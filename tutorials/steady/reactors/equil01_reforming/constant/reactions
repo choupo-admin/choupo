@@ -2,7 +2,7 @@
   Reaction library for the steam-methane reforming equilibrium.
 
   The `equilibriumReactor` needs ONLY the stoichiometry: each reaction's
-  equilibrium constant Kp(T) is computed from the species' `gibbsFormation`
+  equilibrium constant Kp(T) is computed from the species' `standardThermochemistry`
   data (K = exp(-dG°/RT)), not from a rate law.  No `kinetics` block here --
   a kinetic reactor (cstr/pfr) would add one; an equilibrium reactor must not
   need one.  The two reactions are INDEPENDENT (the overall

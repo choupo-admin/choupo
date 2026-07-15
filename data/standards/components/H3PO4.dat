@@ -45,74 +45,7 @@ solidHeatCapacity
 
 provenance
 {
-    gibbsFormation { origin literature; method "dHf_298: CRC Handbook (crystalline H3PO4, -1284.4 kJ/mol; NBS printings -1279.0); s_298: Wagman et al. NBS Tables 1982"; }
+    standardThermochemistry { origin literature; method "dHf_298: CRC Handbook (crystalline H3PO4, -1284.4 kJ/mol; NBS printings -1279.0); s_298: Wagman et al. NBS Tables 1982"; }
     solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
     rho_p { origin literature; method "crystalline H3PO4 density ~1.834 g/cm3"; }
-}
-
-cosmo
-{
-    VT2005
-    {
-        model       COSMOSAC;
-        variant     "2002";
-        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-1062-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7664-38-2";
-        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
-        area        104.14135;
-        volume      87.48438;
-        sigmaProfile
-        (
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.624960186459762
-            2.33960676051321
-            4.35642955574834
-            1.38779513553061
-            1.30518314749438
-            3.68186332770740
-            3.83479191037396
-            2.84590271926399
-            0.536601362422497
-            1.39967412722514
-            1.74871787885927
-            1.42723801797039
-            0.954444874774069
-            1.19024594974366
-            1.44078118165264
-            1.27876552140948
-            0.585021290137798
-            0.709314757954321
-            2.45340906390809
-            4.13790041837097
-            2.55413390769975
-            2.21186502498864
-            1.37078163651028
-            1.83597793604120
-            5.58060389988123
-            4.83741424585215
-            4.52140504444551
-            4.93773457039642
-            7.07963507672937
-            8.21733731043210
-            5.22911089353684
-            2.21211369156288
-            4.07225700361813
-            7.88136113058332
-            3.36097144020219
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-        );
-    }
 }

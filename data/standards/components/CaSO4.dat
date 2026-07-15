@@ -53,7 +53,7 @@ liquidHeatCapacity
 
 provenance
 {
-    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982 (anhydrite)"; }
+    standardThermochemistry { origin literature; method "Wagman et al. NBS Tables 1982 (anhydrite)"; }
     solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
     rho_p { origin literature; method "anhydrite mineralogical density ~2.96 g/cm3"; }
 }

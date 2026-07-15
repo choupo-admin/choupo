@@ -57,7 +57,7 @@ solubility
 }
 
 
-// gibbsFormation kept for Gibbs-reactor consumers that might
+// standardThermochemistry kept for Gibbs-reactor consumers that might
 // want to model sugar decomposition (Maillard, caramelisation).
 // NIST WebBook values for crystalline sucrose.
 standardThermochemistry

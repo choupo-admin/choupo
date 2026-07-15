@@ -6,7 +6,7 @@
   (2 H2S + SO2 -> 3 S + 2 H2O at 1000-1500 K) --- another good
   GibbsReactor target with strong T sensitivity.
   Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
-  reference EOS; gibbsFormation cross-checked vs NASA TM-4513
+  reference EOS; standardThermochemistry cross-checked vs NASA TM-4513
   (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
   literature value, primary re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/

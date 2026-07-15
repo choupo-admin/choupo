@@ -280,7 +280,7 @@ int EstimateComponent::run(const DictPtr& dict,
               << (fillPsat ? "    -> the component is FLASHABLE with no measured data.\n"
                            : "    -> NOT flashable until vapour pressure is supplied.\n")
               << "  GAP Joback cannot fill -- see the commented TODO below:\n"
-              << "    * gibbsFormation.s_298 -> Gibbs reactor     (third-law absolute S; Joback gives dGf, not S)\n"
+              << "    * standardThermochemistry.s_298 -> Gibbs reactor     (third-law absolute S; Joback gives dGf, not S)\n"
               << "  CAVEAT: Ambrose-Walton is an ESTIMATE -- a few % for non-polar species,\n"
               << "    worse for polar / H-bonding / associating ones.  Overlay it on measured\n"
               << "    Psat before trusting it for design (Psat(Tb) = " << Psat_Tb_bar
@@ -498,7 +498,7 @@ int EstimateComponent::run(const DictPtr& dict,
 //  A petroleum pseudo-component is a LUMP of hundreds of species, anchored on
 //  the bulk characterisation pair (Tb, SG).  The proposal it writes is an
 //  ORDINARY .dat resolved by exact name -- but it OMITS what a lump cannot
-//  honestly carry (formula/CAS, gibbsFormation) and its provenance SCREAMS it
+//  honestly carry (formula/CAS, standardThermochemistry) and its provenance SCREAMS it
 //  is lumped/estimated, NOT a real species.
 // ---------------------------------------------------------------------------
 int EstimateComponent::runScalar(const DictPtr& dict, const std::string& comp,
@@ -588,7 +588,7 @@ int EstimateComponent::runScalar(const DictPtr& dict, const std::string& comp,
               << "  characterisation point (Tb = " << Tb << " K, SG = " << SG << ").\n"
               << "  It is an ORDINARY .dat resolved by name, but it OMITS:\n"
               << "    * formula / CAS     -- there is no single molecule;\n"
-              << "    * gibbsFormation    -- no stoichiometric reaction to reference.\n"
+              << "    * standardThermochemistry    -- no stoichiometric reaction to reference.\n"
               << "  READY (active below): EoS (Tc,Pc,omega) + Psat (Ambrose-Walton)\n"
               << "    + Vliq (Rackett) + Cp_ig & Cp_liq (Kesler-Lee) -> FLASHABLE and\n"
               << "    energy-balance-closing with NO measured data.\n"

@@ -251,7 +251,7 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
         // Heat of reaction on the ONE enthalpy base (elements/formation datum).
         // Resolved ONCE here through the shared helper so the LiquidDH and
         // GasConstantV bases speak the SAME convention: when every reacting
-        // species carries gibbsFormation, dH_rxn(T) = Σ νᵢ·hᵢ(T) is authoritative
+        // species carries standardThermochemistry, dH_rxn(T) = Σ νᵢ·hᵢ(T) is authoritative
         // (LiquidDH -> h_formation(T,"liquid"); GasConstantV -> h_pure_ig), and a
         // present dict `dH_rxn` is cross-checked (mismatch warned, never silently
         // overriding); species lacking formation data fall to the announced dict
@@ -315,7 +315,7 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             if (energy_ == Energy::GasConstantV && (!c.hasCpIdealGas() || !c.hasGibbsData()))
                 throw std::runtime_error("BatchReactor (adiabatic, gasConstantV):"
                     " component '" + c.name() + "' needs idealGasHeatCapacity +"
-                    " gibbsFormation (for u_i = h_pure_ig − R_uT and Cv) in its"
+                    " standardThermochemistry (for u_i = h_pure_ig − R_uT and Cv) in its"
                     " .dat file");
         }
     }

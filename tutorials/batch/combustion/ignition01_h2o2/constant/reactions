@@ -15,7 +15,7 @@
   both members of each GRI DUPLICATE pair (their rates add).  The AR-collider
   channel is omitted: this case carries no argon.
 
-  THERMO (was always real): gibbsFormation + Cp of the nine species from
+  THERMO (was always real): standardThermochemistry + Cp of the nine species from
   data/standards/components/ (per-species cited).  Reverse rates come from
   equilibrium -- thermo-consistent by construction.
 

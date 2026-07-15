@@ -77,5 +77,5 @@ provenance
     idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 0.93%";
     liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
     triplePoint    "CoolProp reference EOS triple-point T,P";
-    preserved      "from prior proposal (NOT CoolProp): gibbsFormation, groups";
+    preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
 }

@@ -27,7 +27,7 @@ CAS         "n/a";              // pseudo-mixture
 // SPECIAL STATUS: this is NOT a pure compound -- it is a fixed-composition
 // 30 vol % propylene-glycol / 70 vol % water BRINE, lumped into one
 // pseudo-component for the closed secondary-refrigerant loop.  It carries NO
-// gibbsFormation block ON PURPOSE: a fixed mixture has no single heat of
+// standardThermochemistry block ON PURPOSE: a fixed mixture has no single heat of
 // formation and never reacts (utility heat-carrier only -- "Do NOT put in a
 // reactor", above).  The deliberate absence is correct, not a curation gap;
 // a real glycol study would model PG and water as two SEPARATE components with

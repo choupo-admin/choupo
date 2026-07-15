@@ -29,7 +29,7 @@ MW             188.177;        // g/mol
 nonvolatile    true;
 dissociation   2;              // K+ + HC4H4O6-
 
-// FORMATION DATUM -- NOT a component-level gibbsFormation block by design.
+// FORMATION DATUM -- NOT a component-level standardThermochemistry block by design.
 // KHT is a sparingly-soluble electrolyte (K+ + bitartrate HC4H4O6-).  Its
 // cation's aqueous thermodynamics live in the ion tier, species/aqueous/
 // (K+, z = +1), referenced BY NAME.  The bitartrate anion HC4H4O6- has NO

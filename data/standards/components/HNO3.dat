@@ -41,74 +41,7 @@ liquidHeatCapacity
 
 provenance
 {
-    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982 (liquid HNO3)"; }
+    standardThermochemistry { origin literature; method "Wagman et al. NBS Tables 1982 (liquid HNO3)"; }
     liquidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
     Vliq { origin literature; method "pure-liquid density ~1.513 g/cm3 at 25 C"; }
-}
-
-cosmo
-{
-    VT2005
-    {
-        model       COSMOSAC;
-        variant     "2002";
-        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-1063-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7697-37-2";
-        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
-        area        78.99960;
-        volume      59.4379;
-        sigmaProfile
-        (
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.483825850784804
-            1.14384354005441
-            1.00801055911391
-            1.13417550222721
-            0.871808784710289
-            0.755595813328100
-            0.312124917542276
-            1.21492188878917
-            0.742224646611349
-            0.452953382930640
-            0.303477060446011
-            0.605291678953349
-            1.01321878368008
-            2.14204422672227
-            2.25783894577738
-            2.34120418271148
-            1.99101209013703
-            3.38384157657731
-            1.86007580176468
-            2.63496481252358
-            2.15237185229528
-            2.08521498094920
-            4.40497291085280
-            9.96295681289383
-            12.4570784510461
-            11.0268749432254
-            8.93384292340841
-            1.32383307994366
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-        );
-    }
 }

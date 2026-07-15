@@ -21,7 +21,7 @@
   Use:
     Pseudo-fluid for the `dowthermA` utility (closed-loop sensible heat carrier
     in the 285-650 K range, ~13 to ~377 C).  Do NOT put in a reactor or any
-    case where you actually need ΔHrxn — this entry has NO gibbsFormation
+    case where you actually need ΔHrxn — this entry has NO standardThermochemistry
     block on purpose (the heat-carrier never reacts in normal use).
 
   Limits:

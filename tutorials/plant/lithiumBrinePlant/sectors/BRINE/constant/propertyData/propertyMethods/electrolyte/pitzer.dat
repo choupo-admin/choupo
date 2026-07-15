@@ -1,0 +1,73 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "propertyMethods/electrolyte/pitzer.dat"; }
+/*---------------------------------------------------------------------------*\
+  propertyMethod electrolyte.pitzer -- the Pitzer ion-interaction model for
+  aqueous electrolytes: mean activity + osmotic coefficients from the virial
+  expansion in ionic strength.  Per-group reference rungs (amendment A1):
+  water on pureLiquidRaoult, ions on ionAqueousInfiniteDilution (H+(aq)=0).
+  Pair beta0/beta1/Cphi come from parameters.pitzerPairs (cited; the
+  calorimetric T-slots only where fitted -- see the L_phi doctrine).
+  Source: Pitzer (1973), J. Phys. Chem. 77:268.
+\*---------------------------------------------------------------------------*/
+recordType propertyMethod;
+schemaVersion 1;
+
+name pitzer;
+family electrolyte;
+
+description "Pitzer electrolyte activity model.";
+
+componentApproach apparentOrTrue;
+
+// U2 (final-property-architecture.md): the reference basis lives INSIDE the
+// propertyMethod, declared per phase.  The engine reads it from the selected
+// method and NEVER hardcodes "aqueous".  The solid rung is the ion-derived datum
+// (single-source; no stored Hf_solid -- see salt-formation-ion-derived).
+referenceBasis
+{
+    aqueous
+    {
+        // A1 (grammar forum 2026-07-04): per-GROUP rungs made explicit --
+        // ONE aqueous Gibbs surface, two conventions on it (Gibbs-Duhem).
+        water { rung pureLiquidRaoult;          convention "a_w from the osmotic coefficient"; }
+        ions  { rung ionAqueousInfiniteDilution; convention "H+(aq)=0"; }
+    }
+
+    solid
+    {
+        rung solidFromIonFormation;
+        relation "Hf_solid = sum(nu_i*hfAq_i) - dH_solution";
+    }
+
+    vapour
+    {
+        rung idealGasReference;
+    }
+}
+
+requires
+{
+    ionSpecies true;
+
+    ionCharges true;
+
+    pairParameters
+    {
+        type electrolytePairParameters;
+    }
+
+    optionalMixingParameters
+    {
+    }
+
+    optionalSaltEquilibria
+    {
+        path "data/standards/components/";   // salt anchors live as measuredSolubilityAnchor in the component file
+    }
+}
+
+provides ( meanActivityCoefficient osmoticCoefficient waterActivity ionicStrength osmoticPressure saturationIndex );
+
+notes
+{
+    purpose "Defines the method contract. Numerical parameters live in parameters/electrolyte/pitzer/.";
+}

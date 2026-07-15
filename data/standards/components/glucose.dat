@@ -12,7 +12,7 @@
   Sources: dHf_298 from Ponomarev & Migarskaya, Russ. J. Phys. Chem. 34
            (1960) -- combustion calorimetry; s_298 from Boerio-Goates,
            J. Chem. Thermodyn. 23 (1991) -- adiabatic calorimetry (full
-           citations at the gibbsFormation block).  MW from standard
+           citations at the standardThermochemistry block).  MW from standard
            atomic weights; solid Cp deliberately absent (flagged, not
            fabricated -- see body).
 \*---------------------------------------------------------------------------*/

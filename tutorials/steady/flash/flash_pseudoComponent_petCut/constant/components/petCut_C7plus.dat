@@ -10,7 +10,7 @@
                               there is no single molecule)
     critical { Tc Pc omega}-- corresponding-states constants of the cut
     gasIdeal  { Cp }       -- ideal-gas heat capacity (NO Hf_298 / S_298:
-                              gibbsFormation needs a stoichiometric reaction,
+                              standardThermochemistry needs a stoichiometric reaction,
                               and a lump has none)
     liquidPure{ Tb Vliq Cp Psat }  -- enough to FLASH and to close an
                               energy balance.

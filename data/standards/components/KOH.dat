@@ -48,7 +48,7 @@ liquidHeatCapacity
 
 provenance
 {
-    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982"; }
+    standardThermochemistry { origin literature; method "Wagman et al. NBS Tables 1982"; }
     solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
     rho_p { origin literature; method "KOH crystal density ~2.04 g/cm3"; }
 }

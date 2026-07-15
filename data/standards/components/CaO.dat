@@ -46,7 +46,7 @@ solidHeatCapacity
 
 provenance
 {
-    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982 (S_298: NBS 39.75; CODATA/Robie-Hemingway ~38.1)"; }
+    standardThermochemistry { origin literature; method "Wagman et al. NBS Tables 1982 (S_298: NBS 39.75; CODATA/Robie-Hemingway ~38.1)"; }
     solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
     rho_p { origin literature; method "lime crystal density ~3.34 g/cm3"; }
 }

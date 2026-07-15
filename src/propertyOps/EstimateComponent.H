@@ -63,7 +63,7 @@ Description
     when the selected `model` is a SCALAR-input estimator (RiaziDaubert), the
     op reads an `anchors { Tb; SG; }` block instead of `groups ( ... )` and
     produces a PETROLEUM PSEUDO-COMPONENT -- a lumped cut with no single
-    molecule.  Its proposal OMITS formula/CAS (no molecule) and gibbsFormation
+    molecule.  Its proposal OMITS formula/CAS (no molecule) and standardThermochemistry
     (no stoichiometric reaction); the provenance SCREAMS it is lumped/estimated
     (status ESTIMATE; lumped true; "NOT a real species").
 \*---------------------------------------------------------------------------*/

@@ -320,7 +320,7 @@ int PFR::solve(const DictPtr& dict,
     // The PFR is isothermal (T_out = T_in = T), so the heat it must exchange to
     // hold T against the reaction enthalpy is dH_rxn(T)·ξ on the ONE datum.  The
     // shared resolver derives dH_rxn(T) = Σ νᵢ·hᵢ(T) from the species'
-    // gibbsFormation (and announces it); without this the PFR's reaction heat
+    // standardThermochemistry (and announces it); without this the PFR's reaction heat
     // leaked out of globalEnergyBoundary (the leak CSTR/GibbsReactor already
     // plug).  Reported only when every reacting species carries formation data.
     {
@@ -455,7 +455,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
                     {
                         throw std::runtime_error("PFR: thermalMode `" + tmode + "` needs the "
                             "heat of reaction, so every reacting species needs a "
-                            "`gibbsFormation` block -- '" + thermo.comp(i).name()
+                            "`standardThermochemistry` block -- '" + thermo.comp(i).name()
                             + "' has none (a fictitious species carries no elements datum; "
                               "use thermalMode isothermal, or a real species)");
                     }

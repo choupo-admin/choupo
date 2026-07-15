@@ -14,7 +14,7 @@
   Replaces the 3-way split mineralSolubility/halite + salts/halite + phases/solid/halite;
   each value keeps its per-datum provenance below.
 
-  NaCl carries NO gibbsFormation (arity-2): the salt solid enthalpy is
+  NaCl carries NO standardThermochemistry (arity-2): the salt solid enthalpy is
   ion-derived at build time (Hf_solid = Sum nu.hfAq - dH_soln), ions in species/aqueous/.
 \*---------------------------------------------------------------------------*/
 

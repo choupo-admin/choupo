@@ -5,7 +5,7 @@
   The campaign ledger integrates each transfer's enthalpy PACKAGE BY
   PACKAGE at each package's own temperature.  A package containing a
   species with NO formation datum (here `compA`, a lumped teaching
-  species that deliberately carries no gibbsFormation block) cannot be
+  species that deliberately carries no standardThermochemistry block) cannot be
   priced --- the record must mark H invalid and NAME the species.  The
   contract under test is the temporal one:
 

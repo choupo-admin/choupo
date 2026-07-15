@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   thermoPackage  --  proxy01_gas_loop
 
-  Water-gas-shift quartet, gas phase, ideal.  All four carry gibbsFormation
+  Water-gas-shift quartet, gas phase, ideal.  All four carry standardThermochemistry
   + idealGasHeatCapacity, so the gas-aware Mixer (formation datum) and the
   Gibbs reactor both have what they need.
 \*---------------------------------------------------------------------------*/

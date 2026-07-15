@@ -5,7 +5,7 @@
   HCN + 3 H2O over Pt-Rh gauze).  Also a fuel-NOx side-product in
   combustion of N-bearing fuels (coal char).  Highly polar, strongly
   associated in the liquid phase.
-  Sources: gibbsFormation cross-checked vs NASA TM-4513
+  Sources: standardThermochemistry cross-checked vs NASA TM-4513
   (McBride-Gordon-Reno 1993); constants and idealGasHeatCapacity --
   individual literature values, primary re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/

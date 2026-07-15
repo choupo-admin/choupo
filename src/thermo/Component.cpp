@@ -320,7 +320,7 @@ void Component::readFromDict(const DictPtr& d)
         cpSolid_ = HeatCapacityModel::New(d->subDict("solidHeatCapacity"));
 
     // ---- Optional Gibbs-formation block (consumed by the Gibbs reactor) ----
-    // gibbsFormation
+    // standardThermochemistry
     // {
     //     dHf_298    -241830;       // J/mol, in the natural phase below
     //     s_298         188.83;     // J/(mol·K), third-law absolute
@@ -333,16 +333,13 @@ void Component::readFromDict(const DictPtr& d)
     //                               // whose Hf cannot be referenced to gas
     //                               // because the compound never vaporises.
     // }
-    // `standardThermochemistry` is the current name; `gibbsFormation` is the old
-    // name (dual-read during the corpus-wide rename -- new name wins).  The block
-    // holds the NBS/CODATA triad: dHf_298 (formation), dGf_298 (formation), s_298
+    // The NBS/CODATA triad: dHf_298 (formation), dGf_298 (formation), s_298
     // (ABSOLUTE third-law entropy).  Reference state is the GLOBAL convention
     // (298.15 K, 1 bar, ideal gas) -- so `phase` defaults to gas and a condensed
     // reference is declared explicitly (phase solid/liquid, or a gasIdeal/solid block).
-    if (d->found("standardThermochemistry") || d->found("gibbsFormation"))
+    if (d->found("standardThermochemistry"))
     {
-        auto g = d->subDict(d->found("standardThermochemistry")
-                              ? "standardThermochemistry" : "gibbsFormation");
+        auto g = d->subDict("standardThermochemistry");
         Hf298_         = g->lookupScalar("dHf_298");
         S298_          = g->lookupScalar("s_298");
         naturalPhase_  = g->lookupWordOrDefault("phase", "gas");
@@ -363,7 +360,7 @@ void Component::readFromDict(const DictPtr& d)
         const bool so = blockHasFormation("solid");
         if ((gi || so) && hasGibbsData_)
             throw std::runtime_error("Component '" + name_ + "': the formation "
-                "datum is defined BOTH in gibbsFormation{} and in a reference-"
+                "datum is defined BOTH in standardThermochemistry{} and in a reference-"
                 "state block -- keep exactly one.");
         if (gi && so)
             throw std::runtime_error("Component '" + name_ + "': Hf_298 in BOTH "
@@ -484,7 +481,7 @@ void Component::readFromDict(const DictPtr& d)
             auto s = c->subDict(setName);
             CosmoSet cs;
             cs.model   = s->lookupWordOrDefault("model", "COSMOSAC");
-            cs.variant = s->lookupWordOrDefault("variant", "cosmoSAC2002");
+            cs.variant = s->lookupWordOrDefault("variant", "2002");
             cs.source  = s->lookupWordOrDefault("source", "undeclared");
             cs.area    = s->lookupScalarOrDefault("area", 0.0);
             cs.volume  = s->lookupScalarOrDefault("volume", 0.0);
@@ -537,7 +534,7 @@ scalar Component::h_formation(scalar T, const std::string& targetPhase) const
 {
     if (!hasGibbsData_)
         throw std::runtime_error("Component '" + name_ +
-            "': h_formation needs gibbsFormation block in .dat");
+            "': h_formation needs standardThermochemistry block in .dat");
 
     // Integrators -- throws clearly if the relevant Cp model is missing.
     auto cpGasIntegral = [&](scalar Tend) -> scalar {
@@ -646,7 +643,7 @@ scalar Component::h_pure_ig(scalar T) const
 {
     if (!hasGibbsData_)
         throw std::runtime_error("Component '" + name_ +
-            "': h_pure_ig(T) needs gibbsFormation block in.dat");
+            "': h_pure_ig(T) needs standardThermochemistry block in.dat");
     if (!cpGas_)
         throw std::runtime_error("Component '" + name_ +
             "': h_pure_ig(T) needs idealGasHeatCapacity block in.dat");
@@ -657,7 +654,7 @@ scalar Component::s_pure_ig(scalar T) const
 {
     if (!hasGibbsData_)
         throw std::runtime_error("Component '" + name_ +
-            "': s_pure_ig(T) needs gibbsFormation block in.dat");
+            "': s_pure_ig(T) needs standardThermochemistry block in.dat");
     if (!cpGas_)
         throw std::runtime_error("Component '" + name_ +
             "': s_pure_ig(T) needs idealGasHeatCapacity block in.dat");

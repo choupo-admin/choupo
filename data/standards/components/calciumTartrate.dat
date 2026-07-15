@@ -41,7 +41,7 @@ solid
 // from the ions (ionAqReference), both carrying hfAq from Kochergina et al. 2006.
 dissociatesTo  { Ca 1; Tart 1; }   // ion stoichiometry (formula-like identity)
 
-// gibbsFormation OMITTED on purpose (see header): the SOLID datum needs a
+// standardThermochemistry OMITTED on purpose (see header): the SOLID datum needs a
 // measured dissolution enthalpy.  Until then, the dissolved salt works via the
 // ion tier; a precipitated solid honestly REFUSES the energy balance.
 

@@ -5,7 +5,7 @@
   no Antoine / ideal-gas Cp blocks.  The `solid { rho_p; }` block gives
   the particle density used by gas-solid separation (the cyclone d50);
   `k_v` defaults to a sphere.  Silica IS a real solid (enriched
-  2026-06-07): `gibbsFormation` (dHf_298 / s_298, solid phase) puts it
+  2026-06-07): `standardThermochemistry` (dHf_298 / s_298, solid phase) puts it
   on the elements/formation datum and `solidHeatCapacity` carries its
   sensible heat, so it can react / appear in energy balances --- it is
   NOT a mere pseudo-solid that is only physically separated.

@@ -7,7 +7,7 @@
 
   The diphenyl side reaction (2 benzene <-> biphenyl + H2) is a documented
   follow-on (PHASE 5): it needs the biphenyl component created via the props
-  bench (Joback) AND a Psat + gibbsFormation before it can touch a VLE unit.
+  bench (Joback) AND a Psat + standardThermochemistry before it can touch a VLE unit.
 \*---------------------------------------------------------------------------*/
 
 hda
@@ -20,7 +20,7 @@ hda
         { component benzene;  nu  1; }
         { component CH4;      nu  1; }
     );
-    // dH_rxn: NOT specified.  Every species carries gibbsFormation, so the
+    // dH_rxn: NOT specified.  Every species carries standardThermochemistry, so the
     // engine derives the authoritative dH_rxn(T) = Sum nu_i * h_i(T)
     // (~ -48.4 kJ/mol) from the elements datum.  A dH_rxn key here would be a
     // redundant second source; it belongs only where a species lacks formation.

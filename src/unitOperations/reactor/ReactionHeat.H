@@ -35,18 +35,18 @@ Function
 
           dH_rxn(T) = Σ νᵢ · hᵢ(T)          [J per mole of extent]
 
-    where each hᵢ carries ΔHf°(elements, 25 °C) from its gibbsFormation{} block
+    where each hᵢ carries ΔHf°(elements, 25 °C) from its standardThermochemistry{} block
     (phase-aware: h_pure_ig for "gas", h_formation(T,"liquid") otherwise).
 
     The reactions-dict `dH_rxn` key is DEMOTED to an explicit, announced,
     cross-checked OVERRIDE -- used only when a reacting species deliberately
     lacks formation data (toy / lumped / measured-ΔH pedagogy):
 
-      (a) every species carries gibbsFormation  -> the formation value is
+      (a) every species carries standardThermochemistry  -> the formation value is
           authoritative (sourceOut = "formation"); a present `dictOverride`
           is CROSS-CHECKED and a mismatch beyond tolerance is WARNED aloud,
           never silently overriding the curated value;
-      (b) any species lacks gibbsFormation      -> fall back to `dictOverride`
+      (b) any species lacks standardThermochemistry      -> fall back to `dictOverride`
           and LOUDLY announce "dict OVERRIDE -- no formation datum"
           (sourceOut = "dict-override");
       (c) neither formation data nor a dict value -> WARN aloud and return 0

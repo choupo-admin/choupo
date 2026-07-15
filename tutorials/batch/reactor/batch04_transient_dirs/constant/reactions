@@ -28,7 +28,7 @@ esterification_etac_exo
         Ea     7.0e4;
     }
 
-    // Heat of reaction: from the species' gibbsFormation (elements datum) --
+    // Heat of reaction: from the species' standardThermochemistry (elements datum) --
     // the engine computes -26.06 kJ/mol of ethanol, the authoritative value.
     // No dict dH_rxn override here: all four species carry formation data.
 }

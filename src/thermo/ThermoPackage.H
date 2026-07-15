@@ -175,8 +175,8 @@ public:
     //                                                              [J/(mol·K)]
     //
     //   with P_ref = 1 bar = 1e5 Pa (convention of the S°_298 values in
-    //   the.dat gibbsFormation blocks --- JANAF / NIST reference state).
-    //   Requires every component in the mixture to carry a `gibbsFormation`
+    //   the.dat standardThermochemistry blocks --- JANAF / NIST reference state).
+    //   Requires every component in the mixture to carry a `standardThermochemistry`
     //   block; otherwise the underlying h_pure_ig / s_pure_ig throw with
     //   a clear error.
     //
@@ -220,7 +220,7 @@ public:
     //   H_stream_formation(T,P,vf,z) = (1−vf)·H_liquid_formation
     //                                + vf·H_real          [J/mol]
     //
-    // Both require every component present to carry `gibbsFormation`
+    // Both require every component present to carry `standardThermochemistry`
     // (for h_pure_ig) and Watson data (for Δhvap); they throw otherwise,
     // and the energy-balance report falls back to the sensible datum
     // with a flagged note.
@@ -277,7 +277,7 @@ public:
 
     // Does component i have ANY route to an ELEMENTS-datum enthalpy that the
     // H_*_formation kernels actually honour?  The two such routes:
-    //   (1) a `gibbsFormation{}` block (the normal formation datum), or
+    //   (1) a `standardThermochemistry{}` block (the normal formation datum), or
     //   (2) the electrolyte AQUEOUS infinite-dilution ion reference, when the
     //       package's salt is calorimetrically fitted AND its ions carry the
     //       slice-2 aqueous tier (hasAqueousReference()).

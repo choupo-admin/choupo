@@ -413,7 +413,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
                     {
                         throw std::runtime_error("CSTR: thermalMode `" + tmode + "` needs the "
                             "elements datum on every reacting species -- '"
-                            + thermo.comp(i).name() + "' has no `gibbsFormation` block "
+                            + thermo.comp(i).name() + "' has no `standardThermochemistry` block "
                             "(a fictitious species carries none; use thermalMode isothermal)");
                     }
                 }

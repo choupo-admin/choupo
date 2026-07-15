@@ -124,11 +124,11 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
 
         // Heat of reaction on the ONE enthalpy base (elements/formation datum),
         // resolved ONCE here through the shared helper.  When every reacting
-        // species carries gibbsFormation, dH_rxn(T) = Σ νᵢ·hᵢ(T) is authoritative
+        // species carries standardThermochemistry, dH_rxn(T) = Σ νᵢ·hᵢ(T) is authoritative
         // and a present dict `dH_rxn` is cross-checked (mismatch warned, never
         // silently overriding).  The dynamic reactor is always non-isothermal
         // (it integrates T), so the heat of reaction is always consulted.  The
-        // ctrl toy components (compA/compB, no gibbsFormation) take the announced
+        // ctrl toy components (compA/compB, no standardThermochemistry) take the announced
         // dict-override branch -- their numbers are unchanged.
         std::optional<scalar> dictDH;
         if (rxn->found("dH_rxn")) dictDH = rxn->lookupScalar("dH_rxn");

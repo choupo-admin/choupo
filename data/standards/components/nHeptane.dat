@@ -66,8 +66,8 @@ provenance
     idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 3.39%";
     liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.01%";
     triplePoint    "CoolProp reference EOS triple-point T,P";
-    preserved      "from prior proposal (NOT CoolProp): gibbsFormation, groups";
-    gibbsFormation "NASA TM-4513 (McBride-Gordon-Reno 1993), H0/S0(298.15) from NASA-7 poly";
+    preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
+    standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), H0/S0(298.15) from NASA-7 poly";
 }
 
 groups

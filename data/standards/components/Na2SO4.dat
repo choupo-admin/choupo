@@ -43,7 +43,7 @@ solidHeatCapacity
 
 provenance
 {
-    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982 (anhydrous thenardite)"; }
+    standardThermochemistry { origin literature; method "Wagman et al. NBS Tables 1982 (anhydrous thenardite)"; }
     solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
     rho_p { origin literature; method "thenardite mineralogical density ~2.68 g/cm3"; }
 }

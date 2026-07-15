@@ -8,7 +8,7 @@
     + liquid molar volume Vliq (Rackett / Yamada-Gunn from Tc,Pc,omega)
     -> the component is FLASHABLE with no measured data.
   GAP Joback cannot fill -- see the commented TODO below:
-    * gibbsFormation.s_298 -> Gibbs reactor     (third-law absolute S; Joback gives dGf, not S)
+    * standardThermochemistry.s_298 -> Gibbs reactor     (third-law absolute S; Joback gives dGf, not S)
   CAVEAT: Ambrose-Walton is an ESTIMATE -- a few % for non-polar species,
     worse for polar / H-bonding / associating ones.  Overlay it on measured
     Psat before trusting it for design (Psat(Tb) = 0.969829 bar; ~1.013 if self-consistent).

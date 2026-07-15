@@ -101,7 +101,7 @@ int GibbsReactor::solve(const DictPtr& dict,
         for (std::size_t j = 0; j < M; ++j) A[j][i] = atoms[j];
         if (!thermo.comp(compIdx[i]).hasGibbsData())
             throw std::runtime_error("GibbsReactor: species '" + sname
-                + "' is missing a gibbsFormation block in its.dat file");
+                + "' is missing a standardThermochemistry block in its.dat file");
         // A species can condense if it carries a vapour-pressure model; the
         // method's supersaturation check decides whether it actually does.
         condensable[i] = thermo.comp(compIdx[i]).hasVaporPressure();

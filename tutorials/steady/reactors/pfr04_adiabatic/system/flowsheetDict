@@ -12,7 +12,7 @@
   `thermalMode` takes `isothermal` (default -- T imposed, duty a result),
   `adiabatic` (here), or `heatExchange` (a jacket: U, areaPerVolume, T_coolant).
   A non-isothermal reactor needs the heat of reaction, so every reacting species
-  must carry `gibbsFormation` -- a fictitious toy species cannot be used.
+  must carry `standardThermochemistry` -- a fictitious toy species cannot be used.
 \*---------------------------------------------------------------------------*/
 
 units

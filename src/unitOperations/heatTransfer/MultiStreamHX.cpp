@@ -52,7 +52,7 @@ int MultiStreamHX::solve(const DictPtr& dict,
     const std::size_t n = thermo.n();
 
     // Enthalpy datum: formation reference when every component carries
-    // gibbsFormation (so a stream that flashes inside the unit is summed
+    // standardThermochemistry (so a stream that flashes inside the unit is summed
     // consistently), else the sensible Hliquid datum.  For a non-reacting
     // exchanger the per-component zero cancels in h_out - h_in either way.
     bool useFormation = true;

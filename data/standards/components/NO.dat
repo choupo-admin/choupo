@@ -4,7 +4,7 @@
   Formed via the Zeldovich mechanism (N2 + O <-> NO + N, then
   N + O2 <-> NO + O), reaching equilibrium populations ~ 100-1000 ppm
   at typical adiabatic flame temperatures.
-  Sources: gibbsFormation cross-checked vs NASA TM-4513
+  Sources: standardThermochemistry cross-checked vs NASA TM-4513
   (McBride-Gordon-Reno 1993); constants and idealGasHeatCapacity --
   individual literature values, primary re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/

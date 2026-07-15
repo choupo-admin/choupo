@@ -10,7 +10,7 @@
   (same CAS 7664-41-7, divergent constants) was merged into this file
   and removed -- one molecule, one file, one set of numbers.
   Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
-           reference EOS; gibbsFormation cross-checked vs NASA TM-4513
+           reference EOS; standardThermochemistry cross-checked vs NASA TM-4513
            (McBride-Gordon-Reno 1993); vaporPressure -- individual
            literature value, primary re-citation pending (IST review);
            liquidViscosity -- Engineering Toolbox saturated-liquid table.
@@ -75,7 +75,7 @@ provenance
 {
     vaporPressure  "individual literature value -- primary re-citation pending (IST review)";
     constants      "cross-checked vs CoolProp 7.2.0 reference EOS";
-    gibbsFormation "NASA TM-4513 (McBride-Gordon-Reno 1993), ideal-gas, 298 K";
+    standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), ideal-gas, 298 K";
     liquidViscosity
     {
         origin       regressed;

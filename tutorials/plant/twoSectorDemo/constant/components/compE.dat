@@ -7,7 +7,7 @@ omega       0.2400;
 Tb          352.00;
 HvapTb      30800;
 Vliq        8.5e-5;
-gibbsFormation { dHf_298 -30000.0;  s_298 258.0;  phase gas; }
+standardThermochemistry { dHf_298 -30000.0;  s_298 258.0;  phase gas; }
 vaporPressure { model Antoine; coefficients (4.05 1250.0 -50.0); Trange (250 500); }
 idealGasHeatCapacity { model polynomial; coefficients (50.0 0.12 -6.0e-5 9.0e-9); Trange (200 1500); }
 provenance { source synthetic; note "demo two-sector case"; }

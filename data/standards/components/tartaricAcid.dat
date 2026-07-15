@@ -66,7 +66,7 @@ liquidHeatCapacity
 
 // ENERGY-BALANCE SCOPE.  Tartaric acid closes an energy balance on THREE rungs,
 // all on the same elements floor:
-//   (1) SOLID crystal     -- gibbsFormation (above) + solidHeatCapacity;
+//   (1) SOLID crystal     -- standardThermochemistry (above) + solidHeatCapacity;
 //   (2) DISSOLVED NEUTRAL  -- the aqueous rung via solution/tartaricAcid-water.dat
 //       (dHsoln +15.3 kJ/mol, Kochergina) => h_aq = Hf_crystal + dHsoln = -1295.9
 //       kJ/mol, with NO ideal-gas/Watson vapour leg (a decomposing solid has none);

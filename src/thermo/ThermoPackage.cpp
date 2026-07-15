@@ -707,7 +707,7 @@ pureFluidRoute(const std::map<std::size_t, std::unique_ptr<PureFluidModel>>& pf,
 
 // ---- Ideal-gas mixture H and S (NIST/JANAF reference state) -------------
 //
-// Both h_pure_ig and s_pure_ig in Component throw if `gibbsFormation` is
+// Both h_pure_ig and s_pure_ig in Component throw if `standardThermochemistry` is
 // absent --- the error propagates here so the caller sees exactly which
 // component is missing data.
 
@@ -789,7 +789,7 @@ std::optional<scalar> ThermoPackage::dHsolnForSolute(std::size_t i) const
     const Component& c = components_[i];
 
     // Only a dissolved molecular solute with a CRYSTALLINE formation datum
-    // (gibbsFormation.phase solid) takes the aqueous rung.  Volatile species
+    // (standardThermochemistry.phase solid) takes the aqueous rung.  Volatile species
     // and liquid/gas-datum components are untouched (byte-identical path).
     if (!c.isNonvolatile() || !c.hasGibbsData() || c.naturalPhase() != "solid")
         return std::nullopt;
@@ -830,7 +830,7 @@ std::optional<scalar> ThermoPackage::dHsolnForSolute(std::size_t i) const
 bool ThermoPackage::hasEnthalpyDatum(std::size_t i) const
 {
     if (i >= n()) return false;
-    // Route 1: the ordinary formation datum.  A gibbsFormation{} block lets
+    // Route 1: the ordinary formation datum.  A standardThermochemistry{} block lets
     // h_pure_ig / h_formation place the species on the elements reference
     // (the generic loop in H_liquid_formation / H_ig).
     if (components_[i].hasGibbsData()) return true;

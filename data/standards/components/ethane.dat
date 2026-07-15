@@ -5,7 +5,7 @@
   feedstock for the steam cracker; the C2H6 / C2H4 / H2 / C / CO2 /
   H2O equilibrium at ~1100 K is a standard GibbsReactor exercise.
   Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
-  reference EOS; gibbsFormation cross-checked vs NASA TM-4513
+  reference EOS; standardThermochemistry cross-checked vs NASA TM-4513
   (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
   literature value, primary re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/

@@ -11,7 +11,7 @@
   Component: Acetone  (C3H6O, CAS 67-64-1)
   Sources:   vaporPressure  -- NIST WebBook (Ambrose & Sprake, 1974)
              constants + Cp  -- Poling, Prausnitz, O'Connell (5th ed.), App. A
-             gibbsFormation  -- NIST WebBook (ideal-gas, 298 K)
+             standardThermochemistry  -- NIST WebBook (ideal-gas, 298 K)
 \*---------------------------------------------------------------------------*/
 
 name        acetone;
@@ -63,5 +63,5 @@ provenance
 {
     vaporPressure  "NIST WebBook -- Ambrose & Sprake 1974";
     constants      "Poling/Prausnitz/O'Connell 5th ed., Appendix A";
-    gibbsFormation "NIST WebBook (ideal-gas, 298 K)";
+    standardThermochemistry "NIST WebBook (ideal-gas, 298 K)";
 }

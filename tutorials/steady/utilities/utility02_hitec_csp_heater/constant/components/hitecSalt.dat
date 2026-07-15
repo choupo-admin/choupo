@@ -23,7 +23,7 @@
     carrier in the 142-535 C range; melts at 415 K, thermally unstable above
     ~538 C).  Choose HITEC over Dowtherm A when service temperature exceeds
     ~400 C.  Do NOT put in a reactor or any case where you actually need
-    ΔHrxn — this entry has NO gibbsFormation block on purpose.
+    ΔHrxn — this entry has NO standardThermochemistry block on purpose.
 
   Limits:
     ρ:  range 470-870 K, ±2 %     (Janz 1981 linear)

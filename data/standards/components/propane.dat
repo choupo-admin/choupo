@@ -4,7 +4,7 @@
              constants  -- cross-checked vs CoolProp 7.2.0 reference EOS;
                            Cp -- individual literature value, primary
                            re-citation pending (IST review)
-             gibbsFormation  -- NASA TM-4513 (McBride-Gordon-Reno 1993),
+             standardThermochemistry  -- NASA TM-4513 (McBride-Gordon-Reno 1993),
                                 ideal-gas, 298 K
 \*---------------------------------------------------------------------------*/
 
@@ -55,7 +55,7 @@ provenance
 {
     vaporPressure  "Rips 1963 (primary measured set)";
     constants      "cross-checked vs CoolProp 7.2.0 reference EOS";
-    gibbsFormation "NASA TM-4513 (McBride-Gordon-Reno 1993), ideal-gas, 298 K";
+    standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), ideal-gas, 298 K";
 }
 
 groups

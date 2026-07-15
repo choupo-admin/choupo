@@ -2,7 +2,7 @@
   batch02_adiabatic / constant/thermoPackage
 
   Equimolar aceticAcid + ethanol charge esterifying to ethylAcetate + water
-  in a closed ADIABATIC batch vessel: the gibbsFormation blocks of all four
+  in a closed ADIABATIC batch vessel: the standardThermochemistry blocks of all four
   species are the load-bearing data --- the -26 kJ/mol exotherm that drives
   the 320 -> ~445 K runaway is computed from the elements datum, never typed
   in.  No vapour leaves the liquid charge, so Raoult + ideal gas is an

@@ -4,7 +4,7 @@
 
   Steam-methane reforming: two independent reactions are driven to SIMULTANEOUS
   chemical equilibrium at 1100 K, 1 bar -- no kinetics, no residence time.  The
-  two extents are a RESULT of each reaction's Kp(T) (from the gibbsFormation
+  two extents are a RESULT of each reaction's Kp(T) (from the standardThermochemistry
   data), solved together by the multivariate Newton:
 
       smr :  CH4 + H2O  <->  CO  + 3 H2      (strongly endothermic)

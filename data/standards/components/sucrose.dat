@@ -56,7 +56,7 @@ solubility
 }
 
 
-// gibbsFormation kept for Gibbs-reactor consumers that might
+// standardThermochemistry kept for Gibbs-reactor consumers that might
 // want to model sugar decomposition (Maillard, caramelisation).
 // Individual literature values for crystalline sucrose -- primary
 // re-citation pending (IST review).

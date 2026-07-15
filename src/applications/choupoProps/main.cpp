@@ -127,7 +127,7 @@ void emitGapReport(const ThermoPackage& thermo, std::ostream& os)
         if (!criticals)            missing.push_back("criticals");
         if (!psat && !nonvol)      missing.push_back("vaporPressure");
         if (!cpig)                 missing.push_back("cpIdealGas");
-        if (!gibbs)                missing.push_back("gibbsFormation");
+        if (!gibbs)                missing.push_back("standardThermochemistry");
         if (!missing.empty() || unverified) anyGap = true;
         os << "      { \"name\": \"" << js(c.name()) << "\""
            << ", \"unverified\": " << (unverified ? "true" : "false")
@@ -135,7 +135,7 @@ void emitGapReport(const ThermoPackage& thermo, std::ostream& os)
            << ", \"have\": { \"criticals\": " << (criticals?"true":"false")
            << ", \"vaporPressure\": " << (psat?"true":"false")
            << ", \"cpIdealGas\": " << (cpig?"true":"false")
-           << ", \"gibbsFormation\": " << (gibbs?"true":"false")
+           << ", \"standardThermochemistry\": " << (gibbs?"true":"false")
            << ", \"vliq\": " << (vliq?"true":"false")
            << ", \"nonvolatile\": " << (nonvol?"true":"false") << " }"
            << ", \"missing\": [";

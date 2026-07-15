@@ -6,7 +6,7 @@
   heater then adds sensible heat to the liquid; energyBalance reports the
   implied duty, and it CLOSES because the lump carries gasIdeal + liquidPure
   Cp.  No reaction -> no formation datum needed (matching the lump's omitted
-  gibbsFormation).
+  standardThermochemistry).
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

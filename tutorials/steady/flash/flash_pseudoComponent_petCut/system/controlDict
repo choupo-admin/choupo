@@ -9,10 +9,10 @@
 
   The pseudo-component .dat lives in constant/components/petCut_C7plus.dat
   (SELF-CONTAINED -- the case carries its own lump).  It omits formula/CAS
-  and gibbsFormation (a lump has no molecule and no reaction), yet it FLASHES
+  and standardThermochemistry (a lump has no molecule and no reaction), yet it FLASHES
   (critical{} + Ambrose-Walton Psat) and closes an enthalpy balance (gasIdeal
   + liquidPure Cp).  Sensible-heat balance only -- no reaction -> no Hf datum
-  is needed, exactly as the lump's missing gibbsFormation implies.
+  is needed, exactly as the lump's missing standardThermochemistry implies.
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;

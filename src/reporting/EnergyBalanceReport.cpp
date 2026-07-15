@@ -105,7 +105,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         // sensible fallback).  For a DISPLAY report we surface that single
         // unit's gap LOUDLY (a `gap:<reason>` row + the named component on
         // stderr) and carry on, so one curation gap does not nuke the whole
-        // run's report.  The fix is to CURATE the component's gibbsFormation,
+        // run's report.  The fix is to CURATE the component's standardThermochemistry,
         // never to re-add the second datum.
         // The unit's genuine external duty KPIs (independent of the enthalpy
         // datum -- it only reads the KPIs), so a unit whose stream-enthalpy
@@ -120,7 +120,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         } catch (const std::exception& ex) {
             std::cerr << "WARNING: energyBalance: unit '" << u.name
                       << "' has no elements-datum enthalpy -- " << ex.what()
-                      << "  (curate the gibbsFormation block; the per-unit "
+                      << "  (curate the standardThermochemistry block; the per-unit "
                          "closure is reported as a gap, not a sensible "
                          "fallback)\n";
             f << u.name << ",n/a,n/a,n/a,n/a,n/a,gap\n";
@@ -250,7 +250,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         const scalar Qext = globalQext;
         int    nFeed = 0, nProd = 0, nGap = 0;
         // No-silent-crutch: a boundary stream that genuinely CARRIES a species
-        // with no elements-datum enthalpy (z_i > 0 but no gibbsFormation / no
+        // with no elements-datum enthalpy (z_i > 0 but no standardThermochemistry / no
         // aqueous-ion reference) cannot be placed on the datum.  Dropping it
         // and still printing a closure % is the silent hole this report used to
         // have -- so we collect the offenders and REFUSE the global number
@@ -303,13 +303,13 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             msg << "energy balance cannot close: ";
             if (!gapComponents.empty())
                 msg << "component(s) '" << join(gapComponents, "', '")
-                    << "' have no enthalpy datum (no gibbsFormation, no "
+                    << "' have no enthalpy datum (no standardThermochemistry, no "
                        "aqueous-ion reference)";
             else
                 msg << join(gapOther, "; ");
             msg << " -- present in boundary stream(s) '"
                 << join(gapStreams, "', '") << "'.  "
-                << "Add gibbsFormation{ dHf_298; s_298; phase; } to the "
+                << "Add standardThermochemistry{ dHf_298; s_298; phase; } to the "
                    "component .dat, or configure it as an electrolyte "
                    "(electrolyte{ cation; anion; } + ions in the catalogue).  "
                 << "The ENERGY balance is REFUSED; the mass balance is "

@@ -27,7 +27,7 @@ dissociation   3;                   // van't Hoff factor (2:1 strong electrolyte
 
 // FORMATION DATUM lives PER ION in species/aqueous/ (Ca+2, Cl-; H+(aq)=0
 // convention, Wagman 1982), referenced BY NAME via the electrolyte{} block --
-// CaCl2 carries no component-level gibbsFormation block (arity-2; see
+// CaCl2 carries no component-level standardThermochemistry block (arity-2; see
 // docs/ai/data-doctrine.md).  NOTE: in ions.dat Ca+2 carries hfAq + sAq but
 // its cpAq is still PENDING (flagged in ions.dat); Cl- is complete.  Source
 // Ca+2 cpAq from Wagman 1982 before a CaCl2 heat-of-solution balance is run.

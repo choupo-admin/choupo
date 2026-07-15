@@ -80,7 +80,7 @@ provenance
 {
     vaporPressure  "NIST WebBook / RPP 4th ed. App. A";
     constants      "Reid-Prausnitz-Poling 4th ed., Appendix A";
-    gibbsFormation "NIST WebBook (ideal-gas, 298 K)";
+    standardThermochemistry "NIST WebBook (ideal-gas, 298 K)";
     liquidViscosity
     {
         origin       regressed;

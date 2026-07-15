@@ -15,9 +15,9 @@ propertyDataManifest
     {
         "chemistry/salts/sylvite.dat" { kind local; derivedFrom "Choupo-2607:chemistry/salts/sylvite.dat"; sha256 "41bbb0101e05959880f8977f268302a2aad2ad50532280076186b18b6b4e7ab9"; }
         "components/KCl.dat" { kind local; derivedFrom "Choupo-2607:components/KCl.dat"; sha256 "bd81d8aeb8f40fc4732ca1839a58d68894e81a1f4791068f691d0c596b56e7c1"; }
-        "components/ethanol.dat" { kind standard; standardSet Choupo-2607; sha256 "c1c9faa219b0e7482f7fc5f3b4d2fa913191e625f532c1edc0565b0b84c0a55b"; }
+        "components/ethanol.dat" { kind standard; standardSet Choupo-2607; sha256 "af2ebe4d0fa190d38ab5c30baa00f125988ee7193fe0a3e757b185f6f2a05acb"; }
         "components/potassiumBitartrate.dat" { kind local; derivedFrom "Choupo-2607:components/potassiumBitartrate.dat"; sha256 "db8b7de1d915e0ef1b7a8e35bd7964a7081491611b601c37fb6d5844a4379e55"; }
-        "components/water.dat" { kind standard; standardSet Choupo-2607; sha256 "a3096c1c6863a6cab1686642957177b0398ed1c13c6938e8ec07e59e3bd22dfd"; }
+        "components/water.dat" { kind standard; standardSet Choupo-2607; sha256 "bd02dbd0f03a6f9133c9ed036d6bce897211102e9ca25806cb2b688782972aab"; }
         "phases/solid/sylvite.dat" { kind local; derivedFrom "Choupo-2607:phases/solid/sylvite.dat"; sha256 "1f241024351c601ac25690005bbca076e4a074a26efc74cf19004eaa83192dd0"; }
         "propertyMethods/electrolyte/eNRTL.dat" { kind local; derivedFrom "Choupo-2607:propertyMethods/electrolyte/eNRTL.dat"; sha256 "7f7e4ddaaee3bb12e2bb4fa86a104a381a273a4b7932a9be879fea7440cc0bcc"; }
         "species/aqueous/Cl.dat" { kind standard; standardSet Choupo-2607; sha256 "d3c1a03dc2230a8aae9cb61332ed9f85a44d27a16f46821e8c5d02cee4d6a607"; }

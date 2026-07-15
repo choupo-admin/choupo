@@ -58,7 +58,7 @@ namespace Choupo {
 // the split.
 //
 // Enthalpy datum: formation-reference H_stream when every component carries
-// gibbsFormation (the only datum that sums a gas and a liquid stream
+// standardThermochemistry (the only datum that sums a gas and a liquid stream
 // consistently); else the sensible Hliquid datum (legacy liquid-only cases).
 // For a non-reacting mix the datum cancels in H_out - H_in.
 int Mixer::solve(const DictPtr& dict,

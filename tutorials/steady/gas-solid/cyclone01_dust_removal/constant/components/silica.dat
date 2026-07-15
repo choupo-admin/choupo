@@ -5,7 +5,7 @@
 // note     byte-copy of the FROZEN reference at vendoring time.  This case
 //          is now self-contained + reproducible even if the standard evolves
 //          (the earlier vendored copy was a stale PARTIAL snapshot: it lacked
-//          the gibbsFormation + solidHeatCapacity blocks the run was in fact
+//          the standardThermochemistry + solidHeatCapacity blocks the run was in fact
 //          taking from the standard entry via the field-by-field overlay).
 //          Verify-vs-standard / re-sync is a deliberate curation act.
 // ----------------------------------------------------------------------
@@ -17,7 +17,7 @@
   no Antoine / ideal-gas Cp blocks.  The `solid { rho_p; }` block gives
   the particle density used by gas-solid separation (the cyclone d50);
   `k_v` defaults to a sphere.  Silica IS a real solid (enriched
-  2026-06-07): `gibbsFormation` (dHf_298 / s_298, solid phase) puts it
+  2026-06-07): `standardThermochemistry` (dHf_298 / s_298, solid phase) puts it
   on the elements/formation datum and `solidHeatCapacity` carries its
   sensible heat, so it can react / appear in energy balances --- it is
   NOT a mere pseudo-solid that is only physically separated.

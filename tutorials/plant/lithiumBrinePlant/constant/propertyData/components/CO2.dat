@@ -32,11 +32,10 @@ HvapTb      25230;        // J/mol  (estimate at triple-point T)
 Vliq        4.70e-5;      // m^3/mol  (47.0 cm^3/mol at 273 K)
 diffusionVolume  26.9;          // Fuller diffusion volume [-]
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -393520.0;          // J/mol  -- ideal-gas reference
     s_298     213.790;            // J/(mol·K)  -- third-law absolute
-    phase     gas;            // ideal-gas Hf reference (JANAF convention)
 }
 
 vaporPressure

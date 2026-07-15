@@ -51,7 +51,7 @@ bool hasProp(const Component& c, const std::string& key)
     if (key == "Pc")             return c.Pc() > 0.0;
     if (key == "omega")          return true;
     if (key == "vaporPressure")  return c.hasVaporPressure();
-    if (key == "gibbsFormation") return c.hasGibbsData();
+    if (key == "standardThermochemistry") return c.hasGibbsData();
     if (key == "cpIdealGas")     return c.hasCpIdealGas();
     return true;   // unknown key: don't false-alarm
 }

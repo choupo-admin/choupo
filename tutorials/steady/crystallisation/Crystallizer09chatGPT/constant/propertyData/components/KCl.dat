@@ -27,7 +27,7 @@ dissociatesTo  { K 1; Cl 1; }   // ion stoichiometry; the selected electrolyte m
 
 // FORMATION DATUM lives PER ION in electrolyte/ions.dat (K+, Cl-; H+(aq)=0
 // convention, Wagman 1982), referenced BY NAME via the electrolyte{} block --
-// KCl carries no component-level gibbsFormation block (arity-2; see
+// KCl carries no component-level standardThermochemistry block (arity-2; see
 // docs/ai/data-doctrine.md).  Both K+ and Cl- carry the full hfAq/sAq/cpAq
 // enthalpy tier in ions.dat.
 

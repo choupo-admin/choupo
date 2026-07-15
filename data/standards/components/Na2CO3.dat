@@ -39,7 +39,7 @@ solidHeatCapacity
 
 provenance
 {
-    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982 (anhydrous)"; }
+    standardThermochemistry { origin literature; method "Wagman et al. NBS Tables 1982 (anhydrous)"; }
     solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
     rho_p { origin literature; method "anhydrous Na2CO3 density ~2.54 g/cm3"; }
 }

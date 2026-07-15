@@ -3,7 +3,7 @@
   ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
   Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
   van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
-  constituent/ion, never as a component gibbsFormation block.
+  constituent/ion, never as a component standardThermochemistry block.
 \*---------------------------------------------------------------------------*/
 
 name           2Propanol111NitrilotrisBenzoate11;

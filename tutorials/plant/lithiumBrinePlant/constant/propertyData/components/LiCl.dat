@@ -29,7 +29,7 @@ nonvolatile    true;
 dissociatesTo  { Li 1; Cl 1; } // ion stoichiometry (formula-like identity; the package activates it)
 
 // FORMATION DATUM lives PER ION (Li+, Cl-; H+(aq)=0 convention) in the
-// standard species tree -- no component-level gibbsFormation block (arity-1).
+// standard species tree -- no component-level standardThermochemistry block (arity-1).
 
 solid
 {

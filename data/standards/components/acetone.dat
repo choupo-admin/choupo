@@ -53,7 +53,7 @@ provenance
 {
     vaporPressure  "cross-checked against CoolProp 7.2.0 (MIT) within ~1%";
     constants      "cross-checked against CoolProp 7.2.0 (MIT) within ~1%";
-    gibbsFormation "individual literature value -- primary re-citation pending (IST review)";
+    standardThermochemistry "individual literature value -- primary re-citation pending (IST review)";
 }
 
 // Molecular group decomposition, per method (the curation RECIPE: a group-

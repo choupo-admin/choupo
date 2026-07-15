@@ -88,7 +88,7 @@ scalar reactionHeat(const ThermoPackage&            thermo,
         }
         catch (const std::exception& e)
         {
-            // gibbsFormation present but a Cp / Hvap leg is missing for this
+            // standardThermochemistry present but a Cp / Hvap leg is missing for this
             // phase -- announce and fall through to the explicit override.
             ok = false;
             std::cout << "  [reaction heat] " << context
@@ -143,7 +143,7 @@ scalar reactionHeat(const ThermoPackage&            thermo,
               << ": no formation datum";
     if (!missing.empty()) std::cout << " (missing for " << missing << ")";
     std::cout << " and no explicit dH_rxn -- the reaction is treated as"
-                 " thermally NEUTRAL (heat of reaction = 0). Add gibbsFormation"
+                 " thermally NEUTRAL (heat of reaction = 0). Add standardThermochemistry"
                  " to the species or a dH_rxn override to give it a heat.\n";
     return 0.0;
 }

@@ -328,7 +328,7 @@ Component Database::loadComponent(const std::string& name) const
         projectLocal("transport", "associationFactor", "associationFactor");
         projectLocal("transport", "liquidViscosity", "liquidViscosity");
 
-        // No silent crutch: a Joback ESTIMATE leaves Psat / Vliq / gibbsFormation
+        // No silent crutch: a Joback ESTIMATE leaves Psat / Vliq / standardThermochemistry
         // as declared GAPS (omitted).  If the FROZEN standard backfills them, the
         // merged component is a HYBRID (estimated constants + curated gap data) --
         // announce it per key, never let the estimate look self-sufficient.
@@ -355,9 +355,7 @@ Component Database::loadComponent(const std::string& name) const
                           << "'.Vliq: the ESTIMATE leaves this a GAP, but the "
                           << baseLabel << " is filling it -- the merged component is a hybrid,"
                              " not a pure estimate.\n";
-            auto hasThermo = [](const DictPtr& x)
-            { return x->found("standardThermochemistry") || x->found("gibbsFormation"); };
-            if (hasThermo(dict) && !hasThermo(local))
+            if (dict->found("standardThermochemistry") && !local->found("standardThermochemistry"))
                 std::cerr << "[backfill] component '" << name
                           << "'.standardThermochemistry: the ESTIMATE leaves this a GAP, but the "
                           << baseLabel << " is filling it -- the merged component is a hybrid,"

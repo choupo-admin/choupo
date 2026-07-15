@@ -11,7 +11,7 @@
 
     * T_0 = 320 K (kinetics very slow: k_0 ~ 3.7e-4 s^-1, tau_0 ~ 2700 s).
     * dH_rxn = -26.06 kJ/mol of ethanol, computed from the species'
-      gibbsFormation (elements datum); lifts T ~100 K at full conversion,
+      standardThermochemistry (elements datum); lifts T ~100 K at full conversion,
       enough to show the runaway.
     * Equimolar ethanol + acetic acid charge; ethyl acetate + water are
       the products.  Mass-conserving, so the energy balance is clean.

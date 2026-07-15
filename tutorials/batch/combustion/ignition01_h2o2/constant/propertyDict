@@ -2,7 +2,7 @@
   H2/O2 ignition species pack -- the nine gas-phase species of the skeletal
   chain-branching mechanism, ideal-gas mixture at high temperature.
 
-  Each species carries CURATED gas-phase thermo (gibbsFormation +
+  Each species carries CURATED gas-phase thermo (standardThermochemistry +
   idealGasHeatCapacity) in data/standards/components/ -- that is what sets the
   heat release and the final adiabatic temperature.  The reaction RATES (in
   constant/reactions) are synthetic; see that file's header.

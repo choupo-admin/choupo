@@ -50,7 +50,7 @@ solidPhase     halite;   // ion stoichiometry (formula-like identity; the packag
 // FORMATION DATUM lives PER ION in the aqueous infinite-dilution tier,
 // electrolyte/ions.dat (Na+, Cl-; H+(aq)=0 convention, Wagman 1982),
 // referenced BY NAME via the electrolyte{} block below -- NaCl carries no
-// component-level gibbsFormation block (arity-2; docs/ai/data-doctrine.md).
+// component-level standardThermochemistry block (arity-2; docs/ai/data-doctrine.md).
 // Both Na+ and Cl- DO carry the full hfAq/sAq/cpAq enthalpy tier in ions.dat.
 
 // Salt dissociation map for the electrolyte activity model (pitzer).  cation/anion

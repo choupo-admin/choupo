@@ -43,7 +43,7 @@ solidHeatCapacity
 
 provenance
 {
-    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982"; }
+    standardThermochemistry { origin literature; method "Wagman et al. NBS Tables 1982"; }
     solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
     rho_p { origin literature; method "NH4Cl crystal density ~1.53 g/cm3"; }
 }

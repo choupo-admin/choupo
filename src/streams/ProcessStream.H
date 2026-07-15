@@ -82,7 +82,7 @@ struct ProcessStream
     // Specific molar enthalpy at the ELEMENTS reference (formation
     // datum, 298.15 K).  Populated by Flowsheet::solve once the case
     // has converged, via thermo.H_stream_formation(T, P, vf, z) when
-    // every component carries `gibbsFormation`; left at 0 otherwise.
+    // every component carries `standardThermochemistry`; left at 0 otherwise.
     // Units: J/mol.  Reaction-consistent -- the heat of reaction
     // emerges as h_out - h_in across a reactor.
     //
@@ -105,7 +105,7 @@ struct ProcessStream
     scalar      H_flow_kW = 0.0;
     bool        H_flow_valid = false;
     // Components genuinely PRESENT in this stream (z_i > 0 or s_i > 0) that
-    // carry NO elements-datum enthalpy (no gibbsFormation, no aqueous-ion
+    // carry NO elements-datum enthalpy (no standardThermochemistry, no aqueous-ion
     // reference).  Non-empty => H / H_flow_kW are missing BY MISSING DATA, not
     // by composition -- so the energy-balance report / GUI energy plot must
     // REFUSE and name these, never silently drop the stream (the no-silent-

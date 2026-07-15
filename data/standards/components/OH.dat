@@ -16,7 +16,7 @@
   is left empty for schema compliance and never read).
   Sources: JANAF / NASA TM-4513 (McBride-Gordon-Reno 1993);
   cross-checked with Burcat's thermodynamic database (TAE Report 867)
-  and vs cantera's NASA-polynomial gibbsFormation at 298.15 K.
+  and vs cantera's NASA-polynomial standardThermochemistry at 298.15 K.
 \*---------------------------------------------------------------------------*/
 
 name           OH;

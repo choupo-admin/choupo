@@ -2,7 +2,7 @@
   batch08_isothermal_duty / constant/propertyDict
 
   compA/compB are ABSTRACT lumped species (vendored from batch03): no
-  gibbsFormation block, so the jacket duty cannot be priced from the
+  standardThermochemistry block, so the jacket duty cannot be priced from the
   elements datum --- exactly the situation the reactions dict's declared
   dH_rxn OVERRIDE exists for.  Ideal models: the lesson is the ledger's
   extent-based duty, not the VLE.
