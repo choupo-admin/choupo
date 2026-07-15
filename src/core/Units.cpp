@@ -117,7 +117,7 @@ const std::map<std::string, UnitSpec>& table()
 
         // ----- temperature ---------------------------------------------
         //  K is multiplicative.  C and F are affine; we still register
-        //  them in the table (with affine=true) so isKnownUnit() sees
+        //  them in the table (with affine=true) so lookupUnit() sees
         //  them and the parser routes to affineToK().
         { "K",       UnitSpec{ 1.0,         Dims::temperature } },
         { "degC",    UnitSpec{ 1.0,         Dims::temperature, /*affine=*/true } },
@@ -239,24 +239,6 @@ std::optional<UnitSpec> lookupUnit(const std::string& suffix)
     auto it = t.find(suffix);
     if (it == t.end()) return std::nullopt;
     return it->second;
-}
-
-scalar factorTo_SI(const std::string& suffix)
-{
-    auto s = lookupUnit(suffix);
-    if (!s) return std::nan("");
-    return s->factor;
-}
-
-bool isKnownUnit(const std::string& suffix)
-{
-    return lookupUnit(suffix).has_value();
-}
-
-bool isAffineUnit(const std::string& suffix)
-{
-    auto s = lookupUnit(suffix);
-    return s.has_value() && s->affine;
 }
 
 scalar affineToK(scalar value, const std::string& suffix)

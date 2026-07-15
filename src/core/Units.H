@@ -99,10 +99,7 @@ struct UnitSpec
 
 // Returns the UnitSpec for a known unit alias (e.g. "bar", "kmol/h",
 // "degC"), or nullopt if the suffix is not recognised.  This is the
-// single source of truth for unit names + their dimensions; the
-// older `factorTo_SI` / `isKnownUnit` / `isAffineUnit` API below is
-// preserved for parser-side backwards compatibility and now
-// delegates here.
+// single source of truth for unit names + their dimensions.
 std::optional<UnitSpec> lookupUnit(const std::string& suffix);
 
 // =====================================================================
@@ -186,15 +183,6 @@ constexpr scalar t_to_kg      = 1.0e3;     // metric tonne
 //  everywhere else.  Add a new alias here in one place and the whole
 //  codebase picks it up automatically.
 // =====================================================================
-scalar factorTo_SI(const std::string& suffix);
-
-// True iff the suffix is recognised by `factorTo_SI`.
-bool isKnownUnit(const std::string& suffix);
-
-// True for affine units (e.g. degC, degF) — caller must use the
-// celsius_to_K / fahrenheit_to_K helpers instead of a multiplier.
-bool isAffineUnit(const std::string& suffix);
-
 // Convert an affine temperature unit value to K.  Throws if `suffix`
 // is not "degC" / "C" / "Celsius" / "degF" / "F" / "Fahrenheit".
 scalar affineToK(scalar value, const std::string& suffix);

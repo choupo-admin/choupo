@@ -925,8 +925,8 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     kpis_["R_film"]           = R_film;
     kpis_["R_wall"]           = R_wall;
     kpis_["R_coolant"]        = R_cool;
-    // controllingResistance numeric code: 0 = film, 1 = coolant, 2 = wall.
-    kpis_["controllingResistanceCode"] =   // categorical: 0=condensing film, 1=wall, 2=coolant (renamed pass-5: a bare 0 beside real resistances read as zero ohms)
+    // controllingResistance numeric code: 0 = condensing film, 1 = coolant, 2 = wall.
+    kpis_["controllingResistanceCode"] =
           (controlling == "condensing film") ? 0.0
         : (controlling == "coolant-side")    ? 1.0 : 2.0;
     kpis_["area"]             = area;
