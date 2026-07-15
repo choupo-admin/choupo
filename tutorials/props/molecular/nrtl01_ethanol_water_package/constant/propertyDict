@@ -4,10 +4,6 @@
   assembles + verifies every declared parameter file and announces the assembly
   in the run log.  Edit this file to change THIS case's thermo.
 \*---------------------------------------------------------------------------*/
-recordType propertyPackage;
-schemaVersion 1;
-
-name ethanolWater_NRTL;
 
 components ( ethanol water );
 
@@ -25,8 +21,4 @@ parameters
     }
 }
 
-
-notes
-{
-    purpose "Molecular (degenerate) property package: no dissociation, no chemistry, NRTL. The same ThermoPackageBuilder serves molecular and electrolyte alike.";
-}
+// Molecular (degenerate) property package: no dissociation, no chemistry, NRTL. The same ThermoPackageBuilder serves molecular and electrolyte alike.

@@ -4,10 +4,6 @@
   assembles + verifies every declared parameter file and announces the assembly
   in the run log.  Edit this file to change THIS case's thermo.
 \*---------------------------------------------------------------------------*/
-recordType propertyPackage;
-schemaVersion 1;
-
-name aqueousNaCl_eNRTL;
 
 components ( water NaCl );
 
@@ -36,8 +32,4 @@ parameters
     }
 }
 
-
-notes
-{
-    purpose "Rigorous NaCl eNRTL package. tau(T) anchored/uncalibrated -> no L_phi (calorimetricFit forced false by the builder).";
-}
+// Rigorous NaCl eNRTL package. tau(T) anchored/uncalibrated -> no L_phi (calorimetricFit forced false by the builder).

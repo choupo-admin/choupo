@@ -5,10 +5,6 @@
   speciate op then carries only the ANALYSIS (composition). No selector, no
   degenerate stub -- the whole thermo lives here in the case.
 \*---------------------------------------------------------------------------*/
-recordType propertyPackage;
-schemaVersion 1;
-
-name naclSpeciation;
 
 components ( water NaCl );
 

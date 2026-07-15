@@ -4,10 +4,6 @@
   assembles + verifies every declared parameter file and announces the assembly
   in the run log.  Edit this file to change THIS case's thermo.
 \*---------------------------------------------------------------------------*/
-recordType propertyPackage;
-schemaVersion 1;
-
-name aqueousNaOH_pitzer;
 
 components ( water NaOH );
 
@@ -36,8 +32,4 @@ parameters
     }
 }
 
-
-notes
-{
-    purpose "Rigorous NaOH Pitzer package (calorimetrically fitted Na-OH pair -> heat-of-dilution L_phi).";
-}
+// Rigorous NaOH Pitzer package (calorimetrically fitted Na-OH pair -> heat-of-dilution L_phi).

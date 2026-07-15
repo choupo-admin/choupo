@@ -7,10 +7,6 @@
   composition{LiCl}, is a later reviewed step; the Li-Cl refit + LiCl.H2O
   calibrated Ksp still live in constant/electrolyte/ pending monolith retirement.)
 \*---------------------------------------------------------------------------*/
-recordType propertyPackage;
-schemaVersion 1;
-
-name liCl_farelo_hmw;
 
 components ( water LiCl );
 

@@ -4,10 +4,6 @@
   assembles + verifies every declared parameter file and announces the assembly
   in the run log.  Edit this file to change THIS case's thermo.
 \*---------------------------------------------------------------------------*/
-recordType propertyPackage;
-schemaVersion 1;
-
-name aqueousNaOH_ethanol_eNRTL;
 
 components ( water NaOH ethanol );
 
@@ -35,5 +31,4 @@ parameters
         Na-OH "data/standards/parameters/electrolyte/eNRTL/Na-OH.dat";
     }
 }
-
 

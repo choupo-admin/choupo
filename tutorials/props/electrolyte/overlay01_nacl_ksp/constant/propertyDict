@@ -4,10 +4,6 @@
   ions, and the davies activity method.  The speciate ops carry only the
   ANALYSIS (analyticalTotals); no per-op model.  Replaces the degenerate water+ideal.
 \*---------------------------------------------------------------------------*/
-recordType propertyPackage;
-schemaVersion 1;
-
-name overlay01_nacl_ksp_pkg;
 
 components ( water );
 

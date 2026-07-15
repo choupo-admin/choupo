@@ -4,10 +4,6 @@
   assembles + verifies every declared parameter file and announces the assembly
   in the run log.  Edit this file to change THIS case's thermo.
 \*---------------------------------------------------------------------------*/
-recordType propertyPackage;
-schemaVersion 1;
-
-name aqueousNaCl_pitzer;
 
 components ( water NaCl );
 
@@ -36,9 +32,4 @@ parameters
     }
 }
 
-
-notes
-{
-    purpose "Property package: the central object a case selects. Declares components, chemistry, methods, parameters and reported sets.";
-    builtinMethods "builtin.idealGas and builtin.saltEquilibrium are runtime built-ins; only electrolyte.pitzer is represented as an explicit propertyMethod record here.";
-}
+// Property package: the central object a case selects. Declares components, chemistry, methods, parameters and reported sets.

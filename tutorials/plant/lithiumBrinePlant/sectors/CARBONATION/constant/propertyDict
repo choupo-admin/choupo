@@ -3,7 +3,6 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    propertyDict;
-schemaVersion 1;
 
 inherits "../../../constant";
 

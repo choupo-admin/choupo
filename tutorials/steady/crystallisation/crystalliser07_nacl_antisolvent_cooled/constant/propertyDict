@@ -4,10 +4,6 @@
   assembles + verifies every declared parameter file and announces the assembly
   in the run log.  Edit this file to change THIS case's thermo.
 \*---------------------------------------------------------------------------*/
-recordType propertyPackage;
-schemaVersion 1;
-
-name aqueousNaCl_ethanol_eNRTL;
 
 components ( water ethanol NaCl );
 
@@ -36,8 +32,4 @@ parameters
     }
 }
 
-
-notes
-{
-    purpose "Rigorous NaCl + ethanol (antisolvent) eNRTL package -- drowning-out crystallisation (gammaPMMixed).";
-}
+// Rigorous NaCl + ethanol (antisolvent) eNRTL package -- drowning-out crystallisation (gammaPMMixed).

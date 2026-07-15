@@ -6,10 +6,6 @@
   deliberate override -- the whole point is to read the rival models against
   each other on ONE feed.  Replaces the degenerate water+ideal.
 \*---------------------------------------------------------------------------*/
-recordType propertyPackage;
-schemaVersion 1;
-
-name pitzer_vs_davies_ro_concentrate_pkg;
 
 components ( water );
 
