@@ -193,6 +193,40 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                 g.source  = e->lookupWordOrDefault("source", "undeclared");
                 gases_.push_back(std::move(g));
             }
+        else if (cl.empty())
+        {
+            // Standards tier: gas dissolution (Henry) constants live per-file under
+            // chemistry/gasLiquid/ (the monolith speciation.dat `gases` sidecar is
+            // gone).  Each record's `dissolved` is an ION label (e.g. "CO2"); link it
+            // to the network species whose `ion` matches (CO2 -> CO2aq), fallback the
+            // label itself.  The analytic K(T) carried here is the re-baselined value.
+            const fs::path gdir = fs::path(Database::currentRoot())
+                                / "standards" / "chemistry" / "gasLiquid";
+            if (fs::exists(gdir))
+            {
+                std::vector<fs::path> gfiles;
+                for (const auto& f : fs::directory_iterator(gdir))
+                    if (f.path().extension() == ".dat") gfiles.push_back(f.path());
+                std::sort(gfiles.begin(), gfiles.end());
+                for (const auto& f : gfiles)
+                {
+                    auto e = Dictionary::fromFile(f.string());
+                    GasEntry g;
+                    g.gas     = e->lookupWord("gas");
+                    const std::string dissolved = e->lookupWord("dissolved");
+                    g.species = dissolved;
+                    for (const auto& rec : records)
+                        if (rec->lookupWordOrDefault("ion", "") == dissolved)
+                        { g.species = rec->lookupWord("species"); break; }
+                    g.logK25  = e->lookupScalar("logK25");
+                    g.hasDH   = e->found("dH");
+                    if (g.hasDH) g.dH = e->lookupScalar("dH");
+                    g.kt      = readKT(e);
+                    g.source  = e->lookupWordOrDefault("source", "undeclared");
+                    gases_.push_back(std::move(g));
+                }
+            }
+        }
         if (!cl.empty() && thermoAnnounce())   // case-local eclipses the standards tier: loud
             std::cerr << "[overlay] speciation: case-local " << cl.string()
                       << " ECLIPSES the standard catalogue (network taken whole, "
