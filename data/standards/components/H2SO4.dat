@@ -1,13 +1,12 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Sulfuric acid (H2SO4), pure liquid.  CAS 7664-93-9.
 
-  THE archetypal strong mineral acid, non-volatile at ambient (very low
-  vapour pressure): carried as the LIQUID-phase, dissolved-acid species
-  (role nonvolatile -> K = 0).  The acid for neutralisation duty
-  (H2SO4 + Ca(OH)2 -> CaSO4 + 2 H2O), sulfate-salt precipitation, pickling
-  and acid-balance exercises -- including the tartaric-acid cases that
-  previously had to carry a case-local H2SO4 stub.  This CURATED standard
-  entry supersedes any such case-local copy.
+  THE archetypal strong mineral acid.  This is the MOLECULAR component
+  (pure-liquid formation datum).  It carries NO `role nonvolatile`: a case
+  that treats it as a dissolved acid (neutralisation duty, sulfate-salt
+  precipitation, pickling, acid balances) declares nonvolatility locally, and
+  the dissociation (H2SO4 -> H+ + HSO4- -> H+ + SO4--) is electrolyte
+  chemistry -- not a universal component role.
 
   Carries the LIQUID-phase formation datum and a real liquid heat capacity,
   so its heat of neutralisation closes from the elements reference.
@@ -23,7 +22,6 @@ CAS         7664-93-9;
 
 MW          98.079;            // kg/kmol
 
-role        nonvolatile;       // dissolved strong acid (K = 0)
 
 Vliq        5.360e-5;          // m^3/mol  (= MW / 1830 kg/m^3)
 
