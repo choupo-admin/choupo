@@ -39,5 +39,5 @@ parameters
 
 notes
 {
-    purpose "Aspen-like NaCl + ethanol (antisolvent) eNRTL package -- drowning-out crystallisation (gammaPMMixed).";
+    purpose "Rigorous NaCl + ethanol (antisolvent) eNRTL package -- drowning-out crystallisation (gammaPMMixed).";
 }

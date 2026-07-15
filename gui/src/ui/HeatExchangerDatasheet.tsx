@@ -5,7 +5,7 @@
  *  page (print → PDF); the numbers also export to .ods.  Glass-box: every
  *  correlation is named, U is shown as its three-resistance split.
  *
- *  Aspen EDR produces exactly this (the spec sheet); we do it open, and the
+ *  A detailed exchanger-rating tool produces exactly this (the spec sheet); we do it open, and the
  *  scheme is real (drawn from the solved geometry, not a stock clip-art).
  */
 import { Button, Group, Stack, Text } from "@mantine/core";

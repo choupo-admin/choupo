@@ -39,5 +39,5 @@ parameters
 
 notes
 {
-    purpose "Aspen-like flagship: KCl (eNRTL ion-activity Ksp) + KHT (molecular curve-solute) + ethanol antisolvent. Only KCl is the apparent electrolyte; KHT crystallises off its solubility curve.";
+    purpose "Rigorous flagship: KCl (eNRTL ion-activity Ksp) + KHT (molecular curve-solute) + ethanol antisolvent. Only KCl is the apparent electrolyte; KHT crystallises off its solubility curve.";
 }

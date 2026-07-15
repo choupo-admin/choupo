@@ -525,7 +525,7 @@ export function ExploreWorkspace() {
   // "What unlocks next" — a structural fact (not a recommendation): what ONE
   // more pick of each selection-class would materialise, diffed over the SAME
   // exploreViews source.  States teaching ("two VLE compounds HAVE a McCabe
-  // diagram"), never an Aspen "recommended" nudge.
+  // diagram"), never a black-box "recommended" nudge.
   const unlockLine = useMemo<string | null>(() => {
     if (selected.length === 0) return null;
     const has = (n: string) => metaByName(n, catalogue);

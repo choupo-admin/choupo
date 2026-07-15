@@ -39,5 +39,5 @@ parameters
 
 notes
 {
-    purpose "Aspen-like NaCl eNRTL package. tau(T) anchored/uncalibrated -> no L_phi (calorimetricFit forced false by the builder).";
+    purpose "Rigorous NaCl eNRTL package. tau(T) anchored/uncalibrated -> no L_phi (calorimetricFit forced false by the builder).";
 }
