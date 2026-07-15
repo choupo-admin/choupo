@@ -148,9 +148,9 @@ public:
     //                             first or use OrDefault).
     //  `dimensionsOrDefault`  --  returns stored dimensions or `def`.
     //
-    //  Step 1 of just records the dimensions; it does NOT yet
-    //  cross-check them against caller expectations.  The checked
-    //  `lookupScalar(key, expectedDims)` overload arrives in step 3.
+    //  These accessors just RECORD/return the declared dimensions; the
+    //  cross-check against caller expectations is the checked
+    //  `lookupScalar(key, expectedDims)` overload.
     bool       hasDimensions(const std::string& key) const;
     Dimensions dimensionsOf(const std::string& key) const;
     Dimensions dimensionsOrDefault(const std::string& key,
