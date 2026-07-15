@@ -3,7 +3,7 @@
 
   Identity + charge + MW record, from the deterministic parse of the
   USGS PHREEQC phreeqc.dat SOLUTION_MASTER_SPECIES block (public
-  domain; see data/standards/electrolyte/PROVENANCE.md -- dict-safe
+  domain; see data/standards/parameters/electrolyte/PROVENANCE.md -- dict-safe
   key Mnp3, charge-disambiguated against the existing Mn = Mn+2).
   MW 54.938 g/mol is the IUPAC standard atomic weight of manganese --
   derived, no independent primary needed.

@@ -14,7 +14,7 @@ python3 validate_salts.py             # self-check: python kernel == C++ op (bit
 - `gen_catalogue.py`  — emit the Choupo `.dat` catalogue (dict-safe names, MW corrected, provenance).
 - `validate_salts.py` — python replica of the Pitzer kernel, used to build VALIDATION.md.
 
-See `data/standards/electrolyte/PROVENANCE.md` for the licence manifest and
+See `data/standards/parameters/electrolyte/PROVENANCE.md` for the licence manifest and
 `docs/electrolyte-architecture.md` for the (deferred) ElectrolyteModel build spec.
 
 ## Overlay provenance index / datum-drift scan

@@ -2,7 +2,7 @@
 # validate_components.py -- deterministic VLE sanity check of the clean
 # data/local/ candidate subset.  Style precedent: validate_salts.py
 # (a python replica of the C++ kernel, AAD vs an independent anchor, markdown
-# report mirroring electrolyte/VALIDATION.md).
+# report mirroring parameters/electrolyte/VALIDATION.md).
 #
 # THE ANCHOR (no external data needed -- the file validates against ITSELF):
 # a corresponding-states vapour-pressure model must reproduce the compound's

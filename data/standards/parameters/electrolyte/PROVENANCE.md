@@ -3,10 +3,11 @@
 > **DATA MIGRATED 2026-06-30 — Aspen-like layout.** The electrolyte catalogue this
 > document covers was consolidated kind-by-kind into the ratified layout: Pitzer
 > pairs -> `parameters/electrolyte/pitzer/pairs/`, mixing -> `.../pitzer/mixing/`,
-> eNRTL -> `parameters/electrolyte/eNRTL/`, ions -> `components/true/aqueous/`, and
-> minerals/speciation/gasLiquid/ionExchange -> `data/standards/chemistry/`
-> (resins -> `assets/resins/`). The monolith names (`pairs.dat`, `ions.dat`, ...)
-> referenced below describe the HISTORICAL files; **no value changed**, and the
+> eNRTL -> `parameters/electrolyte/eNRTL/` (this folder); aqueous ions -> `species/aqueous/`;
+> aqueous complexes + gas dissolution -> `chemistry/{aqueousSpeciation,gasLiquid}/`; minerals -> the
+> `solidPhases` block of each `components/<mineral>.dat`; resins -> `assets/resins/`. The apparent/true
+> split was retired 2026-07-01 (one component = one file). The monolith names (`pairs.dat`, `ions.dat`,
+> ...) and `components/true/` referenced below are HISTORICAL; **no value changed**, and the
 > per-value provenance now also lives in each per-file record's `source`/`origin`.
 
 This folder holds the Pitzer ion-interaction parameters used by Choupo's
@@ -335,9 +336,10 @@ difference — hence this section):
 - **Salt-level front-end + data tier — FULLY MIGRATED.** The 8 standards
   monoliths (`ions / pairs / mixing / enrtl / minerals / speciation / gases /
   exchange.dat`) are **DELETED**, split into per-file records under
-  `components/true/aqueous/`, `parameters/electrolyte/{pitzer/pairs, pitzer/mixing,
-  eNRTL}/`, `chemistry/{aqueousSpeciation, mineralSolubility, gasLiquid,
-  ionExchange}/`, `assets/resins/`. The engine reads the per-file tree via
+  `species/aqueous/` (ions), `parameters/electrolyte/{pitzer/pairs, pitzer/mixing,
+  eNRTL}/`, `chemistry/{aqueousSpeciation, gasLiquid, ionExchange}/`, the
+  `solidPhases` block of each `components/<mineral>.dat` (minerals), and
+  `assets/resins/`. The engine reads the per-file tree via
   **dual-leg** readers (case-local `constant/electrolyte/` OLD-flat overlay
   FIRST, else standards per-file). The 12 salt-level electrolyte tutorial cases
   SELECT a `propertyPackage`; the legacy `ElectrolyteActivity::configure()` and
@@ -375,8 +377,10 @@ separate `source` field per value.
   is deferred, not abandoned).
 
 - **CaCl2 / calciumTartrate / potassiumBitartrate — demand-driven candidates.**
-  Migrate to the apparent/true split ONLY when a salt-level `propertyPackage` /
-  tutorial needs them (CaCl2 → a divalent-electrolyte package; the tartrates → a
-  wine/tartrate crystallisation package). NOT by symmetry with NaCl/KCl/NaOH —
-  today nothing consumes them through the builder (only membrane DSPM-DE +
-  propsDict + the solubility-curve crystalliser, by cation/anion name).
+  Add the component (+ its `dissociatesTo` and chemistry) ONLY when a salt-level
+  `propertyPackage` / tutorial needs them (CaCl2 → a divalent-electrolyte package;
+  the tartrates → a wine/tartrate crystallisation package). NOT by symmetry with
+  NaCl/KCl/NaOH — today nothing consumes them through the builder (only membrane
+  DSPM-DE + propsDict + the solubility-curve crystalliser, by cation/anion name).
+  (The apparent/true split was retired 2026-07-01; one component = one file, the
+  role chosen by the package that selects it.)

@@ -7,12 +7,13 @@ explicit provenance metadata in each file.
 
 > **VERIFIED tier only.** Everything in `data/standards/` is human-curated and
 > trusted. UNVERIFIED, machine-ingested or estimated data does **not** live here
-> — it lives in the sibling **[`../proposed/`](../proposed/)** tree (loud
-> `[proposed]` warning at load) until a student reviews and promotes it.
-> Resolution precedence is `proposed < standards < case-local`, so a verified
-> entry here always shadows a same-named proposal. Keep this tree clean: if a
-> file here is an estimate or carries a licence-encumbered value, it is in the
-> wrong tier.
+> — it lives in the sibling **[`../local/`](../local/)** tree, a *gitignored,
+> private* working tier the runtime reads when present (loud `[local] UNVERIFIED`
+> warning at load). The public `proposed/` tier was retired 2026-07-13. Resolution
+> precedence is `inline / case-local / snapshot > standards > local > idealDefault`,
+> so a verified entry here always shadows a same-named `local` one (local only fills
+> gaps). Keep this tree clean: if a file here is an estimate or carries a
+> licence-encumbered value, it is in the wrong tier.
 
 ## ⛔ Read-only — do not modify in place
 

@@ -38,7 +38,7 @@
         standard-grade), and the Tokuyama/ASTOM Neosepta product nameplate:
         CMX ~ 3.0 Ohm.cm2, AMX ~ 2.4 Ohm.cm2 in 0.5 M NaCl at 25 C.
   Licence: representative literature/nameplate values (not a no-grant table);
-  cite the primary per value as above.  See electrolyte/PROVENANCE.md ethos.
+  cite the primary per value as above.  See parameters/electrolyte/PROVENANCE.md ethos.
 \*---------------------------------------------------------------------------*/
 
 name           CMX_AMX;
