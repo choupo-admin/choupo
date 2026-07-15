@@ -47,7 +47,7 @@ converges. *See, then decide*, applied to numerics.
 
 - **The thermodynamics is REAL, curated Choupo data.** The equilibrium each
   reversible step relaxes toward, the heat release, and the burned temperature
-  all come from the nine species' curated gas-phase thermo (`gibbsFormation` +
+  all come from the nine species' curated gas-phase thermo (`standardThermochemistry` +
   `idealGasHeatCapacity`) in `data/standards/components/`, each individually
   cited. So the burned state (~2440 K) is physically meaningful.
 - **The reaction RATES are REAL: the H/O subsystem of GRI-Mech 3.0, transcribed verbatim (28 reactions, third bodies, explicit colliders, the 2OH(+M) Troe falloff, both DUPLICATE pairs).** The Arrhenius constants in

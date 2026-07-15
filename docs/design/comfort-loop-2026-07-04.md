@@ -135,7 +135,7 @@ excessEnthalpy (real, consumed, calorimetric-gated).
 
 STUDENT pass-3 (22 OPEN -- deeper digs, full-log reads, hand-verified numbers):
 top items: silica.dat SELF-CONTRADICTION (prose 'no dHf_solid' above its own
-gibbsFormation block; the case-local vendored copy is stale AND claims
+standardThermochemistry block; the case-local vendored copy is stale AND claims
 self-containment falsely -- the run uses the standard's formation block via
 overlay, H_kW = -172.7 kW proves it); batch02 runaway tutorial prints NO T
 column (the whole point invisible) + mashed header token + 3 disagreeing peak-T

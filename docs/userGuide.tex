@@ -727,7 +727,7 @@ corresponding-states alternative (\code{vaporPressure \{ model
 AmbroseWalton; \}}) covers estimated components.  Ideal-gas and liquid
 heat capacities are polynomials in $T$; species used at flame
 temperatures carry two-range NASA-7 forms (\code{model NASA7}).  Each
-component's \code{gibbsFormation \{ dHf\_298; s\_298; phase; \}} block
+component's \code{standardThermochemistry \{ dHf\_298; s\_298; phase; \}} block
 pins the formation datum --- the \code{phase} keyword (\code{gas} /
 \code{liquid} / \code{solid}) declares on which rung of the enthalpy
 ladder the value is tabulated, and every energy balance that crosses a
@@ -1026,7 +1026,7 @@ grammar}: stoichiometry and kinetics live once, in
 \code{reaction <name>;} for one, \code{reactions ( r1 r2 );} for a
 network --- never repeated inside the unit.  Second, \textbf{one
 enthalpy datum}: the heat of reaction is computed from each species'
-\code{gibbsFormation} block (the elements datum),
+\code{standardThermochemistry} block (the elements datum),
 $\Delta H_{\mathrm{rxn}}(T) = \sum_i \nu_i h_i(T)$, in every reactor,
 steady or dynamic.  There is no \code{dH\_rxn} input to a steady
 reactor --- a reactions-dict \code{dH\_rxn} key is an announced override
@@ -3069,7 +3069,7 @@ right tier for what you are adding:
         the log (\code{[overlay]~...}).
 \end{itemize}
 
-When a new file carries a \code{gibbsFormation} block, declare the
+When a new file carries a \code{standardThermochemistry} block, declare the
 \code{phase} of the tabulated $\Delta h^\circ_f$ explicitly
 (\code{gas} / \code{liquid} / \code{solid}) --- it tells the solver
 which rung of the enthalpy ladder the datum pins (Theory Guide

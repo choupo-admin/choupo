@@ -115,7 +115,7 @@ The three binaries share `src/{core,thermo,solver,materials,unitOperations,contr
 | Vapour pressure Psat_i(T)       | `Antoine` |
 | Heat capacity Cp(T)             | `polynomial` (liquid + ideal gas) |
 | Latent heat ΔHvap(T)            | Watson correlation |
-| Pure-component Gibbs energy     | `gibbsFormation { dHf_298; s_298; }` block + Kirchhoff via Cp |
+| Pure-component Gibbs energy     | `standardThermochemistry { dHf_298; s_298; }` block + Kirchhoff via Cp |
 | Phases                          | vapor, liquid, solid (stub) |
 | Reactors                        | `cstr`, `pfr`, `gibbsReactor` (multi-phase, 3 selectable methods) |
 | Separation flash / saturation   | `isothermalFlash` (alias `flash`; VL / LL / VLLE), `adiabaticFlash`, `bubbleT`, `dewT` |

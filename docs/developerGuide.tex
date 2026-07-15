@@ -630,7 +630,7 @@ exposes enthalpy on two references:
 \textbf{One datum, no fallback (\S\ref{sec:energy-datum}).}  The energy-balance
 ledger runs on the elements datum \emph{only}.  The former silent
 ``fall back to the sensible datum'' arm was \textbf{deleted}: a component
-missing its \code{gibbsFormation} now \emph{throws}, naming the component, so a
+missing its \code{standardThermochemistry} now \emph{throws}, naming the component, so a
 curation gap is loud, never a quietly wrong closure.
 \end{keyidea}
 
@@ -1103,7 +1103,7 @@ Choupo's component data cascades through tiers, lowest precedence to highest:
         \textbf{curated central catalogue} shipped with the simulator.  Carries
         only \textbf{arity-1 intrinsic} data: identity, \code{critical},
         \code{gasIdeal}, \code{liquidPure}, \code{solid}, \code{transport}, the
-        \code{gibbsFormation} datum, and any \code{eosParameters\{\}}
+        \code{standardThermochemistry} datum, and any \code{eosParameters\{\}}
         model-keyed block.  Treat it as read-only --- the engine
         \emph{refuses} to write here; a change is a reviewed curation act.  A
         \textbf{pair} number (NRTL \(\tau\), Henry, \(k_{ij}\), a heat of
@@ -1161,7 +1161,7 @@ liquidHeatCapacity
     Tmax        500.0;
 }
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298     82930.0;        // J/mol  (NIST ideal-gas value)
     s_298         269.20;       // J/(mol*K)  (third-law absolute)
@@ -1172,7 +1172,7 @@ gibbsFormation
 Source the values from DIPPR / Reid-Prausnitz-Poling and \emph{cite the
 source in a top-of-file comment} so they stay auditable.
 
-\paragraph{The \code{phase} field (mandatory in \code{gibbsFormation}).}
+\paragraph{The \code{phase} field (mandatory in \code{standardThermochemistry}).}
 The reference state for formation enthalpy is documented in the Theory
 Guide (chapter on the elements datum).  The \code{phase} keyword tells
 the solver in \emph{which phase} \code{dHf\_298} is tabulated, so
@@ -1209,7 +1209,7 @@ model throws a clear error from \code{Component::h\_formation} the
 first time a stream containing the component is evaluated.
 
 \begin{pitfall}
-\textbf{A missing \code{gibbsFormation} is now fatal, not papered over.}  The
+\textbf{A missing \code{standardThermochemistry} is now fatal, not papered over.}  The
 energy ledger runs on the elements datum \emph{only} (\S\ref{sec:energy-datum});
 the old ``fall back to the sensible datum with a note'' path was deleted.  A
 component that appears in a stream the balance touches but carries no formation
@@ -1767,7 +1767,7 @@ order.}  Read the quantity's \emph{definition}, not its frequency of use.
   \item \textbf{Arity-1} (the molecule alone on the table, no partner named ---
         \emph{not even implicitly}) $\to$ INTRINSIC,
         \file{data/standards/components/<name>.dat}: \(T_c, P_c, \omega\), MW,
-        \code{gibbsFormation}, \code{solid}, \code{liquidPure},
+        \code{standardThermochemistry}, \code{solid}, \code{liquidPure},
         \code{transport}.
   \item \textbf{Arity-2} (the definition must name a partner --- a solvent, a
         counter-ion, an interaction species, \emph{even water}) $\to$ PAIR/SET

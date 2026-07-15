@@ -457,7 +457,7 @@ The simulator integrates dn\_A/dt = -k $\cdot$ (n\_A / V) $\cdot$ V = -k n\_A wi
 \begin{tutnarrative}
 exothermic pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor. Designed to show thermal runaway:
 
-T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' gibbsFormation (elements datum); lifts T \textasciitilde{}108 K at full conversion (320 $\to$ 428 K), enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
+T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' standardThermochemistry (elements datum); lifts T \textasciitilde{}108 K at full conversion (320 $\to$ 428 K), enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
 
 Expected qualitative trajectory:
 
@@ -567,7 +567,7 @@ the batch02\_adiabatic runaway re-run with REAL-TIME instant directories: the in
 
 The physics below is inherited from batch02\_adiabatic, unchanged: exothermic pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor. Designed to show thermal runaway:
 
-T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' gibbsFormation (elements datum); lifts T \textasciitilde{}108 K at full conversion, enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
+T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' standardThermochemistry (elements datum); lifts T \textasciitilde{}108 K at full conversion, enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
 
 Expected qualitative trajectory:
 
@@ -634,7 +634,7 @@ the batch02\_adiabatic runaway integrated with ADAPTIVE Rosenbrock23 time-steppi
 
 The physics below is inherited from batch02\_adiabatic, unchanged: exothermic pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor. Designed to show thermal runaway:
 
-T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' gibbsFormation (elements datum); lifts T \textasciitilde{}100 K at full conversion, enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
+T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' standardThermochemistry (elements datum); lifts T \textasciitilde{}100 K at full conversion, enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
 
 Expected qualitative trajectory:
 
@@ -1089,7 +1089,7 @@ Declared refusals (each with its own diagnostic, try them): x\_D\_target 0.5 $\t
 \begin{tutnarrative}
 MONOTONIC enthalpy validity on the material ledger (the adversarial case of design forum \#99/\#101).
 
-The campaign ledger integrates each transfer's enthalpy PACKAGE BY PACKAGE at each package's own temperature. A package containing a species with NO formation datum (here `compA`, a lumped teaching species that deliberately carries no gibbsFormation block) cannot be priced --- the record must mark H invalid and NAME the species. The contract under test is the temporal one:
+The campaign ledger integrates each transfer's enthalpy PACKAGE BY PACKAGE at each package's own temperature. A package containing a species with NO formation datum (here `compA`, a lumped teaching species that deliberately carries no standardThermochemistry block) cannot be priced --- the record must mark H invalid and NAME the species. The contract under test is the temporal one:
 
 once ONE package is unpriceable, the record's integrated H has lost a parcel FOREVER. Validity is MONOTONIC: a later priceable package must never resurrect it.
 

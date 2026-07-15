@@ -58,7 +58,7 @@ An `estimateComponent` op with `output { proposal auto; }` writes
 `constant/components/<name>.estimate-<date>.dat` — a glass-box file with the
 keys Joback gives **active** (MW, Tc, Pc, ω, Tb, HvapTb, Cp_ig → usable for the
 EoS + energy balances) and the **gaps** it cannot (Vliq, vapour pressure,
-`gibbsFormation.s_298`) as commented TODOs.  In the GUI, the *Estimate* pill
+`standardThermochemistry.s_298`) as commented TODOs.  In the GUI, the *Estimate* pill
 previews the file and offers a dated download.
 
 Promotion is a deliberate act — the file's header prints the `mv`:

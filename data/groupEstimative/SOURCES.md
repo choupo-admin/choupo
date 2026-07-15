@@ -27,7 +27,7 @@ per value; do not treat this tier as reference data.
   consistent by construction.
 - omega: **Lee-Kesler** corresponding states from the estimated (Tb,Tc,Pc).
 - Reference basis for dHf/dGf: ideal-gas, elements datum (JANAF convention) —
-  the same rung Choupo's `gibbsFormation { phase gas; }` block uses.
+  the same rung Choupo's `standardThermochemistry { phase gas; }` block uses.
 - Typical AAD (diverse validation set): Tb ~10%, Tc ~11%, Pc ~11%; worse for
   small molecules and hydrogen-bonders (evidence: the method-comparison run).
 

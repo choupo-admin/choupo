@@ -241,7 +241,7 @@ partially exists.** The work is bounded reader alignment, not new plumbing.
 2. **Salt solid enthalpy stays ion-derived** at build time (`Σν·hfAq − dH_soln`,
    the subtraction never stored); the ions' `hfAq` live in `species/aqueous/`
    (relational, shared — NOT in the component file). A dissociating salt carries NO
-   `gibbsFormation` (`check_ion_pins.py` exits 1 if both). A MOLECULAR solid
+   `standardThermochemistry` (`check_ion_pins.py` exits 1 if both). A MOLECULAR solid
    (sucrose) DOES carry its solid rung in `molecular{}`. Mutually exclusive.
 3. The "1 cation + 1 anion" limit is a property of the single-salt ADAPTER, not the
    data — `dissociatesTo` takes general stoichiometry; a true double salt (carnallite)

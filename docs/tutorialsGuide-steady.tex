@@ -2249,7 +2249,7 @@ The flash boils off the residual toluene (vapour) and leaves the polymer in the 
 \begin{tutnarrative}
 feed $\to$ isothermal flash $\to$ heater on the liquid.
 
-The flash splits the feed into vapour + liquid (the pseudo-component participates in VLE through its critical\{\} + Ambrose-Walton Psat). The heater then adds sensible heat to the liquid; energyBalance reports the implied duty, and it CLOSES because the lump carries gasIdeal + liquidPure Cp. No reaction $\to$ no formation datum needed (matching the lump's omitted gibbsFormation).
+The flash splits the feed into vapour + liquid (the pseudo-component participates in VLE through its critical\{\} + Ambrose-Walton Psat). The heater then adds sensible heat to the liquid; energyBalance reports the implied duty, and it CLOSES because the lump carries gasIdeal + liquidPure Cp. No reaction $\to$ no formation datum needed (matching the lump's omitted standardThermochemistry).
 
 \end{tutnarrative}
 
@@ -5580,7 +5580,7 @@ The plateau is not asserted anywhere in the dict. It is where k1 a'\_HOAc a'\_Me
 \begin{tutnarrative}
 the EQUILIBRIUM reactor (REquil) with MULTIPLE simultaneous reactions.
 
-Steam-methane reforming: two independent reactions are driven to SIMULTANEOUS chemical equilibrium at 1100 K, 1 bar -- no kinetics, no residence time. The two extents are a RESULT of each reaction's Kp(T) (from the gibbsFormation data), solved together by the multivariate Newton:
+Steam-methane reforming: two independent reactions are driven to SIMULTANEOUS chemical equilibrium at 1100 K, 1 bar -- no kinetics, no residence time. The two extents are a RESULT of each reaction's Kp(T) (from the standardThermochemistry data), solved together by the multivariate Newton:
 
 smr : CH4 + H2O <$\to$ CO + 3 H2 (strongly endothermic) wgs : CO + H2O <$\to$ CO2 + H2 (mildly exothermic)
 
@@ -5703,7 +5703,7 @@ dF\_i/dV = SUM\_j nu\_ij r\_j(F,T) dT/dV = SUM\_j (-dH\_j(T)) r\_j / SUM\_i F\_i
 
 The exothermic esterification heats its own stream, which accelerates the Arrhenius rate, which releases more heat -- the positive feedback every reactor engineer must see. T(V) is in the axial profile: plot it.
 
-`thermalMode` takes `isothermal` (default -- T imposed, duty a result), `adiabatic` (here), or `heatExchange` (a jacket: U, areaPerVolume, T\_coolant). A non-isothermal reactor needs the heat of reaction, so every reacting species must carry `gibbsFormation` -- a fictitious toy species cannot be used.
+`thermalMode` takes `isothermal` (default -- T imposed, duty a result), `adiabatic` (here), or `heatExchange` (a jacket: U, areaPerVolume, T\_coolant). A non-isothermal reactor needs the heat of reaction, so every reacting species must carry `standardThermochemistry` -- a fictitious toy species cannot be used.
 
 \end{tutnarrative}
 \begin{tutgolden}

@@ -91,7 +91,7 @@ dissolution equilibrium in `chemistry/mineralSolubility/<mineral>.dat`
 `SI = log₁₀(IAP/Ksp)`, IAP = Π a(ion)^ν. `[WORKS]`.
 
 The salt COMPONENT (`NaCl.dat`) carries identity + `dissociatesTo` +
-`nonvolatile` + a `solid{}` crystal block — and **no** `gibbsFormation` block:
+`nonvolatile` + a `solid{}` crystal block — and **no** `standardThermochemistry` block:
 the salt's solid formation is DERIVED from the ions + dissolution enthalpy
 (arity, §6), never stored twice. A salt is NEVER routed through the ideal-gas
 reference, and NEVER group-estimated (§5).

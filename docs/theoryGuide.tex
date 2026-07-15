@@ -2492,7 +2492,7 @@ fine for any non-reacting unit and is what the flash / column /
 evaporator unit ops use internally for their local duties.  The
 \emph{elements} datum (formation-enthalpy zero) is the only one that
 survives a reactor, so it is what the \code{energyBalance} report uses
-when every component carries a \code{gibbsFormation} block; the report
+when every component carries a \code{standardThermochemistry} block; the report
 falls back to the sensible datum (and flags the row) only when some
 species lacks $\Delta h^{\circ}_f$.  The two agree exactly on any unit
 where nothing reacts --- which is why \file{flash01} reports the same
@@ -2625,11 +2625,11 @@ differently:
 \end{itemize}
 
 Choupo records the chosen rung as a one-word field inside the
-component's \code{gibbsFormation} block.  Every entry in
+component's \code{standardThermochemistry} block.  Every entry in
 \file{data/standards/components/} declares it explicitly:
 
 \begin{lstlisting}[language=dict]
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -241826.0;        // J/mol  (ideal-gas reference)
     s_298     188.834;          // J/(mol*K)  (third-law absolute)
@@ -2638,7 +2638,7 @@ gibbsFormation
 \end{lstlisting}
 
 \begin{lstlisting}[language=dict]
-gibbsFormation                  // sucrose, from NIST WebBook
+standardThermochemistry                  // sucrose, from NIST WebBook
 {
     dHf_298   -2226100.0;       // J/mol  (crystalline)
     s_298         392.4;        // J/(mol*K)
@@ -2799,7 +2799,7 @@ above the elements floor.  But the Gibbs reactor of
 Chapter~\ref{ch:gibbs-reactor} minimises the \emph{Gibbs} energy, and
 Eq.~\eqref{eq:gibbs-mu} needs the absolute standard-state free energy
 $g^{\circ}_i(T)$, which carries an entropy term.  This subsection
-derives the second half of the \code{gibbsFormation} block --- the
+derives the second half of the \code{standardThermochemistry} block --- the
 field $s^{\circ}_{298}$ --- and the chain
 \code{Component::g\_pure\_ig} walks to assemble $g^{\circ}_i(T)$.
 
@@ -2874,7 +2874,7 @@ on the methane side; raise $T$ and the entropy term flips the sign of
 $\Delta g^{\circ}$, driving conversion to syngas.  A Gibbs reactor
 \emph{cannot} reproduce this temperature swing from
 $\Delta h^{\circ}_f$ alone --- it needs each species'
-$s^{\circ}_{298}$.  That is why the \code{gibbsFormation} block carries
+$s^{\circ}_{298}$.  That is why the \code{standardThermochemistry} block carries
 \emph{both} numbers, and why a component lacking $s^{\circ}_{298}$
 cannot be placed in a Gibbs reactor.
 \end{example}
