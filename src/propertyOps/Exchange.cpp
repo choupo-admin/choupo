@@ -34,6 +34,7 @@ License
 #include "thermo/Database.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // electrolytePaths, ionMW
 #include "thermo/electrolyte/SpeciationSolver.H"
+#include "CasePackage.H"
 
 #include <cmath>
 #include <filesystem>
@@ -207,7 +208,7 @@ int Exchange::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
 
     // Optional aqueous-activity-model selection (default Davies, the only S1
     // builtin; an unknown name is refused with the available list).
-    electrolyte::SpeciationSolver solver(dict->lookupWordOrDefault("activityModel", "davies"));
+    electrolyte::SpeciationSolver solver(propertyOps::resolveAqueousActivity(dict));
     propertyOps::readExchange(dict, in, solver, verbosity);
 
     // -- the MANDATORY honesty banner (non-suppressible at verbosity >= 2 +

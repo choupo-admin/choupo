@@ -29,9 +29,8 @@ operations
     // -- the mixed brine, speciated: the ion pool + SI of each solid -----------
     {
         name        brine;
-        type        speciate;
-        activityModel pitzerHMW;            // MANDATORY at I ~ 3 mol/kg -- Davies is invalid above ~0.5 m
-        totals      { Na 3.0 mol/kg; Cl 3.0 mol/kg; Ca 0.10 mol/kg; SO4 0.10 mol/kg; }
+        type        speciate;            // MANDATORY at I ~ 3 mol/kg -- Davies is invalid above ~0.5 m
+        analyticalTotals      { Na 3.0 mol/kg; Cl 3.0 mol/kg; Ca 0.10 mol/kg; SO4 0.10 mol/kg; }
         pH          7.0;                    // charge already balances -> neutral
         diagSpecies ( CaSO4aq );            // the neutral ion pair (partial "dissociation")
         output      { file speciation_brine.csv; }
@@ -40,9 +39,8 @@ operations
     // -- concentrate it (evaporate): watch gypsum scale, then halite ----------
     {
         name        concentrate;
-        type        scalingScan;
-        activityModel pitzerHMW;            // MANDATORY at high I (Davies dies above ~0.5 m)
-        totals      { Na 3.0 mol/kg; Cl 3.0 mol/kg; Ca 0.10 mol/kg; SO4 0.10 mol/kg; }
+        type        scalingScan;            // MANDATORY at high I (Davies dies above ~0.5 m)
+        analyticalTotals      { Na 3.0 mol/kg; Cl 3.0 mol/kg; Ca 0.10 mol/kg; SO4 0.10 mol/kg; }
         pH          7.0;
         recovery    { from 0; to 0.8; n 16; }
         output      { file scaling_scan.csv; }

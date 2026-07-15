@@ -1,14 +1,23 @@
-/*---------------------------------------------------------------------------*\
-  model4_speciation_scaling / constant/thermoPackage
-
-  Water, the SOLVENT, is the package's only component: the multi-ion broth
-  (Na+, Cl-, Ca+2, SO4-2, the CaSO4aq ion pair) lives in the speciate op's
-  own totals, and its activity model is declared THERE -- pitzerHMW,
-  mandatory at I ~ 3.3 mol/kg where Davies is invalid.  This package only
-  carries the solvent basis; it never touches the ion activities.
+/*--------------------------------*- Choupo -*-----------------------*\
+  propertyPackage (INLINE, self-contained) -- the case's OFFICIAL dictionary.
+  Multi-ion speciation SYSTEM: solvent water, the analytical basis measured in
+  ions, and the pitzerHMW activity method.  The speciate ops carry only the
+  ANALYSIS (analyticalTotals); no per-op model.  Replaces the degenerate water+ideal.
 \*---------------------------------------------------------------------------*/
+recordType propertyPackage;
+schemaVersion 1;
+
+name model4_speciation_scaling_pkg;
 
 components ( water );
-phase { type vle; }
-activityModel { model ideal; }
-equationOfState { model idealGas; }
+
+inputBasis
+{
+    solvent           water;
+    analyticalMasters ( Na Cl Ca SO4 );
+}
+
+propertyMethods
+{
+    aqueousActivity electrolyte.pitzerHMW;
+}

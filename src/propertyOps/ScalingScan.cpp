@@ -32,6 +32,7 @@ License
 #include "core/Dimensions.H"
 #include "thermo/electrolyte/ScalingIndices.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
+#include "CasePackage.H"
 
 #include <algorithm>
 #include <cmath>
@@ -141,8 +142,7 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
 
     // Optional aqueous-activity-model selection (default Davies, the only S1
     // builtin; an unknown name is refused with the available list).
-    const std::string activityModel =
-        dict->lookupWordOrDefault("activityModel", "davies");
+    const std::string activityModel = propertyOps::resolveAqueousActivity(dict);
     electrolyte::SpeciationSolver solver(activityModel);
 
     // Optional per-ion gamma columns (the MECHANISM plot): `diagSpecies ( Ca SO4

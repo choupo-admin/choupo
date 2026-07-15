@@ -15,7 +15,7 @@
   (The carbonate system -- HCO3/CO3, ~2.3 mmol/kg, < 0.4% of I -- is OMITTED:
   it is slice S4, and its absence shifts I by < 0.3% and the major-ion gammas
   by < 0.2%, well inside the pins' tolerance.)  pH is GIVEN at 8.1 (typical
-  surface seawater) -- with no carbonate in the totals it only fixes the trace
+  surface seawater) -- with no carbonate in the analyticalTotals it only fixes the trace
   H+/OH-, which do not enter the major-ion gammas.
 
   WHY PITZER, NOT DAVIES: at I ~ 0.7 Davies is already out of its trustworthy
@@ -68,8 +68,7 @@ operations
     {
         name        reduction_nacl;
         type        speciate;
-        activityModel pitzerHMW;
-        totals      { Na 1.0 mol/kg; Cl 1.0 mol/kg; }
+        analyticalTotals      { Na 1.0 mol/kg; Cl 1.0 mol/kg; }
         pH          7.0;
         diagSpecies ( Na Cl );          // gamma_Na, gamma_Cl pinned
         output      { file reduction_nacl.csv; }
@@ -79,8 +78,7 @@ operations
     {
         name        seawater;
         type        speciate;
-        activityModel pitzerHMW;
-        totals      { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
+        analyticalTotals      { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
                       K 0.01058 mol/kg; Cl 0.5658 mol/kg; SO4 0.02926 mol/kg; }
         pH          8.1;                // typical surface seawater (given)
         diagSpecies ( Na Cl K Mg Ca SO4 );
