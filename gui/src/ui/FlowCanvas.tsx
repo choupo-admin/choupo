@@ -478,9 +478,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     if (autoSaveTimer.current !== undefined) window.clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = window.setTimeout(() => {
       const text = layoutToChoText(buildLayout());
-      console.debug("[choupo] layout auto-save ->", markerLoc, markerRel, `${text.length} chars`);
       void writeCaseFile(markerLoc, markerRel, text)
-        .then((path) => console.debug("[choupo] layout auto-save OK ->", path))
         .catch((e) => {
           console.error("[choupo] layout auto-save FAILED", e);
           if (!autoSaveFailed.current) {

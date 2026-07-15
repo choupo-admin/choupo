@@ -146,7 +146,7 @@ export interface ControllerLayer {
 export function defaultSignalParam(type: SignalType, key: string, mean: number): number {
   switch (key) {
     case "mean":      return mean;
-    case "amplitude": return type === "pulse" ? 15 : 15;
+    case "amplitude": return 15;
     case "step":      return -15;          // a 15 K cold step (deviation)
     case "tStep":     return 700;
     case "tStart":    return type === "sine" ? 0 : 700;
