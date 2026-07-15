@@ -1,15 +1,23 @@
-/*---------------------------------------------------------------------------*\
-  softener_brackish / constant/thermoPackage
-
-  Water is the solvent and the package's only component: the brackish feed's
-  ions and the SAC_Na resin sites are declared in the exchange / scalingScan
-  ops (Davies activities for the aqueous ions, Gaines-Thomas equivalent
-  fractions for the bound species on the resin).  The ideal/ideal-gas pair
-  below carries the solvent basis only -- the softening chemistry lives
-  entirely in the propsDict ops.
+/*--------------------------------*- Choupo -*-----------------------*\
+  propertyPackage (INLINE, self-contained) -- the case's OFFICIAL dictionary.
+  Multi-ion speciation SYSTEM: solvent water, the analytical basis measured in
+  ions, and the davies activity method.  The speciate ops carry only the
+  ANALYSIS (analyticalTotals); no per-op model.  Replaces the degenerate water+ideal.
 \*---------------------------------------------------------------------------*/
+recordType propertyPackage;
+schemaVersion 1;
+
+name softener_brackish_pkg;
 
 components ( water );
-phase { type vle; }
-activityModel { model ideal; }
-equationOfState { model idealGas; }
+
+inputBasis
+{
+    solvent           water;
+    analyticalMasters ( Ca Mg Na K Cl SO4 HCO3 );
+}
+
+propertyMethods
+{
+    aqueousActivity electrolyte.davies;
+}

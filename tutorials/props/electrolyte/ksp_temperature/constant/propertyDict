@@ -1,14 +1,23 @@
-/*---------------------------------------------------------------------------*\
-  ksp_temperature / constant/thermoPackage
-
-  Water is the solvent and the package's only component; the hard
-  carbonate-bearing groundwater's ions (Ca, Na, Cl, SO4, HCO3) enter through
-  the five speciate ops' totals at I ~ 0.09 mol/kg, comfortably inside the
-  default Davies window.  The lesson is K(T) -- the sign of dK/dT per
-  mineral -- so the fluid package stays a bare solvent carrier.
+/*--------------------------------*- Choupo -*-----------------------*\
+  propertyPackage (INLINE, self-contained) -- the case's OFFICIAL dictionary.
+  Multi-ion speciation SYSTEM: solvent water, the analytical basis measured in
+  ions, and the davies activity method.  The speciate ops carry only the
+  ANALYSIS (analyticalTotals); no per-op model.  Replaces the degenerate water+ideal.
 \*---------------------------------------------------------------------------*/
+recordType propertyPackage;
+schemaVersion 1;
+
+name ksp_temperature_pkg;
 
 components ( water );
-phase { type vle; }
-activityModel { model ideal; }
-equationOfState { model idealGas; }
+
+inputBasis
+{
+    solvent           water;
+    analyticalMasters ( Ca Na Cl SO4 HCO3 );
+}
+
+propertyMethods
+{
+    aqueousActivity electrolyte.davies;
+}

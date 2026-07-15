@@ -1,15 +1,23 @@
-/*---------------------------------------------------------------------------*\
-  scaling_ro_brackish / constant/thermoPackage
-
-  Water is the solvent and the package's only component: the brackish
-  groundwater's ions enter as the speciate / scalingScan totals, with Davies
-  activities and pH solved from electroneutrality declared in the ops.  The
-  ionic strength climbs from ~0.03 to ~0.2 mol/kg at r = 0.85 -- still
-  inside Davies' ~0.5 m trust window, which is why this case can afford the
-  simpler model.  The package itself is only the inert solvent basis.
+/*--------------------------------*- Choupo -*-----------------------*\
+  propertyPackage (INLINE, self-contained) -- the case's OFFICIAL dictionary.
+  Multi-ion speciation SYSTEM: solvent water, the analytical basis measured in
+  ions, and the davies activity method.  The speciate ops carry only the
+  ANALYSIS (analyticalTotals); no per-op model.  Replaces the degenerate water+ideal.
 \*---------------------------------------------------------------------------*/
+recordType propertyPackage;
+schemaVersion 1;
+
+name scaling_ro_brackish_pkg;
 
 components ( water );
-phase { type vle; }
-activityModel { model ideal; }
-equationOfState { model idealGas; }
+
+inputBasis
+{
+    solvent           water;
+    analyticalMasters ( Ca SO4 Mg Na K Cl HCO3 );
+}
+
+propertyMethods
+{
+    aqueousActivity electrolyte.davies;
+}

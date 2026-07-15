@@ -50,7 +50,7 @@ operations
         name        T10;
         type        speciate;
         temperature 283.15;                 // 10 C
-        totals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
+        analyticalTotals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
                       SO4 0.012 mol/kg; HCO3 0.005 mol/kg; }
         pH          7.6;
         output      { file ksp_T10.csv; }
@@ -59,7 +59,7 @@ operations
         name        T25;
         type        speciate;
         temperature 298.15;                 // 25 C -- the anchor (byte-stable)
-        totals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
+        analyticalTotals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
                       SO4 0.012 mol/kg; HCO3 0.005 mol/kg; }
         pH          7.6;
         output      { file ksp_T25.csv; }
@@ -68,7 +68,7 @@ operations
         name        T40;
         type        speciate;
         temperature 313.15;                 // 40 C
-        totals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
+        analyticalTotals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
                       SO4 0.012 mol/kg; HCO3 0.005 mol/kg; }
         pH          7.6;
         output      { file ksp_T40.csv; }
@@ -77,7 +77,7 @@ operations
         name        T60;
         type        speciate;
         temperature 333.15;                 // 60 C
-        totals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
+        analyticalTotals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
                       SO4 0.012 mol/kg; HCO3 0.005 mol/kg; }
         pH          7.6;
         output      { file ksp_T60.csv; }
@@ -86,7 +86,7 @@ operations
         name        T80;
         type        speciate;
         temperature 353.15;                 // 80 C -- calcite SI well above the cold value
-        totals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
+        analyticalTotals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
                       SO4 0.012 mol/kg; HCO3 0.005 mol/kg; }
         pH          7.6;
         output      { file ksp_T80.csv; }

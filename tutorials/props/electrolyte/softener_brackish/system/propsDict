@@ -46,7 +46,7 @@ operations
     {
         name        raw;
         type        scalingScan;
-        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+        analyticalTotals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
                       Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
         pH          solve;
         recovery    { from 0; to 0.85; n 18; }
@@ -57,7 +57,7 @@ operations
     {
         name        softened;
         type        exchange;
-        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+        analyticalTotals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
                       Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
         pH          solve;
         exchange    { resin SAC_Na; CEC 2.0 eq/L; }   // heavily dosed: limiting effluent
@@ -75,7 +75,7 @@ operations
         // post-exchange aqueous totals (mol/kg) from op (2)'s softened effluent
         // (cations from the exchange WATER-after ledger; anions unchanged from
         // the feed -- only cations exchange):
-        totals      { Ca 2.467e-7 mol/kg; Mg 2.271e-7 mol/kg; Na 2.2508e-2 mol/kg;
+        analyticalTotals      { Ca 2.467e-7 mol/kg; Mg 2.271e-7 mol/kg; Na 2.2508e-2 mol/kg;
                       K 6.957e-7 mol/kg; Cl 1.43852e-2 mol/kg; SO4 2.60254e-3 mol/kg;
                       HCO3 2.99902e-3 mol/kg; }
         pH          solve;

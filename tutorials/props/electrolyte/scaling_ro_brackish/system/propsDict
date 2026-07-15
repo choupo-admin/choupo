@@ -77,7 +77,7 @@ operations
     {
         name        pin_gypsum;
         type        speciate;
-        totals      { Ca 0.015271 mol/kg; SO4 0.015271 mol/kg; }   // back-computed equilibrium
+        analyticalTotals      { Ca 0.015271 mol/kg; SO4 0.015271 mol/kg; }   // back-computed equilibrium
         pH          7.0;
         diagSpecies ( CaSO4aq );
         output      { file pin_gypsum.csv; }
@@ -95,7 +95,7 @@ operations
     {
         name        feed;
         type        speciate;
-        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+        analyticalTotals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
                       Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
         pH          solve;                  // lands ~7.72, near the lab's 7.8
         output      { file speciation_feed.csv; }
@@ -105,7 +105,7 @@ operations
     {
         name        scan;
         type        scalingScan;
-        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+        analyticalTotals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
                       Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
         pH          solve;                  // solved per point (closed system)
         recovery    { from 0; to 0.85; n 18; }
@@ -116,7 +116,7 @@ operations
     {
         name        scan_open;
         type        scalingScan;
-        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+        analyticalTotals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
                       Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
         pH          solve;
         atmosphere  { pCO2 4.2e-4 atm; }    // a(CO2aq) = K_H(T) * pCO2; DIC solved

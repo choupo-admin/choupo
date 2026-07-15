@@ -45,7 +45,7 @@ operations
         type        speciate;
         // 0.030542 = 2 * 0.015271, the gypsum-saturated CaSO4 pin of the sibling
         // case; the excess (0.015271) must come back out as gypsum.
-        totals      { Ca 0.030542 mol/kg; SO4 0.030542 mol/kg; }
+        analyticalTotals      { Ca 0.030542 mol/kg; SO4 0.030542 mol/kg; }
         pH          7.0;
         equilibrate { minerals ( gypsum ); }
         output      { file pin_gypsum_amount.csv; }
@@ -55,7 +55,7 @@ operations
     {
         name        feed;
         type        speciate;
-        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+        analyticalTotals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
                       Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
         pH          solve;
         output      { file feed.csv; }
@@ -65,7 +65,7 @@ operations
     {
         name        feed_eq;
         type        speciate;
-        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+        analyticalTotals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
                       Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
         pH          solve;
         equilibrate { minerals ( calcite gypsum ); }
@@ -76,7 +76,7 @@ operations
     {
         name        scan_eq;
         type        scalingScan;
-        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+        analyticalTotals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
                       Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
         pH          solve;
         equilibrate { minerals ( calcite gypsum ); }
