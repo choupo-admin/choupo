@@ -216,6 +216,26 @@
     border: 1px solid var(--line); border-radius: 10px; }
   .policy { border-left: 4px solid var(--coral); padding-left: 20px; }
 
+  /* "What is included" inventory grid */
+  .included-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .included { padding: 22px 20px; background: var(--white); }
+  .included strong { display: block; color: var(--ink); font-size: 30px; line-height: 1.05; font-weight: 850; }
+  .included span { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
+  .included a { color: inherit; text-decoration: none; display: block; }
+  .included-note { margin: 22px 0 0; color: var(--muted); font-size: 14px; }
+
+  /* "Choose how to run" tabs + cards */
+  .run-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+  .run-tab { border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; color: var(--muted);
+    background: var(--white); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .run-tab[aria-selected="true"] { border-color: var(--teal); color: #05221f; background: var(--teal-bright); }
+  .run-panel { display: none; }
+  .run-panel.is-active { display: block; }
+  .run-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 44px; align-items: start; }
+  .run-grid h3 { margin: 0 0 8px; }
+  .run-grid p { margin: 0 0 12px; color: var(--muted); }
+  .run-note { border-left: 3px solid var(--yellow); padding: 4px 0 4px 14px; color: #6b5f3c; font-size: 14px; }
+
   footer { padding: 38px 0; color: #aab9b3; background: #0b0f0e; font-size: 13px; }
   .footer-grid { display: flex; justify-content: space-between; gap: 24px; }
   footer a { color: #d8e1dd; }
@@ -229,7 +249,8 @@
     .proof { min-height: 82px; padding: 13px 16px; }
     .proof:nth-child(3) { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.14); }
     .proof:nth-child(4) { border-top: 1px solid rgba(255, 255, 255, 0.14); }
-    .principle-grid, .evidence-grid, .install-grid, .about { grid-template-columns: 1fr; gap: 34px; }
+    .principle-grid, .evidence-grid, .install-grid, .about, .run-grid { grid-template-columns: 1fr; gap: 34px; }
+    .included-grid { grid-template-columns: repeat(2, 1fr); }
     .workflow { grid-template-columns: 100px 1fr; }
     .workflow p { grid-column: 2; }
     .resource-grid { grid-template-columns: 1fr; }
@@ -276,9 +297,10 @@
   <div class="wrap nav-inner">
     <a class="brand" href="#top"><img src="logo2-mark.png" alt=""><span>CHOUPO</span></a>
     <div class="nav-links">
+      <a href="#included">What's inside</a>
       <a href="#capabilities">Capabilities</a>
-      <a href="#workflows">Workflows</a>
-      <a href="#evidence">Evidence</a>
+      <a href="/models/">Models</a>
+      <a href="#run">Run it</a>
       <a href="#resources">Docs</a>
       <a class="button compact" href="/app/" target="choupo-app" rel="noopener">Open Choupo</a>
     </div>
@@ -295,21 +317,47 @@
     <div class="hero-actions">
       <a class="button" href="/app/" target="choupo-app" rel="noopener">Run in the browser</a>
       <a class="button secondary" href="/app/?workspace=explore" target="choupo-app" rel="noopener">Explore properties</a>
+      <a class="button secondary" href="/models/">View model catalogue</a>
       <a class="button secondary" href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">Read the source</a>
     </div>
-    <p class="hero-meta">Choupo-2607 · GPL-3.0-or-later · C++17 and WebAssembly · no licence fee or account</p>
+    <p class="hero-meta"><span data-inv="release">Choupo-2607</span> · released <span data-inv="releasedAt">2026-07-14</span> · GPL-3.0-or-later · C++17 and WebAssembly · no licence fee or account</p>
   </div>
   <div class="hero-proof">
     <div class="wrap proof-grid">
-      <div class="proof"><strong>4</strong><span>engines for steady, batch, control and properties</span></div>
-      <div class="proof"><strong>200+</strong><span>worked cases across process engineering</span></div>
-      <div class="proof"><strong>8</strong><span>aligned engine-parity benchmarks against an open-source reference simulator</span></div>
-      <div class="proof"><strong>0</strong><span>heavy C++ dependencies in the native engine</span></div>
+      <div class="proof"><strong data-inv="components">247</strong><span>curated pure-component records</span></div>
+      <div class="proof"><strong data-inv="mixtureParameterRecords">268</strong><span>mixture-parameter records — NRTL, Wilson, UNIQUAC, Henry, Pitzer, eNRTL</span></div>
+      <div class="proof"><strong data-inv="unitOperations">49</strong><span>unit-operation models across four engines</span></div>
+      <div class="proof"><strong data-inv="runnableCases">284</strong><span>runnable tutorial cases</span></div>
     </div>
   </div>
 </header>
 
 <main>
+  <section class="section" id="included" style="background:var(--white)">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">What is inside Choupo</p>
+        <h2>A curated engine, counted from the release itself.</h2>
+        <p class="lede">Every number here is generated from the published <span data-inv="release">Choupo-2607</span> tree, not written by hand. See the full <a class="text-link" href="/models/">model catalogue</a> for names, status and source.</p>
+      </div>
+      <div class="included-grid">
+        <div class="included"><strong data-inv="components">247</strong><span>curated pure-component records</span></div>
+        <div class="included"><strong data-inv="aqueousSpecies">41</strong><span>aqueous true species and ions</span></div>
+        <div class="included"><strong data-inv="nrtlPairs">2</strong><span>NRTL binary pairs</span></div>
+        <div class="included"><strong data-inv="uniquacPairs">3</strong><span>UNIQUAC binary pairs</span></div>
+        <div class="included"><strong data-inv="henryPairs">205</strong><span>Henry-law gas–solvent pairs</span></div>
+        <div class="included"><strong data-inv="pitzerPairs">55</strong><span>Pitzer electrolyte pairs</span></div>
+        <div class="included"><strong data-inv="propertyMethods">7</strong><span>property-method implementations</span></div>
+        <div class="included"><a href="/models/"><strong data-inv="unitOperations">49</strong><span>unit-operation models&nbsp;→</span></a></div>
+        <div class="included"><strong data-inv="runnableCases">284</strong><span>runnable tutorial cases</span></div>
+        <div class="included"><strong data-inv="regressionChecks">249</strong><span>golden-master regression checks</span></div>
+        <div class="included"><strong data-inv="engines">4</strong><span>execution engines: steady, batch, control, properties</span></div>
+        <div class="included"><a href="/models/"><strong>Catalogue</strong><span>browse every model&nbsp;→</span></a></div>
+      </div>
+      <p class="included-note">Counts exclude READMEs, templates, generated outputs and private data — only what is active and distributed in the release. Regenerate with <code>bin/curate/release_inventory.py</code>.</p>
+    </div>
+  </section>
+
   <section class="section" id="glass-box">
     <div class="wrap principle-grid">
       <div class="principle-copy">
@@ -394,16 +442,16 @@ energy balance      <span class="hot">reported</span></pre>
       <div>
         <p class="eyebrow">Evidence, not badges</p>
         <h2>Every credible claim needs a check beside it.</h2>
-        <p class="lede">Choupo separates numerical convergence, conservation, model validation and cross-simulator parity. They are different questions and receive different verdicts.</p>
+        <p class="lede">Choupo separates numerical convergence, conservation, model validation and data provenance. They are different questions and receive different verdicts.</p>
       </div>
       <div class="scoreboard" aria-label="Validation summary">
-        <div class="score"><strong>8 / 8</strong><span>frozen reference-simulator comparison cases pass their declared tolerances</span></div>
+        <div class="score"><strong data-inv="runnableCases">284</strong><span>runnable tutorial cases, each with checkable output</span></div>
         <div class="score"><strong>Golden</strong><span>tutorial KPIs are checked against versioned expected results</span></div>
         <div class="score"><strong>Balances</strong><span>material and energy closure are reported, including declared gaps</span></div>
         <div class="score"><strong>Provenance</strong><span>measured, regressed, estimated and assumed data remain distinguishable</span></div>
       </div>
       <div class="evidence-copy">
-        <p>The validation suite aligns inputs, property choices and KPIs with an open-source reference simulator before comparing results. Tolerances are metric-specific; a model-route allowance is not presented as strict numerical parity.</p>
+        <p>Every tutorial ships an <code>expected</code> golden-master file. <code>bin/runTests</code> re-runs the whole suite and flags any KPI drift or NaN/inf, so a regression is caught the moment it appears — across all <span data-inv="engines">4</span> engines.</p>
         <p class="caution">Choupo is educational and research software, not certified process-design or safety software. Engineering use requires independent validation of models, data and results.</p>
       </div>
     </div>
@@ -416,20 +464,118 @@ energy balance      <span class="hot">reported</span></pre>
     </div>
   </section>
 
-  <section class="section" id="install">
-    <div class="wrap install-grid">
-      <div><p class="eyebrow">Native workflow</p><h2>Build the full engine locally.</h2><p>For custom cases, source inspection and the regression suite, clone the project and build all four binaries with a C++17 compiler and GNU make.</p><p><a class="text-link" href="https://github.com/choupo-admin/choupo#build" target="_blank" rel="noopener">Read the full build guide</a></p></div>
-      <pre class="commands"><span class="comment"># Clone and build Choupo-2607</span>
+  <section class="section" id="run">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Run it</p>
+        <h2>Choose how to run Choupo.</h2>
+        <p class="lede">The browser needs nothing installed and works everywhere. Build from source when you want the native binaries, custom cases and the regression suite.</p>
+      </div>
+
+      <div class="run-tabs" role="tablist" aria-label="How to run Choupo">
+        <button class="run-tab" role="tab" aria-selected="true" data-run="browser">Browser</button>
+        <button class="run-tab" role="tab" aria-selected="false" data-run="windows">Windows</button>
+        <button class="run-tab" role="tab" aria-selected="false" data-run="macos">macOS</button>
+        <button class="run-tab" role="tab" aria-selected="false" data-run="linux">Linux</button>
+        <button class="run-tab" role="tab" aria-selected="false" data-run="mobile">iPhone &amp; iPad</button>
+      </div>
+
+      <div class="run-panel is-active" id="run-browser" role="tabpanel">
+        <div class="run-grid">
+          <div>
+            <h3>Browser — Windows, macOS, Linux</h3>
+            <p>The C++ solver is compiled to WebAssembly and runs locally in your browser tab. Nothing is installed, no account is needed and no case data leaves your machine.</p>
+            <p class="run-note">Recommended way to start on any operating system.</p>
+            <p style="margin-top:16px"><a class="button" href="/app/" target="choupo-app" rel="noopener">Launch Choupo</a></p>
+          </div>
+          <pre class="commands"><span class="comment"># Nothing to install.  Open:</span>
+https://www.choupo.org/app/
+
+<span class="comment"># The same C++ engine as the native build,</span>
+<span class="comment"># executed in your browser via WebAssembly.</span></pre>
+        </div>
+      </div>
+
+      <div class="run-panel" id="run-windows" role="tabpanel">
+        <div class="run-grid">
+          <div>
+            <h3>Windows</h3>
+            <p><strong>1 · Browser</strong> — recommended to start. Just open <a class="text-link" href="/app/" target="choupo-app" rel="noopener">the app</a>; nothing to install.</p>
+            <p><strong>2 · WSL2</strong> — recommended for the native build, development and the regression tests.</p>
+            <p class="run-note">There is no published native <code>.exe</code> installer. The Unix commands below run inside WSL2 (Ubuntu), not in PowerShell or CMD.</p>
+          </div>
+          <pre class="commands"><span class="comment"># In PowerShell (admin), then reboot:</span>
+wsl --install -d Ubuntu
+
+<span class="comment"># Inside the Ubuntu (WSL2) shell:</span>
+sudo apt update &amp;&amp; sudo apt install -y git build-essential
 git clone https://github.com/choupo-admin/choupo.git
 cd choupo
 make all
 
-<span class="comment"># Load helpers and run a case</span>
 source etc/bashrc
 runCase tutorials/steady/flash/flash01_benzene_toluene
-
-<span class="comment"># Verify the installation</span>
 bin/runTests</pre>
+        </div>
+      </div>
+
+      <div class="run-panel" id="run-macos" role="tabpanel">
+        <div class="run-grid">
+          <div>
+            <h3>macOS</h3>
+            <p><strong>1 · Browser</strong> — nothing to install; open <a class="text-link" href="/app/" target="choupo-app" rel="noopener">the app</a>.</p>
+            <p><strong>2 · Native build from source</strong> — the standard C++17 toolchain, no external libraries.</p>
+            <p class="run-note">A native macOS build is not yet part of the automated test matrix; treat it as unverified (both Apple Silicon and Intel) until a workflow confirms it.</p>
+          </div>
+          <pre class="commands"><span class="comment"># Command Line Tools (clang + make):</span>
+xcode-select --install
+
+git clone https://github.com/choupo-admin/choupo.git
+cd choupo
+make all
+
+source etc/bashrc
+runCase tutorials/steady/flash/flash01_benzene_toluene
+bin/runTests</pre>
+        </div>
+      </div>
+
+      <div class="run-panel" id="run-linux" role="tabpanel">
+        <div class="run-grid">
+          <div>
+            <h3>Linux</h3>
+            <p>The native target. Only a C++17 compiler and GNU make are required — zero external libraries.</p>
+            <p><a class="text-link" href="https://github.com/choupo-admin/choupo#build" target="_blank" rel="noopener">Read the full build guide</a></p>
+          </div>
+          <pre class="commands"><span class="comment"># Debian / Ubuntu deps:</span>
+sudo apt install -y git build-essential
+
+git clone https://github.com/choupo-admin/choupo.git
+cd choupo
+make all
+
+source etc/bashrc
+runCase tutorials/steady/flash/flash01_benzene_toluene
+bin/runTests</pre>
+        </div>
+      </div>
+
+      <div class="run-panel" id="run-mobile" role="tabpanel">
+        <div class="run-grid">
+          <div>
+            <h3>iPhone &amp; iPad</h3>
+            <p>The browser app runs in <strong>Safari</strong> and can be added to the Home Screen (Share → Add to Home Screen) to open full-screen.</p>
+            <p>Reading cases, running tutorials and inspecting results work on iPad. Building or editing flowsheets is not recommended on small phone screens.</p>
+            <p class="run-note">There is no native iOS app. Choupo on iPhone and iPad means the WebAssembly build in Safari — the same engine, in the browser.</p>
+            <p style="margin-top:16px"><a class="button" href="/app/" target="choupo-app" rel="noopener">Open in Safari</a></p>
+          </div>
+          <pre class="commands"><span class="comment"># iPad / iPhone — open in Safari:</span>
+https://www.choupo.org/app/
+
+<span class="comment"># Share -&gt; Add to Home Screen for a</span>
+<span class="comment"># full-screen, offline-capable launcher.</span></pre>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -449,7 +595,7 @@ bin/runTests</pre>
       <div class="section-head"><p class="eyebrow">Cite Choupo</p><h2>Make the exact software part of the record.</h2></div>
       <div class="citation">
         <div>
-          <p><code id="citationText">Geraldes, V. (2026). Choupo: Open Chemical Process Simulator (Choupo-2607) [Computer software]. https://github.com/choupo-admin/choupo</code></p>
+          <p><code id="citationText">Geraldes, V. (2026). Choupo: Open Chemical Process Simulator (<span data-inv="release">Choupo-2607</span>) [Computer software]. https://github.com/choupo-admin/choupo</code></p>
           <div class="citation-links"><a class="text-link" href="https://github.com/choupo-admin/choupo/blob/main/CITATION.cff" target="_blank" rel="noopener">CITATION.cff</a><a class="text-link" href="https://github.com/choupo-admin/choupo/releases" target="_blank" rel="noopener">Versioned releases</a></div>
         </div>
         <button class="button light" id="copyCitation" type="button">Copy citation</button>
@@ -472,12 +618,45 @@ bin/runTests</pre>
 
 <footer>
   <div class="wrap footer-grid">
-    <div>Choupo-2607 · GPL-3.0-or-later · <a href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">Corresponding source</a> · <a href="https://github.com/choupo-admin/choupo/blob/main/LICENSE" target="_blank" rel="noopener">Licence and no warranty</a></div>
+    <div><span data-inv="release">Choupo-2607</span> · GPL-3.0-or-later · <a href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">Corresponding source</a> · <a href="https://github.com/choupo-admin/choupo/blob/main/LICENSE" target="_blank" rel="noopener">Licence and no warranty</a></div>
     <div>CHOUPO&trade; is the subject of Portuguese trademark application 769805 MNA by TalentGround Lda.</div>
   </div>
 </footer>
 
 <script>
+  // Fill every [data-inv] element from the generated release inventory -- the
+  // SINGLE SOURCE OF TRUTH.  No release number is hand-written in this page.
+  (function () {
+    fetch("/releaseInventory.json", { cache: "no-cache" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (inv) {
+        if (!inv) return;
+        var flat = { release: inv.release, releasedAt: inv.releasedAt };
+        ["catalogue", "engine", "tutorials", "totals"].forEach(function (g) {
+          if (inv[g]) Object.keys(inv[g]).forEach(function (k) { flat[k] = inv[g][k]; });
+        });
+        document.querySelectorAll("[data-inv]").forEach(function (el) {
+          var v = flat[el.getAttribute("data-inv")];
+          if (v !== undefined && v !== null) el.textContent = v;
+        });
+      })
+      .catch(function () {});
+  }());
+
+  // "Choose how to run" tabs.
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll(".run-tab"));
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        tabs.forEach(function (t) { t.setAttribute("aria-selected", "false"); });
+        tab.setAttribute("aria-selected", "true");
+        document.querySelectorAll(".run-panel").forEach(function (p) { p.classList.remove("is-active"); });
+        var panel = document.getElementById("run-" + tab.getAttribute("data-run"));
+        if (panel) panel.classList.add("is-active");
+      });
+    });
+  }());
+
   (function () {
     var button = document.getElementById("copyCitation");
     var citation = document.getElementById("citationText");

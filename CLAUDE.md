@@ -74,7 +74,7 @@ Choupo/
 ├── bin/                        runCase, runTests, runGui, runSite, listCases, devGui, llmctx, …
 ├── data/standards/             components/ materials/ membranes/ utilities/ + pair catalogues
 ├── src/                        C++ source (see §4)
-└── tutorials/                  148 cases under steady/ batch/ ctrl/ props/ plant/ (see §8)
+└── tutorials/                  284 runnable cases under steady/ batch/ ctrl/ props/ plant/ (see §8)
 ```
 
 ### Git & release conventions
@@ -345,12 +345,16 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
 
 ## 6. Current state (summary — detail in docs)
 
-* **211 tutorials** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
-  `bin/runTests` validates **255** via golden-master KPI + NaN/inf guard
-  + the doctrine gate (0 FAIL, 0 KNOWN-BROKEN; one deliberate EXPECTED-FAIL).
-* **194 components** (incl. the combustion library — GRI-Mech 3.0 + Burcat sulfur/chlorine/soot-PAH/low-T/NOx families: H/O/OH/HO2/H2O2/CH/CH2/CH2_S/HCO/CH3O/CH2OH/C2H/C2H3/C2H5/C3H7 + NNH/HNO/CN/NCO/HCCO/ketene/acetaldehyde) (+ **33/41 aqueous ions** carrying a formation tier),
-  **205 Henry's-law pairs**, **123 binary-interaction + 55 Pitzer pairs**,
-  **4 materials**, **4 membranes**, **9 utilities** in the standard catalogue.
+* Release counts are GENERATED — the single source of truth is
+  `bin/curate/release_inventory.py` → `generated/releaseInventory.json`
+  (consumed by the homepage + `/models`; a `runTests` gate fails when stale).
+  Do NOT hand-maintain these numbers; the current release (Choupo-2607) is:
+* **284 runnable tutorial cases** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
+  `bin/runTests` validates them via golden-master KPI + NaN/inf guard + the
+  doctrine + release-inventory gates (0 FAIL, 0 KNOWN-BROKEN; deliberate EXPECTED-FAILs).
+* **247 components** (incl. the combustion library — GRI-Mech 3.0 + Burcat sulfur/chlorine/soot-PAH/low-T/NOx families) + **41 aqueous species/ions** (single `species/aqueous.dat` catalogue),
+  **205 Henry's-law pairs**, **5 public binary-interaction pairs** (NRTL/UNIQUAC; the bulk moved to `data/local` in the legal scrub) + **55 Pitzer + 3 eNRTL pairs**,
+  **49 unit-operation models**, **4 materials**, **4 membranes**, **9 utilities** in the standard catalogue.
 * **Four binaries by problem class:** `choupoSolve` (steady, F(x)=0,
   Newton-on-tears recycle), `choupoBatch` (batch dY/dt=f + recipe layer),
   `choupoCtrl` (dynamic + control loops), `choupoProps` (property eval + the
@@ -560,7 +564,7 @@ pseudo-components) → [`docs/engine-capabilities.md`](docs/engine-capabilities.
 
 ## 8. Tutorials
 
-`listCases` enumerates all 148; `runCase tutorials/<category>/<name>` runs one.
+`listCases` enumerates them all; `runCase tutorials/<category>/<name>` runs one.
 The annotated index of what each demonstrates →
 **[`docs/tutorials-catalogue.md`](docs/tutorials-catalogue.md)**.
 

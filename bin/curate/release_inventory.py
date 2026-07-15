@@ -66,11 +66,21 @@ def count_runnable_cases() -> int:
     return n
 
 
+def released_at() -> str:
+    """The release date, from the CHANGELOG header `## [Choupo-XXXX] — YYYY-MM-DD`."""
+    ch = (ROOT / "CHANGELOG.md").read_text()
+    rel = release_id()
+    m = re.search(r"^##\s*\[" + re.escape(rel) + r"\]\s*[—-]+\s*([0-9]{4}-[0-9]{2}-[0-9]{2})",
+                  ch, re.M)
+    return m.group(1) if m else ""
+
+
 def build() -> dict:
     tutorials = count_runnable_cases()
     regression = len(list((ROOT / "tutorials").rglob("expected")))
     inv = {
         "release": release_id(),
+        "releasedAt": released_at(),
         "catalogue": {
             "components":        count_dat("components"),
             "aqueousSpecies":    count_catalogue_records("species/aqueous.dat", "aqueousSpecies"),
@@ -78,6 +88,8 @@ def build() -> dict:
             "wilsonPairs":       count_dat("binaryPairs/Wilson"),
             "uniquacPairs":      count_dat("binaryPairs/UNIQUAC"),
             "henryPairs":        count_dat("henrysLaw"),
+            "pitzerPairs":       count_dat("parameters/electrolyte/pitzer/pairs"),
+            "enrtlPairs":        count_dat("parameters/electrolyte/eNRTL"),
             "propertyMethods":   count_dat_recursive("propertyMethods"),
             "materials":         count_dat("materials"),
             "membranes":         count_dat("membranes"),
@@ -92,6 +104,13 @@ def build() -> dict:
             "runnableCases":     tutorials,
             "regressionChecks":  regression,
         },
+    }
+    c = inv["catalogue"]
+    inv["totals"] = {
+        # every binary/pair/Henry/electrolyte parameter record shipped
+        "mixtureParameterRecords":
+            c["nrtlPairs"] + c["wilsonPairs"] + c["uniquacPairs"] + c["henryPairs"]
+            + c["pitzerPairs"] + c["enrtlPairs"],
     }
     return inv
 

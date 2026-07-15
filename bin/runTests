@@ -366,6 +366,20 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/doctrine.$$
 
+    # Release-inventory gate (ChatGPT landing-plan §5): the generated single-
+    # source-of-truth counts (generated/releaseInventory.json, consumed by the
+    # homepage hero + "What is inside" + /models) must match the current tree --
+    # a published release metric may not silently drift.  Regenerate to fix.
+    if "$ROOT/bin/curate/release_inventory.py" --check > /tmp/inventory.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "release-inventory-gate" "$(head -1 /tmp/inventory.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (stale -- run bin/curate/release_inventory.py)\n" "release-inventory-gate"
+        cat /tmp/inventory.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/inventory.$$
+
     # Adsorption catalogue gate: pair records have one home, declared bases,
     # provenance and an honest quality class.  In particular a historical
     # teaching fit may not masquerade as directly measured literature data.

@@ -1,0 +1,148 @@
+{
+  "release": "Choupo-2607",
+  "note": "Machine-generated from the explicit registerBuiltins() factories in src/. Only models that are actually registered/wired are listed (no roadmap items). Retired keys (e.g. outerDict fitBinaryPair, which throws) are excluded. Every source path and every tutorial name was verified to exist.",
+  "categories": {
+    "activityModel": [
+      { "key": "cosmoSAC", "name": "COSMO-SAC (2002, Lin-Sandler / NIST variant)", "source": "src/thermo/activityCoefficient/CosmoSac.cpp", "engine": "all", "phases": "liquid", "tutorials": ["cosmoSAC01_water_ethanol"] },
+      { "key": "ideal", "name": "Ideal solution (Raoult, gamma=1)", "source": "src/thermo/activityCoefficient/IdealSolution.cpp", "engine": "all", "phases": "liquid", "tutorials": [] },
+      { "key": "NRTL", "name": "NRTL (non-random two-liquid)", "source": "src/thermo/activityCoefficient/NRTL.cpp", "engine": "all", "phases": "liquid", "tutorials": ["bubbleT01_ethanol_water", "column03_azeotrope_mesh", "crystalliser09_KHT_KCl_series"] },
+      { "key": "UNIFAC", "name": "UNIFAC (group contribution)", "source": "src/thermo/activityCoefficient/UNIFAC.cpp", "engine": "all", "phases": "liquid", "tutorials": ["column05_reactive_methylacetate", "extract01_ethanol_water_benzene", "ternary03_lle_water_ethanol_benzene"] },
+      { "key": "UNIQUAC", "name": "UNIQUAC (universal quasi-chemical)", "source": "src/thermo/activityCoefficient/UNIQUAC.cpp", "engine": "all", "phases": "liquid", "tutorials": ["batch07_lhhw_methylAcetate", "binary01_lle_water_nbutanol", "bubbleT02_uniquac_ethanol_water"] },
+      { "key": "Wilson", "name": "Wilson (local-composition)", "source": "src/thermo/activityCoefficient/Wilson.cpp", "engine": "all", "phases": "liquid", "tutorials": ["flash03_wilson_ethanol_water"] }
+    ],
+    "equationOfState": [
+      { "key": "idealGas", "name": "Ideal gas", "source": "src/thermo/equationOfState/IdealGas.cpp", "engine": "all", "phases": "vapour", "tutorials": ["adiabaticFlash01_benzene_toluene", "absorber01_NH3_water"] },
+      { "key": "PR", "name": "Peng-Robinson (alias PengRobinson)", "source": "src/thermo/equationOfState/PR.cpp", "engine": "all", "phases": "vapour/liquid", "tutorials": [] },
+      { "key": "SRK", "name": "Soave-Redlich-Kwong", "source": "src/thermo/equationOfState/SRK.cpp", "engine": "all", "phases": "vapour/liquid", "tutorials": ["ammonia01_synthesis_loop", "ammonia02_full_plant", "gibbs10_ammonia_fugacity"] }
+    ],
+    "vaporPressure": [
+      { "key": "AmbroseWalton", "name": "Ambrose-Walton corresponding-states vapour pressure", "source": "src/thermo/vaporPressure/VaporPressureModel.cpp", "engine": "all", "phases": "vapour/liquid", "tutorials": ["compare_psat_ambrose_walton", "estimate_acetone"] },
+      { "key": "Antoine", "name": "Antoine (extended) vapour pressure", "source": "src/thermo/vaporPressure/VaporPressureModel.cpp", "engine": "all", "phases": "vapour/liquid", "tutorials": ["adiabaticFlash01_benzene_toluene", "absorber01_NH3_water"] }
+    ],
+    "heatCapacity": [
+      { "key": "NASA7", "name": "NASA 7-coefficient polynomial Cp (combustion/GRI-Mech)", "source": "src/thermo/heatCapacity/NASA7Cp.cpp", "engine": "all", "phases": "vapour", "tutorials": ["gibbs06_h2_flame_radicals", "ignition01_h2o2", "ignition01_h2o2_rk4"] },
+      { "key": "polynomial", "name": "Polynomial ideal-gas Cp", "source": "src/thermo/heatCapacity/PolynomialCp.cpp", "engine": "all", "phases": "vapour/liquid", "tutorials": ["adiabaticFlash01_benzene_toluene", "absorber01_NH3_water"] }
+    ],
+    "electrolyteModel": [
+      { "key": "davies", "name": "Davies-equation ionic activity", "source": "src/thermo/electrolyte/AqueousActivity.cpp", "engine": "choupoProps", "phases": "aqueous", "tutorials": ["composition01_nacl", "ksp_temperature", "membrane09_index_vs_rigorous"] },
+      { "key": "eNRTL", "name": "Electrolyte-NRTL (single-salt / multi-salt / mixed-solvent adapters)", "source": "src/thermo/activityCoefficient/ElectrolyteActivity.cpp", "engine": "all", "phases": "aqueous", "tutorials": ["crystalliser05_nacl_pitzer", "crystalliser06_nacl_antisolvent", "crystalliser07_nacl_antisolvent_cooled"] },
+      { "key": "pitzer", "name": "Pitzer single-salt VLE/Ksp adapter (ElectrolyteActivity)", "source": "src/thermo/activityCoefficient/ElectrolyteActivity.cpp", "engine": "all", "phases": "aqueous", "tutorials": ["crystalliser05_nacl_pitzer", "crystalliser06_nacl_antisolvent"] },
+      { "key": "pitzerHMW", "name": "Pitzer-Harvie-Moller-Weare multi-ion speciation", "source": "src/thermo/electrolyte/PitzerHMW.cpp", "engine": "choupoProps", "phases": "aqueous", "tutorials": ["farelo_licl_range", "farelo_nacl_nh4cl"] },
+      { "key": "speciationSolver", "name": "Ion speciation solver (mass-action + charge/mass balance)", "source": "src/thermo/electrolyte/SpeciationSolver.cpp", "engine": "choupoProps", "phases": "aqueous", "tutorials": ["composition01_nacl"] }
+    ],
+    "transportModel": [
+      { "key": "Andrade", "name": "Andrade liquid viscosity", "source": "src/thermo/transport/Andrade.cpp", "engine": "all", "phases": "liquid", "tutorials": [] },
+      { "key": "Chung", "name": "Chung low-pressure gas viscosity", "source": "src/thermo/transport/ChungViscosity.cpp", "engine": "all", "phases": "vapour", "tutorials": [] },
+      { "key": "Eucken", "name": "Eucken gas thermal conductivity", "source": "src/thermo/transport/Eucken.cpp", "engine": "all", "phases": "vapour", "tutorials": [] },
+      { "key": "Fuller", "name": "Fuller binary gas diffusivity", "source": "src/thermo/transport/Fuller.cpp", "engine": "all", "phases": "vapour", "tutorials": [] },
+      { "key": "Latini", "name": "Latini liquid thermal conductivity", "source": "src/thermo/transport/Latini.cpp", "engine": "all", "phases": "liquid", "tutorials": [] },
+      { "key": "SatoRiedel", "name": "Sato-Riedel liquid thermal conductivity", "source": "src/thermo/transport/SatoRiedel.cpp", "engine": "all", "phases": "liquid", "tutorials": [] },
+      { "key": "Scheibel", "name": "Scheibel liquid diffusivity", "source": "src/thermo/transport/Scheibel.cpp", "engine": "all", "phases": "liquid", "tutorials": [] },
+      { "key": "Vogel", "name": "Vogel liquid viscosity", "source": "src/thermo/transport/Vogel.cpp", "engine": "all", "phases": "liquid", "tutorials": [] },
+      { "key": "WilkeChang", "name": "Wilke-Chang liquid diffusivity", "source": "src/thermo/transport/WilkeChang.cpp", "engine": "all", "phases": "liquid", "tutorials": [] }
+    ],
+    "phaseEquilibrium": [
+      { "key": "henry", "name": "Henry adsorption isotherm", "source": "src/thermo/adsorbent/IsothermModel.cpp", "engine": "all", "phases": "solid", "tutorials": ["batch11_adsorber_henry"] },
+      { "key": "langmuir", "name": "Langmuir adsorption isotherm", "source": "src/thermo/adsorbent/IsothermModel.cpp", "engine": "all", "phases": "solid", "tutorials": ["batch09_adsorber_co2", "batch10_adsorber_co2_n2"] },
+      { "key": "liquid", "name": "Liquid phase (activity/EoS Gibbs surface)", "source": "src/thermo/phase/LiquidPhase.cpp", "engine": "all", "phases": "liquid", "tutorials": [] },
+      { "key": "solid", "name": "Solid phase", "source": "src/thermo/phase/SolidPhase.cpp", "engine": "all", "phases": "solid", "tutorials": [] },
+      { "key": "stabilityTest", "name": "Michelsen TPD phase-stability test", "source": "src/solver/StabilityTest.cpp", "engine": "all", "phases": "vapour/liquid", "tutorials": ["vlle03_audit_artificial"] },
+      { "key": "vapor", "name": "Vapour phase", "source": "src/thermo/phase/VaporPhase.cpp", "engine": "all", "phases": "vapour", "tutorials": [] }
+    ],
+    "numericalSolver": [
+      { "key": "ActiveSetQP", "name": "Active-set quadratic-programming subsolver (for SQP)", "source": "src/solver/ActiveSetQP.cpp", "engine": "choupoSolve", "phases": null, "tutorials": [] },
+      { "key": "EulerSI", "name": "Semi-implicit Euler ODE integrator", "source": "src/solver/ODE/EulerSI.cpp", "engine": "choupoBatch", "phases": null, "tutorials": [] },
+      { "key": "LU", "name": "LU decomposition linear solver", "source": "src/solver/LU.cpp", "engine": "all", "phases": null, "tutorials": [] },
+      { "key": "NelderMead", "name": "Nelder-Mead simplex (unconstrained optimisation)", "source": "src/solver/NelderMead.cpp", "engine": "all", "phases": null, "tutorials": ["optim01_column_reflux"] },
+      { "key": "NewtonND", "name": "n-dimensional Newton-Raphson (tear/MESH systems)", "source": "src/solver/NewtonND.cpp", "engine": "all", "phases": null, "tutorials": [] },
+      { "key": "NewtonRaphson", "name": "1-D Newton-Raphson", "source": "src/solver/NewtonRaphson.cpp", "engine": "all", "phases": null, "tutorials": [] },
+      { "key": "Rosenbrock23", "name": "Rosenbrock23 adaptive stiff ODE integrator", "source": "src/solver/ODE/Rosenbrock23.cpp", "engine": "choupoBatch", "phases": null, "tutorials": ["batch06_adaptive_runaway", "batch13_breakthrough_co2", "batch15_mesh_study"] },
+      { "key": "RK4", "name": "Classical 4th-order Runge-Kutta ODE integrator", "source": "src/solver/ODE/RK4.cpp", "engine": "choupoBatch", "phases": null, "tutorials": ["batch01_first_order", "batch04_reversible_wgs", "batch05_crystalliser"] },
+      { "key": "SQP", "name": "Sequential quadratic programming (constrained optimisation)", "source": "src/solver/SQP.cpp", "engine": "all", "phases": null, "tutorials": ["optim02_process_cost"] },
+      { "key": "Wegstein", "name": "Wegstein recycle-convergence accelerator", "source": "src/solver/Wegstein.cpp", "engine": "choupoSolve", "phases": null, "tutorials": [] }
+    ],
+    "outerDriver": [
+      { "key": "designSpec", "name": "Design-spec driver (adjust input to hit output target)", "source": "src/outerDriver/DesignSpec.cpp", "engine": "choupoSolve", "phases": null, "tutorials": ["compressor02_designspec_pout", "designSpec01_triple_equal_areas", "brayton01_gas_turbine"] },
+      { "key": "gridSweep", "name": "Multi-dimensional grid parameter sweep", "source": "src/outerDriver/GridSweepDriver.cpp", "engine": "all", "phases": null, "tutorials": ["flash07_gridsweep_TP"] },
+      { "key": "optimization", "name": "Optimisation driver (Nelder-Mead / SQP)", "source": "src/outerDriver/OptimizationDriver.cpp", "engine": "all", "phases": null, "tutorials": ["optim01_column_reflux", "optim02_process_cost", "optim04_membrane_recovery_scaling"] },
+      { "key": "paretoSweep", "name": "Pareto front by epsilon-constraint over the SQP", "source": "src/outerDriver/ParetoSweepDriver.cpp", "engine": "all", "phases": null, "tutorials": ["pareto01_purity_energy"] },
+      { "key": "sweep", "name": "1-D parameter sweep", "source": "src/outerDriver/SweepDriver.cpp", "engine": "all", "phases": null, "tutorials": ["flash06_sweep_T", "economics02_irr_sweep"] }
+    ],
+    "postProcessing": [
+      { "key": "costing", "name": "Costing pass (Guthrie/Turton purchased + bare-module + total-module cost)", "source": "src/postProcessing/costing/Guthrie.cpp", "engine": "all", "phases": null, "tutorials": ["economics01_esterification_dcf", "ammonia02_full_plant"] },
+      { "key": "economics", "name": "Economics pass (OPEX, revenue, DCF/NPV/IRR/payback)", "source": "src/postProcessing/PostProcessor.cpp", "engine": "all", "phases": null, "tutorials": ["economics01_esterification_dcf", "economics02_irr_sweep", "optim05_reactor_npv"] },
+      { "key": "sizing", "name": "Sizing pass (equipment realisation: stirredTank, shellTubeHX, evaporator, crystalliser, sprayDryer, cyclone, compressor, vessel)", "source": "src/postProcessing/sizing/EquipmentSize.cpp", "engine": "all", "phases": null, "tutorials": ["economics01_esterification_dcf", "sprayDryer07_design", "ammonia02_full_plant"] }
+    ],
+    "unitOperation": [
+      { "key": "absorber", "name": "Absorption column", "source": "src/unitOperations/separation/Absorber.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["absorber01_NH3_water"] },
+      { "key": "adiabaticFlash", "name": "Adiabatic (energy-balance) flash", "source": "src/unitOperations/flash/AdiabaticFlash.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["adiabaticFlash01_benzene_toluene"] },
+      { "key": "bagFilter", "name": "Bag filter (gas-solid)", "source": "src/unitOperations/separation/BagFilter.cpp", "engine": "choupoSolve", "phases": "vapour/solid", "tutorials": ["bagFilter01_dust"] },
+      { "key": "bubbleT", "name": "Bubble-point temperature", "source": "src/unitOperations/saturation/BubblePoint.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["bubbleT01_ethanol_water", "bubbleT02_uniquac_ethanol_water"] },
+      { "key": "compressor", "name": "Compressor (W_shaft + isentropic efficiency)", "source": "src/unitOperations/rotating/Compressor.cpp", "engine": "choupoSolve", "phases": "vapour", "tutorials": ["brayton01_gas_turbine", "ammonia02_full_plant"] },
+      { "key": "conversionReactor", "name": "Conversion (fixed-conversion) reactor", "source": "src/unitOperations/reactor/ConversionReactor.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["conversion01_hda", "conversion02_parallel_selectivity", "chlorophenol01_chlorination"] },
+      { "key": "crystalliser", "name": "Crystalliser (cooling/antisolvent, PSD, ion-derived duty)", "source": "src/unitOperations/crystallisation/Crystalliser.cpp", "engine": "choupoSolve", "phases": "liquid/solid", "tutorials": ["crystalliser05_nacl_pitzer", "crystalliser06_nacl_antisolvent", "crystalliser09_KHT_KCl_series"] },
+      { "key": "cstr", "name": "Continuous stirred-tank reactor (power-law/LHHW)", "source": "src/unitOperations/reactor/CSTR.cpp", "engine": "choupoSolve", "phases": "liquid/vapour", "tutorials": ["cstr01_first_order", "cstr02_reversible_wgs", "cstr03_series_selectivity"] },
+      { "key": "cyclone", "name": "Cyclone (Lapple/Leith-Licht/Muschelknautz sub-models)", "source": "src/unitOperations/separation/Cyclone.cpp", "engine": "choupoSolve", "phases": "vapour/solid", "tutorials": ["cyclone01_dust_removal", "cyclone02_leith_licht"] },
+      { "key": "dewT", "name": "Dew-point temperature", "source": "src/unitOperations/saturation/DewPoint.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["dewT01_ethanol_water"] },
+      { "key": "distillationColumn", "name": "Distillation column (Wang-Henke / simultaneous MESH; alias column)", "source": "src/unitOperations/distillation/DistillationColumn.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["column01_benzene_toluene", "column02_simultaneous", "column03_azeotrope_mesh"] },
+      { "key": "electrodialysisStack", "name": "Electrodialysis stack", "source": "src/unitOperations/electrochem/ElectrodialysisStack.cpp", "engine": "choupoSolve", "phases": "aqueous", "tutorials": ["ed01_nacl_desalination", "ed02_over_limiting_current"] },
+      { "key": "electricLoad", "name": "Electric load / power tally", "source": "src/unitOperations/rotating/ElectricLoad.cpp", "engine": "choupoSolve", "phases": null, "tutorials": ["combined01_brayton_rankine", "ed01_nacl_desalination"] },
+      { "key": "equilibriumReactor", "name": "Equilibrium (Keq) reactor (alias REquil)", "source": "src/unitOperations/reactor/EquilibriumReactor.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["equil01_reforming"] },
+      { "key": "evaporativeDryer", "name": "Evaporative dryer", "source": "src/unitOperations/heatTransfer/EvaporativeDryer.cpp", "engine": "choupoSolve", "phases": "vapour/liquid/solid", "tutorials": [] },
+      { "key": "evaporator", "name": "Evaporator", "source": "src/unitOperations/heatTransfer/Evaporator.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["designSpec01_triple_equal_areas"] },
+      { "key": "extractor", "name": "Liquid-liquid extractor (alias extract)", "source": "src/unitOperations/separation/Extractor.cpp", "engine": "choupoSolve", "phases": "liquid", "tutorials": ["extract01_ethanol_water_benzene"] },
+      { "key": "gasSolidSplitter", "name": "Ideal gas-solid splitter", "source": "src/unitOperations/separation/GasSolidSplitter.cpp", "engine": "choupoSolve", "phases": "vapour/solid", "tutorials": ["gasSolidSplitter01_ideal"] },
+      { "key": "gibbsReactor", "name": "Gibbs free-energy minimisation reactor", "source": "src/unitOperations/reactor/GibbsReactor.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["ammonia01_synthesis_loop", "gibbs06_h2_flame_radicals", "gibbs10_ammonia_fugacity"] },
+      { "key": "heatExchanger", "name": "Two-stream heat exchanger", "source": "src/unitOperations/heatTransfer/HeatExchanger.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["ammonia02_full_plant", "combined01_brayton_rankine"] },
+      { "key": "heater", "name": "Heater/cooler (Q-spec)", "source": "src/unitOperations/heatTransfer/Heater.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["air01_heater_expand", "brayton01_gas_turbine"] },
+      { "key": "ionExchanger", "name": "Ion-exchange softener", "source": "src/unitOperations/separation/IonExchanger.cpp", "engine": "choupoSolve", "phases": "aqueous/solid", "tutorials": ["membrane08_softened_scaling"] },
+      { "key": "isothermalFlash", "name": "Isothermal flash / LL Gibbs minimisation (alias flash)", "source": "src/unitOperations/flash/IsothermalFlash.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["absorption01_CO2_water", "ammonia01_synthesis_loop"] },
+      { "key": "mixer", "name": "Stream mixer (P-equality)", "source": "src/unitOperations/mixer/Mixer.cpp", "engine": "choupoSolve", "phases": "vapour/liquid/solid", "tutorials": ["ammonia01_synthesis_loop", "ammonia02_full_plant"] },
+      { "key": "multiStreamHX", "name": "Multi-stream heat exchanger (alias MHeatX)", "source": "src/unitOperations/heatTransfer/MultiStreamHX.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["mheatx01_two_hot_one_cold"] },
+      { "key": "phaseChanger", "name": "Total/partial boiler or condenser (aliases boiler, condenser)", "source": "src/unitOperations/heatTransfer/PhaseChanger.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["condenser01_film_nusselt", "phasechange01_partial_condenser", "rankine02_water"] },
+      { "key": "pfr", "name": "Plug-flow reactor (power-law/LHHW)", "source": "src/unitOperations/reactor/PFR.cpp", "engine": "choupoSolve", "phases": "liquid/vapour", "tutorials": ["pfr01_first_order", "pfr02_reversible_wgs", "pfr03_series_selectivity"] },
+      { "key": "pipe", "name": "Pipe segment (single/two-phase pressure drop)", "source": "src/unitOperations/hydraulics/Pipe.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["pipe01_water_line", "pipe02_airwater_twophase"] },
+      { "key": "pneumaticConveyor", "name": "Pneumatic (gas-solid) conveyor", "source": "src/unitOperations/hydraulics/PneumaticConveyor.cpp", "engine": "choupoSolve", "phases": "vapour/solid", "tutorials": ["pneumaticConveyor01_sand", "pneumaticConveyor02_bends"] },
+      { "key": "psa", "name": "Pressure-swing adsorption", "source": "src/unitOperations/separation/PSA.cpp", "engine": "choupoSolve", "phases": "vapour/solid", "tutorials": ["psa01_h2_psa"] },
+      { "key": "pump", "name": "Pump (W_shaft + efficiency)", "source": "src/unitOperations/rotating/Pump.cpp", "engine": "choupoSolve", "phases": "liquid", "tutorials": ["pump01_water", "pump02_pressure_spec", "rankine02_water"] },
+      { "key": "shortcutColumn", "name": "Shortcut column (Fenske-Underwood-Gilliland; alias FUG)", "source": "src/unitOperations/distillation/ShortcutColumn.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["shortcut01_benzene_toluene"] },
+      { "key": "solidDryer", "name": "Solid dryer (drying air as a real stream)", "source": "src/unitOperations/heatTransfer/SolidDryer.cpp", "engine": "choupoSolve", "phases": "vapour/liquid/solid", "tutorials": ["solidDryer01_sugar"] },
+      { "key": "splitter", "name": "Stream splitter", "source": "src/unitOperations/mixer/Splitter.cpp", "engine": "choupoSolve", "phases": "vapour/liquid/solid", "tutorials": ["ammonia01_synthesis_loop", "ammonia02_full_plant"] },
+      { "key": "spiralWoundModule", "name": "Spiral-wound membrane module (NF/RO, solution-diffusion; alias membraneSW)", "source": "src/unitOperations/membrane/SpiralWoundModule.cpp", "engine": "choupoSolve", "phases": "aqueous", "tutorials": ["membrane01_RO_NaCl_seawater", "membrane02_NF_sugar", "membrane03_concentration_polarization"] },
+      { "key": "sprayDryer", "name": "Spray dryer", "source": "src/unitOperations/heatTransfer/SprayDryer.cpp", "engine": "choupoSolve", "phases": "vapour/liquid/solid", "tutorials": ["sprayDryer01_sugar"] },
+      { "key": "stripper", "name": "Stripping column", "source": "src/unitOperations/separation/Stripper.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["stripper01_NH3_water"] },
+      { "key": "tsaTwinBed", "name": "Temperature-swing adsorption twin bed", "source": "src/unitOperations/separation/TSATwinBed.cpp", "engine": "choupoSolve", "phases": "vapour/solid", "tutorials": ["tsa01_co2_twin_bed", "tsa02_refused_capacity"] },
+      { "key": "turbine", "name": "Turbine (W_shaft + isentropic efficiency)", "source": "src/unitOperations/rotating/Turbine.cpp", "engine": "choupoSolve", "phases": "vapour", "tutorials": ["brayton01_gas_turbine", "combined01_brayton_rankine"] },
+      { "key": "valve", "name": "Valve (isenthalpic throttle)", "source": "src/unitOperations/valve/Valve.cpp", "engine": "choupoSolve", "phases": "vapour/liquid", "tutorials": ["credo01_valve_heater_drum"] },
+      { "key": "batchAccumulator", "name": "Batch accumulator / receiver", "source": "src/unitOperations/batch/BatchAccumulator.cpp", "engine": "choupoBatch", "phases": "liquid", "tutorials": ["recipe04_charge_enthalpy", "still03_with_receiver", "still04_rectifier_benzene_toluene"] },
+      { "key": "batchAdsorber", "name": "Batch (well-mixed) adsorber", "source": "src/unitOperations/batch/BatchAdsorber.cpp", "engine": "choupoBatch", "phases": "vapour/solid", "tutorials": ["batch09_adsorber_co2", "batch10_adsorber_co2_n2", "batch11_adsorber_henry"] },
+      { "key": "batchCrystalliser", "name": "Batch crystalliser", "source": "src/unitOperations/batch/BatchCrystalliser.cpp", "engine": "choupoBatch", "phases": "liquid/solid", "tutorials": ["batch05_crystalliser"] },
+      { "key": "batchReactor", "name": "Batch reactor (dY/dt = f)", "source": "src/unitOperations/batch/BatchReactor.cpp", "engine": "choupoBatch", "phases": "liquid/vapour", "tutorials": ["batch01_first_order", "batch02_adiabatic", "batch03_consecutive"] },
+      { "key": "batchStill", "name": "Batch still / rectifier", "source": "src/unitOperations/batch/BatchStill.cpp", "engine": "choupoBatch", "phases": "vapour/liquid", "tutorials": ["still01_benzene_toluene", "recipe01_react_then_distill", "recipe03_conditional_partial"] },
+      { "key": "fixedBedAdsorber", "name": "Fixed-bed adsorber (breakthrough)", "source": "src/unitOperations/batch/FixedBedAdsorber.cpp", "engine": "choupoBatch", "phases": "vapour/solid", "tutorials": ["batch13_breakthrough_co2", "batch14_transport_only", "batch15_mesh_study"] },
+      { "key": "dynamicCSTR", "name": "Dynamic CSTR (DAE, control-ready)", "source": "src/unitOperations/dynamic/DynamicCSTR.cpp", "engine": "choupoCtrl", "phases": "liquid/vapour", "tutorials": ["ctrl01_cstr_temp_control", "ctrl02_disturbance_rejection", "ctrl03_adaptive_disturbance"] },
+      { "key": "PID", "name": "PID controller block", "source": "src/control/PIDController.cpp", "engine": "choupoCtrl", "phases": null, "tutorials": ["ctrl01_cstr_temp_control", "ctrl02_disturbance_rejection", "ctrl03_adaptive_disturbance"] },
+      { "key": "Schedule", "name": "Schedule (setpoint programme) controller", "source": "src/control/ScheduleController.cpp", "engine": "choupoCtrl", "phases": null, "tutorials": [] },
+      { "key": "Signal", "name": "Signal-source controller block", "source": "src/control/SignalController.cpp", "engine": "choupoCtrl", "phases": null, "tutorials": [] }
+    ],
+    "databank": [
+      { "key": "components", "name": "Pure-component .dat records", "source": "data/standards/components/", "count": 247 },
+      { "key": "binaryPairs.NRTL", "name": "NRTL binary-interaction pairs (public catalogue)", "source": "data/standards/binaryPairs/NRTL/", "count": 2 },
+      { "key": "binaryPairs.UNIQUAC", "name": "UNIQUAC binary-interaction pairs (public catalogue)", "source": "data/standards/binaryPairs/UNIQUAC/", "count": 3 },
+      { "key": "parameters.electrolyte", "name": "Pitzer / electrolyte interaction-parameter records", "source": "data/standards/parameters/electrolyte/", "count": 124 },
+      { "key": "parameters.UNIFAC", "name": "UNIFAC group-parameter records", "source": "data/standards/parameters/UNIFAC/", "count": 2 },
+      { "key": "parameters.binary", "name": "Generic binary-parameter records", "source": "data/standards/parameters/binary/", "count": 1 },
+      { "key": "parameters.eos", "name": "EoS binary-parameter records", "source": "data/standards/parameters/eos/", "count": 1 },
+      { "key": "parameters.solution", "name": "Solution/transfer-parameter records", "source": "data/standards/parameters/solution/", "count": 2 },
+      { "key": "parameters.adsorption", "name": "Adsorption isotherm-parameter records", "source": "data/standards/parameters/adsorption/", "count": 15 },
+      { "key": "henrysLaw", "name": "Henry's-law pairs", "source": "data/standards/henrysLaw/", "count": 205 },
+      { "key": "chemistry", "name": "Chemistry (equilibria: dissolution, association, Ksp) records", "source": "data/standards/chemistry/", "count": 70 },
+      { "key": "propertyMethods", "name": "Property-method definitions", "source": "data/standards/propertyMethods/", "count": 7 },
+      { "key": "materials", "name": "Materials of construction", "source": "data/standards/materials/", "count": 4 },
+      { "key": "membranes", "name": "Membrane specifications", "source": "data/standards/membranes/", "count": 4 },
+      { "key": "adsorbents", "name": "Adsorbent specifications", "source": "data/standards/adsorbents/", "count": 3 },
+      { "key": "utilities", "name": "Utility streams", "source": "data/standards/utilities/", "count": 9 },
+      { "key": "groupEstimative", "name": "Own Joback/Lee-Kesler group-contribution estimates (name catalogue, flagged estimates)", "source": "data/groupEstimative/", "count": 28563 }
+    ]
+  }
+}

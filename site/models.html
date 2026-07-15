@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="The complete catalogue of implemented models, methods, unit operations, solvers and databanks in the Choupo simulator — with status, engine and source location.">
+<title>Model catalogue | Choupo</title>
+<link rel="icon" type="image/png" href="/logo2-mark.png">
+<meta name="theme-color" content="#008f83">
+<style>
+  :root { --ink:#17201d; --muted:#5d6b66; --paper:#f4f5f1; --white:#fff; --night:#101614;
+    --line:#cfd7d2; --teal:#008f83; --teal-bright:#16c7b5; --yellow:#e2b84d; }
+  * { box-sizing:border-box; }
+  body { margin:0; color:var(--ink); background:var(--paper);
+    font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif; line-height:1.5; }
+  a { color:inherit; }
+  .wrap { width:min(1160px, calc(100% - 48px)); margin:0 auto; }
+  .nav { position:sticky; top:0; z-index:20; color:#fff; background:rgba(16,22,20,.96);
+    border-bottom:1px solid rgba(255,255,255,.12); }
+  .nav-inner { min-height:60px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+  .brand { display:inline-flex; align-items:center; gap:10px; text-decoration:none; font-weight:850; color:#fff; }
+  .brand img { width:26px; height:31px; object-fit:contain; }
+  .nav-links { display:flex; gap:20px; align-items:center; }
+  .nav-links a { color:#c1cdc8; font-size:14px; font-weight:650; text-decoration:none; }
+  .nav-links a:hover { color:#fff; }
+  .button { display:inline-flex; align-items:center; border-radius:6px; padding:8px 14px;
+    color:#051815; background:var(--teal-bright); font-weight:800; font-size:14px; text-decoration:none; }
+  header.head { color:#fff; background:var(--night); padding:56px 0 40px; }
+  .eyebrow { margin:0 0 10px; color:var(--teal-bright); font-size:13px; font-weight:800; text-transform:uppercase; }
+  h1 { margin:0; font-size:44px; line-height:1.05; }
+  .sub { max-width:720px; margin:14px 0 0; color:#c1cdc8; font-size:17px; }
+  .meta { margin:14px 0 0; color:#9fb0aa; font-size:13px; }
+  .controls { position:sticky; top:60px; z-index:10; padding:16px 0; background:var(--paper);
+    border-bottom:1px solid var(--line); }
+  .search { width:100%; max-width:520px; border:1px solid var(--line); border-radius:8px;
+    padding:11px 14px; font:inherit; font-size:15px; background:#fff; }
+  main { padding:8px 0 80px; }
+  .cat { padding:34px 0 6px; }
+  .cat h2 { margin:0 0 4px; font-size:24px; }
+  .cat .count { color:var(--muted); font-size:14px; }
+  table { width:100%; border-collapse:collapse; margin-top:14px; font-size:14px; }
+  thead th { text-align:left; padding:9px 12px; border-bottom:2px solid var(--line);
+    color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.03em; }
+  tbody td { padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:hover { background:#fff; }
+  .name { font-weight:750; }
+  .key { color:var(--muted); font:12px/1.4 "JetBrains Mono",Consolas,monospace; }
+  .pill { display:inline-block; border-radius:999px; padding:2px 9px; font-size:12px; font-weight:700;
+    background:#e4efe c; color:#0c5b52; border:1px solid #bfe0d9; }
+  .pill.impl { background:#e2f3ee; color:#0c5b52; border-color:#bfe0d9; }
+  td.src code { font:12px/1.4 "JetBrains Mono",Consolas,monospace; color:var(--muted); }
+  td.tut { color:var(--muted); }
+  .empty { padding:40px 0; color:var(--muted); }
+  footer { padding:30px 0; color:#aab9b3; background:#0b0f0e; font-size:13px; }
+  footer a { color:#d8e1dd; }
+  @media (max-width:760px){ h1{font-size:34px;} table{display:block; overflow-x:auto;} }
+</style>
+</head>
+<body>
+<nav class="nav"><div class="wrap nav-inner">
+  <a class="brand" href="/"><img src="/logo2-mark.png" alt=""><span>CHOUPO</span></a>
+  <div class="nav-links">
+    <a href="/#included">What's inside</a>
+    <a href="/models/">Models</a>
+    <a href="/#run">Run it</a>
+    <a class="button" href="/app/" target="choupo-app" rel="noopener">Open Choupo</a>
+  </div>
+</div></nav>
+
+<header class="head"><div class="wrap">
+  <p class="eyebrow">Model catalogue</p>
+  <h1>Every model, counted from the release.</h1>
+  <p class="sub">The implemented thermodynamic, phase-equilibrium, unit-operation, solver and databank models in Choupo — with implementation status, engine and source location. Roadmap items are not listed. Generated from the published tree, not written by hand.</p>
+  <p class="meta"><span data-inv="release">Choupo-2607</span> · <span id="totalCount">…</span> catalogued entries</p>
+</div></header>
+
+<div class="controls"><div class="wrap">
+  <input class="search" id="search" type="search" placeholder="Search models, keys, source paths, tutorials…" aria-label="Search the catalogue">
+</div></div>
+
+<main><div class="wrap" id="catalogue">
+  <p class="empty" id="loading">Loading the catalogue…</p>
+</div></main>
+
+<footer><div class="wrap">
+  <span data-inv="release">Choupo-2607</span> · GPL-3.0-or-later ·
+  <a href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">Source</a> ·
+  <a href="/">Home</a>
+</div></footer>
+
+<script>
+  var TITLES = {
+    activityModel:"Activity-coefficient models", equationOfState:"Equations of state",
+    electrolyteModel:"Electrolyte models", phaseEquilibrium:"Phase-equilibrium & stability",
+    transportModel:"Transport properties", vaporPressure:"Vapour-pressure models",
+    heatCapacity:"Heat-capacity models", unitOperation:"Unit operations",
+    numericalSolver:"Numerical solvers", outerDriver:"Outer drivers",
+    postProcessing:"Post-processing, sizing & costing", databank:"Parameter & component databanks"
+  };
+  var ORDER = ["unitOperation","activityModel","equationOfState","electrolyteModel",
+    "phaseEquilibrium","transportModel","vaporPressure","heatCapacity","numericalSolver",
+    "outerDriver","postProcessing","databank"];
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}); }
+  function ghSrc(p){ return p ? '<a href="https://github.com/choupo-admin/choupo/blob/main/'+esc(p)+'" target="_blank" rel="noopener"><code>'+esc(p)+'</code></a>' : '<span class="key">—</span>'; }
+
+  function rowsFor(entry){
+    var name = entry.name || entry.key;
+    var status = entry.status || "implemented";
+    var phases = entry.phases || "—";
+    var engine = entry.engine || "—";
+    var count  = (entry.count!=null) ? (" · "+entry.count+" records") : "";
+    var tut = Array.isArray(entry.tutorials) && entry.tutorials.length
+      ? entry.tutorials.map(esc).join(", ") : "—";
+    return '<tr>'
+      + '<td><span class="name">'+esc(name)+count+'</span><br><span class="key">'+esc(entry.key||"")+'</span></td>'
+      + '<td><span class="pill impl">'+esc(status)+'</span></td>'
+      + '<td>'+esc(phases)+'</td>'
+      + '<td>'+esc(engine)+'</td>'
+      + '<td class="src">'+ghSrc(entry.source)+'</td>'
+      + '<td class="tut">'+tut+'</td>'
+      + '</tr>';
+  }
+
+  function render(cat){
+    var host = document.getElementById("catalogue");
+    var keys = Object.keys(cat).sort(function(a,b){
+      var ia=ORDER.indexOf(a), ib=ORDER.indexOf(b);
+      return (ia<0?99:ia)-(ib<0?99:ib);
+    });
+    var html = "", total = 0;
+    keys.forEach(function(k){
+      var list = cat[k] || [];
+      total += list.length;
+      html += '<section class="cat" data-cat="'+esc(k)+'">'
+        + '<h2>'+esc(TITLES[k]||k)+' <span class="count">('+list.length+')</span></h2>'
+        + '<table><thead><tr><th>Model</th><th>Status</th><th>Phases</th><th>Engine</th><th>Source</th><th>Tutorials</th></tr></thead><tbody>'
+        + list.map(rowsFor).join("")
+        + '</tbody></table></section>';
+    });
+    host.innerHTML = html || '<p class="empty">Catalogue is empty.</p>';
+    document.getElementById("totalCount").textContent = total;
+  }
+
+  function wireSearch(){
+    var box = document.getElementById("search");
+    box.addEventListener("input", function(){
+      var q = box.value.trim().toLowerCase();
+      document.querySelectorAll(".cat").forEach(function(sec){
+        var any = false;
+        sec.querySelectorAll("tbody tr").forEach(function(tr){
+          var hit = !q || tr.textContent.toLowerCase().indexOf(q) >= 0;
+          tr.style.display = hit ? "" : "none";
+          if (hit) any = true;
+        });
+        sec.style.display = any ? "" : "none";
+      });
+    });
+  }
+
+  fetch("/releaseInventory.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null;})
+    .then(function(inv){ if(!inv) return;
+      document.querySelectorAll('[data-inv="release"]').forEach(function(e){ e.textContent = inv.release; });
+    }).catch(function(){});
+
+  fetch("/modelsCatalogue.json",{cache:"no-cache"})
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(doc){
+      render(doc.categories || {});
+      wireSearch();
+    })
+    .catch(function(){
+      document.getElementById("loading").textContent =
+        "The model catalogue could not be loaded. Browse the source on GitHub instead.";
+    });
+</script>
+</body>
+</html>
