@@ -1,14 +1,13 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Nitric acid (HNO3), pure liquid.  CAS 7697-37-2.
 
-  A strong mineral acid.  Carried here as the LIQUID-phase, dissolved-acid
-  species (role nonvolatile -> K = 0): the well-conditioned form for aqueous
-  neutralisation / nitrate-salt precipitation and acid-balance exercises,
-  where HNO3 stays in the liquid and its formation datum closes the heat of
-  neutralisation.  (Anhydrous HNO3 IS volatile, bp ~83 C; if a VLE / stripping
-  case needs it in the vapour, add a vaporPressure block and switch the role.)
-
-  Carries the LIQUID-phase formation datum and a real liquid heat capacity.
+  A strong mineral acid.  This is the MOLECULAR component -- pure-liquid
+  formation datum + a real liquid heat capacity.  It carries NO `role
+  nonvolatile`: molecular HNO3 IS volatile (bp ~83 C), so nonvolatility is not
+  a universal property of the compound.  A case that treats it as a dissolved
+  acid declares that locally (a case-local `role nonvolatile` overlay), and its
+  dissociation (HNO3 -> H+ + NO3-) is electrolyte chemistry, not a component
+  role.  A molecular VLE case still needs a vaporPressure block (a gap here).
 
   PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
   J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
@@ -21,7 +20,6 @@ CAS         7697-37-2;
 
 MW          63.013;            // kg/kmol
 
-role        nonvolatile;       // dissolved-acid treatment (K = 0); see header
 
 Vliq        4.165e-5;          // m^3/mol  (= MW / 1513 kg/m^3)
 

@@ -1,12 +1,12 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Phosphoric acid (H3PO4, orthophosphoric).  CAS 7664-38-2.
 
-  A NON-VOLATILE triprotic mineral acid.  Pure H3PO4 MELTS at ~42 C, so at
-  the 25 C reference state the pure compound is a CRYSTALLINE SOLID -- the
-  honest reference phase, so this entry carries the SOLID-phase formation
-  datum (phase solid) and a real solid heat capacity.  In aqueous cases the
-  acid is dissolved; role nonvolatile keeps it out of the vapour (K = 0) for
-  phosphate-precipitation, fertiliser and acid-balance exercises.
+  A triprotic mineral acid.  Pure H3PO4 MELTS at ~42 C, so at the 25 C
+  reference the pure compound is a CRYSTALLINE SOLID -- this entry carries the
+  SOLID-phase formation datum (referenceState pureSolid) + a real solid heat
+  capacity.  It carries NO `role nonvolatile`: a case that dissolves the acid
+  declares nonvolatility locally, and its dissociation (H3PO4 -> H+ + H2PO4- ->
+  ...) is electrolyte chemistry, not a universal component role.
 
   PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
   J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
@@ -22,7 +22,6 @@ CAS         7664-38-2;
 
 MW          97.995;            // kg/kmol
 
-role        nonvolatile;       // never goes to the vapour (K = 0)
 
 solid
 {
