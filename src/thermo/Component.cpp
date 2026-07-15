@@ -275,12 +275,20 @@ void Component::readFromDict(const DictPtr& d)
     // the fusion/sublimation enthalpies of the Clausius-Clapeyron lines.  Parsed
     // after solid{}; ABSENT leaves every field 0 and hasSublimation_ false, i.e.
     // exactly today's behaviour (the P-T diagram stays L-V + critical only).
+    // The triple point is an intrinsic property in its OWN block -- NOT a
+    // sublimation correlation: `triplePoint { T; P; }`.
+    if (d->found("triplePoint"))
+    {
+        auto tp = d->subDict("triplePoint");
+        subTripleT_ = tp->lookupScalarOrDefault("T", 0.0);
+        subTripleP_ = tp->lookupScalarOrDefault("P", 0.0);
+    }
+    // The sublimation-curve inputs (fusion / sublimation latent heats); a REAL
+    // sublimation-pressure correlation, when one exists, is its own block.
     if (d->found("sublimation"))
     {
         auto sb = d->subDict("sublimation");
         hasSublimation_ = true;
-        subTripleT_ = sb->lookupScalarOrDefault("tripleT", 0.0);
-        subTripleP_ = sb->lookupScalarOrDefault("tripleP", 0.0);
         subHfus_    = sb->lookupScalarOrDefault("Hfus", 0.0);
         subHsub_    = sb->lookupScalarOrDefault("Hsub", 0.0);
     }

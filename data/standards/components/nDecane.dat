@@ -43,12 +43,10 @@ liquidHeatCapacity
     Trange        (309  447);
 }
 
-sublimation
+triplePoint
 {
-    tripleT   243.5000;        // K   [CoolProp]
-    tripleP   1.4042;        // Pa  [CoolProp]
-    // Hfus / Hsub absent: CoolProp models no solid phase.  The
-    // sublimation curve stays undrawn until measured Hsub lands.
+    T   243.5000;
+    P   1.4042;
 }
 
 standardThermochemistry
