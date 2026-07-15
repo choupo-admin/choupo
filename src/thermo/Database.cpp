@@ -250,7 +250,7 @@ Component Database::loadComponent(const std::string& name) const
     // of the same name, announce that too.
     if (usingProposed)
         if (announceOnce("proposed:" + name)) std::cerr << "[local] component '" << name
-                  << "': loaded from data/proposed/ -- UNVERIFIED; a student must review"
+                  << "': loaded from data/local/ -- UNVERIFIED; a student must review"
                      " and promote it to data/standards/ before the result is trusted.\n";
     if (hasStd && hasProposed)
         if (caseLocal.empty() && announceOnce("shadowed:" + name)) std::cerr << "[shadowed] component '" << name

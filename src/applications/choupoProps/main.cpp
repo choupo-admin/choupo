@@ -33,7 +33,7 @@ Description
 
     Unlike choupoSolve / choupoBatch / choupoCtrl, this binary does
     NOT simulate a flowsheet.  It evaluates property functions
-    f(T, P, x, params) over points, scans and surfaces, and ajusta
+    f(T, P, x, params) over points, scans and surfaces, and fits
     parameters to data.
 
         case/

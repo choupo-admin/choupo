@@ -132,7 +132,7 @@ Props region2(double p, double T);   // release eq. 15-17, Tables 10/11
 // Routed access: pT_region() then the matching evaluator.
 Props props(double p, double T);
 
-// --- The weapon: self-check against the release verification tables --------
+// --- Self-check against the release verification tables ---------------------
 // Evaluates every computer-program verification state published in the
 // release (Table 5: region 1; Table 15: region 2; Table 35: psat; Table 36:
 // Tsat; eq. 5/6 B23 point) and returns the MAXIMUM RELATIVE DEVIATION over

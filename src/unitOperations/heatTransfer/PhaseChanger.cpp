@@ -449,7 +449,7 @@ int PhaseChanger::solve(const DictPtr& dict,
                   << T_in  << "  K  ( " << (T_in  - 273.15) << " degC )\n"
                   << "  T_out:           " << std::fixed << std::setprecision(3)
                   << T_out << "  K  ( " << (T_out - 273.15) << " degC )"
-                  << (selfTarget ? "  <- result" : "  <- result") << "\n"
+                  << "  <- result" << "\n"
                   << "  vf_in:           " << std::fixed << std::setprecision(5)
                   << vf_in_eff << "\n"
                   << "  vf_out:          " << std::fixed << std::setprecision(5)

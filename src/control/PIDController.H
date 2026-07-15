@@ -39,7 +39,7 @@ Description
 
       * Derivative on PV (not on error).  Eliminates the impulsive
         "set-point kick" when the user changes SP during a run.
-      * Trapezoidal integration of the error for the integral term.
+      * Rectangular (Euler) integration of the error for the integral term.
       * Anti-windup: output is clamped to [u_min, u_max].  When the
         unclamped u exceeds a bound, the integral term is *not*
         advanced for that step (clamping back-calculation light).
