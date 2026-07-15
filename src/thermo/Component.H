@@ -300,6 +300,14 @@ public:
     scalar qUniquac()  const { return qUq_; }
     bool   hasUniquac() const { return rUq_ > 0.0 && qUq_ > 0.0; }
 
+    // COSMO-SAC surface data (intrinsic; `cosmo { area; volume; sigmaProfile ( ... ); }`).
+    // area [A^2], volume [A^3], and the sigma-profile p(sigma) [A^2 per bin] on the
+    // model's GLOBAL grid.  Absent (empty profile) -> CosmoSac throws for that comp.
+    scalar cosmoArea()   const { return cosmoArea_; }
+    scalar cosmoVolume() const { return cosmoVolume_; }
+    const std::vector<scalar>& cosmoSigmaProfile() const { return cosmoSigma_; }
+    bool   hasCosmo()    const { return cosmoArea_ > 0.0 && !cosmoSigma_.empty(); }
+
     bool hasGroups(const std::string& method) const { return groups_.count(method) > 0; }
     const std::vector<std::pair<std::string, int>>& groupsFor(const std::string& method) const
     {
@@ -393,6 +401,11 @@ private:
     // 0 when absent -> the case must supply them, else UNIQUAC throws.
     scalar rUq_ = 0.0;
     scalar qUq_ = 0.0;
+
+    // COSMO-SAC surface data (intrinsic; `cosmo { area; volume; sigmaProfile ( ... ); }`).
+    scalar cosmoArea_ = 0.0;
+    scalar cosmoVolume_ = 0.0;
+    std::vector<scalar> cosmoSigma_;
 };
 
 } // namespace Choupo

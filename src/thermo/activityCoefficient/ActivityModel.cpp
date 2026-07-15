@@ -32,6 +32,7 @@ License
 #include "UNIFAC.H"
 #include "UNIQUAC.H"
 #include "Wilson.H"
+#include "CosmoSac.H"
 #include "ElectrolyteActivity.H"
 #include "thermo/Component.H"
 
@@ -104,6 +105,13 @@ void ActivityModel::registerBuiltins()
         [](const DictPtr& d, const std::vector<Component>& comps)
             -> std::unique_ptr<ActivityModel>
         { return std::make_unique<UNIQUAC>(d, namesOf(comps)); });
+
+    // COSMO-SAC 2002 (NIST benchmark variant); surface data per component's
+    // `cosmo {}` block -- needs the full Component objects (like Wilson).
+    registerModel("cosmoSAC",
+        [](const DictPtr& d, const std::vector<Component>& comps)
+            -> std::unique_ptr<ActivityModel>
+        { return std::make_unique<CosmoSac>(d, comps); });
 }
 
 } // namespace Choupo

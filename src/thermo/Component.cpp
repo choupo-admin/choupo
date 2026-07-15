@@ -448,6 +448,18 @@ void Component::readFromDict(const DictPtr& d)
         qUq_ = u->lookupScalarOrDefault("q", 0.0);
     }
 
+    // COSMO-SAC surface data (intrinsic): `cosmo { area; volume; sigmaProfile ( ... ); }`.
+    // Cavity area/volume + the p(sigma) profile on CosmoSac's global grid, all living
+    // ONCE in the component (like uniquac r/q).  Consumed by the CosmoSac activity model.
+    if (d->found("cosmo"))
+    {
+        auto c = d->subDict("cosmo");
+        cosmoArea_   = c->lookupScalarOrDefault("area", 0.0);
+        cosmoVolume_ = c->lookupScalarOrDefault("volume", 0.0);
+        if (c->found("sigmaProfile"))
+            cosmoSigma_ = c->lookupList("sigmaProfile");
+    }
+
     // Relative permittivity (dielectric constant) -- used by the mixed-solvent
     // electrolyte activity (eNRTL) for the drowning-out / Born effect.  Optional.
     relPermittivity_ = d->lookupScalarOrDefault("relativePermittivity", 0.0);

@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  COSMO-SAC 2002 validation ops.  T = 298.15 K.
+   1. pure water            -> gamma ~ 1 (lnGamma = 0 by construction)
+   2. water/ethanol binary  -> finite, no NaN
+   3. water/ethanol/acetone ternary -> multicomponent
+   4. water/nHexane          -> strongly non-ideal (gamma_hexane >> 1)
+\*---------------------------------------------------------------------------*/
+operations
+(
+    { name pure_water;   type propertyScan1D;
+      vary { variable T; from 298.15 K; to 308.15 K; n 2; }
+      state { P 1 bar; composition { water 1.0; } }
+      properties ( gamma_water ); output { file pure_water.csv; } }
+
+    { name bin_wet;      type propertyScan1D;
+      vary { variable T; from 298.15 K; to 308.15 K; n 2; }
+      state { P 1 bar; composition { water 0.5; ethanol 0.5; } }
+      properties ( gamma_water gamma_ethanol ); output { file bin_wet.csv; } }
+
+    { name ternary;      type propertyScan1D;
+      vary { variable T; from 298.15 K; to 308.15 K; n 2; }
+      state { P 1 bar; composition { water 0.4; ethanol 0.35; acetone 0.25; } }
+      properties ( gamma_water gamma_ethanol gamma_acetone ); output { file ternary.csv; } }
+
+    { name water_hexane; type propertyScan1D;
+      vary { variable T; from 298.15 K; to 308.15 K; n 2; }
+      state { P 1 bar; composition { water 0.5; nHexane 0.5; } }
+      properties ( gamma_water gamma_nHexane ); output { file water_hexane.csv; } }
+);

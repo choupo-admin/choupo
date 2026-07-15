@@ -1,0 +1,11 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    pure_water             n_failures       0                  1e-4
+diag    pure_water             n_points         2                  1e-4
+diag    bin_wet                n_failures       0                  1e-4
+diag    bin_wet                n_points         2                  1e-4
+diag    ternary                n_failures       0                  1e-4
+diag    ternary                n_points         2                  1e-4
+diag    water_hexane           n_failures       0                  1e-4
+diag    water_hexane           n_points         2                  1e-4

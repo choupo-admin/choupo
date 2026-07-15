@@ -446,7 +446,26 @@ calculation problem solved at runtime.*  Three layers kept apart (curated data
 tools where the resolver lives); provenance at data + validation boundaries
 only, never the hot path.  Rejected: structure-first/RDKit, `PropertyResult<T>`
 in the solver, a runtime resolver, a parallel interface taxonomy,
-C++20/CMake/Eigen/PC-SAFT/COSMO-SAC/CAPE-OPEN/open-core.
+C++20/CMake/Eigen/PC-SAFT/CAPE-OPEN/open-core.
+
+**COSMO-SAC — the rejection was REVERSED 2026-07-15 (Vítor), for a MINIMAL, glass-box
+version only.**  The original blanket rejection was against *bloat* (heavy deps, quantum
+chemistry, thousands of imported compounds, a new architecture).  A lean COSMO-SAC that
+adds NONE of that IS in: the 2002 (Lin & Sandler) variant, exactly the NIST benchmark
+(Bell et al., AIChE J. 2019; reference code usnistgov/COSMOSAC, public domain), as a plain
+`ActivityModel` subclass (`src/thermo/activityCoefficient/CosmoSac.{H,cpp}`, model key
+`cosmoSAC`) — no new interface, no new deps, ~150 lines of self-contained C++.  Each
+compound carries its OWN COSMO surface data in its `component.dat` `cosmo { area; volume;
+sigmaProfile ( … ); }` block (51-point grid −0.025..0.025 e/Å², step 0.001); the grid +
+constants are hardcoded in the model.  Profiles are VT-2005 (Mullins IECR 45 (2006) 4389,
+DFT-COSMO, US-gov public domain via the NIST bundle) — ONE source, never mixed with LVPP/
+CHAOS; those (MIT / CC-BY, thousands of compounds) are licence-compatible future swaps but
+must replace VT-2005 wholesale with their matching variant constants, never be mixed in.
+A component lacking `cosmo` is a LOUD error.  Validated: pure→lnγ=0 exact, water/hexane
+strongly non-ideal, and a bit-for-bit cross-check vs an independent implementation of the
+same equations+profiles.  Still rejected: profile GENERATION (quantum chemistry), bulk
+import of thousands, multiple variants, any new architecture.  Reference case:
+`tutorials/props/molecular/cosmoSAC01_water_ethanol`.
 
 **Property architecture — FINAL / CLOSED, RATIFIED 2026-06-30 (design SETTLED, do
 NOT relitigate; implementation pending).**  Canonical umbrella:
