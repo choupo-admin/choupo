@@ -127,28 +127,12 @@ export function csvToOverlay(name: string, csv: string): ExperimentalOverlay | n
   return { name, header: p.header, rows: p.rows };
 }
 
-/** Friendly label for the shape `CsvAutoPlot` would render this CSV as.
- *  Exposed so the PropsView header can show the user what the dropdown's
- *  current pick is going to look like ("1D scan" / "2D grid" / "T-x-y" /
- *  "Parity" / "Fit history") before the plot mounts. */
 /** Any ternary diagram: header begins x1,x2,x3 (then either a phase-map's
  *  region/kind columns, or a scalar surface's 4th column like T_bubble).
  *  Unambiguous — cannot collide with the 2-D grid heuristic (whose first column
  *  is T/P/x[...]).  TernaryPlot re-parses the raw csv and dispatches by columns. */
 function detectTernary(p: ParsedCsv): boolean {
   return p.header[0] === "x1" && p.header[1] === "x2" && p.header[2] === "x3";
-}
-
-export function classifyCsvShape(csv: string): string {
-  const p = parseCsv(csv);
-  if (!p) return "—";
-  if (detectCategoricalCsv(csv)) return "Bar (categorical)";
-  if (detectTernary(p)) return "Ternary";
-  if (detectFitLog(p))    return "Fit history";
-  if (detectParity(p))    return "Parity";
-  if (detectTxy(p))       return "T-x-y";
-  if (detectGrid2D(p))    return "2D grid";
-  return "1D scan";
 }
 
 /** Detect a parity CSV by looking for an `_exp` / `_model` column pair. */
@@ -1790,29 +1774,12 @@ function ArrheniusPlot({ parsed, info }: {
   );
 }
 
-/** True iff every CSV carries the T-x-y trio (x[comp], T_bubble, y_eq_comp)
- *  for the SAME component -- so several models can be overlaid on a binary-VLE
- *  diagram with switchable T-x-y / x-y / T-x / T-y views. */
-export function csvsAreTxyCompatible(csvs: MultiCsvInput[]): boolean {
-  if (csvs.length < 1) return false;
-  let comp: string | null = null;
-  for (const c of csvs) {
-    const p = parseCsv(c.text);
-    if (!p) return false;
-    const info = detectTxy(p);
-    if (!info) return false;
-    if (comp === null) comp = info.comp;
-    else if (info.comp !== comp) return false;
-  }
-  return true;
-}
-
 /** Overlay SEVERAL models on one binary-VLE diagram, with the same T-x-y /
  *  x-y / T-x / T-y toggle as the single-model TxyPlot.  In x-y mode this is the
  *  multi-model McCabe-Thiele picture: every model's equilibrium curve y_eq(x)
  *  against the y=x diagonal -- the ideal model has NO azeotrope (its curve
  *  never meets the diagonal in the interior), NRTL / Wilson do.  Each model
- *  must carry the (x[comp], T_bubble, y_eq_comp) trio (csvsAreTxyCompatible). */
+ *  must carry the (x[comp], T_bubble, y_eq_comp) trio. */
 export function MultiTxyOverlay({ csvs, overlays = [], defaultMode, partner }: {
   csvs: MultiCsvInput[];
   overlays?: ExperimentalOverlay[];

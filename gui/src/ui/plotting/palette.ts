@@ -237,18 +237,6 @@ export function colorForValue(
   return gradientColor((value - min) / (max - min), map);
 }
 
-/** A few legend stops (value + colour) across [min,max] for the scale bar. */
-export function gradientStops(
-  min: number, max: number, n = 5, map: ColorMap = "turbo",
-): Array<{ value: number; color: string }> {
-  const out: Array<{ value: number; color: string }> = [];
-  for (let i = 0; i < n; i++) {
-    const t = n === 1 ? 0.5 : i / (n - 1);
-    out.push({ value: min + (max - min) * t, color: gradientColor(t, map) });
-  }
-  return out;
-}
-
 /** A CSS linear-gradient(...) string sampling the colormap left->right. */
 export function gradientCss(map: ColorMap = "turbo", n = 9): string {
   const stops: string[] = [];
