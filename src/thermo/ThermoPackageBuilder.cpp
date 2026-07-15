@@ -244,11 +244,11 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
         auto d2t = speciesMapOf(saltRec);
         for (const auto& ion : d2t->keys())
         {
-            const fs::path ip =
-                resolve("data/standards/species/aqueous/" + ion + ".dat");
-            auto iRec = loadRec(ip, "species " + ion);
-            if (!iRec->found("charge")) absent("charge", ip.string());
-            const int z = static_cast<int>(std::lround(iRec->lookupScalar("charge")));
+            auto iRec = electrolyte::findIon(ion);
+            if (!iRec)
+                throw std::runtime_error("propertyPackage: ion '" + ion
+                    + "' not found (case ions.dat / snapshot / species/aqueous.dat).");
+            const int z = static_cast<int>(std::lround(iRec->lookupScalar("z")));
             if      (z > 0) catName = ion;
             else if (z < 0) anName = ion;
         }

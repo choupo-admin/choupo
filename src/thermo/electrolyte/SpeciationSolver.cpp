@@ -484,7 +484,7 @@ double SpeciationSolver::chargeOf(const std::string& master) const
     if (!ion)
         throw std::runtime_error("speciation: master ion '" + master
             + "' not in constant/electrolyte/ions.dat (case) or "
-              "data/standards/species/aqueous/");
+              "data/standards/species/aqueous.dat");
     const double z = ion->lookupScalar("z");
     masterCharge_[master] = z;
     return z;

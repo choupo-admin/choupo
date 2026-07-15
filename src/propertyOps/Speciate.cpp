@@ -161,11 +161,11 @@ electrolyte::SpeciationInput readAnalysis(const DictPtr& dict)
             for (const auto& ion : sm->keys())
             {
                 const scalar nu = sm->lookupScalar(ion);
-                const fs::path ip = croot / "species" / "aqueous" / (ion + ".dat");
-                if (!fs::exists(ip))
-                    throw std::runtime_error("composition." + salt + ": species/aqueous/"
-                        + ion + ".dat missing (needed for the charge balance).");
-                netCharge += nu * Dictionary::fromFile(ip.string())->lookupScalar("charge");
+                auto iRec = electrolyte::findIon(ion);
+                if (!iRec)
+                    throw std::runtime_error("composition." + salt + ": ion '" + ion
+                        + "' not found in species/aqueous (needed for the charge balance).");
+                netCharge += nu * iRec->lookupScalar("z");
                 in.totals[ion] += m * nu;
             }
             if (std::fabs(netCharge) > 1e-9)

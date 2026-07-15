@@ -220,7 +220,10 @@ inline DictPtr bridgeTrueIon(const DictPtr& r, const std::string& species)
 //       as before, whole-row FIRST-FILE-WINS (do NOT merge fields with the
 //       standards leg: crystalliser05 ships {z,MW}-only Na with NO hfAq, and its
 //       golden depends on ionAqReference returning false there).
-//   (2) standards species/aqueous/<species>.dat -- NESTED, bridged to flat.
+//   (2) sealed snapshot species/aqueous/<species>.dat -- NESTED per-file (frozen).
+//   (3) standards species/aqueous.dat -- ONE catalogue (aqueousSpecies list),
+//       matched by `name`, bridged to flat.  (The 41 per-file records were
+//       consolidated into this single catalogue.)
 inline DictPtr findIon(const std::string& species)
 {
     const fs::path cl = caseElectrolytePath("ions.dat");
@@ -237,10 +240,15 @@ inline DictPtr findIon(const std::string& species)
         throw std::runtime_error("SEALED snapshot: ion '" + species
             + "' (species/aqueous/) is NOT in the case's constant/propertyData/ --"
               " re-run `choupo-import` (the installation catalogue is forbidden).");
-    const fs::path tp = fs::path(Database::currentRoot())
-                      / "standards" / "species" / "aqueous" / (species + ".dat");
-    if (fs::exists(tp))
-        return bridgeTrueIon(parsedOnce(tp), species);
+    const fs::path cat = fs::path(Database::currentRoot())
+                      / "standards" / "species" / "aqueous.dat";
+    if (fs::exists(cat))
+    {
+        auto c = parsedOnce(cat);
+        for (const auto& r : c->lookupDictList("aqueousSpecies"))
+            if (r->lookupWord("name") == species)
+                return bridgeTrueIon(r, species);
+    }
     return nullptr;
 }
 
