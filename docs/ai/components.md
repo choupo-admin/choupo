@@ -19,7 +19,7 @@ the catalogue's `k_v`).  See [`data-doctrine.md`](data-doctrine.md) §3.
 A property whose definition names a **solvent** — an "in-water" ΔH_soln, an
 aqueous Hf°, a solubility curve — is arity-2 and lives in a **catalogue**
 (`data/standards/solution/<solute>-<solvent>.dat` for molecular solutes;
-`data/standards/components/true/aqueous/` for the ∞-dilution ion tier), referenced
+`data/standards/species/aqueous/` for the ∞-dilution ion tier), referenced
 by name, never copied into `<name>.dat`.  The solvent is always **named**, not
 implied (`data-doctrine.md` §2).
 
@@ -41,7 +41,7 @@ Choupo also ships an **extended, unverified tier**. At the current snapshot the
 file-level inventory is 194 records in `data/standards/components/` and 625 in
 `data/local/components/`; overlapping names and identities mean these counts
 must not be added and advertised as an equal-quality compound total. The GUI
-shows proposals separately and the engine prints `[proposed]` whenever one is
+shows proposals separately and the engine prints `[local]` whenever one is
 actually used.
 
 The ChemSep v8.3 import contributes 279 new proposal files after CAS
@@ -62,7 +62,7 @@ provenance before choosing one.
 
 ChemSep also stages 748 NRTL/UNIQUAC/Wilson records under
 `data/local/binaryPairs/`. Pair resolution is lower-precedence than the
-standard library and is announced as `[proposed]`; missing pairs still
+standard library and is announced as `[local]`; missing pairs still
 ideal-default loudly. The records passed the deterministic identity, source
 hash and unit-conversion audit in `data/local/CHEMSEP-PAIR-AUDIT.md`, but
 their imported DECHEMA parameters have no captured temperature range and must

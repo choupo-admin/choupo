@@ -100,9 +100,9 @@ NRTL searches, in order:
 4. the **extended, unverified library**
    `data/local/binaryPairs/NRTL/<i>-<j>.dat`.
 
-The same standard-before-proposed fallback applies to UNIQUAC and Wilson. A
-proposed pair can never shadow a standard pair. When the fourth tier is used,
-the run prints `[proposed]`, records `status: proposed` plus typed provenance in
+The same standard-before-local fallback applies to UNIQUAC and Wilson. A
+`local` pair can never shadow a standard pair. When the fourth tier is used,
+the run prints `[local]`, records `status: local` plus typed provenance in
 the result JSON, and the GUI displays the advisory. Treat it as screening data
 until it has been checked against VLE data for the relevant temperature and
 composition range.
@@ -268,7 +268,7 @@ A solute property whose **definition names a solvent** — an "in-water"
 
 | Solute kind | Tier | Carries |
 |---|---|---|
-| **ions** (∞-dilution) | `data/standards/components/true/aqueous/` | `hfAq / sAq / cpAq` on the H⁺(aq)=0 convention (Wagman/NBS 1982) |
+| **ions** (∞-dilution) | `data/standards/species/aqueous/` | `hfAq / sAq / cpAq` on the H⁺(aq)=0 convention (Wagman/NBS 1982) |
 | **molecular solutes** | `data/standards/solution/<solute>-<solvent>.dat` | ΔH_soln and other solution thermo, primary-cited |
 
 Water earns **one canonical, named, by-name aqueous reference tier** — never
@@ -429,19 +429,7 @@ parameters
 }
 ```
 
-The selector form:
-
-```
-// <case>/constant/propertyDict           (the selector form)
-/* header comment REQUIRED: say which manifest this selects, summarise what
-   it declares (methods, pairs + sources), and point at the run log for the
-   full assembly story.  A bare one-liner is a juice-less file -- forbidden. */
-package co2Water_henry;
-```
-
-The run header names what was found: `Property package:  INLINE in the case`
-or `Property package:  co2Water_henry   (record: data/standards/
-propertyPackages/co2Water_henry.dat)`.
+The run header names what was found: `Property package:  INLINE in the case`.
 
 ### The four VLE worlds — the liquid method slot IS the world
 

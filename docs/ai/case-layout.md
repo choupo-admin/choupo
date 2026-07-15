@@ -258,7 +258,7 @@ case/
 │   ├── controlDict
 │   └── flowsheetDict     (or propsDict)
 └── constant/
-    └── propertyDict      (flat declaration, inline manifest, or selector)
+    └── propertyDict      (flat declaration OR inline propertyPackage manifest)
 └── 0/
     └── <stream>          (one complete state file per graph stream)
 ```
