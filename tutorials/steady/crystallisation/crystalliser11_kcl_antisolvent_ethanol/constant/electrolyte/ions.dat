@@ -1,6 +1,0 @@
-/* Case-local ion charges (overlay). Self-contained: only the ions this case uses. */
-ions
-(
-    { species K;  ion "K+";  z +1; MW 39.098; }
-    { species Cl; ion "Cl-"; z -1; MW 35.453; }
-);

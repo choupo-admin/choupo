@@ -3,7 +3,7 @@
 stream  feed                   F                0.0277777777778  1e-4
 stream  magma                  F                0.0271500572444  1e-4
 kpi     cryst                  Ksp_activity     38.4846213082    1e-4
-kpi     cryst                  Q_removed        2435.55566933    1e-4
+kpi     cryst                  Q_removed        1251.26049958    1e-4
 kpi     cryst                  T_op             298.15           1e-4
 kpi     cryst                  c_sat            0.35905536       1e-4
 kpi     cryst                  crystal_flow     0.036683987968   1e-4

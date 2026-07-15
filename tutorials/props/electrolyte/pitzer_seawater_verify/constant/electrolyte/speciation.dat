@@ -17,6 +17,11 @@
 
   Source: USGS PHREEQC phreeqc.dat (public domain), Kw entry (the standard
   catalogue's OH row, taken verbatim).
+
+  THE ONLY case-local override left in this case: the ions, Pitzer pairs/mixing
+  and minerals are read from the curated data/standards/ tree (byte-identical --
+  this verification runs at 25 C, so the catalogue's T-slopes are inactive).  This
+  file is the case's sole DELTA -- the deliberate restricted network -- not a copy.
 \*---------------------------------------------------------------------------*/
 
 reactions
