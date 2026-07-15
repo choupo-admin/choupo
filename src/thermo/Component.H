@@ -306,7 +306,8 @@ public:
     // block; the case's `activityModel { model cosmoSAC; source <setName>; }` picks one.
     struct CosmoSet
     {
-        std::string variant;              // e.g. cosmoSAC2002 -> which constants
+        std::string model;                // e.g. COSMOSAC (the family)
+        std::string variant;              // e.g. 2002 -> which constants
         std::string source;               // provenance (databank + primary)
         scalar area   = 0.0;              // cavity surface area [A^2]
         scalar volume = 0.0;              // cavity volume [A^3]

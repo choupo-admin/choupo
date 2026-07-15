@@ -333,15 +333,22 @@ void Component::readFromDict(const DictPtr& d)
     //                               // whose Hf cannot be referenced to gas
     //                               // because the compound never vaporises.
     // }
-    if (d->found("gibbsFormation"))
+    // `standardThermochemistry` is the current name; `gibbsFormation` is the old
+    // name (dual-read during the corpus-wide rename -- new name wins).  The block
+    // holds the NBS/CODATA triad: dHf_298 (formation), dGf_298 (formation), s_298
+    // (ABSOLUTE third-law entropy).  Reference state is the GLOBAL convention
+    // (298.15 K, 1 bar, ideal gas) -- so `phase` defaults to gas and a condensed
+    // reference is declared explicitly (phase solid/liquid, or a gasIdeal/solid block).
+    if (d->found("standardThermochemistry") || d->found("gibbsFormation"))
     {
-        auto g = d->subDict("gibbsFormation");
+        auto g = d->subDict(d->found("standardThermochemistry")
+                              ? "standardThermochemistry" : "gibbsFormation");
         Hf298_         = g->lookupScalar("dHf_298");
         S298_          = g->lookupScalar("s_298");
         naturalPhase_  = g->lookupWordOrDefault("phase", "gas");
         if (naturalPhase_ != "gas" && naturalPhase_ != "liquid" && naturalPhase_ != "solid")
             throw std::runtime_error("Component '" + name_ +
-                "': gibbsFormation.phase must be gas / liquid / solid, got '"
+                "': standardThermochemistry.phase must be gas / liquid / solid, got '"
                 + naturalPhase_ + "'");
         hasGibbsData_  = true;
     }
@@ -476,6 +483,7 @@ void Component::readFromDict(const DictPtr& d)
         {
             auto s = c->subDict(setName);
             CosmoSet cs;
+            cs.model   = s->lookupWordOrDefault("model", "COSMOSAC");
             cs.variant = s->lookupWordOrDefault("variant", "cosmoSAC2002");
             cs.source  = s->lookupWordOrDefault("source", "undeclared");
             cs.area    = s->lookupScalarOrDefault("area", 0.0);

@@ -64,10 +64,16 @@ CosmoSac::CosmoSac(const DictPtr& dict, const std::vector<Component>& comps)
                 + "' has no COSMO set '" + set + "' (add it, or pick a set it carries).");
 
         const Component::CosmoSet& cs = c.cosmoSet(set);
-        if (cs.variant != "cosmoSAC2002")
+        // The COSMOSAC-2002 family, written either as `variant cosmoSAC2002;` (old) or
+        // `model COSMOSAC; variant 2002;` (current).  Only this family is implemented --
+        // never pair a profile with another variant's constants (a foreign family REFUSES).
+        const bool is2002 = (cs.variant == "cosmoSAC2002")
+                         || ((cs.model == "COSMOSAC" || cs.model.empty()) && cs.variant == "2002");
+        if (!is2002)
             throw std::runtime_error("cosmoSAC: component '" + c.name() + "' set '" + set
-                + "' declares variant '" + cs.variant + "', but only cosmoSAC2002 is "
-                  "implemented (do not mix a profile with the wrong variant's constants).");
+                + "' declares model/variant '" + cs.model + "/" + cs.variant + "', but only "
+                  "COSMOSAC variant 2002 is implemented (do not mix a profile with the wrong "
+                  "variant's constants).");
         if (static_cast<int>(cs.sigmaProfile.size()) != NGRID)
             throw std::runtime_error("cosmoSAC: component '" + c.name() + "' set '" + set
                 + "' sigmaProfile has " + std::to_string(cs.sigmaProfile.size())

@@ -355,9 +355,11 @@ Component Database::loadComponent(const std::string& name) const
                           << "'.Vliq: the ESTIMATE leaves this a GAP, but the "
                           << baseLabel << " is filling it -- the merged component is a hybrid,"
                              " not a pure estimate.\n";
-            if (dict->found("gibbsFormation") && !local->found("gibbsFormation"))
+            auto hasThermo = [](const DictPtr& x)
+            { return x->found("standardThermochemistry") || x->found("gibbsFormation"); };
+            if (hasThermo(dict) && !hasThermo(local))
                 std::cerr << "[backfill] component '" << name
-                          << "'.gibbsFormation: the ESTIMATE leaves this a GAP, but the "
+                          << "'.standardThermochemistry: the ESTIMATE leaves this a GAP, but the "
                           << baseLabel << " is filling it -- the merged component is a hybrid,"
                              " not a pure estimate.\n";
         }
