@@ -325,8 +325,11 @@ another method, no special case.  **7 homes:** `components/` (identity **+
 `dissociatesTo`** = formula-like ion stoichiometry, NOT the "saco") · `species/`
 (model species + charge, medium-tagged `…Thermo{}`) · `phases/solid/` (ρ_p,k_v) ·
 `chemistry/` (REAL equilibria w/ K+ΔH: dissolution, association) · `parameters/` ·
-`propertyMethods/` (declares model + reference rung) · `propertyPackages/` (SELECTS
-all; a manifest).  (`propertySets/` was deleted 2026-07-01 — zero readers.)  **ONE component = ONE file:
+`propertyMethods/` (declares model + reference rung) · the property PACKAGE
+(the manifest that SELECTS all — components, methods, chemistry — lives INLINE in
+each case's `constant/propertyDict`; the shared `data/standards/propertyPackages/`
+catalogue + `package <name>;` selector were retired 2026-07-15, every case is
+self-contained).  (`propertySets/` was deleted 2026-07-01 — zero readers.)  **ONE component = ONE file:
 `components/apparent/*` is DELETED** (the builder reads salt identity+`dissociatesTo`
 from `components/`, solid from `phases/solid/`, anchor from `chemistry/salts/`);
 **"true species" is BANNED** (→ *model/solver species*; `recordType modelSpecies`,

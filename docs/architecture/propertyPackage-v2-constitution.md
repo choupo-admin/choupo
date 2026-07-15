@@ -11,9 +11,11 @@ never patch-by-shout.
 2. **The cão-e-gato principle** — no ultimate model exists; every workhorse,
    fallback and improvisation is DECLARED in the dict, ANNOUNCED in the log,
    its quality stated as a WORD.  Hiding the cat is fraud.
-3. **The case shows its own chemistry** — inline manifests are the tutorial
-   standard; catalogue selection (`package <name>;`) is for fleets; the
-   selector file explains itself (no juice-less files).
+3. **The case shows its own chemistry** — the inline manifest is the ONLY
+   form; `constant/propertyDict` always carries the full package record.  The
+   `package <name>;` selector into a shared `data/standards/propertyPackages/`
+   catalogue was retired: a case never reaches out to a shared registry for its
+   thermo; if two cases share thermo, each carries its own copy.
 4. **The builder loads, verifies and announces — never estimates.**
    (Estimation is curation-time; see docs/property-architecture.md.)
 

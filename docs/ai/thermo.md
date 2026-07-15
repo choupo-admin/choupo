@@ -391,17 +391,14 @@ under `<case>/constant/components/<name>.dat`.
 
 ## propertyPackage — the declarative manifest (the modern convention)
 
-The SAME `constant/propertyDict` file takes **TWO forms**, discriminated
-by content (there is no second filename — `constant/propertyPackage` and
-`constant/thermoPackage` were both retired with no backward compatibility):
-
-1. **INLINE full manifest** (the file has a `components (…)` list, so it IS
-   the package record): components, methods, solution structure and
-   parameter sources all IN the case, readable — the self-contained form,
-   **the standard for tutorials** ("the case shows its own chemistry").
-2. **Selector** (`package <name>;`, resolving
-   `data/standards/propertyPackages/<name>.dat`): for fleets of cases
-   sharing identical thermo.
+`constant/propertyDict` is **always the INLINE full manifest** — the file
+carries a `components (…)` list, so it IS the package record: components,
+methods, solution structure and parameter sources all IN the case, readable.
+This is the self-contained form and the ONLY form (the `package <name>;`
+selector into a shared `data/standards/propertyPackages/` catalogue was
+retired — a case never reaches out to a shared registry for its thermo; if
+two cases share thermo, each carries its own copy).  `constant/propertyPackage`
+and `constant/thermoPackage` were also retired with no backward compatibility.
 
 The inline form, from
 `tutorials/steady/flash/flash08_co2_water_package/constant/propertyDict`:

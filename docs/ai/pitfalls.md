@@ -205,11 +205,11 @@ N2-CH4 split needs its DECHEMA kij 0.0289).  Declare the pair file
 (`data/standards/parameters/eos/kij/<i>-<j>.dat`) and watch for the
 `[builder] kij(...)` line confirming it loaded.
 
-### A bare one-line selector file → forbidden (juice-less)
-`package <name>;` alone, with no header, tells the reader nothing.  The
-selector file's header is REQUIRED: which manifest it selects, a
-summary of what that manifest declares (methods, pairs + sources), and
-the pointer to the run log's assembly story.  See `thermo.md`.
+### The `package <name>;` selector is retired → write the manifest inline
+There is no shared `data/standards/propertyPackages/` catalogue any more:
+`constant/propertyDict` must BE the inline `recordType propertyPackage`
+manifest (components, methods, pairs + sources, all in the case).  A stray
+`package <name>;` now fails LOUD.  See `thermo.md`.
 
 ## Reactions
 

@@ -63,15 +63,13 @@ and the level are always **named in the file**.
 ### No juice-less files — every file carries its own explanatory content
 
 The explicitness rule has a file-level corollary: **a content-free file is
-forbidden**.  A bare one-line `package <name>;` propertyPackage selector, an
-empty role overlay, any stub that tells the reader nothing — all the same
-disease.  The worked instance is the **selector-header requirement**: a
-`constant/propertyDict` selector file MUST carry a header stating which
-manifest it selects, summarising what that manifest declares (methods, pairs
-+ sources), and pointing at the run log's assembly story.  The one-line
-SELECTION stays (the case selects, the package declares); the FILE must
-still explain itself.  (Sibling rule already below: a unit `constant/` never
-carries a `thermoPackage` placeholder — §3.)
+forbidden**.  An empty role overlay, any stub that tells the reader nothing —
+all the same disease.  The `package <name>;` shared-catalogue selector — the
+classic juice-less one-liner — is now retired outright: `constant/propertyDict`
+is ALWAYS the inline manifest (components, methods, parameter sources all IN the
+case, each explaining itself; a case never reaches out to a shared registry for
+its thermo).  (Sibling rule already below: a unit `constant/` never carries a
+`thermoPackage` placeholder — §3.)
 
 ### Derivatives are NEVER stored — the salt-formation rule (settled 2026-06-29, forum)
 
@@ -181,9 +179,9 @@ grammar reads from:
   `electrolyte/{pitzer,eNRTL}`, `transport/chung`), each carrying its
   per-GROUP `referenceBasis` rungs (amendment A1) and its `requires{}` /
   `provides{}` contract.
-* **`data/standards/propertyPackages/<name>.dat`** — shared package
-  manifests a case's `constant/propertyDict` selector may name (a case
-  may equally carry the full manifest INLINE — the tutorial standard).
+* The property package is the manifest INLINE in the case's
+  `constant/propertyDict` — there is no shared `propertyPackages/` catalogue
+  (the `package <name>;` selector was retired; every case is self-contained).
 
 The contract is **declare → verify → refuse**: the package DECLARES its
 parameter files (`parameters { henryPairs {…} kijPairs {…} }`, pointing into

@@ -544,10 +544,11 @@ boiling (Bromley), flow boiling (Chen), any `C_sf` default or catalogue.
 ## The `propertyPackage` record grammar (the MANIFEST form of constant/propertyDict)
 
 The modern alternative to the flat `thermoPackage` is a typed RECORD.  The
-file either IS the full manifest (it has `components (…)` — the inline,
-self-contained form, standard for tutorials) or is a one-line selector
-(`package <name>;` + a REQUIRED explanatory header) naming a record in
-`data/standards/propertyPackages/`.  The record keys:
+file IS the full manifest — it carries a `components (…)` list — the inline,
+self-contained form, the ONLY form (the `package <name>;` selector into a
+shared `data/standards/propertyPackages/` catalogue was retired; each case
+carries its own manifest, never a reference to a shared registry).  The
+record keys:
 
 ```
 recordType     propertyPackage;              // typed record marker

@@ -801,7 +801,8 @@ data/standards/
   chemistry/.../<name>.dat         an equilibrium: dissolution, speciation
   parameters/.../<i>-<j>.dat       a pair: NRTL, Pitzer, eNRTL
   propertyMethods/.../<name>.dat   a model declaration (+ its reference basis)
-  propertyPackages/<name>.dat      THE CENTRE: a case selects one
+  (the package is the manifest INLINE in the case's constant/propertyDict --
+   THE CENTRE; there is no shared propertyPackages/ catalogue)
 \end{lstlisting}
 
 The arity rule decides \emph{which} file: a number that ``stands alone with the

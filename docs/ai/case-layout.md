@@ -20,10 +20,10 @@ are the source of truth.
 │                                       optimization / DesignSpec)
 ├── constant/
 │   ├── propertyDict         REQUIRED; the ONE property-package file.
-│   │                          It is either a flat model declaration, an
-│   │                          inline `recordType propertyPackage` manifest,
-│   │                          or `package <name>;` selecting a record under
-│   │                          data/standards/propertyPackages/<name>.dat
+│   │                          Either a flat model declaration OR an inline
+│   │                          `recordType propertyPackage` manifest (the
+│   │                          selector `package <name>;` into a shared
+│   │                          catalogue was retired — every case is inline)
 │   ├── reactions            OPTIONAL  named-reaction library
 │   ├── crystallisation      OPTIONAL  per-kinetic-pair library
 │   ├── dryingKinetics       OPTIONAL  drying-curve library
@@ -265,11 +265,10 @@ case/
 
 Don't add `solverDict` / `outerDict` / `reactions` unless you need
 them.  Don't write empty stubs — and, more generally, **no juice-less
-files**: every file must carry its own explanatory content.  A bare
-one-line `package <name>;` selector in `propertyDict` without its
-required header (which manifest, what it declares — methods, pairs +
-sources — and a pointer to the run log's assembly story) is forbidden,
-exactly like an empty role overlay or a content-free placeholder.
+files**: every file must carry its own explanatory content.  The
+`propertyDict` must be the inline manifest itself (the `package <name>;`
+selector into a shared catalogue is retired); a content-free placeholder
+or an empty role overlay is forbidden the same way.
 
 ## Materialising `0/` — `bin/choupo-init0`
 

@@ -68,8 +68,8 @@ case/
     ├── propertyDict       REQUIRED -- the ONE property-package file, in
     │                      either form by content: FLAT (components +
     │                      activity / EoS / transport) or the declarative
-    │                      MANIFEST (full inline record, the tutorial
-    │                      standard; or a `package <name>;` selector)
+    │                      MANIFEST (full inline record — the only package
+    │                      form; the shared-catalogue selector was retired)
     ├── reactions          (opt) named-reaction library
     ├── crystallisation    (opt) per-kinetic-pair library
     └── dryingKinetics     (opt) drying-curve library
@@ -125,8 +125,8 @@ them in answers to users.
       + `henrysLaw/`) and the builder VERIFIES them at assembly: a
       declared-but-missing file REFUSES loudly, naming the entry to
       add (never an ideal-default).  Method records live in
-      `data/standards/propertyMethods/`, shared package manifests in
-      `data/standards/propertyPackages/` (see `thermo.md`).
+      `data/standards/propertyMethods/`; the package manifest is inline in
+      the case's `constant/propertyDict` (see `thermo.md`).
 
    When you write a case, intrinsic data come from existing
    `data/standards/components/` entries (see `components.md`); only
@@ -175,8 +175,8 @@ validation cases), 255 golden-master cases, and 194 standard component files.
 Big changes, recent first:
 
 - The `propertyPackage` grammar consolidation (2026-07-04): the
-  declarative manifest in TWO forms (inline full record — the tutorial
-  standard — or a `package <name>;` selector with a REQUIRED header),
+  declarative manifest inline in the case (the shared-catalogue
+  `package <name>;` selector was retired — every case is self-contained),
   the four VLE worlds selected by the liquid method slot (γ-φ /
   `solution.henryDilute` / φ-φ `eos.<Model>` both phases /
   `electrolyte.*`), per-group reference rungs in each
