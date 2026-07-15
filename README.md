@@ -4,7 +4,7 @@
 directories, modular thermo, file-based component database, browser GUI
 (WASM).
 
-> **Choupo-2607** (pre-1.0) — four binaries, one per problem class
+> **Choupo-2607** — four binaries, one per problem class
 > (`choupoSolve` steady, `choupoBatch` time-dependent + recipes,
 > `choupoCtrl` dynamic continuous + control loops, `choupoProps`
 > property evaluation + parameter fitting); 191 tutorials guarded by 243
@@ -212,8 +212,8 @@ name or marks — the code is open; the name is a trademark of
 
 ## Roadmap
 
-**Choupo-2607 — pre-1.0 consolidation.**  Four binaries, three-layer architecture
-(outer driver / simulator / post-processor), 191 tutorials.  Thermo:
+**Choupo-2607.**  Four binaries, three-layer architecture
+(outer driver / simulator / post-processor), 284 runnable cases.  Thermo:
 ideal / NRTL / Wilson activity, SRK + Peng-Robinson cubic EoS,
 ideal-gas H/S, Henry's law, Pitzer electrolyte osmotic, gas + liquid
 transport (viscosity / conductivity / diffusivity, selectable

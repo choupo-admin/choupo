@@ -1,9 +1,9 @@
 # Changelog
 
 All notable changes to **Choupo** are documented here.  The format follows
-[Keep a Changelog](https://keepachangelog.com/) and the project uses
-[Semantic Versioning](https://semver.org/) (pre-1.0: minor bumps may carry
-breaking changes).
+[Keep a Changelog](https://keepachangelog.com/).  Releases use dated catalogue
+tags (`Choupo-YYMM`), not semantic versions; **Choupo-2607** is the first
+version.
 
 ## [Unreleased]
 
