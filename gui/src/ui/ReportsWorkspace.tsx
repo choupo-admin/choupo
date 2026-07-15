@@ -186,7 +186,7 @@ export function ReportsWorkspace() {
               {eb.missingComponents.length > 0
                 ? ` (${eb.missingComponents.join(", ")})`
                 : ""}
-              . Add a gibbsFormation{" "}block to the component .dat, or configure
+              . Add a standardThermochemistry{" "}block to the component .dat, or configure
               it as an electrolyte. The mass balance is unaffected.
             </Text>
           ) : (

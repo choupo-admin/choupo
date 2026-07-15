@@ -58,7 +58,7 @@ if fails: sys.exit(f"{fails} pin(s) FAILED -- fix the tier before the L_phi buil
 
 # TEETH (forum 2026-06-29, 'salt-crystallisation-enthalpy'): a component whose
 # formation lives in the ion tier (it carries dissolutionEnthalpy / an
-# electrolyte{} block) MUST NOT also carry a component-level gibbsFormation
+# electrolyte{} block) MUST NOT also carry a component-level standardThermochemistry
 # block.  The salt's SOLID formation is DERIVED (sum nu*hfAq - dH_soln), never a
 # stored second source -- re-introducing it is a HARD failure, not silent drift.
 import glob
@@ -66,11 +66,11 @@ sins = []
 for p in (glob.glob(str(repo / "data/standards/components/*.dat"))
           + glob.glob(str(repo / "tutorials/**/constant/components/*.dat"), recursive=True)):
     t = open(p, errors="ignore").read()
-    if re.search(r"dissolutionEnthalpy", t) and re.search(r"(?m)^gibbsFormation\s*\n\{", t):
+    if re.search(r"dissolutionEnthalpy", t) and re.search(r"(?m)^standardThermochemistry\s*\n\{", t):
         sins.append(p)
 if sins:
     sys.exit("ARITY-1 VIOLATION -- electrolyte component(s) ALSO carry a component\n"
-             "gibbsFormation block (a 2nd source of truth; the salt formation is\n"
+             "standardThermochemistry block (a 2nd source of truth; the salt formation is\n"
              "DERIVED from ions + dissolutionEnthalpy, never stored):\n  "
              + "\n  ".join(sins))
 

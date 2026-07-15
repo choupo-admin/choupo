@@ -92,7 +92,7 @@ function ComponentCoverageTable({ rows }: { rows: ComponentCoverage[] }) {
         props bench (estimate / fit) and promote it into <code>constant/</code>. Solutes carry no
         Psat by design (n/a). A dissociating salt (one with <code>dissociatesTo</code>) derives its
         formation datum from its IONS (Σν·hf_aq − ΔH_soln) — a ✗ under ΔGf there is the ion-derived
-        route, not a gap; do NOT add a component-level gibbsFormation block to a salt.
+        route, not a gap; do NOT add a component-level standardThermochemistry block to a salt.
       </Text>
     </>
   );

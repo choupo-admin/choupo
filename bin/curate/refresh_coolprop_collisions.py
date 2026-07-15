@@ -7,7 +7,7 @@
 # (Tc/Pc/omega/MW/Tb), a fitted Antoine and Cp polynomials -- but it has NO
 # formation properties (dHf, s_298), NO group decompositions (Joback/UNIFAC),
 # and NO solid model (Hsub/Hfus).  The existing chemicals-lineage proposal
-# files often DO carry gibbsFormation{}, groups{}, diffusionVolume and (for
+# files often DO carry standardThermochemistry{}, groups{}, diffusionVolume and (for
 # CO2/water) a curated sublimation{} block with Hsub.  A blind overwrite would
 # drop those.  So this tool takes the CoolProp file as the BASE and re-inserts
 # the prior file's blocks that CoolProp cannot supply.
@@ -29,7 +29,7 @@ REVIEW = ROOT / 'data/local/_coolprop_review'
 OUT    = ROOT / 'data/local/COOLPROP-REFRESH.md'
 
 # Blocks CoolProp cannot supply -> preserved from the prior proposal file.
-PRESERVE_BLOCKS = ['gibbsFormation', 'groups']
+PRESERVE_BLOCKS = ['standardThermochemistry', 'groups']
 # A scalar line CoolProp does not emit.
 PRESERVE_LINES  = ['diffusionVolume']
 
@@ -139,7 +139,7 @@ def main():
     print(f'refresh: {len(upgraded)} UPGRADED (merge over existing proposal), '
           f'{len(new_alt)} NEW-ALT (CoolProp alternative to a standard).')
     pres = [n for n in upgraded if n in merged_notes]
-    print(f'  {len(pres)} carried preserved blocks (gibbsFormation/groups/'
+    print(f'  {len(pres)} carried preserved blocks (standardThermochemistry/groups/'
           f'diffusionVolume/sublimation); e.g. '
           + ', '.join(f'{n}[{"+".join(merged_notes[n])}]' for n in pres[:4]))
 
@@ -148,7 +148,7 @@ def write_report(upgraded, new_alt, notes):
     L = ['# CoolProp collision refresh -- proposal tier (STAGE-ONLY)', '']
     L.append(f'- **{len(upgraded)} UPGRADED**: CoolProp-anchored constants/VP/Cp merged over the '
              f'existing proposal file, PRESERVING fields CoolProp cannot supply '
-             f'(gibbsFormation, groups, diffusionVolume, curated sublimation).')
+             f'(standardThermochemistry, groups, diffusionVolume, curated sublimation).')
     L.append(f'- **{len(new_alt)} NEW-ALT**: a clean CoolProp alternative staged for a name that '
              f'previously existed ONLY as a frozen standard (shadowed by the standard at run time).')
     L.append('- `_coolprop_review/` kept as the pristine pre-merge CoolProp record. '

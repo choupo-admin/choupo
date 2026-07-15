@@ -15,7 +15,7 @@
 #   5. CAS-dedupe: abort if any promoted CAS maps to >1 staged file; a lowercase
 #      literature twin of the same CAS (heptane/nHeptane, ...) is left in
 #      proposed/, never promoted alongside the camelCase CoolProp file.
-#   6. no laundering: if a gibbsFormation block is present it must carry its
+#   6. no laundering: if a standardThermochemistry block is present it must carry its
 #      origin=estimated/method=Joback (or DERIVED) tag -- promoted verbatim.
 #
 # Action: plain mv (the human curation act; the engine itself refuses to write
@@ -64,10 +64,10 @@ def aw_aad(text):
 
 
 def gibbs_tagged_ok(text):
-    """If a gibbsFormation block exists, it must show its estimate origin."""
-    if 'gibbsFormation' not in text:
+    """If a standardThermochemistry block exists, it must show its estimate origin."""
+    if 'standardThermochemistry' not in text:
         return True
-    blk = re.search(r'gibbsFormation\s*\{.*?\}', text, re.S)
+    blk = re.search(r'standardThermochemistry\s*\{.*?\}', text, re.S)
     if not blk:
         return True
     b = blk.group(0)
@@ -117,7 +117,7 @@ def main():
         if not primary_named(text):
             why.append('gate4: no named primary EOS citation')
         if not gibbs_tagged_ok(text):
-            why.append('gate6: gibbsFormation present without estimate tag (laundering)')
+            why.append('gate6: standardThermochemistry present without estimate tag (laundering)')
         if why:
             rejected.append((name, '; '.join(why))); continue
         cas_map.setdefault(c, []).append(name)

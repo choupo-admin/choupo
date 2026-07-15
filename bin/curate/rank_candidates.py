@@ -8,7 +8,7 @@
 # Ranking signals (higher = more promotable):
 #   * provenance tier   CoolProp-measured EOS  >  literature  >  Joback-estimated
 #   * validation        Antoine/AW reproduces the file's own Tb (AAD, PASS/DROP)
-#   * completeness      idealGasCp, liquidCp, gibbsFormation, groups, curated subl.
+#   * completeness      idealGasCp, liquidCp, standardThermochemistry, groups, curated subl.
 #   * teaching value    a small curated set of staple species
 #
 # Two tracks, because the ACT differs:
@@ -103,7 +103,7 @@ def main():
         else:
             score -= 5.0
         comp = sum(6 for b in ('idealGasHeatCapacity', 'liquidHeatCapacity',
-                               'gibbsFormation', 'groups') if has_block(text, b))
+                               'standardThermochemistry', 'groups') if has_block(text, b))
         if hsub_subl(text):
             comp += 6
         score += comp
@@ -142,7 +142,7 @@ def write(new, rep):
     L.append('')
     L.append('Score = provenance tier (CoolProp 100 / literature 60 / Joback 30) '
              '+ validation (30 - 3*AAD%, PASS; -25 DROP) + completeness (6 per of '
-             'idealGasCp / liquidCp / gibbsFormation / groups / curated-sublimation) '
+             'idealGasCp / liquidCp / standardThermochemistry / groups / curated-sublimation) '
              '+ 12 if a teaching staple. "compl" column = blocks-present count.')
     L.append('')
     L.append('## Track NEW -- clean ADD to data/standards/ (no existing standard)')

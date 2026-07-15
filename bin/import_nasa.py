@@ -300,7 +300,7 @@ Tb          {tb};         // K
 HvapTb      {hvap_tb};      // J/mol
 Vliq        {vliq};       // m^3/mol
 
-gibbsFormation
+standardThermochemistry
 {{
     dHf_298   {dhf:.4f};            // J/mol  -- ideal-gas reference
     s_298     {s298:.4f};           // J/(mol·K)  -- third-law absolute
@@ -338,7 +338,7 @@ CAS            {cas};
 MW             {mw};       // kg/kmol
 nonvolatile    true;
 
-gibbsFormation
+standardThermochemistry
 {{
     dHf_298    {dhf:.4f};            // J/mol  -- ideal-gas reference
     s_298      {s298:.4f};           // J/(mol·K)  -- third-law absolute

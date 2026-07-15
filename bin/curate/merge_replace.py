@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # merge_replace.py -- WAVE 2 of the ratified promotion plan.  The 21 REPLACE
 # files (a CoolProp proposal whose name already exists as a frozen standard)
-# must NEVER be promoted by overwrite: 21/21 standards carry gibbsFormation the
+# must NEVER be promoted by overwrite: 21/21 standards carry standardThermochemistry the
 # CoolProp file lacks (acetone also groups; methanol/benzene/ethanol/toluene
 # carry liquidViscosity/associationFactor/relativePermittivity/diffusionVolume).
 # So this builds the per-value MERGE upgrade INSIDE data/local/ ONLY:
@@ -33,7 +33,7 @@ R = importlib.util.module_from_spec(ref); ref.loader.exec_module(R)
 REPLACE = ['methanol', 'acetone', 'toluene', 'benzene', 'ethanol', 'nHexane',
            'N2', 'O2', 'CO2', 'NH3', 'CH4', 'CO', 'H2', 'Ar', 'He',
            'H2S', 'N2O', 'SO2', 'HCl', 'propane']            # water excluded
-GRAFT_BLOCKS = ['gibbsFormation', 'groups', 'liquidViscosity']
+GRAFT_BLOCKS = ['standardThermochemistry', 'groups', 'liquidViscosity']
 GRAFT_LINES  = ['associationFactor', 'relativePermittivity', 'diffusionVolume']
 
 
@@ -103,7 +103,7 @@ def write_report(rows, skipped):
     L.append('The 21 names that already exist as a frozen standard are NOT overwritten. '
              'Each proposal file now carries CoolProp measured constants/VP/Cp/triple + '
              'named-EOS provenance (the licence fix -- every REPLACE standard cites an '
-             'excluded source) PLUS the standard\'s gibbsFormation/groups/transport grafted '
+             'excluded source) PLUS the standard\'s standardThermochemistry/groups/transport grafted '
              'in (CoolProp cannot supply these).')
     L.append('')
     L.append('**HONEST CAVEAT:** the grafted dHf/s_298 values trace to the prior standard, '

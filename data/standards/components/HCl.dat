@@ -6,7 +6,7 @@
   1/2 Cl2 + H2O Deacon process is a Gibbs-equilibrium pedagogical case
   (mildly exothermic, equilibrium-limited at high T).
   Sources: constants cross-checked vs CoolProp 7.2.0 reference EOS (MIT);
-           gibbsFormation vs NASA TM-4513 (McBride-Gordon-Reno 1993).
+           standardThermochemistry vs NASA TM-4513 (McBride-Gordon-Reno 1993).
 \*---------------------------------------------------------------------------*/
 
 name        HCl;

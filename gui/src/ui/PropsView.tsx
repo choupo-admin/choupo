@@ -963,7 +963,7 @@ function proposalCapabilities(text: string) {
   const has = (key: string) => new RegExp(`^[ \\t]*${key}\\b`, "m").test(text);
   return {
     eos: has("Tc") && has("Pc"),
-    gibbs: has("gibbsFormation"),
+    gibbs: has("standardThermochemistry"),
     energy: has("idealGasHeatCapacity"),
     vle: has("vaporPressure"),
     pump: has("Vliq"),

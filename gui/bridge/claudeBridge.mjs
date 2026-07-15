@@ -327,7 +327,7 @@ PHASES (in order; NEVER jump ahead -- re-running an earlier one means telling th
               which datum + which species); the USER places the PDFs in literature/ from
               whatever access they have -- their call, their responsibility; never judge,
               never ask how, never fetch a paper yourself -- then READ them and pull each
-              value WITH its citation.  gibbsFormation{dHf_298;s_298;phase;} on any species
+              value WITH its citation.  standardThermochemistry{dHf_298;s_298;phase;} on any species
               that reacts or flows in an energy-balanced stream.  Ions->electrolyte{} +
               case-local ions.dat, never a faked dHf.  DO NOT PROCEED until the user has
               signed off on the model + the data plan.

@@ -70,8 +70,8 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
   const kind: ComponentKind = nonvol ? "nonvolatile" : vleAble ? "volatile" : "fragment";
   // electrolyte: a declared electrolyte{} block, OR dissociation > 1 on a
   // non-solid (excludes solid sugars etc. that may carry a stoichiometry).
-  const isSolid = typeof j.gibbsFormation === "object" && j.gibbsFormation !== null
-    && (j.gibbsFormation as JsonDict).phase === "solid";
+  const isSolid = typeof j.standardThermochemistry === "object" && j.standardThermochemistry !== null
+    && (j.standardThermochemistry as JsonDict).phase === "solid";
   const dissoc = typeof j.dissociation === "number" ? j.dissociation : 1;
   const isElectrolyte = (j.electrolyte !== undefined && j.electrolyte !== null)
     || (dissoc > 1 && !isSolid);

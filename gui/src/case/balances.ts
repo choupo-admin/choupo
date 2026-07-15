@@ -134,7 +134,7 @@ export interface EnergyBalance {
   /** Boundary streams skipped because the solver emitted no enthalpy. */
   skipped: number;
   /** Components genuinely PRESENT in a boundary stream that have NO enthalpy
-   *  datum (no gibbsFormation, no aqueous-ion reference) -- the reason the
+   *  datum (no standardThermochemistry, no aqueous-ion reference) -- the reason the
    *  balance is REFUSED, named for the student.  Empty when the solver did not
    *  report them (older run log) even though `skipped` > 0; the refusal still
    *  holds, just unnamed.  Deduplicated, in first-seen order. */

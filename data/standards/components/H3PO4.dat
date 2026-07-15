@@ -44,7 +44,7 @@ solidHeatCapacity
 
 provenance
 {
-    gibbsFormation { origin literature; method "dHf_298: CRC Handbook (crystalline H3PO4, -1284.4 kJ/mol; NBS printings -1279.0); s_298: Wagman et al. NBS Tables 1982"; }
+    standardThermochemistry { origin literature; method "dHf_298: CRC Handbook (crystalline H3PO4, -1284.4 kJ/mol; NBS printings -1279.0); s_298: Wagman et al. NBS Tables 1982"; }
     solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
     rho_p { origin literature; method "crystalline H3PO4 density ~1.834 g/cm3"; }
 }

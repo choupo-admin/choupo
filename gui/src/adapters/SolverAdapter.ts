@@ -85,7 +85,7 @@ export interface StreamResult {
    *  producer does not compute one (e.g. equilibrium crystalliser). */
   psd?: { diameter: number[]; massFrac: number[] };
   /** Components genuinely PRESENT in this stream that carry NO elements-datum
-   *  enthalpy (no gibbsFormation, no aqueous-ion reference).  When non-empty,
+   *  enthalpy (no standardThermochemistry, no aqueous-ion reference).  When non-empty,
    *  H / H_kW are absent BY MISSING DATA, not by composition -- the energy
    *  balance must REFUSE and name these, never silently skip the stream.
    *  Absent for fully-curated streams (and for run logs from an older solver

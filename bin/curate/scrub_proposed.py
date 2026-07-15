@@ -14,7 +14,7 @@
 #   1. DELETE every contiguous run of `//`-comment lines that contains a
 #      commented-out coefficient TUPLE (`coefficients ( <numbers> )`) -- the
 #      whole stale block (commented vaporPressure/idealGasHeatCapacity/
-#      gibbsFormation/liquidHeatCapacity skeleton) goes, not just the tuple line.
+#      standardThermochemistry/liquidHeatCapacity skeleton) goes, not just the tuple line.
 #   2. In every REMAINING comment line, replace each EXCLUDED source token with
 #      a neutral marker:  `<-CRC` -> `<-stripped`;  a bare/`[CRC]` mention ->
 #      `[excluded source]`.  This keeps the honest "value removed, re-source"

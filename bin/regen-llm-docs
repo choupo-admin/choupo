@@ -116,7 +116,7 @@ def parse_component(path: Path) -> dict:
         "vaporPressure": _has_block(text, "vaporPressure"),
         "cpIg": _has_block(text, "idealGasHeatCapacity"),
         "cpLiq": _has_block(text, "liquidHeatCapacity"),
-        "gibbs": _has_block(text, "gibbsFormation"),
+        "gibbs": _has_block(text, "standardThermochemistry"),
         "solid": _has_block(text, "solid"),
         "solubility": _has_block(text, "solubility"),
         "sorption": _has_block(text, "sorption"),
@@ -203,7 +203,7 @@ def render_components_md() -> str:
         out.append(f"### {cat}")
         out.append("")
         out.append(
-            "| Name | MW | role | Psat | Cp_ig | Cp_liq | gibbsFormation"
+            "| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry"
             " | solid | solubility | sorption | Vliq | Notes |"
         )
         out.append("|---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|")
@@ -296,7 +296,7 @@ def _glossary() -> str:
 - `Antoine { ... }` — `ln P = A − B/(T + C)` for VLE.
 - `idealGasHeatCapacity { coefficients (a1 a2 ... ); }` — for H_ig, S_ig.
 - `liquidHeatCapacity { coefficients ( ... ); }` — for sensible H_liq.
-- `gibbsFormation { dHf_298; s_298; }` — for K_eq + adiabatic flames.
+- `standardThermochemistry { dHf_298; s_298; }` — for K_eq + adiabatic flames.
 - `diffusionVolume <Sigma_v>;` — for Fuller diffusivity.
 - `liquidViscosity { andrade { ... } vogel { ... } }` — model-specific.
 - `associationFactor <phi>;` — for Wilke-Chang liquid diffusivity.

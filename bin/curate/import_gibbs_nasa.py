@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# import_gibbs_nasa.py -- fill the formation-data gap (gibbsFormation: dHf_298,
+# import_gibbs_nasa.py -- fill the formation-data gap (standardThermochemistry: dHf_298,
 # s_298) from the NASA Glenn thermodynamic database (public domain).
 #
 # SOURCE: McBride, Gordon & Reno, "Coefficients for Calculating Thermodynamic
@@ -8,7 +8,7 @@
 # The NASA-7 polynomials are referenced to the elements, so the standard-state
 # enthalpy H0(298.15) IS the enthalpy of formation dHf0(298.15), and S0(298.15)
 # is the third-law absolute entropy -- exactly the two values Choupo's
-# gibbsFormation{} block needs (phase gas).
+# standardThermochemistry{} block needs (phase gas).
 #
 # ISOMER GUARD (the C3H6O lesson): NASA names many species by FORMULA only and
 # "C3H6O" in TM-4513 is PROPYLENE OXIDE (Hf -93.7), NOT acetone (-217.1).  Every
@@ -109,7 +109,7 @@ def verify(hs):
 
 
 def gibbs_block(dHf, s298):
-    return ('gibbsFormation\n{\n'
+    return ('standardThermochemistry\n{\n'
             f'    dHf_298   {dHf:.1f};        // J/mol  ideal-gas '
             '[origin=measured method=NASA-TM4513]\n'
             f'    s_298     {s298:.2f};        // J/(mol.K) third-law absolute '
@@ -118,7 +118,7 @@ def gibbs_block(dHf, s298):
 
 
 def existing_gibbs_is_estimate(text):
-    e = R.extract_block(text, 'gibbsFormation')
+    e = R.extract_block(text, 'standardThermochemistry')
     if not e:
         return True                # absent -> fill it
     return any(m in e[0] for m in ESTIMATE_MARK)
@@ -127,7 +127,7 @@ def existing_gibbs_is_estimate(text):
 def apply(path, name, dHf, s298):
     text = path.read_text()
     blk = gibbs_block(dHf, s298)
-    e = R.extract_block(text, 'gibbsFormation')
+    e = R.extract_block(text, 'standardThermochemistry')
     if e:
         text = text[:e[1]] + blk + text[e[2]:]
     else:                          # insert before provenance, else append
@@ -138,8 +138,8 @@ def apply(path, name, dHf, s298):
             text = text.rstrip() + '\n\n' + blk + '\n'
     # add a provenance note
     prov = R.extract_block(text, 'provenance')
-    if prov and 'gibbsFormation "NASA' not in text:
-        note = '    gibbsFormation "NASA TM-4513 (McBride-Gordon-Reno 1993), H0/S0(298.15) from NASA-7 poly";\n'
+    if prov and 'standardThermochemistry "NASA' not in text:
+        note = '    standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), H0/S0(298.15) from NASA-7 poly";\n'
         close = prov[1] + prov[0].rfind('}')
         text = text[:close] + note + text[close:]
     # HELD banner cleanup: if no excluded-graft markers remain, drop the banner
@@ -195,7 +195,7 @@ def main():
 
 
 def write_report(prop, std, guard_fail, skipped, dev):
-    L = ['# NASA-TM-4513 gibbsFormation import (public domain)', '']
+    L = ['# NASA-TM-4513 standardThermochemistry import (public domain)', '']
     L.append(f'Source: McBride, Gordon & Reno, NASA TM-4513 (1993) -- US-gov public domain '
              f'(cantera nasa_gas.yaml). dHf0_298 = H0(298.15) referenced to elements; '
              f's_298 = S0(298.15). Anchor verify worst = {dev:.3f} kJ/mol (CO2/H2O/NH3/benzene/CO).')
