@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*-----------------------*\
-  propertyPackage (INLINE, self-contained) -- the case's OFFICIAL dictionary.
+  propertyPackage (INLINE, self-contained) -- the case's dictionary.
   Multi-ion speciation SYSTEM: solvent water, the analytical basis measured in
   ions (Li, Cl), and the Pitzer-HMW activity method.  The speciate ops carry only
   the ANALYSIS (analyticalTotals).  Replaces the former degenerate water+ideal.

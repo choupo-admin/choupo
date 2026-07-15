@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  constant/propertyDict -- the case's OFFICIAL property package, INLINE and
+  constant/propertyDict -- the case's property package, INLINE and
   self-contained (no selector, no shared catalogue).  The ThermoPackageBuilder
   assembles + verifies every declared parameter file and announces the assembly
   in the run log.  Edit this file to change THIS case's thermo.
