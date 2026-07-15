@@ -71,4 +71,19 @@ if [ -d "$TARGET/code/.build" ]; then
     count=$((count + 1))
 fi
 
+# Transient time-snapshot directories (choupoBatch / choupoCtrl `solutionControl
+# { write true; }` fills the case root with OpenFOAM-style `50/ 100/ ... 1000/`
+# or `1/ 2/ 3/ ...`).  These are RUN OUTPUTS -- remove them all EXCEPT the
+# authored initial state `0/`.  A dir counts as a time only if its whole name is
+# numeric (integer or decimal); `system/ constant/ code/ sectors/ ...` are kept.
+while IFS= read -r -d '' d; do
+    base=$(basename "$d")
+    case "$base" in
+        0) ;;                          # the authored initial state -- keep
+        *[!0-9.]*) ;;                  # has a non-numeric char -- not a time dir
+        '') ;;
+        *)  rm -rf "$d"; count=$((count + 1)) ;;
+    esac
+done < <(find "$TARGET" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null)
+
 echo "cleanCase: $count item(s) removed from $TARGET"

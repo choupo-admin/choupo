@@ -71,6 +71,12 @@ const CASE_FILES = import.meta.glob(
     // Golden-master KPI files (bin/runTests --record): regression fodder,
     // never a case input the solver reads -- keep them out of the bundle.
     "!../../../tutorials/**/expected",
+    // Transient time-snapshot dirs (choupoBatch/choupoCtrl `solutionControl
+    // { write true; }`): the authored `0/` is the initial state and stays, but
+    // `50/ 100/ ... 1000/` and `1/ 2/ 3/ ...` are RUN OUTPUTS -- never bundle
+    // them (they bloat the tree and bake in one machine's run state; the browser
+    // regenerates the transient in MEMFS when the case is run).
+    "!../../../tutorials/**/[1-9]*/**",
     // Agent-teaching artefacts: an in-GUI / local console may scaffold these
     // into a case (born-taught), but they are NOT case inputs the solver reads,
     // and ai/choupo-authoring.md is ~113 KB -- inlining one per tutorial would
