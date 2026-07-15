@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-phenylphenyl)methanol" "biphenyl-4-ylmethanol" "4-phenylbenzyl alcohol" "4-hydroxymethylbiphenyl" "p-phenylbenzyl alcohol" "4-(hydroxymethyl)biphenyl" "biphenyl-4-methanol" "(1,1'-biphenyl)-4-methanol" "[1,1'-biphenyl]-4-methanol" "4-hydroxymethyl-biphenyl" "(4-phenylphenyl)methan-1-ol" "biphenyl-4-yl-methanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=136950.0
-    phase     gas;
 }

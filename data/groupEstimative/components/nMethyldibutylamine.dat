@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-butyl-n-methyl-butan-1-amine" "1-butanamine, n-butyl-n-methyl-" "dibutylamine, n-methyl-" "n,n-dibutylmethylamine" "n-methyldi-n-butylamine" "dibutylmethylamine" "dibutyl(methyl)amine" "n-methyl dibutylamine" "n-butyl-n-methylbutan-1-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -161560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=135680.0
-    phase     gas;
 }

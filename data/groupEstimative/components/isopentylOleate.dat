@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 16; } { group CH; count 1; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbutyl octadec-9-enoate" "agn-pc-00flkt" "3-methylbutyl (z)-octadec-9-enoate" "9-octadecenoic acid(9z)-, 3-methylbutyl ester" "9-octadecenoicacid (z)-, 3-methylbutyl ester; oleic acid, isopentyl ester (7ci);3-methylbutyl oleate; isoamyl oleate; isopentyl oleate; iso-amyl oleate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -723390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1087.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-89810.0
-    phase     gas;
 }

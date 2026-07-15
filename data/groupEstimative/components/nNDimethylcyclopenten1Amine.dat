@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-cyclopenten-1-amine,n,n-dimethyl-" "n,n-dimethylcyclopent-1-en-1-amine" "1-cyclopenten-1-amine, n,n-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   6850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     393.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=183430.0
-    phase     gas;
 }

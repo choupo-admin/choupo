@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethenyl-1,3,5-trimethyl-benzene" "2-vinylmesitylene" "1,3,5-trimethyl-2-vinylbenzene" "styrene, 2,4,6-trimethyl-" "benzene, 2-ethenyl-1,3,5-trimethyl-" "2-ethenyl-1,3,5-trimethylbenzene" "mesitylethylene" "vinylmesitylene" "2,6-trimethylstyrene" "styrene,4,6-trimethyl-" "ambap769-25-5" "pdelbhcvxbsvpj-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   57180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     454.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=213100.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group C_ring; count 8; } { group dC_ring; count 8; } { group F; count 16; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,4,4,7,7,8,8,11,11,12,12,15,15,16,16-hexadecafluoropentacyclo(12.2.0.0.0.02,5.05,9.010,13) hexadeca-1,5,9,13-tetraene" "3,3,4,4,7,7,8,8,11,11,12,12,15,15,16,16-hexadecafluoropentacyclo[12.2.0.0.0.02,5.05,9.010,13] hexadeca-1,5,9,13-tetraene" "3,3,4,4,7,7,8,8,11,11,12,12,15,15,16,16-hexadecafluoropentacyclo[12.2.0.02,5.06,9.010,13]hexadeca-1(14),2(5),6(9),10(13)-tetraene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2953230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1085.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2765720.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 2; } { group tC; count 2; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1-tris(fluoranyl)-4,4-dimethyl-pent-2-yne" "1,1,1-trifluoro-4,4-dimethylpent-2-yne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -521340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     417.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-367890.0
-    phase     gas;
 }

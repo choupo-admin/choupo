@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 2; } { group OH; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r,3r)-2,3,4-tris(oxidanyl)butanal" "d-erythrose" "(2r,3r)-2,3,4-trihydroxybutanal" "d-erythro-tetrose" "threose" "(r*,r*)-2,3,4-trihydroxybutanal" "d-(-)-erythrose" "butanal, 2,3,4-trihydroxy-, (r*,r*)-" "d-(&#8722;)-erythrose" "butanal,2,3,4-trihydroxy-, (2r,3r)-rel-" "b1552b3e-262b-4cef-a0a9-79c534bcee4e" "butanal,2,3,4-trihydroxy-, (r*,r*)-; erythrose (8ci); (?a'a a'a currency)-erythrose; dl-erythrose; meso-erythrose" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -678720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     464.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-532060.0
-    phase     gas;
 }

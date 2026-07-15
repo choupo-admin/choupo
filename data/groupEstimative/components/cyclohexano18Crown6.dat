@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 14; } { group CH_ring; count 2; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,5,8,11,14,17-hexaoxabicyclo[16.4.0]docosane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1118530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     609.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-504980.0
-    phase     gas;
 }

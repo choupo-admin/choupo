@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "undecan-2-one" "methyl nonyl ketone" "ketone, methyl nonyl" "2-hendecanone" "2-oxoundecane" "nonyl methyl ketone" "methyl n-nonyl ketone" "methylnonylketone" "rue ketone" "2-undecanon" "2-undecanone (natural)" "mgk dog and cat repellent" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -382950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     611.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-87180.0
-    phase     gas;
 }

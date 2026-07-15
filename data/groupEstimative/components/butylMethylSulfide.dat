@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methylsulfanylbutane" "1-(Methylsulfanyl)butane" "1-(Methylthio)butane" "2-thiahexane" "Butane, 1-(methylthio)-" "butyl methyl thioether" "methyl butyl sulfide" "methyl n-butyl sulfide" "sulfide, butyl methyl" "n-butyl methyl sulfide" "α-(methylthio)butane" "butyl methyl sulphide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -104660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=24340.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-heptenal, (4z)-" "trans-4-heptenal" "4-heptenal, (4e)-" "agn-pc-0d7f2h" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -156170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     440.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11240.0
-    phase     gas;
 }

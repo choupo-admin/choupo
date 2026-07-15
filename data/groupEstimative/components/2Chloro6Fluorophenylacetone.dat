@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-chloranyl-6-fluoranyl-phenyl)propan-2-one" "1-(2-chloro-6-fluorophenyl)acetone" "1-(2-chloro-6-fluorophenyl)propan-2-one" "1-(2-chloro-6-fluorophenyl)-2-propanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -339930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-217610.0
-    phase     gas;
 }

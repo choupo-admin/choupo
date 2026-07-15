@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH; count 1; } { group C; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-n-propan-2-yl-propan-2-amine" "n-isopropyl-2-methylpropan-2-amine" "2-propanamine, 2-methyl-n-(1-methylethyl)-" "ethanamine, 1,1-dimethyl, n-(1-methylethyl)" "n-isopropyl-tert-butylamine" "(tert-butyl)(methylethyl)amine" "2-methyl-n-propan-2-ylpropan-2-amine" "diethylamine,1,1,1'-trimethyl- (7ci,8ci); 2-methyl-n-(1-methylethyl)-2-propanamine;isopropyl-tert-butylamine; n-isopropyl-n-tert-butylamine;n-tert-butyl-n-isopropylamine; n-tert-butylisopropylamine;tert-butylisopropylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -148370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     420.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97850.0
-    phase     gas;
 }

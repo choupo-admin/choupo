@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group dCH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1z,4z,7z)-cyclonona-1,4,7-triene" "1,4,7-cyclononatriene, (z,z,z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     466.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110640.0
-    phase     gas;
 }

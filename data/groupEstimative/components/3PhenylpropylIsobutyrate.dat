@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylpropyl 2-methylpropanoate" "hydrocinnamyl isobutyrate" "propanoic acid, 2-methyl-, 3-phenylpropyl ester" "phenylpropyl isobutyrate" "hydrocinnamyl 2-methylpropanoate" "isobutyric acid, 3-phenylpropyl ester" "3-phenylpropyl isobutyrate (natural)" "phenylpropyl 2-methylpropanoate, beta-" "propanoic acid, 3-phenylpropyl ester" "agn-pc-00bos5" "vbtakmzsmfmlgt-uhfffaoysa-" "isobutyric acid 3-phenylpropyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -397680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     597.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-141820.0
-    phase     gas;
 }

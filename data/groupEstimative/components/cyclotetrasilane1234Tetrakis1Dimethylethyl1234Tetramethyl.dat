@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 16; } { group C; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4-tetratert-butyl-1,2,3,4-tetramethyl-1,2,3,4-tetrasiletane" "1,2,3,4-tetratert-butyl-1,2,3,4-tetramethyltetrasiletane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -825990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1177.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-185400.0
-    phase     gas;
 }

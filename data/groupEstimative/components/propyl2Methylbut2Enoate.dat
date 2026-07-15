@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-butenoic acid, 2-methyl-, propyl ester" "2-butenoic acid,2-methyl-, propyl ester, (2e)-" "2-butenoic acid,2-methyl-, propyl ester, (2z)-" "2-butenoicacid, 2-methyl-, propyl ester, (e)-;propyl tiglate;" "2-butenoicacid, 2-methyl-, propyl ester, (z)-; propyl angelate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -418300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     508.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-222220.0
-    phase     gas;
 }

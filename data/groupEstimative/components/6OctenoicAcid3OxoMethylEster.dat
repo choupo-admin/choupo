@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH; count 2; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-oxidanylideneoct-6-enoate" "methyl 3-oxooct-6-enoate" "methyl3-oxo-6-octenoate" "agn-pc-00maxa" "methyl 3-oxo-6-octenoate" "6-octenoic acid, 3-oxo-, methyl ester" "6-octenoic acid, 3-oxo-, methyl ester, (z)-" "6-octenoic acid, 3-oxo-, methyl ester, (6e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -541730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     577.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-334170.0
-    phase     gas;
 }

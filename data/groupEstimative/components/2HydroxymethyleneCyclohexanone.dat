@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 1; } { group CH2_ring; count 4; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(oxidanylmethylidene)cyclohexan-1-one" "cyclohexanone, 2-(hydroxymethylene)-" "cyclohexanone,2-(hydroxymethylene)-" "(2e)-2-(hydroxymethylene)cyclohexanone" "2-(hydroxymethylene)cyclohexanone;a-(hydroxymethylene)cyclohexanone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -327050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     384.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-173730.0
-    phase     gas;
 }

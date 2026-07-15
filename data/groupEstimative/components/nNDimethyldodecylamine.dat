@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 11; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyldodecan-1-amine" "antioxidant dda" "1-dodecanamine, n,n-dimethyl-" "lauryldimethylamine" "dodecyldimethylamine" "n,n-dimethyl-n-dodecylamine" "n,n-dimethyllaurylamine" "dimethyl lauramine" "dda (antioxidant)" "n-lauryldimethylamine" "armeen dm-12d" "dodecylamine, n,n-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -264760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     717.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=177780.0
-    phase     gas;
 }

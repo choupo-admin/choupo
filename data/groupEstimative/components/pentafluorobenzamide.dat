@@ -33,9 +33,8 @@ groups
     joback ( { group dC_ring; count 6; } { group F; count 5; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,5,6-pentakis(fluoranyl)benzamide" "2,3,4,5,6-pentafluorobenzamide" "benzamide, 2,3,4,5,6-pentafluoro-" "benzamide, pentafluoro-" "benzamide,3,4,5,6-pentafluoro-" "2,3,4,5,6-pentafluoro-benzamide" "benzamide,2,3,4,5,6-pentafluoro-" "p105" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1067970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     528.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-964200.0
-    phase     gas;
 }

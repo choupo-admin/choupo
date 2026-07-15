@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(2-ethylhexoxycarbonyl)benzene-1,3-dicarboxylic acid" "4-{[(2-ethylhexyl)oxy]carbonyl}isophthalic acid" "1,2,4-benzenetricarboxylic acid, 1(or 2)-(2-ethylhexyl) ester" "trimellitic anhydride, mono-2-ethylhexyl ester" "1,2,4-benzenetricarboxylic acid 2-ethylhexyl ester" "1(or 2)-(2-ethylhexyl) dihydrogen benzene-1,2,4-tricarboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1203720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     847.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-815220.0
-    phase     gas;
 }

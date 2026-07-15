@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-bis(phenylmethyl)ethanamide" "dibenzylacetamide" "n-acetyldibenzylamine" "1-(propylsulfonyl)pyrrolidine" "n,n-bis(phenylmethyl)acetamide" "acetamide, n,n-bis(phenylmethyl)-" "acetamide, n,n-dibenzyl-" "acetamide,n-dibenzyl-" "n,n-bisbenzylacetamide" "acetamide,n-bis(phenylmethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   54440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     609.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=290520.0
-    phase     gas;
 }

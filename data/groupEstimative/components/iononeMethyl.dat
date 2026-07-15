@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group dCH; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-1-(2,6,6-trimethylcyclohex-2-en-1-yl)pent-1-en-3-one" "6-methylionone" "cetone, alpha-" "methylionone, alpha-" "1-(2,6,6-trimethyl-2-cyclohexen-1-yl)-1-penten-3-one" "1-penten-3-one, 1-(2,6,6-trimethyl-2-cyclohexen-1-yl)-" "5-(2,6,6-trimethyl-2-cyclohexenyl)-4-penten-3-one" "1-2,6,6-trimethylcyclohex-2-en-1-yl;pent-1-en-3-one" "1-(2,6,6-trimethyl-2-cyclohexen-1-yl)pent-1-en-3-one" "1-(2,6,6-trimethyl-2-cyclohexene-1-yl)-1-penten-3-one" "(r-(e))-1-(2,6,6-trimethyl-2-cyclohexen-1-yl)pent-1-en-3-one" "1-penten-3-one, 1-((1r)-2,6,6-trimethyl-2-cyclohexen-1-yl)-, (1e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -232120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     674.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=49880.0
-    phase     gas;
 }

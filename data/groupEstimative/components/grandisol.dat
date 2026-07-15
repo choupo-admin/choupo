@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(1-methyl-2-prop-1-en-2-yl-cyclobutyl)ethanol" "2-[1-methyl-2-(prop-1-en-2-yl)cyclobutyl]ethanol" "2-(1-methyl-2-prop-1-en-2-ylcyclobutyl)ethanol" "cyclobutaneethanol, 1-methyl-2-(1-methylethenyl)-, trans-" "cyclobutaneethanol, 2-isopropenyl-1-methyl-, stereoisomer" "cyclobutaneethanol, 1-methyl-2-(1-methylethenyl)-, (1r,2s)-" "cyclobutaneethanol, 1-methyl-2-(1-methylethenyl)-, (1r-cis)-" "grandlure i" "(+)-gandisol" "cis-1-methyl-2-isopropenylcyclobutaneethanol" "cyclobutaneethanol, 2-isopropenyl-1-methyl-, cis-(+)-" "cyclobutaneethanol, 1-methyl-2-(1-methylethenyl)-, (1r,2s)-rel-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -224780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     544.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=11240.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methoxy-4-[(e)-2-phenylethenyl]benzene" "anisole, p-styryl-" "4-methoxystilbene" "benzene, 1-methoxy-4-(2-phenylethenyl)-" "1-(p-methoxyphenyl)-2-phenylethene" "1-methoxy-4-((e)-styryl)-benzene" "1-((1e)-2-phenylvinyl)-4-methoxybenzene" "1-methoxy-4-(2-phenylethenyl)benzene" "anisole,p-styryl-" "trans-p-methoxystilbene" "trans-4-methoxystilbene" "(e)-4-methoxystilbene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   93660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     525.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=265830.0
-    phase     gas;
 }

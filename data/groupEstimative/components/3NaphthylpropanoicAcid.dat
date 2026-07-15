@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-naphthalen-1-ylpropanoic acid" "1-naphthalenepropanoic acid" "3-(1-naphthyl)propionic acid" "3-(1-naphthyl)-propionic acid" "3-(naphthalen-1-yl)propanoic acid" "1-naphthalenepropionic acid" "3-(1-naphthyl)propanoic acid" "alpha-naphthylpropionate" "1-naphthalenepropanoicacid" "3-(naphth-1-yl)propanoic acid" "3-naphthalen-1-ylpropionic acid" "beta-(1-naphthyl)propionic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -245790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-75900.0
-    phase     gas;
 }

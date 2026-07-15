@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group CH_ring; count 5; } { group Cl; count 3; } { group OH; count 3; } { group O; count 1; } { group O_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s,3s,4s,5r,6r)-3,4,5-tris(oxidanyl)-6-[2,2,2-tris(chloranyl)ethoxy]oxane-2-carboxylic acid" "trichloroethanol glucuronide" "trichloroethyl " "a-d-glucuronide" "2,2,2-trichloroethanol glucuronide" "a," "a," "a-trichloroethyl-" "a-d-glucuronic acid" "2,2,2-trichloroethyl " "a-d-glucopyranosiduronic acid" "2,2,2-trichloroethyl beta-d-glucopyranosiduronic acid" "beta-d-glucopyranosiduronic acid, 2,2,2-trichloroethyl" "(2s,3s,4s,5r,6r)-3,4,5-trihydroxy-6-(2,2,2-trichloroethoxy)oxane-2-carboxylic acid" "uca" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1362640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-968350.0
-    phase     gas;
 }

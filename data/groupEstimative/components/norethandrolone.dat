@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(8r,9s,10r,13s,14s,17s)-17-ethyl-13-methyl-17-oxidanyl-1,2,6,7,8,9,10,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-3-one" "pronabol" "nilevar" "solevar" "17-ethyl-19-nortestosterone" "17-ent" "nileva" "ethylnortestosteron" "19-nortestosterone, 17-ethyl-" "noretandrolone [dcit]" "19-norethyltestosterone" "17-alpha-nortestosterone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -449550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     656.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=34540.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 19; } { group CH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6,8-trimethylnonan-4-yl octadecanoate" "2,6,8-trimethylnonan-4-yl stearate" "octadecanoic acid 3,5-dimethyl-1-(2-methylpropyl)hexyl ester" "octadecanoic acid, 3,5-dimethyl-1-(2-methylpropyl)hexyl ester" "3,5-dimethyl-1-(2-methylpropyl)hexyl stearate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1000930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1337.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-118410.0
-    phase     gas;
 }

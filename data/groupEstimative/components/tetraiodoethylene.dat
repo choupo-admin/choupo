@@ -33,9 +33,8 @@ groups
     joback ( { group dC; count 2; } { group I; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2-tetrakis(iodanyl)ethene" "ethene, tetraiodo-" "periodoethene" "tetraiodoethene" "diiodoform" "ethylene, tetraiodo-" "ethylene periodide" "ethylene tetraiodide" "diodoform" "ethene, 1,1,2,2-tetraiodo-" "1,1,2,2-tetraiodoethene" "ethene,1,1,2,2-tetraiodo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   320510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     441.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=261560.0
-    phase     gas;
 }

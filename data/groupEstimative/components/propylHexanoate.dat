@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propyl caproate" "caproic acid propyl ester" "hexanoic acid, propyl ester" "n-propyl hexanoate" "propionyl hexanoate" "hexanoic acid propyl ester" "propyl hexanoate (natural)" "we(3:0/6:0)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -546370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     557.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-285470.0
-    phase     gas;
 }

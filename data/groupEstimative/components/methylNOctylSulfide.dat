@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methylsulfanyloctane" "octane, 1-(methylthio)-" "methyl octyl sulfide" "methyl octyl sulphide" "1-(methylsulfanyl)octane" "sulfide,methyl octyl (6ci,7ci,8ci);methyl n-octyl sulfide;methyl octyl sulfide;octyl methyl sulfide;n-octyl methyl sulfide;1-methylthiooctane;2-thiadecane;methyl 1-octylsulfide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -187220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     567.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58020.0
-    phase     gas;
 }

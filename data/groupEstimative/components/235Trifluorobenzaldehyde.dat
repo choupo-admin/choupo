@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,5-tris(fluoranyl)benzaldehyde" "2,3,5-ttrifluorobenzaldehyde" "2,3,5-trifluoro benzaldehyde" "benzaldehyde,2,3,5-trifluoro-" "benzaldehyde, 2,3,5-trifluoro-" "benzaldehyde, 2,3,5-trifluoro- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -497570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-448890.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 5; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-piperidin-1-ylethyl 2-oxidanyl-2,2-diphenyl-ethanoate" "pipethanate" "pipethanatum [inn-latin]" "beta-piperidylethyl benzilate" "1-piperidineethanol benzilate" "2-(1-piperidino)ethyl benzilate" "benzilic acid, 2-piperidinoethyl ester" "alpha-hydroxy-alpha-phenylbenzeneacetic acid 2-(1-piperidinyl)ethyl ester" "benzeneacetic acid, alpha-hydroxy-alpha-phenyl-, 2-(1-piperidinyl)ethyl ester" "pipetanato" "pipethanatum" "pipethanate hcl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -333620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     832.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=61450.0
-    phase     gas;
 }

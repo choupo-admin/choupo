@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethyl-1-h-indene" "2-ethylindene" "1h-indene, 2-ethyl-" "indene,2-ethyl- (7ci,8ci);2-ethylindene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   94140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     380.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=233310.0
-    phase     gas;
 }

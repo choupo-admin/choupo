@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group dCH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethylhexyl 3-(4-methoxyphenyl)prop-2-enoate" "2-ethylhexyl 4-methoxycinnamate" "2-ethylhexyl-4-methoxycinnamate" "2-ethylhexyl trans-4-methoxycinnamate" "2-propenoicacid, 3-(4-methoxyphenyl)-, 2-ethylhexyl ester, (e)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -527350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     791.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134130.0
-    phase     gas;
 }

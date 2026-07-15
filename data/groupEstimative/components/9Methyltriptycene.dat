@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-methyl triptycene" "9,10(1',2')-benzenoanthracene, 9,10-dihydro-9-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   383890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=598690.0
-    phase     gas;
 }

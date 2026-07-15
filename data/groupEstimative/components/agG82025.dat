@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 9; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(cyclohepten-1-yl)morpholine" "morpholine, 4-(1-cyclohepten-1-yl)-" "4-cyclohept-1-en-1-ylmorpholine" "4-(1-cyclohepten-1-yl)morpholine" "morpholine,4-(1-cyclohepten-1-yl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -139210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     529.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=151050.0
-    phase     gas;
 }

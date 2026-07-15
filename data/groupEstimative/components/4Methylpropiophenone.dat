@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-methylphenyl)propan-1-one" "1-(p-tolyl)propan-1-one" "p-methylpropiophenone" "4-methylpropiophenone" "1-propanone, 1-(4-methylphenyl)-" "p-tolyl ethyl ketone" "p-methyl propiophenone" "1-p-tolylpropan-1-one" "patyhuuyaduhqs-uhfffaoysa-" "1-propanone,1-(4-methylphenyl)-" "l757" "4 inverted exclamation marka-methylpropiophenone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -137250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=7180.0
-    phase     gas;
 }

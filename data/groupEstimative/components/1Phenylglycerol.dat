@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenylpropane-1,2,3-triol" "agn-pc-00l5m4" "(s(r*,r*))-1-phenylglycerol" "1,2,3-propanetriol, 1-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -459810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     533.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-278030.0
-    phase     gas;
 }

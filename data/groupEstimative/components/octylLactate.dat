@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octyl 2-oxidanylpropanoate" "octyl 2-hydroxypropanoate" "propanoic acid, 2-hydroxy-, octyl ester" "octyl (2s)-2-hydroxypropanoate" "propanoic acid, 2-hydroxy-, octyl ester, (s)-" "propanoic acid,2-hydroxy-, octyl ester, (2s)-" "propanoicacid, 2-hydroxy-, octyl ester, (s)-; octyl (-)-lactate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -745160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     677.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-407890.0
-    phase     gas;
 }

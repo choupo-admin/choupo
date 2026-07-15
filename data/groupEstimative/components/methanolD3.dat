@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trideuteriomethanol" "methan-d3-ol" "methyl-d3 alcohol" "1,1,1-trideuteromethanol" "methan-d3-ol-d" "(2h3)methanol" "de305" "methanol-d3 >99.5 atom % d" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -216200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     245.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-179280.0
-    phase     gas;
 }

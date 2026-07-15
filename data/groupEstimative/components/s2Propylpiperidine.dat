@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-propylpiperidine" "(+)-coniine" "(s)-(+)-coniine" "(s)-beta-propylpiperidine" "coniine" "cicutine" "coniin" "koniin" "(s)-coniine" "piperidine, 2-propyl-, (2s)-" "piperidine, 2-propyl-,hydrochloride (1:1), (2s)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -116320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     430.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=128640.0
-    phase     gas;
 }

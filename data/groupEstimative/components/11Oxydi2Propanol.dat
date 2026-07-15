@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-oxidanylpropoxy)propan-2-ol" "2-propanol, 1,1'-oxybis-" "bis(2-hydroxypropyl) ether" "2-propanol, 1,1'-oxydi-" "4-oxaheptane-2,6-diol" "1,1'-oxydipropan-2-ol" "1,1'-oxybis-2-propanol" "2,2'-dihydroxydipropyl ether" "niax catalyst d-19" "1,1'-dimethyldiethylene glycol" "2-propanol,1'-oxydi-" "2-propanol,1'-oxybis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -614410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383880.0
-    phase     gas;
 }

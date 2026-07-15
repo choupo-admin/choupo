@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9h-fluorene" "diphenylenemethane" "o-biphenylenemethane" "2,2'-methylenebiphenyl" "2,3-benzindene" "o-biphenylmethane" "methane, diphenylene-" "fluoren" "fluorenyl radical" "alpha-diphenylenemethane-9h-fluorene" "2,2'-methylene biphenyl" "fluorene solution" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   243930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     349.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=356800.0
-    phase     gas;
 }

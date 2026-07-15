@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 11; } { group CH_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclododecanole" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -425880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     763.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134810.0
-    phase     gas;
 }

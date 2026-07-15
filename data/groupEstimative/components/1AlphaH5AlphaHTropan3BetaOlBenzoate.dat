@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(8-methyl-8-azabicyclo[3.2.1]octan-3-yl) benzoate" "8-azabicyclo[3.2.1]octan-3-ol, 8-methyl-, benzoate, exo-" "benzoyltropein" "benzoyltropine" "8-methyl-8-azabicyclo[3.2.1]oct-3-yl benzoate" "benzoyl tropein hcl" "exo-8-methyl-8-azabicyclo(3.2.1)octan-3-ol, benzoate (ester)" "benzoic acid 8-methyl-8-aza-bicyclo[3.2.1]oct-3-yl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -247050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     498.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=89930.0
-    phase     gas;
 }

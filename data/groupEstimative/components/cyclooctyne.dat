@@ -33,9 +33,8 @@ groups
     joback ( { group tC; count 2; } { group CH2_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-cyclooctyne" "hydrazinecarboximidamide,2-(1-[1,1'-biphenyl]-4-ylethylidene)-, hydrochloride (1:1)" "guanidine,[(a-methyl-p-phenylbenzylidene)amino]-, monohydrochloride (8ci);hydrazinecarboximidamide, 2-(1-[1,1'-biphenyl]-4-ylethylidene)-,monohydrochloride (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   138510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=251440.0
-    phase     gas;
 }

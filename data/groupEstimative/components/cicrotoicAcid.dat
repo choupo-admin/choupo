@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-3-cyclohexylbut-2-enoic acid" "accroibile" "cicrotoinsaeure" "3-cyclohexyl-2-butenoic acid" "acide cicrotoique [inn-french]" "acidum cicrotoicum [inn-latin]" "beta-methylcyclohexaneacrylic acid" "beta-methylcyclohexanepropenoic acid" "beta-cyclohexyl-beta-methacrylic acid" "cyclohexaneacrylic acid, beta-methyl-" "acido cicrotoico" "acide cicrotoique" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -438250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     557.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-214470.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 25; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "carbocerate" "c27:0" "carboxylic acids, c27-47" "(c24-c44) alpha olefins, propionic acid reaction product" "563cbb30-089b-45e1-be24-439806fb6ff4" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -950880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1260.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-167450.0
-    phase     gas;
 }

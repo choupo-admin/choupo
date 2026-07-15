@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethyl-3-methyl-pentanamide" "valmethamide" "axiquel" "nirvanil" "valmetamide" "ethylmethyl valeramide" "2-ethyl-3-methylvaleramide" "valoctamidum" "valeramide, 2-ethyl-3-methyl-" "pentanamide, 2-ethyl-3-methyl-" "valnoctamide [usan:inn]" "valnoctamidum [inn-latin]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -297800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     526.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-50870.0
-    phase     gas;
 }

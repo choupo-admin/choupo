@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-nonyloxan-2-one" "2h-pyran-2-one, tetrahydro-6-nonyl-" "5-tetradecanolide" "delta-tetradecanolide" "tetrahydro-6-nonyl-2h-pyran-2-one" ".delta.-nonyl-.delta.-valeralactone" "5-hydroxytetradecanoic acid delta-lactone" "delta-myristolactone" "a-tetradecalactone" "2h-pyran-2-one, tetrahydro-6-nonyl-, (s)-" "a-tetradecane lactone" "delta-tetradecanolactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -582930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     682.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-194720.0
-    phase     gas;
 }

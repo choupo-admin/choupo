@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 3; } { group OH_phenol; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1s,3r,4r,5r)-3-[(e)-3-[3,4-bis(oxidanyl)phenyl]prop-2-enoyl]oxy-1,4,5-tris(oxidanyl)cyclohexane-1-carboxylic acid" "3-caffeoylquinic acid" "chlorogenate" "hlorogenic acid" "3-o-caffeoylquinic acid" "3-(3,4-dihydroxycinnamoyl)quinic acid" "heriguard" "3-caffeoylquinate" "caffeoyl quinic acid" "5-o-(3,4-dihydroxycinnamoyl)-l-quinic acid" "chlorogenic acid (8ci)" "3-trans-caffeoylquinic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1490140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     888.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1101680.0
-    phase     gas;
 }

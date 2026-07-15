@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylpropanoic acid" "2-bromopropionic acid" "propanoic acid, 2-bromo-" "propionic acid, 2-bromo-" ".alpha.-bromopropionic acid" "2-bromo-propionic acid" "alpha-bromopropionic acid" "dl-2-bromopropionic acid" "(+/-)-2-bromopropionic acid" "(s)-(-)-2-bromopropionicacid" "propionic acid, 2-bromo- (6ci,7ci,8ci)" "dl-2-bromopropionic" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -434470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     367.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-357650.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tridec-1-yne" "1-c13h24" "1-tridecylene" "agn-pc-00farb" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -19750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     631.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=281650.0
-    phase     gas;
 }

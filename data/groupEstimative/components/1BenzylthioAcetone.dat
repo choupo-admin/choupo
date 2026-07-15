@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(phenylmethylsulfanyl)propan-2-one" "1-(benzylsulfanyl)acetone" ".alpha.-(benzylthio)acetone" "1-(benzylthio)-2-propanone" "1-(phenylmethylthio)acetone" "alpha-(benzylthio)acetone" "1-benzylsulfanylpropan-2-one" "1-(benzylsulfanyl)propan-2-one" "2-propanone,1-[(phenylmethyl)thio]-" "2-propanone,(benzylthio)- (7ci);2-propanone, 1-(benzylthio)- (8ci);(benzylthio)acetone;1-(benzylthio)-2-propanone;1-(benzylthio)acetone;benzylthio-2-propanone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -83910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     527.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=49930.0
-    phase     gas;
 }

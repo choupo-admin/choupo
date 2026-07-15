@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 8; } { group CH_ring; count 1; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,5,6,7,8,8a-octahydro-1h-naphthalen-4a-ol" "4a(2h)-naphthalenol, octahydro-, trans-" "cis-9-decalinol" "trans-9-decalol" "octahydronaphthalen-4a-ol" "octahydronaphthalen-4a(2h)-ol" "cis-1-hydroxybicyclo[4.4.0]decane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -265760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     565.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-35890.0
-    phase     gas;
 }

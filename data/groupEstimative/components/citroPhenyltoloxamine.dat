@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group C; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 1; } { group COOH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyl-2-[2-(phenylmethyl)phenoxy]ethanamine;2-oxidanylpropane-1,2,3-tricarboxylic acid" "2-(2-benzylphenoxy)-n,n-dimethylethanamine 2-hydroxypropane-1,2,3-tricarboxylate" "n,n-dimethyl-2[alpha-phenyl-o-tolyl)oxy]ethylamine citrate" "phenyltoloxamine citrate salt" "phenyltoloxamine citrate (usp)" "phenyl toloxamine dihydrogen citrate" "n,n-dimethyl-2([" "a-phenyl-o-tolyl]oxy)ethylamine" "ethylamine,n-dimethyl-2-[(.alpha.-phenyl-o-tolyl)oxy]-, citrate (1:1)" "n,n-dimethyl-2-(.alpha.-phenyl-o-toloxy)ethylamine dihydrogen citrate" "2-(2-benzylphenoxy)-n,n-dimethylethanamine; 2-hydroxypropane-1,2,3-tricarboxylic acid" "ethanamine,n-dimethyl-2-[2-(phenylmethyl)phenoxy]-, 2-hydroxy-1,2,3-propanetricarboxylate (1:1)" "phenyltoloxamine dihydrogen citrate;kutrase;phenoxadrine citrate;ethylamine, n, n-dimethyl-2-[ (.alpha.-phenyl-o-tolyl)oxy]-, citrate (1:1);ethanamine, n,n-dimethyl-2-(2-(phenylmethyl)phenoxy)-, 2-hydroxy-1,2,3-propanetricarboxylate (1:1);phenoxadrin citrate;mobigesic;ethanamine,n,n-dimethyl-2-[2-(phenylmethyl) phenoxy]-,2-hydroxy-1,2,3- propanetricarboxylate (1:1);2-(2-benzylphenoxy)ethyl-dimethyl-azanium; 3-carboxy-3,5-dihydroxy-5-oxo-pentanoate;floxamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1444560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1139.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-906720.0
-    phase     gas;
 }

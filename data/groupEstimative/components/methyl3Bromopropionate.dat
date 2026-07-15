@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-bromanylpropanoate" "methyl 3-bromopropanoate" "propanoic acid, 3-bromo-, methyl ester" "methyl beta-bromopropionate" "propionic acid, 3-bromo-, methyl ester" "beta-bromopropionic acid, methyl ester" "3-bromopropanoic acid methyl ester" "methyl .beta.-bromopropionate" "3-bromopropionic acid methyl ester" "3-bromo-propionic acid methyl ester" ".beta.-bromopropionic acid, methyl ester" "propionic acid, 3-bromo-, methyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -416840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     414.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-313250.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group N; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diethylcysteamine" "ethanethiol, 2-(diethylamino)-" "diethyl(2-mercaptoethyl)amine" "2-diethylaminoethanethiol" "diethylaminoethanethiol" "diethylcysteamin" "triethylamine, 2-mercapto-" "n-diaethyl cysteamin" "n-diethyl cysteamine" "2-(diethylamino)ethyl mercaptan" "n,n-diethyl-cysteamine" "2-(diethylamino)ethylmercaptan" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -61160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     468.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=139810.0
-    phase     gas;
 }

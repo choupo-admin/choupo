@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 6; } { group CH; count 2; } { group O; count 4; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(2,2-diethoxyethyl)-2,2-diethoxy-n-methyl-ethanamine" "n-(2,2-diethoxyethyl)-2,2-diethoxy-n-methylethanamine" "n-[2,2-bis(ethyloxy)ethyl]-2,2-bis(ethyloxy)-n-methylethanamine" "dploxprjcfwurn-uhfffaoysa-" "ethanamine, n-(2,2-diethoxyethyl)-2,2-diethoxy-n-methyl-" "2,2 inverted exclamation marka-methyliminobis(acetaldehyde diethyl acetal)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -783560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     704.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-255520.0
-    phase     gas;
 }

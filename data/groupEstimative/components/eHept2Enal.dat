@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trans-2-heptenal" "butylacrolein" "2-heptenal, (e)-" "3-butylacrolein" "(e)-2-hepten-1-al" "beta-butylacrolein" "(e)-2-heptenal" "2-heptenal, (2e)-" "hept-2-enal" "trans-2-hepten-1-al" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -156170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     440.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11240.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenyl cyclopropane-1-methanol" "cyclopropanemethanol,1-phenyl-" "apalrpyidibhqn-uhfffaoysa-" "(1-phenylcyclopropyl)methanol;1-phenyl-1-(hydroxymethyl)cyclopropane;1-phenyl-1-cyclopropanemethanol;1-phenylcyclopropanemethanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -77390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     469.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=64170.0
-    phase     gas;
 }

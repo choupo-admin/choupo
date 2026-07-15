@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2_ring; count 3; } { group dCH_ring; count 6; } { group dC_ring; count 12; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,7,8,12,13-hexamethoxy-10,15-dihydro-5h-tribenzo[a,d,g]cyclononene" "cycloveratril" "cycloveratryl" "sdccgmls-0066965.p001" "brd-k49154891-001-01-3" "2,3,7,8,12,13-hexamethoxy-5,10,15-trihydrotribenzo[a,d,g][9]annulene" "5h-tribenzo[a,g]cyclononene, 10,15-dihydro-2,3,7,8,12,13-hexamethoxy-" "5h-tribenzo[a,d,g]cyclononene, 10,15-dihydro-2,3,7,8,12,13-hexamethoxy-" "5,6,12,13,19,20-hexamethoxytetracyclo[15.4.0.0^{3,8}.0^{10,15}]henicosa-1(17),3(8),4,6,10(15),11,13,18,20-nonaene" "5,6,12,13,19,20-hexamethoxytetracyclo[15.4.0.0^{3,8}.0^{10,15}]henicosa-1(17),3,5,7,10,12,14,18,20-nonaene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -694430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     852.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134520.0
-    phase     gas;
 }

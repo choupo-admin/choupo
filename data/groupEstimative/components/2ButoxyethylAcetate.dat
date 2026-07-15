@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-butoxyethyl ethanoate" "ethylene glycol monobutyl ether acetate" "butyl glycol acetate" "butyl cellosolve acetate" "butoxyethyl acetate" "butylglycol acetate" "ethanol, 2-butoxy-, acetate" "egbea" "ektasolve eb acetate" "butylcellosolve acetate" "n-butoxyethanol acetate" "2-butoxyethanol acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -657950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     530.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-398890.0
-    phase     gas;
 }

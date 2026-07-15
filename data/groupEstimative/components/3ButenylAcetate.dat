@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "but-3-enyl ethanoate" "2-vinylethyl acetate" "3-buten-1-ol acetate" "3-buten-1-ol, acetate" "3-buten-1-ol, 1-acetate" "but-3-enyl acetate" "acetic acid 3-buten-1-yl ester" "4-acetoxy-1-butene" "but-3-en-1-yl acetate" "acetic acid 3-butenyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -359020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     436.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-222890.0
-    phase     gas;
 }

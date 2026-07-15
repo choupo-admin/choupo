@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6,11-dihydro-5h-benzo[c][1]benzazepine" "6,11-dihydro-5h-dibenz(b,e)azepine" "dibenz[b,e]azepin, 5,6(11h)dihydro-" "5h-dibenz[b,e]azepine, 6,11-dihydro-" "5h,6h,11h-dibenzo[c,f]azepine" "5h-dibenz[b,e]azepine,6,11-dihydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   248780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     422.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=428730.0
-    phase     gas;
 }

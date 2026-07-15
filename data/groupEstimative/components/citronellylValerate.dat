@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7-dimethyloct-6-enyl pentanoate" "pentanoic acid, 3,7-dimethyl-6-octenyl ester" "pentanoic acid, 3,7-dimethyl-6-octen-1-yl ester" "3,7-dimethyl-6-octen-1-yl valerate" "citronellyl pentanoate" "3,7-dimethyloct-6-enyl valerate" "3,7-dimethyl-6-octen-1-yl pentanoate" "valeric acid, 3,7-dimethyl-6-octen-1-yl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -568060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     771.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-165720.0
-    phase     gas;
 }

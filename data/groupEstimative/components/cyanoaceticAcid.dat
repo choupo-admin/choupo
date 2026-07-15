@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group COOH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-cyanoethanoic acid" "acetic acid, cyano-" "malonic mononitrile" "monocyanoacetic acid" "acide cyanacetique" "2-cyanoacetic acid" "cyanessigsaeure" "malonic acid mononitrile" "usaf kf-17" "acetic acid, 2-cyano-" "cyanessigsaeure [german]" "acide cyanacetique [french]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -290640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     332.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236350.0
-    phase     gas;
 }

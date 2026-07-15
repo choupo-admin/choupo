@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-bis(fluoranyl)-1-iodanyl-benzene" "2,4-difluoro-1-iodobenzene" "1,3-difluoro-4-iodobenzene" "2,4-difluoro-1-iodobenze" "2,4-difluoro iodobenzene" "benzene, 2,4-difluoro-1-iodo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -268930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-238710.0
-    phase     gas;
 }

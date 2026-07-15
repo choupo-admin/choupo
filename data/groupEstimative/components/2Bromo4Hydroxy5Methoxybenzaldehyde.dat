@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Br; count 1; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanyl-5-methoxy-4-oxidanyl-benzaldehyde" "6-bromovanillin" "vanillin, 6-bromo-" "vanillin, 6-bromo-," "r712" "vanillin,6-bromo- (6ci);2-bromo-4-hydroxy-5-methoxybenzaldehyde;6-bromovanillin;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -201610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     518.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-91710.0
-    phase     gas;
 }

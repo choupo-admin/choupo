@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-methylidene-3-oxidanyl-butanoate" "butanoic acid, 3-hydroxy-2-methylene-, methyl ester, (r)-" "methyl 2-(1-hydroxyethyl)acrylate" "methyl 3-hydroxy-2-methylidenebutanoate" "butanoic acid,3-hydroxy-2-methylene-, methyl ester" "3-hydroxy-2-methylene-butanoic acid methyl ester" "butyricacid, 3-hydroxy-2-methylene-, methyl ester (8ci); acrylic acid,2-(1-hydroxyethyl)-, methyl ester (8ci); methyl (?a'a a'a currency)-3-hydroxy-2-methylenebutanoate; methyl2-(1-hydroxyethyl)propenoate; methyl 3-hydroxy-2-methylenebutanoate; methyl3-hydroxy-2-methylenebutyrate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -526320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     473.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-370700.0
-    phase     gas;
 }

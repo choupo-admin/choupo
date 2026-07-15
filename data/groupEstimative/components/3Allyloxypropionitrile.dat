@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-prop-2-enoxypropanenitrile" "2-cyanoethyl allyl ether" "allyl 2-cyanoethyl ether" "propionitrile, 3-allyloxy-" "allyl beta-cyanoethyl ether" "propionitrile, beta-allyloxy-" "propanenitrile, 3-(2-propenyloxy)-" "3-allyloxypropannitril" "3-(allyloxy)propionitrile" "allyl .beta.-cyanoethyl ether" "beta-allyloxypropionitrile" "propionitrile, 3-(allyloxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -9080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     402.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=115660.0
-    phase     gas;
 }

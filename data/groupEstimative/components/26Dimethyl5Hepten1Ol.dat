@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-dimethylhept-5-en-1-ol" "5-hepten-1-ol, 2,6-dimethyl-" "(2s)-2,6-dimethylhept-5-en-1-ol" "agn-pc-00h0rz" "5-hepten-1-ol,6-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -279170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     537.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-42690.0
-    phase     gas;
 }

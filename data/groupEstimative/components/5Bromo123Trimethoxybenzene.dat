@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Br; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-bromanyl-1,2,3-trimethoxy-benzene" "1-bromo-3,4,5-trimethoxybenzene" "3,4,5-trimethoxybromobenzene" "u773" "1,2,3-trimethoxy-5-bromobenzene;3,4,5-trimethoxy-1-bromobenzene;3,4,5-trimethoxybromobenzene;3,4,5-trimethoxyphenyl bromide;5-bromo-1,2,3-trimethoxybenzene;5-bromopyrogallol trimethyl ether;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -397300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     466.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-192260.0
-    phase     gas;
 }

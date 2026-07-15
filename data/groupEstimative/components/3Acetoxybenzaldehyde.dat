@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-methanoylphenyl) ethanoate" "3-formylphenyl acetate" "benzaldehyde, 3-(acetyloxy)-" "34231-78-2[rn]" "3-(acetoxy)benzaldehyde" "(3-formylphenyl) acetate" "acetic acid 3-formylphenyl ester" "acetic acid (3-formylphenyl) ester" "benzaldehyde, m-hydroxy-, acetate(6ci,7ci,8ci);3-formylphenylacetate;m-acetoxybenzaldehyde;m-hydroxybenzaldehyde acetate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -244860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     526.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-138730.0
-    phase     gas;
 }

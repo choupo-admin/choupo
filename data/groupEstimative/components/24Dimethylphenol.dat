@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-hydroxy-2,4-dimethylbenzene" "2,4-dmp" "2,4-xylenol" "4,6-dimethylphenol" "4-hydroxy-1,3-dimethylbenzene" "phenol, 2,4-dimethyl-" "m-xylenol" "gallex" "rcra waste number u101" "caswell no. 907a" "lysol brand disinfectant" "2,4-dimethyl phenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -160700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-35360.0
-    phase     gas;
 }

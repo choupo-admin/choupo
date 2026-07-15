@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 11; } { group dC_ring; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo[a]anthracene-7-carbaldehyde" "1,2-benzanthracene-10-aldehyde" "7-formylbenz(a)anthracene" "7-formylbenzo[a]anthracene" "benz(a)anthracene-7-carboxaldehyde" "benz[a]anthracene-7-carboxaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   416290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     525.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=556530.0
-    phase     gas;
 }

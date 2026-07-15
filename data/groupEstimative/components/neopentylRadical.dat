@@ -30,9 +30,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } { group dCH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-dimethylpropane" "2,2-di-methylpropyl" "2,2-dimethylpropyl" "(ch3)3cch2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -88460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     310.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=41790.0
-    phase     gas;
 }

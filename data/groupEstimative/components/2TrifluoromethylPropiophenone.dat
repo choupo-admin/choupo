@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[2-(trifluoromethyl)phenyl]propan-1-one" "o-trifluoromethylpropiophenone" "2-(trifluoromethyl)phenylpropanone" "1-[2-(trifluoromethyl)phenyl]-1-propanone" "2 -(trifluoromethyl)propiophenone" "2-benzyl-3,3,3-trifluoro-propionaldehyde" "1-(2-trifluoromethyl-phenyl)-propan-1-one" "propiophenone,2'-(trifluoromethyl)- (8ci);1-[2-(trifluoromethyl)phenyl]propan-1-one;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -734330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-574410.0
-    phase     gas;
 }

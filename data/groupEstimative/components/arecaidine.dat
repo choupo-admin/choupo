@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-3,6-dihydro-2h-pyridine-5-carboxylic acid" "methylguvacine" "arecaine" "n-methylguvacine" "1,2,5,6-tetrahydro-1-methylnicotinic acid" "1,2,5,6-tetrahydro-1-methyl-3-pyridinecarboxylic acid" "1-methyl-1,2,5,6-tetrahydropyridine-3-carboxylic acid" "nicotinic acid, 1,2,5,6-tetrahydro-1-methyl-" "hydroquinone o-" "a-d-glucopyranoside" "4-hydroxyphenyl-" "a-d-glucopyranoside" "nicotinic acid,2,5,6-tetrahydro-1-methyl-" "3-pyridinecarboxylic acid,2,5,6-tetrahydro-1-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -343420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     446.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-160480.0
-    phase     gas;
 }

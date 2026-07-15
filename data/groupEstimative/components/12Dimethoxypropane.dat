@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propylene glycol dimethyl ether" "propane, 1,2-dimethoxy-" "s591" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -416250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     363.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-221220.0
-    phase     gas;
 }

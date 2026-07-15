@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group OH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(oxidanyl)propanoic acid" "glyceric acid" "2,3-dihydroxypropanoic acid" "2,3-dihydroxypropans" "2,3-dihydroxypropanoic acid(20% in water)" "alpha,beta-hydroxypropionic acid" "glycerolic acid" "glyceronic acid" "polyglyceric acid" "glyceric acid, dl-" "(+-)-glyceric acid" "beta-hydroxylactic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -765260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     418.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-645610.0
-    phase     gas;
 }

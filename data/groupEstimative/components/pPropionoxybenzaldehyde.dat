@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-methanoylphenyl) propanoate" "4-formylphenyl propanoate" "4-formylphenyl propionate" "4-propionyloxybenzaldehyde" "4-n-propionyloxybenzaldehyde" "benzaldehyde, 4-(1-oxopropoxy)-" "(4-formylphenyl) propanoate" "4-(propionyloxy)-benzaldehyde" "p-formylphenyl propionate" "benzaldehyde,4-(1-oxopropoxy)-" "propanoic acid (4-formylphenyl) ester" "4-(1-oxopropoxy)benzaldehyde;4-(propionyloxy)benzaldehyde; 4-propionoxybenzaldehyde;p-(propionyloxy)benzaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -265500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     565.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-130310.0
-    phase     gas;
 }

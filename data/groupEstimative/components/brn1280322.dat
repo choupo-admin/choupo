@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethoxy-4-methyl-oxane" "2h-pyran, 2-ethoxy-4-methyl tetrahydro-" "2h-pyran, tetrahydro-2-ethoxy-4-methyl-" "2-ethoxy-4-methyloxane" "agn-pc-03e6vx" "2-ethoxy-4-methyltetrahydropyran" "(2s,4r)-2-ethoxy-4-methyloxane" "2h-pyran, 2-ethoxytetrahydro-4-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -438690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     354.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-157900.0
-    phase     gas;
 }

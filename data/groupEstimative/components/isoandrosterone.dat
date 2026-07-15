@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 9; } { group CH_ring; count 5; } { group C_ring; count 2; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10,13-dimethyl-3-oxidanyl-1,2,3,4,5,6,7,8,9,11,12,14,15,16-tetradecahydrocyclopenta[a]phenanthren-17-one" "3-hydroxyandrostan-17-one" "trans-androsterone" "epi-androsterone" "iso-androsterone" "d-epiandrosterone" "3-epiandrosterone" "androsterone, epi-" "androstan-17-one, 3-hydroxy-, (3.alpha.,5.alpha.)-" "androsterine" "3-hydroxy-10,13-dimethylperhydrocyclopenta[a]phenanthren-17-one" "androsterone, trans-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -495560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     618.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1920.0
-    phase     gas;
 }

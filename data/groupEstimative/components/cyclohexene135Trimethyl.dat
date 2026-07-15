@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,5-trimethylcyclohexene" "agn-pc-00l3of" "cyclohexene,1,3,5-trimethyl-" "1,3,5-trimethyl-1-cyclohexene,c&t" "1,3,5-trimethyl-1-cyclohexene" "1,3,5-trimethyl-1-cyclohexene, cis & trans-" "1,3,5-trimethyl-1-cyclohexene;1,3,5-trimethylcyclohexene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -148800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     390.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=61970.0
-    phase     gas;
 }

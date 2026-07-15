@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-iodanyl-2-methyl-propane" "2-iodo-2-methylpropane" "propane, 2-iodo-2-methyl-" "trimethyliodomethane" "sjphavimup@" "2-iodo-2-methyl-propane" "1,1-dimethylethyliodide; 2-iodo-2-methylpropane; 2-methyl-2-iodopropane; trimethyliodomethane;t-butyl iodide; tert-butyl iodide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -57770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     328.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=43760.0
-    phase     gas;
 }

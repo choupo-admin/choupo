@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group C; count 1; } { group dCH2; count 3; } { group dC; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-bis(2-methylprop-2-enoyloxymethyl)butyl 2-methylprop-2-enoate" "acryester tmp" "chemlink 30" "ptma" "blemmer ptt" "light ester tmp" "hi-cross m" "nk ester tmpt" "tmptma" "nk ester m tmpt" "trimethylolpropane trimethancrylate" "perkalink 400-50d" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1028520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     945.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-589720.0
-    phase     gas;
 }

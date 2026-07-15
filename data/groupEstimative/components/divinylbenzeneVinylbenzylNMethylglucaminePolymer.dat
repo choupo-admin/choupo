@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 5; } { group dCH2; count 3; } { group dCH; count 3; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH; count 6; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-bis(ethenyl)benzene;(2r,3s,4r,5r)-1-[(2-ethenylphenyl)methyl-methyl-amino]hexane-1,2,3,4,5,6-hexol" "d-glucitol, 1-deoxy-1-(((ethenylphenyl)methyl)methylamino)-, polymer with diethenylbenzene" "1,2-bis(ethenyl)benzene; (2r,3s,4r,5r)-1-[(2-ethenylphenyl)methyl-methylamino]hexane-1,2,3,4,5,6-hexol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -737430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1311.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-189980.0
-    phase     gas;
 }

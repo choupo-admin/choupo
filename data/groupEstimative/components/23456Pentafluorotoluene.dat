@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dC_ring; count 6; } { group F; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5-pentakis(fluoranyl)-6-methyl-benzene" "benzene, pentafluoromethyl-" "pentafluorotoluene" "methylpentafluorobenzene" "pentafluoromethylbenzene" "methyl pentafluorobenzene" "toluene, 2,3,4,5,6-pentafluoro-" "2,3,4,5,6-pentafluoro-toluene" "benzene, 1,2,3,4,5-pentafluoro-6-methyl-" "1,2,3,4,5-pentafluoro-6-methylbenzene" "2,4,5,6-pentafluorotoluene" "sxprvmizfrcagc-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -989180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-901730.0
-    phase     gas;
 }

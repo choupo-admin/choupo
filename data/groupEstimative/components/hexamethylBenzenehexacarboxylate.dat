@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group dC_ring; count 6; } { group COO; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexamethyl benzene-1,2,3,4,5,6-hexacarboxylate" "hexamethyl mellitate" "benzenehexacarboxylic acid, hexamethyl ester" "benzenehexacarboxylic acid hexamethyl ester" "mellitic acid hexamethyl ester" "benzene-1,2,3,4,5,6-hexacarboxylic acid hexamethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2139350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1027.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1697280.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 13; } { group CH; count 2; } { group OH; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9,10,16-tris(oxidanyl)hexadecanoic acid" "9,10,16-trihydroxyhexadecanoic acid" "alpha-aleuritic acid" "erythro-aleuritic acid" "aleuritic acid (alpha)" "synthetic aleuritic acid" "dl-erythro-aleuritic acid" "(.+/-.)-aleuritic acid" "(+-)-erythro-aleuritic acid" "hexadecanoic acid, 9,10,16-trihydroxy-, (9r,10s)-rel-" "8,9,15-trihydroxypentadecane-1-carboxylic acid" "dl-erythro-9,10,16-trihydroxyhexadecanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1191090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     965.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-675410.0
-    phase     gas;
 }

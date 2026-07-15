@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 1-methyl-4-phenyl-piperidine-4-carboxylate" "pethidine" "demerol" "isonipecaine" "pethidin" "pethidineter" "meperidol" "pethanol" "phetidine" "pipersal" "dolsin" "lydol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -290430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     720.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=19300.0
-    phase     gas;
 }

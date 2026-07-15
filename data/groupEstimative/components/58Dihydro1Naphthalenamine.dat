@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5,8-dihydronaphthalen-1-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   142410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=279240.0
-    phase     gas;
 }

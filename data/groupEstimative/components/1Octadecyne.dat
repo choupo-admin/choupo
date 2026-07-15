@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 15; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadec-1-yne" "octadecyne" "octadec-1-in" "cetylacetylene" "hexadecylacetylene" "cetylacetylene;1-octadecyne;timtec-bb sbb009112;n-hexadecylacetylene;octadec-1-yne;octadecyne;1-octadecyne 90%;1-octadecyne tech 85%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -122950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     826.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=323750.0
-    phase     gas;
 }

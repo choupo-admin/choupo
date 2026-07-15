@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nih-7856 (( inverted exclamation marka)-form)gpa-208 ((-)-form)gpa-2087 ((-)-form)nih-8178 ((-)-form)fda-0487 ((-)-form)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -138430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     594.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=259500.0
-    phase     gas;
 }

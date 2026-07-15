@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-phenyl-1-octanol" "8-phenyl-n-octanol" "benzeneoctanol" "8-phenyloctanol;8-phenyloctylalcohol;1-octanol,8-phenyl- (6ci,7ci,8ci);8-phenyl-1-octanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -247990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     645.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=42590.0
-    phase     gas;
 }

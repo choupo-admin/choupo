@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group N; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n,3-trimethyl-2-thiophen-2-yl-pentan-1-amine" "n,n,3-trimethyl-2-(thiophen-2-yl)pentan-1-amine" "thiophene, 2-(1-(sec-butyl)-2-(dimethylamino)ethyl)-" "2-thiopheneethanamine, n,n-dimethyl-beta-(1-methylpropyl)-" "n,n,3-trimethyl-2-thiophen-2-ylpentan-1-amine" "2-(1-sec-butyl-2-(dimethylamino)ethyl) thiophene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     581.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=290470.0
-    phase     gas;
 }

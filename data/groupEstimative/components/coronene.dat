@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 12; } { group dC_ring; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexabenzobenzene" "dibenzo(ghi,pqr)perylene" "dibenzo[ghi,pqr]perylene" "superbenzene" "[6]circulene" "ambap191-07-1" "tetracosahydrocoronene;coronene, tetracosahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   650530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     292.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=838080.0
-    phase     gas;
 }

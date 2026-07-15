@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4s)-4-methyloxolan-2-one" "dl-3-methylgamma butyrolactone" "u320" "2(3h)-furanone,dihydro-4-methyl-, (4s)-" "2(3h)-furanone,dihydro-4-methyl-, (s)-; (s)-3-methyl-g-butyrolactone; (s)-4-methyldihydrofuran-2-one;(s)-4-methyldihydrofuran-2-one; (s)-b-methyl-g-butyrolactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -391010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     311.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-258400.0
-    phase     gas;
 }

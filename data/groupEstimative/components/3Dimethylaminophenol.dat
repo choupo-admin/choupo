@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(dimethylamino)phenol" "phenol, 3-(dimethylamino)-" "phenol, m-(dimethylamino)-" "m-(dimethylamino)phenol" "m-dimethylaminophenol" "n,n-dimethyl-3-aminophenol" "n,n-dimethyl-m-aminophenol" "(3-hydroxyphenyl)dimethylamine" "3-hydroxy-n,n-dimethylaniline" "3-n,n-dimethylaminophenol" "n,n-dimethyl-3-hydroxyaniline" "n,n-dimethyl-3-aminophenol; 3-dmap" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -81700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     403.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=85050.0
-    phase     gas;
 }

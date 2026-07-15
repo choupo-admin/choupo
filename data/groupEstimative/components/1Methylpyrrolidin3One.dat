@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-3-pyrrolidinone" "1-methyl-3-pyrrolidone" "3-pyrrolidone, 1-methyl-" "3-pyrrolidinone, 1-methyl-" "1-methyl-3-pyrrolidinone;n-methyl-3-pyrrolidinone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -129720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     260.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=35770.0
-    phase     gas;
 }

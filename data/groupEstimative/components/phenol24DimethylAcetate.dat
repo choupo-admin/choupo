@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2,4-dimethylphenyl) ethanoate" "2,4-dimethylphenyl acetate" "(2,4-dimethylphenyl) acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -353420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     478.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-183900.0
-    phase     gas;
 }

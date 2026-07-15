@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-oxidanylethanoate" "ethyl 2-hydroxyacetate" "glycolic acid, ethyl ester" "ethyl hydroxyacetate" "acetic acid, hydroxy-, ethyl ester" "hydroxyacetic acid ethyl ester" "ethyl glycollate" "glycolic acid ethyl ester" "acetic acid, 2-hydroxy-, ethyl ester" "2-hydroxyacetic acid ethyl ester" "zannofhadgwoli-uhfffaoysa-" "u360" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -595400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-464390.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH2; count 1; } { group dCH; count 1; } { group dC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-methyl-3-methylidene-oct-6-en-1-ol" "trans-isogeraniol" "7-methyl-3-methylene-6-octen-1-ol" "6-octen-1-ol, 7-methyl-3-methylene-" "7-methyl-3-methylideneoct-6-en-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -178890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=47460.0
-    phase     gas;
 }

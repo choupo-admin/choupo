@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-methylpiperidine" "piperidine, 1-methyl-" "methylpiperidine" "1-methylpiperidine solution" "n-methylpiperidin" "lk 20" "n-methyl piperidine" "1-methyl-piperidine" "1-methylpiperidine;" "17874-59-8 (hydrochloride)" "s724" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -18820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     397.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=154680.0
-    phase     gas;
 }

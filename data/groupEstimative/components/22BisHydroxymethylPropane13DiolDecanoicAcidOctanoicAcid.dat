@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 18; } { group C; count 1; } { group OH; count 4; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-bis(hydroxymethyl)propane-1,3-diol;decanoic acid;octanoic acid" "octanoic acid, decanoic acid, pentaerythritol ester" "pentaerythritol caprylic acid capric acid mixed esters" "decanoic acid, mixed esters with octanoic acid and pentaerythritol" "pentaerythrityl tetracaprylate/caprate" "pentaerythritol, caprylate caprate tetraester" "decanoic acid, mixed triesters with octanoic acid and pentaerythritol" "saturated straight chain (c8 and c10) fatty acid pentaerythritol ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2059500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1538.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1299000.0
-    phase     gas;
 }

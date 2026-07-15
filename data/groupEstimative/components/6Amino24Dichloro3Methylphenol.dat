@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group Cl; count 2; } { group OH_phenol; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-azanyl-2,4-bis(chloranyl)-3-methyl-phenol" "2-amino-4,6-dichloro-5-methylphenol" "6-amino-2,4-dichloro-m-cresol" "phenol, 6-amino-2,4-dichloro-3-methyl-" "phenol,6-amino-2,4-dichloro-3-methyl-" "2-amino-4,6-dichloro-5-methylphenol;3,5-dichloro-2-hydroxy-4-methylaniline;6-amino-2,4-dichloro-3-methylphenol;6-amino-2,4-dichloro-m-cresol;phenol, 6-amino-2,4-dichloro-3-methyl-;4, 6-dichloro-2-amino-5-methylphenol hydrochloride;6-amino-2, 4-dichloro-3-methylphenol hydrochloride;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -160690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     448.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20450.0
-    phase     gas;
 }

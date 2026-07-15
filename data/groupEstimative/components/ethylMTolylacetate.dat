@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-(3-methylphenyl)ethanoate" "ethyl meta-tolylacetate" "ethyl 2-(3-methylphenyl)acetate" "ethyl 3-methylphenylacetate" "ethyl 2-(m-tolyl)acetate" "m-tolylacetic acid ethyl ester" "rviwpvavhhvqir-uhfffaoysa-" "3-methylphenylacetic acid ethyl ester" "benzeneacetic acid,3-methyl-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -362590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     523.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-165850.0
-    phase     gas;
 }

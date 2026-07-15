@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[6-(methylamino)-4,4-diphenyl-heptan-3-yl] ethanoate" "paracymethadol" "noracimetadolo [dcit]" "noracymethadol [inn:ban]" "noracymethadolum [inn-latin]" "nor-laam" "alpha-ethyl-beta-(2-(methylamino)propyl)-beta-phenylbenzeneethanol, acetate (ester)" "benzeneethanol, .alpha.-ethyl-.beta.-[2-(methylamino)propyl]-.beta.-phenyl-, acetate (ester)" "l-alpha-noracetylmethadol" "noracimetadol" "noracimetadolo" "noracymethadolum" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -307470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     834.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=136160.0
-    phase     gas;
 }

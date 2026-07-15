@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "alpha,alpha-dimethyl-gamma-butyrolactone" "2(3h)-furanone, dihydro-3,3-dimethyl-" "3,3-dimethyldihydrofuran-2(3h)-one" "butyric acid, 2,2-dimethyl-4-hydroxy-, g-lactone" "alpha-dmgbl" "2,2-dimethyl-4-butyrolactone" "2(3h)-furanone, dihydrodimethyl-" "3,3-dimethyl-dihydro-furan-2-one" "dihydro-3,3-dimethyl-2(3h)-furanone" "4-hydroxy-2, .gamma.-lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -396410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     420.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-255470.0
-    phase     gas;
 }

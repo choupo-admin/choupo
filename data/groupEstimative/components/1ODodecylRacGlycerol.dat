@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group CH; count 1; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-dodecoxypropane-1,2-diol" "1,2-propanediol, 3-(dodecyloxy)-, (r)-" "1,2-propanediol, 3-(dodecyloxy)-, (s)-" "3-dodecyloxypropane-1,2-diol" "3-(dodecyloxy)propane-1,2-diol" "1,2-propanediol, 3-(dodecyloxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -794890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     843.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-305660.0
-    phase     gas;
 }

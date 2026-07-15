@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 39; } { group dCH_ring; count 5; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,7-tri(tetradecyl)naphthalene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -723420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1947.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=577130.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-octoxyphenol" "4-(octyloxy)phenol" "4-(n-octyloxy)phenol" "phenol, 4-(octyloxy)-" "4-octyloxyphenol" "p-(octyloxy)phenol" "hydroquinone mono-n-octyl ether" "s267" "phenol,p-(octyloxy)- (6ci,7ci,8ci);4-(n-octyloxy)phenol;hydroquinone octyl ether;p-(octyloxy)phenol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -405290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     632.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-80210.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7-dimethyloctan-3-ol" "3,7-dimethyl-3-octanol" "3-octanol, 3,7-dimethyl-" "linalool tetrahydride" "2,6-dimethyl-6-octanol" "3,7-dimethyloctanol-3" "(1)-3,7-dimethyloctan-3-ol" ".+/-.-3,7-dimethyl-3-octanol" "3-octanol, 3,7-dimethyl-, (.+/-.)-" "3-octanol,7-dimethyl-" "tetrahydro linalool" "3-octanol,3,7-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -415990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     548.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-103100.0
-    phase     gas;
 }

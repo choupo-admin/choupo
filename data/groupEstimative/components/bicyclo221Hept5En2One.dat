@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bicyclo[2.2.1]hept-2-en-5-one" "bicyclo(2.2.1)hept-5-en-2-one" "bicyclo(2.2.1)hept-2-en-5-one" "dehydronorcamphor" "2-norbornenone" "2-norbornen-5-one" "5-norbornen-2-one" "norcamphor, dehydro-" "rd-10" "bicyclo[2.2.1]hept-2-en-6-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -128290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     151.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=24830.0
-    phase     gas;
 }

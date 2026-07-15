@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group Cl; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,4',4''-trichlorotrityl alcohol" "tris(4-chlorophenyl)methan-1-ol" "benzenemethanol,4-chloro-a,a-bis(4-chlorophenyl)-" "methanol,tris(p-chlorophenyl)- (6ci,7ci,8ci);4,4',4''-trichlorotriphenylmethanol;tri-p-chlorophenyl carbinol;tris(4-chlorophenyl)carbinol;tris(4-chlorophenyl)methanol;tris(p-chlorophenyl)methanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   31490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     670.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=247670.0
-    phase     gas;
 }

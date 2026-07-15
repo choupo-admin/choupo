@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group tC; count 2; } { group I; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-iodanylprop-2-yn-1-ol" "2-propyn-1-ol, 3-iodo-" "3-iodo-2-propynol" "3-iodo-prop-2-yn-1-ol" "3-hydroxy-1-iodopropyne;3-iodo-2-propyn-1-ol; 3-iodo-2-propynol; 3-iodopropargyl alcohol; iodopropargylalcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   91690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     351.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=98480.0
-    phase     gas;
 }

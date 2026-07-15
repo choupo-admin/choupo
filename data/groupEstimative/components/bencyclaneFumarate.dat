@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH; count 2; } { group CH2_ring; count 6; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-but-2-enedioic acid;n,n-dimethyl-3-[1-(phenylmethyl)cycloheptyl]oxy-propan-1-amine" "angiociclan" "angiodel" "diacyclan" "dilangio" "fludilat" "halidor" "hemoflux" "ludilat" "bencyclane fumarate (jan)" "bencyclane fumarate [jan]" "1-benzyl-1-(3'-dimethylaminopropoxy)cycloheptane fumarate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -977750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1239.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-444530.0
-    phase     gas;
 }

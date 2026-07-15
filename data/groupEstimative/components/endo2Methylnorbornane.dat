@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3r)-3-methylbicyclo[2.2.1]heptane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -89350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     264.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=118170.0
-    phase     gas;
 }

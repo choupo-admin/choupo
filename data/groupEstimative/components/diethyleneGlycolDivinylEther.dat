@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH2; count 2; } { group dCH; count 2; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethenoxy-2-(2-ethenoxyethoxy)ethane" "divinylcarbitol" "dvedeg [russian]" "ether, bis[2-(vinyloxy)ethyl]" "bis(2-(vinyloxy)ethyl) ether" "bis[2-(vinyloxy)ethyl] ether" "di(ethylene glycol) divinyl ether" "ethene, 1,1'-[oxybis(2,1-ethanediyloxy)]bis-" "3,6,9-trioxaundeca-1,10-diene" "ether, bis(2-vinyloxyethyl)" "1,1'-(oxybis(ethyleneoxy))diethylene" "ethene, 1,1'-(oxybis(2,1-ethanediyloxy))bis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -354250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-122840.0
-    phase     gas;
 }

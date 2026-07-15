@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl naphthalene-1-carboxylate" "methyl 1-naphthalenecarboxylate" "1-naphthoic acid, methyl ester" "1-naphthalenecarboxylic acid, methyl ester" "1-naphthalenecarboxylic acid methyl ester" "methyl naphthoate" "1-(methoxycarbonyl)naphthalene" "1-naphthoic acid methyl ester" "hmrrobkaacrwbp-uhfffaoysa-" "naphthalene-1-carboxylic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -192160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-50780.0
-    phase     gas;
 }

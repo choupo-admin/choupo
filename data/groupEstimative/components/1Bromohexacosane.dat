@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 25; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanylhexacosane" "hexacosane, 1-bromo-" "bromohexacosane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -553640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1219.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=182360.0
-    phase     gas;
 }

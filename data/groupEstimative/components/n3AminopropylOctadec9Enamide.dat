@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 17; } { group dCH; count 2; } { group CdO; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(3-azanylpropyl)octadec-9-enamide" "9-octadecenamide, n-(3-aminopropyl)-, (9z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -384870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1086.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=233080.0
-    phase     gas;
 }

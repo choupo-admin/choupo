@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 1; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bis(chloranyl)-dideuterio-methane" "methylene chloride-d2" "dideuteromethylenechloride" "dideuteromethylene chloride" "methane-d2, dichloro-" "dichloro(2h2)methane" "deuterated dichloromethane" "methane-d2-, dichloro-" "dichloro(dideuterio)methane" "dichloromethane, deuterated" "de780" "methylene chloride-d2 >99.95 atom % d" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -95450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     261.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-66320.0
-    phase     gas;
 }

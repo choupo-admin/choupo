@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 3; } { group OH; count 2; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "riddelline" "riddeliine" "riddeliin" "riddeline" "13,19-didehydro-12,18-dihydroxysenecionan-11,16-dione" "(15z)-12,18-dihydroxy-13,19-didehydrosenecionan-11,16-dione" "riddelliin" "18-hydroxyseneciphylline" "senecionan-11,16-dione, 13,19-didehydro-12,18-dihydroxy-" "trans-15-ethylidene-12beta-hydroxy-12alpha-hydroxymethyl-13-methylenesenec-1-enine" "stereoisomer of 3-ethylidene-3,4,5,6,9,11,13,14,14alpha,14beta-decahydro-6-hydroxy-6-(hydroxymethyl)-5-methylene(1,6)dioxacyclododecino[2,3,4-gh] -pyrrolizidine-2,7-dione" "stereoisomer of 3-ethylidene-3,4,5,6,9,11,13,14,14alpha,14beta-decahydro-6-hydroxy-6-(hydroxymethyl)-5-methylene(1,6)dioxacyclododecino[2,3,4-gh]-pyrrolizidine-2,7-dione" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -864600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     838.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-423590.0
-    phase     gas;
 }

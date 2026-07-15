@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl(penta-1,4-diynyl)silane" "silane,trimethyl-1,4-pentadiyn-1-yl-" "silane,trimethyl-1,4-pentadiynyl- (9ci); 1-(trimethylsilyl)-1,4-pentadiyne;trimethyl-1,4-pentadiynylsilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   244130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=337590.0
-    phase     gas;
 }

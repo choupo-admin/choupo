@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 10; } { group C; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3-tritert-butyl-8-methyl-naphthalene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -162580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     695.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=331840.0
-    phase     gas;
 }

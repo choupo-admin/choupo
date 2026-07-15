@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-(trifluoromethyl)phenyl)ethanol" "1-[4-(trifluoromethyl)phenyl]ethan-1-ol" "alpha-methyl-4-(trifluoromethyl)benzyl alcohol" "(1r)-1-[4-(trifluoromethyl)phenyl]ethan-1-ol" "(1s)-1-[4-(trifluoromethyl)phenyl]ethan-1-ol" "a-methyl-4-trifluoromethylbenzyl alcohol" "alpha-methyl-4-trifluoromethylbenzyl alcohol" "alpha-methyl-4(trifluoromethyl)benzyl alcohol" ".alpha.-methyl-p-trifluoromethylbenzyl alcohol" "alpha-methyl-p-(trifluoromethyl)benzyl alcohol" "benzylalcohol, a-methyl-p-(trifluoromethyl)-(7ci,8ci);(?a'a a'a currency)-1-(p-trifluoromethylphenyl)ethanol;1-(1-hydroxyethyl)-4-trifluoromethylbenzene;1-(4-trifluoromethylphenyl)ethanol;1-(p-trifluoromethylphenyl)ethanol;4-trifluoromethyl-a-methylbenzenemethanol;a-methyl-4-trifluoromethylbenzenemethanol;a-methyl-p-(trifluoromethyl)benzyl alcohol;1-(4-(trifluoromethyl)phenyl)ethanol;1-[4-(trifluoromethyl)phenyl]ethanol;benzenemethanol, a'a" "afa-methyl-4-(trifluoromethyl)-;a'a" "afa-methyl-p-trifluoromethylbenzyl alcohol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -758620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     491.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-593170.0
-    phase     gas;
 }

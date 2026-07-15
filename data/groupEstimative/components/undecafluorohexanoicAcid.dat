@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 5; } { group F; count 11; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,4,4,5,5,6,6,6-undecakis(fluoranyl)hexanoic acid" "perfluorohexanoic acid" "hexanoic acid, undecafluoro-" "undecafluoro-1-hexanoic acid" "perfluorocaproic acid" "hexanoic acid, 2,2,3,3,4,4,5,5,6,6,6-undecafluoro-" "hexanoic acid, perfluoro-" "ipc-pffa-6" "ipc-pffa-6 hg" "perfluorohexanoic acid (pfhxa)" "perfluorohexanoic acid high grade" "undecafluorohexanoic acid high grade" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2718400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     597.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2472980.0
-    phase     gas;
 }

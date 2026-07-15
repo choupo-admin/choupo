@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,4-bis(chloranyl)benzoic acid" "benzoic acid, 3,4-dichloro-" "3,4-dichloro-benzoic acid" "benzoic acid,4-dichloro-" "34z" "benzoicacid, 3,4-dichloro-" "3,4-dcba" "benzoic acid,3,4-dichloro" "h296" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -355970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     429.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-266560.0
-    phase     gas;
 }

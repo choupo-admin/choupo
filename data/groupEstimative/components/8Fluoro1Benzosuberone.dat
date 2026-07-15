@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-fluoranyl-6,7,8,9-tetrahydrobenzo[7]annulen-5-one" "3-fluoro-6,7,8,9-tetrahydro-5h-benzo[a]cyclohepten-5-one" "3-fluoro-6,7,8,9-tetrahydrobenzo[7]annulen-5-one" "8-fluoro-2,3,4,5-tetrahydrobenzo[a][7]annulen-1-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -309770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     410.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-138250.0
-    phase     gas;
 }

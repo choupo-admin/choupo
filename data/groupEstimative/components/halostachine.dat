@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(methylamino)-1-phenyl-ethanol" "(+-)-halostachine" "2-(methylamino)-1-phenylethanol" "n-methylphenylethanolamine" "2-methylamino-1-phenylethanol" "alpha-(methylaminomethyl)benzyl alcohol" "(+-)-alpha-((methylamino)methyl)benzenemethanol" "benzyl alcohol, alpha-((methylamino)methyl)-, dl-" "alpha-((methylamino)methyl)benzyl alcohol" "2-(methylamino)-1-phenylethan-1-ol" "dl-1-phenyl-1-oxy-2-(methylamino)-aethan [german]" "ethanol, 2-(methylamino)-1-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -96600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     482.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=87440.0
-    phase     gas;
 }

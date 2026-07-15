@@ -34,9 +34,8 @@ groups
     joback ( { group C; count 2; } { group F; count 3; } { group Cl; count 1; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1-bis(bromanyl)-1-chloranyl-2,2,2-tris(fluoranyl)ethane" "chlorodibromotrifluoroethane" "ethane, 1,1-dibromo-1-chloro-2,2,2-trifluoro-" "dibromotrifluoromonochloroethane" "monochlorodibromotrifluoroethane" "1-chloro-1,1-dibromotrifluoroethane" "ethane, chlorodibromotrifluoro-" "1,1-dibromo-1-chlorotrifluoroethane" "ethane,dibromochlorotrifluoro- (7ci,9ci)" "1-chloro-1,1-dibromo-2,2,2-trifluoroethane" "1-chloro-1,1-dibromo-2,2,2-trifluoroethane (fc-113ab2)" "dibromochlorotrifluoroethane;monochlorodibromotrifluoroethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -653520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     386.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-596080.0
-    phase     gas;
 }

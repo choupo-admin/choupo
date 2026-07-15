@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetraethyl silicate" "tetraethoxysilane" "silicon ethoxide" "silicic acid (h4sio4), tetraethyl ester" "teos" "ethyl silicate" "dynasil a" "tetraethoxysilicon" "ethyl orthosilicate" "silicon tetraethoxide" "silane, tetraethoxy-" "silicic acid, tetraethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -848950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     639.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-508280.0
-    phase     gas;
 }

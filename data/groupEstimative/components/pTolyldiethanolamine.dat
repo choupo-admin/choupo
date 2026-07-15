@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-hydroxyethyl-(4-methylphenyl)amino]ethanol" "n,n-bis(2-hydroxyethyl)-p-toluidine" "2,2'-(p-tolylimino)diethanol" "diethylol-p-toluidine" "n,n-diethanol-p-toluidine" "n-(4-methylphenyl)diethanolamine" "n-(p-tolyl)diethanolamine" "n,n-di(2-hydroxyethyl)-para-toluidine" "n-(4-methylphenyl)-n,n-diethanolamine" "2,2'-[(4-methylphenyl)imino]diethanol" "2,2'-(p-tolylazanediyl)diethanol" "n,n-(2-hydroxyethyl)-p-toluidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -282240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     589.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-18340.0
-    phase     gas;
 }

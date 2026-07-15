@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 18; } { group C; count 6; } { group CH2_ring; count 6; } { group dCH_ring; count 12; } { group dC_ring; count 24; } { group OH_phenol; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexa-tert-butyl(hexahydroxy)calix[6]arene" "5,11,17,23,29,35-hexa(tert-butyl)heptacyclo[31.3.1.1~3,7~.1~9,13~.1~15,19~.1~21,25~.1~27,31~]dotetraconta-1(37),3,5,7(42),9(41),10,12,15,17,19(40),21( 3+" "5,11,17,23,29,35-hexa-tert-butylheptacyclo[31.3.1.1(3,7).1(9,13).1(15,19).1(21,25).1(27,31)]dotetraconta-1(37),3(42),4,6,9(41),10,12,15(40),16,18,21(39),22,24,27(38),28,30,33,35-octadecaene-37,38,39,40,41,42-hexol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1165730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1951.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=185220.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-3,4-dihydro-2h-quinoline" "1-methyl-1,2,3,4-tetrahydroquinoline" "1,2,3,4-tetrahydro-1-methylquinoline" "agn-pc-0dbetn" "quinoline, tetrahydromethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   136000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=315340.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group O; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2,4,5-triethoxyphenyl)ethanone" "1-(2,4,5-triethoxyphenyl)ethan-1-one" "ethanone, 1-(2,4,5-triethoxyphenyl)-" "pxbwcogdyxmwmc-uhfffaoysa-" "1-2,4,5 trimethoxy acetophenone" "2',4',5'-triethoxyacetophenone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -639410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     636.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-293400.0
-    phase     gas;
 }

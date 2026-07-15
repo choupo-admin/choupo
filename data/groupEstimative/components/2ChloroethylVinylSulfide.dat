@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group Cl; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-2-ethenylsulfanyl-ethane" "ethene, [(2-chloroethyl)thio]-" "ethene, ((2-chloroethyl)thio)-" "2-chloroethylvinyl sulfide" "ethene,[(2-chloroethyl)thio]-" "1-chloro-2-ethenylsulfanylethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   25670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     402.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91830.0
-    phase     gas;
 }

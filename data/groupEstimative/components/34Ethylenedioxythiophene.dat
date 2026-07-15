@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group O_ring; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-dihydrothieno[3,4-b][1,4]dioxine" "edot" "3,4-ethylenedioxy thiophene" "thieno[3,4-b]-1,4-dioxin, 2,3-dihydro-" "2h,3h-thiopheno[3,4-e]1,4-dioxane" "2,3-dihydrothieno(3,4-b)-1,4-dioxin" "2,3-dihydrothieno[3,4-b]-1,4-dioxin" "thieno(3,4-b)-1,4-dioxin, 2,3-dihydro-" "3,4-ethylendioxythiophen" "3,4-ethyl enedioxythiophene" "am711" "2,3-dihydrothieno[3,4-b][1,4]dioxin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -125490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     214.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8540.0
-    phase     gas;
 }

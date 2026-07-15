@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-chloranyl-6-fluoranyl-phenyl)ethanol" "2-(2-chloro-6-fluorophenyl)ethanol" "2-chloro-6-fluorophenethyl alcohol" "2-(2-chloro-6-fluorophenyl)ethan-1-ol" "2-(6-chloro-2-fluorophenyl)ethan-1-ol" "bh808" "benzeneethanol,2-chloro-6-fluoro-" "2-(2-chloro-6-fluorophenyl)ethanol;2-chloro-6-fluorophenylethanol;2-(2-chloro-6-fluorophenyl)ethan-1-ol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -358940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     464.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-233930.0
-    phase     gas;
 }

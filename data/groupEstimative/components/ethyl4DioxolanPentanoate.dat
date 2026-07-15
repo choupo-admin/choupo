@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-(2-methyl-1,3-dioxolan-2-yl)propanoate" "1,3-dioxolane-2-propionic acid, 2-methyl-, ethyl ester" "1,3-dioxolane-2-propanoic acid, 2-methyl-, ethyl ester" "ethyl 2-methyl-1,3-dioxolane-2-propionate" "ethyl 3-(2-methyl-[1,3]dioxolan-2-yl)propanoate" "ethyl levulinate ethylene ketal" "2-methyl-1,3-dioxolane-2-propanoic acid ethyl ester" "1,3-dioxolane-2-propionic acid, 2-methyl-, ethyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -734650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     474.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-426650.0
-    phase     gas;
 }

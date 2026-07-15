@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group Cl; count 1; } { group O_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[4-(chloromethyl)-1,3-dioxolan-2-yl]propan-2-one" "2-propanone, 1-(4-(chloromethyl)-1,3-dioxolan-2-yl)-" "1-(4-(chloromethyl)-1,3-dioxolan-2-yl)-2-propanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -539990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     293.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-276190.0
-    phase     gas;
 }

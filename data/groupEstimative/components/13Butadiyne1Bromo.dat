@@ -33,9 +33,8 @@ groups
     joback ( { group tCH; count 1; } { group tC; count 3; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanylbuta-1,3-diyne" "1-bromobuta-1,3-diyne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   464640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     304.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=422990.0
-    phase     gas;
 }

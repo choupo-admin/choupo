@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group dCH; count 6; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9z,11e,13e-octadecatrienoic acid" "9,11,13-octadecatrienoicacid" "9,11,13-octadecatrienoicacid, (9e,11e,13e)-" "9,11,13-octadecatrienoicacid, (9z,11e,13e)-" "9,11,13-octadecatrienoicacid, (9z,11z,13e)-" "9,11,13-octadecatrienoicacid, (e,z,z)- (8ci)" "9,11,13-octadecatrienoicacid, (e,e,e)- (8ci); 9-trans,11-trans,13-trans-octadecatrienoic acid; b-eleostearic acid; y-eleostearic acid" "9,11,13-octadecatrienoicacid, (e,z,e)- (8ci); cis,trans,trans-9,11,13-octadecatrienoic acid;cis-eleostearic acid; a-eleostearic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -413460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     890.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2570.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 22; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4-bis(4-phenylphenyl)benzene" "1,1':4',1'':4'',1''':4''',1''''-quinquephenyl" "p-pentaphenyl" "1-phenyl-4-[4-(4-phenylphenyl)phenyl]benzene" "1,1'':4'',1''':4''',1''''-quinquephenyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   485710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     773.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=734880.0
-    phase     gas;
 }

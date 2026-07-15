@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octane-1-thiol" "n-octyl mercaptan" "1-mercaptooctane" "octyl mercaptan" "octylmercaptan" "octylthiol" "1-octylthiol" "n-octanethiol" "n-octanethiolate" "n-octylmercaptan" "mercaptan c8" "nanothinks(tm) 8" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -169970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     530.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=45870.0
-    phase     gas;
 }

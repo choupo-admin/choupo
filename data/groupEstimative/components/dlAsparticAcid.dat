@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group COOH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanylbutanedioic acid" "aspartic acid" "dl-aminosuccinic acid" "dl-asparagic acid" "aspartic acid, dl-" "(+-)-aspartic acid" "(r,s)-aspartic acid" "2-aminobutanedioic acid" "aminosuccinic acid" "acid d,l-aspart" "butanedioic acid, (s)-" ".alpha.-aminosuccinic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -797920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     460.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-641010.0
-    phase     gas;
 }

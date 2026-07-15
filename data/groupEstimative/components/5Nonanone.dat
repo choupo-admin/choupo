@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nonan-5-one" "butyl ketone" "dibutyl ketone" "5-oxononane" "di-n-butyl ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -341670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     533.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104020.0
-    phase     gas;
 }

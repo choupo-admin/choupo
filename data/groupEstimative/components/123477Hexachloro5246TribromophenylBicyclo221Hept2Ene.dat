@@ -34,9 +34,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 6; } { group Cl; count 6; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,7,7-hexakis(chloranyl)-5-[2,4,6-tris(bromanyl)phenyl]bicyclo[2.2.1]hept-2-ene" "bicyclo(2.2.1)hept-2-ene, 1,2,3,4,7,7-hexachloro-5-(tribromophenyl)-" "bicyclo[2.2.1]hept-2-ene, 1,2,3,4,7,7-hexachloro-5-(tribromophenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   54340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     804.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=201690.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 1; } { group O; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-ethylhexoxy)propanenitrile" "3-[(2-ethylhexyl)oxy]propanenitrile" "propionitrile, 3-(2-ethylhexyloxy)-" "3-(2-ethylhexyloxy)propionitrile" "3-((2-ethylhexyl)oxy)propiononitrile" "propanenitrile, 3-((2-ethylhexyl)oxy)-" "propanenitrile, 3-[(2-ethylhexyl)oxy]-" "3-[(2-ethylhexyl)oxy]propionitrile" "3-(2-ethylhexyloxy)propannitril" "beta(2-ethyl hexoxy)propionitrile" "3-((ethylhexyl)oxy)propionitrile" "3-((ethylhexyl)oxy) propionitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -242990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     592.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=67480.0
-    phase     gas;
 }

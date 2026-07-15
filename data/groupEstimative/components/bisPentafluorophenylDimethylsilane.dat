@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group dC_ring; count 12; } { group F; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethyl-bis[2,3,4,5,6-pentakis(fluoranyl)phenyl]silane" "dimethyl-bis(2,3,4,5,6-pentafluorophenyl)silane" "dimethyl[bis(2,3,4,5,6-pentafluorophenyl)]silane" "bis(perfluorophenyl)dimethylsilane" "bis(pentafluorophenyl)dimethylsilane 97%" "bis(pentafluorophenyl)dimethylsilane;bis(perfluorophenyl)dimethylsilane;dimethyl[bis(2,3,4,5,6-pentafluorophenyl)]silane;bis(pentafluorophenyl)dimethylsilane 97%;bis(pentafluorophenyl)dimethylsilane97%;dimethylbis(pentafluorophenyl)silane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2046650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     870.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1857340.0
-    phase     gas;
 }

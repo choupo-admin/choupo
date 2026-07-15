@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-4-sulfanyl-butanoic acid" "homocysteine" "(2s)-2-amino-4-sulfanylbutanoic acid" "2-amino-4-mercapto-butyric acid" "l-2-amino-4-mercaptobutyric acid" "hcs" "butyric acid, 2-amino-4-mercapto-" "hcy" "homocysteine (van)" "2-amino-4-mercaptobutyric acid (van)" "butyric acid, 2-amino-4-mercapto- (8ci)" "butanoic acid, 2-amino-4-mercapto- (van)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -409170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     469.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-267710.0
-    phase     gas;
 }

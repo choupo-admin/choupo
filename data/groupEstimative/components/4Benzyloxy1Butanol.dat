@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-phenylmethoxybutan-1-ol" "4-(benzyloxy)butan-1-ol" "tetramethylene glycol monobenzyl ether" "1-butanol, 4-(benzyloxy)-" "4-benzyl-oxy-1-butanol" "1-butanol,4-(phenylmethoxy)-" "1-butanol, 4-(phenylmethoxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -318290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     540.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-87670.0
-    phase     gas;
 }

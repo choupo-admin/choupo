@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-propan-2-yloxyethanoic acid" "2-propan-2-yloxyacetic acid" "acetic acid, (1-methylethoxy)-" "2-isopropoxyacetic acid" "iso-propoxy acetic acid" "agn-pc-0d8b4n" "(propan-2-yloxy)acetic acid" "2-(propan-2-yloxy)acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -634300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     405.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-460130.0
-    phase     gas;
 }

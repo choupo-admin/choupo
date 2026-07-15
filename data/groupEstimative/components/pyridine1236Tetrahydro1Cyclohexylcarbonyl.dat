@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 8; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohexyl(3,6-dihydro-2h-pyridin-1-yl)methanone" "1-(cyclohexylcarbonyl)-1,2,3,6-tetrahydropyridine" "pyridine, 1-(cyclohexylcarbonyl)-1,2,3,6-tetrahydro-" "methanone,cyclohexyl(3,6-dihydro-1(2h)-pyridinyl)-" "1,2,3,6-tetrahydro-1-(cyclohexylcarbonyl)pyridine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -143140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     590.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=130690.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group Cl; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-2-oxidanyl-propanoic acid" "3-chlorolactic acid" "beta-chlorolactic acid" "3-chloro-2-hydroxypropionic acid" "propanoic acid, 3-chloro-2-hydroxy-" "3-chlorolactate" "chlorolactic acid" "(2r)-3-chloro-2-hydroxypropanoic acid" "(2s)-3-chloro-2-hydroxypropanoic acid" "a-chlorolactic acid" "3-chloro-lactic acid" "dl-3-chlorolactic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -628770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-520720.0
-    phase     gas;
 }

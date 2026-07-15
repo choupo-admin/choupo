@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylpropyl 3-phenylprop-2-enoate" "hydrocinnamyl cinnamate" "2-propenoic acid, 3-phenyl-, 3-phenylpropyl ester" "2-propenoic acid,3-phenyl-, 3-phenylpropyl ester" "cinnamicacid, 3-phenylpropyl ester (7ci,8ci); hydrocinnamyl cinnamate; phenylpropylcinnamate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -141850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     689.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=95350.0
-    phase     gas;
 }

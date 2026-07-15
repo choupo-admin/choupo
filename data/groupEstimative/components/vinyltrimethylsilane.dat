@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethenyl(trimethyl)silane" "silane, ethenyltrimethyl-" "trimethyl(vinyl)silane" "(trimethylsilyl)ethylene" "trimethylvinylsilane" "ethenyltrimethylsilane" "silane, trimethylvinyl-" "vinyl trimethylsilane" "ethenyl-trimethylsilane" "silane, trimethylvinyl- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -132720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     472.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-25700.0
-    phase     gas;
 }

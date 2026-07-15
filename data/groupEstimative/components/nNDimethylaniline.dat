@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethylaniline" "dimethylphenylamine" "benzenamine, n,n-dimethyl-" "(dimethylamino)benzene" "n,n-dimethylbenzenamine" "n,n-dimethylbenzeneamine" "n,n-dimethylphenylamine" "aniline, n,n-dimethyl-" "dimethylaminobenzene" "n,n-dimethylanilin" "n,n-(dimethylamino)benzene" "dimethyl-phenyl-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   95610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     377.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=239670.0
-    phase     gas;
 }

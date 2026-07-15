@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylpropane-1-thiol" "3-phenylpropanethiol" "1-propanethiol,3-phenyl- (6ci,7ci); 3-phenyl-1-propanethiol; 3-phenylpropanethiol;3-phenylpropyl mercaptan; 3-phenylpropylthiol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   45920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166700.0
-    phase     gas;
 }

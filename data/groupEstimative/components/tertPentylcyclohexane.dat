@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylbutan-2-ylcyclohexane" "cyclohexane, tert-pentyl-" "tert-amylcyclohexane" "2-cyclohexyl-2-methylbutane" "cyclohexane, (1,1-dimethylpropyl)-" "2-methyl-2-cyclohexylbutane" "cyclohexane,1-dimethylpropyl)-" "(2-methylbutan-2-yl)cyclohexane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -224800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=69030.0
-    phase     gas;
 }

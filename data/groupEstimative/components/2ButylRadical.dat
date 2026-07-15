@@ -30,9 +30,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butane" "1-methyl-propyl" "sec-c4h9" "butan-2-yl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -67280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     308.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22910.0
-    phase     gas;
 }

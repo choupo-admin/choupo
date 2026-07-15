@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenoxypropan-2-amine" "2-phenoxyisopropylamine" "ethylamine, 1-methyl-2-phenoxy-" "1-phenoxy-2-propanamine" "1-methyl-2-phenoxy-ethylamine" "1-phenoxyprop-2-ylamine" "(s) 1-phenoxy-2-propylamine" "(2-aminopropoxy)benzene" "1-phenoxy-2-propylamine" "2-propanamine, 1-phenoxy-" "2-propanamine, 1-phenoxy- (9ci)" "2-propanamine,1-phenoxy-, (2r)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -96270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=96320.0
-    phase     gas;
 }

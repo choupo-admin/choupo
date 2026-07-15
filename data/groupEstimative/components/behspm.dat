@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 14; } { group NH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-ethyl-n'-[4-[4-(ethylamino)butylamino]butyl]butane-1,4-diamine" "dehspm" "diethylhomospermine" "n(1),n(14)-bis(ethyl)homospermine" "be-4-4-4" "n1 n14-bis(ethyl)norspermine" "1,14-bis(ethylamino)-5,10-diazatetradecane" "n(sup 1),n(sup 14)-diethylhomospermine" "n(sup 1),n(sup 14)-bis(ethyl)homospermine" "n,n'-bis(4-(ethylamino)butyl)-1,4-butanediamine" "1,4-butanediamine, n,n'-bis(4-(ethylamino)butyl)-" "n(1),n(14)-diethylhomospermine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -159690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     941.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=441400.0
-    phase     gas;
 }

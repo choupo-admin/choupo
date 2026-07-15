@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(13-methyl-17-oxidanylidene-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthren-3-yl) ethanoate" "estrone, acetate" "3-acetoxyestrone" "1,3,5[10]-estratrien-3-ol-17-one acetate" "3-hydroxy-1,3,5[10]-estratrien-17-one 3-acetate" "estra-1,3,5(10)-trien-17-one, 3-(acetyloxy)-" "17-oxoestra-1,3,5(10)-trien-3-yl acetate" "(13-methyl-17-oxo-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthren-3-yl) acetate" "[(8r,9r,13s,14s)-13-methyl-17-oxo-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthren-3-yl] acetate" "15-methyl-14-oxotetracyclo[8.7.0.0^{2,7}.0^{11,15}]heptadeca-2(7),3,5-trien-5-yl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -496540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     585.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-77440.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(8r,9s,13s,14s)-13-methyl-3-oxidanyl-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthren-17-one" "folliculin" "oestrone" "theelin" "follicular hormone" "estrovarin" "disynformon" "estrugenone" "folliculine" "follicunodis" "glandubolin" "hiestrone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -303820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     488.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=71100.0
-    phase     gas;
 }

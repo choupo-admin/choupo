@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-3,3-dimethyl-butane" "neohexyl chloride" "3,3-dimethylbutyl chloride" "butane, 1-chloro-3,3-dimethyl-" "tert-butylchloroethylene" "1-chloro-3,3-dimethyl butane" "1-chloro-3,3-dimethyl-butane" "butane,1-chloro-3,3-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -191660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     384.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-9450.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 21; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "docosan-1-ol" "behenyl alcohol" "docosanol" "behenic alcohol" "abreva" "docosyl alcohol" "n-docosanol" "lidakol" "lidavol" "tadenan" "erazaban" "healip" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -649640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1063.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2460.0
-    phase     gas;
 }

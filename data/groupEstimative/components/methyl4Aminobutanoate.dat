@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-azanylbutanoate" "gaba methyl ester" "methyl 4-aminobutyrate" "methyl gamma-aminobutyrate" "4-aminobutyric acid methyl ester" "butyric acid, 4-amino-, methyl ester" "butanoic acid, 4-amino-, methyl ester (9ci)" "13031-60-2 (hydrochloride)" "butanoic acid, 4-amino-, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -430020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-252700.0
-    phase     gas;
 }

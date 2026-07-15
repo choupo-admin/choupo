@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group Cl; count 1; } { group CdO; count 1; } { group NH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-n-(2-cyanoethyl)ethanamide" "ceca" "udankor" "udonkor" "nf 21" "acetamide, 2-chloro-n-(2-cyanoethyl)-" "n-(beta-cyanoethyl)chloroacetamide" "n-(beta-cyanoethyl)monochloroacetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -56500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72940.0
-    phase     gas;
 }

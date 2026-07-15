@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohexyl ethanoate" "acetic acid, cyclohexyl ester" "hexalin acetate" "cyclohexanyl acetate" "acetic acid cyclohexyl ester" "cyclohexanol, acetate" "adronal acetate" "cyclohexanolazetat" "cyclohexane acetate" "cyclohexanolazetat [german]" "cyclohexylester kyseliny octove" "u361" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -471410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     488.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-269440.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH2; count 2; } { group dC; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-methyl-3-methylidene-oct-7-enenitrile" "7-methyl-3-methylideneoct-7-enenitrile" "7-octenenitrile, 7-methyl-3-methylene-" "7-methyl-3-methylene-7-octenenitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   146430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     534.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=325080.0
-    phase     gas;
 }

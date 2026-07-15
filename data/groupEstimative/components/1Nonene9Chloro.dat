@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 7; } { group dCH2; count 1; } { group dCH; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-chloranylnon-1-ene" "9-chloronon-1-ene" "9-chloro-1-nonene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -119400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=100810.0
-    phase     gas;
 }

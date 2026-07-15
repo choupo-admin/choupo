@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 8; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 2; } { group COOH; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10-oxidanylidene-10-(1,2,2,6,6-pentamethylpiperidin-4-yl)oxy-decanoic acid" "decanedioic acid, 1-(1,2,2,6,6-pentamethyl-4-piperidinyl) ester" "decanedioic acid, mono(1,2,2,6,6-pentamethyl-4-piperidinyl) ester" "10-oxo-10-(1,2,2,6,6-pentamethylpiperidin-4-yl)oxydecanoic acid" "10-oxo-10-[(1,2,2,6,6-pentamethyl-4-piperidyl)oxy]decanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1005870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1059.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-415830.0
-    phase     gas;
 }

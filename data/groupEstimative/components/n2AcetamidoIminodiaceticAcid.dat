@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CdO; count 1; } { group COOH; count 2; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[(2-azanyl-2-oxidanylidene-ethyl)-(2-hydroxy-2-oxoethyl)amino]ethanoic acid" "carbamoylmethylaminodiacetic acid" "ada" "n-(carbamoylmethyl)iminodiacetic acid" "2,2'-((2-amino-2-oxoethyl)azanediyl)diacetic acid" "2,2'-[(2-amino-2-oxoethyl)imino]diacetic acid" "n-carbamoylmethyliminodi(acetic acid)" "glycine, n-(2-amino-2-oxoethyl)-n-(carboxymethyl)-" "(carbamoylmethyl-carboxymethyl-amino)-acetic acid" "mha" "2-[(carbamoylmethyl)(carboxymethyl)amino]acetic acid" "n-[2-acetamido]-2-iminodiacetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -878970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     590.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-639870.0
-    phase     gas;
 }

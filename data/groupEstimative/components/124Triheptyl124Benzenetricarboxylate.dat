@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 18; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triheptyl benzene-1,2,4-tricarboxylate" "1,2,4-benzenetricarboxylic acid, 1,2,4-triheptyl ester" "1,2,4-benzenetricarboxylic acid, triheptyl ester" "tri-n-heptyl trimellitate" "triheptyl trimellitate" "NS00024975" "w-109675" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1400780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1359.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-636240.0
-    phase     gas;
 }

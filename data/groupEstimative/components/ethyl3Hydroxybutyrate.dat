@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-oxidanylbutanoate" "ethyl 3-hydroxybutanoate" "butanoic acid, 3-hydroxy-, ethyl ester" "butyric acid, 3-hydroxy-, ethyl ester" "ethyl beta-hydroxybutyrate" "ethyl dl-3-hydroxybutyrate" "ethyl (1)-3-hydroxybutyrate" "ethyl 3-hydroxybutyrate (natural)" "agn-pc-00gt2v" "3-hydroxy-butyric acid ethyl ester" "dl-3-hydroxybutyric acid ethyl ester" "butanoic acid, 3-hydroxy-, ethyl ester, (.+/-.)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -641960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     482.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-449990.0
-    phase     gas;
 }

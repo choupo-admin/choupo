@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 2; } { group dCH; count 2; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-1,1,4,4-tetramethoxybut-2-ene" "trans-1,1,4,4-tetramethoxy-2-butene" "1,1,4,4-tetramethoxy-trans-2-butene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -630670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     487.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-328180.0
-    phase     gas;
 }

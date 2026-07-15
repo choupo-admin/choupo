@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylpropane-1,2,3-tricarboxylic acid;hydrate" "citric acid hydrate" "citric acid, monohydrate" "2-hydroxypropane-1,2,3-tricarboxylic acid hydrate" "1,2,3-propanetricarboxylic acid, 2-hydroxy-, monohydrate" "citro hydrate" "citric acid (tn)" "citric acid, acs" "citric acid hydrate (jp16)" "citric acid, u.s.p." "citric acid monohydrate (usp)" "m189" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1378960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     794.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1166070.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentane, 3,3-dimethyl-" "pentane,3,3-dimethyl-" "agn-pc-0d6mx9" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -196560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=10900.0
-    phase     gas;
 }

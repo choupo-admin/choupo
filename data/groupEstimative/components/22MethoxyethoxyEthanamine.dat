@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-aminoethoxy)-2-methoxyethane" "ethylamine, 2-(2-methoxyethoxy)-," "ethanamine, 2-(2-methoxyethoxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -377180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-152330.0
-    phase     gas;
 }

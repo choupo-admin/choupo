@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group C_ring; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[4-[1-(4-butanoyloxyphenyl)-3-oxidanylidene-2-benzofuran-1-yl]phenyl] butanoate" "(3-oxo-1,3-dihydro-2-benzofuran-1,1-diyl)di-4,1-phenylene dibutanoate" "butanoic acid, (3-oxo-1(3h)-isobenzofuranylidene)di-4,1-phenylene ester" "butanoic acid, 1,1'-((3-oxo-1(3h)-isobenzofuranylidene)di-4,1-phenylene) ester" "butanoic acid, 1,1'-[(3-oxo-1(3h)-isobenzofuranylidene)di-4,1-phenylene] ester" "butanoic acid,1-phenylene ester" "(3-oxo-1(3h)-isobenzofurylidene)di-p-phenylene dibutyrate" "[4-[1-(4-butanoyloxyphenyl)-3-oxo-2-benzofuran-1-yl]phenyl] butanoate" "4-{1-[4-(butanoyloxy)phenyl]-3-oxo-2-benzofuran-1-yl}phenyl butanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -797550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1002.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-358430.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-oxidanylidenebutanoic acid" "3-ketobutyrate" "3-oxobutyric acid" "3-oxobutanoic acid" "oxobutyrate" "beta-ketobutyric acid" "3-ketobutyric acid" "diacetic acid" "3-oxo-butanoic acid" "butanoic acid, 3-oxo-" "3-oxo-butyric acid" "3-oxobutanate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -588740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     391.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-490030.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group C; count 1; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-azanyl-3-methyl-3-oxidanyl-butanoic acid" "(2r)-2-amino-3-hydroxy-3-methylbutanoic acid" "d-b-hydroxyvaline" "d-threonine, 3-methyl-" "(r)-(-)-2-amino-3-hydroxy-3-methylbutanoic acid" "(r)-2-amino-3-hydroxy-3-methylbutanoic acid;d-b-hydroxyvaline;d-valine,3-hydroxy- (9ci);valine, 3-hydroxy-, d- (8ci);" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -629270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-422660.0
-    phase     gas;
 }

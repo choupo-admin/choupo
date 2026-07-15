@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group I; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,5-tris(iodanyl)benzoic acid" "floraltone" "tiba" "triiodobenzoic acid" "johnkolor" "benzoic acid, 2,3,5-triiodo-" "2,3,5-tiba" "2,3,5-triiodobenzoicacid" "triiodobenzoic acid (van)" "2,3,5-triiodo-benzoic acid" "tib" "b3i" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -105350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     523.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-77970.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group C; count 2; } { group CH2_ring; count 14; } { group CH_ring; count 6; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( ""4',4""(5"")-di-tert-butyldicyclohexano-18-crown-6"" "4 inverted exclamation marka,4 inverted exclamation marka(5 inverted exclamation marka)-di-tert-butyldicyclohexano-18-crown-6" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1378090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     801.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-372740.0
-    phase     gas;
 }

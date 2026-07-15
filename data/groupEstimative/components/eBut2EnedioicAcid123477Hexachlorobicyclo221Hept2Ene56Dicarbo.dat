@@ -34,9 +34,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH; count 2; } { group CH_ring; count 2; } { group C_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 6; } { group OH; count 2; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-but-2-enedioic acid;1,2,3,4,7,7-hexakis(chloranyl)bicyclo[2.2.1]hept-2-ene-5,6-dicarboxylic acid;propane-1,2-diol" "bicyclo(2.2.1)hept-5-ene-2,3-dicarboxylic acid, 1,4,5,6,7,7-hexachloro-, polymer with (2e)-2-butenedioic acid and 1,2-propanediol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2125870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1364.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1688260.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 7; } { group CH_ring; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,4a,5,6,7,8,8a-decahydroquinoline" "trans-decahydroquinoline" "quinoline, decahydro-" "cis-decahydroquinoline" "quinoline, decahydro-, cis-" "perhydroquinoline" "quinoline, decahydro-, trans-" "decahydroquinoline, mixture of cis and trans" "2-azabicyclo[4.4.0]decane" "(4ar,8ar)-decahydroquinoline" "quinoline, decahydro-, (4ar,8as)-rel-" "agn-pc-0cxswt" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -70320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     399.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=185710.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5,6,7,8-tetrahydronaphthalen-2-ol" "6-tetralinol" "6-hydroxytetralin" "2-naphthalenol, 5,6,7,8-tetrahydro-" "ac-beta-tetralol" "2-naphthol, 5,6,7,8-tetrahydro-" "5,6,7,8-tetrahydro-beta-naphthol" "5,6,7,8-tetrahydro-2-hydroxynaphthalene" "5,6,7,8-tetrahydro-2-napthol" "tetrahydro-.beta.-naphthol" "5,7,8-tetrahydro-2-naphthol" "2-naphthol,6,7,8-tetrahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -115000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     431.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37840.0
-    phase     gas;
 }

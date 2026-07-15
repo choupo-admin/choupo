@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group Br; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-bromanylbutanenitrile" "4-bromobutanenitrile" "butanenitrile, 4-bromo-" "butyronitrile, 4-bromo-" "3-bromopropyl cyanide" "3-cyanopropyl bromide" "usaf do-6" "4-bromo butyronitrile" "gamma-bromobutyronitrile" "1-bromo-3-cyanopropane" "trimethylene bromocyanide" ".gamma.-bromobutyronitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   65320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     368.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=130300.0
-    phase     gas;
 }

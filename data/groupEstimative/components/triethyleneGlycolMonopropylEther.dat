@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group OH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-(2-propoxyethoxy)ethoxy]ethanol" "Ethanol, 2-[2-(2-propoxyethoxy)ethoxy]-" "2-(2-(2-Propoxyethoxy)ethoxy)ethanol" "3,6,9-trioxadodecane-1-ol" "Ethanol, 2-(2-(2-propoxyethoxy)ethoxy)-" "Ethanol, 2-2-(2-propoxyethoxy)ethoxy-" "triethylene glycol n propyl ether" "j96.996f" "2-[2-(2-Propoxy-ethoxy)-ethoxy]-ethanol" "CHEMBL3184425" "tox21_301227" "NCGC00256095-01" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -777980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     591.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-426920.0
-    phase     gas;
 }

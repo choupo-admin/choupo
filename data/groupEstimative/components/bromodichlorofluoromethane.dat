@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group F; count 1; } { group Cl; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bromanyl-bis(chloranyl)-fluoranyl-methane" "methane, bromodichlorofluoro-" "dichlorobromofluoromethane" "bromo(dichloro)fluoromethane" "bromo-dichloro-fluoromethane" "bromo(dichloro)fluoromethane;" "methane,bromodichlorofluoro- (6ci,7ci,8ci,9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -273980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     305.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-243970.0
-    phase     gas;
 }

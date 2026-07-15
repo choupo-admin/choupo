@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-hydroxyethyl ethanoate" "2-acetoxyethanol" "ethylene glycol, monoacetate" "1,2-ethanediol, monoacetate" "ethylene glycol monoacetate" "ethylenediol, monoacetate" "glycol monoacetate" "acetic acid 2-hydroxyethyl ester" "beta-hydroxyethyl acetate" "1,2-ethanediol, 1-acetate" "ethylene glycol acetate" "laneth-9 acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -595400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-464390.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-phenylethenyl)pyridine" "pyridine,3-(2-phenylethenyl)-" "3-stilbazole(6ci); pyridine, 3-styryl- (7ci,8ci); 1-phenyl-2-(3'-pyridyl)-ethylene;3-styrylpyridine; b-(3-pyridyl)styrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   311420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=440670.0
-    phase     gas;
 }

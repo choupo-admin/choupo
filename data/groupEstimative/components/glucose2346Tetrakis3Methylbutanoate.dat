@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 8; } { group CH2; count 5; } { group CH; count 8; } { group OH; count 1; } { group OdCH_al; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3,4,5-tris(3-methylbutanoyloxy)-2-oxidanyl-6-oxidanylidene-hexyl] 3-methylbutanoate" "2,3,4,6-tetrakis-o-(3-methylbutanoyl)hexose" "[2-hydroxy-3,4,5-tris(3-methylbutanoyloxy)-6-oxohexyl] 3-methylbutanoate" "[(2r,3r,4s,5r)-2-hydroxy-3,4,5-tris(3-methylbutanoyloxy)-6-oxohexyl] 3-methylbutanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2129140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1367.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1329300.0
-    phase     gas;
 }

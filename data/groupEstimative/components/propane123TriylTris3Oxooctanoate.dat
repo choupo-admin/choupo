@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 17; } { group CH; count 1; } { group CdO; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(3-oxidanylideneoctanoyloxy)propyl 3-oxidanylideneoctanoate" "glycerol tri(3-oxooctanoate)" "octanoic acid, 3-oxo-, 1,1',1''-(1,2,3-propanetriyl) ester" "glyceryl tri(3-oxooctanoate)" "2,3-bis(3-oxooctanoyloxy)propyl 3-oxooctanoate" "octanoic acid, 3-oxo-, 1,2,3-propanetriyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1895470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1432.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1143850.0
-    phase     gas;
 }

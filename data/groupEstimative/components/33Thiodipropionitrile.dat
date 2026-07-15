@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group CN; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-cyanoethylsulfanyl)propanenitrile" "propanenitrile, 3,3'-thiobis-" "dicyanoethyl sulfide" "2-cyanoethyl sulfide" "di(2-cyanoethyl)sulfide" "bis(2-cyanoethyl) sulfide" "usaf ha-5" "sulfide, bis(2-cyanoethyl)" "propionitrile, 3,3'-thiodi-" "3,3'-thiodipropiononitrile" "beta,beta'-thiodipropionitrile" "beta,beta'-dicyanodiethyl sulfide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   204460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     463.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=299120.0
-    phase     gas;
 }

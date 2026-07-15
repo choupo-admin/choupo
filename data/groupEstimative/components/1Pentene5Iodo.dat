@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-iodanylpent-1-ene" "5-iodo-1-pentene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   55770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=137180.0
-    phase     gas;
 }

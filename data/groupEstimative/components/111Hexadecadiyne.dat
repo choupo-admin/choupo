@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group tCH; count 1; } { group tC; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadeca-1,11-diyne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   190630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     720.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=509710.0
-    phase     gas;
 }

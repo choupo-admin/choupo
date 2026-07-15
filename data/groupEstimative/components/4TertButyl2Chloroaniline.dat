@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-tert-butyl-2-chloranyl-aniline" "4-tert-butyl-2-chloroaniline" "aniline, 4-tert-butyl-2-chloro-" "4-(tert-butyl)-2-chlorophenylamine" "benzenamine,2-chloro-4-(1,1-dimethylethyl)-" "aniline,4-tert-butyl-2-chloro- (6ci); (4-tert-butyl-2-chlorophenyl)amine;2-chloro-4-(1,1-dimethylethyl)aniline; 4-tert-butyl-2-chlorobenzenamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -26840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     472.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=183830.0
-    phase     gas;
 }

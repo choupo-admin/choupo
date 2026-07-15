@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 20; } { group O_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16,18,18,20,20-icosamethyl-1,3,5,7,9,11,13,15,17,19-decaoxa-2,4,6,8,10,12,14,16,18,20-decasilacycloicosane" "2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16,18,18,20,20-icosamethylcyclodecasiloxane" "cyclodecasiloxane,eicosamethyl- (8ci,9ci); eicosamethylcyclodecasiloxane" "cyclodecasiloxane,2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16,18,18,20,20-eicosamethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2842310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1778.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1807520.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH; count 10; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[(1z,3z,5z,7z,9z)-dodeca-1,3,5,7,9-pentaenoxy]propan-2-ol" "methylglycyl fecapentaene-12" "2'-(1,3,5,7,9-dodecapentaenyloxy)-2'-propanol" "(all e)-1-(2-hydroxypropoxy)-1,3,5,7,9-dodecapentaene" "2-propanol, 1-(1,3,5,7,9-dodecapentaenyloxy)-, (all-e)-" "1,3,5,7,9-dodecapentaene, 1-(2-hydroxypropoxy)-, (all-e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -56560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     760.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=232260.0
-    phase     gas;
 }

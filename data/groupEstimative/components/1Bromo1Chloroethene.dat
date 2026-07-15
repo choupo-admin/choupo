@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dC; count 1; } { group Cl; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-1-chloranyl-ethene" "ethene, 1-bromo-1-chloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   41620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     309.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=47640.0
-    phase     gas;
 }

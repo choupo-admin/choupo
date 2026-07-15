@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohex-3-ene-1-carboxylic acid" "3-cyclohexenecarboxylic acid" "cyclohex-3-enecarboxylic acid" "1,2,3,6-tetrahydrobenzoic acid" "1-cyclohexene-4-carboxylic acid" "delta3-cyclohexenylcarboxylic acid" ".delta.(sup3)-cyclohexenecarboxylic acid" "(s)-3-naphthenic acid" ".delta.3-cyclohexenecarboxylic acid" ".delta.3-cyclohexenylcarboxylic acid" "(r)-3-cyclohexenecarboxylic acid" "3-cyclohexene carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -425980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-281440.0
-    phase     gas;
 }

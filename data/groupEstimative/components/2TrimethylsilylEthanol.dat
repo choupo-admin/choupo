@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-trimethylsilylethanol" "(2-hydroxyethyl)trimethylsilane" "ethanol, 2-(trimethylsilyl)-" "silane, (2-hydroxyethyl)trimethyl-" "2-trimethylsilanyl-ethanol" "2-(trimethylsilyl) ethanol" "2-(trimethylsilyl)ethan-1-ol" "3,3-dimethyl-3-silabutan-1-ol" "3,5-dimethyl-4-isoxazolemethanol" "(3,5-dimethylisoxazol-4-yl)methanol;3,5-dimethylisoxazole-4-methanol;3,5-dimethyl-4-hydroxymethylisoxazole" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -410380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     528.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-250360.0
-    phase     gas;
 }

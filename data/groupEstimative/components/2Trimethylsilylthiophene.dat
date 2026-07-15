@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl(thiophen-2-yl)silane" "2-thienyltrimethylsilane" "trimethyl-2-thienylsilane" "silane, trimethyl-2-thienyl-" "trimethyl(2-thienyl)silane" "thien-2-yl-trimethyl-silane" "thiophene,2-(trimethylsilyl)-" "2-(1,1-dimethyl-1-silaethyl)thiophene" "silane,trimethyl-2-thienyl- (6ci,7ci,8ci,9ci);2-(trimethylsilyl)thiophene;2-thienyltrimethylsilane;trimethyl-2-thienylsilane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -69260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     516.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37710.0
-    phase     gas;
 }

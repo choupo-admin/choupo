@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group NH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(methylamino)ethanenitrile" "sarcosinonitrile" "(methylamino)acetonitrile" "2-(methylamino)acetonitrile" "acetonitrile, (methylamino)-" "n-methylaminoacetonitrile" "glycinonitrile, n-methyl-" "acetonitrile, 2-(methylamino)-" "n-methylglycinonitrile sulfate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   113100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     319.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=196950.0
-    phase     gas;
 }

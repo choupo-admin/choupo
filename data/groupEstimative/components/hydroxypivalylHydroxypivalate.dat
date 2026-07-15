@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 2; } { group OH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-hydroxy-2,2-dimethylpropyl) 3-hydroxy-2,2-dimethylpropanoate" "1,3-Propanediol, 2,2-dimethyl-, mono(2,2-dimethylhydracrylate)" "2,2-Dimethyl-1,3-propanediol mono(hydroxypivalate)" "2,2-dimethyl-3-hydroxypropyl 2,2-dimethyl-3-hydroxypropionate" "2,2-dimethyl-3-hydroxypropyl α,α-dimethyl-β-hydroxypropionate" "3-(Hydroxypivaloyloxy)-2,2-dimethylpropanol" "3-hydroxy-2,2-dimethylpropyl 2,2-dimethylhydracrylate" "3-hydroxy-2,2-dimethylpropyl 3-hydroxy-2,2-dimethylpropanoate" "3-hydroxy-2,2-dimethylpropyl 3-hydroxy-2,2-dimethylpropionate" "3-hydroxy-2,2-dimethylpropyl hydroxypivalate" "ester diol 204" "hydracrylic acid, 2,2-dimethyl-, 3-hydroxy-2,2-dimethylpropyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -888970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     620.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-545010.0
-    phase     gas;
 }

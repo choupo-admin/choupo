@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "suberone" "suberon" "ketoheptamethylene" "cycloheptanon" "cycloheptyloxy" "cycloheptan-1-one" "1-oxocycloheptane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-94470.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-amino-4-methoxybenzotrifluoride" "2-amino-4-trifluoromethylanisole" "2-methoxy-5-(trifluoromethyl)phenylamine" "6-methoxy-alpha,alpha,alpha-trifluoro-m-toluidine" "agn-pc-0cxoi7" "2-methoxy-5-trifluoromethylaniline" "2-amino-4-(trifluoromethyl)anisole" "2-methoxy-5-trifluoromethyl-aniline" "5-trifluoromethyl-o-anisidine" "2-methoxy-5-trifluoromethyl-phenylamine" "3-amino-4-(trifluoromethyl)anisole" "6-methoxy-" "a," "a," "a-trifluoro-m-toluidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -690370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-510510.0
-    phase     gas;
 }

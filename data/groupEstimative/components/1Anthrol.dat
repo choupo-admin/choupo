@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 9; } { group dC_ring; count 5; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "anthracen-1-ol" "1-hydroxyanthracene" "1-anthracenol" "alpha-anthrol" "1-anthrol(8ci)" "alpha-hydroxyanthracene" "anthrol" ".alpha.-anthrol" "anthracene, 1-hydroxy" "1-anthrol (8ci)" "1-anthracenol (9ci)" ".alpha.-hydroxyanthracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   97600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     397.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=228460.0
-    phase     gas;
 }

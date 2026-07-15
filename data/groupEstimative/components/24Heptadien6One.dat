@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 4; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hepta-3,5-dien-2-one" "2,4-heptadien-6-one;3,5-heptadienone; crotonylideneacetone; crotylideneacetone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -65950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=39580.0
-    phase     gas;
 }

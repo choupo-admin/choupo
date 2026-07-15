@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butyl methanoate" "n-butyl formate" "formic acid, butyl ester" "n-butyl methanoate" "formic acid butyl ester" "n-butylformate" "butylester kyseliny mravenci" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -70080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     534.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=35180.0
-    phase     gas;
 }

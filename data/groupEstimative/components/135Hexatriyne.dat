@@ -33,9 +33,8 @@ groups
     joback ( { group tCH; count 2; } { group tC; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexa-1,3,5-triyne" "triacetylene" "hc#cc#cc#ch" "hc#c-c#c-c#ch" "hc.equiv.cc.equiv.cc.equiv.ch" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   688930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     300.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=648580.0
-    phase     gas;
 }

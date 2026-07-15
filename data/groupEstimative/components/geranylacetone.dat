@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group dCH; count 2; } { group dC; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6,10-dimethylundeca-5,9-dien-2-one" "geranyl acetone" "5,9-undecadien-2-one, 6,10-dimethyl-" "6,10-dimethyl-undeca-5,9-dien-2-one" "undecadien-2-one, 6,10-dimethyl-" "6,10-dimethyl-5,9-undecadiene-2-one" "cis,trans-geranylacetone" "5,9-undecadien-2-one,6,10-dimethyl-, (5z)-" "(e)-6,10-dimethyl-5,9-undecadien-2-one;(e)-geranylacetone;6,10-dimethyl-(e)-5,9-undecadien-2-one;trans-6,10-dimethyl-5,9-undecadien-2-one;" "5,9-undecadien-2-one,6,10-dimethyl-, (z)- (8ci); 5,9-undecadien-2-one, 6,10-dimethyl-, cis- (6ci);(z)-geranylacetone; nerylacetone; cis-6,10-dimethyl-5,9-undecadien-2-one;cis-geranylacetone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -209370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     667.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=73000.0
-    phase     gas;
 }

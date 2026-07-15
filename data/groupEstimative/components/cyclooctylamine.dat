@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 7; } { group CH_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclooctanamine" "aminocyclooctane" "cyclooctanamine; cyclooctylamine" "hsohbwmxeckekv-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -132660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     528.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83180.0
-    phase     gas;
 }

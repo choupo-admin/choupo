@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 7; } { group CH2; count 3; } { group CH; count 3; } { group NH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-[bis(butan-2-ylamino)-methyl-silyl]butan-2-amine" "silanetriamine, 1-methyl-n,n',n''-tris(1-methylpropyl)-" "1-methyl-n,n,n-tris(1-methylpropyl)silanetriamine" "n,n',n''-tri(butan-2-yl)-1-methylsilanetriamine" "n-[bis(butan-2-ylamino)-methylsilyl]butan-2-amine" "1-methyl-n,n',n''-tris(1-methylpropyl)silanetriamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -278700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     882.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=214670.0
-    phase     gas;
 }

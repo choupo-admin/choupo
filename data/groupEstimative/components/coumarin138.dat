@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-(dimethylamino)-2,3-dihydro-1h-cyclopenta[c]chromen-4-one" "7-(dimethylamino)-2,3-dihydrocyclopenta[c]chromen-4(1h)-one" "cyclopenta[c][1]benzopyran-4(1h)-one, 7-(dimethylamino)-2,3-dihydro-" "cyclopenta(c)(1)benzopyran-4(1h)-one, 7-(dimethylamino)-2,3-dihydro-" "cyclopenta[c][1]benzopyran-4(1h)-one,3-dihydro-" "7-(dimethylamino)-1,2,3-trihydrocyclopenta[1,2-c]chromen-4-one" "7-(dimethylamino)-2,3-dihydrocyclopenta[c]chromen-4(1h)-one; {cyclopenta[c][1]benzopyran-4(1h)-one,} 7-(dimethylamino)-2,3-dihydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -141170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120280.0
-    phase     gas;
 }

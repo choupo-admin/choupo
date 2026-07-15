@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dO_oth; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-dimethylthiolane 1,1-dioxide" "2,4-dimethyl sulfolane" "2,4-dimethyltetrahydrothiophene-1,1-dioxide" "2,4-dimethyltetramethylene sulfone" "2,4-dimethyltetrahydrothiophene dioxide" "2,4-dimethyltetrahydrothiophene 1,1-dioxide" "thiophene, tetrahydro-2,4-dimethyl-, 1,1-dioxide" "2,4-dimethylthiolane-1,1-dione" "dimethylsulfolane" "thiophene,4-dimethyl-, 1,1-dioxide" "thiophene,tetrahydro-2,4-dimethyl-, 1,1-dioxide" "(2s,4r)-2,4-dimethyltetrahydrothiophene 1,1-dioxide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -616090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-461080.0
-    phase     gas;
 }

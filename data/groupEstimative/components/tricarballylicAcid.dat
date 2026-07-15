@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propane-1,2,3-tricarboxylic acid" "1,2,3-propanetricarboxylic acid" "carballylic acid" "tricarballylate" "beta-carboxyglutaric acid" "trc" "propane 1,2,3-tricarboxylic acid" "3-carboxyglutaric acid" "carboxymethylsuccinic acid" "3-carboxypentanedioic acid" ".beta.-carboxyglutaric acid" "1,3-propanetricarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1223260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     539.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1034530.0
-    phase     gas;
 }

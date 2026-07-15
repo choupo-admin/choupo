@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 3; } { group dCH; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "buta-1,3-diene;ethenylbenzene" "poly(styrene-co-butadiene)" "polystyrene-block-polybutadiene-block-polystyrene" "styrene 1,3-butadiene polymer" "buta-1,3-diene; styrene" "kopolymer butadien styrenovy" "buta-1,3-diene; ethenylbenzene" "benzene, ethenyl-, polymer with 1,3-butadiene, chlorinated" "benzene, ethenyl-, polymer with 1,3-butadiene, ethoxylated" "benzene, ethenyl-, polymer with 1,3-butadiene, hydrogenated" "benzene, ethenyl-, polymer with 1,3-butadiene, carboxy-terminated" "hydrogenated styrene-butadiene polymer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   210190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     610.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=321330.0
-    phase     gas;
 }

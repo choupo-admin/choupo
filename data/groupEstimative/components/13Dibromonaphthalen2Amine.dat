@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 5; } { group dC_ring; count 5; } { group Br; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3-bis(bromanyl)naphthalen-2-amine" "2-naphthalenamine, 1,3-dibromo-" "1,3-dibromo-2-naphthalenamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   229910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     465.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=318580.0
-    phase     gas;
 }

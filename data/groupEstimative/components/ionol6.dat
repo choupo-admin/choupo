@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 2; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-2,6-bis(1-phenylethyl)phenol" "alkofen mbp" "phenol, 4-methyl-2,6-bis(1-phenylethyl)-" "2,6-bis(1-phenylethyl)-p-cresol" "2,6-bis(1-phenylethyl)-4-methylphenol" "p-cresol, 2,6-bis(alpha-methylbenzyl)-" "2,6-bis(alpha-methylbenzyl)-p-cresol" "2,6-bis(.alpha.-methylbenzyl)-p-cresol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -19270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     727.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=301250.0
-    phase     gas;
 }

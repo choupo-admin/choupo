@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 5; } { group OH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r,2s,4s,5r)-cyclohexane-1,2,3,4,5-pentol" "(+)-quercitol" "(+)-proto-quercitol" "viburnitol" "d-chiro-inositol, 2-deoxy-" "1l-1,3,4/2,5-cyclohexanepentol" "5-deoxyinositol" "quercitol" "acorn sugar" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -955360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     444.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-690850.0
-    phase     gas;
 }

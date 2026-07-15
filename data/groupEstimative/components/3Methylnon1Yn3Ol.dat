@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group C; count 1; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-1-nonyn-3-ol" "3-methyl-1-nonyne-3-ol" "1-nonyn-3-ol, 3-methyl-" "ethynyl n-hexyl methyl carbinol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -118810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     527.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=122410.0
-    phase     gas;
 }

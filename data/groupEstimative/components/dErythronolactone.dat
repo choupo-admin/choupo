@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group OH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3r,4r)-3,4-bis(oxidanyl)oxolan-2-one" "d-erythronic acid gamma-lactone" "(3r-cis) (-)-dihydro-3,4-dihydroxy-2(3h)-furanone" "(3r,4r)-3,4-dihydroxyoxolan-2-one" "d-erythronic " "a-lactone" "erythronic acid g-lactone" "d-erythronic gamma-lactone" "erythronic acid-1,4-lactone" "d-erythronic acid " "a-lactone" "delta-erythronic acid gamma-lactone" "3,4-dihydroxydihydro-2(3h)-furanone" "(3r,4r)-3,4-dihydroxy-2-oxolanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -695170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     332.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-548170.0
-    phase     gas;
 }

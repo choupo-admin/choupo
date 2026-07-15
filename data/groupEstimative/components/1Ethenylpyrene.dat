@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-vinylpyrene" "3-vinylpyrene" "pyrene, 3-vinyl-" "pyrene, 1-ethenyl-" "pyrene, 1-ethenyl- (9ci)" "pyrene,3-vinyl- (8ci); 1-ethenylpyrene; 1-vinylpyrene; 3-vinylpyrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   440450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     398.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=586230.0
-    phase     gas;
 }

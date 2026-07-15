@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzoic acid;cyclohexanamine" "cyclohexylammonium benzoate" "cyclohexanamine benzoate" "benzoic acid, compd. with cyclohexanamine (1:1)" "benzoic acid, compd. with cyclohexylamine (1:1)" "n-cyclohexylammonium benzoate" "benzoic acid, compound with cyclohexylamine (1:1)" "benzoic acid; cyclohexanamine" "benzoic acid, compd. with cyclohexylamine (1:1) (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -448900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     737.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-186780.0
-    phase     gas;
 }

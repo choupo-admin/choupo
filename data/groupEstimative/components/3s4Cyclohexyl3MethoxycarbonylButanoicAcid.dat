@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s)-3-(cyclohexylmethyl)-4-methoxy-4-oxidanylidene-butanoic acid" "(s)-4-methoxy-3-cyclohexylmethyl-4-oxobutanoic acid" "butanedioic acid,2-(cyclohexylmethyl)-, 1-methyl ester, (2s)-" "butanedioicacid, (cyclohexylmethyl)-, 1-methyl ester, (2s)- (9ci);(s)-2-(cyclohexylmethyl)succinic acid-1-methyl ester;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -909520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     687.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-582110.0
-    phase     gas;
 }

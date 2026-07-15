@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodecyl cyanide" "1-cyanododecane" "nitriles, c10-16" "tridecannitril" "lauryl cyanide" "n-tridecanonitrile" "n-dodecyl cyanide" "(c10-c16) alkylnitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -146770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     668.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=191760.0
-    phase     gas;
 }

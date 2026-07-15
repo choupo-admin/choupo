@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group Cl; count 3; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(chloranyl)-1-ethoxy-ethanol" "chloral alcoholate" "chloral semiacetal" "chloral ethylalcoholate" "chloral, ethyl hemiacetal" "ethanol chloral hemiacetal" "ethanol, 2,2,2-trichloro-1-ethoxy-" "trichloroacetaldehyde monoethylacetal" "1-ethoxy-2,2,2-trichloroethanol" "ethanol, 1-ethoxy-2,2,2-trichloro-" "chloralalkoholat" "2,2-trichloro-1-ethoxyethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -471590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     425.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-294410.0
-    phase     gas;
 }

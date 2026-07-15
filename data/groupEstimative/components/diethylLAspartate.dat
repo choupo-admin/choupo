@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group COO; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diethyl (2s)-2-azanylbutanedioate" "diethyl aspartate" "l-aspartic acid, diethyl ester" "aspartic acid, diethyl ester" "aspartic acid, 1,4-diethyl ester" "diethyl dl-aspartate" "diethyl (2s)-2-aminobutanedioate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -814500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     612.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-540250.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 2; } { group dC_ring; count 2; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanyl-3-propyl-cyclopent-2-en-1-one" "2-hydroxy-3-propylcyclopent-2-en-1-one" "2-cyclopenten-1-one, 2-hydroxy-3-propyl" "2-cyclopenten-1-one, 2-hydroxy-3-propyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -382720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-187970.0
-    phase     gas;
 }

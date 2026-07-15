@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-oxidanylpentanoate" "ethyl 2-hydroxypentanoate" "dl-2-hydroxypentanoic acid ethyl ester" "dl-alpha-hydroxyvaleric acid ethyl ester" "ethyl dl-2-hydroxyvalerate" "ethyl dl -2-hydroxyvalerate" "ethyl (+/-)-2-hydroxyvalerate" "2-hydroxyvaleric acid ethyl ester" "2-hydroxypentanoic acid ethyl ester" "dl -2-hydroxypentanoic acid ethyl ester" "pentanoic acid, 2-hydroxy-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -662600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     521.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-441570.0
-    phase     gas;
 }

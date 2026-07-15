@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 1; } { group dC; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group Cl; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[2,2-bis(chloranyl)ethenyl]-2,2-dimethyl-cyclopropane-1-carboxylic acid" "3-(2,2-dichloroethenyl)-2,2-dimethylcyclopropanecarboxylic acid" "cyclopropanecarboxylic acid, 3-(2,2-dichloroethenyl)-2,2-dimethyl-" "permethric acid" "3-(2,2-dichlorovinyl)-2,2-dimethylcyclopropane carboxylic acid" "3-(2,2-dichloroethenyl)-2,2-dimethylcyclopropane-1-carboxylic acid" "84057-83-0 (calcium salt)" "57112-15-9 (monosodium salt)" "l355" "3-(2,2-dichloroethenyl)-2,2-dimethyl-1-cyclopropanecarboxylic acid" "cyclopropanecarboxylicacid, 3-(2,2-dichloroethenyl)-2,2-dimethyl-" "(1r,3s)-3-(2,2-dichloroethenyl)-2,2-dimethyl-cyclopropane-1-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -435410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     471.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-239780.0
-    phase     gas;
 }

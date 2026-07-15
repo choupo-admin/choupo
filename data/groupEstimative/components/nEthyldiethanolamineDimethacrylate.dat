@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group dCH2; count 2; } { group dC; count 2; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[ethyl-[2-(2-methylprop-2-enoyloxy)ethyl]amino]ethyl 2-methylprop-2-enoate" "(ethylimino)diethane-2,1-diylbis(2-methylprop-2-enoate)" "2-propenoic acid, 2-methyl-, 1,1'-((ethylimino)di-2,1-ethanediyl) ester" "2-propenoic acid, 2-methyl-, 1,1'-[(ethylimino)di-2,1-ethanediyl] ester" "2-propenoic acid, 2-methyl-, (ethylimino)diethylene ester" "(ethylimino)diethylene 2-methyl-2-propenoate" "(ethylimino)di-2,1-ethanediyl bismethacrylate" "2-methyl-2-propenoic acid, (ethylimino)diethylene ester" "(ethylimino)diethane-2,1-diyl bis(2-methylprop-2-enoate)" "2-propenoic acid, 2-methyl-, (ethylimino)di-2,1-ethanediyl ester" "2-propenoic acid,2-methyl-, 1,1'-[(ethylimino)di-2,1-ethanediyl] ester" "2-propenoicacid, 2-methyl-, (ethylimino)di-2,1-ethanediyl ester (9ci); methacrylic acid,(ethylimino)diethylene ester (8ci); ethanol, 2,2'-(ethylimino)di-,dimethacrylate (ester) (8ci); n-ethyldiethanolamine dimethacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -668040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     802.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-284380.0
-    phase     gas;
 }

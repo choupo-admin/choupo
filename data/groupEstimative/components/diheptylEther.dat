@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 12; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-heptoxyheptane" "ether, diheptyl" "di-n-heptyl ether" "heptane, 1,1'-oxybis-" "1,1'-oxybisheptane" "ether, di-n-heptyl-" "heptyloxyheptane" "n-heptyl ether" "ether, di-n-heptyl" "heptane,1'-oxybis-" "1-(heptyloxy)heptane" "bis(1-heptyl) ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -464510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     712.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-38000.0
-    phase     gas;
 }

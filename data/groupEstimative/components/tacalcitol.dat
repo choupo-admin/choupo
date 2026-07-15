@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 3; } { group dCH2; count 1; } { group dCH; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dC_ring; count 3; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r,3s,5z)-5-[(2e)-2-[(1r,3as,7ar)-7a-methyl-1-[(2r,5r)-6-methyl-5-oxidanyl-heptan-2-yl]-2,3,3a,5,6,7-hexahydro-1h-inden-4-ylidene]ethylidene]-4-methylidene-cyclohexane-1,3-diol" "curatoderm" "bonalfa" "tv-02h" "tv-02" "1-alpha,24(r)-dihydroxyvitamin d3" "(1r,3s,5z)-5-[(2e)-2-[(1r,3as,7ar)-1-[(2r,5r)-5-hydroxy-6-methylheptan-2-yl]-7a-methyl-2,3,3a,5,6,7-hexahydro-1h-inden-4-ylidene]ethylidene]-4-methylidenecyclohexane-1,3-diol" "tacalcitolum [inn-latin]" "tacalcitolum" "tv 02" "vellutan" "apsor" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -680840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1082.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-8580.0
-    phase     gas;
 }

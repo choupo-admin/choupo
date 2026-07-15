@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pent-4-enyl ethanoate" "4-pentenyl acetate" "5-acetoxy-1-pentene" "pent-4-enyl acetate" "pent-4-ene-1-yl acetate" "4-penten-1-ol,1-acetate" "acetic acid 4-pentenyl ester" "ch3c(o)o(ch2)3ch=ch2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -379660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-214470.0
-    phase     gas;
 }

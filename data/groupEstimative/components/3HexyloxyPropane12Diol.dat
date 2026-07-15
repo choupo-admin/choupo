@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 1; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-hexoxypropane-1,2-diol" "3-hexyloxypropane-1,2-diol" "3-(hexyloxy)propylene glycol" "1,2-propanediol,3-(hexyloxy)-" "1,2-propanediol, 3-(hexyloxy)-" "1-o-hexylglycerol;3-(hex-1-yloxy)-1,2-propanediol; 3-(hexyloxy)-1,2-propanediol; glycerol a-hexyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -671050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     610.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-356180.0
-    phase     gas;
 }

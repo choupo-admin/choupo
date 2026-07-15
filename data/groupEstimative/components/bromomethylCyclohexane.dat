@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bromomethylcyclohexane" "cyclohexylmethyl bromide" "bromocyclohexylmethane" "cyclohexane, (bromomethyl)-" "cyclohexylmethylbromide" "agn-pc-00gtfe" "1-cyclohexyl-1-bromo-methane" "(bromomethyl) cyclohexane" "(bromomethyl)cyclohexane;1-cyclohexyl-1-bromo-methane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -107160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46830.0
-    phase     gas;
 }

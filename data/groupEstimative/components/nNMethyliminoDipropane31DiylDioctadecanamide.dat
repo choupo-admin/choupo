@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 38; } { group CdO; count 2; } { group NH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-[3-[methyl-[3-(octadecanoylamino)propyl]amino]propyl]octadecanamide" "octadecanamide, n,n'-((methylimino)di-3,1-propanediyl)bis-" "octadecanamide, n,n'-[(methylimino)di-3,1-propanediyl]bis-" "n,n'-((methylimino)bis(trimethylene))bis(stearamide)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -981540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1981.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=342900.0
-    phase     gas;
 }

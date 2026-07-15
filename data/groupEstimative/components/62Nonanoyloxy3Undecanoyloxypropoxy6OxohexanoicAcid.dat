@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 22; } { group CH; count 1; } { group COOH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-(2-nonanoyloxy-3-undecanoyloxy-propoxy)-6-oxidanylidene-hexanoic acid" "hexanedioic acid mixed esters with nonanoic acid trimethylolpropane and undecanoic acid" "trimethylolpropane ester of nonanoic, undecanoic and hexanedioic acids" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1949280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1483.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1084160.0
-    phase     gas;
 }

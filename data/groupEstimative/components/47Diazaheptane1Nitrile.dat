@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group NH2; count 1; } { group NH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-azanylethylamino)propanenitrile" "propanenitrile, 3-[(2-aminoethyl)amino]-" "3-[(2-aminoethyl)amino]propanenitrile" "propanenitrile, 3-((2-aminoethyl)amino)-, homopolymer" "propanenitrile, 3-[(2-aminoethyl)amino]-, homopolymer" "propanenitrile, 3-((2-aminoethyl)amino)-" "2-(2-(cyanoethyl)aminoethylamine" "3-(2-aminoethylamino)propanenitrile" "n-(2-cyanoethyl)-1,2-ethanediamine" "n-(2-cyanoethyl)-1,2-ethylenediamine" "3-((2-aminoethyl)amino)propiononitrile" "propionitrile, 3-((2-aminoethyl)amino)-, polymers" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   105610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=280240.0
-    phase     gas;
 }

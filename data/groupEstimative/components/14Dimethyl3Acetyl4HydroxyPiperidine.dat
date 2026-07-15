@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 1; } { group OH; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(1,4-dimethyl-4-oxidanyl-piperidin-3-yl)ethanone" "1-(4-hydroxy-1,4-dimethylpiperidin-3-yl)ethanone" "1-(4-hydroxy-1,4-dimethyl-3-piperidyl)ethanone" "1-(4-hydroxy-1,4-dimethyl-3-piperidinyl)ethanone" "1-(4-hydroxy-1,4-dimethylpiperidin-3-yl)-ethanone" "1-(4-hydroxy-1,4-dimethyl-piperidin-3-yl)-ethanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -370990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-106710.0
-    phase     gas;
 }

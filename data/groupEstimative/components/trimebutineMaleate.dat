@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 2; } { group C; count 1; } { group dCH; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group O; count 3; } { group COOH; count 2; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-but-2-enedioic acid;[2-(dimethylamino)-2-phenyl-butyl] 3,4,5-trimethoxybenzoate" "trimebutine maleate salt" "debridat" "transacalm" "cerekinon" "digerent" "modulon" "spabucol" "cerekinon (tn)" "2-(dimethylamino)-2-phenylbutyl 3,4,5-trimethoxybenzoate maleate" "trimebutine maleate (jp16)" "ambap34140-59-5" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1491420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1207.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-860140.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nonan-5-ylbenzene" "benzene, (1-butylpentyl)-" "1-butylpentylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -121680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     624.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=185390.0
-    phase     gas;
 }

@@ -30,9 +30,8 @@ groups
     joback ( { group dCH_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopenta-1,3-diene" "cyclopentadienyl radical" "5-cyclopenta-1,3-dienyl" "cyclopenta-2,4-dien-1-yl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   78740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     249.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110380.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group F; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-2,2-bis(fluoranyl)propane" "2,2-difluoropropyl chloride" "propane, 1-chloro-2,2-difluoro-" "(chloromethyl)(difluoromethyl)methane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -521960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     330.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-424330.0
-    phase     gas;
 }

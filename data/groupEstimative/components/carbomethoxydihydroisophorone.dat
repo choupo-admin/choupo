@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2,4,4-trimethyl-6-oxidanylidene-cyclohexane-1-carboxylate" "methyl 2,4,4-trimethyl-6-oxocyclohexanecarboxylate" "cyclohexanecarboxylic acid, 2,4,4-trimethyl-6-oxo-, methyl ester" "methyl 2,4,4-trimethyl-6-oxocyclohexane-1-carboxylate" "2,4,4-trimethyl-6-oxocyclohexanecarboxylic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -696470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     511.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-387680.0
-    phase     gas;
 }

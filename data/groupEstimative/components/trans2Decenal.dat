@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dec-2-enal" "2-decenal, (2e)-" "decenal" "2-decenaldehyde" "3-heptyl-acrolein" "2-decenal, (2z)-" "2-decenal,(z)- (8ci); (z)-2-decenal; cis-2-decen-1-al; cis-2-decenal" "2-decenal,(e)- (8ci); (2e)-2-decenal; (e)-2-decenal; 2(e)-decenal; trans-2-decen-1-al;trans-2-decenal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -218090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     557.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=14020.0
-    phase     gas;
 }

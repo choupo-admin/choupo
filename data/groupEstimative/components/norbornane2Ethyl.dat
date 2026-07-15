@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethylbicyclo[2.2.1]heptane" "bicyclo[2.2.1]heptane, 2-ethyl-" "2-ethylbicyclo[2.2.1]heptane" "bicyclo(2.2.1)heptane, 2-ethyl-" "5-ethylnorbornane" "agn-pc-00c60i" "2-ethyl bicyclo(2.2.1)heptane" "bicyclo[2.2.1]heptane,2-ethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -109990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     303.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=126590.0
-    phase     gas;
 }

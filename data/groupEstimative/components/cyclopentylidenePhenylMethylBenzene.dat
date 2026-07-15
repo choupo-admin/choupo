@@ -33,9 +33,8 @@ groups
     joback ( { group dC; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 10; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzene, (cyclopentylidenephenylmethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   205270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     603.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=406670.0
-    phase     gas;
 }

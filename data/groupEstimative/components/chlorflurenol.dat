@@ -33,9 +33,8 @@ groups
     joback ( { group C_ring; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group Cl; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-9-oxidanyl-fluorene-9-carboxylic acid" "chlorflurecol" "chloroflurenol" "9h-fluorene-9-carboxylic acid, 2-chloro-9-hydroxy-" "chlorflurecol [bsi:iso]" "2-chloro-9-hydroxyfluorene-9-carboxylic acid" "chloroflurenol [iso-french]" "2-chloro-9-hydroxy-9h-fluorene-9-carboxylic acid" "2-chloro-9-hydroxyflurene-9-carboxylic acid" "fluorene-9-carboxylic acid, 2-chloro-9-hydroxy-" "o684" "2-chloro-9-hydroxy-9-fluorenecarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-150270.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group dCH; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 2; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-but-2-enedioic acid;[1-(1-methylpyrrolidin-3-yl)-1-phenyl-propyl] propanoate" "alpha-ethyl-1-methyl-alpha-phenyl-3-pyrrolidinemethanol propionate fumarate" "3-pyrrolidinemethanol, alpha-ethyl-1-methyl-alpha-phenyl-, propionate (ester), fumarate (1:1)" "(e)-but-2-enedioic acid; [1-(1-methylpyrrolidin-3-yl)-1-phenylpropyl] propanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1127040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1033.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-622110.0
-    phase     gas;
 }

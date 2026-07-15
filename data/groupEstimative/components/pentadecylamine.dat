@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentadecan-1-amine" "n-pentadecylamine" "1-aminopentadecane" "1-pentadecanamine" "1-pentadecylamine" "pentadecane, 1-amino-" "1- degrees +/->>ue(r)iaie" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -319140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     791.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=141870.0
-    phase     gas;
 }

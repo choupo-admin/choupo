@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 4; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-azanylbicyclo[2.2.1]heptane-2-carboxylic acid" "3-amino-2-norbornanecarboxylic acid" "diexo-3-amino-bicyclo[2.2.1]heptane-2-carboxylic acid" "3-amino-2-bicyclo[2.2.1]heptanecarboxylic acid" "bicyclo[2.2.1]heptane-2-carboxylicacid, 3-amino-" "bicyclo[2.2.1]heptane-2-carboxylic acid, 3-amino-" "diendo-3-amino-bicyclo[2.2.1]heptane-2-carboxylic acid" "bicyclo[2.2.1]heptane-2-carboxylic acid, 3-amino-, exo,exo-" "bicyclo[2.2.1]heptane-2-carboxylic acid, 3-amino-, endo,endo-" "2-norbornanecarboxylicacid, 3-amino- (6ci);3-aminobicyclo[2.2.1]heptane-2-carboxylic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -426170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     327.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-167000.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxy-3-methyl-but-1-ene" "2-methoxy-3-methylbut-1-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -189030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     382.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-28510.0
-    phase     gas;
 }

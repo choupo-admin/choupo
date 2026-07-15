@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group CH; count 2; } { group OH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9,10-bis(oxidanyl)octadecanoic acid" "9,10-dihydroxystearate" "dioxystearinsaeure" "9,10-dihydroxystearic acid" "9,10-dihydroxystearinsaeure" "dhsa" "threo-9,10-dihydroxyoctadecanoic acid" "erythro-9,10-dihydroxyoctadecanoic acid" "9,10-dihydroxy stearic acid" "agn-pc-04y44j" "9,10-dhsa" "octadecanoic acid,10-dihydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1080140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     992.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-521750.0
-    phase     gas;
 }

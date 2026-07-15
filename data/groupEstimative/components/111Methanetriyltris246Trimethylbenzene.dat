@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 9; } { group CH; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[bis(2,4,6-trimethylphenyl)methyl]-1,3,5-trimethyl-benzene" "benzene,1,1',1''-methylidynetris[2,4,6-trimethyl-" "benzene, 1,1',1''-methylidynetris(2,4,6-trimethyl-" "2-[bis(2,4,6-trimethylphenyl)methyl]-1,3,5-trimethylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -20170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     862.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=433000.0
-    phase     gas;
 }

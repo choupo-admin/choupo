@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 7; } { group CH2; count 9; } { group CH; count 1; } { group O; count 6; } { group COO; count 1; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-trimethoxysilylpropyl 2-methyl-3-[2-(3-trimethoxysilylpropylamino)ethylamino]propanoate" "2-oxa-7,10-diaza-3-silatridecan-13-oic acid, 3,3-dimethoxy-12-methyl-, 3-(trimethoxysilyl)propyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1647030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1300.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-872870.0
-    phase     gas;
 }

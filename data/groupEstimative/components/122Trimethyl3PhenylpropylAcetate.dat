@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3,3-dimethyl-4-phenyl-butan-2-yl) ethanoate" "(3,3-dimethyl-4-phenylbutan-2-yl) acetate" "benzenepropanol, a,b,b-trimethyl-, 1-acetate" "benzenepropanol,a,b,b-trimethyl-, acetate (9ci)" "benzenepropanol, alpha,beta,beta-trimethyl-, acetate" "benzenepropanol, alpha,beta,beta-trimethyl-, 1-acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -427070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     597.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-130560.0
-    phase     gas;
 }

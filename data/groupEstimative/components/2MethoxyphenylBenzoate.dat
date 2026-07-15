@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-methoxyphenyl) benzoate" "benzosol" "guaiacol benzoate" "o-anisyl benzoate" "benzoylguaiacol" "benzcaine" "2-(benzoyloxy)anisole" "guaiacyl benzoate" "o-methoxyphenyl benzoate" "phenol, 2-methoxy-, benzoate" "2-[(phenylcarbonyl)oxy]anisole" "1-benzoyloxy-2-methoxybenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -320200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     544.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-133180.0
-    phase     gas;
 }

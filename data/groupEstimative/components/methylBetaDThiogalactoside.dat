@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH_ring; count 5; } { group OH; count 4; } { group O_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(hydroxymethyl)-6-methylsulfanyl-oxane-3,4,5-triol" "agn-pc-03vide" "methyl-beta-d-thiogalactopyranoside" ".beta.-d-galactopyranoside, methyl 1-thio-" "2-(hydroxymethyl)-6-methylsulfanyloxane-3,4,5-triol" "(2r,3r,4s,5r)-2-(hydroxymethyl)-6-methylsulfanyloxane-3,4,5-triol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -913900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-598610.0
-    phase     gas;
 }

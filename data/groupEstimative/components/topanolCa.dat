@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 13; } { group CH2; count 1; } { group CH; count 2; } { group C; count 3; } { group dCH_ring; count 6; } { group dC_ring; count 12; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[4,4-bis(5-tert-butyl-2-methyl-4-oxidanyl-phenyl)butan-2-yl]-2-tert-butyl-5-methyl-phenol" "trisalkofen bmb" "topanol sa" "1,1,3-tris(2-methyl-4-hydroxy-5-tert-butylphenyl)butane" "tpnc" "tri(butylcresyl)butane" "mark ao 30" "1,1,3-tris(5-tert-butyl-4-hydroxy-2-methylphenyl)butane" "4,4',4''-butane-1,1,3-triyltris(2-tert-butyl-5-methylphenol)" "4,4',4''-(1-methylpropanyl-3-ylidene)tris(6-tert-butyl-m-cresol)" "phenol, 4,4',4''-(3-methylpropane-1,1,3-triyl)tris(2-tert-butyl-5-methyl-" "4,4',4''-(1-methyl-1-propanyl-3-ylidene)tris(2-(1,1-dimethylethyl)-5-methylphenol)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -734980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1184.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=79890.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-bis(chloranyl)benzamide" "benzamide, 2,6-dichloro-" "2,6-bam" "benzamide,6-dichloro-" "2,6-dichlorobenzoic acid amide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -84490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=14880.0
-    phase     gas;
 }

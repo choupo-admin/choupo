@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group OH; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-azanylpropan-1-ol;ethane-1,2-diol" "o,o'-bis(3-aminopropyl)polyethylene glycol" "o,o'-bis(3-aminopropyl)polyethylene glycol 1,500" "o,o inverted exclamation marka-bis(3-aminopropyl)polyethylene glycol" "o,o inverted exclamation marka-bis(3-aminopropyl)polyethylene glycol 1,500" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -681050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     662.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-457550.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group CH2; count 3; } { group CH; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 5; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,4,10,13-tetramethyl-17-(6-methylheptan-2-yl)-1,2,3,7,8,9,11,12,14,15,16,17-dodecahydrocyclopenta[a]phenanthren-3-ol" "cholest-5-en-3.beta.-ol, 4,4-dimethyl-" "cholest-5-en-3-ol, 4,4-dimethyl-, (3.beta.)-" "4,4-dimethylcholesterol" "4,4-dimethylcholest-5-enol" "cholest-5-en-3.beta.-ol,4-dimethyl-" "cholest-5-en-3-ol,4-dimethyl-, (3.beta.)-" "(3s,8s,9s,10r,13r,14s,17r)-4,4,10,13-tetramethyl-17-[(2r)-6-methylheptan-2-yl]-1,2,3,7,8,9,11,12,14,15,16,17-dodecahydrocyclopenta[a]phenanthren-3-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -533610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1051.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=207120.0
-    phase     gas;
 }

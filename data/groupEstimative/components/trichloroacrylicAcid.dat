@@ -33,9 +33,8 @@ groups
     joback ( { group dC; count 2; } { group Cl; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,3-tris(chloranyl)prop-2-enoic acid" "2,3,3-trichloroacrylic acid" "2,3,3-trichloroprop-2-enoic acid" "perchlorovinylic acid" "trichloroprop-2-enoic acid" "2-propenoic acid, 2,3,3-trichloro-" "acrylicacid, trichloro- (6ci,7ci,8ci); 2,3,3-trichloroacrylic acid; perchlorovinylicacid; trichloroacrylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -405100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     411.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-342200.0
-    phase     gas;
 }

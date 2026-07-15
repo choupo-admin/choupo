@@ -30,9 +30,8 @@ groups
     joback ( { group dCH2; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "iodanylmethane" "iodomethylate" "iodomethyl radical" "methyl radical, iodo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   79720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     249.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=63390.0
-    phase     gas;
 }

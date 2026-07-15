@@ -34,9 +34,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-2-methyl-pentane" "pentane, 2-chloro-2-methyl-" "2-chloro-2-methyl-pentane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -191660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     384.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-9450.0
-    phase     gas;
 }

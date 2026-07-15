@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group CdO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-thiophen-3-ylethanone" "methyl 3-thienyl ketone" "3-acetyl thiophene" "ethanone, 1-(3-thienyl)-" "1-thien-3-ylethanone" "methyl-3-thienyl ketone" "1-(3-thienyl)ethanone" "ketone, methyl 3-thienyl" "1-(thiophen-3-yl)ethanone" "1-(thien-3-yl)ethan-1-one" "1-oxo-1-(thien-3-yl)ethane" "1-(thiophen-3-yl)ethan-1-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -49580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     377.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=5130.0
-    phase     gas;
 }

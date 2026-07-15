@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-aminobenzotrifluoride" "m-aminobenzotrifluoride" "3-aminotrifluorotoluene" "benzenamine, 3-(trifluoromethyl)-" "3-trifluoromethylaniline" "m-(trifluoromethyl)aniline" "m-amino trifluorotoluene" "3-(trifluoromethyl)benzenamine" "m-abtf" "alpha,alpha,alpha-trifluoro-m-toluidine" "m-aminotrifluoromethylbenzene" "m-aminobenzal fluoride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -526040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     423.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-404300.0
-    phase     gas;
 }

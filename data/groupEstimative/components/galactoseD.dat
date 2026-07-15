@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 5; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,5,6-pentakis(oxidanyl)hexanal" "dextrose (polymer)" "d-(1-14c)glucose" "l-(1-14c)glucose" "l-(-)-mannose" "cartose" "cerelose" "l-glucose-1-3h(n) solution" "l-glucose" "d-(+)-allose" "l-(-)-talose" "dextropur" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1035020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     624.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-793740.0
-    phase     gas;
 }

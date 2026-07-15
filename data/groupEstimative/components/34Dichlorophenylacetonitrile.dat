@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3,4-dichlorophenyl)ethanenitrile" "3,4-dichlorobenzyl cyanide" "2-(3,4-dichlorophenyl)acetonitrile" "(3,4-dichlorphenyl)acetonitril" "(3,4-dichlorophenyl)acetonitrile" "3,4-dccn" "benzeneacetonitrile, 3,4-dichloro-" "benzeneacetonitrile, 3,4-dichloro-;4,4-dichlorophenylacetonitrile" "acetonitrile,(3,4-dichlorophenyl)- (6ci,7ci,8ci);(3,4-dichlorophenyl)acetonitrile;3,4-dichlorobenzyl cyanide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   138540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     421.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=218950.0
-    phase     gas;
 }

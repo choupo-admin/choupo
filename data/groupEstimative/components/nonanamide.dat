@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nonamide" "pelargonamide" "nonan-1-amide" "nonanoic acid amide" "nonanamide (8ci)(9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -307880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     584.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37570.0
-    phase     gas;
 }

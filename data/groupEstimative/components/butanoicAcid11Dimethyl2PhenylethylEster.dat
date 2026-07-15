@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-methyl-1-phenyl-propan-2-yl) butanoate" "dmbc butyrate" "2-benzyl-2-propyl butyrate" "1,1-dimethyl-2-phenylethyl butanoate" "dimethyl benzyl carbinyl butyrate" "alpha,alpha-dimethylphenethyl butyrate" "dimethylbenzylcarbinyl butyrate" "benzyl dimethylcarbinyl butyrate" "benzyl dimethyl carbinyl butyrate" "benzyl dimethylcarbinyl n-butyrate" "1,1-dimethyl-2-phenylethyl butyrate" "butyric acid, .alpha.,.alpha.-dimethylphenethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -421790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     607.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-128120.0
-    phase     gas;
 }

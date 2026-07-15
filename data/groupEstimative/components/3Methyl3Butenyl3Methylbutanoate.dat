@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbut-3-enyl 3-methylbutanoate" "3-methylbut-3-enyl isovalerate" "butanoic acid, 3-methyl-, 3-methyl-3-butenyl ester" "butanoic acid,3-methyl-, 3-methyl-3-buten-1-yl ester" "butanoicacid, 3-methyl-, 3-methyl-3-butenyl ester (9ci); 3-methyl-3-butenyl3-methylbutyrate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -456650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     578.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-200200.0
-    phase     gas;
 }

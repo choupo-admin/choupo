@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "non-6-enal" "6-nonenal, (6e)-" "6-nonenal,(z)- (8ci); (z)-6-nonenal; 6-nonenal, cis-; cis-6-nonenal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -197450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     518.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=5600.0
-    phase     gas;
 }

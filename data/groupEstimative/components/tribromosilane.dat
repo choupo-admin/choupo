@@ -35,9 +35,8 @@ groups
     joback ( { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(bromanyl)silicon" "silane, tribromo-" "tribromosilicon" "sibr3" "silicobromoform" "tribromosilyl" "tribromomonosilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -20150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-60300.0
-    phase     gas;
 }

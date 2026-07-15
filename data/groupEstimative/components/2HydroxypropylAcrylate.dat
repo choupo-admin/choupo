@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylpropyl prop-2-enoate" "propylene glycol monoacrylate" "2-propenoic acid, 2-hydroxypropyl ester" "2-hydroxypropyl prop-2-enoate" "beta-hydroxypropyl acrylate" "1,2-propanediol, 1-acrylate" "acrylic acid, 2-hydroxypropyl ester" "2-propenoic acid, 2-hydroxypropyl ester, homopolymer" "25584-83-2 (parent)" "2-hydroxypropyl 2-propenoate, homopolymer" "2-propenoic acid, 2-hydroxypropyl ester (9ci)" "hydroxypropyl acrylate [mixture of (1) and (2)]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -516530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     477.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-362150.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 5; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tricyclo(4.3.1.12,5)undecane, 10-methoxy-, stereoisomer" "10-methoxytricyclo[4.3.1.12,5]undecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     319.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=87790.0
-    phase     gas;
 }

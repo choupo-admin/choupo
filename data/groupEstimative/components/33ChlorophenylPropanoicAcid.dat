@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(3-chlorophenyl)propionic acid" "3-(3-chloro-phenyl)-propionic acid" "benzenepropanoic acid,3-chloro-" "3-(3-chlorophenyl) propionic acid" "3-chlorophenyl-3-propanoic acid" "l363" "hydrocinnamicacid, m-chloro- (6ci,7ci,8ci);3-(3-chlorophenyl)propanoic acid;3-chloro-b-phenylpropionic acid;3-chlorohydrocinnamic acid;3-[3-chlorophenyl]propionic acid;m-chlorohydrocinnamic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -370040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     480.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-228160.0
-    phase     gas;
 }

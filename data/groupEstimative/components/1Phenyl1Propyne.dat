@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group tC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-1-ynylbenzene" "methylphenylacetylene" "benzene, 1-propynyl-" "benzene, propynyl-" "1-phenylpropyne-1" "prop-1-ynyl-benzene" "prop-1-yn-1-ylbenzene" "1-methyl-2-phenylacetylene" "ghl.pd_mitscher_leg0.471" "propine, 1-phenyl- (3ci);1-phenyl-1-propyne;1-propynylbenzene;3-phenyl-2-propyne;methylphenylacetylene;phenylmethylacetylene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   279740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     371.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=340110.0
-    phase     gas;
 }

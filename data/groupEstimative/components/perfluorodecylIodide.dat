@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 10; } { group F; count 21; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10-henicosakis(fluoranyl)-10-iodanyl-decane" "1-iodoperfluorodecane" "heneicosafluorodecyl iodide" "perfluoro-1-iododecane" "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10-henicosafluoro-10-iododecane" "heneicosafluoro-1-iododecane" "henicosafluoro-10-iododecane" "decane, heneicosafluoro-1-iodo-" "decane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10-heneicosafluoro-10-iodo-" "decane, 1-iodo-1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heneicosafluoro-" "perfluorodecyliodide" "henicosafluorodecyl iodide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -4378670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     878.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3971170.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethylhexanoic acid" "3-ethylhexanoicacid" "8060bfa4-5e5d-464c-8acd-a17316e2ebe1" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -564000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     511.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-329870.0
-    phase     gas;
 }

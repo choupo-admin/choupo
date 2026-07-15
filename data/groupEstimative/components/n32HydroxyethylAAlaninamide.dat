@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group OH; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-hydroxyethylamino)propanamide" "3-((2-hydroxyethyl)amino)propionamide" "n~3~-(2-hydroxyethyl)-beta-alaninamide" "propanamide, 3-((2-hydroxyethyl)amino)-" "propanamide, 3-[(2-hydroxyethyl)amino]-" "3-[(2-hydroxyethyl)amino]propionamide" "3-((2-hydroxyethyl)amino)propionamide;" "propanamide,3-[(2-hydroxyethyl)amino]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -324080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     520.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-118680.0
-    phase     gas;
 }

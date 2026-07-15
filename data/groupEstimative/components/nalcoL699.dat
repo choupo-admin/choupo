@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 7; } { group CH; count 3; } { group OH; count 4; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[2-[bis(2-oxidanylpropyl)amino]ethyl-(2-hydroxyethyl)amino]propan-2-ol" "2-propanol, 1,1'-[[2-[(2-hydroxyethyl)(2-hydroxypropyl)amino]ethyl]imino]bis-" "1,1'-(2-(n-2-hydroxyethyl-2-hydroxypropylamino)ethylimino)dipropan-2-ol" "1-[2-[bis(2-hydroxypropyl)amino]ethyl-(2-hydroxyethyl)amino]propan-2-ol" "2-propanol,1'-[[2-[(2-hydroxyethyl)(2-hydroxypropy)amino]ethyl]imino]bis-" "2-propanol,1'-[[2-[(2-hydroxyethyl)(2-hydroxypropyl)amino]ethyl]imino]di-" "2-propanol, 1,1'-((2-((2-hydroxyethyl)(2-hydroxypropy)amino)ethyl)imino)bis- (9ci)" "2-propanol, 1,1'-((2-((2-hydroxyethyl)(2-hydroxypropyl)amino)ethyl)imino)di- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -801350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     869.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-274460.0
-    phase     gas;
 }

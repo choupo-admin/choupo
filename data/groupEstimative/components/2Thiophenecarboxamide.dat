@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "thiophene-2-carboxamide" "2-thienylamide" "2-thenamide" "thiophenecarboxamide" "2-thienylamide [french]" "2-(aminocarbonyl)thiophene" "thiophen-2-carboxamide" "thiophene-2-carboxylic acid amide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   4850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     390.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=63160.0
-    phase     gas;
 }

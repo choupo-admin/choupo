@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3-trideuteriooxypropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -567220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     415.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-438520.0
-    phase     gas;
 }

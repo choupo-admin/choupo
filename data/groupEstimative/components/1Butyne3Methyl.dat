@@ -30,9 +30,8 @@ groups
     joback ( { group CH3; count 2; } { group dC; count 1; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbut-1-yne" "2-methyl-3-butyn-2-yl" "hc.equiv.cc(ch3)2" "3-methylbut-1-yn-3-yl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   194190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     312.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=245850.0
-    phase     gas;
 }

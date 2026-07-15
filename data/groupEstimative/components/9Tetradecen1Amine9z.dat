@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradec-9-en-1-amine" "agn-pc-02kyrn" "(e)-tetradec-9-en-1-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -181280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     746.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=213670.0
-    phase     gas;
 }

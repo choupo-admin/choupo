@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 2; } { group C; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH_phenol; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-tert-butyl-5-[(4-tert-butyl-3-oxidanyl-phenyl)methylsulfanylmethyl]phenol" "3,3'-(sulfanediyldimethanediyl)bis(6-tert-butylphenol)" "sulfide, bis(4-t-butyl-m-cresyl)-" "2-tert-butyl-5-[(4-tert-butyl-3-hydroxyphenyl)methylsulfanylmethyl]phenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -377540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     824.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=69480.0
-    phase     gas;
 }

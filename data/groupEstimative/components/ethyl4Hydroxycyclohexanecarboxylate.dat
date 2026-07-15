@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 4-oxidanylcyclohexane-1-carboxylate" "ethyl trans-4-hydroxycyclohexanecarboxylate" "4-hydroxy-cyclohexanecarboxylic acid ethyl ester" "ethyl 4-hydroxycyclohexane carboxylate" "4-hydroxycyclohexanecarboxylic acid ethyl ester" "ethyl 4-hydroxycyclohexanecarboxylate, mixture of cis and trans" "cis-ethyl 4-hydroxycyclohexanecarboxylate" "ethyl 4-hydroxycyclohexane-1-carboxylate" "cyclohexanecarboxylicacid, 4-hydroxy-, ethyl ester" "4-hydroxy-cyclohexane-1-carboxylic acid ethyl ester" "cyclohexanecarboxylic acid, 4-hydroxy-, ethyl ester" "trans-4-hydroxycyclohexanecarboxylic acid ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -664620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-405550.0
-    phase     gas;
 }

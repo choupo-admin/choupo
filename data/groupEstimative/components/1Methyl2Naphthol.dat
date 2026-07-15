@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methylnaphthalen-2-ol" "2-naphthalenol, methyl-" "1-methyl-naphthalen-2-ol" "2-naphthalenol, 1-methyl-" "2-naphthalenol, 1-methyl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -31550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=96550.0
-    phase     gas;
 }

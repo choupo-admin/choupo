@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group dCH; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(6-methylheptoxy)-4-oxidanylidene-but-2-enoic acid" "2-butenedioic acid (2z)-, monoisooctyl ester" "2-butenedioic acid(2z)-, monoisooctyl ester" "4-(6-methylheptoxy)-4-oxobut-2-enoic acid" "2-butenedioicacid (z)-, monoisooctyl ester; maleic acid, isooctyl ester (7ci);(z)-2-butenedioic acid monoisooctyl ester; hydrogen isooctyl maleate; isooctylhydrogen maleate; monoisooctyl maleate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -846620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     711.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-526340.0
-    phase     gas;
 }

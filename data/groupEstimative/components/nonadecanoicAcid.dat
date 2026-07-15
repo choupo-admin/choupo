@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 17; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-nonadecanoic acid" "nonadecylic acid" "nonadecanoate" "fatty acids, c16-22" "n-nonadecanoate" "n-nonadecylate" "n-nonadecylic acid" "nonadecans&#xe4;ure" "agn-pc-00smjc" "(c16-c22)alkylcarboxylic acid" "(c16-c22) alkylcarboxylic acid" "c19:0" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -785760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     949.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-234810.0
-    phase     gas;
 }

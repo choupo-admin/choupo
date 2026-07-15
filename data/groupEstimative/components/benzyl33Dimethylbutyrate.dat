@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(phenylmethyl) 3,3-dimethylbutanoate" "benzyl 3,3-dimethylbutanoate" "butanoic acid, 3,3-dimethyl-, phenylmethyl ester" "benzyl neocaproate" "3,3-dimethylbutyric acid benzyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -401150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     568.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-136540.0
-    phase     gas;
 }

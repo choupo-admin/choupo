@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 8; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9,10-anthracenedicarboxaldehyde" "anthracene-9,10-dicarboxaldehyde" "9,10-diformylanthracene" "anthracene-9,10-dialdehyde" "9,10-anthracene dicarboxyaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   363590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     598.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=468580.0
-    phase     gas;
 }

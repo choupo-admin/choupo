@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-phenylmethoxyphenyl)ethanone" "4'-(benzyloxy) acetophenone" "4'-(benzyloxy)-acetophenone" "1-[4-(benzyloxy)phenyl]ethanone" "1-[4-(benzyloxy)phenyl]ethan-1-one" "ethanone, 1-[4-(phenylmethoxy)phenyl]-" "1-(4-(benzyloxy)phenyl)ethanone" "1-acetyl-4-(phenylmethoxy)benzene" "4-benzyloxyacetophenone" "4'-(benzyloxy)acetophenone" "1-(4-benzyloxyphenyl)ethanone" "ethanone,1-[4-(phenylmethoxy)phenyl]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -136140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     559.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=56690.0
-    phase     gas;
 }

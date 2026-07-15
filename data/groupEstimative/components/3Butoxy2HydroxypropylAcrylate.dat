@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-butoxy-2-oxidanyl-propyl) prop-2-enoate" "2-propenoic acid, 3-butoxy-2-hydroxypropyl ester" "3-butoxy-2-hydroxy-1-propyl acrylate" "(3-butoxy-2-hydroxypropyl) prop-2-enoate" "2-propenoic acid,3-butoxy-2-hydroxypropyl ester" "acrylicacid, 3-butoxy-2-hydroxypropyl ester (7ci,8ci); 1,2-propanediol, 3-butoxy-,1-monoacrylate (8ci); 1-butoxy-3-acryloyloxy-2-propanol;3-butoxy-2-hydroxypropyl acrylate; acrylic acid-butyl glycidyl ether adduct" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -731310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     644.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-433470.0
-    phase     gas;
 }

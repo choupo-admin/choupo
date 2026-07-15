@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentan-2-amine" "2-pentylamine" "2-aminopentane" "butylamine, 1-methyl-" "sec-amylamine" "1-methylbutylamine" "1-methyl-n-butylamine" "methylpropylcarbinylamine" "sec-pentanamine" "sec-pentylamine" "2-amylamine" "dl-2-aminopentane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -118020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     392.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55230.0
-    phase     gas;
 }

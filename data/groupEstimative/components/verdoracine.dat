@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 1; } { group dCH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-4-propan-2-yl-2-prop-1-enyl-benzene" "p-cymene, 2-propenyl-" "2-prop-1-enyl-p-cymene" "2-(1-propenyl)-p-cymene" "4-isopropyl-1-methyl-2-propenylbenzene" "benzene, 1-methyl-4-(1-methylethyl)-2-(1-propenyl)-" "1-methyl-4-(1-methylethyl)-2-(1-propenyl)benzene" "benzene, 1-methyl-4-(1-methylethyl)-2-(1-propen-1-yl)-" "1-methyl-4-propan-2-yl-2-prop-1-enylbenzene" "1-methyl-4-propan-2-yl-2-[(z)-prop-1-enyl]benzene" "benzene,1-methyl-4-(1-methylethyl)-2-(1-propen-1-yl)-" "benzene,1-methyl-4-(1-methylethyl)-2-(1-propenyl)- (9ci); p-cymene, 2-propenyl-(7ci,8ci); 4-isopropyl-1-methyl-2-[1'-propenyl]benzene;4-isopropyl-1-methyl-2-propenylbenzene; pelargene; verdoracine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   13880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     527.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=229510.0
-    phase     gas;
 }

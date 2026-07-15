@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 11; } { group C_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methoxy-1-methyl-cyclododecane" "1-methoxy-1-methylcyclododecane" "1-methylcyclododecyl methyl ether" "cyclododecane, 1-methoxy-1-methyl-" "1-methyl-1-methoxycyclododecane" "cyclododecane,1-methoxy-1-methyl-" "1-methyl-1-methoxycyclododecane;1-methylcyclododecyl methyl ether; madrox" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -431910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     871.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-91640.0
-    phase     gas;
 }

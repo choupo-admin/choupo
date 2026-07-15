@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-4-(trifluoromethyl)benzene" "p-methylbenzotrifluoride" "4-(trifluoromethyl)toluene" "alpha,alpha,alpha-trifluoro-p-xylene" "benzene, 1-methyl-4-(trifluoromethyl)-" "1-methyl-4-(trifluormethyl)benzol" "4-methyl-1-(trifluoromethyl)benzene" "1-methyl-4-(trifluoromethyl)-benzene" "p-xylene, .alpha.,.alpha.,.alpha.-trifluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -580470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     411.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-462330.0
-    phase     gas;
 }

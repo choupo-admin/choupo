@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl (2e,4e)-hexa-2,4-dienoate" "methyl 2,4-hexadienoate" "2,4-hexadienoic acid, methyl ester, (e,e)-" "2,4-hexadienoic acid, methyl ester" "methyl hexa-2,4-dienoate" "sorbic acid, methyl ester" "2,4-hexadienoic acid, methyl ester, (2e,4e)-" "sorbic acid methyl ester" "methyl sorbate, (e,e)-" "methyl (2e,4e)-hexadienoate" "2-trans,4-trans-methyl sorbate" "methyl (e,e)-hexa-2,4-dienoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -270650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     466.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-141870.0
-    phase     gas;
 }

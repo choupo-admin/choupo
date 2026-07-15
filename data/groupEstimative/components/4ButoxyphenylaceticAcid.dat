@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-butoxyphenyl)ethanoic acid" "4-n-butoxyphenylacetic acid" "2-(4-butoxyphenyl)acetic acid" "4-butoxybenzeneacetic acid" "(p-butoxyphenyl)acetic acid" "4-(n-butoxyphenyl)acetic acid" "acetic acid, (p-butoxyphenyl)-" "(4-butoxyphenyl)acetic acid" "p-butoxyphenylacetic acid" "benzeneacetic acid, 4-butoxy-" "(4-butoxy-phenyl)-acetic acid" "benzeneacetic acid, 4-butoxy- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -548440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     575.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-295970.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 16; } { group COO; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-sulfanylethyl hexadecanoate" "2-sulfanylethyl palmitate" "hexadecanoic acid, 2-mercaptoethyl ester" "2-mercaptoethyl hexadecanoate" "hexadecanoic acid,2-mercaptoethyl ester" "palmiticacid, 2-mercaptoethyl ester (8ci); 1-hexadecanoyloxy-2-ethanethiol;2-mercaptoethyl hexadecanoate; 2-mercaptoethyl palmitate; b-mercaptoethyl palmitate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -693650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     970.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-180300.0
-    phase     gas;
 }

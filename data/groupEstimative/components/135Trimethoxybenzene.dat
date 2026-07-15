@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phloroglucinol trimethyl ether" "benzene, 1,3,5-trimethoxy-" "sym-trimethoxybenzene" "1,3,5-trimethyoxybenzene" "o,o,o-1,3,5-trimethylresorcinol" "1,5-trimethoxybenzene" "1,5-trimethyoxybenzene" "1,3,5-trimethoxy benzene" "agn-pc-00c4nw" "1,3,5-trimethoxybenzene (jan)" "brd-k81884069-001-02-8" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -412160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     421.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-196950.0
-    phase     gas;
 }

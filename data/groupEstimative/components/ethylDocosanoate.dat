@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 21; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "docosanoic acid, ethyl ester" "ethyl docosenyl" "ethyl behenate" "behenic acid ethyl ester" "docosanoic acid, ethylester" "we(2:0/22:0)" "behenicacid ethyl ester;ethyl behenate;ethyl docosanoate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -855970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1142.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-159170.0
-    phase     gas;
 }

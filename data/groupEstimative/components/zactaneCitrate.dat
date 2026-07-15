@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group C; count 1; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group COOH; count 3; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 1-methyl-4-phenyl-azepane-4-carboxylate;2-oxidanylpropane-1,2,3-tricarboxylic acid" "ethoheptazine citrate" "1-methyl-1-carbethoxy-4-phenyl hexamethylenimine citrate" "ethyl hexahydro-1-methyl-4-phenyl-1h-azepine-4-carboxylate, compound with citric acid (1:1)" "ethyl 1-methyl-4-phenylazepane-4-carboxylate; 2-hydroxypropane-1,2,3-tricarboxylic acid" "ethoheptazine citrate (jan)" "77-15-6 (parent)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1764480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1292.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1204330.0
-    phase     gas;
 }

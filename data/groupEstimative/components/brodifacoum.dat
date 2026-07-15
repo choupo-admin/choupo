@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 16; } { group dC_ring; count 10; } { group Br; count 1; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[3-[4-(4-bromophenyl)phenyl]-1,2,3,4-tetrahydronaphthalen-1-yl]-4-oxidanyl-chromen-2-one" "bromfenacoum" "klerat" "talon" "volid" "super warfarin" "talon rodenticide" "brodifacoum [ansi:bsi:iso]" "coumarin, 3-(3-(4'-bromo-1,1'-biphenyl-4-yl)-1,2,3,4-tetrahydro-1-naphthyl)-4-hydroxy-" "bfc" "3-(3-(4'-bromo-(1,1'-biphenyl)-4-yl)-1,2,3,4-tetrahydro-1-napthalenyl)-4-hydroxycoumarin" "3-(3-(4'-bromo-1,1'-biphenyl-4-yl)-1,2,3,4-tetrahydro-1-naphthyl)-4-hydroxycoumarin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -59280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     817.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=312420.0
-    phase     gas;
 }

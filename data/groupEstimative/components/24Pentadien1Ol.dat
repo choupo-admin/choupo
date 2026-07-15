@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "penta-2,4-dien-1-ol" "agn-pc-01ls8y" "2,4-pentadien-1-ol, (2e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -56110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     390.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22460.0
-    phase     gas;
 }

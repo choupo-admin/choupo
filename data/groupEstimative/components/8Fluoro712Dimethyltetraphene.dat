@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 9; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-fluoranyl-7,12-dimethyl-benzo[a]anthracene" "7,12-dimethyl-8-fluorobenz(a)anthracene" "8-fluoro-7,12-dimethylbenz(a)anthracene" "8-fluoro-7,12-dimethylbenzo[a]anthracene" "benz(a)anthracene, 7,12-dimethyl-8-fluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   100150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     502.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=306920.0
-    phase     gas;
 }

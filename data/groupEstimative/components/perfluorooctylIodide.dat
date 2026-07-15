@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 8; } { group F; count 17; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8-heptadecakis(fluoranyl)-8-iodanyl-octane" "1-iodoperfluorooctane" "perfluoro-n-octyl iodide" "heptadecafluoro-1-iodooctane" "heptadecafluoro-n-octyl iodide" "perfluoro-1-iodooctane" "1-iodoheptadecafluorooctane" "heptadecafluorooctyl iodide" "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8-heptadecafluoro-8-iodooctane" "octane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8-heptadecafluoro-8-iodo-" "perfluorooctyliodide" "m812" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3535450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     751.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3214450.0
-    phase     gas;
 }

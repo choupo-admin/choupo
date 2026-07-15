@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(2-bromoethyl)benzoicacid" "4'-(2-bromoethyl)benzoic acid" "p-(.beta.-bromoethyl)benzoic acid" "ambap52062-92-7" "benzoic acid,4-(2-bromoethyl)-" "p(beta-bromoethyl)benzoic acid" "benzoicacid, p-(2-bromoethyl)- (7ci);2-[4-carboxyphenyl]ethyl bromide;4-(2-bromoethyl)benzoic acid;p-(2-bromoethyl)benzoic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -327970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     498.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-201910.0
-    phase     gas;
 }

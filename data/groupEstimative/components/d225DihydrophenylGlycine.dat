@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-azanyl-2-cyclohexa-1,4-dien-1-yl-ethanoic acid" "(r)-(-)-2-amino-2-(cyclohexa-1,4-dienyl)acetic acid" "(r)-2-amino-2-(cyclohexa-1,4-dien-1-yl)acetic acid" "(r)-(-)-2-(2,5-dihydrophenyl)glycine" "(r)-alpha-amino-1,4-cyclohexadiene-1-acetic acid" "(2r)-2-amino-2-cyclohexa-1,4-dienylacetic acid" "(r)-" "a-amino-1,4-cyclohexadiene-1-acetic acid" "(2r)-2-amino-2-cyclohexa-1,4-dien-1-ylacetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -351460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     493.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-180970.0
-    phase     gas;
 }

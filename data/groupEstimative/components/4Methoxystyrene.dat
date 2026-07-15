@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethenyl-4-methoxy-benzene" "4-vinylanisole" "benzene, 1-ethenyl-4-methoxy-" "p-methoxystyrene" "anisole, p-vinyl-" "p-vinylanisole" "1-ethenyl-4-methoxybenzene" "1-methoxy-4-vinylbenzene" "anisole, p-vinyl- (8ci)" "benzene, 1-ethenyl-4-methoxy- (9ci)" "u255" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -10820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110520.0
-    phase     gas;
 }

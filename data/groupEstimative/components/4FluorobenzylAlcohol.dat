@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-fluorophenyl)methanol" "p-fluorobenzyl alcohol" "benzenemethanol, 4-fluoro-" "4-fluorobenzylalcohol" "4-fluorobenzylic alcohol" "4-fluorobenzoic alcohol" "(4-fluorophenyl)methan-1-ol" "q1r df[wln]" "4-fluoro benzyl alcohol" "gezmeihvfswoca-uhfffaoysa-" "4- fluoro benzyl alcohol" "benzenemethanol, 4-fluoro- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     398.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-220790.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 30; } { group CH; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(11-methyldodecyl) benzene-1,2,4-tricarboxylate" "triisotridecyl benzene-1,2,4-tricarboxylate" "1,2,4-benzenetricarboxylic acid, 1,2,4-triisotridecyl ester" "tris(isotridecyl)trimellitate" "1,2,4-benzenetricarboxylic acid, triisotridecyl ester" "1,2,4-benzenetricarboxylicacid, 1,2,4-triisotridecyl ester" "1,2,4-benzenetricarboxylicacid, triisotridecyl ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1788140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     2032.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-492000.0
-    phase     gas;
 }

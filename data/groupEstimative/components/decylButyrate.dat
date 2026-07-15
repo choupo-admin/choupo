@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 11; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "decyl butanoate" "butanoic acid, decyl ester" "butyric acid, decyl ester" "butyric acid, decyl ester (8ci)" "we(10:0/4:0)" "ammonium,[[(4-chloro-a,a,a-trifluoro-m-tolyl)carbamoyl]methyl][[(6-chloro-a,a,a-trifluoro-m-tolyl)carbamoyl]methyl]dimethyl-, chloride (8ci);ethanaminium,2-[[2-chloro-5-(trifluoromethyl)phenyl]amino]-n-[2-[[4-chloro-3-(trifluoromethyl)phenyl]amino]-2-oxoethyl]-n,n-dimethyl-2-oxo-,chloride (9ci)" "ethanaminium,2-[[2-chloro-5-(trifluoromethyl)phenyl]amino]-n-[2-[[4-chloro-3-(trifluoromethyl)phenyl]amino]-2-oxoethyl]-n,n-dimethyl-2-oxo-,chloride (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -649570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     752.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-243370.0
-    phase     gas;
 }

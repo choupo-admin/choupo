@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-oxidanylidene-2-(phenylmethylidene)butanoate" "butanoic acid, 3-oxo-2-(phenylmethylene)-, ethyl ester, (e)-" "butanoic acid, 3-oxo-2-(phenylmethylene)-, ethyl ester, (z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -397550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     623.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-196630.0
-    phase     gas;
 }

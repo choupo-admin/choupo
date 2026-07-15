@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxetane, 3,3-diethyl-" "oxetane, 3,3-diethyl" "3,3-diethyl-oxetane" "agn-pc-0cmok3" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -237930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     376.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-34900.0
-    phase     gas;
 }

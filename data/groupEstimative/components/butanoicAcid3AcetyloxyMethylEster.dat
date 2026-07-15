@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-acetyloxybutanoate" "methyl butanoate, 3-acetoxy" "butanoic acid, 3-(acetyloxy)-, methyl ester, (3r)-" "methyl 3-acetoxybutyrate" "(2e)-n-(3-methyl-1h-pyrazol-5-yl)-3-phenyl-2-propenamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -827650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     521.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-615120.0
-    phase     gas;
 }

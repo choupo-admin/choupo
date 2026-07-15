@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-naphthalen-2-yloxyethanol" "2-(2-naphthyloxy)ethanol" "2-(2-naphthoxy)ethanol" "2-(naphthalen-2-yloxy)ethanol" "ethanol, 2-(2-naphthalenyloxy)-" "ethylene glycol mono-2-naphthyl ether" "2-(2-naphthyloxy)ethan-1-ol" "beta-naphthoxyethanol" "ethoxylated 2-naphthol" ".beta.-naphthoxyethanol" "ethoxylated beta-naphthol" "2-(2-naphthalenyloxy)ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -159330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     464.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=17770.0
-    phase     gas;
 }

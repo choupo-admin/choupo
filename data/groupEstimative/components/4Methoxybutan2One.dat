@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methoxy-2-butanone" "2-butanone, 4-methoxy-" "4-methoxy-butan-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -391330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     388.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-242700.0
-    phase     gas;
 }

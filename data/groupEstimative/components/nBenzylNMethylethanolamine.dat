@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[methyl-(phenylmethyl)amino]ethanol" "2-[benzyl(methyl)amino]ethanol" "2-(benzyl(methyl)amino)ethanol" "ethanol, 2-[methyl(phenylmethyl)amino]-" "ethanol, 2-(benzylmethylamino)-" "2-(n-benzyl-n-methylamino)ethanol" "ethanol, 2-(methyl(phenylmethyl)amino)-" "2-(benzylmethylamino)ethanol" "2-[methylbenzylamino]ethan-1-ol" "2-(benzyl-methyl-amino)-ethanol" "n-benzyl-n-methyl-n-ethanolamine" "2-[benzyl(methyl)amino]ethan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -97900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=119690.0
-    phase     gas;
 }

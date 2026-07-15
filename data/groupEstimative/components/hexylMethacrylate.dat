@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group dCH2; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexyl 2-methylprop-2-enoate" "n-hexyl methacrylate" "methacrylic acid, hexyl ester" "2-propenoic acid, 2-methyl-, hexyl ester" "hexyl 2-methyl-2-propenoate" "hexyl 2-methylacrylate" "methacrylic acid hexyl ester" "poly(hexyl methacrylate) solution" "methacrylic acid, hexyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -451370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     588.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-197760.0
-    phase     gas;
 }

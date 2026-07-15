@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 10; } { group CH_ring; count 5; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(13-methyl-3-oxidanyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthren-17-yl) 3-cyclopentylpropanoate" "3-hydroxyestra-1(10),2,4-trien-17-yl 3-cyclopentylpropanoate" "3-hydroxyestra-1,3,5(10)-trien-17-yl 3-cyclopentylpropanoate" "(3-hydroxy-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthren-17-yl) 3-cyclopentylpropanoate" "[(8r,9s,13s,14s)-3-hydroxy-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthren-17-yl] 3-cyclopentylpropanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -608380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     837.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20480.0
-    phase     gas;
 }

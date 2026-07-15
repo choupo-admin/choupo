@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "undecanoic acid, ethyl ester" "undecanoic acid ethyl ester" "ethyl undecylate" "ethyl hendecanoate" "undecanoic acid, ethylester" "ambap627-90-7" "n-undecanoic acid ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -628930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     713.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-251790.0
-    phase     gas;
 }

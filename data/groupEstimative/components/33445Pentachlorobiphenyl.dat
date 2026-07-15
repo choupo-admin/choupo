@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 5; } { group dC_ring; count 7; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3-tris(chloranyl)-5-(3,4-dichlorophenyl)benzene" "3,4,5,3',4'-pentachlorobiphenyl" "3,3',4,4',5-pentachloro-1,1'-biphenyl" "3,4,3',4',5'-pentachlorobiphenyl" "1,1'-biphenyl, 3,3',4,4',5-pentachloro-" "3,4,5,3',4'-pentachloro-biphenyl" "3,4,5,3',4'-penta coplanar polychlorinated biphenyl" "pcb 126/pcb118" "tef transgenics (pcb126)" "pcb 126/pcb 153; binary mixture" "3,3',4,4',5'-pentachloro-biphenyl" "3,3',4,4',5-pcb" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   46000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=167180.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,8-dimethyl-2-propan-2-yl-azulene" "elamazulene" "vetivazulene" "4,8-dimethyl-2-propan-2-ylazulene" "azulene,4,8-dimethyl-2-(1-methylethyl)-" "azulene,2-isopropyl-4,8-dimethyl- (7ci,8ci); vetivazulene (6ci); elemazulene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   34980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     496.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=263150.0
-    phase     gas;
 }

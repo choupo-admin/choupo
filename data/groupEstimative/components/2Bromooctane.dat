@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanyloctane" "octane, 2-bromo-" "sec-octyl bromide" "2-octyl bromide" "2-bromoooctane" "1-methylheptyl bromide" "(r)-2-bromooctane" "2-bromo-octane" "2-bromo octane" "sec-octyl bromide (van)" "octane, 2-bromo-, (.+/-.)-" "h283" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -187400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     509.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=28360.0
-    phase     gas;
 }

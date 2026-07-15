@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-bis(oxidanyl)benzaldehyde" "beta-resorcylaldehyde" "benzaldehyde, 2,4-dihydroxy-" "4-hydroxysalicylaldehyde" "4-formylresorcinol" "beta-resorcaldehyde" "beta-resorcinaldehyde" ".beta.-resorcylaldehyde" "beta-resorcylic aldehyde" "b-resorcylaldehyde" "beta-rosorcaldehyde" "salicylaldehyde, 4-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -229450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     456.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-144810.0
-    phase     gas;
 }

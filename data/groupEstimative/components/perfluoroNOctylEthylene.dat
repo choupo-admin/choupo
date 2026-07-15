@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 8; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 17; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecakis(fluoranyl)dec-1-ene" "1h,1h,2h-perfluoro-1-decene" "1h,1h,2h-perfluorodec-1-ene" "1h,1h,2h-heptadecafluoro-1-decene" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecafluoro-1-decene" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecafluorodec-1-ene" "tridecafluoro 1-decene" "(perfluoroctyl)ethylene" "(perfluorooctyl)ethylene" "(perfluorooctyl)ethene;(perfluorooctyl)ethylene;1,1,2-trihydroperfluoro-1-decene;1h,1h,2h-heptadecafluoro-1-decene;1h,1h,2h-perfluoro-1-decene;1h,1h,2h-perfluorodecene;3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecafluoro-1-decene;3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecafluorodecene;f 1820;heptadecafluoro-1-decene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3528170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     768.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3167890.0
-    phase     gas;
 }

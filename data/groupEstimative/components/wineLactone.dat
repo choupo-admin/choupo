@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s,3as,7ar)-3,6-dimethyl-3a,4,5,7a-tetrahydro-3h-1-benzofuran-2-one" "(-)-wine lactone" "(-)-(3s,3as,7ar)-wine lactone" "2-(2- hydroxy-4-methyl-3-cyclohexenyl) propionic acid gamma-lactone" "2(3h)-benzofuranone, 3a,4,5,7a-tetrahydro-3,6-dimethyl-, (3s,3as,7ar)-" "2(3h)-benzofuranone, 3a,4,5,7a-tetrahydro-3,6-dimethyl-, (3s-(3alpha,3aalpha,7aalpha))-" "2-(2- hydroxy-4-methyl-3-cyclohexenyl) propionic acid gamma-lactone [fhfi]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -401600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     350.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-155030.0
-    phase     gas;
 }

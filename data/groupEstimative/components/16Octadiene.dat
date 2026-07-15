@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octa-1,6-diene" "1,6-octadiene, (z)-" "1,6-n-octadiene;2,7-octadiene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   34200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     456.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=184540.0
-    phase     gas;
 }

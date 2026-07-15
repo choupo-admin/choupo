@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 6; } { group F; count 13; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-1,1,2,2,3,3,4,4,5,5,6,6,6-tridecakis(fluoranyl)hexane" "1-bromoperfluorohexane" "perfluorohexylbromide" "tridecafluorohexyl bromide" "1-bromotridecafluorohexane" "1-bromo-1,1,2,2,3,3,4,4,5,5,6,6,6-tridecafluorohexane" "1-bromo-tridecafluorohexane" "tridecafluoro-1-bromohexane" "1-bromotridecafluorohexane; perfluorohexyl bromide" "hexane, 1-bromo-1,1,2,2,3,3,4,4,5,5,6,6,6-tridecafluoro-" "hexane,1-bromo-1,1,2,2,3,3,4,4,5,5,6,6,6-tridecafluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2742770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     619.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2501530.0
-    phase     gas;
 }

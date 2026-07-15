@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group CN; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(thiiran-2-yl)ethanenitrile" "3,4-epithiobutanenitrile" "thiiraneacetonitrile" "(+-)-thiiraneacetonitrile" "thiiraneacetonitrile, (+-)-" "2-(thiiran-2-yl)acetonitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   157050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     277.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=216590.0
-    phase     gas;
 }

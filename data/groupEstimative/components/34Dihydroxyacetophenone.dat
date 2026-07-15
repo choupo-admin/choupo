@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[3,4-bis(oxidanyl)phenyl]ethanone" "3,4-dihydroxyacetophenone" "qingxintong" "4-acetylpyrocatechol" "1-(3,4-dihydroxyphenyl)ethanone" "acetopyrocatechol" "4-acetopyrocatechol" "ethanone, 1-(3,4-dihydroxyphenyl)-" "acetophenone-3',4'-dihydroxy" "1-acetyl-3,4-dihydroxybenzene" "4-acetocatechol" "3,4'-dihydroxyacetophenone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -439120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     440.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-309270.0
-    phase     gas;
 }

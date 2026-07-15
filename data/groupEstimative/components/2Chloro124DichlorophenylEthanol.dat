@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-1-(2,4-dichlorophenyl)ethanol" "benzyl alcohol, 2,4-dichloro-.alpha.-(chloromethyl)-" "benzenemethanol, 2,4-dichloro-.alpha.-(chloromethyl)-" "(s)-2-chloro-1-(2,4-dichlorophenyl)ethanol" "benzenemethanol,2,4-dichloro-a-(chloromethyl)-,(as)-" "1-(2,4-dichlorophenyl)-2-chloroethan-1-ol" "alpha-(chloromethyl)-2,4-dichlorobenzyl alcohol" "benzenemethanol,2,4-dichloro-" "a-(chloromethyl)-" "benzylalcohol, 2,4-dichloro-a'a" "afa-(chloromethyl)- (8ci);2,4-dichloro-a'a" "afa-(chloromethyl)benzyl alcohol;2-chloro-1-(2,4-dichlorophenyl)ethanol;a'a" "afa-(2,4-dichlorophenyl)-a'a" "afas-chloroethanol;a'a" "afa-(chloromethyl)-2,4-dichlorobenzylalcohol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -199590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     490.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-65420.0
-    phase     gas;
 }

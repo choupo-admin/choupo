@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group Br; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanylbutan-2-one" "3-bromobutan-2-one" "2-butanone, 3-bromo-" "3-bromobut-2-one" "2-bromobutan-2-one" "2-bromo-3-oxobutane" "3-bromo-butan-2-one" "1-bromoethyl methyl ketone" "(?a'a a'a currency)-a-bromoethyl methyl ketone;1-bromoethyl methyl ketone;2-bromo-3-butanone;3-bromo-2-butanone;3-bromobutanone;a-bromoethyl methyl ketone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -217420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     380.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134240.0
-    phase     gas;
 }

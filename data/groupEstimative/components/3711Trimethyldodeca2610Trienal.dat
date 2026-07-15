@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group dCH; count 3; } { group dC; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6,10-dodecatrienal, 3,7,11-trimethyl-, (2e,6e)-" "2,6,10-dodecatrienal, 3,7,11-trimethyl-, (2z,6e)-" "agn-pc-00po48" "2,6,10-dodecatrienal,3,7,11-trimethyl-" "farnesal(6ci); 3,7,11-trimethyl-2,6,10-dodecatrienal; farnesone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -116220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     726.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=190910.0
-    phase     gas;
 }

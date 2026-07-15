@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(diphenylmethyl)oxy-8-methyl-8-azabicyclo[3.2.1]octane" "3-(diphenylmethoxy)-8-methyl-8-azabicyclo[3.2.1]octane" "3-benzhydryloxy-8-methyl-8-azabicyclo[3.2.1]octane" "benzatropina" "benzatropine" "benzatropinum" "cogentinol" "cogentine" "benzatropine [inn]" "tropine benzohydryl ether" "nk 02" "8-azabicyclo[3.2.1]octane, 3-(diphenylmethoxy)-8-methyl-, endo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   45420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=455790.0
-    phase     gas;
 }

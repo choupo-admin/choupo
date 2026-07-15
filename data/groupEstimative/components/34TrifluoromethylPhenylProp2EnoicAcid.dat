@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "agn-pc-00bzl3" "trans-4-(trifluoromethyl)cinnamic acid;3-(4-trifluoromethylphenyl)acrylyc acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -854800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-709180.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 4; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylnaphthalene-1-carbaldehyde" "1-naphthalenecarboxaldehyde, 2-hydroxy-" "1-formyl-2-naphthol" "2-hydroxynaphthaldehyde" "1-naphthaldehyde, 2-hydroxy-" "2-hydroxy-1-napthaldehyde" "2-naphthol 1-carboxaldehyde" "2-hydroxy-1-naphthalenecarboxaldehyde" "2-hydroxy-1-naphthalaldehyde" "2-hydroxy-1-naphthylaldehyde" "2-hydroxynaphthalene-1-carbaldehyde" "beta-hydroxynaphthaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   44900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     470.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=140510.0
-    phase     gas;
 }

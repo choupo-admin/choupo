@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(phenylmethyl) methanoate" "formic acid, phenylmethyl ester" "benzyl methanoate" "benzyl alcohol, formate" "phenylmethyl formate" "formic acid benzyl ester" "benzyl formiat" "formic acid, benzyl ester" "benzylformate" "ameisensaeurebenzylester" "carbobenzoxy group" "benzylester kyseliny mravenci" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   104530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     544.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=172850.0
-    phase     gas;
 }

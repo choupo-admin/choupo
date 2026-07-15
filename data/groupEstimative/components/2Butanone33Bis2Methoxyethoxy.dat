@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group C; count 1; } { group O; count 4; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-bis(2-methoxyethoxy)butan-2-one" "3,3-bis(2-methoxyethoxy)-2-butanone" "3,3-di(beta-methoxyethoxy)-2-butanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -899940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     578.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-512760.0
-    phase     gas;
 }

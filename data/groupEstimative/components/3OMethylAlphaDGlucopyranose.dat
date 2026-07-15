@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH_ring; count 5; } { group OH; count 4; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s,3r,4s,5r,6r)-6-(hydroxymethyl)-4-methoxy-oxane-2,3,5-triol" "(2s,3r,4s,5r,6r)-6-(hydroxymethyl)-4-methoxyoxane-2,3,5-triol" "3-o-methylglucose" "3-o-methyl-" "a-d-glucopyranose" "alpha-d-glucopyranose, 3-o-methyl-" "(2s,3r,4s,5r,6r)-6-(hydroxymethyl)-4-methoxytetrahydro-2h-pyran-2,3,5-triol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1087990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     392.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-736730.0
-    phase     gas;
 }

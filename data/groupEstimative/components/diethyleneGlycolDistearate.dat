@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 36; } { group O; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-octadecanoyloxyethoxy)ethyl octadecanoate" "octadecanoic acid, oxydi-2,1-ethanediyl ester" "octadecanoic acid, 1,1'-(oxydi-2,1-ethanediyl) ester" "witconol cad" "oxydiethylene stearate" "oxydiethane-1,2-diyl distearate" "stearic acid, oxydiethylene ester" "oxydi-2,1-ethanediyl dioctadecanoate" "oxydiethane-2,1-diyl dioctadecanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1635710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1827.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-439820.0
-    phase     gas;
 }

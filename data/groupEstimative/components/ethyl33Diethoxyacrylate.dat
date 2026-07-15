@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH; count 1; } { group dC; count 1; } { group O; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3,3-diethoxyprop-2-enoate" "3,3-diethoxyacrylic acid ethyl ester" "2-propenoic acid, 3,3-diethoxy-, ethyl ester" "ethyl-3,3-diethoxy acrylate" "am907" "u746" "2-propenoic acid,3,3-diethoxy-, ethyl ester" "acrylicacid, 3-oxo-, ethyl ester, diethyl acetal (7ci,8ci); 3,3-diethoxyacrylic acidethyl ester; carbethoxyketene diethyl acetal; ethyl 3,3-diethoxyacrylate; ethylb,b-diethoxyacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -703380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     569.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-423800.0
-    phase     gas;
 }

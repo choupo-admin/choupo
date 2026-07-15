@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group CH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethyllauric acid" "dodecanoic acid, 2-ethyl-" "2-ethyl-dodecanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -687840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     744.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-279350.0
-    phase     gas;
 }

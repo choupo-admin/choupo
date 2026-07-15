@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-methylpropoxy)naphthalene" "fragarol" "nerolin fragarol" "2-naphthyl isobutyl ether" "isobutyl 2-naphthyl ether" "naphthalene, 2-(2-methylpropoxy)-" "naphthalene, 2-isobutoxy-" "beta-naphthol isobutyl ether" "beta-naphthyl isobutyl ether" "isobutyl beta-naphthyl ether" "ether, isobutyl(2-naphthyl)" "naphthalene, 2-isobutoxy- (7ci,8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -53660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     481.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=168990.0
-    phase     gas;
 }

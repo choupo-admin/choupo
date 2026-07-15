@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH; count 2; } { group dCH2; count 2; } { group dCH; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-butenedioic acid (2e)-, 1,4-bis(1-methylethyl) ester, polymer with ethenyl acetate and ethenylbenzene" "2-butenedioic acid (2e)-, bis(1-methylethyl) ester, polymer with ethenyl acetate and ethenylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1078440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1240.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-642840.0
-    phase     gas;
 }

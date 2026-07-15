@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 5; } { group CH_ring; count 7; } { group C_ring; count 4; } { group OH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3" "a,6" "a,10" "a,14s)-grayanotoxane-3,5,6,14,16-pentol" "grayanotoxane-3,5,6,14,16-pentol, (3-beta,6-beta,14r)-" "7,9a-methano-9ah-cyclopenta(b)heptalene-2,8,11,11a,12(1h)-pentol, dodecahydro-1,1,4,8-tetramethyl-, (2s,3as,4r,4ar,7r,8r,9as,11r,11ar,12r)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1032140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     889.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-447910.0
-    phase     gas;
 }

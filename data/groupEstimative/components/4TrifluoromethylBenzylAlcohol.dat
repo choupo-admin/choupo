@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[4-(trifluoromethyl)phenyl]methanol" "p-trifluoromethylbenzyl alcohol" "4-trifluoromethyl benzene methanol" "4-trifluoromethylbenzyl alcohol" "(4-(trifluoromethyl)phenyl)methanol" "4-(trifluoromethyl)benzylic alcohol" "benzenemethanol, 4-(trifluoromethyl)-" "[4-(trifluoromethyl)phenyl]methan-1-ol" "q1r dxfff" "ptf-byl" "ghl.pd_mitscher_leg0.197" "4-(trifluoromethyl)benzylalcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -732700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-599150.0
-    phase     gas;
 }

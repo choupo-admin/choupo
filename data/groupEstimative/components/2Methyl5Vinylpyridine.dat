@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-ethenyl-2-methyl-pyridine" "5-ethenyl-2-methylpyridine" "2-picoline, 5-vinyl-" "pyridine, 5-ethenyl-2-methyl-" "2-methyl-5-vinyl-pyridine" "2-mvp" "pyridine, 2-methyl-5-vinyl-" "pyridine, 2-methyl-5-vinyl" "mvp" "5-vinyl-2-methylpyridine homopolymer" "pyridine, 5-ethenyl-2-methyl-, homopolymer" "poly(2-methyl-5-vinylpyridine)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   174830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     363.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=284150.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenoxyethylbenzene" "2-phenethyl phenyl ether" "2-phenylethyl phenyl ether" "(2-phenoxyethyl)benzene" "(2-phenylethoxy)benzene" "phenethyloxybenzene" "2-phenylethylphenyl ether" "benzene,(2-phenoxyethyl)-" "ether,phenethyl phenyl (6ci,7ci); 2-phenoxy-1-phenylethane; 2-phenylethyl phenylether; phenethyl phenyl ether; phenyl phenylethyl ether; b-phenylethyl phenyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   8550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     499.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=186820.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group dCH2; count 2; } { group dC; count 2; } { group COOH; count 1; } { group COO; count 2; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-propenoic acid, 2-methyl-, telomer with butyl 2-methyl-2-propenoate and methyl 3-mercaptopropanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1311880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1195.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-902360.0
-    phase     gas;
 }

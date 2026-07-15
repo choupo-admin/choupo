@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group O; count 2; } { group N; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[6-[2-(dimethylamino)ethoxy]pyridin-2-yl]oxy-n,n-dimethyl-ethanamine" "2,6-bis[2-(dimethylamino)ethoxy]pyridine" "[2-({6-[2-(dimethylamino)ethoxy]pyridin-2-yl}oxy)ethyl]dimethylamine" "2-[6-(2-dimethylaminoethyloxy)pyridin-2-yl]oxy-n,n-dimethylethanamine" "2-((6-(2-(dimethylamino)ethoxy)-2-pyridinyl)oxy)-n,n-dimethylethanamine; n-(2-((6-(2-(dimethylamino)ethoxy)-2-pyridinyl)oxy)ethyl)-n,n-dimethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -183180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     617.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=249970.0
-    phase     gas;
 }

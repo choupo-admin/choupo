@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 1; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-octoxypropane-1,2-diol" "1,2-propanediol, 3-(octyloxy)-" "3-octyloxypropane-1,2-diol" "octyl-sepharose" "1,2-propanediol, 3-(octyloxy)-, (r)-" "octylagarose cl-4b" "1-glyceryloctyl ether" "octylsepharose cl-4b" "octyl-sepharose cl-4b" "agn-pc-00qgpm" "sepharose cl 4b, 2-hydroxy-3-(octyloxy)propyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -712330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     688.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-339340.0
-    phase     gas;
 }

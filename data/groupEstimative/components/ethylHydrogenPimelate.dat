@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-ethoxy-7-oxidanylidene-heptanoic acid" "pimelic acid monoethyl ester" "7-ethoxy-7-oxoheptanoic acid" "monoethyl pimelate" "ethyl hydrogen heptane-1,7-dioate" "heptandioic acid monoethyl ester" "heptanedioic acid monoethyl ester" "heptanedioic acid, 1-ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -896640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     610.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-629380.0
-    phase     gas;
 }

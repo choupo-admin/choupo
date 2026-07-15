@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 8; } { group dC; count 2; } { group dCH_ring; count 16; } { group dC_ring; count 8; } { group N; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyl-4-[1,2,2-tris[4-(dimethylamino)phenyl]ethenyl]aniline" "tetrakis(p-(dimethylamino)phenyl)ethylene" "benzenamine, 4,4',4'',4'''-(1,2-ethenediylidene)tetrakis(n,n-dimethyl-" "benzenamine, 4,4',4'',4'''-(1,2-ethenediylidene)tetrakis[n,n-dimethyl-" "aniline,4',4'',4'''-ethenediylidenetetrakis[n,n-dimethyl-" "aniline, 4,4',4'',4'''-ethenediylidenetetrakis(n,n-dimethyl-" "dimethyl(4-{1,2,2-tris[4-(dimethylamino)phenyl]vinyl}phenyl)amine" "n,n-dimethyl-4-[1,2,2-tris(4-dimethylaminophenyl)ethenyl]aniline" "benzenamine,4',4'',4'''-(1,2-ethenediylidene)tetrakis[n,n-dimethyl-" "n,n-dimethyl-n-(4-(1,2,2-tris(4-(dimethylamino)phenyl)vinyl)phenyl)amine" "methanaminium,n,n'-[[1,2-bis[4-(dimethylamino)phenyl]-1,2-ethanediylidene]di-2,5-cyclohexadiene-4,1-diylidene]bis[n-methyl-,dichloride (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   522910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1079.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1152760.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O_ring; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-dihydro-1,4-benzodioxin-6-amine" "3,4-ethylenedioxyaniline" "6-amino-1,4-benzodioxane" "6-amino-1,4-benzodioxan" "2,3-dihydro-1,4-benzodioxin-6-amin" "2,3-dihydrobenzo[b][1,4]dioxin-6-amine" "1,4 benzodioxan-6-amine" "1,4-benzodioxan-6-ylamine" "sdccgmls-0066218.p001" "2h,3h-benzo[e]1,4-dioxin-6-ylamine" "2h,3h-benzo[e]1,4-dioxane-6-ylamine" "q697" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -138090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     269.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=60200.0
-    phase     gas;
 }

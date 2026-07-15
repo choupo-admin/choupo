@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phenyl ethanoate" "phenol acetate" "acetylphenol" "acetic acid, phenyl ester" "acetic acid phenyl ester" "acetyl phenol" "acetic acid,phenyl ester" "acetoxybenzene" "acetates" "(acetyloxy)benzene" "(4-acetoxy)polystyrene" "fenylester kyseliny octove" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -289200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-181480.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10-dodecen-1-ol, acetate, (10e)-" "10-dodecen-1-ol, 1-acetate, (10e)-" "dodec-10-enyl acetate" "10-dodecen-1-ol,1-acetate, (10e)-" "10-dodecen-1-ol,acetate, (10e)- (9ci); 10-dodecen-1-ol, acetate, (e)-;(e)-1-acetoxy-10-dodecene; (e)-10-dodecen-1-ol acetate; (e)-10-dodecen-1-ylacetate; (e)-10-dodecenyl acetate; reamol lbl; trans-10-dodecenyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -532350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     746.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-163150.0
-    phase     gas;
 }

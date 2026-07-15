@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group C_ring; count 1; } { group O_ring; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-piperidone ethylene ketal" "4-piperidinone ethyl ketal" "piperidone-4-ethyleneketal" "4-piperidone-ethylene ketal" "4-piperidone ethylene acetal" "1,4-dioxa-8-azaspiro(4.5)decane" "1,4-dioxa-8-aza-spiro[4.5]decane" "agn-pc-03fodx" "4-piperidone ethyl hemiketal" "piperidin-4-one ethylene ketal" "piperidin-4-one ethylene acetal" "q217" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     330.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1150.0
-    phase     gas;
 }

@@ -39,9 +39,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 6; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triethoxy-[1,2,3,4,7,7-hexakis(chloranyl)-5-bicyclo[2.2.1]hept-2-enyl]silane" "triethoxy(1,4,5,6,7,7-hexachloro-5-norbornen-2-yl)silane" "silane, triethoxy(1,4,5,6,7,7-hexachlorobicyclo[2.2.1]hept-5-en-2-yl)-" "silane, triethoxy(1,4,5,6,7,7-hexachlorobicyclo(2.2.1)hept-5-en-2-yl)-" "silane,triethoxy(1,4,5,6,7,7-hexachloro-5-norbornen-2-yl)- (8ci)" "silane,triethoxy(1,4,5,6,7,7-hexachlorobicyclo[2.2.1]hept-5-en-2-yl)-" "triethoxy(1,4,5,6,7,7-hexachlorobicyclo[2.2.1]hept-5-en-2-yl)silane" "triethoxy-(1,2,3,4,7,7-hexachloro-5-bicyclo[2.2.1]hept-2-enyl)silane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -735050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     936.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-344550.0
-    phase     gas;
 }

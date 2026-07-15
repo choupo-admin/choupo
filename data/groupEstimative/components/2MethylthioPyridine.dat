@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group Nd_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylsulfanylpyridine" "2-methylthiopyridine" "methyl 2-pyridyl sulfide" "pyridine, 2-(methylthio)-" "2-pyridyl methyl sulfide" "2-methylthiolpyridine" "2-methylthio pyridine" "methylthio-2 pyridine [french]" "methylthio-2 pyridine" "2-(methylsulfanyl)pyridine" "l314" "2-(methylthio)pyridine;2-pyridyl methyl sulfide; methyl 2-pyridyl sulfide; a-(methylthio)pyridine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   144020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     357.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=222220.0
-    phase     gas;
 }

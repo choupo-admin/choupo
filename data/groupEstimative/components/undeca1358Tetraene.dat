@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e,e,z)-undeca-1,3,5,8-tetraene" "(z,e,z)-undeca-1,3,5,8-tetraene" "1,3,5,8-undecatetraene,(3e,5e,8z)-" "1,3,5,8-undecatetraene,(3e,5z,8z)-" "1,3,5,8-undecatetraene,(e,e,z)-; trans,trans,cis-1,3,5,8-undecatetraene" "1,3,5,8-undecatetraene,(z,e,z)- (8ci); finavarrene; trans,cis,cis-1,3,5,8-undecatetraene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   206720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     560.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=370240.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-butoxyethoxy)butane" "ethylene glycol dibutyl ether" "dibutyl cellosolve" "glycol dibutyl ether" "dibutyl oxitol" "ethane, 1,2-dibutoxy-" "ethyl glycol dibutyl ether" "butane, 1,1'-(1,2-ethanediylbis(oxy))bis-" "butane, 1,1'-[1,2-ethanediylbis(oxy)]bis-" "dibutyl glycol" "dibutylether ethylenglykolu" "butane,1-(2-butoxyethoxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -514170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     568.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-176680.0
-    phase     gas;
 }

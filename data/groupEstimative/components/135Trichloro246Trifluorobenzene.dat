@@ -33,9 +33,8 @@ groups
     joback ( { group dC_ring; count 6; } { group F; count 3; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,5-tris(chloranyl)-2,4,6-tris(fluoranyl)benzene" "1,3,5-trichlorotrifluorobenzene" "benzene, 1,3,5-trichloro-2,4,6-trifluoro-" "sym-trichlorotrifluorobenzene" "sym-trifluorotrichlorobenzene" "1,3,5-trifluorotrichlorobenzene" "2,4,6-trifluorotrichlorobenzene" "1,3,5-trifluoro-2,4,6-trichlorobenzene" "1,5-trichlorotrifluorobenzene" "1,5-trichloro-2,4,6-trifluorobenzene" "benzene,3,5-trichloro-2,4,6-trifluoro-" "benzene,1,3,5-trichloro-2,4,6-trifluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -623540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-556320.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-ethoxyethoxy)-2-methoxy-ethane" "diethylene glycol ethyl methyl ether" "2-ethoxyethyl 2-methoxyethyl ether" "ether, 2-ethoxyethyl 2-methoxyethyl" "ethane, 1-ethoxy-2-(2-methoxyethoxy)-" "me2" "methyl diglyme" "2,5,8-trioxadecane" "ethylmethylether diethylenglykolu" "1-(2-ethoxyethoxy)-2-methoxyethane" "p068" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -584470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-306940.0
-    phase     gas;
 }

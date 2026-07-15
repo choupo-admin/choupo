@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 3; } { group CH2_ring; count 1; } { group CH_ring; count 5; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group OH; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3r,5r)-7-[(1s,2s,6r,8s,8ar)-2,6-dimethyl-8-[(2s)-2-methylbutanoyl]oxy-1,2,6,7,8,8a-hexahydronaphthalen-1-yl]-3,5-bis(oxidanyl)heptanoic acid" "lovastatin acid" "monacolinic k acid" "msd 803 free acid" "msd 803 acid" "1-naphthaleneheptanoic acid, 1,2,6,7,8,8a-hexahydro-beta,delta-dihydroxy-2,6-dimethyl-8-(2-methyl-1-oxobutoxy)-" "1-naphthaleneheptanoic acid, 1,2,6,7,8,8a-hexahydro-beta,delta-dihydroxy-2,6-dimethyl-8-(2-methyl-1-oxobutoxy)-, (1s-(1alpha(betas*,deltas*),2alpha,6beta,8beta(r*),8aalpha))-" "lva" "(3r,5r)-7-[(1s,2s,6r,8s,8ar)-2,6-dimethyl-8-[(2s)-2-methylbutanoyl]oxy-1,2,6,7,8,8a-hexahydronaphthalen-1-yl]-3,5-dihydroxyheptanoic acid" "(3r,5r)-7-[(1s,2s,6r,8s,8ar)-2,6-dimethyl-8-{[(2s)-2-methylbutanoyl]oxy}-1,2,6,7,8,8a-hexahydronaphthalen-1-yl]-3,5-dihydroxyheptanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1362510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     959.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-683780.0
-    phase     gas;
 }

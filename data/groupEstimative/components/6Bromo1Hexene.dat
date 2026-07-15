@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH2; count 1; } { group dCH; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-bromanylhex-1-ene" "6-bromohex-1-ene" "1-bromo-5-hexene" "1-hexene, 6-bromo-" "5-hexenyl bromide" "6-bromo-hexene" "6-bromo-hex-1-ene" "bromo(6-)-1-hexene" "hex-5-en-1-yl bromide" "rimxejyjxdblie-uhfffaoysa-" "1-bromo-5-hexene;5-hexen-1-yl bromide;5-hexenyl bromide;6-bromohexene;" "1-bromo-5-hexene; 5-hexen-1-yl bromide; 5-hexenyl bromide; 6-bromo-1-hexene; 6-bromohexene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -15410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     436.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=101800.0
-    phase     gas;
 }

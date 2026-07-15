@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1s,2r)-2-(dibutylamino)-1-phenyl-propan-1-ol" "(-)-dbne" "n,n-dibutyl-d-(-)-norephedrine" "(1s,2r)-(-)-2-(dibutylamino)-1-phenyl-1-propanol" "(1s,2r)-2-(dibutylamino)-1-phenyl-1-propanol" "(-)-alpha-[1-(dibutylamino)ethyl]benzyl alcohol" "(1s,2r)-2-(dibutylamino)-1-phenylpropan-1-ol" "(-)-" "a-[1-(dibutylamino)ethyl]benzyl alcohol; (-)-n,n-dibutylnorephedrin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -252940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     759.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=173750.0
-    phase     gas;
 }

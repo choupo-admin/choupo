@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group C_ring; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 8; } { group OH_phenol; count 2; } { group COOH; count 4; } { group COO; count 1; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[[5-[1-[3-[[bis(2-hydroxy-2-oxoethyl)amino]methyl]-4-oxidanyl-phenyl]-3-oxidanylidene-2-benzofuran-1-yl]-2-oxidanyl-phenyl]methyl-(2-hydroxy-2-oxoethyl)amino]ethanoic acid" "phenolphthalexon" "62698-58-2 (tetra-hydrochloride salt)" "2-[[5-[1-[3-[[bis(carboxymethyl)amino]methyl]-4-hydroxyphenyl]-3-oxo-2-benzofuran-1-yl]-2-hydroxyphenyl]methyl-(carboxymethyl)amino]acetic acid" "n,n'-((3-oxo-1(3h)-isobenzofuranylidene)bis((6-hydroxy-3,1-phenylene)methylene))bis(n-(carboxymethyl)glycine)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1824910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1275.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1184170.0
-    phase     gas;
 }

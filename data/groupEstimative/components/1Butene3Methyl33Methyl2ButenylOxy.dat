@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-1-(2-methylbut-3-en-2-yloxy)but-2-ene" "1-butene, 3-methyl-3-((3-methyl-2-butenyl)oxy)-" "1-butene, 3-methyl-3-((3-methyl-2-buten-1-yl)oxy)-" "1-butene, 3-methyl-3-[(3-methyl-2-buten-1-yl)oxy]-" "gamma,gamma-dimethylallyl alpha,alpha-dimethylallyl ether" "3-methyl-3-((3-methyl-2-butenyl)oxy)but-1-ene" "1,1-dimethyl-2-propenyl 3-methyl-2-butenyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -157840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     502.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=90670.0
-    phase     gas;
 }

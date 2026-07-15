@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group OH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-sulfanylethanol" "mercaptoethanol" "thioglycol" "beta-mercaptoethanol" "ethanol, 2-mercapto-" "2-thioethanol" "2-hydroxyethyl mercaptan" "thioethylene glycol" "2-hydroxy-1-ethanethiol" "monothioglycol" "thiomonoglycol" "2-hydroxyethanethiol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -198360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     347.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-141470.0
-    phase     gas;
 }

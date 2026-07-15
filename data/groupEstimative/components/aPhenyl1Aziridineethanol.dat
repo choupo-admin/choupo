@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(aziridin-1-yl)-2-phenyl-ethanol" "beta-phenyl-1-aziridineethanol" "beta-phenylaziridine-1-ethanol" "1-aziridineethanol, beta-phenyl-" "1-aziridineethanol, .beta.-phenyl-" "2-(aziridin-1-yl)-2-phenylethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=197810.0
-    phase     gas;
 }

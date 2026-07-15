@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-butan-2-yloxybutane" "sec-butyl ether" "butane, 2,2'-oxybis-" "bis(2-butyl)ether" "2,2'-oxybisbutane" "propane, 1-methyl-1,1'-oxybis" "2,2'-oxydibutane" "bis(2-butyl) ether" "agn-pc-0d62lh" "hhbzztkmmldndn-uhfffaoysa-" "sec-butylether (6ci,7ci,8ci); bis(2-butyl) ether; di-sec-butyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -351230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-93400.0
-    phase     gas;
 }

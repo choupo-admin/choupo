@@ -34,9 +34,8 @@ groups
     joback ( { group CH3; count 2; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranylpropan-2-ylbenzene" "3-chloroisopropylbenzene" "2-chloropropan-2-ylbenzene" "alpha,alpha-dimethylbenzyl chloride" "alpha, alpha-dimethylbenzyl chloride" "benzene, (1-chloro-1-methylethyl)-" "a,a-dimethylbenzyl chloride" "(2-chloropropan-2-yl)benzene" "(alpha-chloro-isopropyl)-benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -17050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     394.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=128220.0
-    phase     gas;
 }

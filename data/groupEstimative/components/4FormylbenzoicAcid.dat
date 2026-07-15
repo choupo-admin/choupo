@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methanoylbenzoic acid" "4-carboxybenzaldehyde" "benzoic acid, 4-formyl-" "terephthalaldehydic acid" "p-carboxybenzaldehyde" "p-formylbenzoic acid" "terephthaldehydic acid" "4-carboxybenzaladehyde" "4-formyl-benzoic acid" "4-formylbenzoicacid" "benzaldehyde-4-carboxylic acid" "p-cba" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     489.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-180690.0
-    phase     gas;
 }

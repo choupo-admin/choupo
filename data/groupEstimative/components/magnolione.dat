@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group CdO; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-oxidanylidenepropyl)-2-pentyl-cyclopentan-1-one" "3-(2-oxopropyl)-2-pentylcyclopentanone" "cyclopentanone, 3-(2-oxopropyl)-2-pentyl-" "pentylcyclopentanonepropanone" "3-(2-oxopropyl)-2-pentylcyclopentan-1-one" "2-pentyl-3-(2-propanone)-1-cyclopentanone" "agn-pc-00ahpw" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -521790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     517.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-164090.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group OH_phenol; count 1; } { group O; count 1; } { group O_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(7-methoxy-6-oxidanyl-2-prop-1-en-2-yl-2,3-dihydro-1-benzofuran-5-yl)ethanone" "1-(6-hydroxy-7-methoxy-2-prop-1-en-2-yl-2,3-dihydro-1-benzofuran-5-yl)ethanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -495840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     490.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184100.0
-    phase     gas;
 }

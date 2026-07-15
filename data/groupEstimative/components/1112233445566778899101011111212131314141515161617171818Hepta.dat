@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 18; } { group F; count 37; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18-heptatriacontakis(fluoranyl)-20-iodanyl-icosane" "eicosane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18-heptatriacontafluoro-20-iodo-" "1,1,2,2-tetrahydroperfluoroeicosyl iodide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -7792830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1463.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-6981210.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 36; } { group dC_ring; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetrakis(4-phenylphenyl)silane" "tetra(p-biphenyl)silane" "1,1'-biphenyl, 4,4'',4'''',4''''''-silanetetrayltetrakis-" "silane, tetrakis((1,1'-biphenyl)-4-yl)-" "silane, tetrakis([1,1'-biphenyl]-4-yl)-" "tetrakis(4-biphenylyl)silane" "silane, tetrakis(4-biphenylyl)-" "silane, tetrakis(4-biphenylyl)- (8ci)" "1,1'-biphenyl,4,4'',4'''',4''''''-silanetetrayltetrakis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   700690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1276.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1109280.0
-    phase     gas;
 }

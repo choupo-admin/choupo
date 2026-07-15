@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 2; } { group C_ring; count 1; } { group OH; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(diethylamino)propan-2-yl (2s)-2-cyclohexyl-2-oxidanyl-cyclohexane-1-carboxylate" "rociverinum [inn-latin]" "1-(diethylamino)propan-2-yl(1s)-1-hydroxy-1,1'-bi(cyclohexyl)-2-carboxylate" "(1,1'-bicyclohexyl)-2-carboxylic acid, 1-hydroxy-, 2-(diethylamino)-1-methylethyl ester" "rilaten" "rociverine [inn]" "2-(diethylamino)-1-methylethyl cis-1-hydroxy(bicyclohexyl)-2-carboxylate" "rociverina" "rociverinum" "2-(diethylamino)-1-methylethyl cis-1- hydroxy(bicyclohexyl)-2-carboxylate" "1-(diethylamino)propan-2-yl (2s)-2-cyclohexyl-2-hydroxycyclohexane-1-carboxylate" "[1,1'-bicyclohexyl]-2-carboxylicacid, 1-hydroxy-, 2-(diethylamino)-1-methylethyl ester, (1a,2a)-[partial]-; lg 30158; rilaten; rociverine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -759850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1009.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-185630.0
-    phase     gas;
 }

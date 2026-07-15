@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-butanolal" "3-hydroxybutyraldehyde" "acetaldol" "aldol" "butanal, 3-hydroxy-" "butyraldehyde, 3-hydroxy-" "β-hydroxybutyraldehyde" "oxybutanal" "oxybutyric aldehyde" "beta-hydroxybutyraldehyde" ".beta.-hydroxybutyraldehyde" "3-hydroxy-butyraldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -368980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     371.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-255980.0
-    phase     gas;
 }

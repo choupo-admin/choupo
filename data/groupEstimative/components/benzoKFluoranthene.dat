@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 12; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo(k)fluoranthene" "11,12-benzofluoranthene" "8,9-benzfluoranthene" "dibenzo(b,jk)fluorene" "dibenzo[b,jk]fluorene" "8,9-benzofluoranthene" "benzo[k]fluoranthene solution" "11,12-benzo(k)fluoranthene" "2,3,1',8'-binaphthylene" "benzo(k)fluoranthene [polycyclic aromatic compounds]" "benzo(k)fluoranthene [polycyclic aromatic hydrocarbons]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   464810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     372.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=621880.0
-    phase     gas;
 }

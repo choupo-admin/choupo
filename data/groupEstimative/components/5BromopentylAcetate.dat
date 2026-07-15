@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-bromanylpentyl ethanoate" "5-bromoamyl acetate" "5-bromo-n-amyl acetate" "acetic acid 5-bromoamyl ester" "acetic acid 5-bromopentyl ester" "1-pentanol, 5-bromo-,1-acetate" "1-pentanol,5-bromo-, acetate (6ci,7ci,8ci,9ci);1-acetoxy-5-bromopentane;5-bromo-1-acetoxypentane;5-bromo-1-pentanol acetate;5-bromopentyl acetate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -478760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     530.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287990.0
-    phase     gas;
 }

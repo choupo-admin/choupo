@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group CH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,4,4a,5,6,7,8,8a-octahydrochromen-2-one" "bicyclononalactone" "2h-1-benzopyran-2-one, octahydro-" "cyclohexyllactone" "cyclohexyl lactone" "coumarin, octahydro-" "octahydro-1-benzopyran-2-one" "octahydro-2h-1-benzopyran-2-one" "octahydrochromen-2-one" "agn-pc-00po9n" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -413090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     417.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-188170.0
-    phase     gas;
 }

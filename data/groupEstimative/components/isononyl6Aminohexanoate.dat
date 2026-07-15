@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 11; } { group CH; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-methyloctyl 6-azanylhexanoate" "hexanoic acid, 6-amino-, isononyl ester" "7-methyloctyl 6-aminohexanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -641700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     833.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-170940.0
-    phase     gas;
 }

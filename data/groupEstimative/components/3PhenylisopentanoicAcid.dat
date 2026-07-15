@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-3-phenyl-butanoic acid" "3-methyl-3-phenylbutanoic acid" "beta-phenylisovaleric acid" "beta,beta-dimethylhydrocinnamic acid" "beta,beta-dimethylbenzenepropanoic acid" "hydrocinnamic acid, beta,beta-dimethyl-" ".beta.-phenylisovaleric acid" "hydrocinnamic acid,.beta.-dimethyl-" "benzenepropanoic acid,.beta.-dimethyl-" "3-methyl-3-phenylbutyricacid" "3-methyl-3-phenyl-butyric acid" "benzenepropanoic acid, beta,beta-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -392860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-186920.0
-    phase     gas;
 }

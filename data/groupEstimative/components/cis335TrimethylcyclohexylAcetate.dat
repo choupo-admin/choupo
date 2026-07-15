@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(1s,5s)-3,3,5-trimethylcyclohexyl] ethanoate" "(1s,5s)-3,3,5-trimethylcyclohexyl acetate" "[(1s,5s)-3,3,5-trimethylcyclohexyl] acetate" "acetic acid cis-3,3,5-trimethylcyclohexyl ester" "cyclohexanol, 3,3,5-trimethyl-, acetate, cis-" "cyclohexanol, 3,3,5-trimethyl-, acetate, (1r,5r)-rel-" "cyclohexanol, 3,3,5-trimethyl-, 1-acetate, (1r,5r)-rel-" "cyclohexanol, 3,3,5-trimethyl-, acetate, cis- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -558770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     590.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-265090.0
-    phase     gas;
 }

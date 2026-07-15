@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group Br; count 1; } { group O; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(bromomethyl)-6,7-dimethoxy-chromen-2-one" "4-(bromomethyl)-6,7-dimethoxy-2h-chromen-2-one" "4-(bromomethyl)-6,7-dimethoxychromen-2-one" "4-(bromomethyl)-6,7-dimethoxycoumarin" "4-bdmc" "brdmc-4,6,7" "4-bromomethyl-6,7-dimethoxycoumarin;" "4-(bromomethyl)-6,7-dimethoxy-2-oxo-2h-benzopyran" "4-(bromomethyl)-6,7-dimethoxy-2-oxo-2h-chromene" "2h-1-benzopyran-2-one,4-(bromomethyl)-6,7-dimethoxy-" "2h-1-benzopyran-2-one, 4-(bromomethyl)-6,7-dimethoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -498670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     512.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-271480.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group C; count 1; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(bromanyl)methylsilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   62080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     470.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55720.0
-    phase     gas;
 }

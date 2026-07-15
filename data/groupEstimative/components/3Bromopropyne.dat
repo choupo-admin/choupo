@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanylprop-1-yne" "propargyl bromide" "1-propyne, 3-bromo-" "3-bromo-1-propyne" "propynyl bromide" "propyne, 3-bromo-" "2-propynyl bromide" "1-bromo-2-propyne" "gamma-bromoallylene" "3-bromoprop-1-yne" "g-bromoallylene" "propargyl bromide solution" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   212980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     293.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=211770.0
-    phase     gas;
 }

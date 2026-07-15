@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 7; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-pyren-2-ylethanol" "2-hydroxyethylpyrene" "2-hydroxyethylpyreneanlg" "2-(1-hydroxyethyl)pyrene" "alpha-methyl-2-pyrenemethanol" "2-pyrenemethanol, alpha-methyl-" "1-(2-pyrenyl)ethanol-(2-hydroxyethylpyrene)" "2-pyrenemethanol, a-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   157510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     444.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=359130.0
-    phase     gas;
 }

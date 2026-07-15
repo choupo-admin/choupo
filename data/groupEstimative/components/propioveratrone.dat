@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3,4-dimethoxyphenyl)propan-1-one" "3,4-dimethoxypropiophenone" "1-(3,4-dimethoxy-phenyl)-propan-1-one" "propiophenone, 3',4'-dimethoxy-" "3,4-dimethoxyphenyl ethyl ketone" "1-(3,4-dimethoxyphenyl)-1-propanone" "3',4'-dimethoxypropiophenone" "1-(3,4-dimethoxyphenyl)-propan-1-one" "1-propanone, 1-(3,4-dimethoxyphenyl)-" "ghl.pd_mitscher_leg0.580" "3',4'-dimethoxy-1-phenylpropiophenone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -433800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     514.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-204030.0
-    phase     gas;
 }

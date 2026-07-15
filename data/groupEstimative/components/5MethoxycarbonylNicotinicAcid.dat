@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group COOH; count 1; } { group COO; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methoxycarbonylpyridine-3-carboxylic acid" "3,5-pyridinecarboxylic acid, 3-methyl ester" "5-(methoxycarbonyl)pyridine-3-carboxylic acid" "agn-pc-02leuy" "3,5-pyridinedicarboxylic acid, 3-methyl ester" "pyridine-3,5-dicarboxylic acid monomethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -618150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     472.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-457970.0
-    phase     gas;
 }

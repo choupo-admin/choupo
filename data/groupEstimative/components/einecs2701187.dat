@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group Cl; count 1; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzene-1,3-diol;4-chloranyl-2,6-dimethyl-phenol" "benzene-1,3-diol; 4-chloro-2,6-dimethylphenol" "resorcinol, 4-chloro-2,6-dimethylolphenol condensation product" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -529990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     702.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-298360.0
-    phase     gas;
 }

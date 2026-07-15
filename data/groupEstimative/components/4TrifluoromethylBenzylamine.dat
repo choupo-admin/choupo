@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[4-(trifluoromethyl)phenyl]methanamine" "1-[4-(trifluoromethyl)phenyl]methanamine" "4-trifluoromethylbenzylamine" "4-aminomethylbenzotrifluoride" "4-trifluoromethyl-benzylamine" "p-(trifluoromethyl)benzylamine" "ptf-bym" "p-trifluoromethylbenzyl amine" "benzenemethanamine, 4-(trifluoromethyl)-" "4-(trifluoromethyl)benzyl amine" "[4-(trifluoromethyl)phenyl]methylamine" "z1r dxfff" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -546680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-395880.0
-    phase     gas;
 }

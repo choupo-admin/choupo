@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 7; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-[3-(1-adamantyl)-4-oxidanyl-phenyl]naphthalene-2-carboxylic acid" "cd437" "6-[3-(1-adamantyl)-4-hydroxyphenyl]naphthalene-2-carboxylic acid" "6-[3-(1-adamantyl)-4-hydroxyphenyl]-2-naphthalene carboxylic acid" "6-[3-(1-adamantyl)-4-hydroxyphenyl]-2-naphthalenecarboxylic acid" "2-naphthalenecarboxylic acid, 6-(4-hydroxy-3-tricyclo(3.3.1.1(3,7))dec-1-ylphenyl)-" "2-naphthalenecarboxylicacid, 6-(4-hydroxy-3-tricyclo[3.3.1.13,7]dec-1-ylphenyl)-" "6-(4-hydroxy-3-tricyclo(3.3.1.1(3,7))dec-1-ylphenyl)-2-naphthalenecarboxylic acid" "o-desmethyl adapalene" "cd 437/ahpn" "o-demethylated adapalene" "brd-k28907958-001-01-9" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -291330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     723.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=137460.0
-    phase     gas;
 }

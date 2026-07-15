@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group Br; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(bromanyl)propanal" "dibromopropanal" "propanal, 2,3-dibromo-" "2,3-dibromopropionaldehyde" "acrolein dibromide" "2,3-dibromopropional" "propionaldehyde, 2,3-dibromo-" "propanal,3-dibromo-" "propionaldehyde,3-dibromo-" "propanal, 2,3-dibromo- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -143450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     384.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-98940.0
-    phase     gas;
 }

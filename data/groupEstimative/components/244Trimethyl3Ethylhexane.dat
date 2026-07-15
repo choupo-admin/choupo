@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 2; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethyl-2,4,4-trimethyl-hexane" "3-ethyl-2,4,4-trimethylhexane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -289680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     526.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=39700.0
-    phase     gas;
 }

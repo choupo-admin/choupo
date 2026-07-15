@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 2; } { group COOH; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pyridine-2,3-dicarboxylic acid" "2,3-pyridinedicarboxylic acid" "quinolinate" "2,3-pyridindicarbons" "pyridine-2,3-dicarboxylate" "pyridine-2,3-carboxylate" "2,3-pyridinedicarboxylicacid" "pyridin-2,3-dicarbonsaeure" "2,3-pyridinedicarboxylate" "ntm" "pyridinedicarboxylicacid" "pyridine carboxylate, 6c" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -630500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-499930.0
-    phase     gas;
 }

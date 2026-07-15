@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-ethenoxyethoxy)-2-ethoxy-ethane" "(2-(2-ethoxyethoxy)ethoxy)ethylene" "ethene, (2-(2-ethoxyethoxy)ethoxy)-" "ethene, [2-(2-ethoxyethoxy)ethoxy]-" "ether, 2-ethoxyethyl 2-(vinyloxy)ethyl" "[2-(2-ethoxyethoxy)ethoxy]ethene" "vinyl 2-(2-ethoxyethoxy)ethyl ether" "1-(2-ethenoxyethoxy)-2-ethoxyethane" "1-(2-ethoxyethoxy)-2-(vinyloxy)-ethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -479680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     496.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-210680.0
-    phase     gas;
 }

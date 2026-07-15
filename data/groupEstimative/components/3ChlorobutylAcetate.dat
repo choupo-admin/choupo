@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranylbutyl ethanoate" "acetic acid, 3-chlorobutyl ester" "1-butanol, 3-chloro, acetate" "1-butanol, 3-chloro-, acetate" "1-butanol, 3-chloro-,1-acetate" "1-butanol,3-chloro-, acetate (6ci,7ci,8ci,9ci); 3-chlorobutyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -505470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     464.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-325100.0
-    phase     gas;
 }

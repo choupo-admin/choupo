@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group F; count 3; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[1-[3-(trifluoromethyl)phenyl]propan-2-ylamino]ethyl benzoate" "benfluramate" "minolip" "n-(2-benzoyloxyethyl)norfenfluramine" "mediator" "benfluorexum [inn-latin]" "2-(alpha-methyl-m-trifluoromethylphenethylamino)ethanol benzoate" "ethanol, 2-(alpha-methyl-m-trifluoromethylphenethylamino)-, benzoate" "ethanol, 2-[[1-methyl-2-[3-(trifluoromethyl)phenyl]ethyl]amino]-, benzoate" "n-(2-hydroxyethyl)-alpha-methyl-m-trifluoromethylphenethylamine benzoate" "phenethylamine, n-(2-hydroxyethyl)-alpha-methyl-m-trifluoromethyl-, benzoate" "2-[[1-methyl-2-[3-(trifluoromethyl)-phenyl]ethyl]amino]ethanol benzoate ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -840070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     815.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-480720.0
-    phase     gas;
 }

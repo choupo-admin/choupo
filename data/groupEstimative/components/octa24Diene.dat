@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-octadiene;(2e,4e)-2,4-octadiene;2,4-octadiene mixture" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   25990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     454.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176920.0
-    phase     gas;
 }

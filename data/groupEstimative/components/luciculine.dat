@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 8; } { group C_ring; count 3; } { group dC_ring; count 1; } { group OH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "napelline" "(2r,4s,5r,7r,13r,16s,17r)-11-ethyl-13-methyl-6-methylidene-11-azahexacyclo[7.7.2.15,8.01,10.02,8.013,17]nonadecane-4,7,16-triol(non-preferred name)" "7,20-cycloveatchane-1,12,15-triol, 21-ethyl-4-methyl-16-methylene-, (1-alpha,12-alpha, 15-beta)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -421510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     610.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=197240.0
-    phase     gas;
 }

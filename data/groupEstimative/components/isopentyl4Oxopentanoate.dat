@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbutyl 4-oxidanylidenepentanoate" "iso-amyl levulinate" "isoamyl levulinate" "isopentyl levulinate" "3-methylbutyl 4-oxopentanoate" "levulinic acid, isopentyl ester" "pentanoic acid, 4-oxo-,3-methylbutyl ester" "pentanoic acid, 4-oxo-, 3-methylbutyl ester" "levulinicacid, isopentyl ester (6ci); isoamyl levulinate; isopentyl levulinate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -684870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     613.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-408410.0
-    phase     gas;
 }

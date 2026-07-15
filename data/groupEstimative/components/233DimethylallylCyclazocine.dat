@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "fortalin" "fortral" "sosegon" "sosigon" "talwin" "lexir" "pentazocina [dcit]" "(-)-pentazocine" "pentazocinum [inn-latin]" "ii-c-2" "pentazocine [usan:inn:ban:jan]" "rel-pentazocine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -72280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     661.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=348010.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 13; } { group CH; count 2; } { group dCH; count 6; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[10,13-dimethyl-17-(6-methylheptan-2-yl)-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl] octadeca-9,12,15-trienoate" "agn-pc-03vcij" "[(3s,10r,13r,17r)-10,13-dimethyl-17-(6-methylheptan-2-yl)-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl] (9z,12z,15z)-octadeca-9,12,15-trienoate" "cholest-5-en-3-ol (3.beta.)-, (9z,12z,15z)-9,12,15-octadecatrienoate" "cholest-5-en-3-ol (3.beta.)-, 3-[(9z,12z,15z)-9,12,15-octadecatrienoate]" "[(10r,13r,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl] (9z,12z,15z)-octadeca-9,12,15-trienoate" "cholest-5-en-3-ol(3b)-,(9z,12z,15z)-9,12,15-octadecatrienoate (9ci);cholest-5-en-3-ol (3b)-, 9,12,15-octadecatrienoate,(z,z,z)-;cholesterol, linolenate (7ci,8ci);linolenic acid, cholesteryl ester(6ci);cholesterol a-linolenate;cholesteryl linolenate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -672140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1628.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=422150.0
-    phase     gas;
 }

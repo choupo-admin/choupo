@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 3; } { group F; count 7; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,4,4,5,5,5-heptakis(fluoranyl)pentan-2-one" "methyl heptafluoropropyl ketone" "methyl heptafluoropropylketone" "3,3,4,4,5,5,5-heptafluoro-2-pentanone" "2-pentanone,3,3,4,4,5,5,5-heptafluoro-" "2-pentanone, 3,3,4,4,5,5,5-heptafluoro-" "3,3,4,4,5,5,5-heptafluoropentan-2-one;hfk 447mcc;heptafluoropropyl methyl ketone;methyl heptafluoropropyl ketone;3,3,4,4,5,5,5-heptafluoropentan-2-one;1,1,1,2,2,3,3-heptafluoro-4-pentanone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1658130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     482.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1492850.0
-    phase     gas;
 }

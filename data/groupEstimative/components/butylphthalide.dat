@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-butyl-3h-2-benzofuran-1-one" "3-n-butylphthalide" "3-butylphthalide" "n-butylphthalide" "1(3h)-isobenzofuranone, 3-butyl-" "phthalide, 3-butyl-" "3-butyl-1(3h)-isobenzofuranone" "1(3h)-isobenzofuranone, 3-butyl-, (r)-" "3-butyl-3h-isobenzofuran-1-one" "3-butylisobenzofuran-1(3h)-one" "3-n-butylphthalide;butylphthalide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -298110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     432.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-72480.0
-    phase     gas;
 }

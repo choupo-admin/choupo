@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-methylbut-1-enyl)-4-(3-methylbutoxy)benzene" "4-(2-methylbut-1-enyl)-1-(3-methylbutoxy)benzene" "benzene, 1-(2-methyl-1-buten-1-yl)-4-(3-methylbutoxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -178580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     657.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=150850.0
-    phase     gas;
 }

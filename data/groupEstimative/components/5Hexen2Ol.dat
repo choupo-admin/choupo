@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hex-5-en-2-ol" "methyl(2-vinylethyl)carbinol" "(r)-(-)-hydroxyhex-5-ene" "agn-pc-00hevx" "lnpnxwkvafkibx-uhfffaoysa-" "1-hexen-5-ol;5-hydroxy-1-hexene" "5-hexen-2-ol, (.+-.)-" "5-hexen-2-ol, (.+/-.)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -199250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     426.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-51780.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 2; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(3-methylbutoxy)propane-1,2-diol" "1,2-propanediol, 3-isopentyloxy-" "1, 3-isopentyloxy-" "1, 3-(3-methylbutoxy)-" "1,2-propanediol, 3-(3-methylbutoxy)-" "1,2-propanediol, 3-(3-methylbutoxy)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -655690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     561.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-367040.0
-    phase     gas;
 }

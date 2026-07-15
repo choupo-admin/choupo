@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-methoxybicyclo[4.4.1]undeca-1,3,5,7,9-pentaene" "bicyclo(4.4.1)undeca-1,3,5,7,9-pentaene, 2-methoxy-" "bicyclo[4.4.1]undeca-1,3,5,7,9-pentaene, 2-methoxy-" "bicyclo[4.4.1]undeca-1,3,5,7,9-pentaene,2-methoxy-" "2-methoxy-1,6-methano[10]annulene;2-methoxybicyclo[4.4.1]undeca-1,3,5,7,9-pentaene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -13260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     433.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=142490.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-4-phenylbut-3-en-2-one" "benzylideneacetone" "methyl styryl ketone" "acetocinnamone" "4-phenyl-3-buten-2-one" "benzylidene acetone" "trans-benzalacetone" "benzalaceton" "styryl methyl ketone" "3-buten-2-one, 4-phenyl-" "4-phenylbutenone" "benzilideneacetone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -8560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97030.0
-    phase     gas;
 }

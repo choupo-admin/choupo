@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-azanyl-3-(3-oxidanylpropylsulfanyl)propanoic acid" "cleanal" "s-(3-hydroxypropyl)-l-cysteine" "s-(3-hydroxypropyl)cysteine" "l-cysteine, s-(3-hydroxypropyl)-" "(-)-3-((3-hydroxypropyl)thio)-l-alanine" "alanine, 3-((3-hydroxypropyl)thio)-, l-" "fudostein" "spelear" "fudostein [inn]" "cleanal (tn)" "s2129_selleck" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -599290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     597.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383960.0
-    phase     gas;
 }

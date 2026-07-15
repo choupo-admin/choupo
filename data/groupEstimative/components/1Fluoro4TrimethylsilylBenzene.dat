@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-fluorophenyl)-trimethyl-silane" "silane,(4-fluorophenyl)trimethyl-" "(4-fluorophenyl)-trimethylsilane" "silane, (4-fluorophenyl)trimethyl-" "benzene,1-fluoro-4-(trimethylsilyl)-" "silane,(4-fluorophenyl)trimethyl- (9ci); silane, (p-fluorophenyl)trimethyl-(6ci,7ci,8ci); (p-fluorophenyl)trimethylsilane;4-fluoro-1-(trimethylsilyl)benzene; 4-fluorophenyltrimethylsilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     552.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-171890.0
-    phase     gas;
 }

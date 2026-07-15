@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 8; } { group C; count 1; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tripropyl 2-oxidanylpropane-1,2,3-tricarboxylate" "1,2,3-propanetricarboxylic acid, 2-hydroxy-, tripropyl ester" "citric acid tripropyl ester" "tripropyl 2-hydroxypropane-1,2,3-tricarboxylate" "1,2,3-propanetricarboxylicacid, 2-hydroxy-, 1,2,3-tripropyl ester" "1,2,3-propanetricarboxylicacid, 2-hydroxy-, tripropyl ester (9ci); citric acid, tripropyl ester(7ci,8ci); propyl citrate; tripropyl citrate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1465750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     906.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-989670.0
-    phase     gas;
 }

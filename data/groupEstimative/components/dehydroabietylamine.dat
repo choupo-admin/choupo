@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(1r,4as,10ar)-1,4a-dimethyl-7-propan-2-yl-2,3,4,9,10,10a-hexahydrophenanthren-1-yl]methanamine" "amine d" "dehydroabietylamine" "1,4a-dimethyl-7-isopropyl-1,2,3,4,4a,9,10,10a-octahydro-1-phenanthrenemethylamine" "dehydroabietylamine acetate acetate" "1-phenanthrenemethanamine, 1,2,3,4,4a,9,10,10a-octahydro-1,4a-dimethyl-7-(1-methylethyl)-, (1r,4as,10ar)-" "podocarpa-8,13-trien-15-amine, 13-isopropyl-" "brd-k62289640-003-01-9" "[(1r,4as,10ar)-7-isopropyl-1,4a-dimethyl-2,3,4,9,10,10a-hexahydrophenanthren-1-yl]methanamine" "1-phenanthrenemethanamine,2,3,4,4a,9,10,10a-octahydro-1,4a-dimethyl-7-(1-methylethyl)-, [1r-(1.alpha.,4a.beta.,10a.alpha.)]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -70610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     814.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=353290.0
-    phase     gas;
 }

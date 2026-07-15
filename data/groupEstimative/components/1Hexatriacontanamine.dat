@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 35; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexatriacontan-1-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -752580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1609.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=318690.0
-    phase     gas;
 }

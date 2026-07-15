@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH; count 1; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butane-1,2,4-tricarboxylic acid" "1,4-butanetricarboxylic acid" "carboxylate, 42" "1,2,4-tricarboxybutane" "3-carboxyhexanedioic acid" "3-carboxy-hexanedioic acid" "1,2,4-butanetricarboxylicacid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1243900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     578.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1026110.0
-    phase     gas;
 }

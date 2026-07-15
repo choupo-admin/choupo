@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-bromoethyl)-3-methoxy-benzene" "1-(2-bromoethyl)-3-methoxybenzene" "3-(2-bromoethyl)-1-methoxybenzene" "anisole, m-(2-bromoethyl)-" "1-bromo-2-(3-methoxyphenyl)ethane" "3-methoxy-1-(2-bromoethyl)benzene" "1-(2-bromo-ethyl)-3-methoxy-benzene" "benzene,1-(2-bromoethyl)-3-methoxy-" "benzene, 1-(2-bromoethyl)-3-methoxy-" "anisole, m-(2-bromoethyl)-;1-bromo-2-(3-methoxyphenyl)ethane;1-(2-bromo-ethyl)-3-methoxy-benzene;3-methoxy-1-(2-bromoethyl)benzene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -109920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     456.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37000.0
-    phase     gas;
 }

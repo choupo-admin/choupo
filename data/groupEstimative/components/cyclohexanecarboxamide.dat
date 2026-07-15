@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group CH_ring; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexahydrobenzamide" "cyclohexamethylene carbamide" "cyclohexylcarboxamide" "cyclohexylcarboxyamide" "hexahydrobenzoic acid amide" "cyclohexyl carboxyamide" "cyclohexanamide" "cyclohexaneformamide" "cyclohexanecarboxylic acid amide" "h373" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -212280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     476.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-29960.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group CdO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3,5-diethanoylphenyl)ethanone" "benzene, 1,3,5-triacetyl-" "1-(3,5-diacetylphenyl)ethanone" "1,5-triacetylbenzene" "1,3,5,triacetylbenzene" "benzene,3,5-triacetyl-" "1-(3,5-diacetylphenyl)ethanon" "1,1',1''-benzene-1,3,5-triyltriethanone" "1,1',1''-(benzene-1,3,5-triyl)triethanone" "ethanone,1',1''-(1,3,5-benzenetriyl)tris-" "ethanone, 1,1',1''-(1,3,5-benzenetriyl)tris-" "1-(3,5-diacetylphenyl)ethanone;1,1',1''-(1,3,5-benzenetriyl)triethanone;1,1',1''-(benzene-1,3,5-triyl)trisethanone;1,3,5-triacetylbenzene,98%;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -415160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     584.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-243450.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-cyclohexylbutyl ethanoate" "alpha-propylcyclohexylmethyl acetate" "agn-pc-0db72h" "[(1s)-1-cyclohexylbutyl] acetate" "cyclohexanemethanol, a-propyl-, 1-acetate" "cyclohexanemethanol, alpha-propyl-, acetate" "cyclohexanemethanol, .alpha.-propyl-, acetate" "cyclohexanemethanol, alpha-propyl-, 1-acetate" "cyclohexanemethanol, .alpha.-propyl-, 1-acetate" "cyclohexanemethanol,a-propyl-, acetate (9ci);1-cyclohexyl-1-butyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -559250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     634.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-238200.0
-    phase     gas;
 }

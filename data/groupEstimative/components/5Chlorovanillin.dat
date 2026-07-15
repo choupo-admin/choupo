@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 1; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-5-methoxy-4-oxidanyl-benzaldehyde" "3-chloro-4-hydroxy-5-methoxybenzaldehyde" "benzaldehyde, 3-chloro-4-hydroxy-5-methoxy-" "3-chlorovanillin" "vanillin, 5-chloro-" "vanillin, 5-chloro- (8ci)" "5-chloro-4-hydroxy-3-methoxybenzaldehyde" "3-chloro-4-hydroxy-5-methoxy-benzaldehyde" "benzaldehyde,3-chloro-4-hydroxy-5-methoxy-" "chloro-4-hydroxy-3-methoxybenzaldehyde" "benzaldehyde, 3-chloro-4-hydroxy-5-methoxy- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -243680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     500.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-117960.0
-    phase     gas;
 }

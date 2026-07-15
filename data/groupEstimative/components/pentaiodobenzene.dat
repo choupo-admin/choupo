@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 1; } { group dC_ring; count 5; } { group I; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5-pentakis(iodanyl)benzene" "1,2,3,4,5-pentaiodobenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   407830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     536.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=364130.0
-    phase     gas;
 }

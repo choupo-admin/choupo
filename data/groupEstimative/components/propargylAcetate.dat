@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-ynyl ethanoate" "2-propyn-1-ol, acetate" "3-acetoxypropyne" "2-propynyl acetate" "prop-2-ynyl acetate" "propargyl alcohol acetate" "prop-2-yn-1-yl acetate" "2-propyn-1-ol, 1-acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -171910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     371.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96080.0
-    phase     gas;
 }

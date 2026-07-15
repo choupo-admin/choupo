@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group C; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-tert-butyl-4-(4-tert-butylphenyl)benzene" "4,4'-di-t-butylbiphenyl" "4,4'-di-tert-butyl-1,1'-biphenyl" "1-(tert-butyl)-4-[4-(tert-butyl)phenyl]benzene" "cdkceznpayworx-uhfffaoysa-" "1-tert-butyl-4-(4-tert-butyl-phenyl)-benzene" "1,1'-biphenyl,4,4'-bis(1,1-dimethylethyl)-" "4,4 inverted exclamation marka-di-tert-butylbiphenyl" "biphenyl,4,4'-di-tert-butyl- (6ci,7ci,8ci);4,4'-bis(1,1-dimethylethyl)-1,1'-biphenyl;4,4'-di-tert-butyl-1,1'-biphenyl;4,4'-di-tert-butylbiphenyl;p,p'-di-tert-butylbiphenyl;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -23510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     632.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=328760.0
-    phase     gas;
 }

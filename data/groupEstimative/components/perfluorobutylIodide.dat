@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 4; } { group F; count 9; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,3,4,4-nonakis(fluoranyl)-4-iodanyl-butane" "nonafluorobutyl iodide" "n-nonafluorobutyl iodide" "1-iodoperfluorobutane" "nonafluoro-1-iodobutane" "1,1,1,2,2,3,3,4,4-nonafluoro-4-iodobutane" "butane, 1,1,1,2,2,3,3,4,4-nonafluoro-4-iodo-" "perfluorobutyliodide" "n-nonafluorobutyliodide" "1-iodononafluorobutane" "perfluoro-n-butyl iodide" "nonafluoro-n-butyl iodide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1849010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     497.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1701010.0
-    phase     gas;
 }

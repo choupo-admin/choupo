@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(trifluoromethyl)prop-2-enoic acid" "2-(trifluoromethyl)propenoic acid" "tfmaa" "2-trifluoromethylacrylic acid" "2-trifluoromethyl-acrylic acid" "vlsrkcibhnjfha-uhfffaoysa-" "tfmaa; 2-(trifluoromethyl)propenoic acid" "acrylicacid, 2-(trifluoromethyl)- (8ci);2-trifluoromethylpropenoic acid;a-(trifluoromethyl)acrylic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -957600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-863410.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethylpyridin-4-amine" "dmap" "4-(dimethylamino)pyridine" "4-pyridinamine, n,n-dimethyl-" "pyridine, 4-(dimethylamino)-" "4-dimethylamino pyridine" "n,n-dimethyl-4-pyridinamine" "p-dimethylaminopyridine" "4-(dimethylamino)-pyridine" "n-(4-pyridyl)dimethylamine" "gamma-(dimethylamino)pyridine" "4-(n,n-dimethylamino)pyridine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   149040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     351.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=308300.0
-    phase     gas;
 }

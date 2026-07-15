@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 16; } { group O; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethanoic acid;3-tetradecoxypropan-1-amine" "1-propanamine, 3-(tetradecyloxy)-, acetate (1:1)" "3-(tetradecyloxy)propylamine, acetic acid salt" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -995810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1119.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-378120.0
-    phase     gas;
 }

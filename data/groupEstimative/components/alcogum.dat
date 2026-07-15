@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl prop-2-enoate;2-methylprop-2-enoic acid" "acrysol rm 4" "rhoplex rm 4" "eudragit l 30d" "primal rm 4" "alcogum l 11" "alcogum l 15" "alcogum l 21" "rm 4 (polymer)" "rm 4" "2-propenoic acid, 2-methyl-, polymer with ethyl 2-propenoate" "ethyl acrylate-methacrylic acid polymer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -767190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     705.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-567010.0
-    phase     gas;
 }

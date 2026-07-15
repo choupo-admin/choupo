@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH; count 1; } { group dC; count 1; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,5-tris(chloranyl)pent-1-ene" "1,1-dichloro-1-pentenyl chloride" "1,1,5-trichloro-1-pentene" "1,1,5-trichloropent-1-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -86320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     440.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=27100.0
-    phase     gas;
 }

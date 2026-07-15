@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 12; } { group dC_ring; count 8; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-azanylnaphthalen-1-yl)naphthalen-2-amine" "(s)-(-)-1,1'-binaphthyl-2,2'-diamine" "1,1'-bi(2-naphthalenylamine)" "1,1'-binaphthyl-2,2'-diamine" "(s)-(-)-2,2'-diamino-1,1'-binaphthalene" "[1,1'-binaphthalene]-2,2'-diamine" "(1,1'-binaphthalene)-2,2'-diamine" "(r)-(+)-dabn" "(s)-(-)-dabn" "2,2'-diamino-1,1'-dinaphthyl" "(r)-(+)-1,1'-bi(2-naphthylamine)" "(r)-[1,1'-binaphthalene]-2,2'-diamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   420770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     582.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=650020.0
-    phase     gas;
 }

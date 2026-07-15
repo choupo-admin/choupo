@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dC_ring; count 1; } { group CdO; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r,6s,7r)-6-methyl-7-(3-oxidanylidenebutyl)-3-propan-2-ylidene-bicyclo[4.1.0]heptan-4-one" "(1r,6s,7r)-6-methyl-7-(3-oxobutyl)-3-propan-2-ylidenebicyclo[4.1.0]heptan-4-one" "bicyclo(4.1.0)heptan-3-one, 1-methyl-4-(1-methylethylidene)-7-(3-oxobutyl)-, (1s,6r,7r)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -402630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-42980.0
-    phase     gas;
 }

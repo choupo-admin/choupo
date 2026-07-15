@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group tC; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group OH; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(17s)-13-methyl-17-[3,3,3-tris(fluoranyl)prop-1-ynyl]-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthrene-3,17-diol" "estra-1,3,5(10)-triene-3,17-beta-diol, 17-(3,3,3-trifluoro-1-propynyl)-" "estra-1,3,5(10)-trien-3,17-diol, 3-methoxy-17-(3,3,3-trifluoro-1-propynyl)-, (17-beta)-" "(17s)-13-methyl-17-(3,3,3-trifluoroprop-1-ynyl)-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthrene-3,17-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -710150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     790.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-309860.0
-    phase     gas;
 }

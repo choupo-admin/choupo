@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH; count 6; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nona-2,4,6-trienal" "2,4,6-nonatrienal, (2e,4e,6z)-" "2,4,6-nonatrienal, (2e,4e,6e)-" "2,4,6-nonatrienal, (2e,4e,6e)-;nona-2,4,6-trienal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   36990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     505.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166040.0
-    phase     gas;
 }

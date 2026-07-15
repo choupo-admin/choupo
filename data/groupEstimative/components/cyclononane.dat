@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 9; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "aromatic hydrocarbons, c9-17" "cyclononane." );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -172910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     578.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=20760.0
-    phase     gas;
 }

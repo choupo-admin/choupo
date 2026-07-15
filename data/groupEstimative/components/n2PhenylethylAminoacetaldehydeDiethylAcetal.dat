@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-diethoxy-n-(2-phenylethyl)ethanamine" "2,2-diethoxy-n-phenethylethanamine" "n-(2-phenylethyl)amino acetaldehyde diethyl acetal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -312010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     648.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=56360.0
-    phase     gas;
 }

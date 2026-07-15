@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-ethyl-1-phenyl-cyclohexan-1-amine" "eticyclidine" "ethylphencyclidine" "cyclohexanamine, n-ethyl-1-phenyl-" "eticyclidine [inn]" "eticyclidinum [latin]" "cyclohexylamine, n-ethyl-1-phenyl-" "eticyclidinum [inn-latin]" "n-ethyl-1-phenylcyclohexanamine" "(1-phenylcyclohexyl)ethylamine" "n-ethyl-1-phenylcyclohexylamine" "n-(1-phenylcyclohexyl)ethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   27270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     674.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=287760.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-3-phenyl-propan-1-ol" "(s)-(-)-2-amino-3-phenyl-1-propanol" "(s)-2-amino-3-phenyl-1-propanol" "phenylalaninol" "(2s)-2-amino-3-phenylpropan-1-ol" "hph" "2-amino-3-phenyl-propan-1-ol" "h-phenylalaninol" "phenylalaninol group" "brd-k44204252-001-02-2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -116280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     493.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=64500.0
-    phase     gas;
 }

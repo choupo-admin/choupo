@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-iodanyltetradecane" "tetradecane, 1-iodo-" "1-iodotetradecane" "myristyl iodide" "1-iodotetradecane;myristyl iodide; tetradecyl iodide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -255420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     756.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=125120.0
-    phase     gas;
 }

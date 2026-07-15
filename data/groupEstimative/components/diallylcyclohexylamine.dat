@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 2; } { group dCH; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-bis(prop-2-enyl)cyclohexanamine" "cyclohexanamine, n,n-di-2-propenyl-" "n,n-di(prop-2-en-1-yl)cyclohexanamine" "cyclohexanamine, n,n-di-2-propen-1-yl-" "n,n-diallylcyclohexylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   81700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     599.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=361070.0
-    phase     gas;
 }

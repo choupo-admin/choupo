@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group OH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-oxidanylpentanal" "pentanal, 5-hydroxy-" "5-hydroxy-pentanal" "5-hydroxyvaleraldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -384340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     420.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-245120.0
-    phase     gas;
 }

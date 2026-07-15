@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanyl-4-methyl-aniline" "3-bromo-p-toluidine" "p-toluidine, 3-bromo-" "3-bromo-4-methyl-phenylamine" "4-amino-2-bromotoluene" "benzenamine, 3-bromo-4-methyl-" "3-bromo-1,4-toluidine" "3-bromo-4-methylphenylamine" "3-bromo-para-toluidine" "3-bromo-4-methylaniline," "3-bromo-4-methylbenzenamine" "grxmmibzrmkadt-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   85900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=181980.0
-    phase     gas;
 }

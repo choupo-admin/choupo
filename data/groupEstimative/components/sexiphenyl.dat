@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 26; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5-pentakis-phenylbenzene" "pentaphenyl benzene" "1,2,3,4,5-pentaphenylbenzene" "1,1''-terphenyl, 3',4',5'-triphenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   586930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     895.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=888180.0
-    phase     gas;
 }

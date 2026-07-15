@@ -34,9 +34,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 6; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-(bromomethyl)-1,2,3,4,7,7-hexakis(chloranyl)bicyclo[2.2.1]hept-2-ene" "bromocyclen" "bromodan" "alugan" "bromocyclene [french]" "bromocyclen [bsi:iso]" "bromociclene [inn-french]" "bromociclenum [inn-latin]" "bromocyclene [iso-french]" "bromomethylhexachlorobicycloheptene" "bicyclo[2.2.1]hept-2-ene, 5-(bromomethyl)-1,2,3,4,7,7-hexachloro-" "5- bromomethyl-1,2,3,4,7,7-hexachloro-2-norbornene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -97240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     632.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=47430.0
-    phase     gas;
 }

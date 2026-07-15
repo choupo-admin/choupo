@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group O_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trans-2,4-dimethyl-1,3-oxathiolane" "trans-2,5-dimethyl-1,3-oxathiolane" "1,3-oxathiolane, 2,4-dimethyl-, cis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -193130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     256.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-26200.0
-    phase     gas;
 }

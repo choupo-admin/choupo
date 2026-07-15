@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 16; } { group CH; count 1; } { group dCH; count 2; } { group OH; count 1; } { group CdO; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-octadecenamide,n-[3-(dimethylamino)propyl]-12-hydroxy-, (9z,12r)-" "9-octadecenamide,n-[3-(dimethylamino)propyl]-12-hydroxy-, [r-(z)]-; ricinoleamide, n-[3-(dimethylamino)propyl]-(8ci); mackine 201; ricinoleic acid-g-dimethylaminopropylamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -549920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1170.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=154990.0
-    phase     gas;
 }

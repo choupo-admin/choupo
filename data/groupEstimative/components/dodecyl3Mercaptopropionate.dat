@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group COO; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodecyl 3-sulfanylpropanoate" "lauryl 3-mercaptopropionate" "propanoic acid, 3-mercapto-, dodecyl ester" "lauryl beta-mercaptopropionate" "lauryl .beta.-mercaptopropionate" "propionic acid, 3-mercapto-, dodecyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -631730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     854.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-205560.0
-    phase     gas;
 }

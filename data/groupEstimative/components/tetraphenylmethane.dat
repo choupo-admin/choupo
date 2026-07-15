@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 20; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(triphenylmethyl)benzene" "tetraphenyl methane" "methane, tetraphenyl-" "benzene, 1,1',1'',1'''-methanetetrayltetrakis-" "benzene, 1,1',1'',1'''-methanethetrayltetrakis-" "tritylbenzene" "1,1',1'',1'''-methanetetrayltetrabenzene" "benzene,1',1'',1'''-methanetetrayltetrakis-" "benzene, 1,1',1'',1'''-methanetetrayltetrakis- (9ci)" "1,1 inverted exclamation mark ,1 inverted exclamation mark  inverted exclamation mark ,1 inverted exclamation mark  inverted exclamation mark  inverted exclamation mark -methanethetrayltetrakis-benzen; tetraphenyl methane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   378040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     665.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=612100.0
-    phase     gas;
 }

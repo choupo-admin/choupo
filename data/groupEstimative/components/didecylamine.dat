@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 18; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-decyldecan-1-amine" "di-n-decylamine" "1-decanamine, n-decyl-" "amines, di-c10-25-alkyl" "didecyl amine" "didecylamine;" "bis(decyl)amine" "di(c10-c25)alkyl" "n-decyl-1-decanamine" "di-n-decylamine, pract" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -402660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     975.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=206910.0
-    phase     gas;
 }

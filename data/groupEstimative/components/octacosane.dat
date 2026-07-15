@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 26; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-octacosane" "octacosane, n-" "CCRIS 680" "VFF49836P8" "ai3-52615" "CH3-[CH2]26-ch3" "octacosane, analytical standard" "CH3-(CH2)26-CH3" "n-octcosane" "NSC5549" "STL453125" "HY-W272217" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -621250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1246.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=184880.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-oxidanylidenepropanoate" "methyl 2-oxopropanoate" "pyruvic acid, methyl ester" "methylpyruvate" "pyruvic acid methyl ester" "methyl 2-oxopropionate" "propanoic acid, 2-oxo-, methyl ester" "methylglyoxylic acid methyl ester" "pyruvic acid methylester" "2-oxopropanoic acid methyl ester" "2-oxo-propionic acid methyl ester" "propanoic acid, 2-oxo-,methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -555750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-456490.0
-    phase     gas;
 }

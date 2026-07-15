@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(e)-3-methoxybut-2-en-2-yl]benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -68420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     474.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=112270.0
-    phase     gas;
 }

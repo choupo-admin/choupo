@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 11; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(e)-tetradec-10-enyl] acetate" "10-tetradecen-1-ol, acetate, (10z)-" "10-tetradecen-1-ol, 1-acetate, (10z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -573630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     823.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-146310.0
-    phase     gas;
 }

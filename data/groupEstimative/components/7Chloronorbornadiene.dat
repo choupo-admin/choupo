@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 3; } { group dCH_ring; count 4; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-chloranylbicyclo[2.2.1]hepta-2,5-diene" "7-chlorobicyclo[2.2.1]hepta-2,5-diene" "7-norbornadienyl chloride" "7-norbornadadienyl chloride" "uihvxvcugfnpte-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   31110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     184.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=157740.0
-    phase     gas;
 }

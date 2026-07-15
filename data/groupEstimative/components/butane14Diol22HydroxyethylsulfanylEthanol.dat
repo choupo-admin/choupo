@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group OH; count 4; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4-butanediol, polymer with 2,2'-thiobis(ethanol)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -887120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     840.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-602440.0
-    phase     gas;
 }

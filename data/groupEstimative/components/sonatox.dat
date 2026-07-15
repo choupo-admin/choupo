@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group C_ring; count 3; } { group Cl; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,5,5-tetrakis(chloranyl)-4,7,7-tris(chloromethyl)bicyclo[2.2.1]heptane" "heptachlorobornane" "2,2,5-endo,6-exo,8,9,10-heptachlorobornane" "bicyclo(2.2.1)heptane, 2,2,5,6-tetrachloro-1,7,7-tris(chloromethyl)-, (5-endo,6-exo)-" "5-endo,6-exo-2,2,5,6-tetrachloro-1,7,7-tris(chloromethyl)-bicyclo(2.2.1)heptane" "2,3,5,5-tetrachloro-4,7,7-tris(chloromethyl)bicyclo[2.2.1]heptane" "(1s,2s,3s,4s)-2,3,5,5-tetrachloro-4,7,7-tris(chloromethyl)bicyclo[2.2.1]heptane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -256110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     658.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=11900.0
-    phase     gas;
 }

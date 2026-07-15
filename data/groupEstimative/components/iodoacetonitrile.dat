@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group I; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-iodanylethanenitrile" "acetonitrile, iodo-" "2-iodoacetonitrile" "iodacetonitril" "iodo-acetonitrile" "2-iodoethanenitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   157140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     295.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=157260.0
-    phase     gas;
 }

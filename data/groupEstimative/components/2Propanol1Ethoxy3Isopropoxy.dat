@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 2; } { group OH; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethoxy-3-propan-2-yloxy-propan-2-ol" "2-propanol, 1-ethoxy-3-(1-methylethoxy)-" "1-ethoxy-3-isopropoxypropan-2-ol" "1-ethoxy-3-isopropoxy-2-propanol" "1-ethoxy-3-propan-2-yloxypropan-2-ol" "2-propanol, 1-ethoxy-3-(1-methylethoxy)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -635680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-335220.0
-    phase     gas;
 }

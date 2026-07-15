@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "mesidine" "aminomesitylene" "mesitylamine" "benzenamine, 2,4,6-trimethyl-" "aniline, 2,4,6-trimethyl-" "mesidin" "2-amino-1,3,5-trimethylbenzene" "2-aminomesitylene" "2,4,6-trimethylbenzenamine" "mesitylene, 2-amino-" "2,4,6-trimethyl aniline" "2,4,6-trimethylphenylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   6820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     433.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=174870.0
-    phase     gas;
 }

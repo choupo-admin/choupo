@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylmethoxybenzaldehyde" "m-benzyloxybenzaldehyde" "benzaldehyde, 3-(phenylmethoxy)-" "3-(benzyloxy)benzaldehyde" "benzaldehyde, m-(benzyloxy)-" "3-(phenylmethoxy)benzaldehyde" "3-benzyloxy-benzaldehyde" "3-(benzyl-oxy)benzaldehyde" "agn-pc-0cw538" "q015" "scavengepore&trade; 4-phenethyloxybenzaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   73530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     574.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=221150.0
-    phase     gas;
 }

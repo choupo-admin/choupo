@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group O; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[methoxy(dimethyl)silyl]butanenitrile" "butanenitrile,4-(methoxydimethylsilyl)-" "(3-cyanopropyl)dimethylmethoxysilane" "4-(methoxydimethylsilyl)butanenitrile" "4-[methoxy(dimethyl)silyl]butanenitrile;(3-cyanopropyl)dimethylmethoxyilane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -266770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     572.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-68520.0
-    phase     gas;
 }

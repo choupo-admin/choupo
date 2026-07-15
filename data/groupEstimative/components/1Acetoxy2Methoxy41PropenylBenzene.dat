@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-methoxy-4-prop-1-enyl-phenyl) ethanoate" "acetoisoeugenol" "acetyl iso-eugenol" "phenol, 2-methoxy-4-(1-propen-1-yl)-, 1-acetate" "(2-methoxy-4-prop-1-enylphenyl) acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -409700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     560.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-191840.0
-    phase     gas;
 }

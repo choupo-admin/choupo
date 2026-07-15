@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group CH2_ring; count 1; } { group C_ring; count 1; } { group Cl; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4s)-4-methyl-4-(trichloromethyl)oxetan-2-one" "(s)-(-)-4-methyl-4-(trichloromethyl)-2-oxetanone" "(s)-(-)-3-hydroxy-3-methyl-4,4,4-trichlorobutyric " "a-lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -425580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     422.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-284740.0
-    phase     gas;
 }

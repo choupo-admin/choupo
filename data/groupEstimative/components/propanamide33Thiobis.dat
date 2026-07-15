@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group CdO; count 2; } { group NH2; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(3-azanyl-3-oxidanylidene-propyl)sulfanylpropanamide" "3,3'-thiodipropionamide" "3-[(3-amino-3-oxopropyl)thio]propanamide" ".beta.,.beta.'-thiodipropionamide" "4-thia-dipropionic acid 1,7-diamide" "3,3'-thiobis(propionamide)" "3,3'-thiobis[propionamide]" "3,3'-thiodipropanamide" "3,3'-thiobispropanamide" "propanamide,3'-thiobis-" "3,3'-thiobispropionamide" "propionamide,3'-thiobis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -282880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     607.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-92180.0
-    phase     gas;
 }

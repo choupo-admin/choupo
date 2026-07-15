@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-hex-2-enylcyclopentan-1-ol" "cyclopentanol, 2-(2-hexenyl)-" "cyclopentanol, 2-(2-hexen-1-yl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -265240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     536.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13980.0
-    phase     gas;
 }

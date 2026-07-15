@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group CH2_ring; count 5; } { group Cl; count 3; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(chloranyl)-1-piperidin-1-yl-ethanone" "piperidine, 1-trichloroacetyl-," "1-(trichloroacetyl)piperidine" "2,2,2-trichloro-1-piperidinoethan-1-one" "2,2,2-trichloro-1-piperidin-1-ylethanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -208010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     524.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1230.0
-    phase     gas;
 }

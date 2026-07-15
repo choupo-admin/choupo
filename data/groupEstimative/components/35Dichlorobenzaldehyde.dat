@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5-bis(chloranyl)benzaldehyde" "benzaldehyde, 3,5-dichloro-" "3,5-dichloro-benzaldehyde" "benzaldehyde,5-dichloro-" "tpc-b008" "q649" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   70750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=121310.0
-    phase     gas;
 }

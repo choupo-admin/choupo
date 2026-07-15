@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group tC; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanylbut-2-yne" "1-bromobut-2-yne" "2-butynyl bromide" "1-bromo-but-2-yne" "2-butyne, 1-bromo-" "b237" "2-butyne,bromo- (6ci,7ci);1-bromo-2-butyne;1-bromo-3-methyl-2-butyne;2-butyn-1-ylbromide;2-butynyl bromide;4-bromobut-2-yne;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   172740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     334.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=199920.0
-    phase     gas;
 }

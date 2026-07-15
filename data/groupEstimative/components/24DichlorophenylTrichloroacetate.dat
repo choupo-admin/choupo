@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2,4-dichlorophenyl) 2,2,2-tris(chloranyl)ethanoate" "2,4-dichlorophenol trichloroacetate" "phenol, 2,4-dichloro-, trichloroacetate" "acetic acid, trichloro-, 2,4-dichlorophenyl ester" "(2,4-dichlorophenyl) 2,2,2-trichloroacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -399590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     528.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-257550.0
-    phase     gas;
 }

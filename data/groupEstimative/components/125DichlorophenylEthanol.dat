@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[2,5-bis(chloranyl)phenyl]ethanol" "2,5-dichlorophenyl ethanol" "1-(2,5-dichlorophenyl)ethan-1-ol" "2,5-dichloro-alpha-methylbenzyl alcohol" "benzenemethanol,2,5-dichloro-a-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -183850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-53490.0
-    phase     gas;
 }

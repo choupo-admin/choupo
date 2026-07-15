@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 8; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-cyclobuta-3,4:5,6-bi(cyclopenta)benzene" "1,2-cyclobuteno-3,4:5,6-bi(cyclopenteno)benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   132470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=348740.0
-    phase     gas;
 }

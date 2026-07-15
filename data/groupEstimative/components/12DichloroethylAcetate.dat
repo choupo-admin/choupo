@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-bis(chloranyl)ethyl ethanoate" "acetic acid 1,2-dichloroethyl ester" "ethanol, 1,2-dichloro-, acetate" "ethanol,1,2-dichloro-, acetate" "ethanol, 1,2-dichloro-,1-acetate" "1,2-dichlorethylester kyseliny octove" "1,2-dichloroethylester kyseliny octove" "ethanol,1,2-dichloro-, acetate (6ci,7ci,8ci,9ci); 1,2-dichloroethanol acetate;1,2-dichloroethyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -479930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     420.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-353870.0
-    phase     gas;
 }

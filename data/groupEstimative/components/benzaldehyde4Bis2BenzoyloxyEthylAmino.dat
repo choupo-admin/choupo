@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 14; } { group dC_ring; count 4; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[(4-methanoylphenyl)-[2-(phenylcarbonyloxy)ethyl]amino]ethyl benzoate" "benzaldehyde, 4-(bis(2-(benzoyloxy)ethyl)amino)-" "benzoic acid, ((p-formylphenyl)imino)diethylene ester" "2-[n-(2-benzoyloxyethyl)-4-formylanilino]ethyl benzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -351790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1003.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=21220.0
-    phase     gas;
 }

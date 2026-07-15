@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 10; } { group tCH; count 1; } { group tC; count 3; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-tetradeca-3,13-diynoxyoxane" "2h-pyran, tetrahydro-2-(3,13-tetradecadiyn-1-yloxy)-" "2h-pyran, tetrahydro-2-((3,13-tetradecadiynyl)oxy)-" "2h-pyran, tetrahydro-2-[(3,13-tetradecadiynyl)oxy]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -81190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     766.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=368300.0
-    phase     gas;
 }

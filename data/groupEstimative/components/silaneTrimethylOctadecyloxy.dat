@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 17; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl(octadecoxy)silane" "trimethyl(octadecyloxy)silane" "1-trimethylsilyloxyoctadecane" "silane,trimethyl(octadecyloxy)-" "1-(trimethylsilyloxy)octadecane;1-octadecyl trimethylsilyl ether; silcare 1m71; stearyloxytrimethylsilane;trimethyl(stearyloxy)silane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -720610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1111.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-83820.0
-    phase     gas;
 }

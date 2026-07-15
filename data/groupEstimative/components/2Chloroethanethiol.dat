@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group Cl; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranylethanethiol" "2-chloroethyl mercaptan" "ethanethiol, 2-chloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -61870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     329.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-16580.0
-    phase     gas;
 }

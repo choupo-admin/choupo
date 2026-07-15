@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group C; count 1; } { group dCH; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4,4-trimethylpent-2-ene" "2-pentene, 2,4,4-trimethyl-" "beta-diisobutylene" "2,2,4-trimethyl-3-pentene" "2,4,4-trimethylpentene-2" "agn-pc-00e9s2" "propene, 1-tert-butyl-2-methyl-" "2,2,4-trimethyl-3-pentene;2,4,4-trimethyl-2-pentene;propene, 1-tert-butyl-2-methyl-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -109770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     418.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=90990.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(2-methylpropyl)butan-2-amine" "2-butanamine, n-(2-methylpropyl)-" "dvfvbaphbzwjfx-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -165540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     489.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=100990.0
-    phase     gas;
 }

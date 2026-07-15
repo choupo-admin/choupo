@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 11; } { group C_ring; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 3; } { group O; count 4; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "acetyl benzoyl aconine" "agn-pc-00iylk" "(3alpha,6alpha,14alpha,15alpha,16beta)-8-(acetyloxy)-20-ethyl-3,13,15-trihydroxy-1,6,16-trimethoxy-4-(methoxymethyl)aconitan-14-yl benzoate" "(9xi,13xi)-8-(acetyloxy)-20-ethyl-3,13,15-trihydroxy-1,6,16-trimethoxy-4-(methoxymethyl)aconitan-14-yl benzoate" "8-(acetyloxy)-20-ethyl-3,13,15-trihydroxy-1,6,16-trimethoxy-4-(methoxymethyl)aconitan-14-yl benzoate" "aconitane-3,8,13,14,15-pentol, 20-ethyl-1,6,16-trimethoxy-4-(methoxymethyl)-, 8-acetate 14-benzoate, (1.alpha.,3.alpha.,6.alpha.,14.alpha.,15.alpha.,16.beta.)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1746460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1045.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-719460.0
-    phase     gas;
 }

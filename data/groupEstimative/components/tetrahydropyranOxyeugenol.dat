@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group O; count 2; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,5-dimethoxy-n1,n1-dimethyl-benzene-1,4-diamine" "2,5-dimethoxy-n,n-dimethylbenzene-1,4-diamine" "1,4-benzenediamine, 2,5-dimethoxy-n,n-dimethyl-" "1,4-benzenediamine, 2,5-dimethoxy-n1,n1-dimethyl-" "n,n-dimethyl-2,5-dimethoxy-1,4-benzenediamine" "1,4-benzenediamine,2,5-dimethoxy-n1,n1-dimethyl-" "2,5-dimethoxy-1-n,1-n-dimethylbenzene-1,4-diamine" "1,4-benzenediamine,2,5-dimethoxy-n,n-dimethyl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -210730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     510.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=84070.0
-    phase     gas;
 }

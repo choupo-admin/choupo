@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 4; } { group CH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triethoxy(2-methylpropyl)silane" "isobutyltriethoxysilane" "silane, triethoxy(2-methylpropyl)-" "triethoxyisobutylsilane" "(2-methylpropyl)triethoxysilane" "silane,triethoxy(2-methylpropyl)-" "i482" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -763290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     696.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-388880.0
-    phase     gas;
 }

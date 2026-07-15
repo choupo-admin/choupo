@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group Cl; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-chloranylhexan-2-one" "6-chlorohexan-2-one" "1-chloro-5-hexanone" "1-chlorohexane-5-one" "6-chloro-hexan-2-one" "2-hexanone, 6-chloro-" "4-chlorobutyl methyl ketone" "1-chlorohexan-5-one;4-chlorobutyl methyl ketone; 5-oxohexyl chloride; 6-chloro-2-hexanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -295490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-141210.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-ethylhexoxy)propan-1-amine" "2-ethylhexyloxypropylamine" "3-(2-ethylhexyloxy)propylamine" "3-((2-ethylhexyl)oxy)propylamine" "3-(2-ethylhexoxy)propylamine" "2-ethylhexyl 3-aminopropyl ether" "propylamine, 3-(2-ethylhexoxy)-" "3-((2-ethylhexyl)oxy)propan-1-amine" "1-propanamine, 3-[(2-ethylhexyl)oxy]-" "3-[(2-ethylhexyl)oxy]propylamine" "3-[(2-ethylhexyl)oxy]propan-1-amine" "3-((ethylhexyl)oxy)propylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -374080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     637.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=750.0
-    phase     gas;
 }

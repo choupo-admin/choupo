@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentoxybenzene" "pentyl phenyl ether" "amyloxyphenyl" "benzene, (pentyloxy)-" "amylphenyl ether" "ether, pentyl phenyl" "pentyloxybenzene" "ether,pentyl phenyl (6ci,7ci,8ci); (pentyloxy)benzene; 1-phenoxypentane; amyl phenylether; pentyl phenyl ether; phenyl pentyl ether; n-amyl phenyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -166060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     489.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=49150.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-azetidinecarboxylic acid" "3-carboxyazetidine" "3-azetanecarboxylic acid" "h-aze(3)-oh" "azetane-3-carboxylic acid" "azetidine-3-carboxylicacid" "l-azetidine-3-carboxylic acid" "azetidine-3- carboxylic acid" "bh271" "ht876" "al392-1" "36476-78-5 azetidine-3-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -371710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     288.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-224750.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(diethylamino)propan-2-one" "(diethylamino)acetone" "1-(diethylamino)acetone" "2-propanone, 1-(diethylamino)-" "2-propanone,1-(diethylamino)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -232860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     471.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-10080.0
-    phase     gas;
 }

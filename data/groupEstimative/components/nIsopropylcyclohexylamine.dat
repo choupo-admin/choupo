@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-propan-2-ylcyclohexanamine" "cyclohexylisopropylamine" "cyclohexylamine, n-isopropyl-" "isopropylcyclohexylamine" "n-cyclohexylisopropylamine" "cyclohexanamine, n-(1-methylethyl)-" "n-(propan-2-yl)cyclohexanamine" "cyclohexyl(methylethyl)amine" "cyclohexyl-isopropyl-amine" "n-isopropylcyclohexanamine" "n-cyclohexyl-n-isopropylamine" "uyycvbasznffrx-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -126580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     507.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=136300.0
-    phase     gas;
 }

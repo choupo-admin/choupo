@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 31; } { group CH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(3s,4s,8r)-8-ethyl-3-[(3s)-octan-3-yl]-4-propyl-undecyl] octadecanoate" "[(3s,4s,8r)-8-ethyl-3-[(3s)-octan-3-yl]-4-propylundecyl] octadecanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1248610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1805.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-17370.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 6; } { group CH2_ring; count 18; } { group O; count 3; } { group O_ring; count 9; } { group N; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4,6,11-trioxa-1-aza-5-silabicyclo[3.3.3]undecan-5-yloxy)-n,n-bis[2-(4,6,11-trioxa-1-aza-5-silabicyclo[3.3.3]undecan-5-yloxy)ethyl]ethanamine" "ethanamine, 2-(2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undec-1-yloxy)-n,n-bis((2-(2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undec-1-yl)oxy)ethyl)-" "ethanamine, 2-(2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undec-1-yloxy)-n,n-bis(2-(2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undec-1-yloxy)ethyl)-" "ethanamine, 2-(2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undec-1-yloxy)-n,n-bis[[2-(2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undec-1-yl)oxy]ethyl]-" "ethanamine, 2-(2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undec-1-yloxy)-n,n-bis[2-(2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undec-1-yloxy)ethyl]-" "ethanamine,2-(2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undec-1-yloxy)-n,n-bis[2-(2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undec-1-yloxy)ethyl]-" "ethanol,2,2',2''-nitrilotri-, cyclic ester with silicic acid (h4sio4) (1:1), triesterwith 2,2',2''-nitrilotriethanol (8ci);2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undecane, ethanamine deriv.;tris(nitrilo-2,2',2''-triethoxysiloxyethyl)amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1684690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     998.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-508180.0
-    phase     gas;
 }

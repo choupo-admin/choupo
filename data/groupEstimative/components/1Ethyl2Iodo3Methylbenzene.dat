@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethyl-2-iodanyl-3-methyl-benzene" "3-ethyl-2-iodotoluene" "2-ethyl-6-methyliodobenzene" "3-ethyl-2-iodo-1-methylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   61370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     443.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176170.0
-    phase     gas;
 }

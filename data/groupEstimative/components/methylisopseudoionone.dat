@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 2; } { group dCH; count 3; } { group dC; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3e,5e)-3,6,10-trimethylundeca-3,5,9-trien-2-one" "iso-methylpseudoionone" "pseudo-isomethyl ionone" "3,5,9-undecatrien-2-one, 3,6,10-trimethyl-" "2,6,9-trimethylundeca-2,6,8-trien-10-one" "3,6,10-trimethylundeca-3,5,9-trien-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -122580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     695.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=153090.0
-    phase     gas;
 }

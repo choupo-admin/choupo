@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-trimethoxysilylpropyl prop-2-enoate" "3-(acryloyloxy)propyltrimethoxysilane" "3-acryloxypropyltrimethoxysilane" "2-propenoic acid, 3-(trimethoxysilyl)propyl ester" "(3-acryloyloxypropyl)trimethoxysilane" "3-(trimethoxysilyl)propyl 2-propenoate" "o002" "acrylic acid 3-(trimethoxysilyl)propyl ester" "acrylicacid, 3-(trimethoxysilyl)propyl ester (7ci,8ci);1-propanol,3-(trimethoxysilyl)-, acrylate (8ci);(3-acryloxypropyl)trimethoxysilane;3-(trimethoxysilyl)propyl acrylate;a 0397;ay 43-310m;acryloxypropyltrimethoxysilane;kbm 5103;kmb 5103;sia 0200.0;[3-(acryloyloxy)propyl]trimethoxysilane;[g-(acryloyloxy)propyl]trimethoxysilane;g-acryloxypropyltrimethoxysilane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -929220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     713.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-617390.0
-    phase     gas;
 }

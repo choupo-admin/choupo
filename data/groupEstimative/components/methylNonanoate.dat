@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl pelargonate" "nonanoic acid, methyl ester" "methyl nonylate" "methyl n-nonanoate" "nonanoic acid methyl ester" "pelargonic acid methyl ester" "agn-pc-03eaxe" "methyl ester nonanoic acid" "nonanoic acid methyl ester (fame mix)" "methyln-nonanoate;methyl nonanoate;methyl nonylate;methyl pelargonate;pelargonicacid methyl ester;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -567010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     596.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-277050.0
-    phase     gas;
 }

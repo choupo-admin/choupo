@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group tCH; count 1; } { group tC; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "penta-1,3-diyne" "ch3c.equiv.cc.equiv.ch" "methylbutadiyne;methyldiacetylene" "1,3-pentadiyne(7ci,8ci,9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   417670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     292.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=417090.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(2-azanyl-1-oxidanyl-propyl)benzene-1,2-diol" "isoadrenaline" "alpha-methylnorepinephrine" "nordefrin" "dioxynorepinephrine" "nordephrine" "dihydroxyphenylpropanolamine" "l-alpha-methylnorepinephrine" "1,2-benzenediol, 4-(2-amino-1-hydroxypropyl)-" "(+-)-3,4-dihydroxynorephedrine" "nordefrin (unspecified)" "2-amino-1-(3,4-dihydroxyphenyl)propan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -476180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     536.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-247180.0
-    phase     gas;
 }

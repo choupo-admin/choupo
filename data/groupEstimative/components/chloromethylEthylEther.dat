@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloromethyloxyethane" "chloromethoxyethane" "ethane, (chloromethoxy)-" "(chloromethoxy)ethane" "ether, chloromethyl ethyl" "ethoxychloromethane" "ethoxymethyl chloride" "ethoxy methyl chloride" "ethyl chloromethyl ether" "ether,chloromethyl ethyl (6ci,7ci,8ci);chloromethoxyethane;ethoxychloromethane;ethoxymethyl chloride;ethyl chloromethyl ether;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -253210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     317.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-142550.0
-    phase     gas;
 }

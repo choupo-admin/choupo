@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzhydrol, alpha-propyl-" "benzhydrol, .alpha.-propyl-," "1,1-diphenyl-1-butanol" "benzenemethanol, a-phenyl-a-propyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -61490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     578.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=174680.0
-    phase     gas;
 }

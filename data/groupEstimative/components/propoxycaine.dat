@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group COO; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(diethylamino)ethyl 4-azanyl-2-propoxy-benzoate" "pravocaine" "propoxicainum" "ranocaine" "blockain" "propoxycaine [inn]" "propossicaina [dcit]" "propoxycainum [inn-latin]" "4-amino-2-propoxybenzoic acid, 2-(diethylamino)ethyl ester" "2-diethylaminoethyl 4-amino-2-propoxybenzoate" "2-(diethylamino)ethyl 4-amino-2-propoxybenzoate" "benzoic acid, 4-amino-2-propoxy-, 2-(diethylamino)ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -508160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     790.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-61150.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 10; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylethyl undec-10-enoate" "10-undecenoic acid, 2-phenylethyl ester" "10-undecenoic acid,2-phenylethyl ester" "10-undecenoicacid, phenethyl ester (6ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -390810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     836.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1020.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-methylphenyl)-1,3-dioxan-5-ol" "tolualdehyde glyceryl acetal" "1,3-dioxan-5-ol, 2-(methylphenyl)-, cis-" "1,3-dioxan-5-ol, 2-(methylphenyl)- (mixed isomers)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -427560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     347.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-147800.0
-    phase     gas;
 }

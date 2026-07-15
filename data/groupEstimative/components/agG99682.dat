@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 10; } { group CH2; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2,3,3,4,4,5,5-decaethyl-1,2,3,4,5-pentasilolane" "cyclopentasilane, decaethyl-" "decaethylcyclopentasilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -902610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1459.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-301520.0
-    phase     gas;
 }

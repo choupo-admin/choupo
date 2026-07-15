@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group Br; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2-tetrakis(bromanyl)ethane" "tetrabromoethane" "ethane, 1,1,1,2-tetrabromo-" "halogenated ethanes cs (1,1, 1,2-tetrabromoethane)" "1,1,1,2-tetrabromoethane (seealso halogenated ethanes cs (1,1,1,2-tetrabromoethane))" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   11960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     399.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=26080.0
-    phase     gas;
 }

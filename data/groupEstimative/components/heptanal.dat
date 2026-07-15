@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "heptaldehyde" "enanthaldehyde" "n-heptaldehyde" "enanthal" "heptyl aldehyde" "heptanaldehyde" "oenanthaldehyde" "enanthole" "oenanthal" "oenanthol" "n-heptylaldehyde" "enanthic aldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -273390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-91460.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(bromomethyl)-3-(trifluoromethyl)benzene" "m-trifluoromethylbenzyl bromide" "3-(bromomethyl)benzotrifluoride" "3-trifluoromethylbenzylbromide" "3-trifluoromethylbenzyl bromide" "fxffr c1e" "3-(trifluoromethyl)benzylbromide" "alpha'-bromo-alpha,alpha,alpha-trifluoro-m-xylene" "1-bromomethyl-3-trifluoromethyl-benzene" "a'-bromo-a,a,a-trifluoro-m-xylene" "3-trifluoromethyl benzyl bromide" "myyyznvauzvxbo-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -554140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-448010.0
-    phase     gas;
 }

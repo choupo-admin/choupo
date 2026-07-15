@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "but-3-ynoic acid" "3-butynoate" "but-3-insaeure" "ch.equiv.cch2cooh" "ch#cch2cooh" "ch.$.cch2cooh" "2-ethynylaceticacid;3-butynoate;ethynylacetic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -184260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     334.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-138040.0
-    phase     gas;
 }

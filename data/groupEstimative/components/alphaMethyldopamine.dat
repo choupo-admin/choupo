@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(2-azanylpropyl)benzene-1,2-diol" "dl-alpha-methyldopamine" "4-(2-aminopropyl)catechol" "(+-)-4-(2-aminopropyl)-1,2-benzenediol" "pyrocatechol, 4-(2-aminopropyl)-, (+-)-" "methyldopamine" "catecholamphetamine" "3,4-dihydroxyamphetamine" "4-(2-aminopropyl)-1,2-benzenediol" "4-(2-aminopropyl)benzene-1,2-diol" "(s)-4-(2-aminopropyl)catechol" "1,2-benzenediol, 4-(2-aminopropyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -318670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     495.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-107920.0
-    phase     gas;
 }

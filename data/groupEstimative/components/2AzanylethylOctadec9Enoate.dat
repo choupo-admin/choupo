@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 16; } { group dCH; count 2; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "monoethanolamine oleate;9-octadecenoic acid (9z)-, compd. with 2-aminoethanol (1:1);oleic acid, 2-aminoethanol salt (6ci);9-octadecenoic acid (z)-, compd. with 2-aminoethanol;cis-9-octadecenoic acid, ethanolamine salt;oleic acid, ethanolamine salt" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -622400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1031.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-46180.0
-    phase     gas;
 }

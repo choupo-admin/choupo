@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 2; } { group C_ring; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 10; } { group OH_phenol; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,3',3'-tetramethyl-2,2',3,3'-tetrahydro-1,1'-spirobi[indene]-5,5',6,6',7,7'-hexol" "1,1,10,10-tetramethylspiro[indane-3,3'-indane]-4,5,6,13,14,15-hexaol" "1,1'-spirobi(1h-indene)-5,5',6,6',7,7'-hexol, 2,2',3,3'-tetrahydro-3,3,3',3'-tetramethyl-" "1,1'-spirobi[1h-indene]-5,5',6,6',7,7'-hexol, 2,2',3,3'-tetrahydro-3,3,3',3'-tetramethyl-" "1,1'-spirobi[1h-indene]-6,6',7,7'-tetrol,2,2',3,3'-tetrahydro-3,3,3',3'-tetramethyl-" "1,1'-spirobi[indan]-6,6',7,7'-tetrol,3,3,3',3'-tetramethyl- (8ci); 3,3,3',3'-tetramethyl-1,1'-spirobiindane-6,7,6',7'-tetrol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -913370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     873.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-486800.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[4-(aminomethyl)phenyl]methanamine" "1,4-benzenedimethanamine" "1,4-bis(aminomethyl)benzene" "4-aminomethylbenzylamine" "1,4-phenylenedimethanamine" "p-xylene-alpha,alpha'-diamine" "1,4-xylylenediamine" "methylamine, p-phenylenebis-" "alpha,alpha'-diamino-p-xylene" ".alpha.,.alpha.'-diamino-p-xylene" "p-xylenediamine" "p-xylylendiamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   84190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     458.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=252160.0
-    phase     gas;
 }

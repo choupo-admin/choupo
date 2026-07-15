@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 13; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(z)-hexadec-11-enyl] ethanoate" "11-hexadecen-1-ol, acetate, (z)-" "(z)-11-hexadecen-1-yl acetate" "z-11-hexadecen-1-yl acetate" "(z)-11-hexadecenyl acetate" "(z)-11-hexadecen-1-ol acetate" "11-hexadecen-1-ol, 1-acetate, (11z)-" "(z)-hexadec-11-enyl acetate" "z-11-hda" "[(z)-hexadec-11-enyl] acetate" "(z)-hexadec-11-en-1-yl acetate" "(11z)-hexadec-11-en-1-yl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -614910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     901.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-129470.0
-    phase     gas;
 }

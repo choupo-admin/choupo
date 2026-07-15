@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-methylbutanoate" "butanoic acid, 2-methyl-, ethyl ester" "butyric acid, 2-methyl-, ethyl ester" "dl-2-methylbutyric acid ethyl ester" "ethyl 2-methyl butyrate" "ethyl 2-methyl-butanoate" "d-ethyl 2-methylbutyrate" "ethyl alpha-methylbutyrate" "ethyl dl-2-methylbutyrate" "ethyl .alpha.-methylbutyrate" "ethyl 2-methylbutyrate (natural)" "we(2:0/4:0(2me))" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -510370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     470.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-304750.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 22; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-dodecyldodecan-1-amine" "1-dodecanamine, n-dodecyl-" "dilaurylamine" "di-n-dodecylamine" "didodecyl amine" "n-dodecyl-1-dodecanamine" "didodecylamine practical grade" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -485220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1131.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=240590.0
-    phase     gas;
 }

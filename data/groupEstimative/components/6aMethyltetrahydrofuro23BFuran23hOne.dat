@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 1; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6a-methyl-2,3,3a,4-tetrahydrofuro[2,3-b]furan-5-one" "8-methyl-1,7-dioxabicyclo(3.3.0)octan-2-one" "8-methyl-1,7-dioxabicyclo[3.3.0]octan-2-one" "furo(2,3-b)furan-2(3h)-one, tetrahydro-6a-methyl-" "furo[2,3-b]furan-2(3h)-one, tetrahydro-6a-methyl-" "furo[2, tetrahydro-6a-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -476250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     317.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-272420.0
-    phase     gas;
 }

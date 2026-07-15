@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 1; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1-dibutoxy-n,n-dimethyl-methanamine" "n,n-dimethylformamide dibutyl acetal" "1,1-dibutoxy-n,n-dimethylmethanamine" "1,1-dibutoxy-n,n-dimethylmethylamine" "gsffxkgtgpmvlm-uhfffaoysa-" "n,n-dimethylformamide di-n-butylacetal" "n,n-dimethylformamide di-n-butyl acetal" "methanamine,1,1-dibutoxy-n,n-dimethyl-" "m716" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -472560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     613.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-59920.0
-    phase     gas;
 }

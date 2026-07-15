@@ -33,9 +33,8 @@ groups
     joback ( { group dC; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[2,2-bis(chloranyl)-1-(2-chlorophenyl)ethenyl]-4-chloranyl-benzene" "2,4'-dde" "2,2-(2-chlorophenyl-4'-chlorophenyl)-1,1-dichloroethene" "1,1-dichloro-2-(o-chlorophenyl)-2-(p-chlorophenyl)ethylene" "1,1-dichloro-2-(o-chlorophenyl)-2-(p-chlorophenyl)ethene" "2,2,o,p'-tetrachlorovinylidenebisbenzene" "2-(2-chlorophenyl)-2-(4-chlorophenyl)-1,1-dichloroethylene" "benzene, 1-chloro-2-[2,2-dichloro-1-(4-chlorophenyl)ethenyl]-" "1-chlor-2-[2,2-dichlor-1-(4-chlorphenyl)vinyl]benzol" "1-chloro-2-[2,2-dichloro-1-(4-chlorophenyl)ethenyl]benzene" "benzene, 1-chloro-2-(2,2-dichloro-1-(4-chlorophenyl)ethenyl)-" "ethylene, 1,1-dichloro-2-(o-chlorophenyl)-2-(p-chlorophenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   152510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     594.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=287960.0
-    phase     gas;
 }

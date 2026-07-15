@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(1-methylpiperidin-2-yl)propan-2-one" "1-(1-methyl-2-piperidinyl)acetone" "n-methylpelletierine" "methyl-isopelletierin" "1-(1-methyl-2-piperidyl)acetone" "acetone, (1-methyl-2-piperidyl)-" "2-propanone, (1-methyl-2-piperidinyl)-" "2-propanone,1-(1-methyl-2-piperidinyl)-" "2-propanone, 1-(1-methyl-2-piperidinyl)-, (.+-.)-" "2-propanone, 1-(1-methyl-2-piperidinyl)-, (.+/-.)-" "1-(1-methyl-2-piperidinyl)acetone;isopelletierine, n-methyl- (7ci);1-(1-methylpiperidin-2-yl)propan-2-one;acetone, (1-methyl-2-piperidyl)-;methylisopunicine;n-methylisopelletierine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -213660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     498.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=43310.0
-    phase     gas;
 }

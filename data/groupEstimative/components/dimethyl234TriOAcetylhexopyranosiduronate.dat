@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH_ring; count 5; } { group O; count 1; } { group O_ring; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3,4,5-triacetyloxy-6-methoxy-oxane-2-carboxylate" "agn-pc-00ivdw" "alpha-d-galactopyranosiduronic acid, methyl methyl ester, triacetate" "methyl 3,4,5-triacetyloxy-6-methoxyoxane-2-carboxylate" "methyl(methyl 2,3,4-tri-o-acetyl-beta-d-glucopyranosid)uronate" ".alpha.-d-galactopyranosiduronic acid,methyl methyl ester,triacetate" "methyl(methyl 2,3,4-tri-o-acetyl-.alpha.-d-mannopyranoside)uronate" "methyl (2s,3r,4s,5r,6s)-3,4,5-triacetyloxy-6-methoxyoxane-2-carboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1892670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     666.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1371990.0
-    phase     gas;
 }

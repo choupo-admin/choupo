@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl (2r)-2-oxidanyl-2-phenyl-ethanoate" "methyl (r)-(-)-mandelate" "methyl (2r)-2-hydroxy-2-phenylacetate" "(-)-methyl (r)-alpha-hydroxyphenylacetate" "(-)-methyl d-mandelate" "methyl d-(-)-mandelate" "d-mandelic acid methyl ester" "(r)-mandelic acid methyl ester" "(r)-methyl 2-hydroxy-2-phenylacetate" "(-)-methyl (r)-" "a-hydroxyphenylacetate" "k805" "(2r)-2-hydroxy-2-phenylacetic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -467350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-312320.0
-    phase     gas;
 }

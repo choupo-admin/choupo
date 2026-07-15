@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-azanylhexanoic acid" "5-aminocaproic acid" "hexanoic acid, 5-amino-" "delta-aminocaproic acid" "5-aminocaproicacid; 5-aminohexanoic acid; d-aminocaproic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -488930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-280260.0
-    phase     gas;
 }

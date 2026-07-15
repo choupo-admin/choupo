@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group NH2; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[[2,4-bis(azanyl)phenyl]methyl]benzene-1,3-diamine" "4,4'-methanediyldibenzene-1,3-diamine" "4,4'-methylenedi-m-phenylenediamine" "ar,ar,ar',ar'-tetraaminodiphenylmethane" "4-[(2,4-diaminophenyl)methyl]benzene-1,3-diamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   250690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     631.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=510680.0
-    phase     gas;
 }

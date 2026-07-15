@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 7; } { group CH_ring; count 5; } { group C_ring; count 3; } { group Br; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1s,3as,3br,5s,5as,9ar,9bs,11as)-5-bromanyl-1,9a,11a-trimethyl-1-oxidanyl-2,3,3a,3b,4,5,5a,8,9,9b,10,11-dodecahydroindeno[5,4-f]chromen-7-one" "6alpha-bromo-17beta-methyl-4-oxa-5alpha-androstan-3-one" "6-alpha-bromo-17-beta-methyl-4-oxa-5-alpha-androstan-3-one" "4-oxa-5-alpha-androstan-3-one, 6-alpha-bromo-17-beta-hydroxy-17-methyl-" "6-alpha-bromo-17-beta-hydroxy-17-alpha-methyl-4-oxa-5-alpha-androstan-3-one" "6alpha-bromo-17beta-hydroxy-17alpha-methyl-4-oxa-5alpha-androstan-3-one" "(4ar,4bs,6as,7s,9as,9br,11s,11as)-11-bromo-7-hydroxy-4a,6a,7-trimethyltetradecahydroindeno[5,4-f]chromen-2(3h)-one" "4-oxaandrostan-3-one, 6-bromo-17-hydroxy-17-methyl-, (5-alpha,6-alpha,17-beta)-" "4-oxaandrostan-3-one, 6-bromo-17-hydroxy-17-methyl-, (5-alpha,6-alpha,17-beta)- (9ci)" "(1s,3as,3br,5s,5as,9ar,9bs,11as)-5-bromo-1-hydroxy-1,9a,11a-trimethyl-2,3,3a,3b,4,5,5a,8,9,9b,10,11-dodecahydroindeno[5,4-f]chromen-7-one" "cyclopenta[5,6]naphtho[2,1-b]pyran-2(3h)-one,11-bromotetradecahydro-7-hydroxy-4a,6a,7-trimethyl-,(4ar,4bs,6as,7s,9as,9br,11s,11as)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -641590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     787.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-164380.0
-    phase     gas;
 }

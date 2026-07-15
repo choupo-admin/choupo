@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 2; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl (e)-3-bromoprop-2-enoate" "2-propenoic acid,3-bromo-, methyl ester, (2e)-" "2-propenoic acid, 3-bromo-, methyl ester, (2z)-" "2-propenoicacid, 3-bromo-, methyl ester, (e)-; acrylic acid, 3-bromo-, methyl ester, (e)-(8ci); methyl (e)-3-bromo-2-propenoate; methyl (e)-3-bromoacrylate; methyl (e)-b-bromoacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -299620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     407.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-233030.0
-    phase     gas;
 }

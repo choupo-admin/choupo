@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group I; count 1; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-iodanyl-5-methoxy-4-oxidanyl-benzaldehyde" "4-hydroxy-3-iodo-5-methoxybenzaldehyde" "5 iodovanillin" "benzaldehyde, 4-hydroxy-3-iodo-5-methoxy-" "5-iodo vanillin" "fbbcsyadxyileh-uhfffaoysa-" "3-methoxy-4-hydroxy-5-iodobenzaldehyde" "4-hydroxy-5-iodo-3-methoxybenzaldehyde" "upcmld0enat5212559:001" "4-hydroxy-3-iodo-5-methoxy-benzaldehyde" "benzaldehyde,4-hydroxy-3-iodo-5-methoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -151070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     523.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-47910.0
-    phase     gas;
 }

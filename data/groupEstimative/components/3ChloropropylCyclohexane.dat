@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranylpropylcyclohexane" "3-chloropropylcyclohexane" "(3-chloro-propyl)-cyclohexane" "1-chloro-3-cyclohexylpropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -190510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     509.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37420.0
-    phase     gas;
 }

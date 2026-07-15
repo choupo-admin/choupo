@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group Br; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[(4-bromophenyl)-phenyl-methoxy]-n,n-dimethyl-ethanamine" "bromazine" "bromdiphenhydramine" "bromdiphenhydraminum" "bromazinum" "bromazina" "bromazine [inn:ban]" "bromazinum [inn-latin]" "bromanautine" "histabromamine" "amodryl" "bromazin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   23740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     668.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=325110.0
-    phase     gas;
 }

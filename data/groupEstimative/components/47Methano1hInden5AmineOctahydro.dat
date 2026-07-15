@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group CH_ring; count 5; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7-methano-1h-inden-5-amine, octahydro-, (3ar,4s,5r,7s,7ar)-rel-" "exo-5-aminotetrahydro-endo-dicyclopentadiene" "4,7-methano-1h-inden-5-amine, octahydro-" "tricyclo[5.2.1.0^{2,6}]decan-8-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -44380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     261.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=254500.0
-    phase     gas;
 }

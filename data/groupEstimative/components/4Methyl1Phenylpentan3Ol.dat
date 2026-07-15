@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-1-phenyl-pentan-3-ol" "4-methyl-1-phenyl-3-pentanol" "(3s)-4-methyl-1-phenylpentan-3-ol" "benzenepropanol, alpha-(1-methylethyl)-" "benzenepropanol, .alpha.-(1-methylethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -217270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     548.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=20870.0
-    phase     gas;
 }

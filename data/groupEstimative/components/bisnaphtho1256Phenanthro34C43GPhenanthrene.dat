@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 30; } { group dC_ring; count 24; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bisnaphtho(1',2':5,6)phenanthro(3,4-c:4',3'-g)phenanthrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   1245310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     778.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1690080.0
-    phase     gas;
 }

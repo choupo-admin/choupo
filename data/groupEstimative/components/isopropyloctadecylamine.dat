@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 17; } { group CH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-propan-2-yloctadecan-1-amine" "1-octadecanamine, n-(1-methylethyl)-" "n-isopropyloctadecylamine" "octadecylamine, n-isopropyl-" "n-(1-methylethyl)-1-octadecanamine" "octadecyl(propan-2-yl)amine" "n-(propan-2-yl)octadecan-1-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -428580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1005.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=212890.0
-    phase     gas;
 }

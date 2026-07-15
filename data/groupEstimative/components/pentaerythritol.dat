@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group C; count 1; } { group OH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-bis(hydroxymethyl)propane-1,3-diol" "pentek" "pentaerythrite" "auxinutril" "maxinutril" "monopentek" "penetek" "metab-auxil" "hercules p6" "1,3-propanediol, 2,2-bis(hydroxymethyl)-" "tetramethylolmethane" "methane tetramethylol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -764200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-553220.0
-    phase     gas;
 }

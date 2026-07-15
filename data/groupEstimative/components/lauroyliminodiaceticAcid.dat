@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group CdO; count 1; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[dodecanoyl(2-hydroxy-2-oxoethyl)amino]ethanoic acid" "acetic acid, (lauroylimino)di-" "glycine, n-(carboxymethyl)-n-(1-oxododecyl)-" "2,2'-(dodecanoylimino)diacetic acid" "n-carboxymethyl-n-(1-oxododecyl)-glycine" "n-lauroyliminodiacetic acid" "o193" "[n-(carboxymethyl)dodecanamido]acetic acid" "n-(carboxymethyl)-n-(1-oxododecyl)glycine" "2-[carboxymethyl(dodecanoyl)amino]acetic acid" "glycine,n-(carboxymethyl)-n-(1-oxododecyl)-" "2-[n-(carboxymethyl)dodecanoylamino]acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1119160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     928.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-622120.0
-    phase     gas;
 }

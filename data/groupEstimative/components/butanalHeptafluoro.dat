@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 3; } { group F; count 7; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,4,4,4-heptakis(fluoranyl)butanal" "heptafluorobutyraldehyde" "butyraldehyde, heptafluoro-" "heptafluorobutyraldehyde, tech." "2,2,3,3,4,4,4-heptafluorobutanal" "butanal,2,2,3,3,4,4,4-heptafluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1610490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1471870.0
-    phase     gas;
 }

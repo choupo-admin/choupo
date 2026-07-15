@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group Br; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-bromanylheptanenitrile" "7-bromoheptanonitrile" "6-cyanohexyl bromide" "heptanenitrile, 7-bromo-" "l877" "7-bromoheptanonitrile; 6-bromohexyl cyanide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   3400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     485.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=155560.0
-    phase     gas;
 }

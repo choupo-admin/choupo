@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group CdO; count 1; } { group NH2; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-[[5-azanyl-2-(methylamino)phenyl]methyl]-2,2,2-tris(fluoranyl)-n-methyl-ethanamide" "acetamide, n-((5-amino-2-(methylamino)phenyl)methyl)-2,2,2-trifluoro-n-methyl-" "acetamide, n-[[5-amino-2-(methylamino)phenyl]methyl]-2,2,2-trifluoro-n-methyl-" "n-methyl-n-(trifluoroacetyl)-2-(methylamino)-5-aminobenzenemethanamine" "n-[[5-amino-2-(methylamino)phenyl]methyl]-2,2,2-trifluoro-n-methylacetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -611650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     656.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-309000.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 5-chloranyl-2-oxidanyl-benzoate" "methyl 5-chlorosalicylate" "benzoic acid, 5-chloro-2-hydroxy-, methyl ester" "buttpark 34\07-98" "methyl-5-chloro-2-hydroxybenzoate" "benzoic acid,5-chloro-2-hydroxy-, methyl ester" "salicylic acid, 5-chloro-, methyl ester (8ci)" "5-chloro-2-hydroxybenzoic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -493720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     466.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-357660.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-ethenyl-1,4-dimethyl-cyclohexene" "4-ethenyl-1,4-dimethylcyclohexene" "cyclohexene, 4-ethenyl-1,4-dimethyl-" "cyclohexene,4-ethenyl-1,4-dimethyl-" "cyclohexene,1,4-dimethyl-4-vinyl- (6ci,7ci,8ci); 1,4-dimethyl-4-vinylcyclohex-1-ene;1,4-dimethyl-4-vinylcyclohexene; 4-ethenyl-1,4-dimethylcyclohexene; paradiprene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -8430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     536.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=160450.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group dC; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 9; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethenol, 1-phenyl-2,2-bis(2,4,6-trimethylphenyl)-" "benzenemethanol, a-[bis(2,4,6-trimethylphenyl)methylene]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   6210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     848.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=373790.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 14; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dibenzo[fg,op]naphthacene" "dibenzo(e,l)pyrene" "1,2:6,7-dibenzpyrene (van)" "1,7-dibenzpyrene" "dibenzo(fg,op)naphthacene (8ci)" "dibenzo(fg,op)naphthacene (8ci)(9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   561850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=752580.0
-    phase     gas;
 }

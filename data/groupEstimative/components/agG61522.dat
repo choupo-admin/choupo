@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethylmethanamide;methanoic acid" "formic acid compd. with n,n-dimethylformamide (1:1)" "formic acid, compd. with n,n-dimethylformamide (1:1)" "formic acid, compound with n,n-dimethylformamide (1:1)" "n,n-dimethylformamide; formic acid" "formic acid, n,n-dimethylformamide salt" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -387990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     581.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-258750.0
-    phase     gas;
 }

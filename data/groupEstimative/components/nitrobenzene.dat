@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NO2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nitrobenzol" "benzene, nitro-" "oil of mirbane" "nitro-benzene" "essence of mirbane" "mirbane oil" "nitrobenzeen" "mononitrobenzene" "oil of myrbane" "nitrobenzen" "p-nitrobenzene" "1-nitrobenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   58600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     363.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=147600.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group tC; count 4; } { group dCH_ring; count 20; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5,12-bis(2-phenylethynyl)tetracene" "bpen" "5,12-bisnaphthacene" "naphthacene, 5,12-bis(phenylethynyl)-" "naphthacene, 5,12-bis(2-phenylethynyl)-" "5,12-bis(phenylethynyl)tetracene" "naphthacene,5,12-bis(2-phenylethynyl)-" "naphthacene,5,12-bis(phenylethynyl)- (8ci,9ci); 5,12-bis(phenethynyl)naphthacene;5,12-bis(phenylethynyl)naphthacene; 5,12-bis(phenylethynyl)tetracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   1036430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     753.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1259660.0
-    phase     gas;
 }

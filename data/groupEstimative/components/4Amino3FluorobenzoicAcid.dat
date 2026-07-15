@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-azanyl-3-fluoranyl-benzoic acid" "3-fluoro-4-aminobenzoic acid" "4-amino-3-fluorobenzenecarboxylic acid" "benzoic acid, 4-amino-3-fluoro-" "4-amino-3-fluorobenzoicacid" "4-amino-3-fluoro-benzoic acid" "buttpark 44\09-60" "benzoic acid, 4-amino-3-fluoro-;" "q303" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -486810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     446.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-371060.0
-    phase     gas;
 }

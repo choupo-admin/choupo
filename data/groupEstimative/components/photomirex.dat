@@ -34,9 +34,8 @@ groups
     joback ( { group CH_ring; count 1; } { group C_ring; count 9; } { group Cl; count 11; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hydromirex" "mirex photoproduct" "mirex, photo-" "8-monohydro mirex" "1,2,3,4,5,5,6,7,9,10,10- undecachloropentacyclo(5.3.0.0.0.0)decane" "1,1a,2,2,3,3a,4,5,5,5a,5b-undecachlorooctahydro-1h-1,3,4-(methanetriyl)cyclobuta[cd]pentalene" "8-monohydromirex" "1,3,4-metheno-1h-cyclobuta(cd)pentalene, 1,1a,2,2,3,3a,4,5,5,5a,5-undecachlorooctahydro-" "1,2,3,4,5,5,6,7,9,10,10-undecachloropentacyclo(5.3.0.0(sup 2,6).0(sup 3,9).0(sup 4,8))decane" "8-hydromirex" "1,3,4-metheno-1h-cyclobuta(cd)pentalene, 1,1a,2,2,3,3a,4,5,5,5a,5b-undecachlorooctahydro-" "1,3,4-metheno-1h-cyclobuta[cd]pentalene, 1,1a,2,2,3,3a,4,5,5,5a,5b-undecachlorooctahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   7390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     776.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=178380.0
-    phase     gas;
 }

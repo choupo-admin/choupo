@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 8; } { group CH2; count 5; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2,4-bis(2-methylbutan-2-yl)phenoxy]-n,n-diethyl-ethanamide" "2-[2,4-bis(2-methylbutan-2-yl)phenoxy]-n,n-diethylacetamide" "acetamide, 2-(2,4-bis(1,1-dimethylpropyl)phenoxy)-n,n-diethyl-" "acetamide, 2-[2,4-bis(1,1-dimethylpropyl)phenoxy]-n,n-diethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -478590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     870.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110050.0
-    phase     gas;
 }

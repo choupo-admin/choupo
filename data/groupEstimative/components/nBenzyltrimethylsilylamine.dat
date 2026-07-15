@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenyl-n-trimethylsilyl-methanamine" "silylamine, n-benzyl-1,1,1-trimethyl-" "n-(trimethylsilyl)benzylamine" "silanamine, 1,1,1-trimethyl-n-(phenylmethyl)-" "benzylamino-trimethylsilane" "(benzylamino)trimethylsilane" "1-phenyl-n-trimethylsilylmethanamine" "benzenemethanamine,n-(trimethylsilyl)-" "silanamine,1,1,1-trimethyl-n-(phenylmethyl)- (9ci); silylamine, n-benzyl-1,1,1-trimethyl-(6ci,8ci); (benzylamino)trimethylsilane; benzyl(trimethylsilyl)amine;n-(trimethylsilyl)benzylamine; n-benzyltrimethylsilylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -71350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     606.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=130360.0
-    phase     gas;
 }

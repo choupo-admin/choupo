@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 12; } { group C; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3-butanoyloxy-2,2-bis(butanoyloxymethyl)propyl] butanoate" "butanoic acid, 2,2-bis((1-oxobutoxy)methyl)-1,3-propanediyl ester" "butanoic acid, 2,2-bis[(1-oxobutoxy)methyl]-1,3-propanediyl ester" "butanoic acid, 1,1'-(2,2-bis((1-oxobutoxy)methyl)-1,3-propanediyl) ester" "butanoic acid, 1,1'-[2,2-bis[(1-oxobutoxy)methyl]-1,3-propanediyl] ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1754640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1140.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1112700.0
-    phase     gas;
 }

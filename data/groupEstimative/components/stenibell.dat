@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(17s)-10,13,17-trimethyl-1,2,3,4,7,8,9,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthrene-3,17-diol" "methylandrostendiolum" "methandriolum [inn-latin]" "17alpha-methylandrostenediol" "17-methylandrost-5-ene-3-beta,17-beta-diol" "17alpha-methylandrost-5-ene-3beta,17beta-diol" "17alpha-methyl-androst-5-ene-3beta,17beta-diol" "17alpha-methyl-3beta,17beta-dihydroxyandrosten-5" "androst-5-ene-3,17-diol, 17-methyl-, (3beta,17beta)" "androst-5-ene-3,17-diol, 17-methyl-, (3-beta,17-beta)" "mad" "androst-5-ene-3beta,17beta-diol, 17-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -469180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     813.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=7110.0
-    phase     gas;
 }

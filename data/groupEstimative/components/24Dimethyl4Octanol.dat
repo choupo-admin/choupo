@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-dimethyloctan-4-ol" "2,4-dimethyl-octan-4-ol" "4-octanol, 2,4-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -415990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     548.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-103100.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group I; count 1; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-iodanyl-2-oxidanyl-benzoic acid" "2-hydroxy-5-iodobenzoic acid" "salicylic acid, 5-iodo-" "benzoic acid, 2-hydroxy-5-iodo-" "5-iodo-2-hydroxybenzoic acid" "5-iodsalicylsaeure" "benzoic acid, 2-hydroxy-5-iodo- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -413460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-329570.0
-    phase     gas;
 }

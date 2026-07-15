@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phenylmethanethiol" "benzenemethanethiol" "benzylthiol" "alpha-toluenethiol" "thiobenzyl alcohol" "alpha-toluolthiol" "benzylhydrosulfide" "benzyl hydrosulfide" ".alpha.-toluenethiol" "alpha-tolyl mercaptan" "phenylmethyl mercaptan" "methanethiol, phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   87200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     384.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=149860.0
-    phase     gas;
 }

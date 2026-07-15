@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 2; } { group C; count 1; } { group Cl; count 3; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(chloranyl)-1-propan-2-yloxy-ethanol" "2,2,2-trichloro-1-propan-2-yloxyethanol" "ethanol,2,2,2-trichloro-1-(1-methylethoxy)-" "ethanol,2,2,2-trichloro-1-isopropoxy- (7ci,8ci); chloral 2-propanol hemiacetal; chloralisopropyl hemiacetal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -497510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-288430.0
-    phase     gas;
 }

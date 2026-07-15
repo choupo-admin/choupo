@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group Cl; count 1; } { group OH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(5r,6r)-4-chloranyl-5,6-bis(oxidanyl)cyclohexa-1,3-diene-1-carboxylic acid" "(5r,6r)-4-chloro-5,6-dihydroxycyclohexa-1,3-diene-1-carboxylic acid" "1,3-cyclohexadiene-1-carboxylicacid, 4-chloro-5,6-dihydroxy-, (5r,6r)-" "1,3-cyclohexadiene-1-carboxylicacid, 4-chloro-5,6-dihydroxy-, (5r-cis)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -731680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-564020.0
-    phase     gas;
 }

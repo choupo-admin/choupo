@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dec-1-yne" "octylacetylene" "decyne" "octylacetylene;n-octylacetylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   42170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=256390.0
-    phase     gas;
 }

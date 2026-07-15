@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 10; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloromethyl-decyl-dimethyl-silane" "(chloromethyl)(decyl)dimethylsilane" "silane, (chloromethyl)decyldimethyl-" "chloromethyl-decyl-dimethylsilane" "silane,(chloromethyl)decyldimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -439010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     822.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-58110.0
-    phase     gas;
 }

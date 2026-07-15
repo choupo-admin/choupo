@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-methylphenyl)methyl ethanoate" "benzenemethanol, 2-methyl-, acetate" "methylbenzyl acetate" "(2-methylphenyl)methyl acetate" "2-methylbenzyl acetate" "benzyl alcohol, o-methyl-, acetate" "acetic acid (2-methylphenyl)methyl ester" "acetic acid, (2-methylphenyl)methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -341950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-174270.0
-    phase     gas;
 }

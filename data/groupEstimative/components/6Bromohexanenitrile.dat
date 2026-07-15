@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group Br; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-bromanylhexanenitrile" "6-bromocapronitrile" "hexanenitrile, 6-bromo-" "6-bromohexanonitrile" "5-bromopentyl cyanide" "phoswlarcibbjz-uhfffaoysa-" "behenyl alcohol, tech., 80%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   24040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     446.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=147140.0
-    phase     gas;
 }

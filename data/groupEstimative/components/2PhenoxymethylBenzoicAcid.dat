@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenoxymethylbenzoic acid" "benzoic acid, 2-(phenoxymethyl)-" "alpha-phenoxy-o-toluic acid" "o-(phenoxymethyl)benzoic acid" "t542" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -353190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-166720.0
-    phase     gas;
 }

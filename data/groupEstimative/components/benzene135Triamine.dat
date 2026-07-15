@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,5-benzenetriamine" "s-triaminobenzene" "sym-triaminobenzene" "1,3,5-triaminobenzene" "1,5-benzenetriamine" "1,5-triaminobenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   147790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     425.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=292140.0
-    phase     gas;
 }

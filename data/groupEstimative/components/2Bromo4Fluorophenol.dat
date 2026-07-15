@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Br; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanyl-4-fluoranyl-phenol" "2-bromo-4-fluoro-phenol" "phenol, 2-bromo-4-fluoro-" "meyrabveycfhhb-uhfffaoysa-" "4-fluoro-2-bromo phenol" "496-69-5 2-bromo-4-fluorophenol" "h621" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -289200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     386.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-232690.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH_ring; count 11; } { group dC_ring; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-hexylbenzo[a]anthracene" "5-n-hexyl-1,2-benzanthacene" "benz(a)anthracene, 8-hexyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   236640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     639.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=554670.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group Cl; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-chloroethylsulfanyl)prop-1-ene" "sulfide, allyl 2-chloroethyl" "allyl 2-chloroethyl sulfide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   5030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     440.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=100250.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohexylmethanol" "cyclohexylcarbinol" "hexahydrobenzyl alcohol" "cyclohexanecarbinol" "(hydroxymethyl)cyclohexane" "methanol, cyclohexyl-" "cyclohexylmethyl alcohol" "benzyl alcohol, hexahydro-" "usaf do-49" "cyclohexyl-methanol" "hydroxymethylcyclohexane" "cyclohexyl methanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -285720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104310.0
-    phase     gas;
 }

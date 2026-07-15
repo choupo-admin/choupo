@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylpentanoic acid" "3-methyl-pentanoic acid" "pentanoic acid, 3-methyl-" "3-methyl valeric acid" "dl-3-methylvaleric acid" "sec-butylacetic acid" "valeric acid, 3-methyl-" "3-methyl pentanoic acid" "3-methyl-n-valeric acid" "dl-3-methyl valeric acid" "3-methyl-n-pentanoic acid" "(+/-)-3-methylvaleric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -522720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     433.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-346710.0
-    phase     gas;
 }

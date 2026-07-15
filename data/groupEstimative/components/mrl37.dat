@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group dCH_ring; count 13; } { group dC_ring; count 5; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-diethyl-2-[4-[2-(4-methoxyphenyl)-1-phenyl-ethyl]phenoxy]ethanamine" "2-(p-(p-methoxy-alpha-phenylphenethyl)phenoxy)triethylamine" "triethylamine, 2-(p-(p-methoxy-alpha-phenylphenethyl)phenoxy)-" "1-(p-(beta-diethylaminoethoxy)phenyl)-1-phenyl-2-(p-methoxyphenyl)ethane" "n,n-diethyl-2-(4-(2-(4-methoxyphenyl)-1-phenylethyl)phenoxy)ethanamine" "n,n-diethyl-2-[4-[2-(4-methoxyphenyl)-1-phenylethyl]phenoxy]ethanamine" "2-(p-(p-methoxy--phenylphenethyl)-phenoxy)triethylamine" "ethanamine, n,n-diethyl-2-(4-(2-(4-methoxyphenyl)-1-phenylethyl)phenoxy)-" "ethanamine, n,n-diethyl-2-(4-(2-(4-methoxyphenyl)-1-phenylethyl)phenoxy)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -116150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     905.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=392770.0
-    phase     gas;
 }

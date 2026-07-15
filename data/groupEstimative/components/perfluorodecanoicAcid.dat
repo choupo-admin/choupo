@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 9; } { group F; count 19; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecakis(fluoranyl)decanoic acid" "nonadecafluorodecanoic acid" "ndfda" "perfluoro-n-decanoic acid" "pfda" "nonadecafluoro-n-decanoic acid" "decanoic acid, nonadecafluoro-" "perfluorocapric acid" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluorodecanoic acid" "decanoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluoro-" "n-perfluorodecanoic acid" "nonadecafluorocapric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -4404840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     851.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3986420.0
-    phase     gas;
 }

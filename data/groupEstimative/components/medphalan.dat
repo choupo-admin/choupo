@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 2; } { group COOH; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-azanyl-3-[4-[bis(2-chloroethyl)amino]phenyl]propanoic acid" "(r)-2-amino-3-(4-(bis(2-chloroethyl)amino)phenyl)propanoic acid" "d-melphalan" "p-di(2-chloroethyl)amino-d-phenylalanine" "3026 c. b." "alanine, 3-(p-(bis(2-chloroethyl)amino)phenyl)-, d-" "3026 c.b." "d-phenylalanine, 4-(bis(2-chloroethyl)amino)- (9ci)" "(2r)-2-amino-3-[4-[bis(2-chloroethyl)amino]phenyl]propanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -372300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     727.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-31620.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CdO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyl-3-oxidanylidene-butanamide" "n,n-dimethyl-3-oxobutanamide" "butanamide, n,n-dimethyl-3-oxo-" "n,n-dimethyl-3-oxobutyramide" "n-acetoacetyldimethylamine" "acetylacetamide, n,n-dimethyl-" "n,n-dimethylacetoacetamide solution" "nn-dimethylacetoacetamide" "acetoacetamide,n-dimethyl-" "acetylacetamide,n-dimethyl-" "butanamide,n-dimethyl-3-oxo-" "dimethylamid kyseliny acetoctove" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -324800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-147420.0
-    phase     gas;
 }

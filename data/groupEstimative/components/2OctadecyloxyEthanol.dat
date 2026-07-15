@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 19; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-octadecoxyethanol" "ethanol, 2-(octadecyloxy)-" "polyoxyethylene (2) stearyl ether" "poly(oxy-1,2-ethanediyl), .alpha.-octadecyl-.omega.-hydroxy-" "steareth-2" "steareth-7" "steareth-11" "steareth-13" "steareth-14" "steareth-15" "steareth-16" "steareth-20" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -740580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     997.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-124300.0
-    phase     gas;
 }

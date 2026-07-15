@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-tridecoxyethanol" "trideceth-6" "trideceth-8" "trideceth-9" "trideceth-10" "trideceth-11" "trideceth-12" "trideceth-15" "trideceth-20" "trideceth-50" "peg-5 tridecyl ether" "peg-6 tridecyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -637380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     802.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-166400.0
-    phase     gas;
 }

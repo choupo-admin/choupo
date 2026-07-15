@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group C; count 2; } { group Cl; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 4,6,6,6-tetrakis(chloranyl)-3,3-dimethyl-hexanoate" "hexanoic acid, 4,6,6,6-tetrachloro-3,3-dimethyl-, ethyl ester" "hexanoic acid, 3,3-dimethyl-4,6,6,6-tetrachloro-, ethyl ester" "s826" "ethyl-4,6,6,6-tetrachlor-3,3-dimethylhexanoat" "ethyl 4,6,6,6-tetrachloro-3,3-dimethylhexanate" "4,6,6,6-tetrachloro-3,3-dimethylhexanoic acid, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -652750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     643.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-321530.0
-    phase     gas;
 }

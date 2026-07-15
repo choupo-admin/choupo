@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-iodanyldecane" "decyl iodide" "decane, 1-iodo-" "n-decyl iodide" "1-iodo-decane" "1-decyliodide;decyl iodide;n-decyl iodide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -172860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     601.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91440.0
-    phase     gas;
 }

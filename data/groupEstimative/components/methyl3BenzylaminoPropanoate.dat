@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-[(phenylmethyl)amino]propanoate" "methyl n-benzyl-beta-alaninate" "methyl-beta-benzylamino propionate" "b-alanine, n-benzyl-, methyl ester(8ci); methyl 3-(benzylamino)propionate; methyl n-(benzyl)-3-aminopropionate;methyl n-benzyl-b-alaninate;n-benzyl-b-alanine methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -297650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     570.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-66830.0
-    phase     gas;
 }

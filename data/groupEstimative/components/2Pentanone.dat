@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentan-2-one" "methyl propyl ketone" "ethyl acetone" "pentanone" "propyl methyl ketone" "methyl n-propyl ketone" "ethylacetone" "metylopropyloketon" "methylpropyl ketone" "methyl-propyl-cetone" "2-pentanone (natural)" "metylopropyloketon [polish]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -259110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     377.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-137700.0
-    phase     gas;
 }

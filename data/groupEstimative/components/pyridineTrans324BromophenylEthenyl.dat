@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group Br; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[(e)-2-(4-bromophenyl)ethenyl]pyridine" "pyridine, trans-3-(2-(4-bromophenyl)ethenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   326280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     500.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=445360.0
-    phase     gas;
 }

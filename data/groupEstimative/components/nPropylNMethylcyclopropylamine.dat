@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-methyl-n-propyl-cyclopropanamine" "cyclopropanamine, n-methyl-n-propyl-" "n-methyl-n-propylcyclopropanamine" "n-methyl-n-propylcyclopropylamine" "n-propyl cyclopropyl methyl amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -47480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     354.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=179590.0
-    phase     gas;
 }

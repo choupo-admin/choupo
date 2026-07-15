@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butanamide" "n-butyramide" "n-butylamide" "butanimidic acid" "butanoic acid, amide" "butyroamide" "amide c4" "butyrylamide" "butyramid" "n-butanamide" "n-c3h7c(o)nh2" "c3h7c(o)nh2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -204680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     390.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-79670.0
-    phase     gas;
 }

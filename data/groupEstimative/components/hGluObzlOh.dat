@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-5-oxidanylidene-5-phenylmethoxy-pentanoic acid" "l-glutamic acid 5-benzyl ester" "(s)-2-amino-5-(benzyloxy)-5-oxopentanoic acid" "glutamic acid, 5-benzyl ester, l-" "l-glutamic acid gamma-benzyl ester" "pblg polymer" "poly(5-benzyl l-glutamate)" "(2s)-2-amino-4-[benzyloxycarbonyl]butanoic acid" "5-benzyl l-glutamate polymer" "gamma-benzyl l-glutamate" "l-glutamic acid  pound inverted question mark-benzyl ester" "(2s)-2-amino-5-(benzyloxy)-5-oxopentanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -693520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     663.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-427700.0
-    phase     gas;
 }

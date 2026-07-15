@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group OH; count 1; } { group O; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[2-(2-hydroxyethyloxy)ethoxy]propanenitrile" "3-[2-(2-hydroxyethoxy)ethoxy]propanenitrile" "propionitrile, 3-(2-(2-hydroxyethoxy)ethoxy)-" "propanenitrile, 3-(2-(2-hydroxyethoxy)ethoxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -439600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     508.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-205580.0
-    phase     gas;
 }

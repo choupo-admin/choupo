@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 2; } { group dCH_ring; count 20; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4,4-triphenylbutylbenzene" "benzene, 1,1',1'',1'''-(1,4-butanediylidene)tetrakis-" "(1,4,4-triphenylbutyl)benzene" "1,1',1'',1'''-butane-1,1,4,4-tetrayltetrabenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   314310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     801.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=629640.0
-    phase     gas;
 }

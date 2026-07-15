@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group tC; count 4; } { group F; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,6,6,6-hexakis(fluoranyl)hexa-2,4-diyne" "1,1,1,6,6,6-hexafluorohexa-2,4-diyne" "cf3c.equiv.cc.equiv.ccf3" "2,4-hexadiyne,1,1,1,6,6,6-hexafluoro-" "2,4-hexadiyne,hexafluoro- (7ci,8ci); 1,1,1,6,6,6-hexafluorohexa-2,4-diyne;hexafluoro-2,4-hexadiyne; perfluorohexa-2,4-diyne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -816730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-757940.0
-    phase     gas;
 }

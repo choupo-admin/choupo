@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylhex-1-en-3-ol" "1-hexen-3-ol, 3-methyl-" "3-methyl-hexen-(1)-ol-(3) [german]" "3-methyl-hexen-(1)-ol-(3)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -223360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     436.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-38080.0
-    phase     gas;
 }

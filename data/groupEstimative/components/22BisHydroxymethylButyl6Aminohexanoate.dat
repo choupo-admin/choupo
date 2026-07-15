@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group C; count 1; } { group OH; count 2; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-bis(hydroxymethyl)butyl 6-azanylhexanoate" "hexanoic acid, 6-amino-, 2,2-bis(hydroxymethyl)butyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -887710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     789.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-464560.0
-    phase     gas;
 }

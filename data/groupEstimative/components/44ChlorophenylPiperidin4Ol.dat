@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group OH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(4-chlorophenyl)-4-hydroxypiperidine" "haloperidol metabolite i" "4-(4-chlorophenyl)-4-piperidinol" "4-(p-chlorophenyl)-4-hydroxypiperidine" "4-(chlorophenyl)-4-hydroxylpiperidine" "4-hydroxy-4-(p-chlorophenyl)piperidine" "4-hydroxy-4-(4-chlorophenyl)piperidine" "4-(4-chlorophenyl)-4-hydroxy piperidine" "4-(para-chlorophenyl)-4-hydroxypiperidine" "4-chlorophenyl-4-hydroxypiperidine" "haloperidolmetabolite" "4-p-chlorophenyl-4-piperidinol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -105910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     589.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102440.0
-    phase     gas;
 }

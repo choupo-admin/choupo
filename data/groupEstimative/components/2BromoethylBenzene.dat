@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromoethylbenzene" "phenethyl bromide" "benzene, (2-bromoethyl)-" "2-phenylethyl bromide" "phenylethyl bromide" "2-phenethyl bromide" ".beta.-bromoethylbenzene" "1-bromo-2-phenylethane" "2-phenyl-1-bromoethane" "bromoethylbenzene" "polystyrene a-br" "benzene, bromoethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   54410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=143210.0
-    phase     gas;
 }

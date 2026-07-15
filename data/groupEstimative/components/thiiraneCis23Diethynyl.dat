@@ -33,9 +33,8 @@ groups
     joback ( { group tCH; count 2; } { group tC; count 2; } { group CH_ring; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-diethynylthiirane" "thiirane,cis-2,3-diethynyl-" "thiirane,trans-2,3-diethynyl-" "thiirane, trans-2,3-diethynyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   514350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     246.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=538680.0
-    phase     gas;
 }

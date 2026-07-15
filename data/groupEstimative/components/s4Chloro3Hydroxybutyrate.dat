@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group Cl; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl (3s)-4-chloranyl-3-oxidanyl-butanoate" "ethyl s-4-chloro-3-hydroxybutyrate" "ethyl (s)-(-)-4-chloro-3-hydroxybutyrate" "ethyl (s)-4-chloro-3-hydroxybutyrate" "(s)-4-chloro-3-hydroxybutyric acid ethyl ester" "(s)-4-chloro-3-hydroxy-n-butyric acid ethyl ester" "methyl3s-4-chloro-3-hydroxybutanoate" "ethyl-(-)-4-chloro-3-hydroxybutyrate" "(s)-ethyl 4-chloro-3-hydroxybutanoate" "ethyl (3s)-4-chloro-3-hydroxybutanoate" "n132" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -657700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-461920.0
-    phase     gas;
 }

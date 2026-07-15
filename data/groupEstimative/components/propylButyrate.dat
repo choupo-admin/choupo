@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propyl butanoate" "butanoic acid, propyl ester" "butyric acid, propyl ester" "propyl n-butyrate" "n-propanol butyrate" "n-propyl butanoate" "n-propyl-n-butanoate" "1-propyl butyrate" "n-propyl butyrate" "n-propyl n-butyrate" "butyric acid propyl ester" "n-butyric acid n-propyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -505090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-302310.0
-    phase     gas;
 }

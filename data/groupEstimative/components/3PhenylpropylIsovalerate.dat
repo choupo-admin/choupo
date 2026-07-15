@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylpropyl 3-methylbutanoate" "hydrocinnamyl isovalerate" "butanoic acid, 3-methyl-, 3-phenylpropyl ester" "isovaleric acid, 3-phenylpropyl ester" "3-phenylpropyl isopentanoate" "3-phenylpropyl isovalerianate" "hydrocinnamyl 3-methylbutanoate" "3-phenylpropyl-" "a-methylbutyrate" "3-phenylpropyl-beta-methylbutyrate" "phenylpropyl 3-methylbutanoate, beta-" "butanoic acid,3-methyl-, 3-phenylpropyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -418320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     636.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-133400.0
-    phase     gas;
 }

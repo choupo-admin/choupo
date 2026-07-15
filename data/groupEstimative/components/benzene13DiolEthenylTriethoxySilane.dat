@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 2; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "allyltriethoxy silane, resorcinol resin" "1,3-benzenediol, polymer with ethenyltriethoxysilane" "benzene-1,3-diol; ethenyl(triethoxy)silane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -933380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     917.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-556880.0
-    phase     gas;
 }

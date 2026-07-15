@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 13; } { group F; count 27; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,14-heptacosakis(fluoranyl)tetradecanoic acid" "heptacosafluorotetradecanoic acid" "perfluoromyristic acid" "tetradecanoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,14-heptacosafluoro-" "tetradecanoic acid, heptacosafluoro-" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,14-heptacosafluorotetradecanoic acid" "tetradecanoicacid, heptacosafluoro- (9ci);perfluoromyristic acid;perfluorotetradecanecarboxylic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -6091280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1105.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-5499860.0
-    phase     gas;
 }

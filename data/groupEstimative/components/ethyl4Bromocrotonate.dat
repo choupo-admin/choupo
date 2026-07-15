@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH; count 2; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl (e)-4-bromanylbut-2-enoate" "4-bromocrotonic acid ethyl ester" "(e)-ethyl 4-bromobut-2-enoate" "ethyl (e)-4-bromo-2-butenoate" "ethyl trans-4-bromo-2-butenoate" "2-butenoic acid, 4-bromo-, ethyl ester, (e)-" "ethyl (2e)-4-bromobut-2-enoate" "2-butenoic acid, 4-bromo-, ethyl ester" "(e)-4-bromo-2-butenoic acid ethyl ester" "ethyl 4-bromobut-2-enoate" "ethyl (e)-4-bromobut-2-enoate" "ethyl (2e)-4-bromo-2-butenoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -340900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     485.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-216190.0
-    phase     gas;
 }

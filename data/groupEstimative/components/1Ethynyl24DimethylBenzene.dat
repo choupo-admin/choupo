@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethynyl-2,4-dimethylbenzene" "benzene,1-ethynyl-2,4-dimethyl-" "2,4-dimethylphenylacetylene" "benzene, 1-ethynyl-2,4-dimethyl-" "m-xylene,4-ethynyl- (6ci,7ci,8ci); (2,4-dimethylphenyl)acetylene;1-ethynyl-2,4-dimethylbenzene; 5-methyl-4-ethynyltoluene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   255760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     396.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=349540.0
-    phase     gas;
 }

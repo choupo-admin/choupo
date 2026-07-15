@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 14; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadecanedioic acid, dimethyl ester" "hexadecanedioic acid dimethyl ester" "hexadecanedioic acid,1,16-dimethyl ester" "hexadecanedioicacid, dimethyl ester (6ci,7ci,8ci,9ci);1,14-tetradecanedicarboxylic aciddimethyl ester;dimethyl hexadecanedioate;dimethyl thapsate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1049410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     959.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-520060.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 9; } { group F; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(5-fluoranyl-12-methyl-benzo[a]anthracen-7-yl)methyl ethanoate" "(5-fluoro-12-methyltetraphen-7-yl)methyl acetate" "5-fluoro-7-hydroxymethyl-12-methylbenz(a)anthracene acetate" "benz(a)anthracene-7-methanol, 5-fluoro-12-methyl-, acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -258410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     631.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13390.0
-    phase     gas;
 }

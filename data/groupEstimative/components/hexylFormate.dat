@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexyl methanoate" "n-hexyl formate" "formic acid, hexyl ester" "n-hexyl methanoate" "formic acid hexyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -111360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     612.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=52020.0
-    phase     gas;
 }

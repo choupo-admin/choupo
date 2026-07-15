@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group tC; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-diethylbut-2-yn-1-amine" "n,n-diethyl-2-butyn-1-amine" "but-2-ynyldiethylamine" "diethylamino-2-butyn" "2-butyn-1-amine,n,n-diethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   131380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=330060.0
-    phase     gas;
 }

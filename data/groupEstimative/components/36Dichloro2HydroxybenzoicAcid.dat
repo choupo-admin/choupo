@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 2; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,6-bis(chloranyl)-2-oxidanyl-benzoic acid" "3,6-dichlorosalicylic acid" "3,6-dichloro-2-hydroxy-benzoic acid" "benzoic acid, 3,6-dichloro-2-hydroxy-" "salicylic acid, 3,6-dichloro-" "2-oxy-3,6-dichlorobenzoic acid" "2-hydroxy-3,6-dichlorobenzoic acid" "hxx" "3,6-dichloro-2-hydroxy benzoic acid" "68938-80-7 (di-potassium salt)" "benzoic acid,3,6-dichloro-2-hydroxy-" "68938-79-4 (potassium.hydrochloride salt)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -533280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     456.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-421180.0
-    phase     gas;
 }

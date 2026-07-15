@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3-bicyclo[2.2.1]heptanyl)ethanoic acid" "bicyclo[2.2.1]heptane-2-acetic acid" "2-bicyclo[2.2.1]hept-2-ylacetic acid" "2-norbornaneacetate" "norborn-2-ylacetic acid" "norbornaneacetate (nba)" "norbornyl-2-acetic acid" "fyhbmpwrhcwnbc-uhfffaoysa-" "bicyclo[2.2.1]heptane-2-aceticacid" "bicyclo[2.2.1]hept-2-ylacetic acid" "bicyclo[2.2.1]heptan-2-ylacetic acid" "2-(3-bicyclo[2.2.1]heptanyl)acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -460260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     356.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-217320.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,5-dimethyloxolane" "tetrahydro-2,5-dimethylfuran" "furan, tetrahydro-2,5-dimethyl-" "cis-tetrahydro-2,5-dimethylfuran" "furan, tetrahydro-2,5-dimethyl-, cis-" "2,5-dimethyltetrahydrofuran, mixture of cis and trans" "trans-2,5-dimethyloxolane" "2,5-dimethyl-tetrahydro-furan" "(2r,5s)-2,5-dimethyltetrahydrofuran" "furan, tetrahydro-2,5-dimethyl-, trans-" "trans-(.+/-.)-2,5-dimethyltetrahydrofuran" "furan, tetrahydro-2,5-dimethyl- (8ci)(9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -259030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     245.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-57640.0
-    phase     gas;
 }

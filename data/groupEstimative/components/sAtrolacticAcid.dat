@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-oxidanyl-2-phenyl-propanoic acid" "(s)-2-hydroxy-2-phenylpropanoic acid" "(2s)-2-hydroxy-2-phenylpropanoic acid" "(s)-(+)-atrolactic acid" "atrolactic acid (2-phenyl-lactic acid)" "apg" "a-phenyllactate" "s-atrolactic acid" "benzeneacetic acid, alpha-hydroxy-alpha-methyl-" "atrolactic acid, (+)-" "(s)-2-phenyllactic acid" "(s)-" "a-methylmandelic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -503810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     465.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-340580.0
-    phase     gas;
 }

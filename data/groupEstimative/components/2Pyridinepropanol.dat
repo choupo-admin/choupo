@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group OH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-pyridin-2-ylpropan-1-ol" "3-(2-pyridyl)-1-propanol" "3-(2-pyridyl)propanol" "3-(pyridin-2-yl)propan-1-ol" "2-pyridylpropanol" "2-(3-hydroxypropyl)pyridine" "2-propanol pyridine" "pgr-1" "3-(2-pyridyl)propan-1-ol" "3-(2-pyridinyl)-1-propanol" "1-(alpha-pyridine)-2-propanol" "2-pyridineethanol, alpha-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -91360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=69120.0
-    phase     gas;
 }

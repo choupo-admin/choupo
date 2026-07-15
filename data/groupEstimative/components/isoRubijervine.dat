@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 10; } { group CH_ring; count 9; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "solanid-5-ene-3beta,18-diol (8ci)" "solanid-5-ene-3,18-diol, (3beta)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -456450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     767.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=288400.0
-    phase     gas;
 }

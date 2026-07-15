@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 7; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-bromanyloctanoic acid" "8-bromocaprylic acid" "octanoicacid, 8-bromo-" "octanoic acid, 8-bromo-" "omega-bromocaprylic acid" "caprylicacid, h-bromo- (4ci);8-bromocaprylic acid;w-bromooctanoicacid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -532390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     571.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-313110.0
-    phase     gas;
 }

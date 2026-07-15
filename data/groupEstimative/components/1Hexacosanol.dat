@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 25; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexacosan-1-ol" "n-hexacosanol" "ceryl alcohol" "hexacosyl alcohol" "cerylic alcohol" "hexacosanol" "67905-28-6 (aluminum[1:3] salt)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -732200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1219.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=31220.0
-    phase     gas;
 }

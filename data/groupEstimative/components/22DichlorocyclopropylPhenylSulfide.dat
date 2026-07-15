@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2,2-bis(chloranyl)cyclopropyl]sulfanylbenzene" "[(2,2-dichlorocyclopropyl)sulfanyl]benzene" "1,1-dichloro-2-phenylthiocyclopropane" "2,2-dichlorocyclopropyl phenyl sulphide" "(2,2-dichlorocyclopropyl)sulfanylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   85530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     465.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=194120.0
-    phase     gas;
 }

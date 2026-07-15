@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-disilahept-3-ene,2,2,6,6-tetramethyl-5-methylene-, (e)- (8ci)" "silane,(3-methylene-1-propene-1,3-diyl)bis[trimethyl-, (e)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -240110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     783.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-16690.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-cyclohexyl-4-methyl-phenol" "p-cresol, 2-cyclohexyl-" "2-cyclohexyl-p-cresol" "phenol, 2-cyclohexyl-4-methyl-" "phenol,2-cyclohexyl-4-methyl-" "p-cresol,2-cyclohexyl- (6ci,7ci,8ci); 2-cyclohexyl-4-methylphenol;2-cyclohexyl-p-cresol; 4-methyl-2-cyclohexylphenol; o-cyclohexyl-p-cresol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -209580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     545.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=31190.0
-    phase     gas;
 }

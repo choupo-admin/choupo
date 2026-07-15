@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1-trimethoxypropane" "propane, 1,1,1-trimethoxy-" "methyl orthopropionate" "zgmnaiodrdomek-uhfffaoysa-" "orthopropionic acid trimethyl ester" "orthopropionicacid, trimethyl ester (6ci,7ci);1,1,1-trimethoxypropane;trimethylorthopropanoate;1,1,1-trimethoxypropane;propane, 1,1,1-trimethoxy-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -572580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     384.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-312520.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 11; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4:5,8:9,10-trimethanoanthracene-2-methanamine, tetradecahydro-" "tetradecahydro-1,4:5,8:9,10-trimethylanthracene-2-methylamine" "1-(hexacyclo[6.6.1.13,6.110,13.02,7.09,14]heptadec-4-yl)methanamine (non-preferred name)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -39800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     135.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=505180.0
-    phase     gas;
 }

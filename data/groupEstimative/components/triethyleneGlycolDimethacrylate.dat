@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group dCH2; count 2; } { group dC; count 2; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-(2-methylprop-2-enoyloxy)ethoxy]ethoxy]ethyl 2-methylprop-2-enoate" "tedma" "nk ester 3g" "triethylene dimethacrylate" "tgm 3pc" "tgm 3s" "tgm 3" "polyester tgm 3" "methacrylic acid, diester with triethylene glycol" "tgm 35" "2-propenoic acid, 2-methyl-, 1,2-ethanediylbis(oxy-2,1-ethanediyl) ester" "ethylenebis(oxyethylene) methacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1000010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     808.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-605160.0
-    phase     gas;
 }

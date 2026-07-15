@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 12; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,4-benzopyrene" "3,4-benzpyrene" "benzo[pqr]tetraphene" "benzo(a)pyrene" "benz[a]pyrene" "benzpyrene" "benzo[def]chrysene" "6,7-benzopyrene" "3,4-benz[a]pyrene" "benzopyrene" "3,4-bp" "benzo[d,e,f]chrysene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   464810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     372.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=621880.0
-    phase     gas;
 }

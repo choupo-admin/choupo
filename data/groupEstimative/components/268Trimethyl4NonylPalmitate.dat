@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 17; } { group CH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6,8-trimethylnonan-4-yl hexadecanoate" "2,6,8-trimethylnonan-4-yl palmitate" "hexadecanoic acid 3,5-dimethyl-1-(2-methylpropyl)hexyl ester" "hexadecanoic acid, 3,5-dimethyl-1-(2-methylpropyl)hexyl ester" "3,5-dimethyl-1-(2-methylpropyl)hexyl palmitate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -959650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1259.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-135250.0
-    phase     gas;
 }

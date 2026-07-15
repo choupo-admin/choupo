@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 12; } { group C; count 4; } { group C_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tricyclo[1.1.0.02,4]butane,tetrakis(t-butyl)" "tetrakis(t-butyl)tricyclo[1.1.0.0(2,4)]butane" "1,2,3,4-tetra-tert-butyltricyclo[1.1.0.0(2,4)]butane" "tetrakis(1,1-dimethylethyl)tricyclo[1.1.0.0(2,4)]butane" "tricyclo[1.1.0.02,4]butane,tetrakis(1,1-dimethylethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -201310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     644.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=341960.0
-    phase     gas;
 }

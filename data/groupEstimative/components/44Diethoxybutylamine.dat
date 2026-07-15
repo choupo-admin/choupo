@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,4-diethoxybutan-1-amine" "4-aminobutyraldehyde diethyl acetal" "1-butanamine, 4,4-diethoxy-" "agn-pc-0d2xpt" "butyraldehyde,4-amino-, diethyl acetal (6ci,7ci,8ci);butylamine, 4,4-diethoxy- (8ci);4,4-diethoxy-1-butanamine;4-aminobutanal diethylacetal;4-aminobutyraldehyde diethyl acetal;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -444380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     532.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-129510.0
-    phase     gas;
 }

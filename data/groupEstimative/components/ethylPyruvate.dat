@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-oxidanylidenepropanoate" "ethyl 2-oxopropanoate" "pyruvic acid, ethyl ester" "ethyl 2-oxopropionate" "ethylpyruvate" "propanoic acid, 2-oxo-, ethyl ester" "ethyl pyroracemate" "ethyl acetylformate" "cti-01" "pyruvic acid ethyl ester" "2-oxo-propionic acid ethyl ester" "ethyl pyruvate (natural)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -576390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-448070.0
-    phase     gas;
 }

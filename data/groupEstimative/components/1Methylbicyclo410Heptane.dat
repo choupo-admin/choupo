@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methylbicyclo[4.1.0]heptane" "1-methylbicyclo[4.1.0]heptane" "agn-pc-03e9em" "1-methylbicyclo[4.1.0]-heptane" "bicyclo[4.1.0]heptane, 1-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -53770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     376.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120390.0
-    phase     gas;
 }

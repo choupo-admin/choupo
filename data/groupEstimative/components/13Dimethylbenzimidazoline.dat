@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3-dimethyl-2h-benzimidazole" "benzimidazoline, 1,3-dimethyl-" "1,3-dimethylbenzoimidazole" "1h-benzimidazole, 2,3-dihydro-1,3-dimethyl-" "1h-benzimidazole, 2,3-dihydro-1,3-dimethyl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   236490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     338.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=441900.0
-    phase     gas;
 }

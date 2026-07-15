@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 2; } { group Cl; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-2-chloranyl-cyclopentane" "1-bromo-2-chlorocyclopentane" "cyclopentane, 1-bromo-2-chloro-, cis-" "cyclopentane, 1-bromo-2-chloro-, trans-" "trans-2-chlorocyclopentyl bromide" "agn-pc-02zqr0" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -95800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     342.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22450.0
-    phase     gas;
 }

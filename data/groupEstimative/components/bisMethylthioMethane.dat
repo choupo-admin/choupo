@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group S; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bis(methylsulfanyl)methane" "2,4-dithiapentane" "formaldehyde dimethyl mercaptal" "bis(methylmercapto)methane" "methane, bis(methylthio)-" "dimethylthiomethane" "methylenebis(methyl sulfide)" "thioformaldehyde dimethylacetal" "bis[methylmercapto]methane" "methylenebis[methyl sulfide]" "bis-(methylthio)methane" "locdporvfvogcr-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -21510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     395.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=40620.0
-    phase     gas;
 }

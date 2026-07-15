@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH_ring; count 1; } { group dC_ring; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethyl-3-methyl-4-oxidanyl-2h-furan-5-one" "2(5h)-furanone, 5-ethyl-3-hydroxy-4-methyl-" "5-ethyl-3-hydroxy-4-methylfuran-2(5h)-one" "4-methyl-5-ethyl-3-hydroxyfuranone" "5-ethyl-3-hydroxy-4-methyl-2(5h)furanone" "2-hydroxy-3-methyl-gamma-2-hexenolactone" "2(5h)-furanone, 5-ethyl-3-hyroxy-4-methyl-" "2,4-dihydroxy-3-methyl-2-hexenoic acid gamma-lactone" "2-ethyl-3-methyl-4-hydroxydihydro-(2,5)-furan-5-one" "2-hexenoic acid, 2,4-dihydroxy-3-methyl-, gamma-lactone" "maple furanone" "ethyl fenugreek lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -549680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     390.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-367680.0
-    phase     gas;
 }

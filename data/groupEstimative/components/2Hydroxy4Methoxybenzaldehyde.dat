@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methoxy-2-oxidanyl-benzaldehyde" "4-methoxysalicylaldehyde" "benzaldehyde, 2-hydroxy-4-methoxy-" "4-methoxysalicyaldehyde" "p-anisaldehyde, 2-hydroxy-" "salicylaldehyde, 4-methoxy-" "o-hydroxy-p-methoxybenzaldehyde" "2-hydroxy-4-methoxy-benzaldehyde" "2-hydroxy-p-anisaldehyde" "2-formyl-5-methoxyphenol" "4-methoxyl salicylaldehyde" "4-formyl-3-hydroxyanisole" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -216470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     473.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96400.0
-    phase     gas;
 }

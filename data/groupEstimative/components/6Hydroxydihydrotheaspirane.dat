@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group C_ring; count 3; } { group OH; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6,10,10-tetramethyl-1-oxaspiro[4.5]decan-6-ol" "2,6,10,10-tetramethyl-1-oxaspiro(4.5)decan-6-ol" "1-oxaspiro(4.5)decan-6-ol, 2,6,10,10-tetramethyl-" "6-hydroxy-2,6,10,10-tetramethyl-1-oxaspiro(4.5)decane" "1-oxaspiro(4.5)decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5r,6r)-rel-" "1-oxaspiro(4.5)decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5s,6r)-rel-" "1-oxaspiro(4.5)decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5s,6s)-rel-" "1-oxaspiro[4.5]decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5r,6r)-rel-" "1-oxaspiro[4.5]decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5s,6r)-rel-" "1-oxaspiro[4.5]decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5s,6s)-rel-" "1-oxaspiro[4.5]decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5r,6s)-rel-" "(2r,5r,6s)-2,6,10,10-tetramethyl-1-oxaspiro[4.5]decan-6-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -469880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     684.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-123150.0
-    phase     gas;
 }

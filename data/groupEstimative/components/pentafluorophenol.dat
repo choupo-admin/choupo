@@ -33,9 +33,8 @@ groups
     joback ( { group dC_ring; count 6; } { group F; count 5; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,5,6-pentakis(fluoranyl)phenol" "2,3,4,5,6-pentafluorophenol" "phenol, pentafluoro-" "2,3,4,5,6-pentafluoro-phenol" "phenol, 2,3,4,5,6-pentafluoro-" "hopfp" "perfluorophenol" "xbngyffabrkick-uhfffaoysa-" "4615-85-4 (potassium salt)" "2,3,4,5,6-pentafluorohydroxybenzene" "i552" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1134380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     443.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1055140.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 27; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodecyl octadecanoate" "dodecyl stearate" "octadecanoic acid, dodecyl ester" "c12-14-alkyl stearates" "dodecanyl octadecanoate" "octadecanoic acid, c12-14-alkyl esters" "stearic acid lauryl ester" "stearic acid dodecyl ester" "stearic acid, dodecyl ester" "octadecanoic acid,dodecyl ester" "we(12:0/18:0)" "stearicacid, dodecyl ester (7ci,8ci); dodecyl octadecanoate; dodecyl stearate; laurylstearate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -979810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1375.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108650.0
-    phase     gas;
 }

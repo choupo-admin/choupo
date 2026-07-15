@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group OH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(naphthalen-1-ylamino)ethanol" "ethanol, 2-(1-naphthalenylamino)-" "ethanol, 2-(1-naphthylamino)-" "ethanol, 2-(naphthalenylamino)-" "n-(b-hydroxyethyl)-1-naphthylamine" "2-(naphthalen-1-ylamino)ethan-1-ol" "ethanol, 2-(1-naphthylamino)- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   26360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     493.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=212160.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group CH_ring; count 1; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "piperidine-4-carboxylic acid" "4-piperidinecarboxylic acid" "hexahydroisonicotinic acid" "4-carboxypiperidine" "isonicotinic acid, hexahydro-" "dl-isopipecolinic acid" "h-pic(4)-oh" "4-hexahydroisonicotinic acid" "acide isonipecotique [french]" "acide piperidine-carboxylique-4 [french]" "4-piperidinecarboxylic acid; hexahydroisonicotinic acid" "h-inp-oh" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -425310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     406.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-232110.0
-    phase     gas;
 }

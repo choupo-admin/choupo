@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 7; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s,3as,5as,5br,10ar,10bs)-3,3a,5b-trimethyl-3-oxidanyl-1,2,4,5,5a,6,7,10,10a,10b-decahydrocyclopenta[a]fluoren-8-one" "benorterone [usan:inn]" "benorteronum [inn-latin]" "benorterona" "benorteronum" "17-alpha-methyl-b-nortestosterone" "17beta-hydroxy-17-methyl-b-norandrost-4-en-3-one" "benorterone (usan/inn)" "17-beta-hydroxy-17-methyl-b-norandrost-4-en-3-one" "b-norandrost-4-en-3-one, 17-beta-hydroxy-17-methyl-" "b-norandrost-4-en-3-one, 17-hydroxy-17-methyl-, (17beta)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -407510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     667.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=32730.0
-    phase     gas;
 }

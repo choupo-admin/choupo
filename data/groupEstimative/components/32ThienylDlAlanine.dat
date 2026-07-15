@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-3-thiophen-2-yl-propanoic acid" "thienylalanine" "2-thiophenealanine" "2-thienylalanine" "3-(2-thienyl)alanine" "t5sj b1yzvq[wln]" "2-amino-3-(thiophen-2-yl)propanoic acid" "h-beta-(2-thienyl)-dl-ala-oh" "alpha-amino-2-thiophenepropanoic acid" "2-amino-3-(2-thienyl)propionic acid" "2-thiophenepropionic acid, alpha-amino-" "a(2-thienyl)alanine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -279400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     485.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-137430.0
-    phase     gas;
 }

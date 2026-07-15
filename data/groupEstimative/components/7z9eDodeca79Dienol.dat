@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH; count 4; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodeca-7,9-dien-1-ol" "7,9-dodecadien-1-ol, (7e,9z)-" "agn-pc-00ka3i" "(7z,9z)-dodeca-7,9-dien-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -208800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     661.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=73780.0
-    phase     gas;
 }

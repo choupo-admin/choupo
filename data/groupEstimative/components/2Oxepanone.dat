@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxepan-2-one" "6-hexanolactone" "epsilon-caprolactone" "caprolactone" "hexan-6-olide" "6-hexanolide" "hexano-6-lactone" "1-oxa-2-oxocycloheptane" "e-caprolactone" "1,6-hexanolide" "epsilon-caprolactone monomer" ".epsilon.-caprolactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -403630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     432.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-266470.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group Cl; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(chloranyl)propanal" "2,3-dichloropropionaldehyde" "1,2-dichloro-3-propional" "propionaldehyde, 2,3-dichloro-" "alpha,beta-dichloropropionaldehyde" "propanal, 2,3-dichloro-" "propionaldehyde,2,3-dichloro- (6ci,7ci,8ci); 2,3-dichloropropanal; 2,3-dichloropropionaldehyde;a,b-dichloropropionaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -227590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     348.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-151440.0
-    phase     gas;
 }

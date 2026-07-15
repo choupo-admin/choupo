@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH_ring; count 9; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-heptyl-4-phenyl-benzene" "4-heptylbiphenyl" "4-n-heptylbiphenyl" "1-heptyl-4-phenylbenzene" "p-heptylbiphenyl" "4-heptyl-1-phenylbenzene" "4-heptyl-1,1'-biphenyl" "biphenyl,4-heptyl- (6ci);4-heptylbiphenyl;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   26100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     677.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=324290.0
-    phase     gas;
 }

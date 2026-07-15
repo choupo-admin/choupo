@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethylethanamide" "dimethylacetamide" "acetdimethylamide" "acetamide, n,n-dimethyl-" "dmac" "dimethyl acetamide" "dimethylacetone amide" "dimethylamide acetate" "acetic acid, dimethylamide" "acetyldimethylamine" "n.n-dimethylacetamide" "n,n-dimethyl acetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -170940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     354.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-35340.0
-    phase     gas;
 }

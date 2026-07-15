@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methyl-3-methylidene-bicyclo[2.1.0]pentane" "endo-2-methylene-5-methylbicyclo(2.1.0)pentane" "5-methyl-3-methylidenebicyclo[2.1.0]pentane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   27850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     159.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=187030.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 5-bromanylpentanoate" "methyl 5-bromopentanoate" "5-bromovaleric acid methyl ester" "pentanoic acid, 5-bromo-, methyl ester" "methyl omega-bromopentanoate" "methy 5-bromovalerate" "methyl .omega.-bromopentanoate" "ravvjkcszxaiqp-uhfffaoysa-" "5-bromo-pentanoic acid methyl ester" "valeric acid, 5-bromo-, methyl ester" "q077" "valeric acid, 5-bromo-, methyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -458120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-296410.0
-    phase     gas;
 }

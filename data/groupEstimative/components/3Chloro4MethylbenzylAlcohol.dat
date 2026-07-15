@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-chloranyl-4-methyl-phenyl)methanol" "(3-chloro-4-methylphenyl)methanol" "benzenemethanol, 3-chloro-4-methyl-" "(3-chloro-4-methylphenyl)methan-1-ol" "3-chloro-4-methylbenzyl pound inverted question markalcohol" "benzenemethanol,3-chloro-4-methyl-" "(3-chloro-4-methylphenyl)methanol;3-chloro-4-methylbenzyl alcohol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -162830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     433.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-39120.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 4; } { group OdCH_al; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2e,4e)-6-oxidanylidenehexa-2,4-dienoic acid" "6-oxo-2,4-hexadienoic acid (e,e)-" "6-oxo-trans,trans-2,4-hexadienoic acid" "2,4-hexadienoic acid, 6-oxo-, (e,e)-" "(2e,4e)-6-oxohexa-2,4-dienoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -368580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     448.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-283350.0
-    phase     gas;
 }

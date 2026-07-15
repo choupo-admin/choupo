@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 12; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benz[e]acephenanthrylene" "benzo(b)fluoranthene" "3,4-benzfluoranthene" "3,4-benzofluoranthene" "2,3-benzfluoranthene" "2,3-benzofluoranthene" "b(b)f" "2,3-benzofluoranthrene" "benzo[e]acephenanthrylene" "benzo(e)fluoranthene" "benzo[e]fluoranthene" "benz(e)acephenanthrylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   464810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     372.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=621880.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 6; } { group C_ring; count 1; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(5s,8r,9r,10s,13s,14s,17s)-13-methyl-17-oxidanyl-2,4,5,6,7,8,9,10,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthren-3-one" "estran-3-one, 17-hydroxy-, (5alpha,17beta)-" "5-dihydronandrolone" "5-dihydro-19-nortestosterone" "(5s,8r,9r,10s,13s,14s,17s)-17-hydroxy-13-methyl-2,4,5,6,7,8,9,10,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthren-3-one" "(5s,8r,9s,10s,13s,14s,17s)-17-hydroxy-13-methyl-2,4,5,6,7,8,9,10,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthren-3-one;1434-85-1;5-dihydronandrolone;5-dihydro-19-nortestosterone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -490160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     510.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4850.0
-    phase     gas;
 }

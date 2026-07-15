@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3-bis(bromanyl)propane" "trimethylene bromide" "trimethylene dibromide" "propane, 1,3-dibromo-" "1,3-dibrompropan" ".alpha.,.gamma.-dibromopropane" "alpha,gamma-dibromopropane" "trimethylenebromide" "1,3-dibromo propane" "1,3-dibromo-propane" ".omega.,.omega.'-dibromopropane" ".omega.,.omega.-dibromopropane;trimethylene dibromide;propane, 1,3-dibromo-;1/c3h6br2/c4-2-1-3-5/h1-3h;1,3-dibromopropane/109-64-8;1,3-dibromopropane / trimethylene dibromide;trimethylene bromide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -52590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     374.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3020.0
-    phase     gas;
 }

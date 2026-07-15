@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n4,n4-diethyl-2-methyl-benzene-1,4-diamine" "n1,n1-diethyl-3-methyl-para-phenylenediamine" "n-4,n-4-diethyl-2-methyl-1,4-phenylenediamine" "(4-amino-3-methylphenyl)diethylamine" "cd 2 color developer" "4-(n,n-diethyl)-2-methyl-p-phenylenediamine monohydrochloride" "4-diethylamino-o-toluidine" "2051-79-8 (mono-hydrochloride)" "24828-38-4 (unspecified hydrochloride)" "n1,n1-diethyl-3-methylbenzene-1,4-diamine" "n4,n4-diethyl-2-methyl-1,4-benzenediamine" "1-n,1-n-diethyl-3-methylbenzene-1,4-diamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   44540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     533.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=312120.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methoxybutylcyclohexane" "cyclohexane, (4-methoxybutyl)-" "1-methoxy-4-cyclohexylbutane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -348270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     565.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-38810.0
-    phase     gas;
 }

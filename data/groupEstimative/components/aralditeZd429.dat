@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group NH; count 1; } { group N; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[3-(dimethylamino)propylamino]propanenitrile" "3-{[3-(dimethylamino)propyl]amino}propanenitrile" "n,n-dimethyl-n'-cyanoethyl-1,3-diaminopropane" "n-(2-cyanoethyl)-3-(dimethylamino)propylamine" "3-((3-(dimethylamino)propyl)amino)propanenitrile" "3-((3-(dimethylamino)propyl)amino)propiononitrile" "propanenitrile, 3-((3-(dimethylamino)propyl)amino)-" "propanenitrile, 3-[[3-(dimethylamino)propyl]amino]-" "3-[[3-(dimethylamino)propyl]amino]-propanenitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   77430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     530.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=349830.0
-    phase     gas;
 }

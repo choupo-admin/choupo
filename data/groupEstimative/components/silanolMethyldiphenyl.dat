@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl-oxidanyl-diphenyl-silane" "diphenylmethylsilanol" "methyldiphenylsilanol" "hydroxymethyldiphenylsilane" "methyl(diphenyl)silanol" "silanol, diphenylmethyl-" "silanol, 1-methyl-1,1-diphenyl-" "agn-pc-0cvd9n" "hydroxy-methyl-diphenylsilane" "hydroxy-methyl-di(phenyl)silane" "silanol,1-methyl-1,1-diphenyl-" "silanol,methyldiphenyl- (6ci,7ci,8ci,9ci); diphenyl(hydroxy)methylsilane;diphenylmethylhydroxysilane; diphenylmethylsilanol; methyldiphenylhydroxysilane;methyldiphenylsilanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -102440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     626.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=41820.0
-    phase     gas;
 }

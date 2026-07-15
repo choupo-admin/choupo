@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetramethyl silicate" "tetramethyl orthosilicate" "methyl silicate" "methyl orthosilicate" "tmos" "silane, tetramethoxy-" "silicic acid, tetramethyl ester" "silicon methylate" "silicic acid (h4sio4), tetramethyl ester" "m-silicate 51" "methyl silicate ((meo)4si)" "methyl silicate 28" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -766390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-541960.0
-    phase     gas;
 }

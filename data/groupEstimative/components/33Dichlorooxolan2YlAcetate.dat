@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group Cl; count 2; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3,3-bis(chloranyl)oxolan-2-yl] ethanoate" "2-acetoxy-3,3-dichlorotetrahydrofuran" "3,3-dichlorotetrahydrofuran-2-yl acetate" "2-furanol,3,3-dichlorotetrahydro-, 2-acetate" "(3,3-dichlorooxolan-2-yl) acetate" "2-furanol,3,3-dichlorotetrahydro-, acetate (9ci);2-acetoxy-3,3-dichlorotetrahydrofuran;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -592550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     433.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-397360.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentan-3-one" "diethyl ketone" "propione" "dimethylacetone" "metacetone" "methacetone" "ethyl ketone" "diethylcetone" "diethylketone" "ethyl propionyl" "pentanone-3" "diethylcetone [french]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -259110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     377.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-137700.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group Cl; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranylethanamide" "2-chloroacetamide" "acetamide, 2-chloro-" "2-chloroethanamide" "chloracetamide" "microcide" "mergal af" "chloracetamid" ".alpha.-chloroacetamide" "2-chloracetamide" "usaf do-29" "2-chloro-acetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -179140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     345.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108440.0
-    phase     gas;
 }

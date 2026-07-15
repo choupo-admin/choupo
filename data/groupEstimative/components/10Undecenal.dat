@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group dCH2; count 1; } { group dCH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "undec-10-enal" "undecylenic aldehyde" "hendecenal" "undecylenaldehyde" "10-undecylenealdehyde" "10-hendecenal" "c-11 aldehyde, undecylenic" "aldehyde c-11, undecylenic" "10-undecenyl aldehyde" "10-undecylenic aldehyde" "u220" "brd-k33235400-001-01-2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -230520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     598.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=30060.0
-    phase     gas;
 }

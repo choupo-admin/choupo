@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-bromanylpentoxybenzene" "5-phenoxypentyl bromide" "benzene,[(5-bromopentyl)oxy]-" "5-bromopentoxybenzene" "5-bromoamyl phenyl ether" "5-bromopentyl phenyl ether" "benzene, ((5-bromopentyl)oxy)-" "ether,5-bromopentyl phenyl (6ci,7ci,8ci); 1-bromo-5-phenoxypentane; 5-bromopentylphenyl ether; 5-phenoxy-1-bromopentane; 5-phenoxypentyl bromide;[(5-bromopentyl)oxy]benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -139730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     540.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=63470.0
-    phase     gas;
 }

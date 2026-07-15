@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 14; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-tert-butyl-5-pentadecyl-phenol" "phenol, 2-(1,1-dimethylethyl)-5-pentadecyl-" "5-pentadecyl-2-tert-butyl-phenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -520330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1004.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110620.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group OH; count 1; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-methyl-6-oxidanyl-8-azabicyclo[3.2.1]octan-3-one" "6-hydroxy-8-methyl-8-azabicyclo[3.2.1]octan-3-one" "6-hydroxy tropinone" "(+/-)-exo-6-hydroxytropinone" "(+/-)-exo-6-hydroxy-3-tropanone" "7-hydroxy-8-methylazabicyclo(3.2.1)octan-3-one" "8-azabicyclo[3.2.1]octan-3-one, 6-hydroxy-8-methyl-, exo-" "(+/-)-exo-6-hydroxy-8-methyl-8-azabicyclo[3.2.1]octan-3-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     252.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-30460.0
-    phase     gas;
 }

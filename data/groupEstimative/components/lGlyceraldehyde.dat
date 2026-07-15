@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group OH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2,3-bis(oxidanyl)propanal" "l-aldotriose" "l-glycerose" "(s)-2,3-dihydroxypropanal" "(2s)-2,3-dihydroxypropanal" "l-2,3-dihydroxypropanal" "l-2,3-dihydroxypropionaldehyde" "l-(-)-glyceraldehyde" "l(-)-glyceraldehyde, tech." "propanal,2,3-dihydroxy-, (2s)-" "i485" "glyceraldehyde,l- (8ci); propanal, 2,3-dihydroxy-, (s)-; (-)-glyceraldehyde;(s)-(-)-2,3-dihydroxypropanal; (s)-glyceraldehyde; l-(-)-glyceraldehyde;l-glyceraldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -500570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     383.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-401220.0
-    phase     gas;
 }

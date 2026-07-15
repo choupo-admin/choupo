@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[2,4-bis(fluoranyl)phenyl]prop-2-enoic acid" "2,4-difluorocinnamicacid" "agn-pc-0cra3f" "2,4-difluoro-cinnamic acid" "2-propenoic acid, 3-(2,4-difluorophenyl)-" "(2e)-3-(2,4-difluorophenyl)-2-propenoic acid;3-(2,4-difluorophenyl)-2-propenoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -640770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     497.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-535260.0
-    phase     gas;
 }

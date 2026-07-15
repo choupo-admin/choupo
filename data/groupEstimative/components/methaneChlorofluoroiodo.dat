@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group F; count 1; } { group Cl; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloranyl-fluoranyl-iodanyl-methane" "agn-pc-00g6od" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -204230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     306.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-193520.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group F; count 2; } { group Cl; count 1; } { group CdO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-1,1-bis(fluoranyl)pentane-2,4-dione" "1-chloro-1,1-difluoroacetylacetone" "1-chloro-1,1-difluoro-2,4-pentanedione" "2,4-pentanedione,1-chloro-1,1-difluoro-" "1-chloro-1,1-difluoro-2,4-pentanedione;1-chloro-1,1-difluoroacetylacetone;1-chloro-1,1-difluoropentane-2,4-dione;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -788400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-665330.0
-    phase     gas;
 }

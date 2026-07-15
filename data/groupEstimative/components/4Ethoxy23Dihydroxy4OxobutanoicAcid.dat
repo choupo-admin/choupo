@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 2; } { group OH; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-ethoxy-2,3-bis(oxidanyl)-4-oxidanylidene-butanoic acid" "butanedioic acid, 2,3-dihydroxy- (2r,3r)-, 1-ethyl ester" "butanedioic acid, 2,3-dihydroxy- (2r,3r)-, monoethyl ester" "ethyl tartrate, acid" "(2s,3s)-4-ethoxy-2,3-dihydroxy-4-oxobutanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1149740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-933160.0
-    phase     gas;
 }

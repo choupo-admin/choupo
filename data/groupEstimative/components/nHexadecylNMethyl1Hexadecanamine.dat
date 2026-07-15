@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 30; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-hexadecyl-n-methyl-hexadecan-1-amine" "amines, di-c14-18-alkylmethyl" "n-hexadecyl-n-methylhexadecan-1-amine" "methylamine, n,n-bis(n.-hexadecyl)-" "1-hexadecanamine, n-hexadecyl-n-methyl-" "dicetylmethylamine" "di(hexadecyl)methylamine" "(c14-c18) dialkylmethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -656920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1457.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=337760.0
-    phase     gas;
 }

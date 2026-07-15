@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-chloroethyloxy)butane" "butyl 2-chloroethyl ether" "2-chloroethyl n-butyl ether" "1-butoxy-2-chloroethane" "2-chloroethyl butyl ether" "butane, 1-(2-chloroethoxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -315130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     434.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-117290.0
-    phase     gas;
 }

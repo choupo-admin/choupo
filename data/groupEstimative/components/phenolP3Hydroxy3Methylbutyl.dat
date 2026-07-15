@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(3-methyl-3-oxidanyl-butyl)phenol" "benzenepropanol, 4-hydroxy-.alpha.,.alpha.-dimethyl-" "4-(3-hydroxy-3-methylbutyl)phenol" "phenol, p-(3-hydroxy-3-methyl-butyl)-" "2-butanol, 4-(p-hydroxyphenyl)-2-methyl-" "benzenepropanol, 4-hydroxy-alpha,alpha-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -372130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     516.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134450.0
-    phase     gas;
 }

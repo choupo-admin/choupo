@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group C; count 1; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1-dimethoxy-n,n-dimethyl-ethanamine" "n,n-dimethylacetamide dimethyl acetal" "1,1-dimethoxy-n,n-dimethylethylamine" "1,1-dimethoxy-n,n-dimethylethanamine" "(1,1-dimethoxyethyl)dimethylamine" "n,n-dimethylacetamide dimethylacetal" "n-(1,1-dimethoxyethyl)dimethylamine" "(1,1-dimethoxy-ethyl)-dimethyl-amine" "ethanamine, 1,1-dimethoxy-n,n-dimethyl-" "acetamide,n,n-dimethyl-, dimethyl acetal (7ci,8ci);ethylamine,1,1-dimethoxy-n,n-dimethyl- (8ci);(1,1-dimethoxyethyl)dimethylamine;1-(dimethylamino)-1,1-dimethoxyethane;dmf dimethyl acetyl;dimethylacetamide dimethyl acetal;n-(1,1-dimethoxyethyl)-n,n-dimethylamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -372830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96740.0
-    phase     gas;
 }

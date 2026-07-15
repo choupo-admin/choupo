@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-n-propylphenanthrene" "phenanthrene, 9-propyl-" "phenanthrene, 9-propyl- (8ci)(9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   201520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     481.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=398710.0
-    phase     gas;
 }

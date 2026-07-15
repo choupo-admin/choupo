@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 9; } { group CH2_ring; count 3; } { group N; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[3,5-bis[3-(dimethylamino)propyl]-1,3,5-triazinan-1-yl]-n,n-dimethyl-propan-1-amine" "desmorapid" "toyocat trc" "kaolizer 14" "polycat p 41" "r 141 (catalyst)" "niax c 41" "1,3,5-tris[3-(dimethylamino)propyl]hexahydro-1,3,5-triazine" "1,3,5-triazine-1,3,5(2h,4h,6h)-tripropanamine, n,n,n',n',n'',n''-hexamethyl-" "3,3',3''-(1,3,5-triazinane-1,3,5-triyl)tris(n,n-dimethylpropan-1-amine)" "n,n',n''-tris(dimethylaminopropyl)-s-hexahydrotriazine" "s-triazine, hexahydro-1,3,5-tris(dimethylaminopropyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   83470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     905.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=833820.0
-    phase     gas;
 }

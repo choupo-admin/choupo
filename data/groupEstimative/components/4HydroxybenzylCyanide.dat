@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-hydroxyphenyl)ethanenitrile" "4-hydroxyphenylacetonitrile" "p-hydroxybenzyl cyanide" "2-(4-hydroxyphenyl)acetonitrile" "(4-hydroxyphenyl)acetonitrile" "4-hydroxybenzylcyanide" "benzeneacetonitrile, 4-hydroxy-" "acetonitrile, (p-hydroxyphenyl)-" "p-hydroxyphenylacetonitrile" "4-hydroxybenzeneacetonitrile" "4-hydroxy benzyl cyanide" "phbc" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   15650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     393.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107450.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 3; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(chloromethyl)-3,3,3-tris(fluoranyl)prop-1-ene" "2-(chloromethyl)-3,3,3-trifluoroprop-1-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -623070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     392.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-531430.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyldec-5-ene" "(z)-10-chloro-5-decene" "5-decene, 1-chloro-, (5z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -148250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     572.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=101610.0
-    phase     gas;
 }

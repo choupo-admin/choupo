@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group O; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methanoyl-2,3-dimethoxy-benzoic acid" "6-formyl-2,3-dimethoxybenzoic acid" "5,6-dimethoxyphthalaldehydic acid" "o-veratric acid, 6-formyl-" "5,6-dimethoxy-2-formylbenzoic acid" "benzoic acid, 6-formyl-2,3-dimethoxy" "phthalaldehydic acid,6-dimethoxy-" "6-formyl- 2,3-dimethoxybenzoic acid" "benzoic acid, 6-formyl-2,3-dimethoxy-" "phthalaldehydic acid, 5,6-dimethoxy- (8ci)" "benzoic acid, 6-formyl-2,3-dimethoxy- (9ci)" "5,6-dimethoxyphthalaldehydic acid; 6-formyl-2,3-dimethoxybenzoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -585870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     577.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-393110.0
-    phase     gas;
 }

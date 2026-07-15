@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 14; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphto[1,2-k]fluoranthene" "naphtho(1,2-k)fluoranthene" "acenaphtho(1,2-b)phenanthrene" "acenaphtho[1,2-b]phenanthrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   561850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=752580.0
-    phase     gas;
 }

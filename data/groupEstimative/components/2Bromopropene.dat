@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylprop-1-ene" "isopropenyl bromide" "2-bromo-1-propene" "1-propene, 2-bromo-" "propene, 2-bromo-" "2-bromopropylene" "isopropylene bromide" "2-bromoprop-1-ene" "alpha-methylvinyl bromide" ".alpha.-methylvinyl bromide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   36720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     315.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=67990.0
-    phase     gas;
 }

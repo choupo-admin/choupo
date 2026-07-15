@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-3-oxidanyl-2h-furan-5-one" "alpha-methyl tetronic acid" "(r)-4-hydroxy-5-methylfuran-2(5h)-one" "2(5h)-furanone, 4-hydroxy-5-methyl-" "5-hydroxy-2-methylfuran-3-one" "5-hydroxy-2-methylfuran-3(2h)-one" "2(5h)-furanone, 4-hydroxy-5-methyl-, (r)-" "2(5h)-furanone, 4-hydroxy-5-methyl-, (r)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -496930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     319.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-374890.0
-    phase     gas;
 }

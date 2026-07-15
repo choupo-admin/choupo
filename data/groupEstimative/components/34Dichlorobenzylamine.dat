@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3,4-dichlorophenyl)methanamine" "benzenemethanamine, 3,4-dichloro-" "benzylamine, 3,4-dichloro-" "3,4-dichloro-benzylamine" "integrase inhibitor, r1{1}" "benzylamine, 3,4-dichloro- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   28090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=143800.0
-    phase     gas;
 }

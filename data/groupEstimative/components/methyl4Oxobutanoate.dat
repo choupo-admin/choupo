@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-oxidanylidenebutanoate" "methyl 4-oxobutyrate" "4-oxobutanoic acid methyl ester" "4-oxo-butyric acid methyl ester" "succinaldehydic acid, methyl ester" "(4s)-4-hydroxy-4-methoxybutanoic acid" "methyl 4-oxobutanoate/methyl 3-formylpropionate" "succinaldehydicacid, methyl ester (6ci,8ci);3-(methoxycarbonyl)propanal;3-(methoxycarbonyl)propionaldehyde;3-carbomethoxypropionaldehyde;3-formylpropionic acid methyl ester;4-oxobutanoic acid methyl ester;methoxycarbonylpropanal;methyl 3-formylpropanoate;methyl 3-formylpropionate;methyl 4-oxobutanoate;methyl b-formylpropionate;b-(methoxycarbonyl)propionaldehyde;b-carbomethoxypropionaldehyde;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -549390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     420.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-418670.0
-    phase     gas;
 }

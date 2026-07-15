@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 12; } { group CH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-methyl-n-(7-methyloctyl)octan-1-amine" "isononanamine, n-isononyl-" "diisononylamine(8ci)" "isononanamine,n-isononyl-" "1-isononanamine, n-isononyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -371940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     878.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=185190.0
-    phase     gas;
 }

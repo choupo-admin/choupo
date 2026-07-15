@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dicyclopropa(cd,gh)pentalene, octahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   66710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     -57.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=292460.0
-    phase     gas;
 }

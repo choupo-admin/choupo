@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-diethylhepta-2,6-dienal" "(2e,4s)-2,4-diethylhepta-2,6-dienal;(2e)-2,4-diethylhepta-2,6-dienal;2,4-diethylhepta-2,6-dienal;(2e,4r)-2,4-diethylhepta-2,6-dienal;(e)-2,4-diethylhepta-2,6-dienal;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -128370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     578.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=99290.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methoxy-2-oxidanyl-benzoic acid" "2-hydroxy-5-methoxybenzoic acid" "6-hydroxy-m-anisic acid" "5-methoxy-2-hydroxybenzoic acid" "benzoic acid, 2-hydroxy-5-methoxy-" "m-anisic acid, 6-hydroxy-" "2-hydroxy-5-methoxybenzadelhyde" "5-methoxysalicylate" "6-hydroxy-m-anisate" "acid5-methoxysalicylic" "5-methoxy-2-hydroxybenzoate" "5-o-methyl gentisic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -643190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-484270.0
-    phase     gas;
 }

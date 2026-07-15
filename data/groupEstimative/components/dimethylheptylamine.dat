@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethylheptan-1-amine" "n,n-dimethylheptylamine" "1-(dimethylamino)heptane" "1-heptanamine, n,n-dimethyl-" "heptyldimethylamine" "1-heptanamine,n,n-dimethyl-" "heptylamine,n,n-dimethyl- (6ci,7ci,8ci); dimethylheptylamine; heptyldimethylamine;n,n-dimethylheptylamine; n-heptyldimethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -161560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=135680.0
-    phase     gas;
 }

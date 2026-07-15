@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tridecyl aldehyde" "n-tridecylaldehyde" "tridecanaldehyde" "n-tridecanal, 90%" "aldehyde13-13;tridecanaldehyde;tridecyl aldehyde;n-tridecanal;n-tridecylaldehyde;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -397230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     681.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-40940.0
-    phase     gas;
 }

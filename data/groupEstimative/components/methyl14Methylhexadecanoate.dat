@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 13; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadecanoic acid, 14-methyl-, methyl ester" "methyl 14-methyl-8-hexadecenoate" "hexadecanoicacid, 14-methyl-, methyl ester" "we(1:0/16:1(8)(14me))" "palmiticacid, n-methyl-, methyl ester (4ci); 14-methylhexadecadecanoic acid methyl ester;methyl 14-methylhexadecanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -737410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     898.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-212130.0
-    phase     gas;
 }

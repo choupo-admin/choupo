@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexanoic acid, 4-methyl-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -551650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     548.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287910.0
-    phase     gas;
 }

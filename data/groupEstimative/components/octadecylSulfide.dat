@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 34; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-octadecylsulfanyloctadecane" "dioctadecyl sulfide" "distearyl sulfide" "octadecane, 1,1'-thiobis-" "stearyl sulfide" "dioctadecyl sulphide" "octadecane,1'-thiobis-" "octadecyl sulfide (8ci)" "octadecane,1,1'-thiobis-" "1-(octadecylsulfanyl)octadecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -744500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1619.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=285360.0
-    phase     gas;
 }

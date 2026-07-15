@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 10; } { group F; count 22; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-docosafluorodecane" "decane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-docosafluoro-" "decane, docosafluoro-" "docosafluorodecane" "perfluoro-n-decane" "BRN 1810507" "n-perfluorodecane" "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-docosakis(fluoranyl)decane" "perfluorooctylethane" "perfluorodecane 95%" "dsstox_cid_9059" "dsstox_rid_78664" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -4651650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     854.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4224100.0
-    phase     gas;
 }

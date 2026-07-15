@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pent-4-enoic acid" "4-pentenoic acid" "3-vinylpropionic acid" "delta 4-pentenoic acid" ".delta.4-pentenoic acid" "allylessigsaeure" "4-pentensaeure" "4-pentenic acid" "4-penten-1-oic acid" "delta(4)-pentenoic acid" "hvamzgadvcbiti-uhfffaoysa-" "c5:1n-1" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -371370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     399.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-264850.0
-    phase     gas;
 }

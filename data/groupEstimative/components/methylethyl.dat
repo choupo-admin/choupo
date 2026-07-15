@@ -30,9 +30,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propane isopropyl radical" "i-propyl" "iso-c3h7" "methyl-ethyl" "propan-2-yl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -46640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     269.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=14490.0
-    phase     gas;
 }

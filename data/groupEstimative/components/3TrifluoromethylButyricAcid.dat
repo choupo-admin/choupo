@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group F; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,4,4-tris(fluoranyl)-3-methyl-butanoic acid" "3-trifluoromethylbutyric acid" "4,4,4-trifluoro-3-methylbutanoic acid" "4,4,4-trifluoro-3-methyl-butanoic acid" "3-trifluoromethyl butyric acid" "3-(trifluoromethyl)butanoic acid 95%" "3-methyl-4,4,4-trifluorobutanoic acid" "butanoic acid,4,4,4-trifluoro-3-methyl-" "butyricacid, 4,4,4-trifluoro-3-methyl- (7ci,8ci);3-(trifluoromethyl)butyric acid;3-methyl-4,4,4-trifluorobutyric acid;3-trifluoromethylbutanoic acid;4,4,4-trifluoro-3-methylbutanoic acid;4,4,4-trifluoro-3-methylbutyric acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1099160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     450.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-936720.0
-    phase     gas;
 }

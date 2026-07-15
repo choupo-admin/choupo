@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pent-1-ene" "pentene" "propylethylene" "pentylene" "1-n-pentene" "penten" "alpha-amylene" "alpha-n-amylene" "1-pentylene" ".alpha.-n-amylene" "1-amylene" "pentene (petroleum)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -21100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     346.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=79060.0
-    phase     gas;
 }

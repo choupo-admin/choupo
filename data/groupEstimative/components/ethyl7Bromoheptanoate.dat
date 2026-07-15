@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 7-bromanylheptanoate" "7-bromoheptanoic acid ethyl ester" "oobfndgmagsnka-uhfffaoysa-" "heptanoic acid, 7-bromo-, ethyl ester" "7-bromoheptanoicacid ethyl ester;heptanoic acid, 7-bromo-, ethyl ester;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -520040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     608.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-271150.0
-    phase     gas;
 }

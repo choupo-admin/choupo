@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzenamine, 2-butyl-" "o-aminobutylbenzene" "o-butyl-aniline" "2-n-butylaniline" "aniline,o-butyl- (6ci,7ci,8ci); 2-butylaniline; 2-butylbenzenamine; o-aminobutylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   9120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=202550.0
-    phase     gas;
 }

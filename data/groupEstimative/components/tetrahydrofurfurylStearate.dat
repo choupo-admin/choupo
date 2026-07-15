@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 17; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxolan-2-ylmethyl octadecanoate" "octadecanoic acid, (tetrahydro-2-furanyl)methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -906850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1001.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-217160.0
-    phase     gas;
 }

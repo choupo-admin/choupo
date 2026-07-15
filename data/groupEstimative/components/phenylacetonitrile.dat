@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylethanenitrile" "benzyl cyanide" "benzeneacetonitrile" "2-phenylacetonitrile" "benzyl nitrile" "alpha-tolunitrile" "alpha-cyanotoluene" "(cyanomethyl)benzene" "phenyl acetyl nitrile" "acetonitrile, phenyl-" "benzylnitrile" "usaf kf-21" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   192960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     367.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=262070.0
-    phase     gas;
 }

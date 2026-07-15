@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradec-1-ene" "n-tetradec-1-ene" "1-tetradecylene" "alpha-tetradecene" "alkenes, c10-16 .alpha.-" "alkenes, c14-18 alpha-" "alkenes, c14-20 alpha-" "(c14-c18) alpha-olefin" "(c14-c20) alpha-olefin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -206860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     696.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=154840.0
-    phase     gas;
 }

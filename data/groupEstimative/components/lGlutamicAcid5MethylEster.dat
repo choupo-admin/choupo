@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group COOH; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-5-methoxy-5-oxidanylidene-pentanoic acid" "h-glu(ome)-oh" "(2s)-2-amino-5-methoxy-5-oxopentanoic acid" "l-glutamic acid, 5-methyl ester" "polymethylglutamate" "(2s)-2-amino-4-(methoxycarbonyl)butanoic acid" "5-methyl l-glutamate" "beta-methyl-l-glutamate" "(5)-methyl l-glutamate" "l-glutamic acid, 5-methyl ester, homopolymer" "poly-gamma-methyl glutamate" "l-glutamate-5-methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -806210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     536.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-590630.0
-    phase     gas;
 }

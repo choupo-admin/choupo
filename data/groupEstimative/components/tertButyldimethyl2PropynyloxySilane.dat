@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 1; } { group C; count 1; } { group tCH; count 1; } { group tC; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tert-butyl-dimethyl-prop-2-ynoxy-silane" "tert-butyl-dimethyl-prop-2-ynoxysilane" "tert-butyldimethyl(prop-2-ynyloxy)silane" "ghl.pd_mitscher_leg0.449" "upcmld00wv-88" "zydkyfixeysnpo-uhfffaoysa-" "silane,(1,1-dimethylethyl)dimethyl(2-propyn-1-yloxy)-" "tert-butyldimethyl(2-propynyloxy)silane;tert-butyldimethyl(prop-2-ynyloxy)silane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -189780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     574.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=41050.0
-    phase     gas;
 }

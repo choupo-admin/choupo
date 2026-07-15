@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1h-inden-1-yl-dimethyl-phenyl-silane" "1h-inden-1-yl-dimethyl-phenylsilane" "silane, 1h-inden-1-yldimethylphenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   86340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     598.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=293400.0
-    phase     gas;
 }

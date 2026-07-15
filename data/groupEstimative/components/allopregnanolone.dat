@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 9; } { group CH_ring; count 6; } { group C_ring; count 2; } { group OH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[(3r,5s,8r,9s,10s,13s,14s,17s)-10,13-dimethyl-3-oxidanyl-2,3,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthren-17-yl]ethanone" "allotetrahydroprogesterone" "allopregnan-3alpha-ol-20-one" "3a,5a-thp" "3alpha-hydroxy-5alpha-pregnan-20-one" "3-alpha,5-alpha-pregnanolone" "3a-hydroxy-5a-pregnan-20-one" "5alpha-pregnan-3alpha-ol-20-one" "3-alpha,5-alpha-tetrahydroprogesterone" "3-alpha-hydroxy-5-alpha-pregnan-20-one" "3alpha-hydroxy-5alpha-dihydroprogesterone" "5-alpha-pregnan-20-one, 3-alpha-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -532060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     759.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=880.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-hydroxyethyl(methyl)amino]ethanol" "methyldiethanolamine" "2,2'-(methylimino)diethanol" "ethanol, 2,2'-(methylimino)bis-" "n-methyliminodiethanol" "2,2'-methyliminodiethanol" "n,n-bis(2-hydroxyethyl)methylamine" "usaf do-52" "methyl diethanolamine" "bis(2-hydroxyethyl)methylamine" "methylbis(2-hydroxyethyl)amine" "n-methyl-2,2'-iminodiethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -383460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     468.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-171640.0
-    phase     gas;
 }

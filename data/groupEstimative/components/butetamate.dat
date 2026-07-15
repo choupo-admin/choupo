@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(diethylamino)ethyl 2-phenylbutanoate" "butethamate" "beta-diethylaminoethyl-2-phenylbutyrate" "benzeneacetic acid, .alpha.-ethyl-, 2-(diethylamino)ethyl ester" "butetamato" "butetamatum" "butetamate (inn)" "butetamatum [inn-latin]" "agn-pc-04sxcl" "hh105" "2-diethylaminoethyl 2-phenylbutanoate" "(alpha-phenylbutansaeure-2-diethylaminoethylester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -392070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     730.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-5780.0
-    phase     gas;
 }

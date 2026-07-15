@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 2; } { group dCH_ring; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-cyclohepta-2,4,6-trien-1-ylcyclohepta-1,3,5-triene" "7,7'-bis(cycloheptatrienyl)" "bi-2,4,6-cycloheptatrien-1-yl" "7,7'-bicycloheptatrienyl" "7,7'-bi-1,3,5-cycloheptatriene" "7-(cyclohepta-2,4,6-trien-1-yl)cyclohepta-1,3,5-triene" "bi-2,4,6-cycloheptatrien-1-yl(6ci,7ci,8ci,9ci); 7,7'-bis(cycloheptatrienyl); 7,7'-ditropyl; bitropenyl;heptafulvalene, dihydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   110710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=271460.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,6-dimethylpyran-2-one" "4,6-dimethyl-2-pyrone" "mesitene lactone" "2h-pyran-2-one, 4,6-dimethyl-" "4,6-dimethylcoumalin" "4,6-dimethyl-alpha-pyrone" "2,4-dimethyl-alpha-pyrone" "4,6-dimethyl-mpyrone" "sorbic acid, 5-hydroxy-3-methyl-, .delta.-lactone" "4,6-dimethyl-2-pyranone" "4,6-dimethyl-pyran-2-one" "2,4-dimethyl-.alpha.-pyrone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -325490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     364.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-205290.0
-    phase     gas;
 }

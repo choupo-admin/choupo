@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-4-chloranyl-2-fluoranyl-benzene" "2-fluoro-4-chlorobromobenzene" "4-chloro-2-fluorobromobenzene" "2-bromo-5-chlorofluorobenzene" "2-bromo-5-chloro-1-fluorobenzene" "4-chloro-2-fluoro bromobenzene" "1-bromo-4-chloro-2-fluoro-benzene" "4-bromo-1-chloro-3-fluorobenzene;" "1996-29-8 4-chloro-2-fluorobromobenzene" "2-tert-butyl-4-(dicyanomethylene)-6-[2-(1,1,7,7-tetramethyljulolidin-9-yl)vinyl]-4h-pyran" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -139100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     387.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-99630.0
-    phase     gas;
 }

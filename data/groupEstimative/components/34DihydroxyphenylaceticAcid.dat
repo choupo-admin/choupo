@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[3,4-bis(oxidanyl)phenyl]ethanoic acid" "dopac" "homoprotocatechuic acid" "dopacetic acid" "benzeneacetic acid, 3,4-dihydroxy-" "homoprotocatechuate" "dihydroxyphenylacetic acid" "2-(3,4-dihydroxyphenyl)acetic acid" "4-carboxymethylcatechol" "acetic acid, (3,4-dihydroxyphenyl)-" "3,4-dihydroxybenzeneacetic acid" "3,4-dihydroxy-phenylacetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -676810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-524260.0
-    phase     gas;
 }

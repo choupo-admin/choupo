@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group CdO; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diethyl 2-ethanoylbutanedioate" "diethyl acetylsuccinate" "butanedioic acid, acetyl-, diethyl ester" "diethylacetylsuccinate" "ethyl acetylsuccinate" "diethyl acetosuccinate" "acetylsuccinic acid diethyl ester" "diethyl acetylsuccinates" "diethyl 2-acetylbutanedioate" "butanedioic acid, 2-acetyl-, 1,4-diethyl ester" "diethyl (2r)-2-acetylbutanedioate" "1,4-diethyl 2-acetylbutanedioate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1002150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     665.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-718780.0
-    phase     gas;
 }

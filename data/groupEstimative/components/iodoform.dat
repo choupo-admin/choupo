@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group I; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(iodanyl)methane" "triiodomethane" "methane, triiodo-" "carbon triiodide" "jodoform" "dezinfekt v" "trijodmethane" "iodoform (tn)" "iodoform [jan]" "iodoform (jp16/usp)" "k290" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   161360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     352.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=129460.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group CH2_ring; count 12; } { group CH_ring; count 6; } { group COOH; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2,3-bis[(2-carboxycyclohexyl)carbonyloxy]propoxycarbonyl]cyclohexane-1-carboxylic acid" "1,2-cyclohexanedicarboxylic acid, 1,2,3-propanetriyl ester" "1,2-cyclohexanedicarboxylic acid, 1,1',1''-(1,2,3-propanetriyl) ester" "glycerol tri(hexahydrophthalate)" "propane-1,2,3-triyl tris(cyclohexane-1,2-dicarboxylate)" "2-[2,3-bis[(2-carboxycyclohexanecarbonyl)oxy]propoxycarbonyl]cyclohexane-1-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2506600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1292.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1738600.0
-    phase     gas;
 }

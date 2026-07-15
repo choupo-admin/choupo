@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5,5-dimethyl-2-phenyl-morpholine" "morpholine, 5,5-dimethyl-2-phenyl-" "2-phenyl-5-dimethyltetrahydro-1,4-oxazine" "36981-93-8 (hydrochloride)" "2-phenyl-5,5-dimethyltetrahydro-1,4-oxazine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -99450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     456.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=175410.0
-    phase     gas;
 }

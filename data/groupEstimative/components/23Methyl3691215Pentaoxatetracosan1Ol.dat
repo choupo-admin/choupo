@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 17; } { group CH; count 1; } { group OH; count 1; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-[2-[2-(8-methylnonoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethanol" "3,6,9,12-tetraoxatetradecan-1-ol, 14-(isodecyloxy)-" "isodecyl alcohol tetra(oxyethylene) ethanol" "poly(oxy-1,2-ethanediyl), .alpha.-isodecyl-.omega.-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1274740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1032.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-546740.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,4-dihydronaphthalene-1-carboxylic acid" "3,4-dihydro-.alpha.-naphthoic acid" "3,4-dihydro-1-naphthoicacid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -262290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-122700.0
-    phase     gas;
 }

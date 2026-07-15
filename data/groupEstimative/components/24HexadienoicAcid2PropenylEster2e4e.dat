@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-enyl hexa-2,4-dienoate" "allyl 2,4-hexadienoate" "2,4-hexadienoic acid, 2-propen-1-yl ester, (2e,4e)-" "sorbic acid, allyl ester;2,4-hexadienoic acid, 2-propenyl ester, (e,e)-;allyl 2,4-hexadienoate;allyl hexa-2,4-dienoate;2-propenyl 2,4-hexadienoate, trans,trans-;prop-2-enyl (2e,4e)-hexa-2,4-dienoate;2-propenyl 2,4-hexadienoate, (e,e)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -186500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     540.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37190.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(1-methylcyclohexyl)ethanone" "1-acetyl-1-methylcyclohexane" "ethanone, 1-(1-methylcyclohexyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -272110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     572.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-85060.0
-    phase     gas;
 }

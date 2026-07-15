@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-iodanyl-3,5-bis(trifluoromethyl)benzene" "3,5-bis(trifluoromethyl)iodobenzene" "1,3-bis(trifluoromethyl)-5-iodobenzene" "3,5-bis(trifluoromethyl)-1-iodo benzene" "1-iodo-3,5-di(trifluoromethyl)benzene" "3-5-di(trifluoromethyl)iodobenzene" "mbt-i" "3,5-bis(trifluoromethyl) iodobenzene" "n607" "benzene, 1-iodo-3,5-bis(trifluoromethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1112150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     516.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-995430.0
-    phase     gas;
 }

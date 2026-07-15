@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-fluorophenyl)ethanenitrile" "2-fluorophenylacetonitrile" "o-fluorophenylacetonitrile" "benzeneacetonitrile, 2-fluoro-" "2-(2-fluorophenyl)acetonitrile" "o-fluorobenzyl cyanide" "acetonitrile, (o-fluorophenyl)-" "2-fluorobenzeneacetonitrile" "2-fluorophenyl acetonitrile" "(2-fluorophenyl)acetonitrile" "2-fluorobenzyl cyanide;acetonitrile, (o-fluorophenyl)-;o-fluorobenzyl cyanide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -14620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     392.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=57630.0
-    phase     gas;
 }

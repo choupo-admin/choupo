@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 9; } { group CH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexanoic acid, 2-ethyl-, 2-ethylhexyl ester" "2-ethylhexyl-2-ethylhexanoate" "2-ethylhexanoic acid, 2-ethylhexyl ester" "2-ethylhexylester kyseliny 2-ethylkapronove" "hexanoic acid,2-ethyl-, 2-ethylhexyl ester" "caproicacid, a-ethyl-, 2-ethylhexyl ester(4ci); 2-ethylhexyl 2-ethylhexanoate; 2-ethylhexyl 2-ethylhexanonate; dragoxateh; hatco 2976; ooe; octyl octanoate; petrofree lv; tegosoft ee" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -701410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     811.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-231410.0
-    phase     gas;
 }

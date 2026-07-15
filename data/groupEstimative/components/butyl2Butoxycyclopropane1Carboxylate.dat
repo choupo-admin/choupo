@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopropanecarboxylic acid, 2-butoxy-, butyl ester" "butyl-2-butoxycyklopropankarboxylat" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -688050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     553.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-312170.0
-    phase     gas;
 }

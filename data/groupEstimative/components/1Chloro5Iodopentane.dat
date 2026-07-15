@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group Cl; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-5-iodanyl-pentane" "pentamethylene chloroiodide" "pentane, 1-chloro-5-iodo-" "5-chloropentyl iodide" "5-iodopentyl chloride" "pentane,1-chloro-5-iodo-" "1-chloro-5-iodopentane;1-iodo-5-chloropentane; 5-chloro-1-iodopentane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -85400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     439.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37410.0
-    phase     gas;
 }

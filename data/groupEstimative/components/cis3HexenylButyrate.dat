@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hex-3-enyl butanoate" "(e)-3-hexenyl butyrate" "(e)-hex-3-enyl butyrate" "butanoic acid, (3e)-3-hexen-1-yl ester" "butanoic acid, (3z)-3-hexen-1-yl ester" "butanoic acid, 3-hexenyl ester" "butanoic acid,(3e)-3-hexen-1-yl ester" "butanoicacid, (3e)-3-hexenyl ester (9ci); butanoic acid, 3-hexenyl ester, (e)-;(e)-3-hexenyl butanoate; (e)-hex-3-en-1-yl butyrate; e-3-hexenyl butyrate;trans-3-hexenyl butanoate; trans-3-hexenyl butyrate" "butanoicacid, (3z)-3-hexenyl ester (9ci);butanoic acid, 3-hexenyl ester, (z)-;butyricacid, 3-hexenyl ester, (z)- (8ci);(z)-3-hexen-1-ol butanoate;(z)-3-hexen-1-ylbutyrate;(z)-3-hexenyl butanoate;(z)-3-hexenyl butyrate;cis-3-hexenylbutanoate;cis-3-hexenyl butyrate;cis-hex-3-en-1-yl butyrate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -449790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     590.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-196830.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2,4-dimethylphenyl)methyl ethanoate" "benzenemethanol, 2,4-dimethyl-, acetate" "2,4-dimethylbenzenemethanol acetate" "benzyl alcohol, 2,4-dimethyl-, acetate" "benzenemethanol, 2,4-dimethyl-, 1-acetate" "tufurol acetate" "(2,4-dimethylphenyl)methyl acetate" "benzenemethanol,4-dimethyl-, acetate" "benzyl alcohol,4-dimethyl-, acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -374060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     517.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-175480.0
-    phase     gas;
 }

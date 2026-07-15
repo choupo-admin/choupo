@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 4; } { group CdO_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,8-dimethylbicyclo(3.3.1)nona-2,6-dione" "bicyclo[3.3.1]nonane-2,6-dione,4,8-dimethyl-, (exo,exo)- (9ci)" "4,8-dimethylbicyclo[3.3.1]nona-2,6-dione" "agn-pc-03f3g4" "(1r,4s,5r,8r)-4,8-dimethylbicyclo[3.3.1]nonane-2,6-dione" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -459330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     221.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-133660.0
-    phase     gas;
 }

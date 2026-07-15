@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group OH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-pyridin-3-ylethanol" "3-pyridylmethylcarbinol" "1-(3-pyridyl)ethanol" "methyl-3-pyridylcarbinol" "1-(pyridin-3-yl)ethanol" "1-(pyridin-3-yl)ethan-1-ol" "alpha-methyl-3-pyridinemethanol" "alpha-methylpyridine-3-methanol" "3-pyridinemethanol, alpha-methyl-" "1-pyridin-3-yl-ethanol" "3-pyridinemethanol, a-methyl-" "(r)-3-(1-hydroxyethyl) pyridine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -76000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     376.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58260.0
-    phase     gas;
 }

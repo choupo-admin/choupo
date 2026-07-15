@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-bis(chloranyl)phenol" "phenol, 2,6-dichloro-" "2,6-dichlorfenol" "2,6-dichloro-phenol" "2,6-dichlorophenol (2,6-dcp)" "2,6-dcp, 2,6-dichlorophenol" "2,6 dichlorophenol" "dichlorophenol(2,6)" "2,6-dichloro-1-hydroxybenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -150900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     370.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76060.0
-    phase     gas;
 }

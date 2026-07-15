@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 7; } { group CH2_ring; count 5; } { group CH_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4-dimethyl-5-octyl-1,2,3,4,4a,5,6,7,8,8a-decahydronaphthalene" "naphthalene, decahydro-1,4-dimethyl-5-octyl-" "naphthalene,4-dimethyl-5-octyl-" "1,4-dimethyl-5-octyldecahydronaphthalene" "2,5-dimethyl-7-n-octylbicyclo[4.4.0]decane" "decahydro-1,4-dimethyl-5-octylnaphthalene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -396190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     707.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=167490.0
-    phase     gas;
 }

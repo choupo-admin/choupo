@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-(hydroxymethyl)-2h-furan-5-one" "(s)-(-)-5-(hydroxymethyl)-2(5h)-furanone" "(s)-(-)-5-hydroxymethyl-2(5h)-furanone" "(s)-5-(hydroxymethyl)furan-2(5h)-one" "n842" "2(5h)-furanone,5-(hydroxymethyl)-, (s)-;(5s)-hydroxymethyl-5h-furan-2-one;(s)-(-)-5-(hydroxymethyl)-2(5h)furanone;(s)-5-(hydroxymethyl)furan-2(5h)-one;(s)-5-hydroxy-2-penten-4-olide;l-ranunculin aglycon;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -485460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     325.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-365260.0
-    phase     gas;
 }

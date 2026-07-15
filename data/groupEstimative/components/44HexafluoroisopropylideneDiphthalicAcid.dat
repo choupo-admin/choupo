@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 3; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group F; count 6; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[2-(3,4-dicarboxyphenyl)-1,1,1,3,3,3-hexakis(fluoranyl)propan-2-yl]phthalic acid" "4,4'-(perfluoropropane-2,2-diyl)diphthalic acid" "4,4'-(1,1,1,3,3,3-hexafluoro-2,2-propanediyl)diphthalic acid" "4-[2-(3,4-dicarboxyphenyl)-1,1,1,3,3,3-hexafluoropropan-2-yl]phthalic acid" "1,2-benzenedicarboxylic acid, 4,4'-(2,2,2-trifluoro-1-(trifluoromethyl)ethylidene)bis-" "1,2-benzenedicarboxylic acid, 4,4'-[2,2,2-trifluoro-1-(trifluoromethyl)ethylidene]bis-" "4,4'-(2,2,2-trifluoro-1-(trifluoromethyl)ethylidene)bisphthalic acid" "4,4'-(hexafluoroisopropylidene)bisphthalic acid" "1,2-benzenedicarboxylicacid, 4,4'-[2,2,2-trifluoro-1-(trifluoromethyl)ethylidene]bis-" "phthalicacid, 4,4'-[2,2,2-trifluoro-1-(trifluoromethyl)ethylidene]di- (7ci);phthalicacid, 4,4'-[trifluoro-1-(trifluoromethyl)ethylidene]di- (8ci);2,2-bis(3,4-dicarboxyphenyl)hexafluoropropane;2,2-bis(3,4-dicarboxyphenyl)perfluoropropane;4,4'-hexafluoroisopropylidenebis(phthalic acid);" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2612300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     944.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2240580.0
-    phase     gas;
 }

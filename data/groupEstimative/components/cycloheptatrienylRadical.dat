@@ -30,9 +30,8 @@ groups
     joback ( { group dCH_ring; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohepta-1,3,5-triene" "1,3,5-cycloheptatrien-7-yl" "2,4,6-cycloheptatrien-1-yl" "cyclohepta-2,4,6-trien-1-yl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   82920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     329.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=132980.0
-    phase     gas;
 }

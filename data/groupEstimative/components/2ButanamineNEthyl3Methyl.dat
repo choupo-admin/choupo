@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-ethyl-3-methyl-butan-2-amine" "n-ethyl-3-methylbutan-2-amine" "ethyl(3-methylbutan-2-yl)amine" "n-ethyl-3-methyl-2-butanamine" "n-ethyl-1,2-dimethylpropylamine" "propylamine, n-ethyl-1,2-dimethyl-" "n-ethyl-1,2-dimethyl-propylamine" "propylamine, n-ethyl-1,2-dimethyl- (7ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -144900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     450.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=92570.0
-    phase     gas;
 }

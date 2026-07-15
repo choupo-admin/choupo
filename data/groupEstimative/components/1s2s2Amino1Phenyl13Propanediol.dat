@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1s,2s)-2-azanyl-1-phenyl-propane-1,3-diol" "(1s,2s)-2-amino-1-phenylpropane-1,3-diol" "l-(+)-threo-2-amino-1-phenyl-1,3-propanediol" "ambap28143-91-1" "(s,s)-2-amino-1-phenyl-1,3-propanediol" "l-threo-1-phenyl-2-amino-1,3-propanediol" "(2s,3s)-3-phenylpropane-2-amine-1,3-diol" "l-()-threo-2-amino-1-phenyl-1,3-propanediol" "l-threo-(+)-2-amino-1-phenyl-1,3-propanediol" "(s(r*,r*))-2-amino-1-phenylpropane-1,3-diol" "(1s,2s)-(+)-1-phenyl-2-amino-1,3-propanediol" "(1s, 2s)-(+)-2-amino-1-phenyl-1,3-propanediol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -273790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     534.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-74760.0
-    phase     gas;
 }

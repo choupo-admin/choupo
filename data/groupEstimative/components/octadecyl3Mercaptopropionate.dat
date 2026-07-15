@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 19; } { group COO; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadecyl 3-sulfanylpropanoate" "propanoic acid, 3-mercapto-, octadecyl ester" "stearyl 3-mercaptopropionate" "3-mercaptopropionic acid stearyl ester" "3-mercaptopropionic acid octadecyl ester" "propanoic acid,3-mercapto-, octadecyl ester" "propionicacid, 3-mercapto-, octadecyl ester (8ci);octadecyl 3-mercaptopropionate;octadecyl b-mercaptopropionate;stearyl3-mercaptopropionate;stearyl b-mercaptopropionate;b-mercaptopropionic acid stearyl ester;octadecyl 3-sulfanylpropanoate;propanoic acid, 3-mercapto-, octadecyl ester;octadecyl 3-sulfanylpropanoate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -755570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1087.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-155040.0
-    phase     gas;
 }

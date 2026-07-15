@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-methylphenoxy)ethylamine" "ethanamine, 2-(2-methylphenoxy)-" "ethanolamine cresylate" "2-o-tolyloxy-ethylamine" "2-(o-tolyloxy)ethanamine" "1-(2-aminoethoxy)-2-methylbenzene" "2-(2-methylphenoxy)ethylamine hydrochloride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -102460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     456.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=89130.0
-    phase     gas;
 }

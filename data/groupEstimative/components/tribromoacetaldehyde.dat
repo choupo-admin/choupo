@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group Br; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(bromanyl)ethanal" "bromal" "acetaldehyde, tribromo-" "2,2,2-tribromoacetaldehyde" "acetaldehyde, 2,2,2-tribromo-" "bromal (6ci)" "2,2,2-tribromoethanal" "2,2-tribromoacetaldehyde" "acetaldehyde,2,2,2-tribromo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -99950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     366.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-87760.0
-    phase     gas;
 }

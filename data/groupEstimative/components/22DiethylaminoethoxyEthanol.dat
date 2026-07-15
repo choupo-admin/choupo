@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group OH; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-(diethylamino)ethoxy]ethanol" "diethylaminoethoxyethanol" "2-(2-diethylaminoethoxy)-ethanol" "6-ethyl-3-oxa-6-azaoctanol" "diethylamine, ethoxylated" "n,n-diethylethoxyethanolamine" "2-(2-(diethylamino)ethoxy)ethanol" "2-(2-n,n-diethylaminoethoxy)ethanol" "2-(beta-(diethylamino)ethoxy)ethanol" "polyoxyethylene-n,n-diethylethanolamine" "2-[2-(diethylamino)ethoxy]ethan-1-ol" "ethanol, 2-(2-(diethylamino)ethoxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -425370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     545.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-114560.0
-    phase     gas;
 }

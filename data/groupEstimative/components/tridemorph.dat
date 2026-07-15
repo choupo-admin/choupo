@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 12; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-dimethyl-4-tridecyl-morpholine" "2,6-dimethyl-4-tridecylmorpholine" "calixin" "calixine" "tridemorphe" "tridemorpn" "kalinin" "kalixin" "f 220 (fungicide)" "tridemorph [iso]" "basf 220f" "morpholine, 2,6-dimethyl-4-tridecyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -459820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     768.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=162600.0
-    phase     gas;
 }

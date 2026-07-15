@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 10; } { group dCH2; count 1; } { group dCH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tridec-12-enoic acid" "ambap6006-06-0" "c13:1n-1" "(10-undecenyl)aceticacid;w-tridecenoic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -536490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     710.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-197490.0
-    phase     gas;
 }

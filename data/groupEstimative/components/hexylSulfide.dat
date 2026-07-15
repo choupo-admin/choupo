@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-hexylsulfanylhexane" "7-thiatridecane" "hexane, 1,1'-thiobis-" "dihexyl sulfide" "di-n-hexyl sulfide" "hexylthiohexane" "dihexyl sulphide" "n-hexyl sulfide" "hexane,1'-thiobis-" "hexyl sulfide (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -249140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     684.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83280.0
-    phase     gas;
 }

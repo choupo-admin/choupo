@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 2; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-bicyclo[2.2.1]hept-2-enylmethyl 2-chloranylethanoate" "sipomer cca" "5-[(chloroacetoxy)methyl]-2-norbornene" "5-((chloroacetoxy)methyl)-2-norbornene" "bicyclo(2.2.1)hept-5-en-2ylmethyl chloroacetate" "bicyclo(2.2.1)hept-5-en-2-ylmethyl chloroacetate" "acetic acid, chloro-, 5-norbornen-2-ylmethyl ester" "bicyclo(2.2.1)hept-5-en-2-ylmethyl monochloroacetate" "acetic acid, chloro-, bicyclo(2.2.1)hept-5-en-2-ylmethyl ester" "acetic acid, chloro-, bicyclo(2.2.1)hept-5-en-2ylmethyl ester" "acetic acid, 2-chloro-, bicyclo(2.2.1)hept-5-en-2-ylmethyl ester" "acetic acid, 2-chloro-, bicyclo[2.2.1]hept-5-en-2-ylmethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -405870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-157330.0
-    phase     gas;
 }

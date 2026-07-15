@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 3; } { group F; count 6; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-bromanyl-2,3,3,4,4,4-hexakis(fluoranyl)butanoate" "butyric acid, 2-bromo-2,3,3,4,4,4-hexafluoro-, methyl ester" "methyl 2-bromo-2,3,3,4,4,4-hexafluorobutanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1640390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     526.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1465170.0
-    phase     gas;
 }

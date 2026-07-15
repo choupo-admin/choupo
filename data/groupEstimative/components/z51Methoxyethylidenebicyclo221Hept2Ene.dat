@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-(1-methoxyethylidene)bicyclo[2.2.1]hept-2-ene" "(z)-5-(1-methoxyethylidenebicyclo[2.2.1]hept-2-ene" "agn-pc-03d0ni" "(5z)-5-(1-methoxyethylidene)bicyclo[2.2.1]hept-2-ene" "1-(bicyclo[2.2.1]hept-5-en-2-ylidene)ethyl methyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -118490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     326.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=104590.0
-    phase     gas;
 }

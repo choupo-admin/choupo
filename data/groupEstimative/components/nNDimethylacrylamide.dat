@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethylprop-2-enamide" "2-propenamide, n,n-dimethyl-" "acylamide, n,n-dimethyl" "n,n-dimethyl-2-propenamide" "acylamide,n-dimethyl" "acrylamide,n-dimethyl-" "2-propenamide,n-dimethyl-" "nn-dimethylacrylamide" "n,n-dimethyl-acrylamide" "dimethylamid kyseliny akrylove" "ylgyacdqvqqzsw-uhfffaoysa-" "r449" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -66150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     388.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=60920.0
-    phase     gas;
 }

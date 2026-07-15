@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group F; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,3-tris(fluoranyl)propanal" "3,3,3-trifluoropropionaldehyde" "trifluoropropionaldehyde" "propanal, 3,3,3-trifluoro-" "propionaldehyde, 3,3,3-trifluoro-" "3,3,3-trifluoropropaldehyde" "propanal,3,3,3-trifluoro-" "propanal, 3,3,3-trifluoro- (9ci)" "3,3,3-trifluoropropanal contains condensation products" "propionaldehyde,3,3,3-trifluoro- (6ci,8ci);3,3,3-trifluoropropionaldehyde;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -787910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     347.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-706730.0
-    phase     gas;
 }

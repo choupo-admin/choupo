@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group tC; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradeca-5,9-diyne" "5,9-tetradecadiyne;timtec-bb sbb008931;5,9-tetradecadiyne,99%;5,9-tetradecadiyne 99%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   212310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     644.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=472600.0
-    phase     gas;
 }

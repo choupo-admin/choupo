@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-methyl-4-phenyl-aniline" "n-methyl-4-phenylaniline" "4-(n-methylamino)biphenyl" "4-biphenylamine, n-methyl-" "n-methyl-[1,1'-biphenyl]-4-amine" "[1,1'-biphenyl]-4-amine,n-methyl-" "4-biphenylamine,n-methyl- (8ci); 4-biphenylamine, methyl- (7ci); n-methyl-4-aminobiphenyl;n-methyl-4-biphenylamine; p-phenyl-n-methylaniline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   203410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=363160.0
-    phase     gas;
 }

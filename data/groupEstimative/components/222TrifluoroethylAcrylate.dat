@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(fluoranyl)ethyl prop-2-enoate" "2,2,2-trifluoroethyl prop-2-enoate" "2-propenoic acid, 2,2,2-trifluoroethyl ester" "2,2-trifluoroethyl acrylate" "2,2,2-trifluoroethylacrylate" "vbhximaczbqhpx-uhfffaoysa-" "acrylic acid,2,2-trifluoroethyl ester" "2-propenoic acid, trifluoroethyl ester" "acrylic acid 2,2,2-trifluoroethyl ester" "2-propenoic acid,2,2-trifluoroethyl ester" "acrylic acid, 2,2,2-trifluoroethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -935460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-812900.0
-    phase     gas;
 }

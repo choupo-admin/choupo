@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[(dimethylamino)methyl]-2,6-dimethyl-phenol" "mesitol, alpha(sup 4)-(dimethylamino)-" "alpha(sup 4)-(dimethylamino)mesitol" "4-((dimethylamino)methyl)-2,6-xylenol" "2,6-dimethyl-4-dimethylaminomethylphenol" "phenol, 2,6-dimethyl-4-(dimethylaminomethyl)-" "phenol, 4-((dimethylamino)methyl)-2,6-dimethyl-" "4-((dimethylamino)methyl)-2,6-dimethylphenol" "phenol, 4-[(dimethylamino)methyl]-2,6-dimethyl-" "4-(dimethylaminomethyl)-2,6-dimethylphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -166560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     508.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91050.0
-    phase     gas;
 }

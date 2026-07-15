@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group dCH; count 2; } { group OH; count 1; } { group O; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-[2-(2-hydroxyethyloxy)ethyl]octadec-9-enamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -723750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1135.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-66770.0
-    phase     gas;
 }

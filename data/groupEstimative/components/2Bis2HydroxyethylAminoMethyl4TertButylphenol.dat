@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 2; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[[bis(2-hydroxyethyl)amino]methyl]-4-tert-butyl-phenol" "2-[[bis(2-hydroxyethyl)amino]methyl]-4-tert-butylphenol" "ethanol,2'-(5-tert-butyl-2-hydroxybenzyl-amino)bis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -550860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     733.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-136440.0
-    phase     gas;
 }

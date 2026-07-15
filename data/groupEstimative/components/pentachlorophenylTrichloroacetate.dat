@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dC_ring; count 6; } { group Cl; count 8; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2,3,4,5,6-pentakis(chloranyl)phenyl] 2,2,2-tris(chloranyl)ethanoate" "phenol, pentachloro-, trichloroacetate" "perchlorophenyl 2,2,2-trichloroacetate" "acetic acid, trichloro-, pentachlorophenyl ester" "trichloroacetic acid pentachlorophenyl ester" "tca-o-pcp" "(2,3,4,5,6-pentachlorophenyl) 2,2,2-trichloroacetate" "tca-o-pcp; trichloroacetic acid pentachlorophenyl ester" "aceticacid, trichloro-, pentachlorophenyl ester (7ci,8ci,9ci); phenol, pentachloro-,trichloroacetate (8ci); pentachlorophenyl trichloroacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -481220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     610.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-322230.0
-    phase     gas;
 }

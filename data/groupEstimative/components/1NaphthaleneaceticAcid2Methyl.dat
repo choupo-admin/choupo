@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-methylnaphthalen-1-yl)ethanoic acid" "2-methyl-1-naphthylacetic acid" "2-methyl-1-naphthaleneacetic acid" "(2-methyl-1-naphthyl)acetic acid" "1-naphthaleneaceticacid, 2-methyl-" "(2-methylnaphthalen-1-yl)acetic acid" "2-(2-methylnaphthalen-1-yl)acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     487.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-85530.0
-    phase     gas;
 }

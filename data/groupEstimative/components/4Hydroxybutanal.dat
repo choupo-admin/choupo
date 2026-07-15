@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group OH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-oxidanylbutanal" "butanal, 4-hydroxy-" "4-hydroxybutyraldehyde" "butyraldehyde,4-hydroxy- (6ci,7ci,8ci); 4-hydroxybutanal; 4-hydroxybutyraldehyde; g-hydroxybutyraldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -363700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-253540.0
-    phase     gas;
 }

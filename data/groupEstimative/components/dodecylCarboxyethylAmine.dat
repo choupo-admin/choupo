@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(dodecylamino)propanoic acid" ".beta.-alanine, n-dodecyl-" "n-dodecyl-beta-alanine" "dodecyl(2-carboxyethyl)amine" "3-(dodecylamino)propionic acid" "3-(n-dodecylamino)propionic acid" "n-lauryl-beta-aminopropionic acid" "n-lauryl-beta-alanine" "n-lauryl-.beta.-alanine" "beta-alanine, n-dodecyl-" "n-dodecyl-.beta.-alanine" "3-dodecylaminopropionic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -649730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     834.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-179100.0
-    phase     gas;
 }

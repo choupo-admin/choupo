@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group O; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-4-[2-(methylamino)ethoxy]-5-propan-2-yl-phenol" "deacetyldemethylthymoxamine" "carvacrol, 5-(2-(methylamino)ethoxy)-" "phenol, 2-methyl-4-(2-(methylamino)ethoxy)-5-isopropyl-" "(2-(4-hydroxy-2-isopropyl-5-methylphenoxy)ethyl)methylamine" "phenol, 2-methyl-4-(2-(methylamino)ethoxy)-5-(1-methylethyl)-" "phenol, 2-methyl-4-(2-(methylamino)ethoxy)-5-(1-methylethyl)-, 9-cis-" "2-methyl-4-[2-(methylamino)ethoxy]-5-(propan-2-yl)phenol" "2-methyl-4-[2-(methylamino)ethoxy]-5-propan-2-ylphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -359400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     612.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20940.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 2; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylpropyl 3-[3-(2-methylpropoxy)-3-oxidanylidene-propyl]sulfanylpropanoate" "propanoic acid, 3,3'-thiobis-, 1,1'-bis(2-methylpropyl) ester" "bis(2-methylpropyl) 3,3'-thiobispropionate" "propanoic acid, 3,3'-thiobis-, bis(2-methylpropyl) ester" "2-methylpropyl 3-[3-(2-methylpropoxy)-3-oxopropyl]sulfanylpropanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -935540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     846.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-525500.0
-    phase     gas;
 }

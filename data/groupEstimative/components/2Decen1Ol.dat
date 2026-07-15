@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dec-2-en-1-ol" "trans-2-decen-1-ol" "2-decenol" "cis-2- decenol" "2-decenol;dec-2-en-1-ol;" "2-decen-1-ol, (2e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -284740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     589.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23280.0
-    phase     gas;
 }

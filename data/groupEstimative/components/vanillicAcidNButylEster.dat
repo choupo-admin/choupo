@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butyl 3-methoxy-4-oxidanyl-benzoate" "butyl vanillate" "butyl 4-hydroxy-3-methoxybenzoate" "benzoic acid,4-hydroxy-3-methoxy-, butyl ester" "4-hydroxy-3-methoxybenzoic acid, butyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -692760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     599.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-417050.0
-    phase     gas;
 }

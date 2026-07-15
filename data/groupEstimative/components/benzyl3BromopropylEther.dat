@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanylpropoxymethylbenzene" "[(3-bromopropoxy)methyl]benzene" "((3-bromopropoxy)methyl)benzene" "benzyl3-bromopropylether" "1-((3-bromopropoxy)methyl)benzene" "1-[(3-bromopropoxy)methyl]benzene" "3-bromopropoxymethylbenzene" "3-(benzyloxy)propyl bromide" "(3-bromopropoxymethyl)benzene" "3-bromo-1-(phenylmethoxy)propane" "benzyl (3-bromoprop-1-yl) ether" "ether,benzyl 3-bromopropyl (6ci); (3-bromopropoxymethyl) benzene;1-benzyloxy-3-bromopropane; 3-(benzyloxy)-1-bromopropane; 3-benzyloxypropylbromide; 3-bromo-1-benzyloxypropane; 3-bromopropanol benzylic ether;3-bromopropyl benzyl ether; 3-bromopropyl phenylmethyl ether; benzyl3-bromopropyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -119090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     501.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55050.0
-    phase     gas;
 }

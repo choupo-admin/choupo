@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetrahydroisoquinoline" "1,2,3,4-tetrahydro-isoquinoline" "isoquinoline, 1,2,3,4-tetrahydro-" "1,2,3,4-tetrahydro isoquinoline" "tetrahydroisoquinolin" "thiq 6" "1,3,4-tetrahydroisoquinoline" "1,2,3,4-tetrahydroleucoline" "14099-81-1 (hydrochloride)" "1,2,3,4-tetrahydro-2-isoquinoline" "1,2,3,4-tetrahydro-2-azanaphthalene" "brd-k18436203-001-01-4" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   120760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     359.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=271750.0
-    phase     gas;
 }

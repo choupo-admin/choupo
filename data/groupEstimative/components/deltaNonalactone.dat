@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-butyloxan-2-one" "2h-pyran-2-one, 6-butyltetrahydro-" ".delta. nonalactone" "5-hydroxynonanoic acid, lactone" "5-nonalactone" "a-nonalactone" "5-nonanolide" "hydroxynonanoic acid delta-lactone" "delta-nonanolactone" "delta-pelargonolactone" "2h-pyran-2-one, 6-butyltetrahydro-, (r)-" "2h-pyran-2-one, 6-butyltetrahydro-, (s)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -479730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     487.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236820.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethanoylpiperidine-4-carboxylic acid" "1-acetyl-4-piperidinecarboxylic acid" "1-acetylisonipecotic acid" "1-acetyl-4-piperidine carboxylic acid" "1-acetylpiperidine-4-carboxylic acid," "acetylisonipecotic acid" "n-acetylisonipecotic acid" "4-carboxypiperidineacetamide" "n-acetyl-4-piperidinecarboxylic acid" "n-acetyl-4-piperidine carboxylic acid" "1-acetyl-piperidine-4-carboxylic acid" "4-piperidinecarboxylicacid, 1-acetyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -543290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     513.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-309020.0
-    phase     gas;
 }

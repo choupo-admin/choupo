@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tert-butyl ethanoate" "t-butyl acetate" "acetic acid, tert-butyl ester" "acetic acid, 1,1-dimethylethyl ester" "texaco lead appreciator" "acetic acid tert-butyl ester" "1,1-dimethyl acetate" "1,1-dimethylethyl acetate" "tert-butylacetat" "tert butyl acetate" "tert.-butyl acetate" "t-butylacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -493200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     402.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-307890.0
-    phase     gas;
 }

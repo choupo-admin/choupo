@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group O; count 3; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-triethoxysilylpropane-1-thiol" "(3-Thiopropyl)triethoxysilane" "(γ-Mercaptopropyl)triethoxysilane" "1-Propanethiol, 3-(triethoxysilyl)-" "3-(triethoxysilyl)-1-propanethiol" "3-(Triethoxysilyl)propyl mercaptan" "a 1891" "DB 580" "dynasylan 3201" "hd 113" "jh-s 1891" "kh 580" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -698890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     729.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-365470.0
-    phase     gas;
 }

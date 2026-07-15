@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylethanoic acid" "hydroxyacetic acid" "2-hydroxyacetic acid" "hydroxyethanoic acid" "acetic acid, hydroxy-" "glycollic acid" "glycolate" "glycocide" "alpha-hydroxyacetic acid" "glypure" "glypure 70" "glycollate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -587110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     337.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-514770.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group O; count 3; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-triethoxysilylethanethiol" "2-(triethoxysilyl)ethanethiol" "(2-mercaptoethyl)triethoxysilane" "2-(triethoxysilyl)ethyl mercaptan" "ethanethiol,2-(triethoxysilyl)-" ".beta.-mercaptoethyltriethoxysilane" "2-mercaptoethyltriethoxysilane" "(2-mercaptoethyl)triethoxysilane;2-(triethoxysilyl)-1-ethanethiol; 2-(triethoxysilyl)ethanethiol;2-(triethoxysilyl)ethyl mercaptan; a 1893; b-mercaptoethyltriethoxysilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -678250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     690.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-373890.0
-    phase     gas;
 }

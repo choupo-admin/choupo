@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 4; } { group dCH; count 5; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "buta-1,3-diene;(e)-but-2-enedioic acid;ethenylbenzene;methyl 2-methylprop-2-enoate" "2-butenedioic acid (2e)-, polymer with 1,3-butadiene, ethenylbenzene and methyl 2-methyl-2-propenoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -983770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1318.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-651090.0
-    phase     gas;
 }

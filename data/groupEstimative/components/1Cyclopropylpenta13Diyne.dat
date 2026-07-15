@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group tC; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "penta-1,3-diynylcyclopropane" "cyclopropane,1,3-pentadiyn-1-yl-" "cyclopropane,1,3-pentadiynyl- (9ci); 1-cyclopropyl-1,3-pentadiyne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   408950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     320.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=482830.0
-    phase     gas;
 }

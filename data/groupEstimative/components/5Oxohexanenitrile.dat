@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CdO; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-oxidanylidenehexanenitrile" "5-ketohexanenitrile" "hexanenitrile, 5-oxo-" "5-oxohexanonitrile" "5-oxo-hexanenitrile" "4-acetylbutyronitrile" "4-acetylbutyronitrile;5-ketohexanenitrile;5-oxohexanenitrile;5-oxo-hexanenitril;ketohexanenitrile;5-oxohexanonitrile;5-ketohexanenitrile 95+%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -114870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     422.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3900.0
-    phase     gas;
 }

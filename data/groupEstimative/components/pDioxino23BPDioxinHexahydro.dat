@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group CH_ring; count 2; } { group O_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4a,6,7,8a-hexahydro-[1,4]dioxino[2,3-b][1,4]dioxine" "[1,4]dioxino[2,3-b]-1,4-dioxin, hexahydro-" "(1,4)dioxino(2,3-b)-1,4-dioxin, hexahydro-" "naphthodioxane" "1,5,8-naphthodioxane" "p-dioxino[2, hexahydro-" "xieqddlbxuozod-izlxsqmjsa-" "xieqddlbxuozod-olqvqodusa-" "1,5,8-tetraoxaperhydronaphthalene" "[1,3-b]-1,4-dioxin, hexahydro-" "hexahydro(1,4)dioxino(2,3-b)-1,4-dioxin" "ethanedial,2:1,2-bis(1,2-ethanediyl acetal)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -574210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     83.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-271740.0
-    phase     gas;
 }

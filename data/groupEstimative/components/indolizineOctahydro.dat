@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 7; } { group CH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,5,6,7,8,8a-octahydroindolizine" "indolizidine" "octahydroindolizine" ".delta.-coniceine" "octahydro-indolizine" "indolizine, octahydro-, (r)-" "a-coniceine" "1-azabicyclo[4.3.0]nonane" "2,3,4,5,6,7,8,8a-octahydro-1h-indolizine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   12700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     385.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=232270.0
-    phase     gas;
 }

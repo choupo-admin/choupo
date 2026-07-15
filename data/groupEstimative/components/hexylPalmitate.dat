@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 19; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexyl hexadecanoate" "hexadecanoic acid, hexyl ester" "hexadecanoic acid hexyl ester" "we(6:0/16:0)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -814690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1064.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-176010.0
-    phase     gas;
 }

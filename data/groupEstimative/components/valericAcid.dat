@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentanoic acid" "n-valeric acid" "valerianic acid" "n-pentanoic acid" "1-butanecarboxylic acid" "propylacetic acid" "butanecarboxylic acid" "pentanoate" "pentoic acid" "n-pentanoate" "valeric acid, n-" "valerate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -496800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     403.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-352690.0
-    phase     gas;
 }

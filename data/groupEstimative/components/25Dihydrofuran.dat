@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "furan, 2,5-dihydro-" "3-oxolene" "1-oxa-3-cyclopentene" "furan,5-dihydro-" "2,5-dihydro-furan" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -119290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     215.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-29100.0
-    phase     gas;
 }

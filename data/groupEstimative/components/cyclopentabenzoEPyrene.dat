@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 12; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo(l)cyclopenta(cd)pyrene" "benzo[l]cyclopenta[cd]pyrene" "naphtho(1,2,3-mno)acephenanthrylene" "naphtho[1,2,3,4-mno]acephenanthrylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   557670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     332.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=729980.0
-    phase     gas;
 }

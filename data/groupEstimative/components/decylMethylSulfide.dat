@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methylsulfanyldecane" "n-decyl methyl sulfide" "decyl methyl sulphide" "1-(methylsulfanyl)decane" "decane, 1-(methylthio)-" "sulfide,decyl methyl (6ci,7ci,8ci); 1-(methylthio)decane; 2-thiadodecane; decyl methylsulfide; methyl decyl sulfide; n-decyl methyl sulfide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -228500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     645.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=74860.0
-    phase     gas;
 }

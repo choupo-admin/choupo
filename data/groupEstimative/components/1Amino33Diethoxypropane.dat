@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-diethoxypropan-1-amine" "3,3-diethoxypropylamine" "3-aminopropionaldehyde diethylacetal" "3-aminopropionaldehyde diethyl acetal" "propionaldehyde, 3-amino-, diethyl acetal" "pxxmshbzyaohbd-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -423740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     493.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-137930.0
-    phase     gas;
 }

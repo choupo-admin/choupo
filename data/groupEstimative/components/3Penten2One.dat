@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pent-3-en-2-one" "(3e)-3-penten-2-one" "3-penten-2-one, (z)-" "3-penten-2-one, (3e)-" "agn-pc-0cqxpz" "3-penten-2-one,(e)- (8ci); 3-penten-2-one, trans- (6ci); (3e)-pent-3-en-2-one;(e)-3-penten-2-one; trans-3-penten-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -141890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     370.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-57480.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group CH_ring; count 7; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "exo-4-hydroxy-exo-exo-tetracyclo(6.2.1.13,602,7)dodecane" "exo-4-hydroxy-exo-exo-tetracyclo[6.2.1.13,602,7]dodecane" "exo-hydroxy-endo-endo-tetracyclo(6.2.1.13,602,7)dodecane" "exo-hydroxy-endo-endo-tetracyclo[6.2.1.13,602,7]dodecane" "decahydro-1,4:5,8-dimethanonaphthalen-2-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -213060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     186.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=133210.0
-    phase     gas;
 }

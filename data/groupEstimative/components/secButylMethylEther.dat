@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxybutane" "butane, 2-methoxy-" "ether, sec-butyl methyl" "2-butyl methyl ether" "methyl sec-butyl ether" "methyl 1-methylpropyl ether" "s-butyl methyl ether" "agn-pc-0d67k4" "butane, 2-methoxy- (9ci)" "ether,sec-butyl methyl (6ci,7ci,8ci);butane, 2-methoxy- (9ci);2-butyl methyl ether;2-methoxybutane;methyl1-methylpropyl ether;methyl sec-butyl ether;sec-butyl methyl ether;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -284030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     352.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-116220.0
-    phase     gas;
 }

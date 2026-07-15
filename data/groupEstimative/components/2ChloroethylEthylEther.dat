@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-2-ethoxy-ethane" "1-chloro-2-ethoxyethane" "2-ethoxyethyl chloride" "2-chloroethoxyethane" "ether, 2-chloroethyl ethyl" "beta-chloroethyl ethyl ether" "ethyl beta-chloroethyl ether" "ethane, 1-chloro-2-ethoxy-" "2-chloro-1-ethoxyethane" "agn-pc-03v685" "ethane, 1-chloro-2-ethoxy- (9ci)" "ether,2-chloroethyl ethyl (6ci,7ci,8ci);(2-chloroethoxy)ethane;1-chloro-2-ethoxyethane;2-ethoxyethyl chloride;ethyl b-chloroethyl ether;b-chlorodiethyl ether;b-chloroethyl ethyl ether;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -273850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     356.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134130.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 18; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[18]-annulene" "(18)-annulene" "(1,3,5,7,9,11,13,15,17)-cyclooctadecanonaene" "1,3,5,7,9,11,13,15,17-cyclooctadecanonaene" "[18]annulene" "cyclooctadeca-1,3,5,7,9,11,13,15,17-nonaene" "(1e,3z,5e,7e,9z,11e,13e,15z,17e)-cyclooctadeca-1,3,5,7,9,11,13,15,17-nonaene" "(1z,3e,5e,7e,9z,11z,13e,15e,17e)-cyclooctadeca-1,3,5,7,9,11,13,15,17-nonaene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   105910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     771.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=257280.0
-    phase     gas;
 }

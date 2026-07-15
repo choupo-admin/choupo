@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,4-dimethyl-6-oxidanylidene-heptanoic acid" "agn-pc-00po6x" "6-keto-4,4-dimethyl-enanthic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -700690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     547.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-445090.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group C_ring; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 8; } { group OH_phenol; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-bis[3,4-bis(oxidanyl)phenyl]-2-benzofuran-1-one" "pyrocatecholphthalein" "phthalide, 3,3-bis(3,4-dihydroxyphenyl)-" "1(3h)-isobenzofuranone, 3,3-bis(3,4-dihydroxyphenyl)-" "phthalide,3-bis(3,4-dihydroxyphenyl)-" "3,3-bis(3,4-dihydroxyphenyl)-2-benzofuran-1-one" "1(3h)-isobenzofuranone,3-bis(3,4-dihydroxyphenyl)-" "3,3-bis(3,4-dihydroxyphenyl)isobenzofuran-1(3h)-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -684170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     706.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-404270.0
-    phase     gas;
 }

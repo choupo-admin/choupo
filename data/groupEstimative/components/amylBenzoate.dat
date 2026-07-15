@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentyl benzoate" "n-pentyl benzoate" "benzoic acid, pentyl ester" "n-amyl benzoate" "benzoic acid amyl ester" "amylbenzoate; pentyl benzoate; n-amyl benzoate; n-pentyl benzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -371760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     568.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-147800.0
-    phase     gas;
 }

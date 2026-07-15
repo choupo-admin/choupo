@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 3; } { group NH2; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "quinolin-5-amine" "5-quinolinamine" "quinoline, 5-amino-" "quinolin-5-ylamine" "5-quinolylamine" "5-amino-quinoline" "5-quinolinamine (9ci)" "5-amino-1-azanaphthalene" "5-quinolylamine;quinoline, 5-amino-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   253620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     349.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=377830.0
-    phase     gas;
 }

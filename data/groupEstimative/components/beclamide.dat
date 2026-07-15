@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-n-(phenylmethyl)propanamide" "beklamid" "chloracon" "chlorakon" "neuracen" "posedrine" "hibicon" "nidrane" "nydran" "nydrane" "seclar" "n-benzyl-3-chloropropionamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -88050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     539.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=94270.0
-    phase     gas;
 }

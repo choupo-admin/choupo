@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 4; } { group Br; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-bromanylnaphthalen-1-amine" "5-bromo-naphthalen-1-ylamine" "1-amino-5-bromonaphthalene" "5-bromo-1-naphthylamine" "1-naphthalenamine, 5-bromo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   215050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     420.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=313890.0
-    phase     gas;
 }

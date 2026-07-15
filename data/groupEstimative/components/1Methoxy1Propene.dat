@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methoxyprop-1-ene" "(z)-1-methoxyprop-1-ene" "1-propene, 1-methoxy-, (e)-" "1-propene, methoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -140890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     316.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-41980.0
-    phase     gas;
 }

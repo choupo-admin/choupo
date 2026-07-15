@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group CH; count 2; } { group OH; count 2; } { group O; count 2; } { group SH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[4-(2-oxidanyl-3-sulfanyl-propoxy)butoxy]-3-sulfanyl-propan-2-ol" "2-propanol, 1,1'-(1,4-butanediylbis(oxy))bis(3-mercapto-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -752230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     775.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-396420.0
-    phase     gas;
 }

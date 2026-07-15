@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-cyclohexylethanenitrile" "1-cyclohexyl acetonitrile" "1-cyclohexaneacetonitrile" "cyclohexylacetonitrile" "2-cyclohexyl-acetonitrile" "cyclohexyl-acetonitrile" "acetonitrile,phenyl- (6ci,7ci,8ci);(cyanomethyl)benzene;2-phenylacetonitrile;2-phenylethanenitrile;phenylacetonitrile;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   10750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     443.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=174110.0
-    phase     gas;
 }

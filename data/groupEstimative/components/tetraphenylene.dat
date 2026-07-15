@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 16; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "agn-pc-04xje2" "(4az,8az,12az,16az)-tetraphenylene" "tetrabenzocyclooctatetraene;o-tetraphenylene" "(4az,8az,12az,16az)-2,15-dideuteriotetraphenylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   473170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     532.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=667080.0
-    phase     gas;
 }

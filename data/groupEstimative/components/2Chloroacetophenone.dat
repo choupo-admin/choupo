@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-chlorophenyl)ethanone" "o-chloroacetophenone" "acetophenone, 2'-chloro-" "ethanone, 1-(2-chlorophenyl)-" "1-(2-chlorophenyl)ethan-1-one" "o-chloroacetophonone" "1-(2-chloro-phenyl)-ethanone" "1-acetyl-2-chlorobenzene" "o-chlorobenzoyl group" "2-acetylchlorobenzene" "2-chlorophenyl ethanone" "ortho-chlorobenzoyl group" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -111710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     415.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-21590.0
-    phase     gas;
 }

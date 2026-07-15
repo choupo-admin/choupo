@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group COOH; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(3-hydroxy-3-oxopropylsulfanyl)propanoic acid" "bis(2-carboxyethyl) sulfide" "propanoic acid, 3,3'-thiobis-" "tyox a" "thiodipropionic acid" "tdpa" "thiodihydracrylic acid" "4-thiaheptanedioic acid" "propionic acid, 3,3'-thiodi-" "thiahydracrylic acid" "sulfide, bis(2-carboxyethyl)" "diethyl sulfide 2,2'-dicarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -825840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     557.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-655060.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phenol, 3-butoxy-" "resorcinol monobutyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -322730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     476.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-113890.0
-    phase     gas;
 }

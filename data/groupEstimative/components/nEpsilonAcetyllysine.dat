@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-6-acetamido-2-azanyl-hexanoic acid" "nepsilon-acetyl-l-lysine" "n-epsilon-acetyl-l-lysine" "n6-acetyl-l-lysine" "n(6)-acetyl-l-lysine" "n(6)-acetyllysine" "n(zeta)-acetyl-l-lysine" "n(epsilon)-acetyl-l-lysine" "n6-acetyllysine" "(2s)-6-(acetylamino)-2-aminohexanoic acid" "epsilon-n-acetyl-l-lysine" "h-lys(ac)-oh.hcl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -589320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     630.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-302950.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-butyl-2,4-dimethyl-3,6-dihydro-2h-pyran" "2h-pyran, 6-butyl-3,6-dihydro-2,4-dimethyl-" "2-butyl-4,6-dimethyldihydropyran" "6-butyl-2,4-dimethyldihydropyrane" "6-butyl-3,6-dihydro-2,4-dimethyl-2h-pyran" "2h-pyran, 3,6-dihydro-6-butyl-2,4-dimethyl-" "agn-pc-00b3bj" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -322080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     416.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-7310.0
-    phase     gas;
 }

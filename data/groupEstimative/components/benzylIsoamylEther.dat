@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbutoxymethylbenzene" "benzyl isopentyl ether" "isoamyl benzyl ether" "ether, benzyl isopentyl" "benzene, [(3-methylbutoxy)methyl]-" "benzene, ((3-methylbutoxy)methyl)-" "benzyl-isoamyl ether" "benzyl 3-methylbutyl ether" "benzene,[(3-methylbutoxy)methyl]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -191980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     518.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55130.0
-    phase     gas;
 }

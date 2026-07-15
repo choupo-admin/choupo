@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranylethanol" "ethanol, 2-chloro-" "ethylene chlorohydrin" "glycol chlorohydrin" "2-chloroethyl alcohol" "chloroethanol" "2-monochloroethanol" "2-chloro-1-ethanol" "glycol monochlorohydrin" "ethylchlorohydrin" "2-hydroxyethyl chloride" "beta-chloroethyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -252580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     318.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-182790.0
-    phase     gas;
 }

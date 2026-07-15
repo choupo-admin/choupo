@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanylpropan-1-ol" "(s)-(+)-2-amino-1-propanol" "(2s)-2-aminopropan-1-ol" "(s)-2-aminopropan-1-ol" "d-alaninol" "l-alaniol (s)-(+)-2-amino-1-propanol" "s-(+)-2-amino-1-propanol" "h-alaninol" "2a1" "l-alaninol; h-ala-ol" "(2r)-2-amino-1-hydroxypropane" "1-propanol,2-amino-, (s)-;((s)-2-hydroxy-1-methylethyl)amine;(+)-2-aminopropanol;(+)-alaninol;(2s)-2-amino-1-propanol;(s)-2-amino-1-propanol;(s)-alaninol;2-(s)-amino-propan-1-ol;l-(+)-alaninol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -228970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     365.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-98430.0
-    phase     gas;
 }

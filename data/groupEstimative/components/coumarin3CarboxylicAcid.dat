@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 5; } { group dC_ring; count 3; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylidenechromene-3-carboxylic acid" "3-carboxycoumarin" "2-oxo-2h-chromene-3-carboxylic acid" "2-oxochromene-3-carboxylic acid" "2h-1-benzopyran-3-carboxylic acid, 2-oxo-" "g 1 (rodenticide)" "2-oxobenzopyran-3-carboxylic acid" "g 1 (the rodenticide) (van)" "g 1 (van)" "malonic acid, salicylidene-, delta-lactone" "g 1 (the rodenticide)" "malonic acid, .delta.-lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -546610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     425.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-417290.0
-    phase     gas;
 }

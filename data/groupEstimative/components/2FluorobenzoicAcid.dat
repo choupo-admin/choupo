@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-fluoranylbenzoic acid" "o-fluorobenzoic acid" "benzoic acid, 2-fluoro-" "benzoic acid, o-fluoro-" "o-fluorbenzoesaeure" "ofba" "o-fluorbenzoesaeure [german]" "2-fluoro-benzoic acid" "ortho-fluorobenzoic acid" "10.14272/nstreuwftaooks-uhfffaoysa-n" "doi:10.14272/nstreuwftaooks-uhfffaoysa-n" "benzoic acid, o-fluoro-;o-fluorobenzoic acid;o-fluorbenzoesaeure;benzoic acid, 2-fluoro-;o-fluorbenzoesaeure [german];" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -509130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-427880.0
-    phase     gas;
 }

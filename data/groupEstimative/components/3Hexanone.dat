@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexan-3-one" "ethyl propyl ketone" "3-oxohexane" "3-hexanone (natural)" "aethylpropylketon [german]" "aethylpropylketon" "ethyl n-propyl ketone" "3-oxohexane;ethyl propyl ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -279750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     416.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-129280.0
-    phase     gas;
 }

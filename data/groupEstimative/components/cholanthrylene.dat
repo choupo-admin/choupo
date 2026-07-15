@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 12; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo[j]aceanthrylene" "benz[j]aceanthrylene" "benz(j)aceanthrylene" "benzo(7,8)aceanthrylene" "naphth(2,1-d)acenaphthylene" "benz[j]aceanthrylene(8ci,9ci)" "benz[7,8]aceanthrylene;cholanthrylene;naphth[2,1-d]acenaphthylene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   464810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     372.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=621880.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 16; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group dCH_ring; count 2; } { group OH; count 2; } { group COOH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-hexyl-5-(8-oxidanyl-8-oxidanylidene-octyl)cyclohex-3-ene-1-carboxylic acid;2-(2-hydroxyethylamino)ethanol" "5-(7-carboxyheptyl)-2-hexylcyclohex-3-ene-1-carboxylic acid- 2,2'-iminodiethanol(1:1)" "2-cyclohexene-1-octanoic acid, 5-carboxy-4-hexyl-, compd. with 2,2'-iminobis(ethanol) (1:1)" "5(or 6)-carboxy-4-hexylcyclohex-2-ene-1-octanoic acid, compound with 2,2'-iminodiethanol (1:1)" "3-hexyl-4-carboxy-6-(8-octanoic) cyclohexene-1-2, with diethanolamine" "5-(7-carboxyheptyl)-2-hexylcyclohex-3-ene-1-carboxylic acid - 2,2'-iminodiethanol (1:1)" "5-carboxy-4-hexylcyclohex-2-ene-1-octanoic acid, compound with 2,2'-iminodiethanol (1:1)" "2-cyclohexene-1-octanoic acid, 5(or 6)-carboxy-4-hexyl-, compd. with 2,2'-iminobis(ethanol) (1:1)" "2-hexyl-5-(8-hydroxy-8-oxooctyl)cyclohex-3-ene-1-carboxylic acid; 2-(2-hydroxyethylamino)ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1551060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1333.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-778220.0
-    phase     gas;
 }

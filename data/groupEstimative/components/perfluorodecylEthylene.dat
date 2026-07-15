@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 10; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 21; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-henicosakis(fluoranyl)dodec-1-ene" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-henicosafluorododec-1-ene" "(n-perfluorodecyl)ethylene" "1h,1h,2h-perfluorododec-1-ene" "(heneicosafluorodecyl)ethylene" "1-dodecene, 3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-heneicosafluoro-" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-heneicosafluoro-1-dodecene" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-henicosafluorododecene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -4371390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     895.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3924610.0
-    phase     gas;
 }

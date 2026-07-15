@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 2; } { group dC_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methylidene-1,3,4,4a,5,7,8,8a-octahydroisothiochromene" "8-methylene-cis-3-thiabicyclo[4.4.0]decane" "8-methylene-trans-3-thiabicyclo(4.4.0)decane" "8-methylene-trans-3-thiabicyclo[4.4.0]decane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     468.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=199360.0
-    phase     gas;
 }

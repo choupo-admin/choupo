@@ -33,9 +33,8 @@ groups
     joback ( { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-4-ethynyl-benzene" "4-bromophenylacetylene" "1-bromo-4-ethynyl-benzene" "benzene, 1-bromo-4-ethynyl-" "(4-bromophenyl)acetylene" "4'-bromophenylacetylene" "4'-bromophenyl acetylene" "(4-bromphenyl)acetylene" "4-bromo-1-ethynylbenzene" "b180" "(4-bromophenyl)ethyne;(p-bromophenyl)acetylene;(p-bromophenyl)ethyne;1-(4-bromophenyl)acetylene;1-bromo-4-ethynylbenzene;4-bromo(ethynyl)benzene;4-bromo-1-ethynylbenzene;p-ethynylbromobenzene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   334840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     375.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=356650.0
-    phase     gas;
 }

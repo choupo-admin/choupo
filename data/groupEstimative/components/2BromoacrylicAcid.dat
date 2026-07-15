@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dC; count 1; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylprop-2-enoic acid" "bromoacrylic acid" ".alpha.-bromoacrylic acid" "2-bromo-acrylic acid" "alpha-bromo acrylic acid" "2-bromoprop-2-enoic acid" "2-propenoic acid, bromo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -313550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     368.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-275920.0
-    phase     gas;
 }

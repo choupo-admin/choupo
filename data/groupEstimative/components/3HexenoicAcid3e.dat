@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hex-3-enoic acid" "3-hexenoic acid, (3z)-" "(e)-2,5-dideuteriohex-3-enoic acid" "3-hexenoicacid, (e)- (8ci);(e)-3-hexenoic acid;3(e)-hexenoic acid;" "3-hexenoicacid, (z)- (8ci); (z)-3-hexenoic acid; cis-3-hexenoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -400220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     436.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-264050.0
-    phase     gas;
 }

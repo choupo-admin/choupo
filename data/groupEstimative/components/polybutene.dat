@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "but-1-ene;(e)-but-2-ene" "polybutenes" "butene, homopolymer" "polybutylene" "indopol" "butene polymer" "butene, polymers" "polyvis oo" "chevron 6" "oronite 6" "chevron 12" "chevron 16" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -77420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     564.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=79780.0
-    phase     gas;
 }

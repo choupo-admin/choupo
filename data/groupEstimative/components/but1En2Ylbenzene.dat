@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "styrene, .alpha.-ethyl-" "alpha-ethylstyrene" "2-phenyl-1-butene" "(1-ethylvinyl)benzene" "(1-methylenepropyl)benzene" "benzene,(1-methylenepropyl)-" "a-ethylstyrene;styrene, a-ethyl- (7ci,8ci);" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   102440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     430.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=225020.0
-    phase     gas;
 }

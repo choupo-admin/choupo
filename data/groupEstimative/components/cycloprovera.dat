@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH2_ring; count 17; } { group CH_ring; count 9; } { group C_ring; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group CdO; count 1; } { group CdO_ring; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(6s,8r,9s,10r,13s,14s,17r)-17-ethanoyl-6,10,13-trimethyl-3-oxidanylidene-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-17-yl] ethanoate;[(8r,9s,13s,14s,17s)-13-methyl-3-oxidanyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthren-17-yl] 3-cyclopentylpropanoate" "cyclofem" "estradiol cypionate mixed with medroxyprogesterone acetate" "medroxyprogesterone acetate mixed with estradiol cypionate" "estradiol cypionate mixture with medroxyprogesterone acetate" "pregn-4-ene-3,20-dione, 17-(acetyloxy)-6-methyl-, (6-alpha)-, mixt. with (17-beta)-3-hydroxyestra-1,3,5(10)-trien-17-yl cyclopentanepropanoate" "c26h36o3.c24h34o4" "[(6s,8r,9s,10r,13s,14s,17r)-17-acetyl-6,10,13-trimethyl-3-oxo-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-17-yl] acetate; [(8r,9s,13s,14s,17s)-3-hydroxy-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthren-17-yl] 3-cyclopentylpropanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1491510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1655.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-321810.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 2; } { group dC; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,5-dimethylhexa-2,4-dienedioic acid" "(2z,4z)-2,5-dimethylhexa-2,4-dienedioic acid" "2,4-hexadienedioic acid, 2,5-dimethyl-" "alpha,alpha`-dimethyl-trans, trans-muconic acid" "2,4-hexadienedioicacid, 2,5-dimethyl-, (e,e)- (8ci,9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -694130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     552.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-528000.0
-    phase     gas;
 }

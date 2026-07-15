@@ -33,9 +33,8 @@ groups
     joback ( { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-pyridylacetylene" "2-ethynyl pyridine" "pyridine, 2-ethynyl-" "(pyridin-2-yl)acetylene" "2-ethynyl-pyridine" "2- ethynylpyridine" "2-pyridinylethyne;2-pyridylacetylene;2-pyridylethyne;pyridin-2-ylacetylene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   373410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     304.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=420590.0
-    phase     gas;
 }

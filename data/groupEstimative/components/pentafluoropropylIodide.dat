@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 2; } { group F; count 5; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2-pentakis(fluoranyl)-3-iodanyl-propane" "2,2,3,3,3-pentafluoropropyl iodide" "1,1,1,2,2-pentafluoro-3-iodopropane" "1h,1h-pentafluoropropyl iodide" "propane, 1,1,1,2,2-pentafluoro-3-iodo-" "2,3,3,3-pentafluoropropyl iodide" "propane,1,1,2,2-pentafluoro-3-iodo-" "2,2,3,3,3-pentafluoroprop-1-yl iodide" "propane,1,1,1,2,2-pentafluoro-3-iodo-" "1-iodo-2,2,3,3,3-pentafluoropropane" "1,1,1,2,2-pentafluoro-3-iodopropane;2,2,3,3,3-pentafluoropropyl iodide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1026430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     409.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-935870.0
-    phase     gas;
 }

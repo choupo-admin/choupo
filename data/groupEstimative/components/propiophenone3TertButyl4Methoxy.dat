@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3-tert-butyl-4-methoxy-phenyl)propan-1-one" "propiophenone, 3-tert-butyl-4-methoxy-," "1-(3-tert-butyl-4-methoxyphenyl)propan-1-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -372250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     581.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-70930.0
-    phase     gas;
 }

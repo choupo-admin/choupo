@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group CH; count 2; } { group COOH; count 3; } { group NH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanylpentanedioic acid;(2s)-2,6-bis(azanyl)hexanoic acid" "lysine glutamate" "(s)-2,6-diaminohexanoic acid compound with (s)-2-aminopentanedioic acid (1:1)" "poly(glu-lys)" "poly-gl" "pgal" "l-lysine l-glutamate salt" "l-glutamic acid; l-lysine" "poly(glutamic acid-lysine)" "l-glutamic acid- l-lysine(1:1)" "copolymer l-glutamic acid-l-lysine" "l-glutamic acid, polymer with l-lysine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1341990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     987.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-900280.0
-    phase     gas;
 }

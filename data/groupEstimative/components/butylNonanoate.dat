@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nonanoic acid, butyl ester" "butyl pelargonate" "butyl nonan-1-oate" "n-butyl nonanoate" "nonanoic acid butyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -628930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     713.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-251790.0
-    phase     gas;
 }

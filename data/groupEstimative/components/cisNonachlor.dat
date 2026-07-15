@@ -34,9 +34,8 @@ groups
     joback ( { group CH_ring; count 5; } { group C_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 9; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trans-nonachlor" "4,7-methano-1h-indene, 1,2,3,4,5,6,7,8,8-nonachloro-2,3,3a,4,7,7a-hexahydro-" "4,7-methano-1h-indene, 1,2,3,4,5,6,7,8,8-nonachloro-2,3,3a,4,7,7a-hexahydro-, (1.alpha.,2.alpha.,3.alpha.,3a.alpha.,4.beta.,7.beta.,7a.alpha.)-" "c-nonachlor" "t-nonachlor" "4,7-methanoindan, 1,2,3,4,5,6,7,8,8-nonachloro-3a,4,7,7a-tetrahydro-" "4,7-methano-1h-indene, 1,2,3,4,5,6,7,8,8-nonachlor-2,3,3a,4,7,7a-hexahydro-, (1-alpha,2-beta,3-alpha,3a-alpha,4-beta,7-beta,7a-alpha)-" "4,7-methano-1h-indene, 1,2,3,4,5,6,7,8,8-nonachloro-2,3,3a,4,7,7a-hexahydro-, (1alpha,2alpha,3alpha)-" "1,2,3,4,5,6,7,8,8-nonachloro-3a,4,7,7a-tetrahydro-4,7-methanoindan" "4,7-methano-1h-indene, 1,2,3,4,5,6,7,8,8-nonachloro-2,3,3a,4,7,7a-hexahydro-, (1.alpha.,2.beta.,3.alpha.,3a.alpha.,4.beta.,7.beta.,7a.alpha.)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -200290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     542.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=51780.0
-    phase     gas;
 }

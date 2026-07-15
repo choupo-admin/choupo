@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-azanyl-3-phenyl-propanoate" "ethyl (2s)-2-amino-3-phenylpropanoate" "ethyl phenylalaninate" "phenylalanine, ethylester" "ethyl 3-phenyl-dl-alaninate" "ethyl 2-amino-3-phenylpropanoate" "alanine, phenyl-, ethyl ester, l-" "2-amino-3-phenylpropionic acid, ethyl ester" "brd-a06475750-003-01-1" "alanine,phenyl-, ethyl ester, dl- (8ci); (?a'a a'a currency)-phenylalanine ethyl ester; dl-phenylalanine ethyl ester; ethyl2-amino-3-phenylpropanoate; o-ethyl-dl-phenylalanine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -322610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     571.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-92210.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl(phenylmethoxy)silane" "benzyloxytrimethylsilane" "silane, trimethyl(phenylmethoxy)-" "agn-pc-00a6ob" "benzene,[[(trimethylsilyl)oxy]methyl]-" "silane,(benzyloxy)trimethyl- (6ci,7ci,8ci);silane, trimethyl(phenylmethoxy)- (9ci);(benzyloxy)trimethylsilane;benzyl alcohol trimethylsilyl ether;benzyltrimethylsilyl ether;phenyl(trimethylsiloxy)methane;trimethyl(benzyloxy)silane;trimethyl(phenylmethoxy)silane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-64030.0
-    phase     gas;
 }

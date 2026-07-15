@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group dCH; count 3; } { group dC; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6,10-dodecatrien-1-ol, 3,7,11-trimethyl-, (2e,6z)-" "2,6,10-dodecatrien-1-ol, 3,7,11-trimethyl-, (2z,6z)-" "agn-pc-04y22v" "2,6,10-dodecatrien-1-ol,3,7,11-trimethyl-(farnesol) (7ci);2,6,10-dodecatrien-1-ol, 3,7,11-trimethyl-,(e,e)- (8ci);(2e,6e)-farnesol;(e)-b-farnesol;2,6,10-dodecatrien-1-ol,3,7,11-trimethyl-, (2e,6e)-;2,6-di-trans-farnesol;2-trans,6-trans-farnesol;3,7,11-trimethyldodeca-2-trans,6-trans,10-trien-1-ol;inhibitor a2;all-e-farnesol;all-trans-farnesol;trans,trans-farnesol;trans-farnesol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -182870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     758.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=153610.0
-    phase     gas;
 }

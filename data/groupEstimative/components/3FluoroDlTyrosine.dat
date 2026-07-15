@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group OH_phenol; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-3-(3-fluoranyl-4-oxidanyl-phenyl)propanoic acid" "m-fluoro-dl-tyrosine" "3-fluorotyrosine" "3-fluorotyrosin" "m-ftyr" "dl-m-fluorotyrosine" "dl-3-fluorotyrosine" "fluorthyrin" "pardinon" "tyrosine, 3-fluoro-, dl-" "2-amino-3-(3-fluoro-4-hydroxyphenyl)propanoic acid" "tyrosine, 3-fluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -699210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     547.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-501650.0
-    phase     gas;
 }

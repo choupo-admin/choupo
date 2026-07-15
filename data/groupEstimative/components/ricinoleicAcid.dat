@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group CH; count 1; } { group dCH; count 2; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e,12s)-12-oxidanyloctadec-9-enoic acid" "ricinoleic acid, calcium salt" "12s-home(9e)" "12s-hydroxy-9e-octadecenoic acid" "9-octadecenoic acid, 12-hydroxy-, calcium salt, (9z,12r)-" "9-octadecenoic acid, 12-hydroxy-, calcium salt (1:?), (9z,12r)-" "(e,12s)-12-hydroxyoctadec-9-enoic acid" "9-octadecenoic acid, 12-hydroxy-, [s-(e)]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -805410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     945.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-302270.0
-    phase     gas;
 }

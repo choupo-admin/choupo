@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group CdO; count 1; } { group S; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-thiophen-2-ylsulfanylpropan-2-one" "1-(2-thienylthio)acetone" "1-(2-thienylsulfanyl)acetone" "(thien-2-ylthio)acetone" "1-(thiophen-2-ylsulfanyl)propan-2-one" "ethanone,2-(methylthio)-1-(2-thienyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -28350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     477.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46670.0
-    phase     gas;
 }

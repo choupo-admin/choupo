@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group C; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5-ditert-butyl-2-oxidanyl-benzoic acid" "3,5-di-tert-butylsalicylic acid" "3,5-di-tert-butyl-2-hydroxybenzoic acid" "3,5-di-tert-butylsalicylic acid hydrate" "benzoic acid, 3,5-bis(1,1-dimethylethyl)hydroxy-" "benzoic acid, 3,5-bis(1,1-dimethylethyl)-2-hydroxy-" "3,5-ditertbutyl salicylic acid" "3,5-tert-dibutyl salicylic acid" "96247-23-3 (potassium salt)" "3,5-ditert-butyl-2-hydroxybenzoic acid" "3,5-bis(tert-butyl)-2-hydroxybenzoic acid" "3,2-bis(1,1-dimethylethyl)-2-hydroxybenzoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -684420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     623.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-324280.0
-    phase     gas;
 }

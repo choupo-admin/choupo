@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group O; count 3; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n'-(3-trimethoxysilylpropyl)ethane-1,2-diamine" "n-[3-(trimethoxysilyl)propyl]ethylenediamine" "en-aptas" "3-(2-aminoethylamino)propyltrimethoxysilane" "aas-m" "[3-(2-aminoethylamino)propyl]trimethoxysilane" "n-(2-aminoethyl)-3-aminopropyltrimethoxysilane" "gf 91" "n-(3-trimethoxysilylpropyl)-ethylenediamine" "n-(3-(trimethoxysilyl)propyl)ethylenediamine" "[3-(2-aminoethyl)aminopropyl]trimethoxysilane" "n-(2-aminoethyl-3-aminopropyl)trimethoxysilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -629470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     720.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-247440.0
-    phase     gas;
 }

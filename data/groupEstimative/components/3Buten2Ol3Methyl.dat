@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbut-3-en-2-ol" "methyl isopropenyl carbinol" "3-methyl-3-buten-2-ol" "3-buten-2-ol, 3-methyl-, (r)-" "(?a'a a'a currency)-3-methyl-3-buten-2-ol;2-methyl-1-buten-3-ol; 3-methyl-3-buten-2-ol; 3-methylene-2-butanol;3-methylidenebutan-2-ol; methyl isopropenyl carbinol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -188400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     383.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-68750.0
-    phase     gas;
 }

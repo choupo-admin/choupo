@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-hydroxyethyl dodecanoate" "nopalcol 6-l" "peg-4 laurate" "peg-8 laurate" "peg-10 laurate" "peg-12 laurate" "peg-14 laurate" "peg-20 laurate" "peg-32 laurate" "peg-75 laurate" "peg-150 laurate" "2-hydroxyethyl laurate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -801800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     803.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-380190.0
-    phase     gas;
 }

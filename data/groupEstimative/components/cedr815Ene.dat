@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1h-3a,7-methanoazulene, octahydro-3,8,8-trimethyl-6-methylene-, (3r,3as,7s,8as)-" "1h-3a,7-methanoazulene, octahydro-3,8,8-trimethyl-6-methylene-, [3r-(3.alpha.,3a.beta.,7.beta.,8a.alpha.)]-" "(3r-(3alpha,3abeta,7beta,8aalpha))-octahydro-3,8,8-trimethyl-6-methylene-1h-3a,7-methanoazulene" "1h-3a,7-methanoazulene, octahydro-3,8,8-trimethyl-6-methylene-, (3r-(3alpha,3abeta,7beta,8aalpha))-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -72810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     537.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=260150.0
-    phase     gas;
 }

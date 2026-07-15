@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group F; count 3; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1-tris(fluoranyl)-2-iodanyl-ethane" "2-iodo-1,1,1-trifluoroethane" "2,2,2-trifluoroethyl iodide" "trifluoroethyl iodide" "1-iodo-2,2,2-trifluoroethane" "2,2,2-trifluoroiodoethane" "1,1,1-trifluoroiodoethane" "trifluoro iodoethane" "2,2,2-trifluoroethyliodide" "1,1,1-trifluoro-2-iodo-ethane" "ethane, 1,1,1-trifluoro-2-iodo-" "1,1,1-trifluoro-2-iodoethane;1-iodo-2,2,2-trifluoroethane;2,2,2-trifluoro-1-iodoethane;2,2,2-trifluoroethyl iodide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -604820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     345.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-557510.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopent-3-ene-1-carboxylic acid" "3-cyclopentenecarboxylic acid" "cyclopent-3-enecarboxylic acid" "3-cyclopentene-1-carboxylicacid" "3-cyclopentene-1-carhoxylic acid" "ghl.pd_mitscher_leg0.243" "cyclopent-3-ene carboxylic acid" "xvsydlitvybcbd-uhfffaoysa-" "4-carboxycyclopent-1-ene" "cyclopent-3-ene-1-carboxylic acid," "cyclopentene-3-carboxylic acid" "h304" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -399180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     355.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-277760.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-tert-butyl-9h-fluorene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   132280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=385610.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 1; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-but-2-enedioic acid;2-(2-hydroxyethyloxy)ethyl benzoate" "2-butenedioic acid (2e)-, polymer with 2,2'-oxybis(ethanol), benzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1413070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     954.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1076720.0
-    phase     gas;
 }

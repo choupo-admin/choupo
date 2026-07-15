@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tert-butyl but-2-enoate" "2-butenoic acid,1,1-dimethylethyl ester" "2-butenoic acid, 1,1-dimethylethyl ester, (z)-" "2-butenoic acid,1,1-dimethylethyl ester, (2e)-" "crotonicacid, tert-butyl ester (7ci,8ci); tert-butyl 2-butenoate; tert-butyl crotonate" "2-butenoicacid, 1,1-dimethylethyl ester, (e)-; (2e)-2-butenoic acid 1,1-dimethylethylester; (e)-1,1-dimethylethyl 2-butenoate; (e)-2-butenoic acid 1,1-dimethylethylester; tert-butyl (e)-crotonate; trans-tert-butyl crotonate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -417260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     473.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-210830.0
-    phase     gas;
 }

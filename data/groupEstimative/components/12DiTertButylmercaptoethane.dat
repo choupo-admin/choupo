@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 2; } { group C; count 2; } { group S; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-tert-butylsulfanylethylsulfanyl)-2-methyl-propane" "propane, 2,2'-[1,2-ethanediylbis(thio)]bis[2-methyl-" "ethane, 1,2-bis(tert-butylthio)-" "2-(2-tert-butylsulfanylethylsulfanyl)-2-methylpropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -183490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     590.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=105240.0
-    phase     gas;
 }

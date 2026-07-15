@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 9; } { group dC_ring; count 3; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-phenylbenzamide" "biphenyl-4-carboxamide" "[1,1'-biphenyl]-4-carboxamide" "4-biphenylcarboxamide(6ci,7ci,8ci);4-phenylbenzamide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   71150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     521.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=211300.0
-    phase     gas;
 }

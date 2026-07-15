@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 18; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[dimethyl(trimethylsilyl)silyl]-[[[[dimethyl(trimethylsilyl)silyl]-dimethyl-silyl]-dimethyl-silyl]-dimethyl-silyl]-dimethyl-silane" "[dimethyl(trimethylsilyl)silyl]-[[[[dimethyl(trimethylsilyl)silyl]-dimethylsilyl]-dimethylsilyl]-dimethylsilyl]-dimethylsilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1307810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1869.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-737400.0
-    phase     gas;
 }

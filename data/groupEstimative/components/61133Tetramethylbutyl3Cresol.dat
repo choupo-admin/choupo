@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methyl-2-(2,4,4-trimethylpentan-2-yl)phenol" "6-(1,1,3,3-tetramethylbutyl)-m-cresol" "phenol, 5-methyl-2-(1,1,3,3-tetramethylbutyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -322680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=29260.0
-    phase     gas;
 }

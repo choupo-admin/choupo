@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methylhept-1-ene" "1-heptene, 5-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -88300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=101880.0
-    phase     gas;
 }

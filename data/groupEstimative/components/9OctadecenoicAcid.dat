@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadec-9-enoic acid" "red oil" "odorless" "mangrove" "d9-octadecenoic acid" "okic acid" "agn-pc-00kg6f" "elaidic acid, reag." "oleic acid_gurudeebansatyavani" "c18:1" "d 100;d 100 (fatty acid);edenor atio5;edenor ftio5;emersol 205;emersol 211;emersol 213nf;emersol 214nf;emersol 233;emersol 6313nf;extra oleic 80r;extra oleic 90;extra oleic 99;extra olein 80;extra olein 90;extra olein 90r;extra olein a 1981;industrene 105;lunac o-ca;lunac o-ll;lunac o-p;lunac o-v;lunac oa;naa 35;neo-fat 92-04;oleine 7503;priolene 6906;priolene 6907;priolene 6928;priolene 6930;priolene 6933;vopcolene 27;wecoline oo;z-9-octadecenoic acid;cis-9-octadecenoic acid;cis-oleic acid;cis-d9-octadecenoic acid;d9-cis-octadecenoic acid;d9-cis-oleic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -647900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     903.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-163010.0
-    phase     gas;
 }

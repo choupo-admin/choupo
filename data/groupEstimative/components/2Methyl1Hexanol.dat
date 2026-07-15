@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylhexan-1-ol" "1-hexanol, 2-methyl-" "2-methylhexanol" "methylhexanol" "2-methyl-hexan-1-ol" "SB83990" "CS-0297350" "NS00042868" "en300-6506155" "Q27894765" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -345320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     470.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-131200.0
-    phase     gas;
 }

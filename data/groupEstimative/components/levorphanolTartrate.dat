@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 2; } { group OH_phenol; count 1; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "lemoran" "l-3-hydroxy-n-methylmorphinan tartrate" "levorphanol, tartrate" "levo-dromoran tartrate" "agn-pc-00iqs1" "dextrorphan-d-tartrate" "(.+-.)-tartaric acid; racemorphan" "morphinan-3-ol, tartrate (1:1) (salt)" "(+)-3-hydroxy-n-methylmorphinan-d-tartrate" "(+)-3-hydroxy-n-methylmorphinan-d -tartrate" "morphinan-3-ol, tartrate (1:1) (salt), (-)-" "morphinan-6-ol, tartrate (1:1) (salt), stereoisomer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1261190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1019.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-721560.0
-    phase     gas;
 }

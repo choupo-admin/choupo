@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-1,2,3,4,4a,5,6,7,8,8a-decahydronaphthalene" "2-methyldecahydronaphthalene" "decahydro-2-methylnaphthalene" "naphthalene, decahydro-2-methyl-" "naphthalene,decahydro-2-methyl-" "trans-decalin, 2-methyl-" "2-methyldecahydronaphthalene #" "3-methylbicyclo[4.4.0]decane" "Naphthalene, decahydro-2-methyl-, (2alpha,4aalpha,8abeta)-" "2-methyl-decahydronaphthalene" "AS-76698" "NS00096217" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -169750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     441.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107130.0
-    phase     gas;
 }

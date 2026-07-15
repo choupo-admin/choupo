@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 2; } { group COOH; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s)-3-azanylpropane-1,1,3-tricarboxylic acid" "gamma-carboxy-glutamic acid" "gamma-carboxyglutamic acid" "(3s)-3-aminopropane-1,1,3-tricarboxylic acid" "l-gla-oh" "h-l-gla-oh" "gamma-carboxy-l-glutamic acid" "gamma-carboxy-glutamic acid zwitterion" "(3s)-3-amino-1,1,3-propanetricarboxylic acid" "(s)-3-aminopropane-1,1,3-tricarboxylic acid" "1,1,3-propanetricarboxylicacid, 3-amino-, (3s)-" "1,1,3-propanetricarboxylicacid, 3-amino-, (r)-; d-g-carboxyglutamic acid; g-carboxy-d-glutamic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1194750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     581.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-970520.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 11; } { group CH; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 8; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 3; } { group OH; count 4; } { group O; count 2; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,15-dimethoxy-5,7,9,11-tetramethyl-16-[4-[5-methyl-2,4-bis(oxidanyl)-6-propan-2-yl-oxan-2-yl]-3-oxidanyl-pentan-2-yl]-8-oxidanyl-1-oxacyclohexadeca-3,5,11,13-tetraen-2-one" "bafilomycin a1, from streptomyces griseus" "(3z,5e,7r,8s,9s,11e,13e,15s,16r)-16-[(2s,3r,4s)-4-[(2s,4r,5s,6s)-2,4-dihydroxy-5-methyl-6-propan-2-yloxan-2-yl]-3-hydroxypentan-2-yl]-8-hydroxy-3,15-dimethoxy-5,7,9,11-tetramethyl-1-oxacyclohexadeca-3,5,11,13-tetraen-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1980560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1410.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-936120.0
-    phase     gas;
 }

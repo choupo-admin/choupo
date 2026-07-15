@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group dCH; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-3-methylhex-3-ene" "3-methyl-3-hexene" "3-hexene, 3-methyl-, (e)-" "3-methyl-2-hexene (c,t)" "chilte" "3-methyl-trans-3-hexene" "chilte (cnidoscolus (also known as jatropha) spp.)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -80380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     417.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=79730.0
-    phase     gas;
 }

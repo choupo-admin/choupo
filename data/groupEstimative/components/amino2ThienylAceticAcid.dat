@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-2-thiophen-2-yl-ethanoic acid" "dl-2-(2-thienyl)glycine" "amino-thiophen-2-yl-acetic acid" "2-amino-2-(2-thienyl)acetic acid" "dl-alpha-amino-2-thienylacetic acid" "dl-alpha-amino-2-thiopheneacetic acid" "dl-alpha-aminothiophene-2-acetic acid" "2-amino-2-(thiophen-2-yl)acetic acid" "amino(thiophen-2-yl)acetic acid" "(s)-2-thienylglycine" "d-2-(2-thienyl)-glycine" "(-)-2-thienylglycine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -258760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     446.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-145850.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH_ring; count 4; } { group OH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-(hydroxymethyl)-3,4,5-tris(oxidanyl)oxan-2-one" "d-gluconic acid, .delta.-lactone" "gluconic acid, .delta.-lactone, d-" "3,4,5-trihydroxy-6-(hydroxymethyl)tetrahydro-2h-pyran-2-on" "d-glucono-delta-lactone" ".delta.-gluconolactone" "d-talonic acid lactone" "an aldono-1,5-lactone" "galactonic acid, 8ci," "agn-pc-00yhty" "gluconic acid-1,5-lactone" "d -gluconic acid-d -lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1087750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-832490.0
-    phase     gas;
 }

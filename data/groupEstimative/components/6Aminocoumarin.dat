@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 5; } { group dC_ring; count 3; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-azanylchromen-2-one" "coumarin, 6-amino-" "6-aminochromen-2-one" "6-amino-chromen-2-one" "2h-1-benzopyran-2-one, 6-amino-" "6-amino-2h-chromen-2-one" "6-amino-1,2-benzopyrone" "6-abp" "63989-79-7 (hydrochloride)" "2h-1-benzopyran-2-one,6-amino-" "2h-1-benzopyran-2-one, 6-amino-; 6-amino-2h-chromen-2-one hydrochloride" "coumarin,6-amino- (6ci,7ci,8ci); 6-amino-1,2-benzopyrone; 6-amino-2h-chromen-2-one;6-aminocoumarin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -141910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     385.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-15350.0
-    phase     gas;
 }

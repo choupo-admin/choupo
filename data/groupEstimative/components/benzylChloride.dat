@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloromethylbenzene" "(chloromethyl)benzene" "benzylchloride" "benzene, (chloromethyl)-" "alpha-chlorotoluene" "benzylchlorid" "tolyl chloride" "benzene, chloromethyl-" "chlorophenylmethane" "chlorotoluene" "toluene, ar-chloro-" "chlorure de benzyle" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   32980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     355.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=108540.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group tCH; count 1; } { group tC; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pent-4-ynenitrile" "4-pentynenitrile" "1-cyano-3-butyne;4-cyano-1-butyne;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   310250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     326.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=347470.0
-    phase     gas;
 }

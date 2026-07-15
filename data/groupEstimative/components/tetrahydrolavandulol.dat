@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methyl-2-propan-2-yl-hexan-1-ol" "2-isopropyl-5-methylhexan-1-ol" "1-hexanol, 5-methyl-2-(1-methylethyl)-" "2-isopropyl-5-methyl-1-hexanol" "(r)-2-isopropyl-5-methylhexanol" "1-hexanol, 5-methyl-2-(1-methylethyl)-, (2r)-" "2-isopropyl-5-methylhexanol" "5-methyl-2-propan-2-ylhexan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -417800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     567.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-110820.0
-    phase     gas;
 }

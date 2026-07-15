@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,6-dimethyl-4-propan-2-yl-naphthalene" "cadalin" "naphthalene, 1,6-dimethyl-4-(1-methylethyl)-" "naphthalene, 4-isopropyl-1,6-dimethyl-" "4-isopropyl-1,6-dimethylnaphthalene" "1,6-dimethyl-4-propan-2-ylnaphthalene" "1,6-dimethyl-4-(1-methylethyl)naphthalene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   34980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     496.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=263150.0
-    phase     gas;
 }

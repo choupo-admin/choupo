@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohexyl 3-oxidanylidenebutanoate" "cyclohexyl 3-oxobutanoate" "cyclohexyl acetonacetate" "cyclohexylacetonacetate" "butanoic acid, 3-oxo-,cyclohexyl ester" "butanoic acid, 3-oxo-, cyclohexyl ester" "butanoic acid, 3-oxo-, cyclohexyl ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -625270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     593.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-381520.0
-    phase     gas;
 }

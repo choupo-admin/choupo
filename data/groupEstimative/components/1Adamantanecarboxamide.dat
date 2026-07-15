@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "adamantane-1-carboxamide" "adamantanecarboxamide" "tricyclo[3.3.1.1~3,7~]decane-1-carboxamide" "2-carbamoyladamantane" "ambap5511-18-2" "adamantane-1-carboxylic acid amide" "tricyclo(3.3.1.13,7)decane-1-carboxamide" "tricyclo(3.3.1.1(sup 3,7))decane-1-carboxamide" "tricyclo(3.3.1.1(sup 3,7))decane-1-carboxamide (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -142020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     439.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=136220.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 3; } { group dCH; count 3; } { group dC; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7-dimethylocta-2,6-dienyl 2-methylbut-2-enoate" "(e)-3,7-dimethyl-2,6-octadienyl 2-methylisocrotonate" "2-butenoic acid, 2(or 3)-methyl-, (2e)-3,7-dimethyl-2,6-octadien-1-yl ester" "2-butenoic acid, 2(or 3)-methyl-, (2e)-3,7-dimethyl-2,6-octadienyl ester" "2-butenoic acid, 2-methyl-, (2e)-3,7-dimethyl-2,6-octadien-1-yl ester, (2e)-" "2-butenoic acid, 2-methyl-, (2e)-3,7-dimethyl-2,6-octadienyl ester, (2e)-" "2-butenoicacid, 2-methyl-, (2e)-3,7-dimethyl-2,6-octadienyl ester, (2e)- (9ci); 2-butenoicacid, 2-methyl-, 3,7-dimethyl-2,6-octadienyl ester, (e,e)-; tiglic acid,geranyl ester (6ci); tiglic acid, trans-3,7-dimethyl-2,6-octadienyl ester(7ci); geranyl tiglate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -347920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     759.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-19940.0
-    phase     gas;
 }

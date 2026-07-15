@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(phenylmethylsulfanyl)methylbenzene" "dibenzyl sulfide" "dibenzyl sulphide" "benzyl thioether" "benzyl monosulfide" "dibenzyl monosulfide" "dibenzyl thioether" "benzene, 1,1'-[thiobis(methylene)]bis-" "sulfide, dibenzyl" "1,3-diphenyl-2-thiapropane" "1,1'-[thiobis(methylene)]dibenzene" "1,1'-(thiobis(methylene))bisbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   182640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     549.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=324940.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CdO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methylsulfanylbutan-2-one" "2-butanone, 1-(methylthio)-" "1-methylthio-2-butanone" "1-(methylthio)butan-2-one" "2-butanone,1-(methylthio)-" "methylthiomethyl ethyl ketone;" "1-(methylsulfanyl)-2-butanone" "1-(methylsulfanyl)butan-2-one" "k829" "methylthiomethyl ethyl ketone; 1-(methylthio)butan-2-one; 1-(methylthio)-2-butanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -217240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104580.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group dCH; count 6; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(5-but-2-enylnona-2,7-dien-5-yl)pyridine" "4-(1,1-dibut-2-enylpent-3-enyl)pyridine" "pyridine, 4-(1,1-di-2-buten-1-yl-3-penten-1-yl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   197380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     704.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=533640.0
-    phase     gas;
 }

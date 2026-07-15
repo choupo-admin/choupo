@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group COOH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-chloranyl-2-methyl-phenyl)sulfanylethanoic acid" "(4-chloro-o-tolylmercapto)acetic acid" "chlorotolylthioglycolic acid" "((4-chloro-o-tolyl)thio)acetic acid" "4-chloro-o-tolylthioacetic acid" "4-chloro-2-methylphenylthioglycolic acid" "acetic acid, ((4-chloro-o-tolyl)thio)-" "((4-chloro-2-methylphenyl)thio)acetic acid" "(4-chloro-2-methylbenzenemercapto)acetic acid" "acetic acid, ((4-chloro-2-methylphenyl)thio)-" "acetic acid, 2-((4-chloro-2-methylphenyl)thio)-" "acetic acid, ((4-chloro-o-tolyl)thio)-, (6ci,7ci,8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -339640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-204670.0
-    phase     gas;
 }

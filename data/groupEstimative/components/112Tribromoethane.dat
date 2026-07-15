@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2-tris(bromanyl)ethane" "ethane, 1,1,2-tribromo-" "1,1,2-tribromoethane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -10900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     377.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=6480.0
-    phase     gas;
 }

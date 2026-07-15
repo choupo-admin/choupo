@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group dCH; count 2; } { group O; count 3; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-4-oxidanylidene-4-(3-triethoxysilylpropylamino)but-2-enoic acid" "2-butenoic acid, 4-oxo-4-((3-(triethoxysilyl)propyl)amino)-, (2z)-" "2-butenoic acid, 4-oxo-4-[[3-(triethoxysilyl)propyl]amino]-, (2z)-" "4-oxo-4-((3-(triethoxysilyl)propyl)amino)-2-butenoic acid" "(e)-4-oxo-4-(3-triethoxysilylpropylamino)-2-butenoic acid" "(e)-4-oxo-4-(3-triethoxysilylpropylamino)but-2-enoic acid" "4-oxo-4-((3-(triethoxysilyl)propyl)amino)-2-butenoic acid (z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1112090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     936.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-664400.0
-    phase     gas;
 }

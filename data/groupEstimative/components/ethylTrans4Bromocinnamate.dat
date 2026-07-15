@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl (e)-3-(4-bromophenyl)prop-2-enoate" "(e)-ethyl 3-(4-bromophenyl)acrylate" "2-propenoic acid, 3-(4-bromophenyl)-, ethyl ester" "4-bromzimtsaeureethylester" "trans-4-bromocinnamic acid ethyl ester" "ethyl (2e)-3-(4-bromophenyl)-2-propenoate" "ethyl (2e)-3-(4-bromophenyl)prop-2-enoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -219040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     567.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-71310.0
-    phase     gas;
 }

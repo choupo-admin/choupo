@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-vinylaziridine" "aziridine, 1-ethenyl-" "n-vinylethyleneimine" "aziridine, 1-vinyl-" "1-vinyl aziridine" "1-vinylaziridine" "n-vinylethylenimine" "aziridine, 1-ethenyl- (9ci)" "aziridine,1-vinyl- (7ci,8ci); 1-vinylaziridine; n-vinylethylenimine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   166370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     255.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=261980.0
-    phase     gas;
 }

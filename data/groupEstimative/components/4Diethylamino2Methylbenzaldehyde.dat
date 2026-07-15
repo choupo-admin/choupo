@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(diethylamino)-2-methyl-benzaldehyde" "4-diethylamino-2-methylbenzaldehyde" "o-tolualdehyde, 4-(diethylamino)-" "benzaldehyde, 4-(diethylamino)-2-methyl-" "4-(diethylamino)-o-tolualdehyde" "p-(diethylamino)-2-tolualdehyde" "4-diethylamino-2-methyl-benzaldehyde" "2-methyl-4-(diethylamino)benzaldehyde" "r249" "n,n-diethyl-4-amino-2-methyl benzaldehyde" "o-tolualdehyde, 4-(diethylamino)- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   66560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     601.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=298050.0
-    phase     gas;
 }

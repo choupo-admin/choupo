@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranylpropylbenzene" "(3-chloropropyl)benzene" "3-phenylpropyl chloride" "benzene, (3-chloropropyl)-" ".gamma.-chloropropylbenzene" "3-chloropropylbenzene" "(3-chloro-1-propyl)benzene" "3-chloro-1-phenylpropane" "3-phenyl-1-chloropropane" ".gamma.-phenylpropyl chloride" "xzbxayccbftqhh-uhfffaoysa-" "i120" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -8300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     433.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=125380.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 34; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadecyl 3-(3-hexadecoxy-3-oxidanylidene-propyl)sulfanylpropanoate" "propanoic acid, 3,3'-thiobis-, dihexadecyl ester" "propanoic acid, 3,3'-thiobis-, 1,1'-dihexadecyl ester" "dicetyl thiodipropionate" "3,3'-thiobispropanoic acid, dihexadecyl ester" "dihexadecyl 3,3'-thiobispropionate" "hexadecyl 3-(3-hexadecoxy-3-oxopropyl)sulfanylpropanoate" "propanoic acid,3,3'-thiobis-, 1,1'-dihexadecyl ester" "propanoicacid, 3,3'-thiobis-, dihexadecyl ester (9ci); propionic acid, 3,3'-thiodi-,dihexadecyl ester (7ci,8ci); 1-hexadecanol, 3,3'-thiodipropionate (2:1) (8ci);1-hexadecanol diester with 3,3'-thiodipropionic acid; dicetyl thiodipropionate;dihexadecyl thiodipropionate; dipalmityl 3,3'-thiodipropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1420340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1800.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-318540.0
-    phase     gas;
 }

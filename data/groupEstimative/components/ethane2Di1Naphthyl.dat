@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 14; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-naphthalen-1-ylethyl)naphthalene" "1,2-di(1-naphthyl)ethane" "ethane, 1,2-di-1-naphthyl-" "1,2-bis(1-naphthyl)ethane" "naphthalene, 1,1'-(1,2-ethanediyl)bis-" "(2-naphthylethyl)naphthalene" "1,2-di(alpha-naphthyl)ethane" "1,2-di-.alpha.-naphthylethane" "1-[2-(1-naphthyl)ethyl]naphthalene" "naphthalene,1'-(1,2-ethanediyl)bis-" "naphthalene,1,1'-(1,2-ethanediyl)bis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   334850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     569.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=553220.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-hex-3-enyloxolan-2-one" "(e)-5-(3-hexenyl)dihydrofuran-2(3h)-one" "(z)-5-(3-hexenyl)dihydrofuran-2(3h)-one" "2(3h)-furanone, 5-(3z)-3-hexenyldihydro-" "2(3h)-furanone, 5-(3z)-3-hexen-1-yldihydro-" "5-[(z)-hex-3-enyl]oxolan-2-one;63095-33-0;2(3h)-furanone, 5-(3z)-3-hexenyldihydro-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -376990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     499.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-136080.0
-    phase     gas;
 }

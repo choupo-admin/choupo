@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-sulfanylpropane-1,2-diol" "monothioglycerol" "1-thioglycerol" "thioglycerin" "thioglycerine" "thiovanol" "thioglycerol" "alpha-thioglycerol" "glycerol-1-thiol" "1-mercaptoglycerol" "1-monothioglycerol" "alpha-thiolglycerol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -376510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     427.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-272310.0
-    phase     gas;
 }

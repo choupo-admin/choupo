@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-phenylpropan-1-ol" "(s)-2-phenyl-1-propanol" "(s)-beta-methylphenethyl alcohol" "(-)-2-phenylpropanol" "2-phenyl-propanol" "2(s)-phenyl-1-propanol" "(s)-2-phenylpropan-1-ol" "(-)-2-phenyl-1-propanol" "(-)-beta-methylbenzeneethanol" "s-(-)-2-phenyl-1-propanol" "(s)-" "a-methylphenethyl alcohol" "2-phenyl-1-propanol, (-)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -150070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     441.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1950.0
-    phase     gas;
 }

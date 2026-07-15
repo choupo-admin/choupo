@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-oxidanylidenebenzo[f]chromene-2-carboxylate" "ethyl 3-oxo-3h-benzo[f]chromene-2-carboxylate" "ethyl 5,6-benzocoumarin-3-carboxylate" "ethyl 3-oxobenzo[f]chromene-2-carboxylate" "5,6-benzocumarin-3-carbonic acid ethyl ether" "5,6-benzocoumarin-3-carboxylic acid ethyl ester" "3-carboxy-2h-naphtho(2,1-b)pyran-2-one, ethyl ester" "3-oxo-3h-naphtho(2,1-b)pyran-2-carboxylic acid ethyl ester" "3h-naphtho(2,1-b)pyran-2-carboxylic acid, 3-oxo-, ethyl ester" "3h-naphtho[2,1-b]pyran-2-carboxylic acid, 3-oxo-, ethyl ester" "3-oxo-3h-benzo[f]chromene-2-carboxylic acid ethyl ester" "3h-naphtho[2,1-b]pyran-2-carboxylicacid, 3-oxo-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -457860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     542.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236210.0
-    phase     gas;
 }

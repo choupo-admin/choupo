@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-pyrrolidine-2-carboxamide" "prolinamide" "h-pro-nh2" "(s)-prolinamide" "(s)-pyrrolidine-2-carboxamide" "l-proline amide" "l-(-)-prolinamide" "(2s)-2-carbamoylpyrrolidine" "2-pyrrolidinecarboxamide,(s)-" "(s)-pyrrolidine-2-carboxylic acid amide" "(s)-2-pyrrolidinecarboxamide" "(2s)pyrrolidine-2-carboxamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -127030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     372.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=53010.0
-    phase     gas;
 }

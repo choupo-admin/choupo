@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[dimethyl(trimethylsilyloxy)silyl]propyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, 3-(1,1,3,3,3-pentamethyl-1-disiloxanyl)propyl ester" "(3-methacryloyloxypropyl)pentamethyldisiloxane" "3-methacryloxypropyl pentamethyl disiloxane" "2-propenoic acid, 2-methyl-, 3-(pentamethyldisiloxanyl)propyl ester" "2-propenoic acid,2-methyl-, 3-(1,1,3,3,3-pentamethyl-1-disiloxanyl)propyl ester" "3-methacryloxypropylpentamethyldisiloxane;3-(pentamethyldisiloxanyl)propyl 2-methylprop-2-enoate;2-propenoic acid, 2-methyl-, 3-(1,1,3,3,3-pentamethyldisiloxanyl)propyl ester;2-propenoic acid, 2-methyl-, 3-(pentamethyldisiloxanyl)propyl ester;3-(pentamethyldisiloxanyl)propyl methacrylate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -848110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     930.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-495440.0
-    phase     gas;
 }

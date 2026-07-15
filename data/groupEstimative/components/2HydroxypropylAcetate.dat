@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylpropyl ethanoate" "propylene glycol 1-acetate" "1,2-propanediol, monoacetate" "propylene glycol monoacetate" "1,2-propanediol, 1-acetate" "1, 1-acetate" "agn-pc-00nkp9" "1,2-propanediol-1-acetate" "acetic acid 2-hydroxypropyl ester" "[(2r)-2-hydroxypropyl] acetate" "acetic acid, 2-hydroxypropyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -621320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     443.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-458410.0
-    phase     gas;
 }

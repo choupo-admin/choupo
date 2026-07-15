@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 11; } { group CH; count 1; } { group dCH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-hexadecenal, 14-methyl-, (8z)-" "8-hexadecenal,14-methyl-, (8e)-" "8-hexadecenal,14-methyl-, (8z)-" "14-methyl-z-8-hexa-decen-1-al" "(z)-14-methyl-8-hexadecen-1-al" "8-hexadecenal,14-methyl-, (e)-; (e)-14-methyl-8-hexadecenal; (e)-trogodermal" "8-hexadecenal,14-methyl-, (z)-; (z)-14-methyl-8-hexadecenal; 14-methyl-cis-8-hexadecenal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -367850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     820.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70520.0
-    phase     gas;
 }

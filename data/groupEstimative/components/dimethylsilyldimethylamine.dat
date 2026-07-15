@@ -35,9 +35,8 @@ groups
     joback ( { group CH3; count 4; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethylamino(dimethyl)silicon" "n,n,1,1-tetramethylsilanamine" "silanamine, n,n,1,1-tetramethyl-" "dimethylaminodimethylsilane" "n,n,1,1-tetramethylsilylamine" "(n,n-dimethylamino)dimethylsilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -114170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=41200.0
-    phase     gas;
 }

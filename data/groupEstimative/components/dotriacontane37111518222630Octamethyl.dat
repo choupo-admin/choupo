@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 10; } { group CH2; count 22; } { group CH; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7,11,15,18,22,26,30-octamethyldotriacontane" "agn-pc-00o0xv" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -911170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1637.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=266400.0
-    phase     gas;
 }

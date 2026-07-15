@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH2_ring; count 4; } { group O; count 3; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethoxy(3-morpholin-4-ylpropyl)silane" "morpholine, 4-[3-(trimethoxysilyl)propyl]-" "n-((3-trimethoxysilyl)propyl)morpholine" "n-[(3-trimethoxysilyl)propyl]morpholine" "morpholine, 4-(3-(trimethoxysilyl)propyl)-" "morpholine,4-[3-(trimethoxysilyl)propyl]-" "n-(3-trimethoxysilylpropyl)morpholine" "x 12-570;[3-(morpholino)propyl]trimethoxysilane;g-morphinylpropyltrimethoxysilane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -741660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     662.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-317520.0
-    phase     gas;
 }

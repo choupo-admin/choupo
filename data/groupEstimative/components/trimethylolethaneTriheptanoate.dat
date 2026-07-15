@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 18; } { group C; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3-heptanoyloxy-2-(heptanoyloxymethyl)-2-methyl-propyl] heptanoate" "3-(heptanoyloxy)-2-[(heptanoyloxy)methyl]-2-methylpropyl heptanoate" "heptanoic acid, 1,1'-(2-methyl-2-(((1-oxoheptyl)oxy)methyl)-1,3-propanediyl) ester" "heptanoic acid, 1,1'-[2-methyl-2-[[(1-oxoheptyl)oxy]methyl]-1,3-propanediyl] ester" "[3-heptanoyloxy-2-(heptanoyloxymethyl)-2-methylpropyl] heptanoate" "heptanoic acid [2-methyl-3-(1-oxoheptoxy)-2-(1-oxoheptoxymethyl)propyl] ester" "heptanoic acid, 2-methyl-2-(((1-oxoheptyl)oxy)methyl)-1,3-propanediyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1540560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1283.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-760230.0
-    phase     gas;
 }

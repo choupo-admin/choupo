@@ -34,9 +34,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group C_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 6; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "endosulfan lacton" "endosulfan lactone" "endolactone" "3a,4,7,7a-tetrahydro-4,5,6,7,8,8-hexachloro-4,7-methanoisobenzofuran-1(3h)-one" "4,7-methanoisobenzofuran-1(3h)-one, 3a,4,7,7a-tetrahydro-4,5,6,7,8,8-hexachloro-" "5-norbornene-2-carboxylc acid, 1,4,5,6,7,7-hexachloro-3-(hydroxymethyl)-, gamma-lactone" "4,7-methanoisobenzofuran-1(3h)-one, 4,5,6,7,8,8-hexachloro-3a,4,7,7a-tetrahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -376370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     541.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-183890.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 3; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-methylcyclohexyl)-(4-methylpiperidin-1-yl)methanone" "4-methyl-1-((2-methylcyclohexyl)carbonyl)piperidine" "piperidine, 4-methyl-1-((2-methylcyclohexyl)carbonyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -282880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     620.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102150.0
-    phase     gas;
 }

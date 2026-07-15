@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-tert-butyl-2-methoxy-4-prop-2-enyl-phenol" "4-allyl-5-(tert-butyl)-2-methoxyphenol" "phenol, 5-(1,1-dimethylethyl)-2-methoxy-4-(2-propenyl)-" "phenol, 5-(1,1-dimethylethyl)-2-methoxy-4-(2-propen-1-yl)-" "5-tert-butyl-2-methoxy-4-prop-2-enylphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-8790.0
-    phase     gas;
 }

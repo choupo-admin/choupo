@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-(dimethylamino)ethanoate" "glycine, n,n-dimethyl-, ethyl ester" "dimethylglycine ethyl ester" "ethyl 2-(dimethylamino)acetate" "ethyl dimethylglycinate" "ethyl n,n-dimethylglycinate" "ethyl (dimethylamino)acetate" "dimethylaminoacetic acid ethyl ester" "di-me-gly-oet" "bgcnbofpabqgng-uhfffaoysa-" "dimethylglycineethyl ester;ethyl (n,n-dimethylamino)acetate;ethyl (dimethylamino)acetate;ethyl 2-(dimethylamino)acetate;ethyl n,n-dimethylglycinate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -416920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-199950.0
-    phase     gas;
 }

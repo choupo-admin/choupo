@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(6,6-dimethyl-4-bicyclo[3.1.1]hept-3-enyl)ethanol" "homomyrtenol" "nopol (terpene)" "bicyclo[3.1.1]hept-2-ene-2-ethanol, 6,6-dimethyl-" "6,6-dimethyl-2-norpinene-2-ethanol" "2-norpinene-2-ethanol, 6,6-dimethyl-" "6,6-dimethyl-2-(2-hydroxyethyl)-2-norpinene" "2-(6,6-dimethylbicyclo[3.1.1]hept-2-en-2-yl)ethanol" "2-norpinene-2-ethanol,6-dimethyl-" "(-)-nopol" "(1r)-(-)-nopol" "6,6-dimethylbicyclo[3.1.1]hept-2-ene-2-ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -241950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     458.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=21450.0
-    phase     gas;
 }

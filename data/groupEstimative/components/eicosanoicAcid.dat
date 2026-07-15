@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "icosanoic acid" "arachic acid" "arachidic acid" "c 20" "c20 fatty acid" "peanut acid" "n-eicosanic acid" "n-eicosanoic acid" "arachidinic acid" "arachidate" "eicosanoate" "arachinsaeure" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -806400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     988.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-226390.0
-    phase     gas;
 }

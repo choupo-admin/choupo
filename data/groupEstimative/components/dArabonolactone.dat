@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH_ring; count 3; } { group OH; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s,4s,5r)-5-(hydroxymethyl)-3,4-bis(oxidanyl)oxolan-2-one" "1,4-d-arabinonolactone" "d-arabinono-1,4-lactone" "arabinonic acid, gamma-lactone, d-" "(3s,4s,5r)-3,4-dihydroxy-5-(hydroxymethyl)oxolan-2-one" "d-arabino-1,4-lactone" "arabinonic acid-1,4-lactone" "d-arabinonic acid " "a-lactone" "cuokhacjlgprhd-jjyyjpossa-" "d-arabinonic acid, gamma-lactone" "e6b670a8-4605-455a-b696-7c0b3a83d3e3" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -888380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     379.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-684280.0
-    phase     gas;
 }

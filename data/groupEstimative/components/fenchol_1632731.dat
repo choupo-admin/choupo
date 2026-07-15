@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,4-trimethylbicyclo[2.2.1]heptan-3-ol" "fenchyl alcohol" "alpha-fenchol" "2-fenchanol" "1,3,3-trimethylbicyclo[2.2.1]heptan-2-ol" "fenchol, exo-" "2-norbornanol, 1,3,3-trimethyl-" "l-alpha-fenchyl alcohol" "bicyclo[2.2.1]heptan-2-ol, 1,3,3-trimethyl-" "3,3-dimethyl-8,9-dinorbornan-2-ol" "alpha-fenchyl alcohol" "1,3,3-trimethylbicyclo(2.2.1)heptan-2-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -272720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     490.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20500.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 10; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triethoxy(octyl)silane" "n-octyltriethoxysilane" "triethoxyoctylsilane" "silane, triethoxyoctyl-" "octyl(triethoxy)silane" "dynasylan octeo" "a 137 (coupling agent)" "triethoxy-n-octylsilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -840570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     861.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-352760.0
-    phase     gas;
 }

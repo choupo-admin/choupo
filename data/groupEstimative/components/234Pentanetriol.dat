@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 3; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentane-2,3,4-triol" "agn-pc-0cnier" "pentitol, 1,5-dideoxy-" "dl-arabinitol, 1,5-dideoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -619060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     474.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-426560.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 1; } { group NH_ring; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[(2s)-1,2,3,6-tetrahydropyridin-2-yl]pyridine" "(-)-anatabine" "1,2,3,6-tetrahydro-2,3'-bipyridine" "(s)-1,2,3,6-tetrahydro-2,3'-bipyridine" "2,3'-bipyridine, 1,2,3,6-tetrahydro-, (s)-" "2,3'-bipyridine, 1,2,3,6-tetrahydro-, (s)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   169500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     377.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=364900.0
-    phase     gas;
 }

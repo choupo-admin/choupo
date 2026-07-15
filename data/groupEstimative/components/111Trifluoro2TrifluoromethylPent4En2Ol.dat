@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 6; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1-tris(fluoranyl)-2-(trifluoromethyl)pent-4-en-2-ol" "2-(allyl)hexafluoroisopropanol" "2-allylhexafluoroisopropanol" "1,1,1-trifluoro-2-(trifluoromethyl)-4-penten-2-ol" "4-penten-2-ol, 1,1,1-trifluoro-2-(trifluoromethyl)-" "allyl hexafluoroisopropanol" "2-allylhexafluoroisopropanol 97%" "1,1,1-trifluoro-2-trifluoromethyl-pent-4-ene-2-ol" "4-penten-2-ol,1,1-trifluoro-2-(trifluoromethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1396880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     509.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1209680.0
-    phase     gas;
 }

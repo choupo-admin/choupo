@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 9; } { group C; count 3; } { group CH2_ring; count 3; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,5-tritert-butyl-1,3,5-triazinane" "1,3,5-triazine, 1,3,5-tris(1,1-dimethylethyl)hexahydro-" "1,3,5-triazine,1,3,5-tris(1,1-dimethylethyl)hexahydro-" "s-triazine,1,3,5-tri-tert-butylhexahydro- (7ci,8ci);1,3,5-tri-tert-butyl-1,3,5-triazacyclohexane; 1,3,5-tri-tert-butylhexahydro-1,3,5-triazine;1,3,5-tri-tert-butylhexahydro-s-triazine;1,3,5-tris(tert-butyl)-1,3,5-triazacyclohexane;n,n',n''-tri-tert-butyl-1,3,5-triazacyclohexane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -83450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     624.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=484740.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 1; } { group CH; count 3; } { group dCH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s,8s,9s,10r,13r,14s,17r)-17-[(2r,5s)-5-ethyl-6-methyl-hept-3-en-2-yl]-10,13-dimethyl-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-ol" "5,22-stigmastadien-3" "a-ol" "3" "a-hydroxy-24-ethyl-5,22-cholestadiene" "(3s,8s,9s,10r,13r,14s,17r)-17-[(2r,5s)-5-ethyl-6-methylhept-3-en-2-yl]-10,13-dimethyl-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -416570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1008.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=298100.0
-    phase     gas;
 }

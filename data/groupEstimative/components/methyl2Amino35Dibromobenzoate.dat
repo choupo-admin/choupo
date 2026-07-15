@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Br; count 2; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-azanyl-3,5-bis(bromanyl)benzoate" "methyl 3,5-dibromoanthranilate" "3,5-dibromoanthranilic acid methyl ester" "anthranilic acid, 3,5-dibromo-, methyl ester" "2-amino-3,5-dibromobenzoic acid methyl ester" "benzoic acid, 2-amino-3,5-dibromo-, methyl ester" "benzoic acid,5-dibromo-, methyl ester" "3,5-dibromanthranilic acid, methyl ester" "anthranilic acid,5-dibromo-, methyl ester" "2-amino-3,5-dibromo benzoic acid methyl ester" "2-amino-3,5-dibromo-benzoic acid methyl  ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -237160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     547.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-115280.0
-    phase     gas;
 }

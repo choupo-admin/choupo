@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 7; } { group Br; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-bromanylheptan-1-ol" "1-heptanol, 7-bromo-" "7-bromoheptan-1-ol" "7-bromoheptanol;" "agn-pc-0cqx0y" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -313710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     530.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-114440.0
-    phase     gas;
 }

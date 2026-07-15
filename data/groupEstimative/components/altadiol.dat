@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH2_ring; count 6; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(13-methyl-3-oxidanyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthren-17-yl) pentanoate" "estravel" "estradiol valerate" "3-hydroxyestra-1,3,5(10)-trien-17-yl pentanoate" "1,3,5(10)-estratriene-3,17-beta-diol-17-valerate" "beta-estradiol 17-valerate" "agn-pc-00yil2" "beta-estradiol-17-valerate" "[(8r,9s,13s,14s,17s)-3-hydroxy-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthren-17-yl] pentanoate" "1,3,5(10)-estratriene-3,17beta-diol 17-pentanote" "(8alpha,14beta,17alpha)-3-hydroxyestra-1,3,5(10)-trien-17-yl pentanoate" "1,3,5(10)- aeeyi(c)-3,17" "a- paragraph signthorn (1/4) 17-iieao yen" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -606940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     770.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-82290.0
-    phase     gas;
 }

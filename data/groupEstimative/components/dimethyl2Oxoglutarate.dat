@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CdO; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethyl 2-oxidanylidenepentanedioate" "dimethyl " "a-ketoglutarate" "dimethyl 2-oxopentanedioate" "dimethyl 2-ketoglutarate" "2-oxopentanedioic acid, dimethyl ether" "dimethyl-alpha-ketoglutarate" "2-oxoglutaric acid dimethyl ester" "2-ketoglutaric acid dimethyl ester" "2-oxopentanedioic acid dimethyl ester" "glutaric acid, 2-oxo-, dimethyl ester" "pentanedioic acid, 2-oxo-, dimethyl ester" "pentanedioic acid,2-oxo-, 1,5-dimethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -934950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     557.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-741600.0
-    phase     gas;
 }

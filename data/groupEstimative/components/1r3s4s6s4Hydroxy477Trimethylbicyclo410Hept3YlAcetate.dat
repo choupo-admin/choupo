@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group C_ring; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(1r,3s,4s,6s)-4,7,7-trimethyl-4-oxidanyl-3-bicyclo[4.1.0]heptanyl] ethanoate" "3,4-caranediol 4-acetate" "bicyclo(4.1.0)heptane-3,4-diol, 3,7,7-trimethyl-, 4-acetate, (1r,3s,4s,6s)-rel-" "(1alpha,3beta,4alpha,6alpha)-3-hydroxy-3,7,7-trimethylbicyclo(4.1.0)hept-4-yl acetate" "[(1r,3s,4s,6s)-4-hydroxy-4,7,7-trimethyl-3-bicyclo[4.1.0]heptanyl] acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -651620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-321740.0
-    phase     gas;
 }

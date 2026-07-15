@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 16; } { group F; count 34; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadecane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,16-tetratriacontafluoro-" "hexadecane, tetratriacontafluoro-" "perfluoro-n-hexadecane" "perfluorohexadecane" "tetratriacontafluorohexadecane" "hexadecane,1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,16-tetratriacontafluoro-" "NS00018985" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -7181310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1235.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-6494260.0
-    phase     gas;
 }

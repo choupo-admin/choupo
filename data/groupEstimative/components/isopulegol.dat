@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1s,2r,5s)-5-methyl-2-prop-1-en-2-yl-cyclohexan-1-ol" "(1s,3s,4r)-p-menth-8-en-3-ol" "(1s,2r,5s)-2-isopropenyl-5-methylcyclohexanol" "d-isopulegol" "isopulegol, (+)-" "(1s,2r,5s)-(+)-isopulegol" "(1s,2r,5s)-5-methyl-2-prop-1-en-2-ylcyclohexan-1-ol" "cyclohexanol, 5-methyl-2-(1-methylethenyl)-, (1s,2r,5s)-" "cyclohexanol, 5-methyl-2-(1-methylethenyl)-, [1s-(1alpha,2beta,5alpha)]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -272680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     472.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-15180.0
-    phase     gas;
 }

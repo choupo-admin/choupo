@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-chloranyl-4-methyl-phenyl)methanamine" "(3-chloro-4-methylphenyl)methanamine" "1-(3-chloro-4-methylphenyl)methanamine" "3-chloro-4-methyl benzylamine" "benzenemethanamine, 3-chloro-4-methyl-" "(3-chloro-4-methylphenyl)methylamine" "4-(aminomethyl)-2-chlorotoluene" "benzenemethanamine,3-chloro-4-methyl-" "3-chloro-4-methylbenzylamine;[(3-chloro-4-methylphenyl)methyl]amine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   23190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     433.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=164150.0
-    phase     gas;
 }

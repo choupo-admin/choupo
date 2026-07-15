@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 18; } { group dC_ring; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tribenzo[a,c,j]naphthacene" "tribenz[a,c,j]naphthacene" "tribenzo[a,c,j]tetracene" "1,2;3,4;7,8-tribenzotetracene;tribenzo-1,2,3,4,7,8-naphthacene; tribenzo[a,c,j]tetracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   663070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     533.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=905880.0
-    phase     gas;
 }

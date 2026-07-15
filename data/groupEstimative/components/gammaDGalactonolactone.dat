@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group CH_ring; count 3; } { group OH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-[1,2-bis(oxidanyl)ethyl]-3,4-bis(oxidanyl)oxolan-2-one" "d-galactonic acid, .gamma.-lactone" ".gamma.-lactone of mannonic acid" "d-mannonic acid, .gamma.-lactone" "d-mannono-1,4-lactone" "5-(1,2-dihydroxyethyl)-3,4-dihydroxytetrahydrofuran-2-one" "d-galactono-1,4-lactone" "d-glucono-1,4-lactone" "d-galactono-gamma-lactone" "gulonic acid-1,4-lactone" "mannonic acid, d-" "galactonic acid, d-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1066530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     460.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-815120.0
-    phase     gas;
 }

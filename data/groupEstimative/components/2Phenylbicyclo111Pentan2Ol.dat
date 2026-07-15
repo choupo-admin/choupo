@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylbicyclo(1,1,1)pentane-2-ol" "2-phenylbicyclo[1,1,1]pentane-2-ol" "bicyclo[1.1.1]pentan-2-ol,2-phenyl-" "5-phenylbicyclo[1.1.1]pentan-5-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -39410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     355.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=137730.0
-    phase     gas;
 }

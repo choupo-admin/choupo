@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-bromoethyloxy)butane" "1-(2-bromoethoxy)butane" "2-(n-butoxy)ethyl bromide" "bromoethoxybutane" "2-bromo-1-butoxyethane" "butane,1-(2-bromoethoxy)-" "ether,2-bromoethyl butyl (7ci,8ci);1-(2-bromoethoxy)butane;1-butoxy-2-bromoethane;2-bromoethyl butyl ether;2-butoxyethyl bromide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -273060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-91040.0
-    phase     gas;
 }

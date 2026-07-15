@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 2; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexane-1,2,5-triol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -634420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     523.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-415700.0
-    phase     gas;
 }

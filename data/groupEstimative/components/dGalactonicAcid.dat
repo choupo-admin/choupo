@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 5; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r,3s,4s,5r)-2,3,4,5,6-pentakis(oxidanyl)hexanoic acid" "galactonic acid" "galactonate" "(2r,3s,4s,5r)-2,3,4,5,6-pentahydroxyhexanoic acid" "(2r,3s,4s,5r)-2,3,4,5,6-pentahydroxyhexanoic acid;galactonic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1299710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     659.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1038130.0
-    phase     gas;
 }

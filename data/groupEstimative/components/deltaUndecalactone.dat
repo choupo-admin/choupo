@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-hexyloxan-2-one" "2h-pyran-2-one, 6-hexyltetrahydro-" "5-undecanolide" "undecanolide-1,5" "delta-undecanolactone" "5-hydroxyundecanoic acid lactone" "delta-hexylvalerolactone" "undecanoic delta-lactone" "6-hexyltetrahydro-2h-pyran-2-one" ".delta.-hexylvalerolactone" "2h-pyran-2-one, tetrahydro-3-hexyl-" "5-hexyl-5-hydroxypentanoic acid lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -521010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     565.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-219980.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2,6-bis(chloranyl)phenyl]ethanamine" "2-(2,6-dichlorophenyl)ethanamine" "2-(2,6-dichlorophenyl)ethylamine" "2-(2,6-dichlorophenyl)ethan-1-amine" "(2,6-dichloro-phenyl)-ethyl-amine" "1-amino-2-(2,6-dichlorophenyl)ethane" "2-(2-aminoethyl)-1,3-dichlorobenzene" "phenethylamine,2,6-dichloro- (8ci);(2,6-dichlorophenyl)ethylamine;2,6-dichloro-b-phenylethylamine;2,6-dichlorobenzeneethanamine;2-(2,6-dichlorophenyl)ethanamine;2-(2,6-dichlorophenyl)ethylamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   7450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=152220.0
-    phase     gas;
 }

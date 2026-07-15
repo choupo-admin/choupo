@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-propan-2-ylbicyclo[3.1.0]hexan-4-one" "5-isopropylbicyclo(3.1.0)hexan-2-one" "bicyclo[3.1.0]hexan-2-one, 5-isopropyl-" "sabinaketone" "bicyclo(3.1.0)hexan-2-one, 5-(1-methylethyl)-" "5-propan-2-ylbicyclo[3.1.0]hexan-2-one" "5-(propan-2-yl)bicyclo[3.1.0]hexan-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -211230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     307.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=15880.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadec-9-enoic acid" "palmitelaidic acid" "9-hexadecenoic acid, (9z)-" "9-hexadecenoicacid, (e)- (8ci); (e)-9-hexadecenoic acid; (e)-hexadec-9-enoic acid;9-trans-hexadecenoic acid; palmitelaidic acid; trans-9-hexadecenoic acid;trans-palmitoleic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -606620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     825.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-179850.0
-    phase     gas;
 }

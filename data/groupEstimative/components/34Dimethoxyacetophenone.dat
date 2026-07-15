@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3,4-dimethoxyphenyl)ethanone" "acetoveratrone" "3,4-dimethoxyacetophenone" "ethanone, 1-(3,4-dimethoxyphenyl)-" "acetophenone, 3',4'-dimethoxy-" "3,4-dimethoxyphenyl methyl ketone" "1-(3,4-dimethoxyphenyl)-ethanone" "1-(3,4-dimethoxyphenyl)ethan-1-one" "acetophenone,4'-dimethoxy-" "ethanone,4-dimethoxyphenyl)-" "1-acetyl-3,4-dimethoxybenzene" "4-acetylveratrole" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -413160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     476.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-212450.0
-    phase     gas;
 }

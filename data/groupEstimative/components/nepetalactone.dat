@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7-dimethyl-5,6,7,7a-tetrahydro-4ah-cyclopenta[c]pyran-1-one" "md(sub 1) 84" "cyclopenta[c]pyran-1(4ah)-one, 5,6,7,7a-tetrahydro-4,7-dimethyl-" "4,7-dimethyl-5,6,7,7a-tetrahydrocyclopenta[c]pyran-1(4ah)-on" "5,6,7,7a-tetrahydro-4,7-dimethyl-cyclopenta(c)pyran-1(4ah)-one" "cyclopenta(c)pyran-1-(4ah)-one, 5,6,7,7a-tetrahydro-4,7-dimethyl-" "cyclopentanecarboxylic acid, 2-(2-hydroxy-1-methylvinyl)-5-methyl-, delta-lactone (6ci,7ci)" "agn-pc-0cnbp7" "(4as,7s,7ar)-4,7-dimethyl-5,6,7,7a-tetrahydrocyclopenta[c]pyran-1(4ah)-one" "4,7-dimethyl-5,6,7,7a-tetrahydrocyclopenta[c]pyran-1(4ah)-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -401600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     350.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-155030.0
-    phase     gas;
 }

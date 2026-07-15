@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethenyl-3,5-dimethyl-benzene" "1-ethenyl-3,5-dimethylbenzene" "benzene, 1-ethenyl-3,5-dimethyl-" "3,5-dimethylstyrene" "benzene,1-ethenyl-3,5-dimethyl-" "benzene, 1-ethenyl-3,5-dimethyl- (9ci)" "styrene,3,5-dimethyl- (7ci,8ci); 1,3-dimethyl-5-vinylbenzene; 3,5-dimethylstyrene;5-vinyl-m-xylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   89290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     422.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=214310.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 36; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-di(tridecyl)tridecan-1-amine" "tritridecyl amine" "tri-n-tridecylamine" "tris(tridecyl)amine" "1-tridecanamine, n,n-ditridecyl-" "1-tridecanamine,n,n-ditridecyl-" "tris(tridecyl)amine(7ci,8ci); tri(tridecyl)amine; tri-n-tridecylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -780760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1691.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=388280.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopentylmethanol" "cyclopentyl-methanol" "cyclopentylcarbinol" "cyclopentyl carbinol" "cyclopentylmethan-1-ol" "(hydroxymethyl)cyclopentane" "(hydroxymethyl)cyclopentane; cyclopentyl carbinol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -258920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     390.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-100630.0
-    phase     gas;
 }

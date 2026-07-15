@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dC; count 2; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4-tetrakis(chloranyl)buta-1,3-diene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   26010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=78420.0
-    phase     gas;
 }

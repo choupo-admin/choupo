@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 17; } { group dCH2; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadecyl 2-methylprop-2-enoate" "stearyl methacrylate" "2-propenoic acid, 2-methyl-, octadecyl ester" "methacrylic acid, octadecyl ester" "n-octadecyl methacrylate" "octadecyl 2-methylacrylate" "methacrylic acid, stearyl ester" "methacrylic acid octadecyl ester" "methacrylic acid stearyl ester" "poly(octadecyl methacrylate) solution" "2-methyl-2-propenoic acid octadecyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -699050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1055.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96720.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group Br; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-bis(bromanyl)ethyl ethanoate" "ethanol, 1,2-dibromo-, 1-acetate" "alpha,beta-dibromoethyl acetate" "1,2-dibromoethanol acetate" "ethanol, 1,2-dibromo-, acetate" "ethanol, 1,2-dibromo-,1-acetate" "acetic acid 1,2-dibromoethyl ester" "acetic acid 1,2-dibromo-ethyl ester" "acetic acid, 1,2-dibromoethyl ester" "ethanol,1,2-dibromo-, acetate (6ci,7ci,8ci,9ci); 1,2-dibromoethanol acetate;1,2-dibromoethyl acetate; 1-acetoxy-1,2-dibromoethane; a,b-dibromoethyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -395790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-301370.0
-    phase     gas;
 }

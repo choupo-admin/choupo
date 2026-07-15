@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyl-1-phenyl-propan-2-amine" "n,n-dimethyl-1-phenylpropan-2-amine" "1-phenyl-2-dimethylaminopropane" "2-dimethylamino-1-phenylpropane" "n,n,alpha-trimethylphenethylamine" "n,n,alpha-trimethylbenzeneethanamine" "alpha-phenyl-beta-dimethyl amino propane" "phenethylamine, n,n,.alpha.-trimethyl-" "1-phenyl-2-dimethylamino-propan [german]" "benzeneethanamine, n,n,.alpha.-trimethyl-" "phenethylamine, n,n,alpha-trimethyl-" "(2s)-n,n-dimethyl-1-phenylpropan-2-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   28410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=262490.0
-    phase     gas;
 }

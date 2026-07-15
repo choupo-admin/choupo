@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-3-(3-bromophenyl)prop-2-enoic acid" "m-bromocinnamic acid" "3-(3-bromophenyl)acrylic acid" "cinnamic acid, m-bromo-" "bw a800u" "(2e)-3-(3-bromophenyl)acrylicacid" "3-(3-bromophenyl)-2-propenoic acid" "(2e)-3-(3-bromophenyl)acrylic acid" "2-propenoic acid, 3-(3-bromophenyl)-" "3-(3-bromophenyl)prop-2-enoic acid" "2-propenoic acid, 3-(3-bromophenyl)-, (2e)-" "bromocinnamic acid,3-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -210750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     491.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121690.0
-    phase     gas;
 }

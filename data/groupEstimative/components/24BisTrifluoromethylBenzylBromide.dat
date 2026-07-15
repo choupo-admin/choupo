@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(bromomethyl)-2,4-bis(trifluoromethyl)benzene" "2,4-bis(trifluoromethyl)benzylbromide" "2,4-bis(trifluoromethyl)-1-(bromomethyl)benzene" "1-(bromomethyl)-2,4- bis(trifluoromethyl)benzene" "benzene,1-(bromomethyl)-2,4-bis(trifluoromethyl)-" "benzene, 1-(bromomethyl)-2,4-bis(trifluoromethyl)-" "1-(bromomethyl)-2,4-bis(trifluoromethyl)benzene;2,4-bis(trifluoromethyl)benzyl bromide; 2,4-di(trifluoromethyl)benzyl bromide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1183330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     551.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1030810.0
-    phase     gas;
 }

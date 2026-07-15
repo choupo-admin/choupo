@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methylpentan-2-one" "methyl isobutyl ketone" "isopropylacetone" "isobutyl methyl ketone" "2-pentanone, 4-methyl-" "hexone" "mibk" "isohexanone" "2-methyl-4-pentanone" "4-methyl-2-oxopentane" "hexon" "2-methylpropyl methyl ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -285030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     406.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-131720.0
-    phase     gas;
 }

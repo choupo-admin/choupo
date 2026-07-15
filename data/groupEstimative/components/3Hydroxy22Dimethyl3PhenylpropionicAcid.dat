@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-dimethyl-3-oxidanyl-3-phenyl-propanoic acid" "benzenepropanoic acid, b-hydroxy-a,a-dimethyl-" "hydracrylicacid, 2,2-dimethyl-3-phenyl- (8ci); hydrocinnamic acid, b-hydroxy-a,a-dimethyl- (4ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -550370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     533.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-326180.0
-    phase     gas;
 }

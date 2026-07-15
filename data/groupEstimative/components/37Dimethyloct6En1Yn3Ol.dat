@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group dCH; count 1; } { group dC; count 1; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dehydrolinalool" "3,7-dimethyl-6-octen-1-yn-3-ol" "6-octen-1-yn-3-ol, 3,7-dimethyl-" "2-dehydrolinalool" "linalool, dehydro-" "(3r)-3,7-dimethyloct-6-en-1-yn-3-ol" "(3s)-3,7-dimethyloct-6-en-1-yn-3-ol" "6-octen-1-yn-3-ol, 3,7-dimethyl-, (s)-" "linalool, dehydro- (6ci)" "6-octen-1-yn-3-ol,3,7-dimethyl-" "linalool,dehydro- (6ci);2,6-dimethyl-2-octen-7-yn-6-ol;3,7-dimethyl-3-hydroxy-6-octen-1-yne;3,7-dimethyl-6-octen-1-yn-3-ol;dehydro-b-linalool;dehydrolinalool;b-linalool, dehydro-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -11380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     516.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=194080.0
-    phase     gas;
 }

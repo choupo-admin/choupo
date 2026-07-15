@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopent-2-en-1-yl ethanoate" "acetic acid, cyclopent-2-en-1-yl ester" "1-cyclopent-2-enyl acetate" "2-(1-cyclopentenyl) acetate" "(1,2,3-trideuteriocyclopent-2-en-1-yl) acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -386830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     392.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-235800.0
-    phase     gas;
 }

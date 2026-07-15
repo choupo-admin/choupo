@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-3-methylsulfanyl-butane" "2-methyl-3-(methylsulfanyl)butane" "3,4-dimethyl-2-thiapentane" "2-methyl-3-methylsulfanylbutane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -135860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     432.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=27880.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 8; } { group F; count 17; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,9-heptadecakis(fluoranyl)nonan-1-ol" "1h,1h-perfluoro-1-nonanol" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,9-heptadecafluoro-1-nonanol" "1h,1h-perfluorononan-1-ol" "1h,1h-heptadecafluoro-1-nonanol" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,9-heptadecafluorononan-1-ol" "1h,1h-heptadecafluorononanol" "1-nonanol, 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,9-heptadecafluoro-" "1-nonanol,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,9-heptadecafluoro-" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,9-heptadecafluoro-1-nonanol;1,1-dihydroperfluoronon-1-yl alcohol;perfluorooctylmethanol;1h,1h-perfluoro-1-nonanol;1,1-dihydroperfluoro-1-nonanol;(heptadecafluorooctyl)methanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3785190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     785.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3400970.0
-    phase     gas;
 }

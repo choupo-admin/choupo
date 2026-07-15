@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH; count 1; } { group NH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pararosaniline base" "tris(p-aminophenyl)methanol" "benzenemethanol, 4-amino-.alpha.,.alpha.-bis(4-aminophenyl)-" "tris(4-aminophenyl)methan-1-ol" "fuchsin dye base" "tris (4-aminophenyl) carbinol" "methanol, tris(4-aminophenyl)-" "4,4',4''-triaminotrityl alcohol" "4,4',4''-triaminotriphenylcarbinol" "benzenemethanol, 4-amino-alpha,alpha-bis(4-aminophenyl)-" "methanol,tris(p-aminophenyl)- (7ci);parafuchsin carbinol (6ci);tris(4-aminophenyl)methanol;tris(p-aminophenyl)methanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   180080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     725.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=482810.0
-    phase     gas;
 }

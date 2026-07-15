@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 10; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-fluoranyl-3-methyl-1,2-dihydrobenzo[j]aceanthrylene" "cholanthrene, 6-fluoro-3-methyl-" "benz(j)aceanthrylene, 1,2-dihydro-6-fluoro-3-methyl-" "6-fluoro-3-methyl-1,2-dihydrobenzo[j]aceanthrylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   167340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=386270.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-quinolinamine, 1,2,3,4-tetrahydro-" "8-amino-1,2,3,4-tetrahydroquinoline" "8-1,2,3,4-tetrahydroquinolylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   143080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     405.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=328570.0
-    phase     gas;
 }

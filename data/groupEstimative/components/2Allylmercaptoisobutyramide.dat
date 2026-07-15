@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-2-prop-2-enylsulfanyl-propanamide" "alpha-allylmercaptoisobutyramide" "propionamide, 2-(allylthio)-2-methyl-" "2-methyl-2-prop-2-enylsulfanylpropanamide" "propanamide, 2-methyl-2-(2-propenylthio)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -108050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     524.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=69390.0
-    phase     gas;
 }

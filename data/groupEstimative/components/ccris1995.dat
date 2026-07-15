@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 8; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo(a)pyrene-4,5-imine" "3b,4a-dihydro-4h-benzo(1,2)pyreno(4,5-b)azirine" "4h-benzo(1,2)pyreno(4,5-b)azirine, 3b,4a-dihydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   509620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     230.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=756870.0
-    phase     gas;
 }

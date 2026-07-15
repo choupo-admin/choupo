@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tert-butyl methanoate" "t-butyl formate" "formic acid, 1,1-dimethylethyl ester" "formate, t-butyl-" "formic acid, tert-butyl ester" "tert-butyloxycarbonyl group" "formic acid tert-butylester" "1,1-dimethylethyl ester" "tet.-butyl formate" "formic acid tert-butyl ester" "formic acid,1,1-dimethylethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -78830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     495.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=38020.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,5-dimethyl-3-exo-methylenetricyclo(2.1.0.0)pentane" "1,5-dimethyl-3-methylidenetricyclo[2.1.0.02,5]pentane" "1,5-dimethyl-3-exo-methylenetricyclo[2.1.0.02,5]pentane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   128970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     187.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=281520.0
-    phase     gas;
 }

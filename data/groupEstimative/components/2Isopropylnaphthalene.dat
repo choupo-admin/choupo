@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-propan-2-ylnaphthalene" "naphthalene, 2-isopropyl-" "naphthalene, 2-(1-methylethyl)-" "2-(1-methylethyl)naphthalene" "beta-isopropylnaphthalene" "2-(methylethyl)naphthalene" "naphthalene, isopropylated" "2-iso-propylnaphthalene" ".beta.-isopropylnaphthalene" "tvyvqnhyihajtd-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   99200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     431.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=265570.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 12; } { group CH; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[bis[4-(dipropylamino)phenyl]methyl]-n,n-dipropyl-aniline" "benzenamine, 4,4',4''-methylidynetris(n,n-dipropyl-" "benzenamine, 4,4',4''-methylidynetris[n,n-dipropyl-" "4,4',4''-methanetriyltris(n,n-dipropylaniline)" "4-[bis[4-(dipropylamino)phenyl]methyl]-n,n-dipropylaniline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   65480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1298.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=898900.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-[(e)-2-(4-hydroxyphenyl)ethenyl]benzene-1,3-diol" "trans-resveratrol" "3,4',5-trihydroxystilbene" "3,5,4'-trihydroxystilbene" "resvida" "3,4',5-stilbenetriol" "(e)-resveratrol" "3,4',5-trihydroxy-trans-stilbene" "(e)-5-(4-hydroxystyryl)benzene-1,3-diol" "resveratrol, e-" "prestwick_619" "s1396_selleck" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -273940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     561.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-91820.0
-    phase     gas;
 }

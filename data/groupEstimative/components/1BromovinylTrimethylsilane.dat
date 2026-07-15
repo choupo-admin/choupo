@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanylethenyl(trimethyl)silane" "(1-bromovinyl)(trimethyl)silane" "1-bromo-1-trimethylsilylethylene" "1-bromoethenyl(trimethyl)silane" "alpha-trimethylsilylvinyl bromide" "alpha-(trimethylsilyl)vinyl bromide" "1-bromo-1-(trimethylsilyl)ethylene;a-(trimethylsilyl)vinyl bromide;silane,(1-bromovinyl)trimethyl- (6ci,8ci);(1-bromoethenyl)trimethylsilane;(1-bromovinyl)trimethylsilane;(a-bromovinyl)trimethylsilane;1-(trimethylsilyl)ethenyl bromide;1-(trimethylsilyl)vinyl bromide;1-bromo-1-(trimethylsilyl)ethene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -116180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     519.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-19930.0
-    phase     gas;
 }

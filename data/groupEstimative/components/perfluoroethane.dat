@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group F; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,2-hexakis(fluoranyl)ethane" "hexafluoroethane" "ethane, hexafluoro-" "1,1,1,2,2,2-hexafluoroethane" "1,1,1,2,2,2-hexafluoro-ethane" "ethane, 1,1,1,2,2,2-hexafluoro-" "ethforane" "carbon hexafluoride" "hexafluoroethane (fc-116)" "ethane,1,1,1,2,2,2-hexafluoro-" "hexafluoroethane, compressed or refrigerant gas r116" "ethane,hexafluoro- (8ci,9ci);ethyl hexafluoride;f 116;f 116 (fluorocarbon);fc 116;fc 1160;freon 116;hfc 116;hexafluoroethane;pfc 116;perfluorocarbon 116;perfluoroethane;r 116;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1278770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     346.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1197220.0
-    phase     gas;
 }

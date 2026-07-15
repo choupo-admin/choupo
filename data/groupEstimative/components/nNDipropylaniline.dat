@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-di-n-propylaniline" "dipropylaniline" "dipropylamine, n-phenyl-" "benzenamine, n,n-dipropyl-" "phenyldipropylamine" "aniline,n-dipropyl-" "n-phenyldipropylamine" "benzenamine,n-dipropyl-" "n,n-di-(n-propyl)benzenamine" "aniline, n,n-dipropyl- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   13050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     533.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=273350.0
-    phase     gas;
 }

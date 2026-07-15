@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 1; } { group CH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-ethyl-n-propan-2-yl-propan-2-amine" "n-ethyldiisopropylamine" "diisopropylethylamine" "n,n-diisopropylethylamine" "diea" "dipea" "n-ethyl-n-isopropylpropan-2-amine" "2-propanamine, n-ethyl-n-(1-methylethyl)-" "hunig's base" "diisopropyl ethylamine" "diisopropylethyl amine" "ethyl-diisopropyl-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -151480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     464.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=122380.0
-    phase     gas;
 }

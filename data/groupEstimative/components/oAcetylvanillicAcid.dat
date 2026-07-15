@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-acetyloxy-3-methoxy-benzoic acid" "4-(acetyloxy)-3-methoxybenzoic acid" "4-acetoxy-3-methoxybenzoic acid" "3-methoxy-4-acetoxybenzoic acid" "4-acetoxy-3-methoxy-benzoic acid" "benzoic acid, 4-(acetyloxy)-3-methoxy-" "4-acetoxy-meta-anisic acid" "4-acetoxy-3-methoxy benzoic acid" "4-acetyloxy-3-methoxybenzoic acid" "4-acetoxybenzoic acid, methyl ether" "benzoic acid,4-(acetyloxy)-3-methoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -835910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     542.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-632810.0
-    phase     gas;
 }

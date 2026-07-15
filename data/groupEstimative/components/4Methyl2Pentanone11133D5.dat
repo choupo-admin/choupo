@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,3,3-pentadeuterio-4-methyl-pentan-2-one" "2-pentanone, 4-methyl-1,1,1,3,3-d5-" "1,1,1,3,3-pentadeuterio-4-methylpentan-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -285030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     406.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-131720.0
-    phase     gas;
 }

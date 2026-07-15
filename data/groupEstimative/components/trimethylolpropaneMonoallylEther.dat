@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethyl-2-(prop-2-enoxymethyl)propane-1,3-diol" "trimethylolpropane allyl ether" "2-allyloxymethyl-2-ethylpropanediol" "1,1,1-trimethylolpropane monoallyl ether" "2-(allyloxymethyl)-2-ethyl-1,3-propanediol" "1-butanol, 2,2-(dihydroxymethyl)-, monoallyl ether" "ether, allyl (2,2-bis(hydroxymethyl)butyl)" "1,3-propanediol, 2-ethyl-2-((2-propenyloxy)methyl)-" "1,3-propanediol, 2-ethyl-2-[(2-propenyloxy)methyl]-" "1,3-propanediol, 2-ethyl-2-((2-propen-1-yloxy)methyl)-" "1,3-propanediol, 2-ethyl-2-[(2-propen-1-yloxy)methyl]-" "2-ethyl-2-[(prop-2-en-1-yloxy)methyl]propane-1,3-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -549090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-263060.0
-    phase     gas;
 }

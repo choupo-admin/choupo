@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group OH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-oxidanylbutan-2-one" "2-butanone, 4-hydroxy-" "methylolacetone" "4-hydroxybutan-2-one" "3-oxobutanol" "monomethylolacetone" "3-oxo-1-butanol" "4-butanol-2-one" "3-ketobutan-1-ol" "2-hydroxyethyl methyl ketone" "buq" "ch3c(o)ch2ch2oh" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -390700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-282940.0
-    phase     gas;
 }

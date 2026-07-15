@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-4-(phenylmethyl)benzene" "4-benzyltoluene" "benzene, 1-methyl-4-(phenylmethyl)-" "methane, phenyl-p-tolyl-" "1-benzyl-4-methylbenzene" "p-benzyltoluene" "p-tolylphenylmethane" "phenyl-p-tolylmethane" "4-methyl diphenylmethane" "4'-methyldiphenylmethane" "agn-pc-0cjjtz" "1-methyl-4-benzylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   129300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     482.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=282190.0
-    phase     gas;
 }

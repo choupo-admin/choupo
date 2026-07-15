@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 6; } { group dCH; count 2; } { group dC; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "neryl valerate" "pentanoic acid, (2e)-3,7-dimethyl-2,6-octadienyl ester" "pentanoic acid, (2e)-3,7-dimethyl-2,6-octadien-1-yl ester" "pentanoic acid, (2z)-3,7-dimethyl-2,6-octadien-1-yl ester" "pentanoic acid,(2e)-3,7-dimethyl-2,6-octadien-1-yl ester" "pentanoic acid,(2z)-3,7-dimethyl-2,6-octadien-1-yl ester" "pentanoic acid (2z)-3,7-dimethyl-2,6-octadienyl ester" "pentanoicacid, (2e)-3,7-dimethyl-2,6-octadienyl ester (9ci); pentanoic acid,3,7-dimethyl-2,6-octadienyl ester, (e)-; valeric acid,3,7-dimethyl-2,6-octadienyl ester, (e)- (8ci); 2,6-octadien-1-ol,3,7-dimethyl-, valerate, (e)- (8ci); geraniol valerate; geranyl pentanoate;geranyl valerate" "pentanoicacid, (2z)-3,7-dimethyl-2,6-octadienyl ester (9ci); pentanoic acid,3,7-dimethyl-2,6-octadienyl ester, (z)-; valeric acid,(z)-3,7-dimethyl-2,6-octadienyl ester (8ci); 2,6-octadien-1-ol, 3,7-dimethyl-,valerate, (z)- (8ci); (z)-3,7-dimethylocta-2,6-dienyl pentanoate;(z)-3,7-dimethylocta-2,6-dienyl valerate; neryl valerate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -455350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     770.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-91610.0
-    phase     gas;
 }

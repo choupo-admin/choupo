@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-phenylphenyl)pentan-1-one" "1-(4-phenylphenyl)-1-pentanone" "1-pentanone, 1-(1,1'-biphenyl)-4-yl-" "1-pentanone, 1-[1,1'-biphenyl]-4-yl-" "1-(biphenyl-4-yl)pentan-1-one" "1-[1,1'-biphenyl]-4-yl-1-pentanone" "1-pentanone,1-[1,1'-biphenyl]-4-yl-" "1-([1,1'-biphenyl]-4-yl)pentan-1-one" "1-(4-biphenylyl)-1-pentanone;4-valerylbiphenyl;p-phenylvalerophenone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -45200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     625.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=178530.0
-    phase     gas;
 }

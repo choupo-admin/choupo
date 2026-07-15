@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 2; } { group dCH; count 4; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3e,5e,7r)-7,9,9-triethoxynona-3,5-diene" "1,1,3-triethoxy-4,6-nonadiene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -525710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     741.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-84020.0
-    phase     gas;
 }

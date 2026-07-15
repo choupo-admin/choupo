@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group C; count 1; } { group Cl; count 3; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,3-tris(chloranyl)-2-oxidanyl-propanoic acid" "3,3,3-trichlorolactic acid" "propanoic acid,3,3,3-trichloro-2-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -669000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-541740.0
-    phase     gas;
 }

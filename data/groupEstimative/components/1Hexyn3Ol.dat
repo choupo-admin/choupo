@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hex-1-yn-3-ol" "propylethinylcarbinol" "1-hexyne-3-ol" "3-hydroxy-1-hexyne" "1-propylpropargyl alcohol" "(r)-1-hexyn-3-ol" "1 -hexyn-3-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -32780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83450.0
-    phase     gas;
 }

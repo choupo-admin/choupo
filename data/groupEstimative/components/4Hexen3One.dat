@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hex-4-en-3-one" "4-hexen-3-one, (4e)-" "4-hexen-3-one, (4z)-" "4-hexen-3-one,(e)-; (4e)-4-hexen-3-one; (e)-4-hexen-3-one; trans-4-hexen-3-one;trans-4-hexene-3-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -162530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     409.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-49060.0
-    phase     gas;
 }

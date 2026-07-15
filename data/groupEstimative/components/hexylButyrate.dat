@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexyl butanoate" "butanoic acid, hexyl ester" "butyric acid, hexyl ester" "n-hexyl butyrate" "butyric acid hexyl ester" "n-hexyl butanoate" "1-hexyl butyrate" "n-hexyl n-butanoate" "hexyl butyrate (natural)" "we(6:0/4:0)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -567010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     596.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-277050.0
-    phase     gas;
 }

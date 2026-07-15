@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 13; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentadecanoic acid, methyl ester" "pentadecanoic acid methyl ester" "methyl n-pentadecanoate" "fatty acids, c12-18, me esters" "e(r)iaea(1/4)xo yen" "pentanedecanoic acid, methyl ester" "93612fd5-1eff-4869-9b03-8b8bad63ee28" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -690850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     830.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-226530.0
-    phase     gas;
 }

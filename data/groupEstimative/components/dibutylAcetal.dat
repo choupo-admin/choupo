@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(1-butoxyethoxy)butane" "acetaldehyde, dibutyl acetal" "di-n-butyl acetal" "1,1-dibutoxyethane" "1,1-di-n-butoxyethane" "ethane, 1,1-dibutoxy-" "acetaldehyde dibutyl acetal" "6-methyl-5,7-dioxaundecane" "1,1'-(ethylidenebis(oxy))dibutane" "1,1'-(ethylidenebis(oxy))bisbutane" "butane, 1,1'-[ethylidenebis(oxy)]bis-" "1,1'-[ethylidenebis(oxy)]dibutane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -519450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     558.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-179120.0
-    phase     gas;
 }

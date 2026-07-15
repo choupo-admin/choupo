@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triphenylene, 1-methyl-" "triphenylene, methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   339840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     444.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=512570.0
-    phase     gas;
 }

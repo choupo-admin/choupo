@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 11; } { group C; count 1; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tributyl 2-oxidanylpropane-1,2,3-tricarboxylate" "butyl citrate" "tri-n-butyl citrate" "n-butyl citrate" "citroflex 4" "citric acid, tributyl ester" "butyl citrate (van)" "1,2,3-propanetricarboxylic acid, 2-hydroxy-, tributyl ester" "tributyl 2-hydroxypropane-1,2,3-tricarboxylate" "tributyl 2-hydroxy-1,2,3-propanetricarboxylate" "2-hydroxy-1,2,3-propanetricarboxylic acid, tributyl ester" "1,2,3-propanetricarboxylic acid, 2-hydroxy-, 1,2,3-tributyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1527670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1023.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-964410.0
-    phase     gas;
 }

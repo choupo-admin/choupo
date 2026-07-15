@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butanal, 3-(3-(1-methylethenyl)phenyl)-" "benzenepropanal, beta-methyl-3-(1-methylethenyl)-" "benzenepropanal, .beta.-methyl-3-(1-methylethenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -61810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     550.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=138690.0
-    phase     gas;
 }

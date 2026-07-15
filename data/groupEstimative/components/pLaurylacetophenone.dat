@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 11; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-dodecylphenyl)ethanone" "p-dodecylacetophenone" "4'-dodecylacetophenone" "ethanone, 1-(4-dodecylphenyl)-" "acetophenone, 4'-dodecyl-" "p-dodecylphenyl methyl ketone" "1-acetyl-4-dodecylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -343650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     849.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91380.0
-    phase     gas;
 }

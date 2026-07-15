@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxybenzoic acid" "o-methoxybenzoic acid" "benzoic acid, 2-methoxy-" "o-methylsalicylic acid" "2-anisic acid" "salicylic acid methyl ether" "2-methoxy-benzoic acid" "2-methoxybenzoicacid" "ortho-methoxybenzoic acid" "o-methoxy benzoic acid" "2-carboxyanisole" "2-methoxy benzoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -465880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     419.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-329650.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-chlorophenyl)methanethiol" "4-chlorobenzenemethanethiol" "p-chlorobenzyl mercaptan" "4-chlorobenzylmercaptan" "4-chloro benzyl mercaptan" "4-chlor-benzylthiol" "p-chlorotoluene-alpha-thiol" "benzenemethanethiol, 4-chloro-" "benzenemethanethiol, 4-chloro- (9ci)" "l694" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   59990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=128300.0
-    phase     gas;
 }

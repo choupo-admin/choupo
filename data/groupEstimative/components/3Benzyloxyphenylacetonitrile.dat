@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3-phenylmethoxyphenyl)ethanenitrile" "3-(phenylmethoxy)-benzenemethanol" "2-(3-phenylmethoxyphenyl)acetonitrile" "2-(3-(benzyloxy)phenyl)acetonitrile" "2-[3-(benzyloxy)phenyl]acetonitrile" "2-[3-(phenylmethoxy)phenyl]ethanenitrile" "3-benzyloxy-phenyl acetonitrile" "acetonitrile,[m-(benzyloxy)phenyl]- (8ci); 3'-benzyloxyphenylacetonitrile;[3-(benzyloxy)phenyl]acetonitrile; [m-(benzyloxy)phenyl]acetonitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   141320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     538.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=318790.0
-    phase     gas;
 }

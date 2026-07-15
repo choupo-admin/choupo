@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-methylbutanoic acid" "2,3-dimethylbutyric acid" "2,3,3-trimethylpropionic acid" "2,3-dimethyl butyric acid" "butanoic acid,2,3-dimethyl-" "alpha,beta-dimethylbutanoic acid" "(1)-2,3-dimethylbutyric acid" "2,3,3-trimethylpropanoic acid" "methylisopropylacetic acid" "(r)-2,3-dimethylbutanoic acid" "(s)-2,3-dimethylbutanoic acid" "2,3-methylbutanoic acid;butanoicacid,2,3-dimethyl-;butyricacid,2,3-dimethyl-;2-methylisovaleric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -528000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     423.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-349150.0
-    phase     gas;
 }

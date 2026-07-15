@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 19; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "icosane-1-thiol" "icosyl mercaptan" "eicosyl mercaptan" "n-eicosylmercaptan;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -417650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     997.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=146910.0
-    phase     gas;
 }

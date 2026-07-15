@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group OH; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[5-(hydroxymethyl)oxolan-2-yl]methanol" "2,5-bishydroxymethyl tetrahydrofuran" "tetrahydro-2,5-furandimethanol" "2,5-anhydro-3,4-dideoxyhexitol" "2,5-tetrahydrofurandimethanol" "2,5-dihydroxymethyltetrahydrofuran" "2,5-dihydroxymethyl tetrahydrofuran" "2,5-bis(hydroxymethyl)tetrahydrofuran" "2,5-bis[hydroxymethyl]tetrahydrofuran" "(tetrahydrofuran-2,5-diyl)dimethanol" "[(2r,5s)-5-(hydroxymethyl)oxolan-2-yl]methanol" "agn-pc-00jxue" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -563490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     347.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-331280.0
-    phase     gas;
 }

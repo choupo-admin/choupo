@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 10; } { group Cl; count 1; } { group OH_phenol; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[[3-[[2,4-bis(oxidanyl)phenyl]methyl]-5-chloranyl-2-oxidanyl-phenyl]methyl]benzene-1,3-diol" "1,3-benzenediol, 4,4'-((5-chloro-2-hydroxy-1,3-phenylene)bis(methylene))bis-" "1,3-benzenediol, 4,4'-[(5-chloro-2-hydroxy-1,3-phenylene)bis(methylene)]bis-" "4,4'-[(5-chloro-2-hydroxy-1,3-phenylene)bis(methylene)]bisresorcinol" "1,3-benzenediol,4,4'-[(5-chloro-2-hydroxy-1,3-phenylene)bis(methylene)]bis-" "4-[[5-chloro-3-[(2,4-dihydroxyphenyl)methyl]-2-hydroxyphenyl]methyl]benzene-1,3-diol" "resorcinol,4,4'-[(5-chloro-2-hydroxy-m-phenylene)dimethylene]di- (8ci); 2,6-bis(2,4-dihydroxyphenylmethyl)-4-chlorophenol;4-chloro-2,6-bis(2,4-dihydroxybenzyl)phenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -671770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     769.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-349540.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-prop-2-enoyloxypropanoic acid" "2-propenoic acid, 2-carboxyethyl ester" "3-(Acryloyloxy)propionic acid" "3-acryloyloxypropanoic acid" "acrylic acid 2-carboxyethyl ester" "acrylic acid dimer" "aronix m 566" "c 800" "c 800 (acrylate)" "hydracrylic acid, acrylate" "miramer cea" "β-(acryloyloxy)propionic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -709290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     489.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-566800.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-phenylpropanoic acid" "(s)-2-phenylpropanoic acid" "(s)-(+)-hydratropic acid" "(s)-2-phenyl-propionic acid" "(s)-hta" "(s)-alpha-methylbenzeneacetic acid" "(s)-2-phenylpropanic acid" "(+)-hydratropasaeure" "(s)-hydratropic acid" "(+)-hydratropic acid" "s-(+)-2-phenylpropionic acid" "(s)-(+)-2-phenylpropanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -348110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     443.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-209040.0
-    phase     gas;
 }

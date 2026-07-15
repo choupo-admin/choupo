@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbutan-2-ol" "2-butanol, 3-methyl-" "sec-isoamyl alcohol" "2-methyl-3-butanol" "isopropylmethylcarbinol" "methylisopropylcarbinol" "(s)-(+)-3-methyl-2-butanol" "2-butanol, 3-methyl-, (s)-" "isopropyl methyl carbinol" "(r)-(-)-3-methyl-2-butanol" "1,2-dimethylpropanol" "dl-3-methyl-2-butanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -309320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     382.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-150480.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group CH; count 1; } { group OH; count 3; } { group COOH; count 2; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanylpentanedioic acid;2-[bis(2-hydroxyethyl)amino]ethanol" "triethanolamine glutamate" "triethanolamine cocoyl glutamate" "l-glutamic acid, n-coco acyl derivs., compds. with triethanolamine (1:1)" "n-cocoyl-l-glutamic acid, mono(triethanolamine) salt" "(2s)-2-aminopentanedioic acid; 2-[bis(2-hydroxyethyl)amino]ethanol" "l-glutamic acid, compound with 2,2',2''-nitrilotrisethanol (1:1)" "l-glutamic acid, n-coco acyl derivs., compds. with triethanolamine" "l-glutamic acid, n-coco acyl derivs., compds. with triethanolamine(1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1443180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1009.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-986510.0
-    phase     gas;
 }

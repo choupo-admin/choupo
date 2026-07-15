@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-4-methoxy-butane" "ether, 4-bromobutyl methyl" "1-methoxy-4-bromobutane" "butane, 1-bromo-4-methoxy-" "u269" "ether,4-bromobutyl methyl (6ci,7ci,8ci);1-bromo-4-methoxybutane;1-methoxy-4-bromobutane;4-bromobutyl methyl ether;4-methoxybutyl bromide;methyl 4-bromobutyl ether;w-bromobutyl methyl ether;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -252420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-99460.0
-    phase     gas;
 }

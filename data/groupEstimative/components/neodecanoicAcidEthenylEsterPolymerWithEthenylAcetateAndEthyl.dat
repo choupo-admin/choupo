@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group dCH2; count 3; } { group dCH; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethenyl ethanoate;ethenyl 2-ethyl-2,5-dimethyl-hexanoate;ethyl prop-2-enoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1289590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1280.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-750770.0
-    phase     gas;
 }

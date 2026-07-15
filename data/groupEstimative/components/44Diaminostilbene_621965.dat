@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[2-(4-aminophenyl)ethenyl]aniline" "4,4'-vinylenedianiline" "4,4'-(1,2-ethenediyl)bisbenzenamine" "benzenamine, 4,4'-(1,2-ethenediyl)bis-" "benzenamine,4,4'-(1e)-1,2-ethenediylbis-" "4,4'-stilbenediamine,(e)- (8ci); 4,4'-stilbenediamine, trans- (4ci); benzenamine,4,4'-(1,2-ethenediyl)bis-, (e)-; 4,4'-diamino-trans-stilbene;trans-4,4'-diaminostilbene; trans-4,4'-stilbenediamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   302630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     572.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=485680.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,5-dimethylcyclohexan-1-one" "2,5-dimethylcyclohexanone,c&t" "cyclohexanone, 2,5-dimethyl-" "2,5-dimethyl cyclohexanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -312170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     315.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-89370.0
-    phase     gas;
 }

@@ -35,9 +35,8 @@ groups
     joback ( { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bromanylsilicon" "bromosilicon" "silane, bromo-" "bromosilane [forbidden]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   38810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     172.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=15820.0
-    phase     gas;
 }

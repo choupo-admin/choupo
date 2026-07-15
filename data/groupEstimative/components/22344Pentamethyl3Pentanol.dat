@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group C; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,4,4-pentamethylpentan-3-ol" "3-pentanol, 2,2,3,4,4-pentamethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -428210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-94980.0
-    phase     gas;
 }

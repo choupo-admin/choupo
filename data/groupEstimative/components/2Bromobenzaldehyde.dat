@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylbenzaldehyde" "o-bromobenzaldehyde" "benzaldehyde, 2-bromo-" "benzaldehyde, o-bromo-" "2-bromo benzaldehyde" "2-formylbromobenzene" "benzaldehyde, bromo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   140030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=169120.0
-    phase     gas;
 }

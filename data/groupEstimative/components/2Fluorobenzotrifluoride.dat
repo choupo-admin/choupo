@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-fluoranyl-2-(trifluoromethyl)benzene" "o-fluorobenzotrifluoride" "1-fluoro-2-(trifluoromethyl)benzene" "benzene, 1-fluoro-2-(trifluoromethyl)-" "fxffr bf" "alpha,alpha,alpha,2-tetrafluorotoluene" "alpha,alpha,alpha,ar-tetrafluorotoluene" "1-fluoro-2-trifluoromethylbenzene" "a,a,a,2-tetrafluorotoluene" "2-(trifluoromethyl)fluorobenzene" "2-fluoro-1-(trifluoromethyl)benzene" "o-fluoro benzotrifluoride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -755940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     404.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-665560.0
-    phase     gas;
 }

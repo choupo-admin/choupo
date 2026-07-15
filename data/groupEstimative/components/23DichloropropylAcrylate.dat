@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(chloranyl)propyl prop-2-enoate" "2,3-dichloropropyl prop-2-enoate" "2-propenoic acid, 2,3-dichloropropyl ester" "2-propenoic acid, 2,3-dichloropropyl ester, homopolymer" "2,3-dichloropropyl acrylate, homopolymer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -395780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     493.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-249190.0
-    phase     gas;
 }

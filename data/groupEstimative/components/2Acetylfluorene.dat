@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(9h-fluoren-2-yl)ethanone" "ethanone, 1-(9h-fluoren-2-yl)-" "2-acetofluorene" "2-fluorenyl methyl ketone" "fluoren-2-yl methyl ketone" "ketone, fluoren-2-yl methyl" "ethanone, 1-(9h-fluoren-2-yl)" "1-(9h-fluoren-2-yl)-ethanone" "l148" "ethanone, 1-(9h-fluoren-2-yl)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   78600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=235090.0
-    phase     gas;
 }

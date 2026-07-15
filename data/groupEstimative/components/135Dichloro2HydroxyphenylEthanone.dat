@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 2; } { group OH_phenol; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[3,5-bis(chloranyl)-2-oxidanyl-phenyl]ethanone" "3',5'-dichloro-2'-hydroxyacetophenone" "3,5-dichloro-2-hydroxyacetophenone" "ethanone, 1-(3,5-dichloro-2-hydroxyphenyl)-" "1-acetyl-3,5-dichloro-2-hydroxybenzene" "3'5'-dichloro-2'-hydroxyacetophenone" "3'-5'-dichloro-2'-hydroxyacetophenone" "ethanone,1-(3,5-dichloro-2-hydroxyphenyl)-" "1-(3,5-dichloro-2-hydroxyphenyl)ethan-1-one" "2-acetyl-4,6-dichlorophenol;2'-hydroxy-3',5'-dichloroacetophenone;1-(3,5-dichloro-2-hydroxyphenyl)ethanone;acetophenone,3',5'-dichloro-2'-hydroxy- (6ci,7ci,8ci);3,5-dichloro-2-hydroxyacetophenone;3',5'-dichloro-2'-hydroxyacetophenone;4,6-dichloro-2-acetylphenol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -316230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     468.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-197770.0
-    phase     gas;
 }

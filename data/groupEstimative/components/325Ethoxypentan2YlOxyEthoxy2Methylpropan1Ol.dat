@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 2; } { group OH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[2-(5-ethoxypentan-2-yloxy)ethoxy]-2-methyl-propan-1-ol" "tripropylene glycol n-butyl ether" "3-[2-(5-ethoxypentan-2-yloxy)ethoxy]-2-methylpropan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -871100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     728.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-398120.0
-    phase     gas;
 }

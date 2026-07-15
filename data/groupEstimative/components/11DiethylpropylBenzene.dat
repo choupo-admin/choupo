@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethylpentan-3-ylbenzene" "benzene, (1,1-diethylpropyl)-" "benzene,(1,1-diethylpropyl)-" "(1,1-diethylpropyl)benzene;3-ethyl-3-phenylpentane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -83870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     517.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=173830.0
-    phase     gas;
 }

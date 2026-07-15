@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethylsilyl 2-trimethylsilylethanoate" "trimethylsilyl 2-trimethylsilylacetate" "acetic acid, (trimethylsilyl)-, trimethylsilyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -748970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     771.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-503410.0
-    phase     gas;
 }

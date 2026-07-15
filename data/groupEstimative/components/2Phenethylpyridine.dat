@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-phenylethyl)pyridine" "pyridine, 2-(2-phenylethyl)-" "pyridine, 2-phenethyl-" "phenethyl pyridine" "2-phenethyl-pyridine" "2-picoline, alpha-benzyl-" "2-picoline, .alpha.-benzyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   194200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=360450.0
-    phase     gas;
 }

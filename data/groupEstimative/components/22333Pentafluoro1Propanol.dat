@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 2; } { group F; count 5; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,3-pentakis(fluoranyl)propan-1-ol" "pfpoh" "pentafluoro-1-propanol" "2,2,3,3,3-pentafluoropropan-1-ol" "pentafluoropropanol" "1,1-dihydroperfluoropropanol" "perfluorodihydropropanol" "1h,1h-pentafluoro-1-propanol" "2,2,3,3,3-pentafluoropropanol" "1h,1h-pentafluoropropanol" "1-propanol, 2,2,3,3,3-pentafluoro-" "1h,1h-pentafluoropropanol-1" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1255530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     404.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1130810.0
-    phase     gas;
 }

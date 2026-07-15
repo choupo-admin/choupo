@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradecanenitrile" "tetradecanonitrile" "1-cyanotridecane" "c14-18 nitriles" "myristyl nitrile" "myrystyl nitrile" "tridecyl cyanide" "n-tridecyl cyanide" "(c14-c18)alkylnitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -167410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     707.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=200180.0
-    phase     gas;
 }

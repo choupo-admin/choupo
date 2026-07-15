@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 22; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl tetracosanoate" "lignoceric acid methyl ester" "tetracosanoic acid methyl ester" "tetracosanoic acid, methyl ester" "methyl tetracosanoic acid" "tetracosanoic acid,methyl ester" "a(3/4)a ea(1/4)xo yen" "tetracosanoic acid methyl ester (fame mix)" "2450b6fa-63f4-4631-86de-6cdf98a1449a" "lignocericacid methyl ester; methyl lignocerate; methyl tetracosanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -876610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1181.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-150750.0
-    phase     gas;
 }

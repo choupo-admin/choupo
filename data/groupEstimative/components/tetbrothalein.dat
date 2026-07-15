@@ -33,9 +33,8 @@ groups
     joback ( { group C_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 10; } { group Br; count 4; } { group OH_phenol; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-bis[3,5-bis(bromanyl)-4-oxidanyl-phenyl]-2-benzofuran-1-one" "tetrabromophenolphthalein" "3',3'',5',5''-tetrabromophenolphthalein" "phenol tetrabromophthalein" "phenolphthalein, tetrabromo-" "1(3h)-isobenzofuranone, 3,3-bis(3,5-dibromo-4-hydroxyphenyl)-" "phenolphthalein, 3',3'',5',5''-tetrabromo-" "3,3-bis(3,5-dibromo-4-hydroxyphenyl)-2-benzofuran-1-one" "3,3-bis(3,5-dibromo-4-hydroxyphenyl)-3-hydroisobenzofuran-1-one" "tetrabromophenolphthalein (van)" "3',5',5''-tetrabromophenolphthalein" "3',3',5',5'-tetrabromophenolphthalein" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -270110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     832.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76270.0
-    phase     gas;
 }

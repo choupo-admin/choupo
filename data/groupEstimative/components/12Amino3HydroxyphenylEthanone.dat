@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-azanyl-3-oxidanyl-phenyl)ethanone" "2'-amino-3'-hydroxyacetophenone" "2-amino-3-hydroxyacetophenone" "2-amino-3-hydroxyphenyl methyl ketone" "ethanone,1-(2-amino-3-hydroxyphenyl)-" "acetophenone,2'-amino-3'-hydroxy- (6ci,7ci,8ci); 2-amino-3-hydroxyphenyl methyl ketone;2'-amino-3'-hydroxyacetophenone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -239490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-97830.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-ethoxyphenyl)ethanoic acid" "(4-ethoxyphenyl)acetic acid" "benzeneacetic acid, 4-ethoxy-" "p-ethoxyphenylacetic acid" "2-(4-ethoxyphenyl)acetic acid" "para-ethoxyphenylacetic acid" "benzeneacetic acid,4-ethoxy-" "s772" "aceticacid, (p-ethoxyphenyl)- (6ci,7ci,8ci);(p-ethoxyphenyl)acetic acid;4-ethoxyphenylacetic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -507160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     497.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-312810.0
-    phase     gas;
 }

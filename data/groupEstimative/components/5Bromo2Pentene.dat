@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-bromanylpent-2-ene" "2-pentene, 5-bromo-" "2-pentene, 5-bromo-, (2e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     395.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=85760.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 2; } { group COOH; count 4; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[[1,4-bis(oxidanyl)-1,4-bis(oxidanylidene)butan-2-yl]amino]butanedioic acid" "d-aspartic acid,n-[(1s)-1,2-dicarboxyethyl]-, rel-" "agn-pc-03wk4u" "(2s)-2-[[(1s)-1,2-dicarboxyethyl]amino]butanedioic acid" "2-[(1,4-dihydroxy-1,4-dioxobutan-2-yl)amino]butanedioic acid" "d-asparticacid, n-(1,2-dicarboxyethyl)-, (s)-; r,s-iminodisuccinic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1566620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     701.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1274650.0
-    phase     gas;
 }

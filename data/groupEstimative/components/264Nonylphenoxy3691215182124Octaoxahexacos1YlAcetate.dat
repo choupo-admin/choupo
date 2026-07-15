@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 26; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 9; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-[2-[2-[2-[2-[2-[2-(4-nonylphenoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethyl ethanoate" "3,6,9,12,15,18,21,24-octaoxahexacosan-1-ol, 26-(4-nonylphenoxy)-, 1-acetate" "3,6,9,12,15,18,21,24-octaoxahexacosan-1-ol, 26-(4-nonylphenoxy)-, acetate" "26-(4-nonylphenoxy)-3,6,9,12,15,18,21,24-octaoxahexacosan-1-yl acetate" "2-[2-[2-[2-[2-[2-[2-[2-[2-(4-nonylphenoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2047930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1559.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-908770.0
-    phase     gas;
 }

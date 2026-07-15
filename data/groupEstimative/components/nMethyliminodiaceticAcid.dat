@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-hydroxy-2-oxoethyl(methyl)amino]ethanoic acid" "methyliminodiacetic acid" "mida" "methylimidodiacetic acid" "n-methyliminodiaceticacid" "2,2'-(methylazanediyl)diacetic acid" "(methylimino)diacetic acid" "[(carboxymethyl)(methyl)amino]acetic acid" "quadrapure&reg; ida" "quadrapure(tm) ida" "quadrapure(tm) iminodiacetate" "quadrapure&reg; iminodiacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -779540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     473.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-585820.0
-    phase     gas;
 }

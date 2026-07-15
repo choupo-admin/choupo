@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-cyclopentyl-n-methyl-propan-2-amine" "cyclopentadrin" "cyclonarol" "cyclopentamin" "cyklosan" "sinos" "cyclopentaminum [inn-latin]" "cyclopentamine (pharmacetical)" "1-cyclopentyl-n-methylpropan-2-amine" "2-cyclopentyl-n,1-dimethylethylamine" "n,alpha-dimethylcyclopentaneethylamine" "cyclopentaneethanamine, n,.alpha.-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -120420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     487.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=148400.0
-    phase     gas;
 }

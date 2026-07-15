@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 2; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1-bis(2-methoxyethoxy)-3-methyl-butane" "1,1-di(beta-methoxyethoxy)-3-methylbutane" "2,5,7,10-tetraoxaundecane, 6-(2-methylpropyl)-" "isovaleraldehyde, bis(2-methoxyethyl acetal)" "6-(2-methylpropyl)-2,5,7,10-tetraoxaundecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -809810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     610.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383140.0
-    phase     gas;
 }

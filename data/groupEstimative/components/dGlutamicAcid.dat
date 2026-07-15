@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group COOH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-azanylpentanedioic acid" "d-glu" "d-glutamate" "(r)-2-aminopentanedioic acid" "(2r)-2-aminopentanedioic acid" "d-2-aminopentanedioic acid" "glutamic acid d-form" "h-d-glu-oh" "d-glutaminsaeure" "d-glutaminic acid" "d(-)-glutamic acid" "d-(-)-glutamic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -818560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     499.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-632590.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group CH2_ring; count 1; } { group C_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1-dimethyl-2-methylidene-cyclopropane" "cyclopropane, 1,1-dimethyl-2-methylene-" "1,1-dimethyl-2-methylidenecyclopropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   5110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     342.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107980.0
-    phase     gas;
 }

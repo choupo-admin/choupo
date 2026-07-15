@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group F; count 4; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-bis(chloranyl)-1,1,2,2-tetrakis(fluoranyl)ethane" "1,2-dichlorotetrafluoroethane" "cryofluorane" "ethane, 1,2-dichloro-1,1,2,2-tetrafluoro-" "1,2-dichloro-1,1,2,2-tetrafluoroethane" "frigiderm" "arcton 33" "cryofluoranum [latin]" "f 114 (halocarbon)" "r 114 (halocarbon)" "cryofluoranum [inn-latin]" "ethane, dichlorotetrafluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -918030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     349.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-831460.0
-    phase     gas;
 }

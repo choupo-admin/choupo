@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 9; } { group C; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,5-tritert-butylbenzene" "benzene, 1,3,5-tris(1,1-dimethylethyl)-" "benzene, 1,3,5-tri-tert-butyl-" "1,3,5-tritert-butyl-benzene" "1,3,5-tris(tert-butyl)benzene" "p167" "1460-02-2 1,3,5-tri-tert-butylbenzene" "1,3,5-tris-(1,1-dimethylethyl)benzene;benzene, 1,3,5-tris(1,1-dimethylethyl)-;benzene,1,3,5-tri(1,1-dimethylethyl)-" "benzene,1,3,5-tri-tert-butyl- (6ci,7ci,8ci);1,3,5-tri-t-butylbenzene;1,3,5-tris(tert-butyl)benzene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -227510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     621.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=202350.0
-    phase     gas;
 }

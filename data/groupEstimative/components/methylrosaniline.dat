@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group C; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH; count 1; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris[4-(dimethylamino)phenyl]methanol" "methylrosanilinum" "crystal violet carbinol base" "violet 5bo base" "violet 5bno base" "waxoline violet 10b" "crystal violet carbinol" "c.i. solvent violet 9" "aizen crystal violet base" "c.i. basic violet 3, carbinol" "tri(p-dimethylaminophenyl)methanol" "4,4',4''-dimethylaminotriphenylcarbinol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   157460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     852.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=666320.0
-    phase     gas;
 }

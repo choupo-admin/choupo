@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH_ring; count 5; } { group OH; count 5; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-(hydroxymethyl)oxane-2,3,4,5-tetrol" "d-galactose" "d-mannose" "dextrose" ".beta.-d-glucopyranose" ".alpha.-d-glucose" "d-mannopyranose" ".alpha.-d-glucopyranose" "d(+)glucose, anhydrous" "hexose" "d-allose" "galactopyranose" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1087360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     392.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-776970.0
-    phase     gas;
 }

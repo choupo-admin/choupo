@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group O_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-fluoranyl-2,3-dihydrochromen-4-one" "6-fluoro-4-chromanone" "6-fluorochromano-4-one" "6-fluorochromanone" "6-fluoro-4-oxochroman" "6-fluoro-2,3-dihydro-4h-1-benzopyran-4-one" "6-fluoro-2,3-dihydro-4h-chromen-4-one" "2,3-dihydro-6-fluoro-4h-chromen-4-one" "6-fluoro-2,3-dihydro-1-benzopyran-4-one" "2,3-dihydro-6-fluoro-4h-1-benzopyran-4-one" "6-fluoro-3,4-dihydro-2h-1-benzopyran-4-one" "6-fluoro-chroman-4-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -394330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     261.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-229110.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 30; } { group CH; count 1; } { group dCH; count 4; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-acetyloxy-2-octadec-9-enoyloxy-propyl) octadec-9-enoate" "9-octadecenoic acid (9z)-, 1,1'-[1-[(acetyloxy)methyl]-1,2-ethanediyl] ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1612250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1884.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-478770.0
-    phase     gas;
 }

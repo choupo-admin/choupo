@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 8; } { group dC_ring; count 4; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-aminophenyl)aniline" "o-benzidine" "2,2'-diaminobiphenyl" "o,o'-diaminobiphenyl" "2,2'-diaminodiphenyl" "biphenyl-2,2'-diamine" "[1,1'-biphenyl]-2,2'-diamine" "(1,1'-biphenyl)-2,2'-diamine" "2-(2-aminophenyl)phenylamine" "(1,1'-biphenyl)-2,2'-diamine (9ci)" "2,2 inverted exclamation marka-biphenyldiamine" "2,2 inverted exclamation marka-diaminobiphenyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   226690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     501.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=388620.0
-    phase     gas;
 }

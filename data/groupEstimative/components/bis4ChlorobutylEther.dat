@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group Cl; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-4-(4-chloranylbutoxy)butane" "ether, bis(4-chlorobutyl)" "4,4'-dichlorodibutyl ether" "di(chlorobutyl)ether" "4-chlorobutyl ether" "butane, 1,1'-oxybis(4-chloro-" "butane, 1,1'-oxybis[4-chloro-" "1-chloro-4-(4-chlorobutoxy)butane" "1,1'-oxydi-4-chlorobutane" "1,1'-oxybis(4-chlorobutane)" "bis-(4-chlorbut-1-yl)-ether [german]" "bis(4-chlorobutyl)ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -372150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     545.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-112380.0
-    phase     gas;
 }

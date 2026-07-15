@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-5-methyl-benzoic acid" "5-methylanthranilic acid" "6-amino-m-toluic acid" "2-amino-5-methylbenzoicacid" "amino(2-)-5-methylbenzoic acid" "m-toluic acid, 6-amino-" "benzoic acid, 2-amino-5-methyl-" "zr d1 bvq" "2-carboxy-4-methylaniline" "2-amino-5-methyl benzoic acid" "2-amino-5-methyl-benzoic acid" "buttpark 41\07-01" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-167830.0
-    phase     gas;
 }

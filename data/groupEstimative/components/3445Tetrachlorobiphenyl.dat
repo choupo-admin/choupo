@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 6; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3-tris(chloranyl)-5-(4-chlorophenyl)benzene" "pcb 81" "1,1'-biphenyl, 3,4,4',5-tetrachloro-" "3,4,5,4'-tetrachloro-biphenyl" "1,1'-biphenyl, 3,4,4',5-tetrachloro" "1,2,3-trichloro-5-(4-chlorophenyl)benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   73210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     519.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=188740.0
-    phase     gas;
 }

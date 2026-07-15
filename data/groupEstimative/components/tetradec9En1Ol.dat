@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-9-tetradecen-1-ol" "9-tetradecen-1-ol, (9e)-" "9-tetradecen-1-ol, (9z)-" "9-tetradecen-1-ol,(9z)-" "9-tetradecen-1-ol,(z)-; (z)-9-tetradecen-1-ol; (z)-9-tetradecenyl alcohol; 9-cis-tetradecenol;myristoleyl alcohol; cis-9-tetradecen-1-ol; cis-9-tetradecenol; cis-d9-tetradecenol; d9-cis-n-tetradecen-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -367300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     745.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=10400.0
-    phase     gas;
 }

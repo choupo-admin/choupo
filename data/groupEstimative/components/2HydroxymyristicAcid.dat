@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanyltetradecanoic acid" "2-hydroxytetradecanoic acid" "alpha-hydroxymyristic acid" ".alpha.-hydroxymyristic acid" "dl-alpha-hydroxymyristic acid" "tetradecanoic acid, 2-hydroxy-" "alpha-hydroxy-n-tetradecylic acid" "tetradecanoic acid, 2-hydroxy" "2-hydroxymyristate" "alpha-hydroxymyristate" "a-hydroxymyristate" "a-hydroxymyristate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -840070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     795.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-416170.0
-    phase     gas;
 }

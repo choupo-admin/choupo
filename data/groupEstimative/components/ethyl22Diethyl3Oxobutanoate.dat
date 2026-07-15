@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2,2-diethyl-3-oxidanylidene-butanoate" "ethyl 2,2-diethylacetoacetate" "butanoic acid, 2,2-diethyl-3-oxo-, ethyl ester" "diethyl acetoacetate" "acetoacetic acid, 2,2-diethyl-, ethyl ester" "butanoic acid,2,2-diethyl-3-oxo-, ethyl ester" "acetoaceticacid, 2,2-diethyl-, ethyl ester (6ci,7ci,8ci); ethyl a,a-diethylacetoacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -688340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     584.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-403130.0
-    phase     gas;
 }

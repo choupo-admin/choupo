@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group Br; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylethanamide" "bromoacetamide" "acetamide, 2-bromo-" "2-bromo-acetamide" "sjyhcabiktp@" "juikuqoumzufqt-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -137070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     363.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-82190.0
-    phase     gas;
 }

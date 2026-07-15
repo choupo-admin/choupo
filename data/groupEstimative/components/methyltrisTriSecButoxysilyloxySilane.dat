@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 19; } { group CH2; count 9; } { group CH; count 9; } { group O; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tributan-2-yl [methyl-bis[tri(butan-2-yloxy)silyloxy]silyl] silicate" "tri-sec-butyl 1,1,1,5,5,5-hexa-sec-butoxy-3-methyltrisiloxan-3-yl orthosilicate" "trisiloxane, 3-methyl-1,1,1,5,5,5-hexakis(1-methylpropoxy)-3-((tris(1-methylpropoxy)silyl)oxy)-" "trisiloxane, 3-methyl-1,1,1,5,5,5-hexakis(1-methylpropoxy)-3-[[tris(1-methylpropoxy)silyl]oxy]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2887650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     2152.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1440340.0
-    phase     gas;
 }

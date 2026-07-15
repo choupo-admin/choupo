@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexyl 2-bromanylethanoate" "bromoacetic acid, hexyl ester" "hexyl 2-bromoacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -499400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     569.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-279570.0
-    phase     gas;
 }

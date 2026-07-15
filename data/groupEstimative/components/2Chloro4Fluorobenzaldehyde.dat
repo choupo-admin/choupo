@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-4-fluoranyl-benzaldehyde" "c131" "84194-36-5 2-chloro-4-fluorobenzaldehyde" "4-fluoro-2-nitro benzoic acid;benzaldehyde, 2-chloro-4-fluoro-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -109620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-61570.0
-    phase     gas;
 }

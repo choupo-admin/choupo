@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylbut-1-en-3-yne" "1-buten-3-yne, 2-methyl-" "2-methyl-1-buten-1-yne" "2-methyl-1-butene-3-yne" "2-methyl-1-butenyne" "2-methylbutenyne" "3-methyl-3-buten-1-yne" "3-methyl-3-butene-1-yne" "isopropenylacetylene" "valylene" "BRN 0969175" "ai3-25132" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   261010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     311.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=293580.0
-    phase     gas;
 }

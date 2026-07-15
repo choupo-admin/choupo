@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group C; count 2; } { group CH2_ring; count 30; } { group OH; count 6; } { group O; count 1; } { group COO; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxepanone, homopolymer, ester with 2,2'-(oxybis(methylene))bis(2-(hydroxymethyl)-1,3-propanediol) (6:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -4144350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     3092.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2809020.0
-    phase     gas;
 }

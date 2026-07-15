@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(1-adamantyl)ethanoic acid" "1-adamantylacetic acid" "adamantan-1-ylacetic acid" "2-(1-adamantyl)acetic acid" "1-(carboxymethyl)adamantane" "2-(adamantan-1-yl)acetic acid" "2-adamantanylacetic acid" "tricyclo[3.3.1.13,7]decane-1-acetic acid" "tricyclo[3.3.1.1(3,7)-]decane-1-acetic acid" "tricyclo(3.3.1.13,7)dec-1-ylacetic acid" "tricyclo[3.3.1.13,7]dec-1-ylacetic acid" "tricyclo[3.3.1.1~3,7~]dec-1-ylacetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -434140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-136800.0
-    phase     gas;
 }

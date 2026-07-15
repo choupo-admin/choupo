@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7-methano-1h-inden-5-ol, octahydro-, acetate" "4,7-methano-1h-inden-5-ol, octahydro-, 5-acetate" "4,7-methano-1h-inden-5-ol, octahydro-, acetate, (3ar,4s,5r,7s,7ar)-rel-" "4,7-methano-1h-inden-5-ol, octahydro-, 5-acetate, (3ar,4s,5r,7s,7ar)-rel-" "dihydrodicyclopentadiene acetate" "hexahydro-4,7-methanoindan-6-yl acetate" "hexahydro-4,7-methanoindane-5-yl acetate" "octahydro-4,7-methano-1h-inden-5-yl acetate" "(3aalpha,4alpha,5alpha,7alpha,7aalpha)-octahydro-4,7-methano-1h-inden-5-yl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -436730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     339.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-105480.0
-    phase     gas;
 }

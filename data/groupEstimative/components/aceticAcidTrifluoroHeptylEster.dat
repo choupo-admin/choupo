@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group C; count 1; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "heptyl 2,2,2-tris(fluoranyl)ethanoate" "heptyl trifluoroacetate" "heptyl 2,2,2-trifluoroacetate" "acetic acid, trifluoro-, heptyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1143450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     614.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-867060.0
-    phase     gas;
 }

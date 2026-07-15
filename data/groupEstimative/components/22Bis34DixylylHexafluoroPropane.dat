@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 3; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group F; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[2-(3,4-dimethylphenyl)-1,1,1,3,3,3-hexakis(fluoranyl)propan-2-yl]-1,2-dimethyl-benzene" "2,2-bis(3,4-dimethylphenyl)hexafluoropropane" "1,1'-(1,1,1,3,3,3-hexafluoro-2,2-propanediyl)bis(3,4-dimethylbenzene)" "4-[2-(3,4-dimethylphenyl)-1,1,1,3,3,3-hexafluoropropan-2-yl]-1,2-dimethylbenzene" "benzene, 1,1'-[2,2,2-trifluoro-1-(trifluoromethyl)ethylidene]bis[3,4-dimethyl-" "hexafluoro-2,2-bis-(3,4-dimethylphenyl)-propane" "benzene, 1,1'-(2,2,2-trifluoro-1-(trifluoromethyl)ethylidene)bis(3,4-dimethyl-" "4,4'-(hexafluoroisopropylidene)di-o-xylene" "propane, hexafluoro-2,2-di(3,4-xylyl)-" "2,2-bis(3,4-dimethylphenyl)hexafluoropropane;" "2,2-bis-(3,4-dimethylphenyl)-hexafluoropropane" "4,4'-(perfluoropropane-2,2-diyl)bis(1,2-dimethylbenzene)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1211220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     732.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-864940.0
-    phase     gas;
 }

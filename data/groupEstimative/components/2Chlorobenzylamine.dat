@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-chlorophenyl)methanamine" "o-chlorobenzylamine" "benzenemethanamine, 2-chloro-" "2-chlorobenzenemethanamine" "o-chlorobenzyl amine" "benzylamine, o-chloro-" "(2-chlorophenyl)methylamine" "2-chloro benzylamine" "ocam" "2-chloro-benzylamine" "(2-chlorophenyl)-methyl-amine" "benzylamine, o-chloro- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   55300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=165360.0
-    phase     gas;
 }

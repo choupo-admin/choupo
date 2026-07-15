@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(4-phenylphenyl)butanoic acid" "4-biphenyl-4-yl-butyric acid" "4-biphenylbutyric acid" "[1,1'-biphenyl]-4-butanoicacid" "4-biphenylbutyricacid (8ci);butyric acid, 4-(4-biphenylyl)- (6ci);butyric acid, g-4-biphenylyl- (4ci);4-(4-phenylphenyl)butyric acid;4-p-biphenylylbutanoic acid;g-(4-biphenylyl)butyric acid;g-(4-diphenylyl)butyric acid;g-(p-xenyl)butyric acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -262250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     613.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-44880.0
-    phase     gas;
 }

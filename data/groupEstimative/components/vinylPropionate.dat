@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethenyl propanoate" "propanoic acid, ethenyl ester" "propionic acid, vinyl ester" "propionic acid vinyl ester" "vinyl propanoate" "propanoic acid, ethenyl ester, homopolymer" "vinylester kyseliny propionove" "poly(vinyl propionate) solution" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -338380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     397.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-231310.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 12; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dipentylpentan-1-amine" "triamylamine" "1-pentanamine, n,n-dipentyl-" "tri-n-pentylamine" "tri-n-amylamine" "1-pentanamine,n-dipentyl-" "triamylamine, mixed isomers" "1-pentanamine,n,n-dipentyl-" "triamylamine, 99% isomeric" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -285400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     756.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=186200.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-octadec-9-enamide" "oleic acid amide" "oleylamide" "oleyl amide" "adogen 73" "crodamide o" "slip-eze" "armoslip cp" "9-octadecenamide, (z)-" "cis-9,10-octadecenoamide" "crodamide or" "(z)-9-octadecenamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -376420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     928.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=118430.0
-    phase     gas;
 }

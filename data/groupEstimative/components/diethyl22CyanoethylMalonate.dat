@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group COO; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diethyl 2-(2-cyanoethyl)propanedioate" "diethyl (2-cyanoethyl)malonate" "diethyl(2-cyanoethyl)malonate" "diethyl 2-(2-cyanoethyl)-malonate" "diethyl2-(2-cyanoethyl)malonate" "diethyl 2-(2-cyanoethyl)propane-1,3-dioate" "(2-cyanoethyl)malonic acid diethyl ester" "1,3-diethyl 2-(2-cyanoethyl)propanedioate" "propanedioic acid,2-(2-cyanoethyl)-, 1,3-diethyl ester" "3-cyano-2-methylpyridine;3-pyridinecarbonitrile, 2-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -724690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     644.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-456680.0
-    phase     gas;
 }

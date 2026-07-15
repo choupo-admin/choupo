@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 1; } { group O; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(8-methylnonoxy)propanenitrile" "3-isodecoxypropionitrile" "propanenitrile, 3-(decyloxy)-, branched" "3-(isodecyloxy)propylnitrile" "3-(isodecyloxy)propiononitrile" "3-(decyloxy)propiononitrile, branched" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -284270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     670.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=84320.0
-    phase     gas;
 }

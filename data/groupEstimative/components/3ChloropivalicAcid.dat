@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-2,2-dimethyl-propanoic acid" "3-chloro-2,2-dimethylpropionic acid" "chloropivalic acid" "propanoic acid, 3-chloro-2,2-dimethyl-" "chlorotrimethylacetic acid" "3-chloro-2,2-dimethylpropanoic acid" "propionic acid, 3-chloro-2,2-dimethyl-" "a-chloropivalic acid" "beta-chloropivalic acid" ".beta.-chloropivalic acid" "3-chloro-2,2-dimethylpropaneoic acid" "propanoic acid,3-chloro-2,2-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -521290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     398.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-361780.0
-    phase     gas;
 }

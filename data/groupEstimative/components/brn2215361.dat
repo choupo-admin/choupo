@@ -33,9 +33,8 @@ groups
     joback ( { group dC; count 1; } { group C_ring; count 2; } { group dC_ring; count 3; } { group Cl; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[bis(chloranyl)methylidene]-1,2,3,3,5,5-hexakis(chloranyl)cyclopentene" "perchloromethylene-3-cyclopentene" "cyclopentene, 4-(dichloromethylene)-1,2,3,3,5,5-hexachloro-" "hexachloro-4-(dichloromethylene)cyclopentene" "perchloromethylene-delta(sup 3)-cyclopentene" "cyclopentene, hexachloro-4-(dichloromethylene)-" "4-(dichloromethylene)-1,2,3,3,5,5-hexachlorocyclopentene" "cyclopentene, 1,2,3,3,5,5-hexachloro-4-(dichloromethylene)-" "cyclopentene, hexachloro-4-(dichloromethylene)- (8ci)" "1,2,3,3,5,5-hexachloro-4-(dichloromethylidene)cyclopentene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -121390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     621.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-30330.0
-    phase     gas;
 }

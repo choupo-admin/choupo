@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 21; } { group C; count 1; } { group OH; count 4; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-bis(hydroxymethyl)propane-1,3-diol;decanoic acid;octanoic acid;pentanoic acid" "decanoic acid mixed esters with octanoic acid pentaerythritol and valeric acid" "decanoic acid, mixed esters with butyric acid, octanoic acid and pentaerythritol" "decanoic acid, mixed esters with octanoic acid, pentaerythritol and valeric acid" "pentaerythritol, mixed esters with valeric acid, caprylic acid, capric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2624590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1893.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1705570.0
-    phase     gas;
 }

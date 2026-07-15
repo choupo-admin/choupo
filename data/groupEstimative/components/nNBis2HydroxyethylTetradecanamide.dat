@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 16; } { group OH; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradecanamide, n,n-bis(2-hydroxyethyl)-" "n,n-bis(2-hydroxyethyl)tetradecamide" "myristic acid diethanolamide" "myristamide dea" "myristic diethanolamide" "myristoyl diethanolamide" "amides, c14-16, n,n-bis(hydroxyethyl)" "tetradecamide, n,n-bis" "n,n-bis(2-hydroxyethyl)myristamide" "diethanolamine myristic acid condensate" "(c14-c18)alkylcarboxylic acid, diethanolamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -764360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1001.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-191100.0
-    phase     gas;
 }

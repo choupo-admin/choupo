@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dC; count 2; } { group Cl; count 3; } { group OdCH_al; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-2,4,4-tris(chloranyl)-3-methanoyl-but-2-enoic acid" "(z)-2-chloro-3-(dichloromethyl)-4-oxobutenoic acid" "2-butenoic acid, 2,4,4-trichloro-3-formyl-, (z)-" "2-butenoic acid, 3-formyl-2,4,4-trichloro-, (z)-" "(z)-2,4,4-trichloro-3-formylbut-2-enoic acid" "zmx" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -537240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     498.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-427320.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group O; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-(2-methoxyethoxy)ethoxy]ethyl ethanoate" "triethylene glycol monomethyl ether acetate" "ethanol, 2-[2-(2-methoxyethoxy)ethoxy]-, acetate" "2-(2-(2-methoxyethoxy)ethoxy)ethyl acetate" "2-[2-(2-methoxyethoxy)ethoxy]ethyl acetate" "2-(2-(2-methoxyethoxy)ethoxy)ethanol acetate" "ethanol, 2-(2-(2-methoxyethoxy)ethoxy)-, acetate" "ethanol, 2-(2-(2-methoxyethoxy)ethoxy)-, 1-acetate" "ethanol, 2-[2-(2-methoxyethoxy)ethoxy]-, 1-acetate" "acetic acid, 2-[2-(2-methoxyethoxy)ethoxy]ethyl ester" "3,6,9-trioxadecylester kyseliny octove" "2-(2-(2-methoxyethoxy)ethoxy)ethylester kyseliny octove" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -943030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     591.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-600470.0
-    phase     gas;
 }

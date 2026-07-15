@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-hex-3-enal" "3-hexenal, (z)-" "3-hexenal, cis-" "(3z)-hexenal" "3-(z)-hexenal" "cis-3-hexenal solution" "cis-beta,gamma-hexylenic aldehyde" "3-hexenal" "3-hexenal, (3z)-" "hex-3-enal" "3z-hexenal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -135530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-19660.0
-    phase     gas;
 }

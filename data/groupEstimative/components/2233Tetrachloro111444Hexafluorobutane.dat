@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 4; } { group F; count 6; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3-tetrakis(chloranyl)-1,1,1,4,4,4-hexakis(fluoranyl)butane" "butane, 2,2,3,3-tetrachlorohexafluoro-" "butane s2-46" "butane, 2,2,3,3-tetrachloro-1,1,1,4,4,4-hexafluoro-" "2,2,3,3-tetrachlorohexafluorobutane" "butane,2,3,3-tetrachlorohexafluoro-" "hexafluoro-2,2,3,3-tetrachlorobutane" "1,1,1,4,4,4-hexafluoro-tetrachlorobutane" "butane,2,3,3-tetrachloro-1,1,1,4,4,4-hexafluoro-" "butane,2,2,3,3-tetrachloro-1,1,1,4,4,4-hexafluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1400510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     480.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1222420.0
-    phase     gas;
 }

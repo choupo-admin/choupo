@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methoxy-5-methyl-3-methylidene-cyclohexene" "1-methoxy-5-methyl-3-methylidenecyclohexene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -176440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     417.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=17760.0
-    phase     gas;
 }

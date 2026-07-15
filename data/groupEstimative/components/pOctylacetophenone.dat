@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-octylphenyl)ethanone" "4'-n-octylacetophenone" "4'-octylacetophenone" "p-n-octylacetophenone" "4-n-octylacetophenone" "ethanone, 1-(4-octylphenyl)-" "acetophenone, 4'-octyl-" "1-acetyl-4-octylbenzene" "1-(4-octylphenyl)-ethanon" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -261090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     693.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=57700.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylprop-2-enal" "methacrylaldehyde" "2-propenal, 2-methyl-" "isobutenal" "2-methyl-2-propenal" "2-methylacrolein" "2-methylpropenal" "methylacrylaldehyde" "2-methylenepropanal" "methacrylic aldehyde" "acrolein, 2-methyl-" "alpha-methylacrolein" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -95830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     321.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37430.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,5-tris(4-methylphenyl)-1,3,5-triazinane" "anhydroformaldehyde paratoluidine" "s-triazine, hexahydro-1,3,5-tritolyl-" "hexahydro-1,3,5-tri-p-tolyl-s-triazine" "s-triazine, hexahydro-1,3,5-tri-p-tolyl-" "s-triazine,3,5-tritolyl-" "s-triazine,3,5-tri-p-tolyl-" "1,3,5-tris(4-methylphenyl)-1,3,5-triazaperhydroine" "1,5-triazine, hexahydro-1,3,5-tris(4-methylphenyl)-" "1,3,5-triazine, hexahydro-1,3,5-tris(4-methylphenyl)-" "1,3,5-triazine, hexahydro-1,3,5-tris(4-methylphenyl)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   432220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     753.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=860340.0
-    phase     gas;
 }

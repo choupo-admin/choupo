@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-iodanylnonane" "nonyl iodide" "n-nonyl iodide" "nonane, 1-iodo-" "1-n-nonyl iodide" "nonane, iodo-" "nonane,1-iodo-" "iodononane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -152220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     562.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83020.0
-    phase     gas;
 }

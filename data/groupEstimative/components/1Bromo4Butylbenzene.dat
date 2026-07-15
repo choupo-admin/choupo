@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-4-butyl-benzene" "4-bromo-n-butylbenzene" "1-bromo-4-n-butylbenzene" "4-n-butylbromobenzene" "1-(4-bromophenyl)butane" "1-bromo-4-butyl-benzene" "4-(but-1-yl)bromobenzene" "1-bromo-4-(but-1-yl)benzene" "k937" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   1660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=150420.0
-    phase     gas;
 }

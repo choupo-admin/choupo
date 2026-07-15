@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-oxidanylnonanoic acid" "9-hydroxy-nonanoic acid" "9-hydroxy pelargonic acid" "nonanoic acid,9-hydroxy-" "nonanoic acid, 9-hydroxy-" "9-hydroxynonanoicacid;9-hydroxypelargonic acid;w-hydroxynonanoic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -731590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     610.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-455830.0
-    phase     gas;
 }

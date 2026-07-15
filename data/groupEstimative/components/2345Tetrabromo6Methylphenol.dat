@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dC_ring; count 6; } { group Br; count 4; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,5-tetrakis(bromanyl)-6-methyl-phenol" "3,4,5,6-tetrabromo-o-cresol" "satinasept" "tetrabromo-o-cresol" "o-cresol, tetrabromo-" "desderman" "remanol" "deodorant richter/k" "phenol, 2,3,4,5-tetrabromo-6-methyl-" "o-cresol, 3,4,5,6-tetrabromo-" "2-methyl-3,4,5,6-tetrabromophenol" "3,4,5,6-tetrabromo-2-methylphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -69150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     528.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-15390.0
-    phase     gas;
 }

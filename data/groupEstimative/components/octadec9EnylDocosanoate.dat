@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 35; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "docosanoic acid, (9z)-9-octadecenyl ester" "docosanoic acid, (9z)-9-octadecen-1-yl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1068990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1758.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55770.0
-    phase     gas;
 }

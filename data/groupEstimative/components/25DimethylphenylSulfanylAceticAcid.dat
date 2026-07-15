@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2,5-dimethylphenyl)sulfanylethanoic acid" "(2,5-dimethyl-phenylsulfanyl)-acetic acid" "acetic acid, ((2,5-dimethylphenyl)thio)-" "acetic acid, [(2,5-dimethylphenyl)thio]-" "acetic acid, 2-((2,5-dimethylphenyl)thio)-" "acetic acid, 2-[(2,5-dimethylphenyl)thio]-" "(2,5-dimethylphenylsulfanyl)acetic acid" "2-((2,5-dimethylphenyl)thio)acetic acid" "2-(2,5-dimethylphenyl)sulfanylacetic acid" "acetic acid,2-[(2,5-dimethylphenyl)thio]-" "2-[(2,5-dimethylphenyl)sulfanyl]acetic acid" "aceticacid, (2,5-xylylthio)- (6ci,8ci); acetic acid, [(2,5-dimethylphenyl)thio]-(9ci); (2,5-xylylthio)acetic acid; [(2,5-dimethylphenyl)sulfanyl]acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -344540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     541.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184320.0
-    phase     gas;
 }

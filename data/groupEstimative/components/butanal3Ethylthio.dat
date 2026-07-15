@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group OdCH_al; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethylsulfanylbutanal" "3-(ethylthio)butanal" "beta-(ethylthio)butyraldehyde" "3-(ethylthio)butyraldehyde" "3-(ethylsulfanyl)butanal" "butyraldehyde, 3-(ethylthio)-" "butyraldehyde, 3-(ethylthio)- (6ci)" "butyraldehyde,3-(ethylthio)- (6ci); 3-(ethylthio)butanal; 3-(ethylthio)butyraldehyde; b-(ethylthio)butyraldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -216160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     460.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-69200.0
-    phase     gas;
 }

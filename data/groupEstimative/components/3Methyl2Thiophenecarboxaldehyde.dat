@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylthiophene-2-carbaldehyde" "3-methylthiophene-2-carboxaldehyde" "3-methylthiophene-2-aldehyde" "2-formyl-3-methylthiophene" "3-methyl-2-thiophene carboxaldehyde" "thiophenecarboxaldehyde, methyl-" "3-methyl-2-thiophenecarbaldehyde" "u420" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   127980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     425.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=168380.0
-    phase     gas;
 }

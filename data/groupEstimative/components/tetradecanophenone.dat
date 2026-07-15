@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenyltetradecan-1-one" "myristophenone" "tridecyl phenyl ketone" "1-tetradecanone, 1-phenyl-" "ketone, phenyl tridecyl" "phenyl tridecyl ketone" "1-tetradecanone,1-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -332180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     855.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=101010.0
-    phase     gas;
 }

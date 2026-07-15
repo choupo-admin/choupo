@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 22; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-tetracosane" "lignocerane" "ai3-52698" "tricosane, methyl-" "tetracosane, analytical standard" "CH3-(CH2)22-CH3" "CH3-[CH2]22-ch3" "tetracosane; nsc 2984; n-tetracosane" "CHEMBL4172502" "NSC2984" "HY-N7933" "STL301146" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -538690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1090.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=151200.0
-    phase     gas;
 }

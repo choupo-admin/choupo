@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-fluorophenyl)propan-1-one" "p-fluoropropiophenone" "4-fluoropropiophenone" "ethyl 4-fluorophenyl ketone" "propiophenone, 4'-fluoro-" "1-propanone, 1-(4-fluorophenyl)-" "qijnvllxiipxqt-uhfffaoysa-" "1-(4-fluorophenyl)-1-propanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -312720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-196050.0
-    phase     gas;
 }

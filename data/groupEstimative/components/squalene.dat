@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 8; } { group CH2; count 10; } { group dCH; count 6; } { group dC; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6,10,15,19,23-hexamethyltetracosa-2,6,10,14,18,22-hexaene" "spinacene" "agn-pc-00ez64" "2,6,10,15,19,23-hexamethyl-2,6,10,14,18,22-tetracosahexene" "2,6,10,15,19,23-hexamethyl-2,6,10,14,18,22-tetracosahexaene" "2,6,10,14,18,22-tetracosahexaene, 2,6,10,15,19,23-hexamethyl-, (2e,6e,10e,14e,18e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -17950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1260.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=631740.0
-    phase     gas;
 }

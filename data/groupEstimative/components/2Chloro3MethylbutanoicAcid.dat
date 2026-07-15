@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 2; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-3-methyl-butanoic acid" "2-chloroisovaleric acid" "(s)-2-chloro-3-methylbutyricacid" "agn-pc-00por0" "butanoic acid, 2-chloro-3-methyl-" "(s)-2-chloro-3-methylbutanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -523100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     418.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-369500.0
-    phase     gas;
 }

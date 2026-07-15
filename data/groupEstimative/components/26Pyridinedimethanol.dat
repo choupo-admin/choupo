@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group OH; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[6-(hydroxymethyl)pyridin-2-yl]methanol" "2,6-bis(hydroxymethyl)pyridine" "pyridine-2,6-diyldimethanol" "2,6-bis-(hydroxymethyl)pyridine" "2,6-dihydroxymethylpyridine" "[6-(hydroxymethyl)-2-pyridyl]methan-1-ol" "2,6-pyridine dimethanol" "(pyridine-2,6-diyl)dimethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -234420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     430.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-85750.0
-    phase     gas;
 }

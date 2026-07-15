@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxy-6-prop-2-enyl-phenol" "2-allyl-6-methoxyphenol" "o-allylguaiacol" "2-methoxy-6-prop-2-enylphenol" "phenol, 2-methoxy-6-(2-propenyl)-" "guaiacol, 6-allyl-" "6-allyl-2-methoxyphenol" "ghl.pd_mitscher_leg0.513" "phenol, 2-allyl-6-methoxy-" "6-methoxy-2-prop-2-enylphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -208770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     466.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-35680.0
-    phase     gas;
 }

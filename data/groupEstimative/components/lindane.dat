@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 6; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5,6-hexakis(chloranyl)cyclohexane" "gamma-bhc" "beta-hch" "alpha-hch" "gamma-hch" "kwell" "beta-bhc" "hexachlorane" "aalindan" "beta-lindane" "gamma-hexachlorocyclohexane" "1,2,3,4,5,6-hexachlorocyclohexane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -308990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     347.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-86040.0
-    phase     gas;
 }

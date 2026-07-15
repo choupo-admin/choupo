@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "spiro[2.3]hexane" "spirohexane(6ci,7ci,8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   14010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     321.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=123360.0
-    phase     gas;
 }

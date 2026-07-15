@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-methyl-6-propan-2-yl-cyclohex-2-en-1-yl) methanoate" "6-(isopropyl)-3-methylcyclohex-2-en-1-yl formate" "2-cyclohexen-1-ol, 3-methyl-6-(1-methylethyl)-, formate" "2-cyclohexen-1-ol, 3-methyl-6-(1-methylethyl)-, 1-formate" "(3-methyl-6-propan-2-ylcyclohex-2-en-1-yl) formate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -118910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     641.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120330.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 22; } { group O_ring; count 11; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16,18,18,20,20,22,22-docosamethyl-1,3,5,7,9,11,13,15,17,19,21-undecaoxa-2,4,6,8,10,12,14,16,18,20,22-undecasilacyclodocosane" "cycloundecasiloxane, docosamethyl-" "docosamethylcycloundecasiloxane" "cycloundecasiloxane,docosamethyl- (8ci,9ci); docosamethylcycloundecasiloxane" "cycloundecasiloxane,2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16,18,18,20,20,22,22-docosamethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3133370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1951.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1993660.0
-    phase     gas;
 }

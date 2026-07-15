@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O_ring; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "agn-pc-03jg8f" "2-oxiranecarboxamide,2-ethyl-3-propyl-" "hexanamide,2,3-epoxy-2-ethyl- (6ci,7ci,8ci); oxiranecarboxamide, 2-ethyl-3-propyl- (9ci);2,3-epoxy-2-ethylhexanamide; 2-ethyl-3-propyl-2,3-epoxypropionamide;2-ethyl-3-propylglycidamide; oxanamid; oxanamide; quiactin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -323640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     386.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-124500.0
-    phase     gas;
 }

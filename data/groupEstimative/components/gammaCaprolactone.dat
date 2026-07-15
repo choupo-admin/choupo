@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-ethyloxolan-2-one" "gamma-hexalactone" "gamma-hexanolactone" "6-caprolactone" "4-hexanolide" "tonkalide" "toukalide" "2(3h)-furanone, 5-ethyldihydro-" "hexanolide-1,4" ".gamma.-caprolactone" "4-hydroxyhexanoic acid lactone" "4-ethyl-4-butanolide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -411650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     350.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-249980.0
-    phase     gas;
 }

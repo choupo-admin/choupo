@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-oxidanylbenzoate" "ethyl 2-hydroxybenzoate" "sal ethyl" "salicylic acid, ethyl ester" "mesotol" "salotan" "benzoic acid, 2-hydroxy-, ethyl ester" "salicylic ethyl ester" "ethyl o-hydroxybenzoate" "o-(ethoxycarbonyl)phenol" "salicylic ether" "sal ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -487150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     477.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-327680.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[(2-azanyl-4-methyl-pentanoyl)amino]ethanoic acid" "d-leucylglycine" "leu-gly" "n-dl-leucylglycine" "leucylglycine" "d-leu-gly" "2-[(2-amino-4-methylpentanoyl)amino]acetic acid" "l-leucyglycine" "h-dl-leu-gly-oh" "dl-leu-gly" "glycine, n-dl-leucyl-" "(2-amino-4-methylpentanamido)acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -594600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     620.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-305390.0
-    phase     gas;
 }

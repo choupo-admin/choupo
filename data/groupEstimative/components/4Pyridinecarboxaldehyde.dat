@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pyridine-4-carbaldehyde" "isonicotinaldehyde" "4-formylpyridine" "p-pyridinealdehyde" "4-pyridinealdehyde" "isonicotinic aldehyde" "4-pyridylaldehyde" "4-pyridinecarbaldehyde" "pyridine-4-carboxaldehyde" "(4-pyridinecarboxaldehyde)" "p-formylpyridine" "pyridin-4-al" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   178600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     376.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=233060.0
-    phase     gas;
 }

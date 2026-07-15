@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dC; count 2; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,3,3,3-hexakis(chloranyl)prop-1-ene" "propene, hexachloro-" "perchloropropylene" "hexachloropropylene" "perchloropropene" "1-propene, 1,1,2,3,3,3-hexachloro-" "1,1,2,3,3,3-hexachloroprop-1-ene" "1-propene,1,2,3,3,3-hexachloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -110800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     419.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-31240.0
-    phase     gas;
 }

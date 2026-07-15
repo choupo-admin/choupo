@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "mono(1-methylheptyl) phthalate" "1,2-benzenedicarboxylic acid,mono(1-methylheptyl) ester" "1,2-benzenedicarboxylic acid, 1-(1-methylheptyl) ester" "dl-2-octyl phthalate" "(1)-2-octyl hydrogen phthalate" "2-(1-methylheptoxycarbonyl)benzoic acid" "2-[octan-2-yloxy(oxo)methyl]benzoic acid" "2-{[(2r)-octan-2-yloxy]carbonyl}benzoic acid" "1,2-benzenedicarboxylic acid, mono(1-methylheptyl) ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -821340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     761.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-470100.0
-    phase     gas;
 }

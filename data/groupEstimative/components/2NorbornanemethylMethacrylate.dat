@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bicyclo[2.2.1]heptanylmethyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, bicyclo(2.2.1)hept-2-ylmethyl ester" "2-propenoic acid, 2-methyl-, bicyclo[2.2.1]hept-2-ylmethyl ester" "norborn-2-ylmethyl methacrylate" "2-propenoic acid,2-methyl-, bicyclo[2.2.1]hept-2-ylmethyl ester" "2-propenoic acid, 2-methyl-, bicyclo(2.2.1)hept-2-ylmethyl ester, homopolymer" "methacrylicacid, 2-norbornylmethyl ester (7ci,8ci); 2-norbornanemethanol, methacrylate(8ci); 2-norbornanemethyl methacrylate; norborn-2-ylmethyl methacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -373550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-79230.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group F; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(fluoranyl)ethanoic acid" "perfluoroacetic acid" "acetic acid, trifluoro-" "trifluoracetic acid" "trifluoroethanoic acid" "2,2,2-trifluoroacetic acid" "tfa" "1,1,1-trifluoroacetic acid" "trifluoro acetic acid" "water-trifluoroacetic acid" "ipc-pffa-2" "peptide trifluoroacetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1031960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     343.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-959540.0
-    phase     gas;
 }

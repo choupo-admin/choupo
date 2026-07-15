@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(fluoranyl)ethylbenzene" "(2,2,2-trifluoroethyl)-benzene" "2,2,2-trifluoroethylbenzene" "alpha-(trifluoromethyl)toluene" "2-phenyl-1,1,1-trifluoroethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -569000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     417.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-452700.0
-    phase     gas;
 }

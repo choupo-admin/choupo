@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenylpentadecane" "benzene, pentadecyl-" "pentadecane, 1-phenyl-" "n-pentadecylbenzene" "benzene, mono-c10-16-alkyl derivs." "(c10-c16)alkylbenzene" "pentadecane, 1-phenyl- (8ci)" "benzene, mono-c1o-16-alkyl derivs." );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -240240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     867.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=238350.0
-    phase     gas;
 }

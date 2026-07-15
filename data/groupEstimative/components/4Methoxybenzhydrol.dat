@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-methoxyphenyl)-phenyl-methanol" "(4-methoxyphenyl)(phenyl)methanol" "(4-methoxy-phenyl)-phenyl-methanol" "benzenemethanol, 4-methoxy-.alpha.-phenyl-" "(4-methoxyphenyl)phenylmethan-1-ol" "4-methoxybenzhydryl alcohol" "(4-methoxyphenyl)-phenylmethanol" "benzenemethanol,4-methoxy-a-phenyl-" "benzenemethanol, 4-methoxy-alpha-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -160430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     534.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37930.0
-    phase     gas;
 }

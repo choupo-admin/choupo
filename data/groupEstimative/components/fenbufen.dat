@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-oxidanylidene-4-(4-phenylphenyl)butanoic acid" "cinopal" "lederfen" "bufemid" "napanol" "3-(4-phenylbenzoyl)propionic acid" "gamma-oxo(1,1'-biphenyl)-4-butanoic acid" "fenbufene [inn-french]" "fenbufenum [inn-latin]" "3-(4-biphenylcarbonyl)propionic acid" "4-(4-biphenylyl)-4-oxobutyric acid" "3-(4-biphenylylcarbonyl)propionic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -374830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     640.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-173800.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 44; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-hexatetracontane" "hexatetracontane, analytical standard" "STL453692" "HY-W127565" "DB-243591" "CS-0185787" "Q18456677" "C46" "nc46" "n-c46" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -992770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1947.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=336440.0
-    phase     gas;
 }

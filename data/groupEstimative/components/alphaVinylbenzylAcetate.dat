@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenylprop-2-enyl ethanoate" "1-phenylallyl acetate" "1'-acetoxyallylbenzene" "1-phenyl-2-propenyl acetate" "alpha-vinylbenzyl alcohol acetate" "benzenemethanol, " "a-ethenyl-, acetate" "benzyl alcohol, alpha-vinyl-, acetate" "benzenemethanol, alpha-ethenyl-, acetate" "1-phenylprop-2-enyl acetate" "benzenemethanol, a-ethenyl-, acetate" "benzenemethanol, .alpha.-ethenyl-, acetate" "benzenemethanol, alpha-ethenyl-, 1-acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -230970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-70820.0
-    phase     gas;
 }

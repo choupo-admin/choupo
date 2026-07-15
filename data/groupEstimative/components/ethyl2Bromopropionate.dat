@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-bromanylpropanoate" "ethyl 2-bromopropanoate" "ethyl alpha-bromopropionate" "ethyl-2-bromopropionate" "propanoic acid, 2-bromo-, ethyl ester" "2-bromopropanoic acid ethyl ester" "alpha-bromopropionic acid ethyl ester" "ethyl a-bromopropionate" "2-bromopropionic acid ethyl ester" "ethyl alpha-bromopropanoate" "dl-ethyl 2-bromopropionate" "ethyl (1)-2-bromopropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -442760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     443.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-307270.0
-    phase     gas;
 }

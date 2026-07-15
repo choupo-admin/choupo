@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3-dihydro-2-benzothiophene" "1,3-dihydrobenzo[c]thiophene" "benzo[c]thiophene, 1,3-dihydro-" "dihydroisobenzothiophene" "benzo(c)thiophene, 1,3-dihydro-" "1,3-dihydro-benzo[c]thiophene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   155010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     357.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=227580.0
-    phase     gas;
 }

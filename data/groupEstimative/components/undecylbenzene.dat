@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzene, undecyl-" "undecane, 1-phenyl-" "undecanylbenzene" "n-undecylbenzene" "undecyl-benzene" "benzene, c10-13-alkyl derivs." "benzene, mono-c10-13-alkyl derivs." "undecane, 1-phenyl- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -157680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     711.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=204670.0
-    phase     gas;
 }

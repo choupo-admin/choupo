@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group NH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(cyclopropylamino)propanenitrile" "3-(3-cyclopropylamino)propionitrile" "propanenitrile,3-(cyclopropylamino)-" "3-(cyclopropylamino)propanenitrile;3-(cyclopropylamino)propionitrile;n-(2-cyanoethyl)-n-(cyclopropyl)amine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   123980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     346.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=282960.0
-    phase     gas;
 }

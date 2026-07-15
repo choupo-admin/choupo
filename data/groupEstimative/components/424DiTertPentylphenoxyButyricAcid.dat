@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 5; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[2,4-bis(2-methylbutan-2-yl)phenoxy]butanoic acid" "4-(2,4-di-tert-pentylphenoxy)butanoic acid" "butanoic acid, 4-[2,4-bis(1,1-dimethylpropyl)phenoxy]-" "4-[2,4-bis(1,1-dimethylpropyl)phenoxy]butanoic acid" "butanoic acid, 4-(2,4-bis(1,1-dimethylpropyl)phenoxy)-" "upcmld0enat5883862:001" "p834" "4-(2,4-bis(tert-pentyl)phenoxy)butyric acid" "butanoic acid,4-[2,4-bis(1,1-dimethylpropyl)phenoxy]-" "butanoic acid, 4-[2, 4-bis(2, 2-dimethylpropyl)phenoxy]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -742530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     802.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-232560.0
-    phase     gas;
 }

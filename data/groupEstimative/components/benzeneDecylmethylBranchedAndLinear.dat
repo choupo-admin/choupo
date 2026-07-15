@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(2r,5s)-5-ethyl-2-methyl-octyl]benzene" "[(2r,5s)-5-ethyl-2-methyloctyl]benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -168240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     692.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=199790.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-chloranylprop-2-enoate" "2-propenoic acid, 2-chloro-, methyl ester" "methyl-2-chloroacrylate" "methyl alpha-chloroacrylate" "acrylic acid, 2-chloro-, methyl ester" "2-chloroacrylic acid, methyl ester" "methyl-alpha-chloroacrylate" "methyl 2-chloro-2-propenoate" "propenoic acid, 2-chloro-, methyl ester" "2-chlorod" "agn-pc-0cr99w" "methyl .alpha.-chloroacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -343270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     387.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-260210.0
-    phase     gas;
 }

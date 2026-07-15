@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-dimethylpentan-3-ylbenzene" "benzene, [2-methyl-1-(1-methylethyl)propyl]-" "2,4-dimethyl-3-phenylpentane" "(1-isopropyl-2-methyl-propyl)-benzene" "2,4-dimethyl-3-phenyl-pentane" "benzene,[2-methyl-1-(1-methylethyl)propyl]-" "benzene,(1-isopropyl-2-methylpropyl)- (8ci); 2,4-dimethyl-3-phenylpentane; a,a-diisopropyltoluene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -90960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     527.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=163670.0
-    phase     gas;
 }

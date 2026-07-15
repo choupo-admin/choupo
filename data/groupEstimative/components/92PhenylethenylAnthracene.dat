@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 14; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "anthracene,9-(2-phenylethenyl)-" "anthracene,9-styryl- (6ci,7ci,8ci);9-(2-phenylethenyl)anthracene;9-styrylanthracene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   452070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     563.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=633440.0
-    phase     gas;
 }

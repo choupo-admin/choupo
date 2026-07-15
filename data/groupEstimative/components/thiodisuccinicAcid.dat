@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 2; } { group COOH; count 4; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[1,4-bis(oxidanyl)-1,4-bis(oxidanylidene)butan-2-yl]sulfanylbutanedioic acid" "2,2'-thiodisuccinic acid" "2,2'-sulfanediyldisuccinic acid" "butanedioic acid, 2,2'-thiobis-" "2,2-thiodisuccinic acid" "succinic acid, 2,2'-thiodi-" "butanedioic acid,2,2'-thiobis-" "sasyrhxvhlpmqd-uhfffaoysa-" "2,2'-sulfanediyldibutanedioic acid" "2-(1,2-dicarboxyethylthio)butanedioic acid" "2-(1,2-dicarboxyethylsulfanyl)butanedioic acid" "2-[(1,2-dicarboxyethyl)sulfanyl]butanedioic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1578220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     722.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1330920.0
-    phase     gas;
 }

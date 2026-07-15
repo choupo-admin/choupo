@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-4-propan-2-yl-cyclohexa-1,4-diene" "p-mentha-1,4-diene" "crithmene" "moslene" "gamma-terpinen" ".gamma.-terpinen" "1,4-cyclohexadiene, 1-methyl-4-(1-methylethyl)-" "4-isopropyl-1-methyl-1,4-cyclohexadiene" "terpinene, alpha" ".gamma.-terpinene" "1,4-p-menthadiene" "1-isopropyl-4-methyl-1,4-cyclohexadiene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -87730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     460.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=103700.0
-    phase     gas;
 }

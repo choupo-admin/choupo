@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group CH_ring; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-azabicyclo(3.2.1)octane" "8-aza-bicyclo[3.2.1]octane" "1.alpha.h,5.alpha.h-nortropane" "1ah,5ah-nortropane (8ci); nortropane (7ci); nortropan" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -16720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     281.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=193070.0
-    phase     gas;
 }

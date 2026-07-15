@@ -35,9 +35,8 @@ groups
     joback ( { group CH3; count 5; } { group O_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4,6,8,10-pentamethyl-1,3,5,7,9,2$l^{3},4$l^{3},6$l^{3},8$l^{3},10$l^{3}-pentaoxapentasilecane" "cyclopentasiloxane, 2,4,6,8,10-pentamethyl-" "2,4,6,8,10-pentamethyl-1,3,5,7,9,2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1004760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-657020.0
-    phase     gas;
 }

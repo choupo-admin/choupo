@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 4-oxidanylidenebutanoate" "succinaldehydic acid, ethyl ester" "butanoic acid, 4-oxo-, ethyl ester" "beta-formyl propionic acid, ethyl ester" "agn-pc-0cqdia" "2-tritioethyl 4-oxobutanoate" "3-ethoxycarbonylpropionaldehyde" "ethylester kyseliny 3-formylpropionove" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -570030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-410250.0
-    phase     gas;
 }

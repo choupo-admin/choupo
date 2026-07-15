@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 3; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-hydroxymethyl-2,4-dihydroxypentane" "2,4-pentanediol, 3-(hydroxymethyl)-" "3-hydroxymethyl-2,4-pentanediol" "3-hydroxymethylpentane-2,4-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -639700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     513.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-418140.0
-    phase     gas;
 }

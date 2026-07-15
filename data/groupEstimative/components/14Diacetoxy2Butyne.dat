@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group tC; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-acetyloxybut-2-ynyl ethanoate" "butynediol diacetate" "2-butyne-1,4-diol diacetate" "2-butyne-1,4-diol, diacetate" "but-2-yne-1,4-diyl diacetate" "4-acetyloxybut-2-ynyl acetate" "2-butyne-1,4-diol, 1,4-diacetate" "2-butyne-1, diacetate" "bis(acetoxymethyl)acetylene" "ghl.pd_mitscher_leg0.686" "2-butyne-1,4-diol 1,4-diacetate" "2-butyne-1,4-diol,1,4-diacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -570710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     541.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-401460.0
-    phase     gas;
 }

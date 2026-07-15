@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(tert-butylsulfanyl)butane" "butane, 1-[(1,1-dimethylethyl)thio]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -175330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     490.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=52440.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzene-1,2,4-tricarboxylic acid" "trimellitic acid" "4-carboxyphthalic acid" "1,2,4-tricarboxybenzene" "1,2,4-benzenetricarboxylicacid" "1,3,4-benzenetricarboxylic acid" "1,4,5-benzenetricarboxylic acid" "1,4-tricarboxybenzene" "1,4-benzenetricarboxylic acid" "67801-57-4 (cobalt(+2)[1:1] salt)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1066310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     547.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-913680.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 8; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(12-methylbenzo[a]anthracen-7-yl)methanol" "7-(hydroxymethyl)-12-methylbenz[a]anthracene" "12-methylbenz(a)anthracene-7-methanol" "7-hydroxymethyl-12-methylbenz(a)anthracene" "7-(hydroxymethyl)-12-methylbenz(a)anthracene" "benz(a)anthracene-7-methanol, 12-methyl-" "12-methylbenz[a]anthracene-7-methanol" "7-hydroxymethyl-12-methylbenz[a]anthracene" "(12-methyltetraphen-7-yl)methanol" "benz[a]anthracene-7-methanol,12-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   155500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     528.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=374540.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentan-1-ol" "amyl alcohol" "pentyl alcohol" "n-amyl alcohol" "n-pentanol" "butylcarbinol" "pentanol" "amylol" "n-butylcarbinol" "pentanol-1" "1-pentyl alcohol" "n-pentan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -298760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-145600.0
-    phase     gas;
 }

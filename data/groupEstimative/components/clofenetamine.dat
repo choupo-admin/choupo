@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group C; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[1-(4-chlorophenyl)-1-phenyl-ethoxy]-n,n-diethyl-ethanamine" "keithon" "clofenetaminum [inn-latin]" "kt 5" "2-(1-(4-chlorophenyl)-1-phenylethoxy)-n,n-diethylethanamine" "triethylamine, 2-(alpha-(p-chlorophenyl)-alpha-methylbenzyloxy)-" "2-(alpha-(p-chlorophenyl)-alpha-methylbenzyloxy)-n,n-diethylethylamine" "ethylamine, 2-(alpha-(p-chlorophenyl)-alpha-methylbenzyloxy)-n,n-diethyl-" "clofenetamina" "clofenetaminum" "kaithon" "2-[1-(4-chlorophenyl)-1-phenylethoxy]-n,n-diethylethanamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -83720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     737.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=329400.0
-    phase     gas;
 }

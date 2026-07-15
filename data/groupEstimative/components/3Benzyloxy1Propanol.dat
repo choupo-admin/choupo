@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylmethoxypropan-1-ol" "3-benzyloxypropanol" "3-benzyloxy-propan-1-ol" "1-propanol, 3-(benzyloxy)-" "1-propanol, 3-(phenylmethoxy)-" "3-phenylmethoxy-1-propanol" "3-(benzyloxy)-1-propanol" "3-(benzyloxy)propan-1-ol" "3-phenylmethoxy-propan-1-ol" "3-benzoxypropan-1-ol" "3-(benzyl-oxy)propan-1-ol" "3-benzyloxyl propane-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -297650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     501.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96090.0
-    phase     gas;
 }

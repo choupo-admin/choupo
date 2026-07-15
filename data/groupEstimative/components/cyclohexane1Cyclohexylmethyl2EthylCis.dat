@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 9; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(cyclohexylmethyl)-2-ethyl-cyclohexane" "1-(cyclohexylmethyl)-2-ethylcyclohexane" "cyclohexane, 1-(cyclohexylmethyl)-2-ethyl-, trans-" "(1r,2r)-1-(cyclohexylmethyl)-2-ethylcyclohexane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -264630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     636.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116610.0
-    phase     gas;
 }

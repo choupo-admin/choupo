@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 20; } { group OH; count 1; } { group O; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadecanoic acid compd. with 2-(2-aminoethoxy)ethanol (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1209960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1287.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-489680.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(cyclopenten-1-yl)ethanenitrile" "1-cyclopentylacetonitrile" "1-(cyanomethyl)cyclopentene" "1-cyclopenteneacetonitrile" "1-cyclopentene-1-acetonitrile" "cyclopent-1-ene-1-acetonitrile" "2-(cyclopenten-1-yl)acetonitrile" "2-(cyclopent-1-en-1-yl)acetonitrile" "(1-cyclopenten-1-yl)acetonitrile;1-cyclopentenylacetonitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   104200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     383.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=205830.0
-    phase     gas;
 }

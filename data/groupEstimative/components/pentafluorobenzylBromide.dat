@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dC_ring; count 6; } { group F; count 5; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(bromomethyl)-2,3,4,5,6-pentakis(fluoranyl)benzene" "2,3,4,5,6-pentafluorobenzyl bromide" "(bromomethyl)pentafluorobenzene" "1-bromomethylpentafluorobenzene" "alpha-bromo-2,3,4,5,6-pentafluorotoluene" "1-(bromomethyl)-2,3,4,5,6-pentafluorobenzene" "benzene, (bromomethyl)pentafluoro-" "toluene, .alpha.-bromo-2,3,4,5,6-pentafluoro-" "pentafluoro benzyl bromide" "pentafluorobromomethyl benzene" "2,4,5,6-pentafluorobenzyl bromide" "2,3,4,5,6-pentafluorobenzylbromide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -962850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     500.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-887410.0
-    phase     gas;
 }

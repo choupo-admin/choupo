@@ -33,9 +33,8 @@ groups
     joback ( { group dC; count 2; } { group Br; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2-tetrakis(bromanyl)ethene" "tetrabromoethylene" "ethylene, tetrabromo-" "tetrabromoethene" "ethene, 1,1,2,2-tetrabromo-" "1,1,2,2-tetrabromoethene" "ethylene, tetrabromo- (8ci)" "ethene,1,1,2,2-tetrabromo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   118350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     423.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=86360.0
-    phase     gas;
 }

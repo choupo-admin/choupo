@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3-ethanoyl-2,2-dimethyl-cyclobutyl)ethanoic acid" "cyclobutaneacetic acid, 3-acetyl-2,2-dimethyl-" "cis-pinonic acid" "3-acetyl-2,2-dimethyl-cyclobutaneacetic acid" "cis-3-acetyl-2,2-dimethylcyclobutylacetic acid" "2-(3-acetyl-2,2-dimethylcyclobutyl)acetic acid" "3-acetyl-2,2-dimethylcyclobutaneacetic acid" "cyclobutaneacetic acid,2-dimethyl-" "(+) pinonic acid" "(+)-pinonic acid" "cyclobutaneacetic acid, 3-acetyl-2,2-dimethyl-, (1r,3r)-rel-" "pinonic acid (mixed isomers)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -671380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     539.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-411770.0
-    phase     gas;
 }

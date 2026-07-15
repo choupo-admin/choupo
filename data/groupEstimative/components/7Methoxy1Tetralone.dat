@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-methoxy-3,4-dihydro-2h-naphthalen-1-one" "7-methoxyl-1-tetralone" "1(2h)-naphthalenone, 3,4-dihydro-7-methoxy-" "7-methoxy-2,3,4-trihydronaphthalen-1-one" "3,4-dihydro-7-methoxy-1(2h)-naphthalenone" "3,4-dihydro-7-methoxynaphthalen-1(2h)-one" "7-methoxy-1,2,3,4-tetrahydronaphthalen-1-one" "7-methoxy-3,4-dihydronaphthalen-1(2h)-one" "7-methoxy 1-tetralone" "agn-pc-0d5cfo" "gabltkriydndin-uhfffaoysa-" "7-methoxy-1-oxo-tetralin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -239720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     370.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-36340.0
-    phase     gas;
 }

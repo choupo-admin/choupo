@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 19; } { group C; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trihexyl 2-butanoyloxypropane-1,2,3-tricarboxylate" "1,2,3-propanetricarboxylic acid, 2-(1-oxobutoxy)-, trihexyl ester" "1,2,3-propanetricarboxylic acid, 2-(1-oxobutoxy)-, 1,2,3-trihexyl ester" "butyryl-n-trihexylcitrate" "butyryl trihexyl citrate" "n-butyryl tri-n-hexyl citrate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1899120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1412.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1053760.0
-    phase     gas;
 }

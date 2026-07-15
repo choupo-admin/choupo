@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxyethanoic acid" "2-methoxyacetic acid" "acetic acid, methoxy-" "methoxyethanoic acid" "acetic acid, 2-methoxy-" "methoxyessigs" "50402-70-5 (hydrochloride salt)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -587740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     337.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-474530.0
-    phase     gas;
 }

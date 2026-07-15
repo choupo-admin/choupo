@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 5; } { group CH_ring; count 6; } { group C_ring; count 5; } { group OH; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "grayanotoxin iii" "grayanotoxane-3,6,10,14,16-hexol" "grayanotoxane-3,6,10,14,16-hexol, (3.beta.,6.beta.,14r)-" "(1beta,3alpha,5alpha,6alpha,8beta,9alpha,10alpha,13beta,14s)-grayanotoxane-3,5,6,10,14,16-hexol" "7,4,8,11,11a,12(1h)-hexol, dodecahydro-, 1,4,8-tetramethyl-, (2s,3as,4r,4ar,7r,8r,9as,11r,11ar,12r)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1169130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1010.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-590220.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "l-proline, 3-phenyl-,(3r)-" "(2r,3r)-3-phenylpyrrolidine-2-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -306160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     432.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-73210.0
-    phase     gas;
 }

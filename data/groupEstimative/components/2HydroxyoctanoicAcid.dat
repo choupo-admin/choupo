@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanyloctanoic acid" "2-hydroxycaprylic acid" "hydroxyoctanoate" "2-hydroxyoctans" "alpha-hydroxycaprylic acid" "2-hydroxy caprylic acid" "2-hydroxy-octanoic acid" "2-hydroxy-n-octanoic acid" "(+/-)-2-hydroxyoctanoic acid" "2-hydroxyoctanoate" "(2r)-2-hydroxyoctanoic acid" "a-hydroxycaprylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -716230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     562.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-466690.0
-    phase     gas;
 }

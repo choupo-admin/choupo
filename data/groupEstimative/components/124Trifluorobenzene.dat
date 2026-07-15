@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,4-tris(fluoranyl)benzene" "benzene, 1,2,4-trifluoro-" "1,4-trifluorobenzene" "1,3,4-trifluorobenzene" "benzene,2,4-trifluoro-" "1,2,4-trifluoro-benzene" "1,2,4- trifluorobenzene" "1,4-trifluorobenzene, misnomer" "h566" "1,3, 4-trifluorobenzene;benzene, 1,2,4-trifluoro-;1,3,4-trifluorobenzene, misnomer;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -541910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     366.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-491640.0
-    phase     gas;
 }

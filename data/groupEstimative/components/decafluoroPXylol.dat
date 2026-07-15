@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group dC_ring; count 6; } { group F; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,4,5-tetrakis(fluoranyl)-3,6-bis(trifluoromethyl)benzene" "perfluoro-4-xylene" "1,2,4,5-tetrafluoro-3,6-bis(trifluoromethyl)benzene" "benzene, 1,2,4,5-tetrafluoro-3,6-bis(trifluoromethyl)-" "perfluoro-p-xylene" "tetrafluoro-1,4-bis(trifluoromethyl)benzene" "benzene,1,2,4,5-tetrafluoro-3,6-bis(trifluoromethyl)-" "p-xylene,decafluoro- (6ci,7ci); p-xylene, a,a,a,a',a',a',2,3,5,6-decafluoro- (8ci); decafluoro-p-xylene;p-perfluoroxylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2007870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     569.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1861680.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1-methylpiperidin-3-yl) 2-oxidanyl-2,2-diphenyl-ethanoate" "1-methyl-3-piperidyl benzilate" "benzilic acid, 1-methyl-3-piperidyl ester" "alpha-hydroxy-alpha-phenylbenzeneacetic acid, 1-methyl-3-piperidinyl ester" "benzeneacetic acid, .alpha.-hydroxy-.alpha.-phenyl-, 1-methyl-3-piperidinyl ester" "1-methylpiperidin-3-yl 2-hydroxy-2,2-diphenylacetate" "(1-methylpiperidin-3-yl) 2-hydroxy-2,2-diphenylacetate" "benzeneacetic acid, a-hydroxy-a-phenyl-, 1-methyl-3-piperidinylester" "benzeneacetic acid, alpha-hydroxy-alpha-phenyl-, 1-methyl-3-piperidinyl ester" "benzeneacetic acid, alpha-hydroxy-alpha-phenyl-, 1-methyl-3-piperidinyl ester (9ci)" "benzilicacid, 1-methyl-3-piperidyl ester (6ci,7ci,8ci); 3-piperidinol, 1-methyl-,benzilate (ester) (8ci); 1-methyl-3-piperidyl benzilate; 3-npb; jb 336;n-methyl-3-hydroxypiperidine benzilate; n-methyl-3-piperidyl benzilate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -333320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     751.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=45320.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[bis(chloranyl)methyl]-2-(trichloromethyl)benzene" "benzene, 1-(dichloromethyl)-2-(trichloromethyl)-" "o-xylene,.alpha.,.alpha.,.alpha.',.alpha.'-pentachloro-" "alpha,alpha,alpha,alpha',alpha'-pentachloro-o-xylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -76120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     473.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=60010.0
-    phase     gas;
 }

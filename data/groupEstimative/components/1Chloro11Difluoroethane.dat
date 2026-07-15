@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group F; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-1,1-bis(fluoranyl)ethane" "chlorodifluoroethane" "hcfc-142b" "ethane, 1-chloro-1,1-difluoro-" "propellant 142b" "freon 142b" "fluorocarbon 142b" "genetron 142b" "isotron 142b" "gentron 142b" "fluorocarbon fc142b" "monochlorodifluoroethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -501320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     291.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-432750.0
-    phase     gas;
 }

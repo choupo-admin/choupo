@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylpropyl 2-chloranylethanoate" "3-phenylpropyl 2-chloroacetate" "chloroacetic acid, 3-phenylpropyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -366860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     562.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-168150.0
-    phase     gas;
 }

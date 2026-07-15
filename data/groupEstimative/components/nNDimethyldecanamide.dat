@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 8; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "decanamide, n,n-dimethyl-" "n,n-dimethylcapramide" "n,n-dimethylcapylamide" "n,n-dimethyldecanoamide" "n,n-dimethyldecan-1-amide" "nn-dimethyldecanamide" "decanamide,n-dimethyl-" "n,n-dimethylcapramide;" "n,n-dimethyl decanamide" "n,n-dimethyldecanamide, tech" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -336060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     666.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=32020.0
-    phase     gas;
 }

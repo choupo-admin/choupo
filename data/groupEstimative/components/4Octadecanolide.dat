@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-tetradecyloxolan-2-one" ".gamma.-stearolactone" "4-octadecalactone" "gamma-stearolactone" "2(3h)-furanone, dihydro-5-tetradecyl-" "gamma-octadecalactone" "dihydro-5-tetradecyl-2(3h)-furanone" "octadecanoic acid, 4-hydroxy-, gamma-lactone" "octadecanoic acid, .gamma.-lactone" "octadecanoic acid, 4-hydroxy-, gamma-lactone (7ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -659330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     818.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-148940.0
-    phase     gas;
 }

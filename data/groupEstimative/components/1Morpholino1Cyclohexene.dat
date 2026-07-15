@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 8; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(cyclohexen-1-yl)morpholine" "morpholine, 4-(1-cyclohexen-1-yl)-" "n-morpholino-1-cyclohexene" "1-morpholinocyclohexene" "4-(1-cyclohexen-1-yl)morpholine" "4-cyclohex-1-enyl-morpholine" "cyclohexanone morpholine enamine" "1-morpholin-1-ylcyclohexene" "1-(n-morpholino)cyclohexene" "4-(1-cyclohexenyl)morpholine" "n-(1-cyclohexen-1-yl)morpholine" "4-cyclohex-1-enylmorpholine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -112410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     470.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=154730.0
-    phase     gas;
 }

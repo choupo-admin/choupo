@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group O; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-dimethoxy-2-butanone" "3,3-dimethoxy-2-oxobutane" "3,3-dimethoxy-butan-2-one" "2,3-butanedione,dimethyl acetal (8ci);3,3-dimethoxy-2-butanone;3,3-dimethoxybutan-2-one;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -552940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-336440.0
-    phase     gas;
 }

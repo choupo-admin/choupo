@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 9; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo[b]pyren-6-ylmethanol" "benzo(a)pyrene-6-methanol" "(10a-13c)benzo[pqr]tetraphen-6-ylmethanol" "6-(hydroxymethyl)benzo(a)pyrene" "benzo(a)pyrene, 6-hydroxymethyl-" "6-hydroxymethylbenzo[a]pyrene" "benzo[pqr]tetraphen-6-ylmethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   280470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=483850.0
-    phase     gas;
 }

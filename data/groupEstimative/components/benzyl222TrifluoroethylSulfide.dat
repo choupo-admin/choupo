@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group F; count 3; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(fluoranyl)ethylsulfanylmethylbenzene" "(2,2,2-trifluoroethylthio)methylbenzene" "benzyl 2,2,2-trifluoroethyl sulphide" "2,2,2-trifluoroethylsulfanylmethylbenzene" "benzyl 2,2,2-trifluoroethyl sulphide 97%" "2,2,2-trifluoro-1-(phenylmethylthio)ethane" "benzene,[[(2,2,2-trifluoroethyl)thio]methyl]-" "benzyl 2,2,2-trifluoroethyl sulfide;{[(2,2,2-trifluoroethyl)sulfanyl]methyl}benzene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -547770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     517.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-411160.0
-    phase     gas;
 }

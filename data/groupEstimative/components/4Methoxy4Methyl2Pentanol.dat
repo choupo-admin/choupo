@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methoxy-4-methyl-pentan-2-ol" "pent-oxol solvent" "pent-oxol" "2-pentanol, 4-methoxy-4-methyl-" "4-methoxy-4-methylpentan-2-ol" "2-pentanol,4-methoxy-4-methyl-" "4-methoxy-4-methyl-2-pentanol;4-methyl-4-methoxy-2-pentanol; pent-oxol; pent-oxol solvent" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -486290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-233360.0
-    phase     gas;
 }

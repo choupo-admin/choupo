@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octanal, 2-methyl-" "alpha-methyloctanal" "2-methyloctanaldehyde" "methylhexylacetaldehyde" "methyl hexyl acetaldehyde" "2-methyl octanal" "2-methyloctanal;2-methyloctanaldehyde; a-methyloctanal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -319950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-77060.0
-    phase     gas;
 }

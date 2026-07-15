@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butyl 3-chloranylpropanoate" "3-chloropropanoic acid butyl ester" "butyl 3-chloropropionate" "propanoic acid, 3-chloro-, butyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -520830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     513.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-314240.0
-    phase     gas;
 }

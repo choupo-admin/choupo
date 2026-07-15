@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 4; } { group OdCH_al; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2e,4e)-hexa-2,4-dienedial" "muconic dialdehyde" "muconaldehyde" "muconic aldehyde" "hexa-2,4-dienedial" "(e,e)-muconaldehyde" "trans,trans-muconaldehyde" "(e,e)-2,4-hexendial" "(e,e)-2,4-hexadienedial" "2,4-hexadienedial, (e,e)-" "c6h8o" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -103890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-38960.0
-    phase     gas;
 }

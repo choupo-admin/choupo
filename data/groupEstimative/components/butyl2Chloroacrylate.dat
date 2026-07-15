@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butyl 2-chloranylprop-2-enoate" "butyl .alpha.-chloroacrylate" "butyl 2-chloroprop-2-enoate" "2-propenoic acid,2-chloro-, butyl ester" "2-propenoic acid, 2-chloro-, butyl ester" "acrylicacid, 2-chloro-, butyl ester (6ci,7ci,8ci); 2-chloroacrylic acid butyl ester;butyl 2-chloroacrylate; butyl a-chloroacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -405190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     504.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-234950.0
-    phase     gas;
 }

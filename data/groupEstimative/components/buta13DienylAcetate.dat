@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dCH; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "buta-1,3-dienyl ethanoate" "1,3-butadien-1-ol,1-acetate" "[(1z)-buta-1,3-dienyl] acetate" "1,3-butadien-1-ol,acetate (6ci,7ci,8ci,9ci); 1,3-butadienyl acetate; 1-acetoxy-1,3-butadiene;1-acetoxybutadiene; butadienyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -241800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     429.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-142670.0
-    phase     gas;
 }

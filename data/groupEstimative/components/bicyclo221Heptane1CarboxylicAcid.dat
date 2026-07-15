@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group CH_ring; count 1; } { group C_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bicyclo[2.2.1]heptane-4-carboxylic acid" "1-norbornanecarboxylic acid" "bicyclo(2.2.1)heptane-1-carboxylic acid" "1-norbornane carboxylic acid" "bicyclo[2.2.1]heptane-1-carboxylicacid" "bicyclo[2.2.1]heptane-1-carboxylic acid (221)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -404040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     429.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-223520.0
-    phase     gas;
 }

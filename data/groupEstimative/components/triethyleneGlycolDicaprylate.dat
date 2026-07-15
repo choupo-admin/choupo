@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 18; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-(2-octanoyloxyethoxy)ethoxy]ethyl octanoate" "triethylene glycol dioctanoate" "octanoic acid, diester with triethylene glycol" "triethyleneglycol dicaprylate" "octanoic acid, 1,2-ethanediylbis(oxy-2,1-ethanediyl) ester" "octanoic acid, 1,1'-(1,2-ethanediylbis(oxy-2,1-ethanediyl)) ester" "octanoic acid, 1,1'-[1,2-ethanediylbis(oxy-2,1-ethanediyl)] ester" "2,2'-ethylenedioxydiethyl dioctanoate" "octanoic acid, ethylenebis(oxyethylene) ester" "octanoic acid, ethylenebis(oxyethylene) ester (8ci)" "octanoic acid,2-ethanediylbis(oxy-2,1-ethanediyl) ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1396410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1138.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-696380.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-enyl ethanoate" "3-acetoxypropene" "acetic acid, 2-propenyl ester" "2-propenyl acetate" "2-propenyl ethanoate" "2-propenyl methanoate" "3-acetoxy-1-propene" "acetic acid, 2-propen-1-yl ester" "acetic acid prop-2-enyl ester" "alloac" "prop-2-enyl acetate" "acetic acid allyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -338380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     397.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-231310.0
-    phase     gas;
 }

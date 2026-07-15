@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group tC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "agn-pc-00omxp" "6-hepten-4-yn-3-ol,3,6-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     481.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=173010.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 6; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[diethoxy(methyl)silyl]ethyl-diethoxy-methyl-silane" "4,7-diethoxy-4,7-dimethyl-3,8-dioxa-4,7-disiladecane" "2-[diethoxy(methyl)silyl]ethyl-diethoxy-methylsilane" "3,8-dioxa-4,7-disiladecane,4,7-diethoxy-4,7-dimethyl-" "1,2-bis(methyldiethoxysilyl)ethane;1,2-bis[diethoxy(methyl)silyl]ethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1043130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     921.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-579360.0
-    phase     gas;
 }

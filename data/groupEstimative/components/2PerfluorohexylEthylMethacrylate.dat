@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 6; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 13; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,4,4,5,5,6,6,7,7,8,8,8-tridecakis(fluoranyl)octyl 2-methylprop-2-enoate" "3,3,4,4,5,5,6,6,7,7,8,8,8-tridecafluorooctyl methacrylate" "1h,1h,2h,2h-perfluorooctyl methacrylate" "3,3,4,4,5,5,6,6,7,7,8,8,8-tridecafluorooctyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, 3,3,4,4,5,5,6,6,7,7,8,8,8-tridecafluorooctyl ester" "1h,1h,2h,2h-perfluorooctylmethacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3094580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     844.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2696410.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethynylaniline" "benzenamine, 3-ethynyl-" "m-aminophenylacetylene" "m-ethynylaniline" "3-ethynylbenzenamine" "3-ethynylphenylamine" "3-ethynylbenzeneamine" "m-aminophenyl acetylene" "r926" "benzenamine, 3-ethynyl-;3-ethynyl aniline;3-ethynylbenzenamine;m-aminophenylacetylene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   342300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     376.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=408780.0
-    phase     gas;
 }

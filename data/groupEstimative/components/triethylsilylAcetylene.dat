@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triethyl(ethynyl)silane" "ethynyltriethylsilane" "triethylsilyl acetylene" "triethylethynylsilane" "silane, triethylethynyl-" "(triethylsilyl)acetylene;(triethylsilyl)ethyne;triethylethynylsilane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -28170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     563.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=134790.0
-    phase     gas;
 }

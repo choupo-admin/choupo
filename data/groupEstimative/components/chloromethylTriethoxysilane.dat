@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group Cl; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloromethyl(triethoxy)silane" "silane, (chloromethyl)triethoxy-" "silane, triethoxy(chloromethyl)-" "chlormethyl-triethoxysilan" "chloromethyltriethoxysilane" "silane,(chloromethyl)triethoxy-" "(chloromethyl)triethoxysilane;(triethoxysilyl)methyl chloride;nd 41;triethoxy(chloromethyl)silane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -711830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     622.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-423630.0
-    phase     gas;
 }

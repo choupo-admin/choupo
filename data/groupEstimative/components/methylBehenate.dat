@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 20; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl docosanoate" "docosanoic acid, methyl ester" "behenic acid, methyl ester" "docosanoic acid methyl ester" "behenic acid methyl ester" "docosanoic acid,methyl ester" "a+/-a(3/4)xooiea(1/4)xo yen" "docosanoic acid methyl ester (fame mix)" "c444918b-abde-4650-8507-da7e3aac54eb" "paragraph signthorne(r) paragraph signthornea(1/4)xo yen" "paragraph signthorne(r) paragraph signthornieea(1/4)xo yen" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -835330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1103.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-167590.0
-    phase     gas;
 }

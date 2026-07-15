@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group tC; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "but-2-ynoic acid" "tetrolic acid" "3-methylpropiolic acid" "1-propynecarboxylic acid" "2-butynoicacid" "tetrolic acid (8ci)" "b187" "l220" "tetrolicacid (6ci,7ci,8ci);1-propynecarboxylic acid;3-methylpropiolic acid;methylacetylenecarboxylic acid;methylpropynoic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -203860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     336.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-158310.0
-    phase     gas;
 }

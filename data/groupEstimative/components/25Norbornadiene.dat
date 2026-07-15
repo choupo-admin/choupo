@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bicyclo[2.2.1]hepta-2,5-diene" "norbornadiene" "bicyclo(2.2.1)heptadiene" "8,9,10-trinorborna-2,5-diene" "bicyclo[2.2.1]hepta-2,5-dien" "2.5-norbornadiene" "quadricyclo[2.2.1.02,6.03.5]heptane" "(1s,4s)-bbicyclo[2.2.1]hepta-2,5-diene" "bicyclo[2.2.1]hepta-2, dimer, stereoisomer" "bicyclo(2,2,1)hepta-2,5-diene, inhibited or 2,5-norborandiene, inhibited" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   67190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     193.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=177380.0
-    phase     gas;
 }

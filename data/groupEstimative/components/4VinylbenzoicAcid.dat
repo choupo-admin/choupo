@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-ethenylbenzoic acid" "p-vinylbenzoic acid" "4-carboxystyrene" "benzoic acid, 4-ethenyl-" "irqweodkxldorp-uhfffaoysa-" "4-vinyl-benzoic acid" "styrene-4-carboxylic acid" "agn-pc-0d73mx" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -228870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-128390.0
-    phase     gas;
 }

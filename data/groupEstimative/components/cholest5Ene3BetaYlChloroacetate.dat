@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 4; } { group CH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(3s,8s,9s,10r,13r,14s,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl] 2-chloranylethanoate" "(1s,2r,5s,10s,11s,14r,15r)-2,15-dimethyl-14-[(2r)-6-methylheptan-2-yl]tetracyclo[8.7.0.0^{2,7}.0^{11,15}]heptadec-7-en-5-yl 2-chloroacetate" "(1s,2r,5s,10s,11s,14r,15r)-2,15-dimethyl-14-[(2r)-6-methylheptan-2-yl]tetracyclo[8.7.0.02,7.011,15]heptadec-7-en-5-yl 2-chloroacetate" "[(3s,8s,9s,10r,13r,14s,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl] 2-chloroacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -709300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1058.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=34840.0
-    phase     gas;
 }

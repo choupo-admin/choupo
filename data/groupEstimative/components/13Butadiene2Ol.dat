@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "buta-1,3-dien-2-ol" "ch2=chc(oh)=ch2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -37050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     349.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13110.0
-    phase     gas;
 }

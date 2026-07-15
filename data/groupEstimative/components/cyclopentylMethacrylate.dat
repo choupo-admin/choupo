@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopentyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, cyclopentyl ester" "2-methyl-acrylic acid cyclopentyl ester" "2-propenoic acid,2-methyl-, cyclopentyl ester" "methacrylicacid, cyclopentyl ester (6ci,8ci); cyclopentyl methacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -370250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     498.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-169630.0
-    phase     gas;
 }

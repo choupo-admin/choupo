@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phenylmethoxymethylbenzene" "dibenzyl ether" "benzyl oxide" "plastikator ba" "ba (plasticizer)" "dibenzylether" "benzene, 1,1'-[oxybis(methylene)]bis-" "ether, dibenzyl" "plasticator ba" "1,1-oxybis methylene, bis benzene" "(oxybis(methylene))dibenzene" "1,1-oxybismethylene, bis benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   8550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     499.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=186820.0
-    phase     gas;
 }

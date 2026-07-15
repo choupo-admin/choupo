@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 7; } { group dC_ring; count 7; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "anthracene-1,2,10-triol" "desoxyalizarin" "1,2,10-trihydroxyanthracene" "leucoalizarin" "leukoalizarin" "3,4-dihydroxyanthranol" "1,2,10-anthratriol" "3,4,9-trihydroxyanthracene" "1,2,10-anthracenetriol" "1,10-anthratriol" "1,10-anthracenetriol" "3,9,-trihydroxyanthracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     450.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-80780.0
-    phase     gas;
 }

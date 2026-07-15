@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[3-(trifluoromethyl)phenyl]piperazine" "n-(3-trifluoromethylphenyl)piperazine" "1-(3-(trifluoromethyl)phenyl)piperazine" "1(-(3-trifluoromethyl)phenyl)piperazine" "piperazine, 1-[3-(trifluoromethyl)phenyl]-" "1-(3-trifluoromethyl-phenyl)-piperazine" "n-(alpha,alpha,alpha-trifluoro-3-tolyl)piperazine" "[3-(trifluoromethyl)phenyl]piperazine" "1-(alpha,alpha,alpha-trifluoro-m-tolyl)piperazine" "kkimdkmetppurn-uhfffaoysa-" "n-(m-trifluoromethylphenyl)piperazine" "upcmld0enat5654924:001" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -456230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     529.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-194320.0
-    phase     gas;
 }

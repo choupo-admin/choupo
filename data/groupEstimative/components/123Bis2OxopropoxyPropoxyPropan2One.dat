@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group O; count 3; } { group CdO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[2,3-bis(2-oxidanylidenepropoxy)propoxy]propan-2-one" "1,1',1''-[propane-1,2,3-triyltris(oxy)]tripropan-2-one" "poly(oxy-1,2-ethanediyl), alpha,alpha',alpha''-1,2,3-propanetriyltris(omega-(((9z)-1-oxo-9-octadecen-1-yl)oxy)-" "poly(oxy-1,2-ethanediyl), alpha,alpha',alpha''-1,2,3-propanetriyltris(omega-(((9z)-1-oxo-9-octadecenyl)oxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1030690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     727.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-654040.0
-    phase     gas;
 }

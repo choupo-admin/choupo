@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-naphthalen-1-ylethanenitrile" "1-naphthaleneacetonitrile" "1-naphthyl acetonitrile" "alpha-naphthyl acetonitrile" ".alpha.-naphthylacetonitrile" "acetonitrile, (1-naphthyl)-" "1-naphthylmethylcyanide" "alpha-naphthylacetonitrile" "2-naphthalen-1-ylacetonitrile" "alpha-(1-naphthyl)acetonitrile" "2-(naphthalen-1-yl)acetonitrile" "2-naphthylethanenitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   290000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     408.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=392770.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl adamantane-1-carboxylate" "methyl 1-adamantanecarboxylate" "adamantane-1-carboxylic acid methyl ester" "1-adamantanecarboxylic acid methyl ester" "1-adamantanecarboxylic acid, methyl ester" "methyl 1-adamantylformate" "methyl adamantanecarboxylate" "ambap711-01-3" "methyl 1-adamantylcarboxylate" "1-(methoxycarbonyl)adamantane" "1-adamantyl carboxylic acid methyl ester" "adamantan-1-carboxylic acid, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -401150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-103260.0
-    phase     gas;
 }

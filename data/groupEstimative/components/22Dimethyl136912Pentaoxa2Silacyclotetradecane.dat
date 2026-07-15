@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 8; } { group O_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-dimethyl-2-sila-14-crown-5" "1,3,6,9,12-pentaoxa-2-silacyclotetradecane, 2,2-dimethyl-" "1,1-dimethylsila-14-crown-5" "1,1-dimethyl-1-sila-2,5,8,11,14-oxacyclotetradecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -989810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     566.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-554580.0
-    phase     gas;
 }

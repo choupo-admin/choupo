@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 20; } { group tC; count 4; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[4-[4-(4-dodecanoyloxyphenyl)buta-1,3-diynyl]phenyl] dodecanoate" "buta-1,3-diyne-1,4-diyldibenzene-4,1-diyl didodecanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -508770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1534.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=276340.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-4-ethenyl-benzene" "p-chlorostyrene" "styrene, p-chloro-" "benzene, 1-chloro-4-ethenyl-" "parachlorostyrene" "1-chloro-4-vinylbenzene" "1-chloro-4-ethenylbenzene" "styrene, 4-chloro-" "poly(4-chlorostyrene)" "styrene, p-chloro- (8ci)" "benzene,1-chloro-4-ethenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   126300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     383.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=195170.0
-    phase     gas;
 }

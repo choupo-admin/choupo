@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "delta-3-chromene" "2h-1-benzopyran" "1,2-benzopyran" "benzopyran" "3-chromene" "1,2-chromene" "chromene" "benzopyran (6ci)" "1,3-benzopyran(4ci); benzopyran (6ci); 1,2-benzopyran; 1,2-chromene; 2h-chromene; 3-chromene;d-3-chromene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   8730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     277.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=127880.0
-    phase     gas;
 }

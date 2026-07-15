@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 18; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "icosane" "MPCM 37" "parafol 20z" "n-eicosane" "n-icosane" "CCRIS 663" "octyldodecane" "ai3-28404" "EC 204-018-1" "eicosane, analytical standard" "nonadecane, methyl-" "eicosane; mpcm 37; nsc 62789; parafol 20z; n-eicosane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -456130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     935.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=117520.0
-    phase     gas;
 }

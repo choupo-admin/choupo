@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-dimethylpentanedioic acid" "3,3-dimethylglutarate" ".beta.,.beta.-dimethylglutaric acid" "3,3-dimethylpentaneodioic acid" "3,3-dimethyl-pentanedioic acid" "pentanedioic acid, 3,3-dimethyl-" "glutaric acid,3-dimethyl-" "pentanedioic acid,3-dimethyl-" "b,b-dimethylglutarate" "b,b-dimethylglutaric acid" "3,3-dimethyl-glutaric acid" "a," "a-dimethylglutaric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -897100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     496.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-676920.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylidenepent-1-ene" "2-ethylbutadiene" "1,3-butadiene, 2-ethyl-" "1-pentene, 3-methylene-" "c2h5c(=ch2)ch=ch2" "1-pentene, 3-methylene- (9ci)" "1,3-butadiene,2-ethyl- (6ci,7ci,8ci); 2-ethyl-1,3-butadiene; 2-ethylbutadiene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   73900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     376.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166770.0
-    phase     gas;
 }

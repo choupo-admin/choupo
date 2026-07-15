@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nonan-2-yl ethanoate" "2-nonanol, acetate" "nonan-2-yl acetate" "1-methyloctyl acetate" "acetic acid 2-nonyl ester" "2-nonanol, 2-acetate" "acetic acid 1-methyloctyl ester" "gsugvjoudslebl-uhfffaoysa-" "2-nonanol,acetate (8ci,9ci); (?a'a a'a currency)-2-nonanol acetate; (?a'a a'a currency)-2-nonyl acetate; 2-nonanyl acetate; 2-nonyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -592930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     626.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-271070.0
-    phase     gas;
 }

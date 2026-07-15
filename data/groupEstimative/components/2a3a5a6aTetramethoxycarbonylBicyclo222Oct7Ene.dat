@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH_ring; count 6; } { group dCH_ring; count 2; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetramethyl bicyclo[2.2.2]oct-7-ene-2,3,5,6-tetracarboxylate" "agn-pc-00nhpd" "2a,3b,5a,6a-tetramethoxycarbonyl-bicyclo(2,2,2)oct-7-ene" "2a,3b,5b,6a-tetramethoxycarbonyl-bicyclo(2,2,2)oct-7-ene" "tetramethylbicyclo(2.2.2)-7-octene-2,3,5,6-tetracarboxylate" "methyl 3,7,8-tris(methoxycarbonyl)bicyclo[2.2.2]oct-5-ene-2-carboxylate" "tetramethyl (2r,3s,5r,6s)-bicyclo[2.2.2]oct-7-ene-2,3,5,6-tetracarboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1532990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     636.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1061220.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10,13-dimethyl-1,2,6,7,8,9,12,14,15,16-decahydrocyclopenta[a]phenanthrene-3,11,17-trione" "agn-pc-00bph0" "(8alpha,9beta,13alpha)-androst-4-ene-3,11,17-trione" "2,15-dimethyltetracyclo[8.7.0.0<2,7>.0<11,15>]heptadec-6-ene-5,14,17-trione" "(8s,9r,10r,13s,14r)-10,13-dimethyl-1,2,6,7,8,9,12,14,15,16-decahydrocyclopenta[a]phenanthrene-3,11,17-trione" "10,13-dimethyl-2,3,6,7,8,9,10,11,12,13,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthrene-3,11,17-trione" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -531740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-74530.0
-    phase     gas;
 }

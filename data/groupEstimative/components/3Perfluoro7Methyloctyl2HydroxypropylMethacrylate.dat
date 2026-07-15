@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group C; count 9; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 19; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[4,4,5,5,6,6,7,7,8,8,9,9,10,11,11,11-hexadecakis(fluoranyl)-2-oxidanyl-10-(trifluoromethyl)undecyl] 2-methylprop-2-enoate" "2-propenoic acid,2-methyl-,4,4,5,5,6,6,7,7,8,8,9,9,10,11,11,11-hexadecafluoro-2-hydroxy-10-(trifluoromethyl)undecylester" "[4,4,5,5,6,6,7,7,8,8,9,9,10,11,11,11-hexadecafluoro-2-hydroxy-10-(trifluoromethyl)undecyl] 2-methylprop-2-enoate" "2-methyl-2-propenoic acid [4,4,5,5,6,6,7,7,8,8,9,9,10,11,11,11-hexadecafluoro-2-hydroxy-10-(trifluoromethyl)undecyl] ester" "4,4,5,5,6,6,7,7,8,8,9,9,10,11,11,11-hexadecafluoro-2-hydroxy-10-(trifluoromethyl)undecyl 2-methylprop-2-enoate" "4,4,5,5,6,6,7,7,8,8,9,9,10,11,11,11-hexadecafluoro-2-hydroxy-10-(trifluoromethyl)undecyl methacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -4537560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1115.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3962330.0
-    phase     gas;
 }

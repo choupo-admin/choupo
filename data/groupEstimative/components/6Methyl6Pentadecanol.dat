@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 12; } { group C; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methylpentadecan-6-ol" "6-methyl pentadecanol-6" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -534550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     791.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-50140.0
-    phase     gas;
 }

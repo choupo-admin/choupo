@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH_phenol; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzene-1,3-dicarboxylic acid; 4-[2-(4-hydroxyphenyl)ethyl]phenol" "1,3-benzenedicarboxylic acid, polymer with 4,4'-(1,2-ethanediyl)bis(phenol)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -966070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     954.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-639860.0
-    phase     gas;
 }

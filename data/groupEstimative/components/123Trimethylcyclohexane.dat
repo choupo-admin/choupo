@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohexane, 1,2,3-trimethyl-" "cis,cis,cis-1,2,3-trimethylcyclohexane" "cyclohexane, 1,2,3-trimethyl-, (1.alpha.,2.alpha.,3.alpha.)-" "cyclohexane, 1,2,3-trimethyl-, cis-1,2,trans-1,3-" "(1r,3r)-1,2,3-trimethylcyclohexane" "cyclohexane, 1,2,3-trimethyl-, stereoisomer" "agn-pc-03cz4x" "1,2,3-trimethyl cyclohexane" "cyclohexane, 1,2,3-trimethyl-, (1.alpha.,2.alpha.,3.beta.)-" "cyclohexane, 1,2,3-trimethyl-, (1.alpha.,2.beta.,3.alpha.)-" "aromosol h;methylxylene; trimethylbenzene" "cis,trans,cis-1,2,3-trimethylcyclohexane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -215450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     391.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=33930.0
-    phase     gas;
 }

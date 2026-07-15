@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 6; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "heptane, 3,3-diethyl-" "agn-pc-02p3sb" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -279120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     545.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=44580.0
-    phase     gas;
 }

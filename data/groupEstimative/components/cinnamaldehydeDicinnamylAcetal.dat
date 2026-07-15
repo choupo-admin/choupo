@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 4; } { group dC; count 1; } { group dCH_ring; count 15; } { group dC_ring; count 3; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-bis(3-phenylprop-2-enoxy)prop-1-en-2-ylbenzene" "(bis((3-phenylallyl)oxy)methyl)vinylbenzene" "[bis[(3-phenylallyl)oxy]methyl]vinylbenzene" "benzene, (bis((3-phenyl-2-propen-1-yl)oxy)methyl)ethenyl-" "benzene, [bis[(3-phenyl-2-propen-1-yl)oxy]methyl]ethenyl-" "3,3-bis[(e)-3-phenylprop-2-enoxy]prop-1-en-2-ylbenzene" "benzene, (bis((3-phenyl-2-propenyl)oxy)methyl)ethenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   189340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     879.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=540980.0
-    phase     gas;
 }

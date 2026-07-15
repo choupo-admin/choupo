@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 4; } { group O_ring; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethanoic acid;4-methylmorpholine" "morpholine, 4-methyl-, acetate (1:1)" "agn-pc-00asiu" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -633350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-371690.0
-    phase     gas;
 }

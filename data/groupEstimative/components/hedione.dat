@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-(3-oxidanylidene-2-pentyl-cyclopentyl)ethanoate" "kharismal" "methyl dihydrojasmonate" "cyclopentaneacetic acid, 3-oxo-2-pentyl-, methyl ester" "methyl (3-oxo-2-pentylcyclopentyl)acetate" "methyl 2-(3-oxo-2-pentylcyclopentyl)acetate" "methyl(2-amyl-3-oxocyclopentyl)acetate" "methyl 3-oxo-2-pentylcyclopentaneacetate" "methyl (2-pentyl-3-oxocyclopentyl)acetate" "methyl 3-oxo-2-pentyl-cyclopentaneacetate" "dihydrojasmonic acid methyl ester" "(1r,2r)-methyl dihydrojasmonate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -726490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     542.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-345540.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 8; } { group CH2; count 1; } { group C; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethyl-2,2,3,4,4-pentamethyl-pentane" "agn-pc-02y3uk" "3-ethyl-2,2,3,4,4-pentamethylpentane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -317260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58680.0
-    phase     gas;
 }

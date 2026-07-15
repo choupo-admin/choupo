@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbutyl octanoate" "isoamyl caprylate" "octanoic acid, 3-methylbutyl ester" "octanoic acid, isopentyl ester" "isopentyl octanoate" "isoamyl octylate" "isopentyl octylate" "isoamyl n-octanoate" "isoamyl octanoate (natural)" "isopentyl alcohol, octanoate" "isopentyl n-octanoate" "n-octanoic acid isoamyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -634210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     704.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-254230.0
-    phase     gas;
 }

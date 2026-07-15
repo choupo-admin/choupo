@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group tC; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranylnon-4-yne" "1-chloronon-4-yne" "4-nonyne, 1-chloro-" "1-chloro-4-nonyne;4-nonynyl chloride;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   27470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     511.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=215770.0
-    phase     gas;
 }

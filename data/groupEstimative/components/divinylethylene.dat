@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 2; } { group dCH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3e)-hexa-1,3,5-triene" "hexatriene" "1,3,5-hexatriene, (e)-" "1,3,5-hexatriene" "(e)-1,3,5-hexatriene" "hexa-1,3,5-triene, mixed isomers" "1,5-hexatriene" "hexa-1,5-triene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   200910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     373.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=255540.0
-    phase     gas;
 }

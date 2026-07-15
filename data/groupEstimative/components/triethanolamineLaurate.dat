@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 16; } { group OH; count 3; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[bis(2-hydroxyethyl)amino]ethanol;dodecanoic acid" "tea-laurate" "lauric acid, triethanolamine salt" "lauric acid, compound with 2,2',2''-nitrilotriethanol (1:1)" "dodecanoic acid, compd. with 2,2',2''-nitrilotris(ethanol) (1:1)" "dodecanoic acid, compd. with 2,2'2''-nitrilotris(ethanol) (1:1)" "2-[bis(2-hydroxyethyl)amino]ethanol; dodecanoic acid" "dodecanoic acid - 2,2',2''-nitrilotriethanol (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1265900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1186.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-647670.0
-    phase     gas;
 }

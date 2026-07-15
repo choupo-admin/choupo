@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 2; } { group dC; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-3-(2-methylprop-2-enoxy)prop-1-ene" "2-methyl-3-[(2-methyl-2-propenyl)oxy]-1-propene" "1-propene,2-methyl-3-[(2-methyl-2-propen-1-yl)oxy]-" "2-methyl-3-[(2-methylprop-2-en-1-yl)oxy]prop-1-ene" "1-propene,3,3'-oxybis[2-methyl- (9ci); ether, bis(2-methylallyl) (6ci,7ci,8ci);bis(2-methyl-2-propen-1-yl) ether; bis(2-methyl-2-propenyl) ether;bis(2-methylallyl) ether; bismethallyl ether; dimethallyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -109390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     461.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70060.0
-    phase     gas;
 }

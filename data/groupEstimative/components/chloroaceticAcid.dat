@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranylethanoic acid" "monochloroacetic acid" "acetic acid, chloro-" "acide chloracetique" "chloroethanoic acid" "chloracetic acid" "monochloroethanoic acid" "monochloressigsaeure" "chloroacetic acid, solid" "monochloorazijnzuur" ".alpha.-chloroacetic acid" "monochloracetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -450620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     320.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-389880.0
-    phase     gas;
 }

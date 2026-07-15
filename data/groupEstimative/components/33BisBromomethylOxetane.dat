@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group Br; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-di(bromomethyl) oxetane" "oxetane, 3,3-bis(bromomethyl)-" "oxetane,3-bis(bromomethyl)-" "oxetane,3,3-bis(bromomethyl)-" "ht158" "2402-83-7 3,3-bis(bromomethyl)oxetane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -143990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23100.0
-    phase     gas;
 }

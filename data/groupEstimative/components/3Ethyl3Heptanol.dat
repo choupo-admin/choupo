@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group C; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethylheptan-3-ol" "3-heptanol, 3-ethyl-" "3-ethyl-heptan-3-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -390070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     518.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-109080.0
-    phase     gas;
 }

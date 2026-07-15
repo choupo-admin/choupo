@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group I; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-5-iodanyl-benzoic acid" "5-iodoanthranilic acid" "benzoic acid, 2-amino-5-iodo-" "5-iodoanthranil acid" "anthranilic acid, 5-iodo-" "2-amino-5-iodo-benzoic acid" "2-amino-5-iodo-benzoicacid" "benzoicacid, 2-amino-5-iodo-" "5-iodo anthranillic acid" "5-iodoanthranilic acid (p)" "anthranilic acid, 5-iodo- (8ci)" "l184" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -213830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     470.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-118130.0
-    phase     gas;
 }

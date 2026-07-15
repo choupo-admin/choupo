@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,5-bis(chloranyl)phenol" "phenol, 2,5-dichloro-" "3,6-dichlorophenol" "2,5-dcp" "2,5-dichloro-phenol" "dichlorophenol-2,5" "68938-81-8 (potassium salt)" "2,5-dichlo-1-hydroxybenzene" "52166-72-0 (hydrochloride salt)" "6-hydroxy-1,4-dichlorobenzene" "2,5-dichloro-1-hydroxy-benzene" "s791" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -150900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     370.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76060.0
-    phase     gas;
 }

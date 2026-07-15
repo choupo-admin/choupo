@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3-azanylpropanoylamino)ethanoic acid" "glycine, b-alanyl-" ".beta.-alanylglycine" "[(3-ammoniopropanoyl)amino]acetate" "2-(3-aminopropanoylamino)acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -522120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-325770.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group OdCH_al; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(dimethylamino)-2,2-dimethyl-propanal" "3-dimethylamino-2,2-dimethylpropionaldehyde" "propanal, 3-(dimethylamino)-2,2-dimethyl-" "3-dimethylamino-2,2-dimethyl-propionaldehyde" "propanal,3-(dimethylamino)-2,2-dimethyl-" "3-(dimethylamino)-2,2-dimethylpropionaldehyde" "2,2-dimethyl-3-(dimethylamino)-propionaldehyde;3-dimethylamino-2,2-dimethylpropionaldehyde;3-(dimethylamino)-2,2-dimethylpropanal;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -214610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22160.0
-    phase     gas;
 }

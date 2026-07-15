@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group Cl; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-n,n-bis(2-chloroethyl)ethanamine" "sinalost base" "trimitan base" "tris(2-chloroethyl)amine" "trimustine" "2-chloro-n,n-bis(2-chloroethyl)ethanamine" "agent hn3" "ethanamine, 2-chloro-n,n-bis(2-chloroethyl)-" "tri-(2-chloroethyl)amine" "nitrogen mustard (hn-3)" "tris(beta-chloroethyl)amine" "trichlomethine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -146860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=74630.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(trimethylsilylmethyl)prop-2-enyl ethanoate" "2-[(acetoxymethyl)allyl]trimethylsilane" "2-acetoxymethyl-3-(trimethylsilyl)propene" "2-(trimethylsilylmethyl)-2-propen-1-yl acetate" "2-(trimethylsilylmethyl)prop-2-enyl acetate" "2-((trimethylsilyl)methyl)allyl acetate" "acetic acid 2-(trimethylsilylmethyl)prop-2-enyl ester" "2-(trimethylsilylmethyl)-2-propen-1-yl acetate; 2-(trimethylsilylmethyl)allyl acetate; 2-acetoxymethyl-3-(trimethylsilyl)propene" "2-propen-1-ol,2-[(trimethylsilyl)methyl]-, acetate (9ci);2-(trimethylsilylmethyl)allylacetate;2-acetoxymethyl-3-trimethylsilylpropene;2-[(trimethylsilyl)methyl]-2-propen-1-yl acetate;2-[(trimethylsilyl)methyl]-2-propenyl acetate;3-acetoxy-2-(trimethylsilylmethyl)-1-propene;acetic acid2-[(trimethylsilyl)methyl]-2-propenyl ester;[2-(acetoxymethyl)allyl]trimethylsilane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -542350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     675.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-310940.0
-    phase     gas;
 }

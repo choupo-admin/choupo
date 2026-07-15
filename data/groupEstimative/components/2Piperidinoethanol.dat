@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 5; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-piperidin-1-ylethanol" "1-piperidineethanol" "n-(2-hydroxyethyl)piperidine" "1-(2-hydroxyethyl)piperidine" "2-(1-piperidinyl)ethanol" "n-piperidineethanol" "n-(hydroxyethyl)piperidine" "beta-piperidylethanol" "2-(piperidin-1-yl)ethanol" "beta-piperidinoethanol" ".beta.-piperidinoethanol" "2-hydroxyethyl piperidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -191690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     487.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=26280.0
-    phase     gas;
 }

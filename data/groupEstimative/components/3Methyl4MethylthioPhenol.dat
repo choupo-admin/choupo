@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-4-methylsulfanyl-phenol" "4-(methylthio)-m-cresol" "methylthiomethylphenol" "mmtp" "phenol, 3-methyl-4-(methylthio)-" "3-methyl-4-(1-methylthio)phenol" "m-cresol, 4-(methylthio)-" "3-methyl-4-methylthiophenol" "usaf ma-17" "4-(methylthio)-3-methylphenol" "3-methyl-4-(methylsulfanyl)phenol" "3-methyl-4-methylsulfanylphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -118830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2240.0
-    phase     gas;
 }

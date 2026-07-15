@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-3-phenyl-2,3-dihydro-1h-indene" "1-methyl-3-phenyl-indane" "agn-pc-00kaa7" "indane, 1-methyl-3-phenyl-" "1-methyl-3-phenylindane" "1h-indene,2,3-dihydro-1-methyl-3-phenyl-" "1h-indene, 2,3-dihydro-1-methyl-3-phenyl-" "indan,1-methyl-3-phenyl- (6ci,7ci,8ci); 1-methyl-3-phenylindan;1-methyl-3-phenylindane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   140480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     427.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=352070.0
-    phase     gas;
 }

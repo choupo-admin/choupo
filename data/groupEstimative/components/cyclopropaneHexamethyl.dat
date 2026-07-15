@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group C_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2,3,3-hexamethylcyclopropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -151250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     540.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=53760.0
-    phase     gas;
 }

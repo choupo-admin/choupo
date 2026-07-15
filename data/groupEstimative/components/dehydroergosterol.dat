@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH; count 3; } { group dCH; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s,10s,13r,14r,17r)-17-[(e,2r,5r)-5,6-dimethylhept-3-en-2-yl]-10,13-dimethyl-2,3,4,12,14,15,16,17-octahydro-1h-cyclopenta[a]phenanthren-3-ol" "ergosta-5,7,9(11),22-tetraen-3beta-ol" "delta(5,7,9(11)22)-ergostatetraen-3-ol" "ergosta-5,7,9(11),22-tetraen-3" "a-ol" "(22e)-ergosta-5,7,9(11),22-tetraen-3beta-ol" "(3beta,22e)-ergosta-5,7,9(11),22-tetraen-3-ol" "ergosta-5,7,9(11),22-tetraen-3-ol, (3beta,22e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -262630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     967.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=345760.0
-    phase     gas;
 }

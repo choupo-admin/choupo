@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group COOH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-butylpyridine-2-carboxylic acid" "5-butylpicolinic acid" "picolinic acid, 5-butyl-" "2-pyridinecarboxylic acid, 5-butyl-" "fusarinic acid" "5-butyl-2-pyridinecarboxylic acid" "5-n-butylpyridine-2-carboxylic acid" "5-butylpyridine-3-carboxylic acid" "prestwick_233" "5-butyl-2-pyridinedicarboxylic acid" "picolinic acid, 5-butyl- (8ci)" "2-pyridinecarboxylicacid, 5-butyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -342150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     498.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-130760.0
-    phase     gas;
 }

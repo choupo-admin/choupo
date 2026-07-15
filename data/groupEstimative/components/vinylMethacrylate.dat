@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethenyl 2-methylprop-2-enoate" "methacrylic acid, vinyl ester" "2-propenoic acid, 2-methyl-, ethenyl ester" "methacrylic acid, vinyl ester (8ci)" "2-methyl-2-propenoic acid, ethenyl ester" "methacrylic acid vinyl ester" "ffywkoukjfcbam-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -243380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     427.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-143600.0
-    phase     gas;
 }

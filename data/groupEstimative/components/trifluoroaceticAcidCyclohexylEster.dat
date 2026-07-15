@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohexyl 2,2,2-tris(fluoranyl)ethanoate" "acetic acid, trifluoro-, cyclohexyl ester" "cyclohexyl trifluoroacetate" "cyclohexyl 2,2,2-trifluoroacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1068490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     544.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-851030.0
-    phase     gas;
 }

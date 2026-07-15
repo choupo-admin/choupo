@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group F; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-3,3,3-tris(fluoranyl)-2-methoxy-2-phenyl-propanoic acid" "(r)-(+)-a-methoxy-a-trifluoromethylphenylacetic acid" "(2r)-3,3,3-trifluoro-2-methoxy-2-phenylpropanoic acid" "(+)-mtpa" "(r)-(+)-alpha-methoxy-alpha-(trifluoromethyl)phenylacetic acid" "(r)-(+)-alpha-methoxy-alpha-trifluoromethylphenylacetic acid" "(r)-3,3,3-trifluoro-2-methoxy-2-phenylpropanoic acid" "(+)-alpha-methoxy-alpha-(trifluoromethyl)phenylacetic acid" "(+)-alpha-methoxy-alpha-trifluoromethylphenyl-acetic acid" "(+)-a-methoxy-a-trifluoromethylphenylacetic acid" "(+)-a-methoxy-a-(trifluoromethyl)phenylacetic acid" "(r)-(+)-1-methoxy-1-(trifluoromethyl)phenylacetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1101520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     520.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-881930.0
-    phase     gas;
 }

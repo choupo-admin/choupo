@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "agn-pc-00g701" "bicyclo(2.2.1)hept-2-ene, 7-(1-methylethylidene)-" "(1r,4s)-7-propan-2-ylidenebicyclo[2.2.1]hept-2-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   13730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     315.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=209590.0
-    phase     gas;
 }

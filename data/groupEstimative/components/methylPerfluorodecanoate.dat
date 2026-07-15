@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 9; } { group F; count 19; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecakis(fluoranyl)decanoate" "methyl nonadecafluorodecanoate" "methyl 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluorodecanoate" "perfluorodecanoic acid methyl ester" "nonadecafluorodecanoic acid methyl ester" "decanoicacid, nonadecafluoro-, methyl ester (8ci,9ci)" "nonadecafluorodecanoic acid methyl ester; perfluorodecanoic acid methyl ester" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluorodecanoic acid methyl ester" "decanoic acid,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluoro-, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -4392490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     888.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3944460.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dC_ring; count 6; } { group F; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,4,5-tetrakis(fluoranyl)-3,6-dimethyl-benzene" "1,2,4,5-tetrafluoro-3,6-dimethylbenzene" "1,4-dimethyltetrafluorobenzene" "2,3,5,6-tetrafluoro-1,4-dimethylbenzene" "1,4-dimethyltetrafluorobenzene;1,2,4,5-tetrafluor-3,6-dimethylbenzol;1,2,4,5-tetrafluoro-3,6-dimethylbenzene;2,3,5,6-tetrafluoro-1,4-xylene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -813710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-698500.0
-    phase     gas;
 }

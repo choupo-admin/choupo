@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group dCH_ring; count 20; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2,3,4-triphenylcyclopenta-1,3-dien-1-yl)benzene" "1,2,3,4-tetraphenylcyclopentadiene" "tetraphenylcyclopentadiene" "1, 1,2,3,4-tetraphenyl-" "1,3,4-tetraphenylcyclopentadiene" "1,3,4-tetraphenyl-1,3-cyclopentadiene" "1,2,3,4-tetraphenylcyclopenta-1,3-diene" "(2,4,5-triphenylcyclopenta-1,4-dien-1-yl)benzene" "1,3-cyclopentadiene, 1,2,3,4-tetraphenyl- (8ci)" "benzene, 1,1',1'',1'''-(1,3-cyclopentadiene-1,2,3,4-tetrayl)tetrakis-" "benzene,1',1'',1'''-(1,3-cyclopentadiene-1,2,3,4-tetrayl)tetrakis-" "benzene,1,1',1'',1'''-(1,3-cyclopentadiene-1,2,3,4-tetrayl)tetrakis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   454730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     752.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=708600.0
-    phase     gas;
 }

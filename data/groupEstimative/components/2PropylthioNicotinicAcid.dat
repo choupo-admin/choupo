@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group COOH; count 1; } { group Nd_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-propylsulfanylpyridine-3-carboxylic acid" "2-propylthiopyridine-3-carboxylic acid" "2-(n-propylthio)nicotinic acid" "2-(prop-1-ylthio)nicotinic acid" "3-pyridinecarboxylicacid, 2-(propylthio)-" "2-(propylsulfanyl)pyridine-3-carboxylic acid" "2-(prop-1-ylsulphanyl)pyridine-3-carboxylic acid" "2-(propylsulfanyl)nicotinicacid;2-(propylthio)nicotinic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -279640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     521.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-106060.0
-    phase     gas;
 }

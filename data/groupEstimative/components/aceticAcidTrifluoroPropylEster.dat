@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propyl 2,2,2-tris(fluoranyl)ethanoate" "propyl trifluoroacetate" "propyl 2,2,2-trifluoroacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1060890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     458.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-900740.0
-    phase     gas;
 }

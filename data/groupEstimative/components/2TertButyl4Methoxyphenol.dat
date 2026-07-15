@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-tert-butyl-4-methoxy-phenol" "3-tert-butyl-4-hydroxyanisole" "3-bha" "butylated hydroxyanisole" "4-hydroxy-3-tert-butylanisole" "phenol, 2-(1,1-dimethylethyl)-4-methoxy-" "4-methoxy-2-tert-butylphenol" "3-t-butyl-4-hydroxyanisole" "2-butyl-4-hydroxyanisole" "phenol, (1,1-dimethylethyl)-4-methoxy-" "butylated hydroxyanisole i (d)" "2-(tert-butyl)-4-methoxyphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -363590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     470.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-112260.0
-    phase     gas;
 }

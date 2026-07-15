@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group dCH; count 1; } { group dC; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-pentylnon-2-enal" "2-amylnonen-2-al;2-pentyl-2-nonenal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -310440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     709.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=39150.0
-    phase     gas;
 }

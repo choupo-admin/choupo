@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-3-(phenylmethyl)benzene" "benzene, 1-methyl-3-(phenylmethyl)-" "3-methyldiphenylmethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   129300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     482.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=282190.0
-    phase     gas;
 }

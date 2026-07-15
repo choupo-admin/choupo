@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 1; } { group CH; count 2; } { group C; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 2; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(7r,8r)-7-[(e)-2-methylbut-2-enoyl]oxy-5,6,7,8-tetrahydro-3h-pyrrolizin-1-yl]methyl (2s)-3-methyl-2-oxidanyl-2-[(1s)-1-oxidanylethyl]butanoate" "7-tiglyl-9-(-)-viridiflorylretronecine" "(1r,7ar)-7-({[(2s,3s)-2,3-dihydroxy-2-isopropylbutanoyl]oxy}methyl)-2,3,5,7a-tetrahydro-1h-pyrrolizin-1-yl (2e)-2-methylbut-2-enoate" "[(7r,8r)-7-[(e)-2-methylbut-2-enoyl]oxy-5,6,7,8-tetrahydro-3h-pyrrolizin-1-yl]methyl (2s)-2-hydroxy-2-[(1s)-1-hydroxyethyl]-3-methylbutanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1053750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     882.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-466720.0
-    phase     gas;
 }

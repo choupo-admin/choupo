@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(tert-butylamino)ethyl 2-methylprop-2-enoate" "tert-butylaminoethyl methacrylate" "ageflex fm-4" "n-tert-butylaminoethyl methacrylate" "2-tert-butylaminoethyl methacrylate" "2-propenoic acid, 2-methyl-, 2-[(1,1-dimethylethyl)amino]ethyl ester" "methacrylic acid, 2-(tert-butylamino)ethyl ester" "ethanol, 2-(tert-butylamino)-, methacrylate (ester)" "2-methyl-2-propenoic acid, 2-((1,1-dimethylethyl)amino)ethyl ester" "2-propenoic acid, 2-methyl-, 2-((1,1-dimethylethyl)amino)ethyl ester" "2-((1,1-dimethylethyl)amino )ethyl 2-methyl-2-propenoate" "2-((1,1-dimethylethyl)amino)ethyl 2-methyl-2-propenoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -406650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     589.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-105530.0
-    phase     gas;
 }

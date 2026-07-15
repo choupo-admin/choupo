@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group F; count 1; } { group Cl; count 1; } { group O; count 1; } { group O_ring; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-azanyl-5-chloranyl-2-ethoxy-n-[[4-[(4-fluorophenyl)methyl]morpholin-2-yl]methyl]benzamide" "4-amino-5-chloro-2-ethoxy-n-((4-(4-fluorobenzyl)-2-morpholinyl)methyl)benzamide" "mosapride [inn]" "mosapride (inn)" "4-amino-5-chloro-2-ethoxy-n-[[4-[(4-fluorophenyl)methyl]morpholin-2-yl]methyl]benzamide" "4-amino-5-chloro-2-ethoxy-n-[[4-[(4-fluorophenyl)methyl]-2-morpholinyl]methyl]benzamide" "4-amino-5-chloro-2-ethoxy-n-{[4-(4-fluorobenzyl)morpholin-2-yl]methyl}benzamide" "mosart (tn)" "agn-pc-00f93s" "m687" "(+-)-4-amino-5-chloro-2-ethoxy-n-((4-(p-fluorobenzyl)-2-morpholinyl)methyl)benzamide" "(- )-4-amino-5-chloro-2-ethoxy-n-((4-(p-fluorobenzyl)-2-morpholinyl)methyl)-benzamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -422970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     846.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=88630.0
-    phase     gas;
 }

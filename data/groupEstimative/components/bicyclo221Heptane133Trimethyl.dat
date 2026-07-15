@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group C_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,4-trimethylbicyclo[2.2.1]heptane" "norbornane, 1,3,3-trimethyl-" "fenchane" "bicyclo(2.2.1)heptane, 1,3,3-trimethyl-" "agn-pc-01zfl0" "1,3,3-trimethylbicyclo[2.2.1]heptane" "bicyclo[2.2.1]heptane,1,3,3-trimethyl-" "norbornane,1,3,3-trimethyl- (7ci,8ci); fenchane; d-fenchane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -100150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     481.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=124030.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1-trideuterio-3,3-dimethyl-butan-2-one" "1,1,1-trideuterio-3,3-dimethylbutan-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -288500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     377.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-126440.0
-    phase     gas;
 }

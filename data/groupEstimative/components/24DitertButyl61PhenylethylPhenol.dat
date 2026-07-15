@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group CH; count 1; } { group C; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phenol, 2,4-bis(1,1-dimethylethyl)-6-(1-phenylethyl)-" "4,6-di-t-butyl-2-alpha-methylbenzylphenol" "2,4-di-tert-butyl-6-(1-phenylethyl)phenol" "2,4-di-tert-butyl-6-(alpha-methylbenzyl)phenol" "2,4-bis(1,1-dimethylethyl)-6-(1-phenylethyl)phenol" "2,4-bis(1,1-dimethylethyl)-6-(1-phenyl ethyl)phenol" "2,4-di-tert-butyl-6-(1-phenylethyl)phenol, 4a" "2,4-di-tert-butyl-6-(.alpha.-methylbenzyl)phenol" "phenol,4-bis(1,1-dimethylethyl)-6-(1-phenylethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -247380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     726.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=188540.0
-    phase     gas;
 }

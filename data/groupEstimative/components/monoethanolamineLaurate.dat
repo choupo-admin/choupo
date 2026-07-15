@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanylethanol;dodecanoic acid" "ethanolamine; lauric acid" "lauric acid, compound with 2-aminoethanol (1:1)" "dodecanoic acid, compd. with 2-aminoethanol (1:1)" "ethanolamine monolaurate" "lauric acid, ethanolamine salt" "2-aminoethanol; dodecanoic acid" "dodecanoic acid - 2-aminoethanol (1:1)" "dodecanoic acid compd. with 2-aminoethanol (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -912620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     964.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-452040.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CdO; count 1; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-acetyloxyethyl(ethanoyl)amino]ethyl ethanoate" "2,2'-(acetylimino)diethyl diacetate" "acetamide, n,n-bis(2-(acetyloxy)ethyl)-" "n,n-bis(2-hydroxyethyl)acetamide diacetate" "acetamide,n-bis[2-(acetyloxy)ethyl]-" "acetamide, n,n-bis[2-(acetyloxy)ethyl]-" "acetamide,n-bis(2-hydroxyethyl)-, diacetate" "acetamide,n-bis(2-hydroxyethyl)-, diacetate (ester)" "2-[acetyl(2-acetyloxyethyl)amino]ethyl acetate" "acetamide, n,n-bis(2-hydroxyethyl)-, diacetate (ester)" "acetamide, n,n-bis(2-hydroxyethyl)-, diacetate (ester) (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -929340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     690.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-605560.0
-    phase     gas;
 }

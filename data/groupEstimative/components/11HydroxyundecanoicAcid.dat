@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 10; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "11-oxidanylundecanoic acid" "11-hydroxy-undecanoic acid" "11-hydroxyundecanoicacid" "undecanoic acid,11-hydroxy-" "omega-hydroxy hendecanoic acid" "undecanoic acid, 11-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -772870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     688.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-438990.0
-    phase     gas;
 }

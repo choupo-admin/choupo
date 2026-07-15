@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-(dimethoxymethyl)-1,2,3-trimethoxy-benzene" "5-(dimethoxymethyl)-1,2,3-trimethoxybenzene" "benzene,5-(dimethoxymethyl)-1,2,3-trimethoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -755270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     545.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-393760.0
-    phase     gas;
 }

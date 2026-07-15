@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo[def]fluorene" "methylenephenanthrene" "4-h-cyclopenta(d,e,f)phenanthrene" "4,5-phenanthrylenemethane" "benzo(def)fluorene" "4h-cyclopenta(def)phenanthrene" "cyclopenta[d,e,f]phenanthrene" "methane, 4,5-phenanthrylene-" "phenanthrene, 4,5-methylene-" "methane,5-phenanthrylene-" "phenanthrene,5-methylene-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   336790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     309.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=464900.0
-    phase     gas;
 }

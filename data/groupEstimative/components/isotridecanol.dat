@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "11-methyldodecan-1-ol" "isotridecyl alcohol" "11-methyldodecanol" "isotridecanol-" "isotridecan-1-ol" "alcohols, c11-14-iso-, c13-rich" "11-methyl-1-dodecanol" "11-methyl-1-dodecanol;11-methyldodecanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -469160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     703.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-80680.0
-    phase     gas;
 }

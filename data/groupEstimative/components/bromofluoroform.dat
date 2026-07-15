@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group F; count 3; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bromanyl-tris(fluoranyl)methane" "bromotrifluoromethane" "methane, bromotrifluoro-" "trifluorobromomethane" "trifluoromethyl bromide" "bromo(trifluoro)methane" "monobromotrifluoromethane" "halocarbon 13b1" "carbon monobromide trifluoride" "refrigerant 13b1" "daiflon 13b1" "khladon 13b1" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -634720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     302.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-609730.0
-    phase     gas;
 }

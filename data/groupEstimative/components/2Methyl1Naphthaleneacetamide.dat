@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-methylnaphthalen-1-yl)ethanamide" "1-naphthaleneacetamide, 2-methyl-" "2-methylnaphthalene-1-acetamide" "2-(2-methylnaphthalen-1-yl)acetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   14220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     513.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=195910.0
-    phase     gas;
 }

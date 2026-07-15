@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 7; } { group CH_ring; count 2; } { group C_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4a,7,7,10a-tetramethyl-2,5,6,6a,8,9,10,10b-octahydro-1h-benzo[f]chromen-3-one" "4a,7,7,10a-tetramethyl-dodecahydro-benzo[f]chromen-3-one" "ambreinolid" "( )-ambreinolide" "3h-naphtho(2,1-b)pyran-3-one, dodecahydro-4a,7,7,10a-tetramethyl-, (4ar,6as,10as,10br)-" "3h-naphtho[2,1-b]pyran-3-one, dodecahydro-4a,7,7,10a-tetramethyl-, (4ar,6as,10as,10br)-" "ambreinolide(cis-a/b)" "agn-pc-00gko1" "4a,7,7,10a-tetramethyldodecahydro-3h-benzo[f]chromen-3-one" "14,15,16-trinorlabdan-13-oic acid, 8-hydroxy-, .delta.-lactone" "14,15,16-trinorlabdan-13-oic acid, 8-hydroxy-, delta-lactone" "1-naphthalenepropionic acid, decahydro-2-hydroxy-2,5,5,8a-tetramethyl-,delta-lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -506530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     782.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104050.0
-    phase     gas;
 }

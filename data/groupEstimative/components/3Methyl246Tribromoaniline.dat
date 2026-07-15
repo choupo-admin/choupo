@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group Br; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4,6-tris(bromanyl)-3-methyl-aniline" "2,4,6-tribromo-3-methylaniline" "2,4,6-tribromo-m-toluidine" "2,4,6-tribromo-3-methylphenylamine" "benzenamine,2,4,6-tribromo-3-methyl-" "3-methyl-2,4,6-tribromoaniline, 98+%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   115620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     502.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=191360.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group CH; count 1; } { group dCH; count 4; } { group CH2_ring; count 1; } { group CH_ring; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group OH; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-7-[(1s,2s,3s,5r)-2-[(e,3s)-4-(3-chloranylphenoxy)-3-oxidanyl-but-1-enyl]-3,5-bis(oxidanyl)cyclopentyl]hept-5-enoic acid" "dalmazin [veterinary] (tn)" "(z)-7-[(1s,2s,3s,5r)-2-[(e,3s)-4-(3-chlorophenoxy)-3-hydroxybut-1-enyl]-3,5-dihydroxycyclopentyl]-5-heptenoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -998650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     950.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-462740.0
-    phase     gas;
 }

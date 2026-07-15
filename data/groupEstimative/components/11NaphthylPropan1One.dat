@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-naphthalen-1-ylpropan-1-one" "1-propanone, 1-(naphthalenyl)-" "1-propionaphthone" "1'-propionaphthone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -8100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=139090.0
-    phase     gas;
 }

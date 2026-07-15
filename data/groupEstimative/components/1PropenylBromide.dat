@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-1-bromanylprop-1-ene" "propenyl bromide" "1-propene, 1-bromo-" "1-bromopropene" "1-bromopropylene" "1-bromo-1-propene" "(e)-1-bromoprop-1-ene" "propene, 1-bromo-" "(1e)-1-bromoprop-1-ene" "trans-1-bromo-1-propene" "1-bromo-1-propene (cis and trans)" "trans-1-bromopropene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   38300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     317.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=68920.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradecan-1-ol" "myristyl alcohol" "tetradecanol" "tetradecyl alcohol" "n-tetradecanol" "myristic alcohol" "lanette k" "loxanol v" "lanette wax ks" "n-tetradecan-1-ol" "n-tetradecyl alcohol" "alfol 14" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -484520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     752.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-69820.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(dimethylamino)-2-methyl-propan-1-ol" "1-propanol, 2-(dimethylamino)-2-methyl-" "2-dimethylamino-2-methyl-1-propanol" "2-(dimethylamino)-2-methyl-1-propanol" "usaf cs-1" "2-(dimethylamino)-2-methylpropanol" "2-(dimethylamino)-2-methylpropan-1-ol" "2-dimethylamino-2-methylpropan-1-ol" "2-(n,n-dimethylamino)-2-methyl-1-propanol" "2-(dimethylamino)isobutanol" "dmamp-80(tm)" "2-(n,n-dimethylamino)isobutanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -260620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     417.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23560.0
-    phase     gas;
 }

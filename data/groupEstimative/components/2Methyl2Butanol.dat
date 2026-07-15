@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylbutan-2-ol" "amylene hydrate" "tert-amyl alcohol" "2-butanol, 2-methyl-" "tert-pentyl alcohol" "tert-pentanol" "t-amyl alcohol" "dimethylethylcarbinol" "ethyldimethylcarbinol" "tert-isoamyl alcohol" "tert-n-amyl alcohol" "2-methyl butanol-2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -307510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     362.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-142760.0
-    phase     gas;
 }

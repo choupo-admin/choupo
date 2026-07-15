@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-2h-furan-5-one" "5-methyl-2(5h)-furanone" "5-methylfuran-2(5h)-one" "2(5h)-furanone, 5-methyl-" "alpha,beta-angelica lactone" ".alpha.,.beta.-angelica lactone" "delta1-angelica lactone" "gamma-methyl-alpha,beta-crotonolactone" "delta(sup1)-angelica lactone" "4-hydroxy-2-pentenoic acid gamma-lactone" "delta(sup 1)-angelica lactone" "4-hydroxypent-2-enoic acid lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -333230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     274.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-228440.0
-    phase     gas;
 }

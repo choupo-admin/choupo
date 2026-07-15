@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methylcyclohexan-1-ol" "cyclohexanol, 1-methyl-" "1-methyl-1-cyclohexanol" "1-methyl-cyclohexan-1-ol" "1-methyl cyclohexanol" "ghl.pd_mitscher_leg0.946" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -270480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     518.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-109800.0
-    phase     gas;
 }

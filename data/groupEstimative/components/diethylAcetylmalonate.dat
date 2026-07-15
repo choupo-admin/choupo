@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group CdO; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diethyl 2-ethanoylpropanedioate" "diethyl 2-acetylmalonate" "propanedioic acid, acetyl-, diethyl ester" "acetyl diethyl malonate" "ethyl acetomalonate" "malonic acid, acetyl-, diethyl ester" "c-acetylmalonic ester" "diethyl acetomalonate" "diethyl 2-acetylpropanedioate" "1,3-diethyl 2-acetylpropanedioate" "q718" "propanedioic acid, 2-acetyl-, 1,3-diethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -981510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     626.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-727200.0
-    phase     gas;
 }

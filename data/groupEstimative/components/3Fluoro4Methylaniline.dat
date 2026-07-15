@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-fluoranyl-4-methyl-aniline" "4-amino-2-fluorotoluene" "3-fluoro-p-toluidine" "2-fluoro-4-aminotoluene" "benzenamine, 3-fluoro-4-methyl-" "2-fluoro-4-amino-toluene" "p-toluidine, 3-fluoro-" "3-fluoro-4-methylphenylamine" "3-fluoro-4-methyl aniline" "3-fluoro-4-methylbenzenamine" "3-fluoro-4-methylbenzeneamine" "benzenamine, 3-fluoro-4-methyl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -136540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     393.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-27150.0
-    phase     gas;
 }

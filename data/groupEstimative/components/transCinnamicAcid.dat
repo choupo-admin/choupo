@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-3-phenylprop-2-enoic acid" "cinnamic acid" "3-phenylacrylic acid" "(e)-cinnamic acid" "trans-3-phenylacrylic acid" "phenylacrylic acid" "benzenepropenoic acid" "zimtsaeure" "cinnamylic acid" "trans-cinnamate" "3-phenylpropenoic acid" "2-propenoic acid, 3-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -225610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     446.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-126380.0
-    phase     gas;
 }

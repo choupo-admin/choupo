@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-naphthalen-1-yloxy-3-(propan-2-ylamino)propan-2-ol" "propanolol" "beta-propranolol" "propanalol" "dociton" "inderal" "euprovasin" "propanix" "sumial" "propranololo" "avlocardyl" "betalong" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -198980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     641.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=135960.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-propylpent-4-enoic acid" "2-propyl-4-pentenoic acid" "2-allylpentanoic acid" "4-pentenoic acid, 2-propyl-" "4-ene-vpa" "r,s-4-en-vpa" "(+-)-4-en-valproic acid" "2-n-propyl-4-pentenoic acid" "pentanoic acid, 2-(2-propenyl)-" "(+-)-2-n-propyl-4-pentenoic acid" "4-en-valproic acid" "4-en-metabolite" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -438570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-242030.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group tC; count 2; } { group OH; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-[2-[di(propan-2-yl)amino]ethoxy]-3-methyl-hex-4-yn-3-ol" "4-hexyn-3-ol, 3-methyl-6-[2-(diisopropylamino)ethoxy]-" "6-[2-(dipropan-2-ylamino)ethoxy]-3-methylhex-4-yn-3-ol" "6-[2-[di(propan-2-yl)amino]ethoxy]-3-methylhex-4-yn-3-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -316860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     732.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=145140.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 14; } { group CH; count 4; } { group OH; count 2; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-hexoxy-1-[1-[2-(2-hexoxy-1-oxidanyl-ethoxy)propoxy]propan-2-yloxy]ethanol" "7,10,13,16,19-pentaoxapentacosane-9,17-diol, 11,15-dimethyl-" "7,10,13,16,19-pentaoxapentacosane-9,17-diol,11,15-dimethyl-" "2-hexoxy-1-[1-[2-(2-hexoxy-1-hydroxyethoxy)propoxy]propan-2-yloxy]ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1484090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1132.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-674040.0
-    phase     gas;
 }

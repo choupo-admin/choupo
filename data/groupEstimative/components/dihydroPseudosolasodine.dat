@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 1; } { group CH2_ring; count 10; } { group CH_ring; count 8; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10,13-dimethyl-17-[1-(5-methylpiperidin-2-yl)ethyl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthrene-3,16-diol" "16-epi-dihydro-solasodine" "agn-pc-00po36" "(3beta,16alpha,17beta)-17-{(1s)-1-[(2r,5s)-5-methylpiperidin-2-yl]ethyl}androst-5-ene-3,16-diol" "(3beta,16beta)-17-{(1s)-1-[(2r,5r)-5-methylpiperidin-2-yl]ethyl}androst-5-ene-3,16-diol" "(3s,8s,9s,10r,13s,14s,16s,17r)-10,13-dimethyl-17-[(1s)-1-[(2s,5r)-5-methylpiperidin-2-yl]ethyl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthrene-3,16-diol" "10,13-dimethyl-17-[1-(5-methyl-2-piperidyl)ethyl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthrene-3,16-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -582730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     885.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=165840.0
-    phase     gas;
 }

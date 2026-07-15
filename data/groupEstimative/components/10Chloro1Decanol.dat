@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 10; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10-chloranyldecan-1-ol" "1-decanol, 10-chloro-" "10-chlorodecan-1-ol" "10-chloro-1-decanol;10-chlorodecanol;w-chlorodecanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -417700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     629.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-115430.0
-    phase     gas;
 }

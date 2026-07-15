@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group Cl; count 1; } { group CdO; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(6-chloranyl-17-ethanoyl-10,13-dimethyl-3-oxidanylidene-2,8,9,11,12,14,15,16-octahydro-1h-cyclopenta[a]phenanthren-17-yl) ethanoate" "verton" "c-quens" "pregna-4,6-diene-3,20-dione, 17-(acetyloxy)-6-chloro-" "-3,20-dione; 17.alpha.-acetoxy-6-chloro-6-dehydroproges" "(17xi)-6-chloro-3,20-dioxopregna-4,6-dien-17-yl acetate" "(17-acetyl-6-chloro-10,13-dimethyl-3-oxo-2,8,9,11,12,14,15,16-octahydro-1h-cyclopenta[a]phenanthren-17-yl) acetate" "[(10r,13r,17s)-17-acetyl-6-chloro-10,13-dimethyl-3-oxo-2,8,9,11,12,14,15,16-octahydro-1h-cyclopenta[a]phenanthren-17-yl] acetate" "6-chloro-3,20-dioxopregna-4,6-dien-17-yl acetate; .delta.(sup 6)-6-chloro-17.alpha.-acetoxyprogesterone; {6-chloro-.delta.6-[17.alpha.]acetoxyprogesterone}; 17.alpha.-acetoxy-6-chloro-4, 6-pregnadiene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -743290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     859.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-239760.0
-    phase     gas;
 }

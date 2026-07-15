@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group tC; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadec-9-ynoic acid" "stearolic acid" "9-stearolic acid" "stearolsaeure" "octadec-9-insaeure" "9-odya" "delta(9)-octadecynoic acid" "9-oda" "9a-18:1" "stearolicacid (6ci);9-stearolic acid;octadecanoic acid-9-yne;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -492820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     882.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-40430.0
-    phase     gas;
 }

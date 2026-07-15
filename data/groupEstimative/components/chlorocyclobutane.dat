@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloranylcyclobutane" "cyclobutyl chloride" "cyclobutane, chloro-" "chloro-cyclobutane" "chlorocyclobutane," "chlorocyclobutane;cyclobutyl chloride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -74990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     274.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=19520.0
-    phase     gas;
 }

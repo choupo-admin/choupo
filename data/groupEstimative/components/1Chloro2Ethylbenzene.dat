@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-2-ethyl-benzene" "benzene, 1-chloro-2-ethyl-" "o-chloroethylbenzene" "2-ethylchlorobenzene" "2-chloro(ethylbenzene)" "benzene,1-chloro-2-ethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     388.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107330.0
-    phase     gas;
 }

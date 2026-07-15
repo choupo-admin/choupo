@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentacyclo[4.2.0.02,5.03,8.04,7]octane" "cuban" "cubane;quadriprismane; [4]prismane" "pentacyclo[4.2.0.0(2,5).0(3,8).0(4,7)]octane" "pentacyclo[4.2.0.0~2,5~.0~3,8~.0~4,7~]octane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   137650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     -250.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=381800.0
-    phase     gas;
 }

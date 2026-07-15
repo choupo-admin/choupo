@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 4; } { group CH_ring; count 5; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[(1s,2r,5e,7s,9r,10r)-2,6,10-trimethyl-7-bicyclo[7.2.0]undec-5-enyl]ethanone" "ethanone, 1-((1r,4e,9r)-4,11,11-trimethyl-8-methylenebicyclo(7.2.0)undec-4-enyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -386060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     554.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13120.0
-    phase     gas;
 }

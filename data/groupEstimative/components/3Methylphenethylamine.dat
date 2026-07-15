@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3-methylphenyl)ethanamine" "2-m-tolyl-ethylamine" "2-m-tolylethanamine" "2-(m-tolyl)ethanamine" "2-(3-methylphenyl)ethylamine" "2-(3-methylphenyl)ethan-1-amine" "n,3-dimethylbenzylamine;n-(3-methylbenzyl)-n-methylamine; n-methyl-1-m-tolylmethanamine;n-methyl-3-methylbenzylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   29760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=194130.0
-    phase     gas;
 }

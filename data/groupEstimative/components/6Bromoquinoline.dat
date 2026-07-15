@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 3; } { group Br; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-bromanylquinoline" "quinoline, 6-bromo-" "6-bromo-quinoline" "6-bromchinolin" "5332-25-2 6-bromoquinoline" "wt600" "6-bromo-quinolin;quinoline, 6-bromo-" "n527" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   246160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     348.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=325700.0
-    phase     gas;
 }

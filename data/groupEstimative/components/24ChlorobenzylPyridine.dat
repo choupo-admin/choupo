@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group Cl; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[(4-chlorophenyl)methyl]pyridine" "2-(para-chlorobenzyl)-pyridine" "2-(p-chlorobenzyl)pyridine" "2-(4'-chlorobenzyl)pyridine" "xsvwmimfdmjqrl-uhfffaoysa-" "pyridine,2-[(4-chlorophenyl)methyl]-" "k984" "pyridine,2-(p-chlorobenzyl)- (7ci,8ci);2-(p-chlorobenzyl)pyridine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   187630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     450.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=330470.0
-    phase     gas;
 }

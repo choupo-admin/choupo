@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethenoxy-n,n-dimethyl-ethanamine" "2-(dimethylamino)ethyl vinyl ether" "vinyl-2-(n,n-dimethylamino)ethyl ether" "2-(vinyloxy)ethyldimethylamine" "ether, 2-(n,n-dimethylamino)ethyl vinyl" "ethylamine, n,n-dimethyl-2-(vinyloxy)- (6ci,7ci,8ci)" "1-dimethylamino-2-vinyloxyethan" "ether,n-dimethylamino)ethyl vinyl" "2-ethenoxy-n,n-dimethylethanamine" "[2-(ethenyloxy)ethyl]dimethylamine" "ethylamine,n-dimethyl-2-(vinyloxy)-" "ethylamine, n,n-dimethyl-2-(vinyloxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -106430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=93260.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group OH; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "thiophen-2-ylmethanol" "2-hydroxymethylthiophene" "thenyl alcohol" "2-thenyl alcohol" "2-(hydroxymethyl)thiophene" "thiophene-2-methanol" "2-thienylmethanol" "2-thienyl carbinol" "(thien-2-yl)methanol" "2-thienylmethan-1-ol" "2-thiophenecarbinol" "thiophen-2-yl-methanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -68590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     362.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11190.0
-    phase     gas;
 }

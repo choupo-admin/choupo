@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 1; } { group dC_ring; count 6; } { group OH_phenol; count 1; } { group O; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-6-(6-methoxy-7-methyl-4-oxidanyl-3-oxidanylidene-1h-2-benzofuran-5-yl)-4-methyl-hex-4-enoic acid" "melbex" "mycophenolate" "myfortic" "mycophenolsaeure" "acido micofenolico" "micofenolico acido" "acide mycophenolique" "acidum mycophenolicum" "6-(4-hydroxy-6-methoxy-7-methyl-3-oxo-5-phthalanyl)-4-methyl-4-hexenoic acid" "acide mycophenolique [inn-french]" "acidum mycophenolicum [inn-latin]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -967750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     730.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-583420.0
-    phase     gas;
 }

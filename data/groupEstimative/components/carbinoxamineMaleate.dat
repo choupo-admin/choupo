@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group COOH; count 2; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-but-2-enedioic acid;2-[(4-chlorophenyl)-pyridin-2-yl-methoxy]-n,n-dimethyl-ethanamine" "lergefin" "ciberon" "cliston" "p-carbinoxamine maleate" "paracarbinoxamine maleate" "allergefon maleate" "hislosine" "ziriton" "rondec" "carbinoxamine maleate salt" "histine sirup" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -742400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     987.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-311190.0
-    phase     gas;
 }

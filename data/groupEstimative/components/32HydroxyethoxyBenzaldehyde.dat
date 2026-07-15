@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-hydroxyethyloxy)benzaldehyde" "3-(2-hydroxy-ethoxy)-benzaldehyde" "benzaldehyde, 3-(2-hydroxyethoxy)-" "benzaldehyde,3-(2-hydroxyethoxy)-" "3-(2-hydroxyethoxy)benzaldehyde;m-(2-hydroxyethoxy)benzaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -212030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     537.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-70180.0
-    phase     gas;
 }

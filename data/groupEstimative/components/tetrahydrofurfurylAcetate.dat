@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxolan-2-ylmethyl ethanoate" "2-acetoxymethyloxolane" "oxolan-2-ylmethyl acetate" "2-furanmethanol, tetrahydro-, acetate" "furfuryl alcohol, tetrahydro-, acetate" "2-(acetoxymethyl)tetrahydrofuran" "tetrahydro-2-furanmethyl acetate" "tetrahydro-2-furylmethyl acetate" "tetrahydro-2-furanmethanol acetate" "(tetrahydrofuran-2-yl)methyl acetate" "2-furanmethanol, tetrahydro-, 2-acetate" "aaqdyyfafxgbfz-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -576610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     378.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-351880.0
-    phase     gas;
 }

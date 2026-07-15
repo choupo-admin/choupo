@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n',n'-trimethylpropane-1,3-diamine" "n,n,n'-trimethylpropane-1,3-diamine" "3-dimethylamino-n-methylpropylamine" "n,n,n-trimethyl-1,3-propanediamine" "1,3-propanediamine, n,n,n'-trimethyl-" "1,3-propanediamine, n1,n1,n3-trimethyl-" "n-(dimethylaminopropyl)methylamine" "dimethyl[3-(methylamino)propyl]amine" "[3-(dimethylamino)propyl](methyl)amine" "1,3-propanediamine,n1,n1,n3-trimethyl-" "n,n,n inverted exclamation marka-trimethyl-1,3-propanediamine" "1,3-propanediamine,n,n,n'-trimethyl- (6ci,7ci,8ci,9ci);(3-dimethylaminopropyl)methylamine;3-(dimethylamino)-n-methylpropylamine;methyl[3-(dimethylamino)propyl]amine;n,n,n'-trimethyl-1,3-diaminopropane;n,n,n'-trimethyl-1,3-propanediamine;n,n,n'-trimethyltrimethylenediamine;n-(3-dimethylaminopropyl)-n-methylamine;n-(3-dimethylaminopropyl)methylamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -46170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     446.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=199810.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 14; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethyl(dinaphthalen-1-yl)silane" "dimethyl-dinaphthalen-1-yl-silane" "silane,dimethyl-di-1-naphthalenyl-" "silane, dimethyl-di-1-naphthalenyl-" "silane,dimethyldi-1-naphthalenyl- (9ci)" "silane,dimethyldi-1-naphthyl- (6ci,8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   223230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     696.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=448460.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 6; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "16-azatricyclo(9.2.2.14,8)hexadeca-2,4,6,8(16),9,11,13,14-octaene, 12,14-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   268300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     490.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=471890.0
-    phase     gas;
 }

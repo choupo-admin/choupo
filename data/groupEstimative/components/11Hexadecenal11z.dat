@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadec-11-enal" "11-hexadecenal" "11-hexadecenal, (11e)-" "11-hexadecenal,(e)-; (e)-11-hexadecenal" "11-hexadecenal,(z)-; (z)-11-hexadecen-1-al; (z)-11-hexadecenal; (z)-11-hexadecenyl aldehyde;11(z)-hexadecenal; cis-11-hexadecen-1-al; cis-11-hexadecenal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -341930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     791.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=64540.0
-    phase     gas;
 }

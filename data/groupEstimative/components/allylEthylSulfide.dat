@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethylsulfanylprop-1-ene" "allyl(ethyl)sulfide" "4-thia-1-hexene" "allyl ethylsulfide" "allylethylsulfide" "1-propene-1-one, 3-(ethylthio)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   20770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     407.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=112180.0
-    phase     gas;
 }

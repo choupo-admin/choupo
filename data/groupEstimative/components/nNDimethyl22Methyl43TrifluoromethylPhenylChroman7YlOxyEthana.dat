@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group F; count 3; } { group O; count 1; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyl-2-[[2-methyl-4-[3-(trifluoromethyl)phenyl]-3,4-dihydro-2h-chromen-7-yl]oxy]ethanamine" "2-((3,4-dihydro-2-methyl-4-(3-(trifluoromethyl)phenyl)-2h-1-benzopyran-7-yl)oxy)-n,n-dimethylethanamine" "ethanamine, 2-((3,4-dihydro-2-methyl-4-(3-(trifluoromethyl)phenyl)-2h-1-benzopyran-7-yl)oxy)-n,n-dimethyl-" "ethanamine,2-[[3,4-dihydro-2-methyl-4-[3-(trifluoromethyl)phenyl]-2h-1-benzopyran-7-yl]oxy]-n,n-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -785590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     662.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-299120.0
-    phase     gas;
 }

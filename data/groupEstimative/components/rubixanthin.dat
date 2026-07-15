@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 10; } { group CH2; count 2; } { group dCH; count 16; } { group dC; count 6; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r)-4-[(1e,3e,5e,7e,9e,11e,13e,15e,17e,19e)-3,7,12,16,20,24-hexamethylpentacosa-1,3,5,7,9,11,13,15,17,19,23-undecaenyl]-3,5,5-trimethyl-cyclohex-3-en-1-ol" "?natural yellow 27" "(3r)-beta,psi-caroten-3-ol" "(3r)-beta-4-caroten-3-ol" "?e161d" "?(3r)-beta, psi-caroten-3-ol" "beta-4-caroten-3-ol, (3r)-" "(1r)-4-[(1e,3e,5e,7e,9e,11e,13e,15e,17e,19e)-3,7,12,16,20,24-hexamethylpentacosa-1,3,5,7,9,11,13,15,17,19,23-undecaenyl]-3,5,5-trimethylcyclohex-3-en-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   293580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1614.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1002170.0
-    phase     gas;
 }

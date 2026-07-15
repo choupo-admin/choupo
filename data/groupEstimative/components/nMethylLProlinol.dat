@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(2s)-1-methylpyrrolidin-2-yl]methanol" "(s)-(-)-1-methyl-2-pyrrolidinemethanol" "(s)-2-hydroxymethyl-1-methylpyrrolidine" "n-methylprolinol" "1-methyl-l-prolinol" "(s)-1-methylpyrrolidine-2-methanol" "[(2s)-1-methyl-2-pyrrolidinyl]methanol" "(s)-(-)-2-hydroxymethyl-1-methylpyrrolidine" "racemic-[(2s)-1-methylpyrrolidin-2-yl]methanol" "2-pyrrolidinemethanol,1-methyl-, (s)-;(-)-(s)-1-methyl-2-pyrrolidinemethanol;(2s)-(hydroxymethyl)-1-methylpyrrolidine;(2s)-1-methylpyrrolidin-2-ylmethanol;(2s)-1-methylpyrrolidine-2-methanol;(s)-(-)-(1-methyl-2-pyrrolidinyl)methanol;(s)-(-)-1-methylpyrrolidine-2-methanol;(s)-(-)-2-hydroxymethyl-1-methylpyrrolidine;(s)-1-methyl-2-pyrrolidinemethanol;(s)-1-methylpyrrolidin-2-ylmethanol;(s)-2-(hydroxymethyl)-1-methylpyrrolidine;(s)-n-methylpyrrolidine-2-methanol;l-(-)-n-methyl-2-pyrrolidinylmethanol;l-n-methylprolinol;2-pyrrolidinemethanol,1-methyl-, (2s)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -185230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     386.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22250.0
-    phase     gas;
 }

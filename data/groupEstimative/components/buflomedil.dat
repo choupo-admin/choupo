@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH2_ring; count 4; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group O; count 3; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-pyrrolidin-1-yl-1-(2,4,6-trimethoxyphenyl)butan-1-one" "buflomedilum [inn-latin]" "4-(1-pyrrolidinyl)-1-(2,4,6-trimethoxyphenyl)-1-butanone" "1-butanone, 4-(1-pyrrolidinyl)-1-(2,4,6-trimethoxyphenyl)-" "(2,4,6-trimethoxyphenyl)(3-pyrrolidinopropyl) ketone" "blufomedil" "bufomedil" "buflomedilum" "buflomedil (inn)" "buflomedil [inn:ban:dcf]" "2,4,6-trimethoxyphenyl-3-pyrrolidine propyl ketone" "35543-24-9 (hydrochloride)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -546820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     741.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-101000.0
-    phase     gas;
 }

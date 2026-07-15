@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 7; } { group F; count 16; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,7-hexadecakis(fluoranyl)heptane" "perfluoro-n-heptane" "heptane, hexadecafluoro-" "perfluoroheptane (mixed isomers)" "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,7-hexadecafluoroheptane" "heptane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,7-hexadecafluoro-" "perfluoroheptanes" "perfluoroheptane(s)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3386820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     663.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3089020.0
-    phase     gas;
 }

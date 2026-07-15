@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-2-phenyl-ethanol" "(s)-2-phenylglycinol" "(s)-2-amino-2-phenylethanol" "(2s)-2-amino-2-phenylethanol" "2-phenylglycinol" "h-phenylglycinol" "dl-phenylglycinol" "l-2-phenylglycinol" "(2s)-2-amino-2-phenylethan-1-ol" "2-amino-2-phenyl-ethanol" "l-(+)-2-phenylglycinol" "l-(+)-alpha-phenylglycinol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -95640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     454.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=56080.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzenamine, n-dodecyl-" "n-n-dodecylaniline" "n-dodecyl-n-phenylamine" "dodecylphenylamine" "lqkycmrswkqvbq-uhfffaoysa-" "u769" "dodecylamine,n-phenyl- (6ci,7ci,8ci); 4-(n-dodecyl)phenylamine; n-dodecylaminobenzene;n-dodecylaniline; n-dodecylbenzenamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -124850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     791.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=302480.0
-    phase     gas;
 }

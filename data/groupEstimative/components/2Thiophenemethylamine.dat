@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group NH2; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "thiophen-2-ylmethanamine" "2-(aminomethyl)thiophene" "2-thienylmethylamine" "2-thiophenemethanamine" "2-aminomethylthiophene" "thiophene-2-methylamine" "(thiophen-2-yl)methylamine" "thiophenemethanamine" "(2-thienylmethyl)amine" "2-(thienyl)methylamine" "2-thenyl amine" "thiophen-2-yl-methyl-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   117430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     363.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=192080.0
-    phase     gas;
 }

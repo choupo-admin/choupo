@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphthalen-2-ylmethanol" "2-naphthylmethanol" "naphthalen-2-yl-methanol" "2-hydroxymethylnaphthalene" "2-naphthalene methanol" "(2-naphthyl)methanol" "(naphthalen-2-yl)methanol" "2-naphthylmethan-1-ol" "2na" "2-naphthalene methonal" "2-(hydroxymethyl)naphthalene" "l317" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -6470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=114350.0
-    phase     gas;
 }

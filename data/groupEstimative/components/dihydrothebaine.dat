@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group O; count 2; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4r,4ar,7ar,12bs)-7,9-dimethoxy-3-methyl-2,4,4a,5,7a,13-hexahydro-1h-4,12-methanobenzofuro[3,2-e]isoquinoline" "thebaine, dihydro-" "8,14-dihydrothebaine" "delta(sup 6)-dihydrothebaine" "(5alpha)-6,7-didehydro-4,5-epoxy-3,6-dimethoxy-17-methylmorphinan" "4,5alpha-epoxy-3,6-dimethoxy-17-methyl-6-morphinen" "(5r,9r,13s,14r)-4,5-epoxy-3,6-dimethoxy-n-methyl-6-morphinen" "morphinan, 6,7-didehydro-4,5-alpha-epoxy-3,6-dimethoxy-17-methyl-" "(5r,9r,13s,14r)-4,5-epoxy-3,6-dimethoxy-n-methyl-6-morphinen [iupac]" "morphinan, 6,7-didehydro-4,5-alpha-epoxy-3,6-dimethoxy-17-methyl- (8ci)" "morphinan, 6,7-didehydro-4,5-epoxy-3,6-dimethoxy-17-methyl- (5-alpha,14-xi)-" "morphinan, 6,7-didehydro-4,5-epoxy-3,6-dimethoxy-17-methyl- (5-alpha,14-xi)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -203370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     403.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=277220.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group CH_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cycloheptanamine" "aminocycloheptane" "sz1" "vxvvuhqulxcupf-uhfffaoysa-" "cycloheptanamine,hydrochloride (9ci)" "cycloheptanamine,hydrochloride (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -105860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     469.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=86860.0
-    phase     gas;
 }

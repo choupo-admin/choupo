@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "isochromen-1-one" "1h-2-benzopyran-1-one" "iso-coumarin" "3,4-benzo-2-pyrone" "1h-isochromen-1-one" "benzoic acid, 2-(2-hydroxyethenyl)-, delta-lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -164230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     340.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-72170.0
-    phase     gas;
 }

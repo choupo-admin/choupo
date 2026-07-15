@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-methyl-2-phenyl-ethanamide" "benzeneacetamide, n-methyl-" "n-methylphenylacetamide" "acetamide, n-methyl-2-phenyl-" "methylphenylacetamide" "n-methyl-2-phenyl-acetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -51670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97780.0
-    phase     gas;
 }

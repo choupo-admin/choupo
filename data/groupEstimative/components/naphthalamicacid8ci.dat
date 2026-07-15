@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 4; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-aminocarbonylnaphthalene-1-carboxylic acid" "8-(aminocarbonyl)-1-naphthoic acid" "8-carbamoylnaphthalene-1-carboxylic acid" "8-carbamoylnaphthalenecarboxylic acid" "8-carbamoyl-1-naphthalenecarboxylic acid" "8-carboxynaphthalene-1-carboxamide" "1-naphthalenecarboxylicacid, 8-(aminocarbonyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -315410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     527.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-156420.0
-    phase     gas;
 }

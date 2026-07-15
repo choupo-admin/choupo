@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octan-1-amine" "n-octylamine" "1-octanamine" "1-aminooctane" "1-octylamine" "caprylamine" "caprylylamine" "armeen 8" "armeen 8d" "n-octylamine, mono-" "monoctylamine" "1-octanamin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -174660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     519.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=82930.0
-    phase     gas;
 }

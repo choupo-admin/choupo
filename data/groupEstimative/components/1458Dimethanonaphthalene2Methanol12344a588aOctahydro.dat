@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 7; } { group dCH_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "agn-pc-00b8ph" "1,2,3,4,4a,5,8,8a-octahydro-1,4:5,8-dimethanonaphthalen-2-ylmethanol" "1,2,3,4,4a,5,8,8a-octahydro-1,4:5,8-dimethanonaphthalene-2-methanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -175920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     187.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=171590.0
-    phase     gas;
 }

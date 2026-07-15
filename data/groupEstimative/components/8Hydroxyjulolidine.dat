@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,6,7-tetrahydro-1h,5h-benzo[ij]quinolizin-8-ol" "2,3,6,7-tetrahydro-1h,5h-pyrido[3,2,1-ij]quinolin-8-ol" "1h,5h-benzo[ij]quinolizin-8-ol, 2,3,6,7-tetrahydro-" "1-azatricyclo[7.3.1.0^{5,13}]trideca-5(13),6,8-trien-6-ol" "2,3,6,7-tetrahydro-1h,5h-benzo(ij)quinolizin-8-ol" "1h,5h-benzo(ij)quinolizin-8-ol, 2,3,6,7-tetrahydro-" "fofuwjnbaqjabo-uhfffaoysa-" "1,2,3,5,6,7-hexahydropyrido[3,2,1-ij]quinolin-8-ol" "1h,5h-benzo[ij]quinolizin-8-ol,2,3,6,7-tetrahydro-" "1-azatricyclo[7.3.1.05,13]trideca-5(13),6,8-trien-6-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=236390.0
-    phase     gas;
 }

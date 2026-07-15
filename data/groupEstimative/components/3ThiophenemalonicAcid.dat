@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COOH; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-thiophen-3-ylpropanedioic acid" "3-thienylmalonic acid" "3-thienylpropanedioic acid" "propanedioic acid, 3-thienyl-" "2-(thiophen-3-yl)malonic acid" "(3-thienyl)malonic acid" "3-thiophene malonic acid" "propanedioic acid, 2-(3-thienyl)-" "2-(3-thienyl)propanedioic acid" "3-thiophenemalonic" "thiophen-3-malonic acid" "thiophene-3-malonic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -663460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     486.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-547790.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-tert-butylphenyl)-4-chloranyl-butan-1-one" "1-(4-(tert-butyl)phenyl)-4-chlorobutan-1-one" "4-chloro-1-[4-(1,1-dimethylethyl)phenyl]- 1-butanone" "1-(4-tert-butylphenyl)-4-chlorobutan-1-one" "1-[4-(tert-butyl)phenyl]-4-chlorobutan-1-one" "q401" "4-chloro-1-[4-(2-methyl-2-propanyl)phenyl]-1-butanone" "4 inverted exclamation marka-tert-butyl-4-chlorobutyrophenone" "butyrophenone,4'-tert-butyl-4-chloro- (6ci);1-(4-tert-butylphenyl)-4-chloro-1-butanone;4-chloro-4'-tert-butylbutyrophenone;p-tert-butyl-w-chlorobutyrophenone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -244300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     609.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=31770.0
-    phase     gas;
 }

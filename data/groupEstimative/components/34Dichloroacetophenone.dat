@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3,4-dichlorophenyl)ethanone" "acetophenone, 3',4'-dichloro-" "ethanone, 1-(3,4-dichlorophenyl)-" "3,4-dichloroacetophenone" "1-(3,4-dichlorophenyl)ethan-1-one" "1-acetyl-3,4-dichlorobenzene" "3,4-dicloroacetophenone" "3,4 dichloro acetophenone" "acetophenone, 3',4'-dichloro- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -138920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-43150.0
-    phase     gas;
 }

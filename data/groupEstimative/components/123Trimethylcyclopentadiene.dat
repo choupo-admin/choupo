@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3-trimethylcyclopenta-1,3-diene" "1,3-cyclopentadiene, trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -46480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     366.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91770.0
-    phase     gas;
 }

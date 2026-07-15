@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[methoxy(phenyl)methyl]benzene" "diphenylmethyl methyl ether" "1,1'-(methoxymethanediyl)dibenzene" "benzene,1,1'-(methoxymethylene)bis-" "benzene, 1,1'-(methoxymethylene)bis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   3270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     490.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=184380.0
-    phase     gas;
 }

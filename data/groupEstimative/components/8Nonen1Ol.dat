@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 7; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "non-8-en-1-ol" "8-nonene-1-ol;8-nonen-1-ol97+%;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -255890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     552.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-24080.0
-    phase     gas;
 }

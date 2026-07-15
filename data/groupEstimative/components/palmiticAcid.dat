@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadecanoic acid" "cetylic acid" "palmitate" "n-hexadecanoic acid" "hexadecylic acid" "hydrofol" "n-hexadecoic acid" "1-pentadecanecarboxylic acid" "c16 fatty acid" "palmitinic acid" "hexaectylic acid" "pentadecanecarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -723840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     832.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-260070.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,4-dihydro-2h-chromen-4-ol" "chroman-4-ol" "3,4-dihydro-2h-1-benzopyran-4-ol" "4-hydroxychroman" "2h-1-benzopyran-4-ol, 3,4-dihydro-" "2h-1-benzopyran-4-ol, 3,4-dihydro-, (4s)-" "2h-1-benzopyran-4-ol,3,4-dihydro-" "4-chromanol(6ci,7ci,8ci);3,4-dihydro-2h-chromen-4-ol;3,4-dihydro-2h-1-benzopyran-4-ol;4-hydroxy-3,4-dihydro-2h-1-benzopyran;4-hydroxychroman;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -221620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     323.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-46610.0
-    phase     gas;
 }

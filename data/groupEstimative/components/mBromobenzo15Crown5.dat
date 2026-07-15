@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 8; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group O_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "17-bromanyl-2,5,8,11,14-pentaoxabicyclo[13.4.0]nonadeca-1(15),16,18-triene" "1,4,7,10,13-benzopentaoxacyclopentadecin, 2,3,5,6,8,9,11,12-octahydro-15-bromo-" "2,3,5,6,8,9,11,12-octahydro-15-bromo-1,4,7,10,13-benzopentaoxacyclopentadecin" "4'-bromobenzo-15-crown 5-ether" "4 inverted exclamation marka-bromobenzo-15-crown-5" "(benzo-15-crown-5)-4 inverted exclamation marka-yl bromide" "2,3-(4-bromobenzo)-1,4,7,10,13-pentaoxacyclopentadec-2-ene" "15-bromo-1,2,3,4,5,6,7,8,9,10,11,12,13-tridecahydrobenzo[a][15]annulene" "15-bromo-2,3,5,6,8,9,11,12-octahydro-1,4,7,10,13-benzopentaoxacyclopentadecine" "17-bromo-2,5,8,11,14-pentaoxabicyclo[13.4.0]nonadeca-1(15),16,18-triene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -720830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     528.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-308670.0
-    phase     gas;
 }

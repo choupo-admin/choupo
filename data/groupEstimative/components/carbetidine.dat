@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 1-[2-(2-hydroxyethyloxy)ethyl]-4-phenyl-piperidine-4-carboxylate" "etoxeridine" "atenos" "etosseridina" "etoxeridina" "etoxeridinum" "etosseridina [dcit]" "etoxeridine [inn:ban]" "etoxeridinum [inn-latin]" "ethyl 1-[2-(2-hydroxyethoxy)ethyl]-4-phenylpiperidine-4-carboxylate" "isonipecotic acid, 1-(2-(2-hydroxyethoxy)ethyl)-4-phenyl-, ethyl ester" "1-(2-(2-hydroxyethoxy)ethyl)-4-phenylpiperidine-4-carboxylic acid ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -636800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     899.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-197260.0
-    phase     gas;
 }

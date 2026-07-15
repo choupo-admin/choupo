@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group Cl; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(chloranyl)ethanol" "trichloroethanol" "trichloroethyl alcohol" "trichlorethanol" "ethanol, 2,2,2-trichloro-" "(hydroxymethyl)trichloromethane" "2,2,2-trichloro-1-ethanol" "2,2,2-trichloroethyl alcohol" ".beta.,.beta.,.beta-trichloroethanol" "2,2-trichloroethanol" ".beta.-trichloroethanol" "2,2,2-trichloro-ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -292810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     346.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-203810.0
-    phase     gas;
 }

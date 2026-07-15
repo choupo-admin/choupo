@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 10; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "idryl" "benzo[j,k]fluorene" "benzo(jk)fluorene" "benzo[jk]fluorene" "fluoranthene solution" "benzene, 1,2-(1,8-naphthalenediyl)-" "1,2-benzacenaphthene" "1,2-(1,8-naphthylene)benzene" "1,2-(1,8-naphthalenediyl)benzene" "benzene, 1,2-(1,8-naphthylene)-" "fluroanthene" "k)fluorene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   367770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     331.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=491180.0
-    phase     gas;
 }

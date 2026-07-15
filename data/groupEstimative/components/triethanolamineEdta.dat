@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 12; } { group OH; count 3; } { group COOH; count 4; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[bis(2-hydroxyethyl)amino]ethanol;2-[2-[bis(2-hydroxy-2-oxoethyl)amino]ethyl-(2-hydroxy-2-oxoethyl)amino]ethanoic acid" "tea-edta" "ethylenediaminetetraacetic acid, mono(triethanolamine) salt" "tris(2-hydroxyethyl)ammonium trihydrogen ethylenediaminetetraacetate" "glycine, n,n'-1,2-ethanediylbis(n-(carboxymethyl)-, compd. with 2,2',2" "glycine, n,n'-1,2-ethanediylbis(n-(carboxymethyl)-, compd. with 2,2',2''-nitrilotris(ethanol) (1:1)" "2-[2-(bis(carboxymethyl)amino)ethyl-(carboxymethyl)amino]acetic acid; 2-(bis(2-hydroxyethyl)amino)ethanol" "2-[2-[bis(carboxymethyl)amino]ethyl-(carboxymethyl)amino]acetic acid; 2-[bis(2-hydroxyethyl)amino]ethanol" "tris(2-hydroxyethyl)ammonium trihydrogen ethylenediaminetetraacetate;tea-edta" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2140370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1300.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1474680.0
-    phase     gas;
 }

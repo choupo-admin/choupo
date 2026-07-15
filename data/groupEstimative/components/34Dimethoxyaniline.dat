@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-aminoveratrole" "benzenamine, 3,4-dimethoxy-" "4-aminoveratrol" "3,4-dimethoxybenzenamine" "3,4-dimethyloxy aniline" "aniline, 3,4-dimethoxy-" "2-methoxy-4-aminoanisole" "3,4-dimethoxy aniline" "3,4-dimethoxyphenylamine" "ghl.pd_mitscher_leg0.825" "(3,4-dimethoxyphenyl)-amine" "lgdhzclrekigkj-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -225510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     423.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-33920.0
-    phase     gas;
 }

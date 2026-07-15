@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 2; } { group OH; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s,3r)-2,3,4-tris(oxidanyl)butanal" "d-(-)-threose" "d-threose" "(2s,3r)-2,3,4-trihydroxybutanal" "threotetrose" "dl-threose" "threose, dl-" "(+/-)-threose" "threose, (+/-)-" "butanal, 2,3,4-trihydroxy-, (2r,3s)-rel-" "9b9d25d1-bacd-403a-8bfd-5f1befd8b9b3" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -678720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     464.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-532060.0
-    phase     gas;
 }

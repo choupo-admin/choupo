@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH; count 2; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-(diethylamino)prop-2-enoate" "ethyl (e)-3-diethylaminoprop-2-enoate" "2-propenoic acid,3-(diethylamino)-, ethyl ester, (2e)-" "2-propenoicacid, 3-(diethylamino)-, ethyl ester, (e)-; acrylic acid, 3-(diethylamino)-,ethyl ester, (e)- (8ci); ethyl (e)-3-(n,n-diethylamino)propenoate; ethyl(e)-3-(diethylamino)acrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -361620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     567.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-94470.0
-    phase     gas;
 }

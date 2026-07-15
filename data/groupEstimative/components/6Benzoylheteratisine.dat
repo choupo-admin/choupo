@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 8; } { group C_ring; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 1; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-o-benzoylheteratisine" "heteratisine 6-benzoate" "heteratisan-14-one, 6-(benzoyloxy)-20-ethyl-8-hydroxy-1-methoxy-4-methyl-, (1alpha,6beta)-" "8h-13,3,6a-ethanylylidene-7,10-methanooxepino(3,4-i)-1-benzazocin-8-one, tetradecahydro-14-(benzoyloxy)-1-ethyl-12a-hydroxy-6-methoxy-3-methyl-, (3r-(3-alpha,6-beta,6a-alpha,7-beta,7a-alpha,10-beta,12a-alpha,13-alpha,13a-beta,14s*,15r*))-" "heteratisan-14-one, 6-(benzoyloxy)-2-o-ethyl-8-hydroxy-1-methoxy-4-methyl-, (1-alpha,6-beta)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -869860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     795.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-124490.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group dCH; count 2; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bis(1-ethoxy-1-oxidanylidene-propan-2-yl) but-2-enedioate" "bis(1-ethoxy-1-oxopropan-2-yl) but-2-enedioate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1494750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     880.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1099140.0
-    phase     gas;
 }

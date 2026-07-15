@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1-methylcyclohexyl) ethanoate" "cyclohexanol, methyl-, acetate" "cyclohexanol, methyl-, 1-acetate" "methylcyclohexyl acetate" "(1-methylcyclohexyl) acetate" "cyclohexanol, methyl-,1-acetate" "cyclohexanol, 1-methyl-, acetate" "cyclohexanol,methyl-, acetate (6ci,7ci,8ci,9ci); methylcyclohexyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -476810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     596.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-266510.0
-    phase     gas;
 }

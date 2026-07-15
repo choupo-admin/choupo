@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 19; } { group dCH; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "docos-13-en-1-ol" "13-docosen-1-ol, (13e)-" "13-docosen-1-ol, (13z)-" "13-docosen-1-ol,(z)- (8ci); 13(z)-docosen-1-ol; erucic alcohol; erucyl alcohol;cis-13-docosenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -532420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1057.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77760.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 19; } { group CH; count 2; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[octadecyl(2-oxidanylpropyl)amino]propan-2-ol" "2-propanol, 1,1'-(octadecylimino)bis-" "2-propanol,1,1'-(octadecylimino)bis-" "1-[2-hydroxypropyl(octadecyl)amino]propan-2-ol" "2-propanol,1,1'-(octadecylimino)di- (6ci,8ci); n,n-bis(2-hydroxypropyl)stearylamine;n-octadecyldiisopropanolamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -786180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1189.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-16540.0
-    phase     gas;
 }

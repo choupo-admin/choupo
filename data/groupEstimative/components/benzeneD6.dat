@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5,6-hexadeuteriobenzene" "hexadeuterobenzene" "perdeuterobenzene" "benzene-1,2,3,4,5,6-d6" "c6d6" "deuterated benzene" "(2h6)benzene" "de25" ""benzene-d6 ""100%"" >99.95 atom % d"" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   80830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     289.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=121680.0
-    phase     gas;
 }

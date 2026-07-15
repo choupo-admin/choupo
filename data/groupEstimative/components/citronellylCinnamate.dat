@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group dCH; count 3; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7-dimethyloct-6-enyl 3-phenylprop-2-enoate" "2-propenoic acid, 3-phenyl-, 3,7-dimethyl-6-octenyl ester" "2-propenoic acid, 3-phenyl-, 3,7-dimethyl-6-octen-1-yl ester" "2-propenoic acid,3-phenyl-, 3,7-dimethyl-6-octen-1-yl ester" "2-propenoicacid, 3-phenyl-, 3,7-dimethyl-6-octenyl ester (9ci); cinnamic acid,3,7-dimethyl-6-octenyl ester (8ci); 6-octen-1-ol, 3,7-dimethyl-, cinnamate(8ci); citronellyl cinnamate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -296870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     814.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=60590.0
-    phase     gas;
 }

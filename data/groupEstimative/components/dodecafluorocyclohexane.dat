@@ -33,9 +33,8 @@ groups
     joback ( { group C_ring; count 6; } { group F; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2,3,3,4,4,5,5,6,6-dodecakis(fluoranyl)cyclohexane" "perfluorocyclohexane" "cyclohexane, dodecafluoro-" "1,1,2,2,3,3,4,4,5,5,6,6-dodecafluorocyclohexane" "cyclohexane, dodecafluoro- (8ci)(9ci)" "cyclohexane,1,1,2,2,3,3,4,4,5,5,6,6-dodecafluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2476430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     944.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2385120.0
-    phase     gas;
 }

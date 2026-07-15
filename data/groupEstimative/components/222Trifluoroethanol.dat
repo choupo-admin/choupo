@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group F; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(fluoranyl)ethanol" "trifluoroethanol" "ethanol, 2,2,2-trifluoro-" "trifluoroethyl alcohol" "fluorinol 85" "tfetoh" "2,2,2-trifluoroethan-1-ol" "trifluoro ethanol" "perfluoro-1,1-dihydroethanol" "2,2,2-trifluoroethyl alcohol" "tfe" "1h,1h-trifluoroethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -833920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     341.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-752450.0
-    phase     gas;
 }

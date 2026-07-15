@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 7; } { group dCH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7-methano-1h-indene, 3a,4,7,7a-tetrahydro-, polymer with 5-methylbicyclo(2.2.1)hept-2-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -42130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     356.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=349930.0
-    phase     gas;
 }

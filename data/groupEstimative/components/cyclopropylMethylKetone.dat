@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-cyclopropylethanone" "acetylcyclopropane" "ethanone, 1-cyclopropyl-" "methyl cyclopropyl ketone" "ketone, cyclopropyl methyl" "1-cyclopropyl-ethanone" "1-cyclopropylethan-1-one" "acetyltrimethylene" "cyclopropylethanone" "cyclopropylmethylketone" "1-cyclopropyl-1-ethanone" "cyclopropylmethyl ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -186310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     287.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76950.0
-    phase     gas;
 }

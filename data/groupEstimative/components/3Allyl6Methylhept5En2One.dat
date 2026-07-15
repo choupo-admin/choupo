@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methyl-3-prop-2-enyl-hept-5-en-2-one" "5-hepten-2-one, 6-methyl-3-(2-propenyl)-" "5-hepten-2-one, 6-methyl-3-(2-propen-1-yl)-" "6-methyl-3-prop-2-enylhept-5-en-2-one" "6-methyl-3-(prop-2-en-1-yl)hept-5-en-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -155370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     586.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=69890.0
-    phase     gas;
 }

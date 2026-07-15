@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group I; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,5-bis(iodanyl)pentane" "pentamethylene diiodide" "pentane, 1,5-diiodo-" "pentane,5-diiodo-" "iaeoyuupfyjxhn-uhfffaoysa-" "p189" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   7210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107460.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-4-fluoranyl-benzoic acid" "4-fluoro-3-chlorobenzoic acid" "4-fluoro-3-chlorobenzoyl acid" "3-chloro-4-fluoro-benzoic acid" "403-16-7 3-chloro-4-fluorobenzoic acid" "3-chloro-4-fluorobenzoicacid" "benzoicacid, 3-chloro-4-fluoro-" "benzoic acid, 3-chloro-4-fluoro-" "4-fluoro-3-chloro benzoyl acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -536340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-449440.0
-    phase     gas;
 }

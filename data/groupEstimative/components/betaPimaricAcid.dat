@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r,4ar,4bs)-1,4a-dimethyl-7-propan-2-yl-2,3,4,4b,5,9,10,10a-octahydrophenanthrene-1-carboxylic acid" "levopimaric acid" "l-sapietic acid" "delta6,8(14)-abietadienoic acid" "(5xi)-abieta-8(14),12-dien-18-oic acid" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,4b,5,9,10,10a-decahydro-1,4a-dimethyl-7-(1-methylethyl)-, (1theta-(1alpha,4abeta,4balpha,10aalpha))-" "podocarpa-8(14),12-dien-15-oic acid, 13-isopropyl-" "podocarpa-8(14),12-dien-15-oic acid, 13-isopropyl- (8ci)" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,4b,5,9,10,10a-decahydro-1,4a-dimethyl-7-(1-methylethyl)-, (1r-(1alpha,4abeta, 4balpha,10aalpha))-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -521320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     817.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-85110.0
-    phase     gas;
 }

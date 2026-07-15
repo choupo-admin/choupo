@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-naphthalen-1-yloxyethanoic acid" "1-naphthoxyacetic acid" "(1-naphthyloxy)essigs" "1-naphthyloxyacetic acid" "naphthyloxyacetic acid" "2-(naphthalen-1-yloxy)acetic acid" "2-(1-naphthyloxy)acetic acid" "2-naphthalen-1-yloxyacetic acid" "(naphthalen-1-yloxy)acetic acid" "a-naphthoxyacetic acid" "alpha-naphthoxyacetic acid" "(1-naphthoxy)acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -357370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     466.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-189320.0
-    phase     gas;
 }

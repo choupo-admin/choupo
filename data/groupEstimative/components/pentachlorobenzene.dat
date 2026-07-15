@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 1; } { group dC_ring; count 5; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5-pentakis(chloranyl)benzene" "1,2,3,4,5-pentachlorobenzene" "benzene, pentachloro-" "1,2,3,4,5-pentachloro-benzene" "benzene, 1,2,3,4,5-pentachloro-" "qcb" "pecb" "u - pentachlorobenzene" "1,3,4,5-pentachlorobenzene" "5cl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -55220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     425.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13880.0
-    phase     gas;
 }

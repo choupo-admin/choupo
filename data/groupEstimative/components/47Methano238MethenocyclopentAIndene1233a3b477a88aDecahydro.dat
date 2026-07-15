@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 10; } { group dCH_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7-methano-2,3,8-methenocyclopent[a]indene, 1,2,3,3a,3b,4,7,7a,8,8a-decahydro-" "hexacyclo[9.2.1.02,10.03,7.04,9.06,8]tetradecane-12-ene" "4,7-methano-2,3,8-methenocyclpenta[a]indene,1,2,3,3a,3b,4,7,7a,8,8a-decahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   105570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     -126.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=479020.0
-    phase     gas;
 }

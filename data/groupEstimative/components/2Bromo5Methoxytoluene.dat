@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-4-methoxy-2-methyl-benzene" "4-bromo-3-methylanisole" "1-bromo-4-methoxy-2-methylbenzene" "4-bromo-3-methyl-anisole" "benzene, 1-bromo-4-methoxy-2-methyl-" "1-brom-4-methoxy-2-methylbenzol" "blznsxfqrkvfrp-uhfffaoysa-" "b224" "1-bromo-2-methyl-4-methoxybenzene" "anisole,4-bromo-3-methyl- (6ci,8ci);1-bromo-2-methyl-4-methoxybenzene;1-bromo-4-methoxy-2-methylbenzene;2-bromo-5-methoxytoluene;3-methyl-4-bromoanisole;4-bromo-3-methylanisole;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -100750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     411.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=18950.0
-    phase     gas;
 }

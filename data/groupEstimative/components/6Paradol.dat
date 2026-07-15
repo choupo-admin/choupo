@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3-methoxy-4-oxidanyl-phenyl)decan-3-one" "paradol" "[6]-paradol" "5-paradol" "3-decanone, 1-(4-hydroxy-3-methoxyphenyl)-" "1-(4-hydroxy-3-methoxyphenyl)decan-3-one" "1-(4-hydroxy-3-methoxyphenyl)-3-decanone" "paradol" "27113-22-0" "[6]-paradol" "1-(4-hydroxy-3-methoxy-phenyl)decan-3-one" "brd-k84571636-001-01-4" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -591260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     770.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-193500.0
-    phase     gas;
 }

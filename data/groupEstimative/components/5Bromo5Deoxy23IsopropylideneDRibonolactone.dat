@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH_ring; count 3; } { group C_ring; count 1; } { group Br; count 1; } { group O_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-(bromomethyl)-2,2-dimethyl-6,6a-dihydro-3ah-furo[3,4-d][1,3]dioxol-4-one" "agn-pc-00n0q9" "6-bromomethyl-2,2-dimethyldihydrofuro[3,4-d][1,3]dioxol-4-one" "5-bromo-5-deoxy-2,3-o-(1-methylethylidene)-d-ribonic acid " "a-lactone" "(3ar,6s,6ar)-6-(bromomethyl)-2,2-dimethyl-6,6a-dihydro-3ah-furo[3,4-d][1,3]dioxol-4-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -643240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     271.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-351220.0
-    phase     gas;
 }

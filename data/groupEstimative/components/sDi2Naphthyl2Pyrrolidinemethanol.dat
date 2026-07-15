@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 14; } { group dC_ring; count 6; } { group OH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dinaphthalen-2-yl-[(2s)-pyrrolidin-2-yl]methanol" "((2s)pyrrolidin-2-yl)di(2-naphthyl)methan-1-ol" "(s)-(-)-lmdi(2-naphthyl)-2-pyrrolidinemethanol" "(s)-di(naphthalen-2-yl)(pyrrolidin-2-yl)methanol" "bis(naphthalen-2-yl)(2s)-pyrrolidin-2-ylmethanol" "(s)-(-)-" "a," "a-di-(2-naphthyl)-2-pyrrolidine methanol" "(s)-(-)-alpha,alpha-di-(2-naphthyl)-2-pyrrolidine methanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   210240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     642.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=568760.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group dCH_ring; count 8; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7,9,10,12-tetramethylbenzo[a]anthracene" "6,7,9,10-tetramethyl-1,2-benzanthracene" "benz(a)anthracene, 7,9,10,12-tetramethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   243510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     542.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=508940.0
-    phase     gas;
 }

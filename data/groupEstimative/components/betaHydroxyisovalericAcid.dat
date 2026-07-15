@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-3-oxidanyl-butanoic acid" "3-hydroxy-3-methylbutanoic acid" "3-hydroxy-3-methylbutyric acid" "3-hydroxyisovaleric acid" "3-oh-isovaleric acid" "3-hydroxy-isovaleric acid" "hmb-d6" "b-hydroxyisovaleric acid" "beta-hydroxy-beta-methylbutyrate" "3-hydroxy-3-methyl-butanoic acid" "beta-hydroxy-beta-methylbutyric acid" "3-hydroxy-3-methyl butanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -657780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     415.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-486670.0
-    phase     gas;
 }

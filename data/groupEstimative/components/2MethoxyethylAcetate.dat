@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxyethyl ethanoate" "methyl glycol acetate" "ethanol, 2-methoxy-, acetate" "mecsac" "acetic acid 2-methoxyethyl ester" "ethylene glycol monomethyl ether acetate" "methyl cellosolve acetate" "methylglycolacetate" "egmea" "methylcellosolveacetate" "2-methyoxyethylacetate" "acetyl methyl cellosolve" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -596030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-424150.0
-    phase     gas;
 }

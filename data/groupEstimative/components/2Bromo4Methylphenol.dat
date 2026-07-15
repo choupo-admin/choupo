@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanyl-4-methyl-phenol" "2-bromo-p-cresol" "phenol, 2-bromo-4-methyl-" "2-bromo-4-methyl-phenol" "3-bromo-4-hydroxytoluene" "p-cresol, 2-bromo-" "6627-55-0 2-bromo-4-methylphenol" "wt441" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -113730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     393.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-29460.0
-    phase     gas;
 }

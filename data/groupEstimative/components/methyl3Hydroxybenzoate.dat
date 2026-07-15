@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-oxidanylbenzoate" "methyl m-hydroxybenzoate" "m-hydroxybenzoic acid methyl ester" "3-hydroxybenzoic acid methyl ester" "m-carbomethoxyphenol" "methyl m-oxybenzoate" "benzoic acid, 3-hydroxy-, methyl ester" "3-hydroxy-benzoic acid methyl ester" "benzoic acid, m-hydroxy-, methyl ester" "agn-pc-0cxpbc" "3-(methoxycarbonyl)phenol" "benzoic acid,3-hydroxy,methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -466510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-336100.0
-    phase     gas;
 }

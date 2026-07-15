@@ -35,9 +35,8 @@ groups
     joback ( { group CH3; count 5; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethyl(trimethylsilyloxy)silicon" "disiloxane, pentamethyl-" "disiloxane, 1,1,1,3,3-pentamethyl-" "agn-pc-0d6utj" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -446180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     561.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-270920.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 14; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-octoxyoctane" "di-n-octyl ether" "dioctyl ether" "n-octyl ether" "octane, 1,1'-oxybis-" "antar" "caprylic ether" "ether, di-n-octyl-" "dicaprylyl ether" "n-dioctyl ether" "1,1'-oxybisoctane" "octane, 1,1'-oxybis-," );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -505790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     790.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-21160.0
-    phase     gas;
 }

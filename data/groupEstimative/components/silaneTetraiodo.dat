@@ -38,9 +38,8 @@ groups
     joback ( { group I; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetrakis(iodanyl)silane" "tetraiodosilane" "silicon tetraiodide" "silicon(iv) iodide" "silicon (iv) iodide" "siliconiodide (sii4) (8ci);silicon tetraiodide;tetraiodosilane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   152530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     504.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=76840.0
-    phase     gas;
 }

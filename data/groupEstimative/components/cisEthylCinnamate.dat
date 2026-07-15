@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-phenylprop-2-enoate" "ethyl cinnamate  trans" "2-propenoic acid, 3-phenyl-, ethyl ester, (2e)-" "2-propenoic acid, 3-phenyl-, ethyl ester, (2z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -233900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76000.0
-    phase     gas;
 }

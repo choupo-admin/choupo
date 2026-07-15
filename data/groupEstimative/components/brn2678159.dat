@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH_ring; count 6; } { group dC_ring; count 8; } { group OH_phenol; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[1,2,8-tris(oxidanyl)anthracen-9-yl]tetradecan-1-one" "10-myristoyl-1,8,9-anthracenetriol" "1,8-dihydroxy-10-myristoyl-9-anthrone" "1,7,8-anthracenetriol, 9-myristoyl-" "1-(1,2,8-trihydroxyanthracen-9-yl)tetradecan-1-one" "9(10h)-anthracenone, 1,8-dihydroxy-10-(1-oxotetradecyl)-" "9(10h)-anthracenone, 1,8-dihydroxy-10-(1-oxotetradecyl)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -670030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1016.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-101450.0
-    phase     gas;
 }

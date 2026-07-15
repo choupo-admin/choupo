@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group F; count 2; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-bromanyl-2,2-bis(fluoranyl)ethanoate" "ethyl 2-bromo-2,2-difluoroacetate" "ethylbromodifluoroacetate" "ethylbrom(difluor)acetat" "bromodifluoroacetic acid ethyl ester" "acetic acid, bromodifluoro-, ethyl ester" "ethyl bromo difluoro acetate" "irsjdvytjucxrv-uhfffaoysa-" "bromo(difluoro)acetic acid ethyl ester" "2-bromo-2,2-difluoro-1-ethoxyethan-1-one" "2-bromo-2,2-difluoro-1-ethoxy-1-oxoethane" "ethyl 2-bromo-2,2-difluoro-acetate;bromodifluoroacetic acid ethyl ester;2-bromo-2,2-difluoroacetic acid ethyl ester;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -817810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-700030.0
-    phase     gas;
 }

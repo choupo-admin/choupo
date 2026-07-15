@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 13; } { group CH; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-hexadecan-6-yl-1,2,3,4-tetrahydronaphthalene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -284680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1012.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=315110.0
-    phase     gas;
 }

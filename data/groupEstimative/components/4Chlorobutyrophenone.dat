@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-chloranyl-1-phenyl-butan-1-one" "4-chloro-1-phenylbutan-1-one" "gamma-chlorobutyrophenone" ".gamma.-chlorobutyrophenone" "4-chloro-1-oxo-1-phenylbutane" "4-chloro-1-phenyl-1-butanone" "1-butanone, 4-chloro-1-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -141520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     499.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=4880.0
-    phase     gas;
 }

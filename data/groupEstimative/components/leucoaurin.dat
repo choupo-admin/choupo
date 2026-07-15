@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[bis(4-hydroxyphenyl)methyl]phenol" "leucoaurine" "4,4',4''-methanetriyltriphenol" "phenol, methylidynetris-" "4,4',4''-methylidynetrisphenol" "4,4',4''-trihydroxytriphenylmethane" "phenol, 4,4',4''-methylidynetris-" "leucaurin" "agn-pc-0crdak" "phenol, methylidyne(tris-" "tris(4-hydroxyphenyl)methane" "4,4',4''-methylidynetriphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -263110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     646.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-19970.0
-    phase     gas;
 }

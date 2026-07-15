@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 7; } { group CH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6,10-trimethyldodecane" "farnesane" "dodecane, 2,6,10-trimethyl-" "dodecane,2,6,10-trimethyl-" "2,6,10-trimethyldodecane;farnesane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -368770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     711.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=68100.0
-    phase     gas;
 }

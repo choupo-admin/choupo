@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2,4-dimethylphenoxy)ethanoic acid" "2-(2,4-dimethylphenoxy)acetic acid" "2,4-dimethylphenoxyaceticacid" "2,4-dimethylphenoxyacetic acid" "2,4-xylyloxyacetic acid" "acetic acid,2-(2,4-dimethylphenoxy)-" "acetic acid, 2-(2,4-dimethylphenoxy)-" "brd-k47179683-001-01-4" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -518630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     491.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-322440.0
-    phase     gas;
 }

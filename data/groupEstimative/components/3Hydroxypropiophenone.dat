@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-oxidanyl-1-phenyl-propan-1-one" "3-hydroxy-1-phenylpropan-1-one" "3-hydroxy propiophenone" "3-hydroxy-1-phenyl-1-propanone" "1-propanone, 3-hydroxy-1-phenyl-" "1-propanone, 1-phenyl-, monohydroxy deriv." );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     477.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-128430.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 9; } { group COO; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethyl butanedioate;dimethyl hexanedioate;dimethyl pentanedioate" "estasol" "dimethyl butanedioate; dimethyl hexanedioate; dimethyl pentanedioate" "dba dibasic acid (mixture of glutaric acid, succinic acid and adipic acid)" "dibasic ester" "rdpe" "hexanedioic acid, dimethyl ester, mixt. with dimethyl butanedioate and dimethyl pentanedioate" "dibasic dimethyl esters of adipic acid, succinic acid  glutaric acid" "pentanedioic acid, dimethyl ester, mixt. with dimethyl butanedioate and dimethyl hexanedioate" "hexanedioic acid, dimethyl ester, mixt. with dimethyl butandedioate and dimethyl pentanedioate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2603690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1497.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1945800.0
-    phase     gas;
 }

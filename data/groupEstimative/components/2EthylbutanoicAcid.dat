@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethylbutyric acid" "diethylacetic acid" "butanoic acid, 2-ethyl-" "acetic acid, diethyl-" "3-pentanecarboxylic acid" "butyric acid, 2-ethyl-" "a-ethylbutyric acid" "2-ethyl-butyric acid" "2-ethyl butanoic acid" "alpha-ethylbutyric acid" "alpha-ethylbuytyric acid" "3-pentane-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -522720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     433.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-346710.0
-    phase     gas;
 }

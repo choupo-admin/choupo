@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,6-dimethyl-7-(methylamino)chromen-2-one" "4,6-dimethyl-7-(methylamino)-2-benzopyrone" "coumarin, 4,6-dimethyl-7-methylamino-" "coumarin,6-dimethyl-7-methylamino-" "coumarin, 4,6-dimethyl-7-(methylamino)-" "4,6-dimethyl-7-(methylamino)-2h-chromen-2-one" "2h-1-benzopyran-2-one,6-dimethyl-7-(methylamino)-" "2h-1-benzopyran-2-one, 4,6-dimethyl-7-(methylamino)-" "2h-1-benzopyran-2-one,4,6-dimethyl-7-(methylamino)-" "2h-1-benzopyran-2-one, 4,6-dimethyl-7-(methylamino)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -207090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13590.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COOH; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butanedioic acid;quinolin-8-ol" "8-hydroxyquinoline succinate" "8-quinolinol, succinate (salt)" "butanedioic acid, compounds, compd. with 8-quinolinol" "butanedioic acid; quinolin-8-ol" "quinolin-8-ol butanedioate (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -840730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     700.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-592510.0
-    phase     gas;
 }

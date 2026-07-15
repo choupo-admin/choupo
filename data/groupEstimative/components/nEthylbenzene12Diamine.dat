@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n2-ethylbenzene-1,2-diamine" "1-n-ethylbenzene-1,2-diamine" "1,2-benzenediamine, n-ethyl-" "1,2-benzenediamine, n1-ethyl-" "n-ethyl-o-phenylenediamine" "(2-aminophenyl)ethylamine" "2-n-ethylbenzene-1,2-diamine" "1,2-benzenediamine,n1-ethyl-" "1,2-benzenediamine,n-ethyl- (9ci); o-phenylenediamine, n-ethyl- (8ci); 2-(ethylamino)aniline;n-ethyl-1,2-phenylenediamine; n-ethyl-o-phenylenediamine;n-ethylbenzene-1,2-diamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   103870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=275100.0
-    phase     gas;
 }

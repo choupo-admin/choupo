@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 11; } { group dC_ring; count 7; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo[a]anthracen-5-ol" "benz(a)anthracen-5-ol" "benz[a]anthracen-5-ol" "5-hydroxybenz(a)anthracene" "5-hydroxybenz[a]anthracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   194640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=359160.0
-    phase     gas;
 }

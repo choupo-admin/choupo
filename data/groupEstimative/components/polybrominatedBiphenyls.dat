@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 8; } { group Br; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3-tris(bromanyl)-4-[3,4,5-tris(bromanyl)phenyl]benzene" "firemaster bp 6" "2,3,3',4,4',5'-hexabromo-1,1'-biphenyl" "firemaster bp-6" "pbb's" "hexabromobiphenyl (technical grade)" "biphenyl, hexabromo- (technical grade)" "2,3,3',4,4',5'-hexabromobiphenyl" "1,2,3-tribromo-4-(3,4,5-tribromophenyl)benzene" "1,1'-biphenyl, 2,3,3',4,4',5'-hexabromo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   271210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     679.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=303120.0
-    phase     gas;
 }

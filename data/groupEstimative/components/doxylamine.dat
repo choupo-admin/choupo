@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 2; } { group O; count 1; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyl-2-(1-phenyl-1-pyridin-2-yl-ethoxy)ethanamine" "dossilamina" "doxilminio" "doxylaminum" "dossilamina [dcit]" "doxylaminum [inn-latin]" "doxilamina" "doxylamine (inn)" "2-dimethylaminoethoxyphenylmethyl-2-picoline" "doxylamine [inn:ban]" "phenyl-2-pyridylmethyl-beta-n,n-dimethylaminoethyl ether" "n,n-dimethyl-2-(1-phenyl-1-(2-pyridinyl)ethoxy)ethanamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   38200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     606.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=402750.0
-    phase     gas;
 }

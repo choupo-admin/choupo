@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group F; count 2; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-fluoranyl-4-[2,2,2-tris(chloranyl)-1-(4-fluorophenyl)ethyl]benzene" "dfdt" "fluoro-ddt" "p,p'-fluoro-ddt" "p,p'-difluorodiphenyltrichloroethane" "1,1-bis(p-fluorophenyl)2,2,2-trichloroethane" "difluorodiphenyltrichloroethane" "ho-2,474" "difluoro diphenyl trichloroethane" "ethane, 1,1,1-trichloro-2,2-bis(p-fluorophenyl)-" "1,1,1-trichloro-2,2-bis(p-fluorophenyl)ethane" "1,1-bis(p-fluorophenyl) 2,2,2-trichloroethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -335640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     591.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-152450.0
-    phase     gas;
 }

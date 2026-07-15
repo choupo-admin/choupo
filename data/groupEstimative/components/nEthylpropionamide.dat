@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-ethylpropanamide" "propanamide, n-ethyl-" "propionamide, n-ethyl-" "n-propionylethylamine" "agn-pc-0d7uzh" "ethylpropionamide;n-ethylpropanamide;propionamide, n-ethyl-;n-propionylethylamine;n-ethylpropionamide;n-ethylpropionamide 99+%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -205640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     418.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-48310.0
-    phase     gas;
 }

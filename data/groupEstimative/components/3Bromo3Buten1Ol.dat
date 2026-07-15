@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group Br; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanylbut-3-en-1-ol" "3-bromobut-3-en-1-ol" "3bb" "zlchem 79" "3-buten-1-ol, 3-bromo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -136150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     404.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-60410.0
-    phase     gas;
 }

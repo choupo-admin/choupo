@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 7; } { group CH_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclooctyl alcohol" "fhadsmkorvfyos-uhfffaoysa-" "1-hydroxycyclooctane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -318680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     527.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-120090.0
-    phase     gas;
 }

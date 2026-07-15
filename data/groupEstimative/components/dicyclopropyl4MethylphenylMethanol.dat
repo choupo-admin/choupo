@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dicyclopropyl-(4-methylphenyl)methanol" "dicyclopropyl(4-methylphenyl)methan-1-ol" "benzenemethanol, a,a-dicyclopropyl-4-methyl-" "alpha,alpha-dicyclopropyl-4-methylbenzyl alcohol" "alpha,alpha-dicyclopropyl-4-methylbenzenemethanol;alpha,alpha-dicyclopropyl-p-methylbenzyl alcohol;dicyclopropyl-(4-methylphenyl)-methanol;alpha,alpha-dicyclopropyl-4-methylbenzyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -122610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     420.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=157300.0
-    phase     gas;
 }

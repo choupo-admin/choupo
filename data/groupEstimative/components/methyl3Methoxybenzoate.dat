@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl m-anisate" "m-anisic acid, methyl ester" "methyl m-methoxybenzoate" "3-methoxybenzoic acid methyl ester" "benzoic acid, 3-methoxy-, methyl ester" "3-methoxybenoic acid methyl ester" "m-methoxybenzoic acid methyl ester" "m-anisic acid methyl ester" "m-anisic acid, methyl ester (8ci)" "benzoic acid,3-methoxy-, methyl ester" "benzoic acid, 3-methoxy-, methyl ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -453530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     456.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287690.0
-    phase     gas;
 }

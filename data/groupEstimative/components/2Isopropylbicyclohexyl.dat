@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-cyclohexyl-2-propan-2-yl-cyclohexane" "1,1'-bicyclohexyl, 2-(1-methylethyl)-, cis-" "bicyclohexyl, 2-isopropyl-, cis-" "2-isopropyl-1,1'-bicyclohexane" "bicyclohexyl, 2-isopropyl-, trans-" "1-cyclohexyl-2-propan-2-ylcyclohexane" "1,1'-bicyclohexyl, 2-(1-methylethyl)-" "1,1'-bicyclohexyl, 2-(1-methylethyl)-, trans-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -269910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     627.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=114170.0
-    phase     gas;
 }

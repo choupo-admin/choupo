@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenylundecan-1-one" "n-undecanophenone" "1-undecanone, 1-phenyl-" "1-phenylundecanone" "decyl phenyl ketone" "1-phenyl-undecan-1-one" "undecanophenone(7ci,8ci);1-phenyl-1-undecanone;decyl phenyl ketone;undecanoylbenzene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -270260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     738.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=75750.0
-    phase     gas;
 }

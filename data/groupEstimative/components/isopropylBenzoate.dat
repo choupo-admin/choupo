@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propan-2-yl benzoate" "benzoic acid, 1-methylethyl ester" "benzoic acid, isopropyl ester" "1-methylethyl benzoate" "benzoic acid isopropyl ester" "benzoic acid propan-2-yl ester" "isopropylester kyseliny benzoove" "m587" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -335760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     480.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-167080.0
-    phase     gas;
 }

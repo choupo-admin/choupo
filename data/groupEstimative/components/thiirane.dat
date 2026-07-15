@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethylene sulfide" "thiacyclopropane" "dimethylene sulfide" "2,3-dihydrothiirene" "sulfurane" "ethylene sulphide" "ethylene episulfide" "aethylensulfid" "epithioethane" "thiiran" "ethylene episulphide" "aethylensulfid [german]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   53790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     236.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=74280.0
-    phase     gas;
 }

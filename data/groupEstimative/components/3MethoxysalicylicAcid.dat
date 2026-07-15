@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methoxy-2-oxidanyl-benzoic acid" "2-hydroxy-3-methoxybenzoic acid" "o-vanillic acid" "acide orthovanillique" "m-anisic acid, 2-hydroxy-" "3-hydroxy-m-anisic acid" "benzoic acid, 2-hydroxy-3-methoxy-" "3-methoxysalicyclic acid" "guaiacol-3-carboxylic acid" "3-carboxy-2-hydroxyanisole" "benzoic acid, 2-hydroxy-3-methoxy- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -643190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-484270.0
-    phase     gas;
 }

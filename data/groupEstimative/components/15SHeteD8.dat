@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 1; } { group dCH; count 8; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "15-oxidanylicosa-5,8,11,13-tetraenoic acid" "5,8,11,13-eicosatetraenoic acid, 15-hydroxy-" "agn-pc-00s9sv" "15-hydroxyeicosatetraenoicacid" "(?15-hete" "eicosatetraenoic acid,15-hydroxy-" "15-hydroxy-5,8,11,13-eicosatetraenoicacid" "5,8,11,13-eicosatetraenoicacid, 15-hydroxy-" "5,8,11,13-eicosatetraenoicacid, 15-hydroxy-, (5z,8z,11z,13e)-" "5,8,11,13-eicosatetraenoicacid, 15-hydroxy-, (e,z,z,z)-; (?a'a a'a currency)-(5z,8z,11z,13e)-15-hydroxyeicosa-5,8,11,13-tetraenoic acid; 15-hete;15-hydroxy-5(z),8(z),11(z),13(e)-eicosatetraenoic acid;15-hydroxyeicosa-5,8,11,13-tetraenoic acid; 15-hydroxyeicosatetraenoic acid;racemic 15-hete" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -495030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1003.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-44770.0
-    phase     gas;
 }

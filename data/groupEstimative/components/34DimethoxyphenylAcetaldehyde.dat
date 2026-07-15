@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3,4-dimethoxyphenyl)ethanal" "2-(3,4-dimethoxyphenyl)acetaldehyde" "benzeneacetaldehyde,3,4-dimethoxy-" "acetaldehyde,(3,4-dimethoxyphenyl)- (8ci); (3,4-dimethoxyphenyl)acetaldehyde;2-(3,4-dimethoxyphenyl)acetaldehyde; 3,4-dimethoxybenzeneacetaldehyde;homoveratraldehyde; homoveratric aldehyde; homoveratrylaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -386160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-183050.0
-    phase     gas;
 }

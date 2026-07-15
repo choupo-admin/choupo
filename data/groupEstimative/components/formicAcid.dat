@@ -38,9 +38,8 @@ groups
     joback ( { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methanoic acid" "formylic acid" "aminic acid" "hydrogen carboxylic acid" "bilorin" "formisoton" "formira" "myrmicyl" "collo-bueglatt" "collo-didax" "add-f" "acide formique" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -358430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     259.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-333990.0
-    phase     gas;
 }

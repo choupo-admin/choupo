@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(1-adamantyl)ethanenitrile" "2-(adamantan-1-yl)acetonitrile" "2-adamantanylethanenitrile" "tricyclo(3.3.1.13,7)decane-1-acetonitrile" "tricyclo[3.3.1.13,7]decane-1-acetonitrile" "agn-pc-04rhpk" "(adamant-1-yl)acetonitrile" "2-(1-adamantyl)acetonitrile" "ambap16269-13-9" "tricyclo[3.3.1.1~3,7~]dec-1-ylacetonitrile" "1-adamantaneacetonitrile(8ci);1-(cyanomethyl)adamantane;1-adamantylacetonitrile;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   81010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     405.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=340290.0
-    phase     gas;
 }

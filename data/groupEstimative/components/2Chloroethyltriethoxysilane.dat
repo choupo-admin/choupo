@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group Cl; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloroethyl(triethoxy)silane" "(2-chloroethyl)(triethoxy)silane" "silane, (2-chloroethyl)triethoxy-" "silane,(2-chloroethyl)triethoxy-" "2-chloroethyltriethoxysilane;c 3281;triethoxysilylethyl chloride;b-chloroethyltriethoxysilane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -732470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     661.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-415210.0
-    phase     gas;
 }

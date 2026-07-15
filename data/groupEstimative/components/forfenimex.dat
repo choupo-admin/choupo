@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-2-[4-(hydroxymethyl)-3-oxidanyl-phenyl]ethanoic acid" "forphenicinol" "forfenimexum [latin]" "(+)-(s)-2-(a,3-dihydroxy-p-tolyl)glycine" "benzeneacetic acid, alpha-amino-3-hydroxy-4-(hydroxymethyl)-, (s)-" "forfenimexa" "forfenimexum" "forfenimex [inn]" "2-amino-2-[3-hydroxy-4-(hydroxymethyl)phenyl]acetic acid" "(+)-(s)-2-(alpha,3-dihydroxy-p-tolyl)glycine" "alpha-amino-3-hydroxy-4-(hydroxymethyl)benzeneacetic acid" "(2s)-2-amino-2-[3-hydroxy-4-(hydroxymethyl)phenyl]acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -655330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     566.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-443660.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-phenylpentanoic acid" "benzenepentanoic acid" "5-phenylvalerate" "phenylvaleric acid" "phenylpentanoic acid" "valeric acid, 5-phenyl-" "5-phenyl-pentanoic acid" "5pv" "phenylpentanoate" "benzenepentanoate" "5-phenylpentanoate" "5-phenyl-pentanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -384110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     531.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-189760.0
-    phase     gas;
 }

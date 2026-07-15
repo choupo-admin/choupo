@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH2_ring; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(aziridin-1-yl)ethyl-trimethyl-silane" "agn-pc-03g22t" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -132600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     503.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=94640.0
-    phase     gas;
 }

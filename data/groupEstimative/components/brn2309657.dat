@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 8; } { group COOH; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-4-[(12-methylbenzo[a]anthracen-7-yl)methylsulfanyl]butanoic acid" "butyric acid, 2-amino-4-(12-methyl-7-benz(a)anthrylmethyl)thio-" "butyric acid, 2-amino-4-(12-methyl-7-benz[a]anthrylmethyl)thio-" "l-homocysteine, s-[(12-methylbenz[a]anthracen-7-yl)methyl]-" "2-amino-4-[(12-methylbenzo[a]anthracen-7-yl)methylsulfanyl]butanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -54720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     789.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=298260.0
-    phase     gas;
 }

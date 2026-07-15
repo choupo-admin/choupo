@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenylpropan-2-yl ethanoate" "1-methyl-2-phenylethyl acetate" "methylbenzylcarbinyl acetate" "1-phenyl-2-propanol acetate" "benzylmethylcarbinyl acetate" "alpha-methylphenethyl acetate" "1-phenylpropan-2-yl acetate" "alpha-methyl-beta-phenylethyl acetate" "benzeneethanol, alpha-methyl-, acetate" "phenethyl alcohol, alpha-methyl-, acetate" "benzeneethanol, ?-methyl-, acetate" "benzeneethanol, a-methyl-, 1-acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -356400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     519.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-158660.0
-    phase     gas;
 }

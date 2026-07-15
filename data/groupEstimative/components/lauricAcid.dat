@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodecanoic acid" "n-dodecanoic acid" "dodecylic acid" "vulvic acid" "laurostearic acid" "dodecoic acid" "duodecylic acid" "1-undecanecarboxylic acid" "aliphat no. 4" "neo-fat 12" "c12 fatty acid" "dodecanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -641280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     676.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-293750.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-prop-1-en-2-yl-8-oxabicyclo[3.2.1]octane" "6-(1-methylvinyl)-8-oxabicyclo[3.2.1]octane" "6-(1-methylvinyl)-8-oxabicyclo(3.2.1)octane" "8-oxabicyclo(3.2.1)octane, 6-(1-methylethenyl)-" "8-oxabicyclo[3.2.1]octane, 6-(1-methylethenyl)-" "8-oxabicyclo[3.2.1]octane,6-(1-methylethenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -153150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     302.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116080.0
-    phase     gas;
 }

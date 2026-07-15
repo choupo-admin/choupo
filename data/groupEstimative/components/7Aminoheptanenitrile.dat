@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group NH2; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-azanylheptanenitrile" "7-aminoheptanonitrile" "heptanenitrile,7-amino-" "7-aminoheptanenitrile;7-aminoheptanonitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   10860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     486.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=207690.0
-    phase     gas;
 }

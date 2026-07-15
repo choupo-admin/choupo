@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 19; } { group dCH; count 2; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-hydroxyethyl-[(e)-octadec-13-enyl]amino]ethanol" "(c16 and c18)unsaturated alkylcarboxylic acid, diethanolamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -617120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1124.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=51720.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3,3-dimethylbut-1-en-2-yl)-4-(trifluoromethyl)benzene" "styrene, .alpha.-tert-butyl-p-(trifluoromethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -576780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     558.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-338100.0
-    phase     gas;
 }

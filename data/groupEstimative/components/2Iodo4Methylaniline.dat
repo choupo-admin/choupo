@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group I; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-iodanyl-4-methyl-aniline" "4-amino-3-iodotoluene" "2-iodo-4-methylbenzenamine" "iodomethylaniline" "2-iodo-4-methylphenylamine" "benzenamine, 2-iodo-4-methyl-" "(2-iodo-4-methyl-phenyl)-amine" "buttpark 34\09-13" "2-iodo-4-methyl-phenylamine" "p-toluidine, 2-iodo- (8ci);2-amino-5-methylphenyl iodide;2-iodo-4-methylaniline;2-iodo-4-methylbenzenamine;4-amino-3-iodotoluene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   136440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     417.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=225780.0
-    phase     gas;
 }

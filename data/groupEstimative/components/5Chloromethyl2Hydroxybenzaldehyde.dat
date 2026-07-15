@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-(chloromethyl)-2-oxidanyl-benzaldehyde" "5-chloromethyl-2-hydroxy-benzaldehyde" "benzaldehyde, 5-(chloromethyl)-2-hydroxy-" "2-hydroxy-5-chloromethylbenzaldehyde" "2,5-cresotaldehyde, .alpha.-chloro-" "2, .alpha.-chloro-" "5-(chloromethyl)salicylaldehyde" "5-(chloromethyl)salicylaldehyde;" "3-formyl-4-hydroxybenzyl chloride" "benzaldehyde,5-(chloromethyl)-2-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -99990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     495.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3330.0
-    phase     gas;
 }

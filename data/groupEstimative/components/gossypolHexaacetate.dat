@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 12; } { group CH; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 18; } { group COO; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3,8-diacetyloxy-1-methanoyl-6-methyl-4-propan-2-yl-7-(1,6,7-triacetyloxy-8-methanoyl-3-methyl-5-propan-2-yl-naphthalen-2-yl)naphthalen-2-yl] ethanoate" "[2,2'-binaphthalene]-8,8'-dicarboxaldehyde, 1,1',6,6',7,7'-hexakis(acetyloxy)-3,3'-dimethyl-5,5'-bis(1-methylethyl)-" "[3,8-diacetyloxy-1-formyl-6-methyl-4-propan-2-yl-7-(1,6,7-triacetyloxy-8-formyl-3-methyl-5-propan-2-ylnaphthalen-2-yl)naphthalen-2-yl] acetate" "8,8'-diformyl-3,3'-dimethyl-5,5'-di(propan-2-yl)-2,2'-binaphthalene-1,1',6,6',7,7'-hexayl hexaacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1976930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1725.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1173120.0
-    phase     gas;
 }

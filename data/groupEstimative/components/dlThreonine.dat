@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 2; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-3-oxidanyl-butanoic acid" "threonine" "dl-allothreonine" "2-amino-3-hydroxybutanoic acid" "threonine, dl-" "allothreonine, d-" "dl-2-amino-3-hydroxybutanoic acid" "dl-allo-threonine" "allo-dl-threonine" "threonine, d-" "butanoic acid, [r-(r*,s*)]-" "h-d-allo-thr-oh" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -605160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     448.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-436360.0
-    phase     gas;
 }

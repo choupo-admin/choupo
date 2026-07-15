@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradecane, naphthalenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -122560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     869.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=360630.0
-    phase     gas;
 }

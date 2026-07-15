@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-fluoro-alpha-methylbenzylamine" "1-(4-fluorophenyl)ethylamine" "1-(4-fluorphenyl)ethanamin" "1-(4'-fluorophenyl)ethanamine" "4-fluoro-a-methylbenzylamine" "1-(p-fluorophenyl)-ethylamine" "dl-4-fluoro-alpha-methylbenzylamine" "p-fluoro-a-methylbenzylamine" "1-(4-fluorophenyl)ethan-1-amine" "(rs)-1-(4-fluorophenyl)ethylamine" "(+/-)-1-(4-fluorophenyl)ethylamine" "(1r)-(+)-1-(4-fluorophenyl)ethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -150990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11540.0
-    phase     gas;
 }

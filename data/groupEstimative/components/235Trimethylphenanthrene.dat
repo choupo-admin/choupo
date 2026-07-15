@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 7; } { group dC_ring; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phenanthrene, 2,3,5-trimethyl-" "2,3,5-trimethyl-phenanthrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   178580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     469.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=379450.0
-    phase     gas;
 }

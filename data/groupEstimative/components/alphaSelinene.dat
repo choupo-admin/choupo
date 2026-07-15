@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5,8a-dimethyl-3-prop-1-en-2-yl-2,3,4,4a,7,8-hexahydro-1h-naphthalene" "2-isopropenyl-4a,8-dimethyl-1,2,3,4,4a,5,6,8a-octahydronaphthalene" "epi-a-selinene" "alpha-selinene" "7-epi-.alpha.-selinene" "7-epi--.alpha.-selinene" "(2r-(2alpha,4aalpha,8abeta))-1,2,3,4,4a,5,6,8a-octahydro-4a,8-dimethyl-2-(1-methylethenyl)naphthalene" "naphthalene, 1,2,3,4,4a,5,6,8a-octahydro-4a,8-dimethyl-2-(1-methylethenyl)-, [2r-(2.alpha.,4a.alpha.,8a.beta.)]-" "naphthalene, 3,4,4a,5,6,7,8,8a-octahydro-7-isopropylene-1,4a-dimethyl-" "eudesma-3,11-diene(8ci); naphthalene, 1,2,3,4,4a,5,6,8a-octahydro-4a,8-dimethyl-2-(1-methylethenyl)-,[2r-(2a,4aa,8ab)]-; a-selinene (7ci); (-)-a-selinene; selina-3,11-diene; a-selinene, (-)-" "naphthalene, 1,2,3,4,4a,5,6,8a-octahydro-4a,8-dimethyl-2-(1-methylethenyl)-, (2r-(2alpha,4aalpha,8abeta))-" "naphthalene,1,2,3,4,4a,5,6,8a-octahydro-4a,8-dimethyl-2-(1-methylethenyl)-, (2r,4ar,8ar)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -75120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     614.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=234940.0
-    phase     gas;
 }

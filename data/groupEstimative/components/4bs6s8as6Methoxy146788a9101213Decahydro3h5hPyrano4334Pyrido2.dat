@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dC_ring; count 2; } { group O; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "14,17-dihydro-3-methoxy-16(15h)-oxaerythrinan-15-one (3beta)-" "16(15h)-oxaerythrinan-15-one, 14,17-dihydro-3-methoxy-, (3beta)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -406240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     598.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=10970.0
-    phase     gas;
 }

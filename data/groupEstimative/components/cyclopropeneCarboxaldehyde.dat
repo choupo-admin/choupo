@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 1; } { group dCH_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cycloprop-2-ene-1-carbaldehyde" "2-cyclopropene-1-carboxaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -80890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     202.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-26010.0
-    phase     gas;
 }

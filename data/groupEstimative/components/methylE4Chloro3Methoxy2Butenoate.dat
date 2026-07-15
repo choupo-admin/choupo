@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group Cl; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-chloranyl-3-methoxy-but-2-enoate" "methyl 4-chloro-3-methoxybut-2-enoate" "methyl (e)-4-chloro-3-methoxy-but-2-enoate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -524980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     474.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-355990.0
-    phase     gas;
 }

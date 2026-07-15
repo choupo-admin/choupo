@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 23; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetracosan-1-ol" "lignoceryl alcohol" "n-tetracosanol" "lignocerol" "tetracosanol" "tetracosyl alcohol" "lignoceric alcohol" "lignoceryl alkohol" "1- paragraph signthorne(r)ea (1/4)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -690920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1141.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=14380.0
-    phase     gas;
 }

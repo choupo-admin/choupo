@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 17; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "icosan-4-ylcyclohexane" "eicosane, 4-cyclohexyl-" "cyclohexane, (1-propylheptadecyl)-" "4-cyclohexylicosane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -530930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1128.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=190050.0
-    phase     gas;
 }

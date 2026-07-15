@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 6; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 13; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,7-tridecakis(fluoranyl)heptyl prop-2-enoate" "2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptyl acrylate" "2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptyl prop-2-enoate" "2-propenoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptyl ester" "2-propenoic acid,2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptyl ester" "2-propenoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptyl ester (9ci)" "acrylicacid, 2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptyl ester (8ci); 1-heptanol,2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoro-, acrylate (8ci);1,1-dihydroperfluoroheptyl acrylate; 1h,1h-tridecafluoroheptyl acrylate; a,a-dihydroperfluoroheptyl acrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3043510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     771.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2704700.0
-    phase     gas;
 }

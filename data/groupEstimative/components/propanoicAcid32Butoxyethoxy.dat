@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group O; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-butoxyethoxy)propanoic acid" "3-(2-butoxyethoxy)propionic acid" "propanoic acid,3-(2-butoxyethoxy)-" "propionicacid, 3-(2-butoxyethoxy)- (7ci,8ci); 3-(2-butoxyethoxy)propionic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -843800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     582.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-529010.0
-    phase     gas;
 }

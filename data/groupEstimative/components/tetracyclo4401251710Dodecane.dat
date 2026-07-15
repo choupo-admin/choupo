@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group CH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "agn-pc-03j2tq" "tetracyclo[4.4.0.1(2,5).1(7,10)]dodeca-3-ene" "1,4:5,8-dimethanonaphthalene, decahydro-, (1alpha,4alpha,4aalpha,5alpha,8alpha,8aalpha)-" "1,4:5,8-dimethanonaphthalene, decahydro-,(1alpha,4alpha,4aalpha,5beta,8beta,8aalpha)-" "1,4:5,8-dimethanonaphthalene,decahydro-,(1.alpha.,4.alpha.,4a,8.beta.,8a.alpha.)-" "1,4:5,8-dimethanonaphthalene, decahydro-, (1.alpha.,4.alpha.,4a.alpha.,5.alpha.,8.alpha.,8a.alpha.)-" "1,4:5,8-dimethanonaphthalene, decahydro-,(1.alpha.,4.alpha.,4a.alpha.,5.beta.,8.beta.,8a.alpha.)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -40490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     177.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=277740.0
-    phase     gas;
 }

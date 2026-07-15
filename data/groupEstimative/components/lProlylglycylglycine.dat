@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group CdO; count 2; } { group COOH; count 1; } { group NH; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[[(2s)-pyrrolidin-2-yl]carbonylamino]ethanoylamino]ethanoic acid" "pro-gly-gly" "prolyl-glycyl-glycine" "glycine, n-(n-l-prolylglycyl)-" "2-[[2-[[(2s)-pyrrolidine-2-carbonyl]amino]acetyl]amino]acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -599290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     637.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-273810.0
-    phase     gas;
 }

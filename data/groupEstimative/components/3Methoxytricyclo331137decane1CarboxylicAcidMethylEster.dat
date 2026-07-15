@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 2; } { group C_ring; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-methoxyadamantane-1-carboxylate" "3-methoxytricyclo[3.3.1.13,7decane-1-carboxylic acid, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -538770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     570.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-205330.0
-    phase     gas;
 }

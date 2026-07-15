@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methylbicyclo[2.2.1]hept-2-ene-5-carboxamide" "2-methylbicyclo[2.2.1]hept-5-ene-2-carboxamide" "5-endo-methyl-2-norbornene-5-exo-carboxamide" "5-exo-methyl-2-norbornene-5-endo-carboxamide" "2-norbornene-5-exo-carboxamide, 5-endo-methyl-" "(1r,4r,5s)-5-methylbicyclo[2.2.1]hept-2-ene-5-carboxamide" "bicyclo(2.2.1)hept-5-ene-2-carboxamide, 2-methyl-, endo-" "bicyclo(2.2.1)hept-5-ene-2-carboxamide, 2-methyl-, endo- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -115760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     414.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=88590.0
-    phase     gas;
 }

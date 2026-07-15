@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-diethyl-2-oxidanyl-2-phenyl-ethanamide" "n,n-diethyl-2-hydroxy-2-phenylacetamide" "mandelamide, n,n-diethyl-" "2-hydroxy-2-phenyl-n,n-diethylacetamide" "n,n-diethyl-alpha-hydroxybenzeneacetamide" "benzeneacetamide, n,n-diethyl-alpha-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     601.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=5170.0
-    phase     gas;
 }

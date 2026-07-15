@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(4-methylphenyl)propanoic acid" "3-(4-methylphenyl)propionic acid" "p-methylhydrocinnamic acid" "3-p-tolylpropanoic acid" "benzenepropanoic acid, 4-methyl-" "3-(p-tolyl)propanoic acid" "4-methylphenylpropionic acid" "4-methyl phenyl propionic acid" "3-p-tolylpropionic acid" "3-p-tolyl-propionic acid" "3-p-tolylpropanoic acid," "b-(p-tolyl)-propionic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -374940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     486.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-207810.0
-    phase     gas;
 }

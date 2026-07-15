@@ -38,9 +38,8 @@ groups
     joback ( { group I; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(iodanyl)silane" "sihi3" "silane, triiodo-(7ci,8ci,9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   131470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     460.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=71100.0
-    phase     gas;
 }

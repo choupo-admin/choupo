@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group CH_ring; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 9; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ang.-steranthren [german]" "4h-dibenz(fg,j)aceanthrylene, 5,5a,6,7-tetrahydro-" "ang.-steranthren" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   406440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     429.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=668300.0
-    phase     gas;
 }

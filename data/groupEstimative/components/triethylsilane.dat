@@ -35,9 +35,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triethylsilicon" "silane, triethyl-" "triethylsilicon hydride" "triethylsilyl" "silane e3h" "silicontriethyl" "aqrlnpvmditeju-uhfffaoysa-" "triethyl-silane" "triethylhydrosilane" "triethylsilyl hydride" "s834" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -222980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-52740.0
-    phase     gas;
 }

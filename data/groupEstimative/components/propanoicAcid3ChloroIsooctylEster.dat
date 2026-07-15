@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methylheptyl 3-chloranylpropanoate" "6-methylheptyl 3-chloropropanoate" "3-chloropropanoic acid 6-methylheptyl ester" "propanoic acid, 3-chloro-, 6-methylheptyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -608670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     659.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-283000.0
-    phase     gas;
 }

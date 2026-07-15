@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chlorophenethyl alcohol" "o-chlorophenethyl alcohol" "o-chlorophenylmethylcarbinol" "2-(2-chlorophenyl)ethan-1-ol" "benzeneethanol, 2-chloro-" "2-chlorophenethylalcohol" "benzeneethanol,2-chloro-" "o-chlorophenethylic alcohol" "iwnhtcbfrscbqk-uhfffaoysa-" "2-(o-chlorophenyl)ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -151360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     439.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-29490.0
-    phase     gas;
 }

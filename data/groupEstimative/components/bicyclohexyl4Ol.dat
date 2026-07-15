@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 9; } { group CH_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-cyclohexylcyclohexan-1-ol" "4-cyclohexylcyclohexanol" "4,4'-bicyclohexanol" "[1,1'-bicyclohexyl]-4-ol" "[1,1'-bi(cyclohexan)]-4-ol" "4-cyclohexyl-1-cyclohexanol" "(1,1'-bicyclohexyl)-4-ol" "cis-4-cyclohexylcyclohexanol" "(1s,4s)-[1,1'-bi(cyclohexan)]-4-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -354940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     570.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-45470.0
-    phase     gas;
 }

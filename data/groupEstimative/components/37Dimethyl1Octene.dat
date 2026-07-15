@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 2; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7-dimethyloct-1-ene" "1-octene, 3,7-dimethyl-" "diisoamylene" "2,6-dimethyl-7-octene" "1-octene,7-dimethyl-" "agn-pc-03v2kw" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -134860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     521.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116280.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 2; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-2-(methylamino)butanoic acid" "n-methyl-l-valine" "n-methyl-dl-valine" "d-valine, n-methyl-" "meval" "l-valine, n-methyl-" "(s/r)-n-methylvaline" "2-methylamino-3-methylbutanoic acid" "3-methyl-2-methylamino-butyric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -474530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     464.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-259760.0
-    phase     gas;
 }

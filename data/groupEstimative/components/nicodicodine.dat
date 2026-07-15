@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 5; } { group O; count 1; } { group O_ring; count 1; } { group COO; count 1; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(4r,4ar,7s,7ar,12bs)-9-methoxy-3-methyl-2,4,4a,5,6,7,7a,13-octahydro-1h-4,12-methanobenzofuro[3,2-e]isoquinoline-7-yl] pyridine-3-carboxylate" "nicodicodina" "nicodicodinum" "nicodicodina [dcit]" "6-nicotinoyl dihydrocodeine" "nicodicodinum [inn-latin]" "nicodicodine [inn:ban:dcf]" "dihydrocodein-nicotinat (ester)" "4,5alpha-epoxy-3-methoxy-17-methyl-6alpha-morphinanylnicotinat" "nicotinsaeure-(4,5-epoxy-3-methoxy-17-methyl-morphinan-6-yl)-ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -288960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     545.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=275370.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propyl pentanoate" "pentanoic acid, propyl ester" "valeric acid, propyl ester" "n-propyl n-valerate" "n-propyl valerate" "pentanoic acid, propylester" "ethyl-2-methyl pentanoate" "valeric acid, propyl ester (8ci)" "pentanoic acid, propyl ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -525730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     518.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-293890.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group O_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxan-4-one" "4-oxotetrahydropyran" "tetrahydropyran-4-one" "4h-pyran-4-one, tetrahydro-" "4-thp" "4-oxotetrahydopyran" "tetrahydro-pyran-4-one" "tetrahydro-.gamma.-pyrone" "tetrahydro-4h-pyran-4-on" "tetrahydro-2h-pyran-4-one" "2h-3,5,6-trihydropyran-4-one" "tetrahydro-gamma-pyrone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -341570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     232.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-185330.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group I; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-iodanylpropanoic acid" "propanoic acid, 3-iodo-" "3-iodopropanoic acid" "propionic acid, 3-iodo-" "beta-iodopropionic acid" "iodopropanoic acid" "b-iodopropionic acid" "3-iodo-propionic acid" ".beta.-iodopropionic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -378650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-311410.0
-    phase     gas;
 }

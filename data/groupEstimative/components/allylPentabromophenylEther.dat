@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dC_ring; count 6; } { group Br; count 5; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5-pentakis(bromanyl)-6-prop-2-enoxy-benzene" "flammex 5ae" "allyloxypentabromobenzene" "allylpentabromophenylether" "pentabromophenylallylether" "1-pentabromophenoxy-2-propene" "pentabromo(2-propenyloxy)benzene" "ether, allyl pentabromophenyl" "benzene, pentabromo(2-propenyloxy)-" "benzene, 1,2,3,4,5-pentabromo-6-(2-propen-1-yloxy)-" "1,2,3,4,5-pentabromo-6-prop-2-enoxybenzene" "1,2,3,4,5-pentabromo-6-(prop-2-en-1-yloxy)benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   74950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     631.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=143600.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 6; } { group C_ring; count 2; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4r)-4-[(3r,5r,8r,9s,10s,13r,14s,17r)-10,13-dimethyl-3-oxidanyl-2,3,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthren-17-yl]pentanoic acid" "lithocholate" "3alpha-hydroxy-5beta-cholanic acid" "lithocolic acid" "3-hydroxycholan-24-oic acid" "3alpha-hydroxy-5beta-cholan-24-oic acid" "3-alpha-hydroxycholanic acid" "3alpha-hydroxycholanic acid" "3-alpha-hydroxy-5-beta-cholanic acid" "5beta-cholanic acid-3alpha-ol" "(3alpha,5beta)-3-hydroxycholan-24-oic acid" "3alpha-hydroxy-5beta-cholanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -836950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     893.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-191290.0
-    phase     gas;
 }

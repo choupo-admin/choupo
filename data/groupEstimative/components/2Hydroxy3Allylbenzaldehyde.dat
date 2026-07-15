@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanyl-3-prop-2-enyl-benzaldehyde" "3-allylsalicylaldehyde" "3-allyl-2-hydroxybenzaldehyde" "3-allyl-2-hydroxy-benzaldehyde" "2-hydroxy-3-prop-2-enylbenzaldehyde" "salicylaldehyde, 3-allyl-" "benzaldehyde, 2-hydroxy-3-(2-propenyl)-" "tpc-sk001" "tpc-b001" "2-hydroxy-3-(prop-2-en-1-yl)benzaldehyde" "benzaldehyde,2-hydroxy-3-(2-propen-1-yl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=113280.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 9; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10-oxidanyldecanoic acid" "decanoic acid, 10-hydroxy-" "10-oh-capric acid" "10-hydroxycapric acid" "10-oh-decanoic acid" "10-hydroxy capric acid" "10-hydroxy-decanoic acid" "decanoic acid,10-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -752230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     649.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-447410.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 13; } { group C; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-bis(pentanoyloxymethyl)butyl pentanoate" "2-ethyl-2-[[(1-oxopentyl)oxy]methyl]propane-1,3-diyl divalerate" "2-ethyl-2-(((1-oxopentyl)oxy)methyl)propane-1,3-diyl divalerate" "pentanoic acid, 1,1'-(2-ethyl-2-(((1-oxopentyl)oxy)methyl)-1,3-propanediyl) ester" "pentanoic acid, 1,1'-[2-ethyl-2-[[(1-oxopentyl)oxy]methyl]-1,3-propanediyl] ester" "pentanoic acid, 2-ethyl-2-(((1-oxopentyl)oxy)methyl)-1,3-propanediyl ester" "pentanoic acid,1,1'-[2-ethyl-2-[[(1-oxopentyl)oxy]methyl]-1,3-propanediyl] ester" "pentanoicacid, 2-ethyl-2-[[(1-oxopentyl)oxy]methyl]-1,3-propanediyl ester (9ci); valericacid, triester with 2-ethyl-2-(hydroxymethyl)-1,3-propanediol (8ci);1,3-propanediol, 2-ethyl-2-(hydroxymethyl)-, trivalerate (8ci);trimethylolpropane trivalerate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1437360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1088.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-802330.0
-    phase     gas;
 }

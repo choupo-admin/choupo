@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 2; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-oxidanylidenepent-2-enoic acid" "3-acetylacrylic acid" "acetyl acrylic acid" "(e)-4-oxo-pent-2-enoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -492160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-401390.0
-    phase     gas;
 }

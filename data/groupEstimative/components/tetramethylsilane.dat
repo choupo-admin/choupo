@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "silane, tetramethyl-" "tetramethylsilicane" "silicon, tetramethyl-" "tetramethyl silane" "tetramethylsilane solution" "tetramethyl-silane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -237510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121960.0
-    phase     gas;
 }

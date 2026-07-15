@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group O; count 1; } { group O_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(9-methoxy-3-methyl-2,4,4a,5,7a,13-hexahydro-1h-4,12-methanobenzofuro[3,2-e]isoquinoline-7-yl) ethanoate" "dihydrocodeinone enol acetate" "acedicon" "tebacon" "thebacone" "acetyldihydrocodeinone" "demethyldihydrothebaine, acetate" "thebacetyl" "tebacone [dcit]" "3-methoxy-17-methyl-6,7-didehydro-4,5-epoxymorphinan-6-yl acetate" "thebacone [inn-french]" "thebaconum [inn-latin]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -409070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     482.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=80270.0
-    phase     gas;
 }

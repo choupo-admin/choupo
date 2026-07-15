@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group Cl; count 3; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,3-tris(chloranyl)oxolane" "2,3,3-trichlorotetrahydrofuran" "furan, 2,3,3-trichlorotetrahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -249730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     337.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-115760.0
-    phase     gas;
 }

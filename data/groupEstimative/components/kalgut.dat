@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group OH; count 1; } { group OH_phenol; count 1; } { group O; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[(1s)-2-[2-(3,4-dimethoxyphenyl)ethylamino]-1-oxidanyl-ethyl]phenol" "denopaminum [latin]" "benzenemethanol, alpha-(((2-(3,4-dimethoxyphenyl)ethyl)amino)methyl)-4-hydroxy-, (r)-" "denopamina" "denopaminum" "(-)-(r)-1-(p-hydroxyphenyl)-2-((3,4-dimethoxyphenethyl)amino)ethanol" "4-[(1s)-2-{[2-(3,4-dimethoxyphenyl)ethyl]amino}-1-hydroxyethyl]phenol" "(-)-(r)-alpha-(((3,4-dimethoxyphenethyl)amino)methyl)-p-hydroxybenzyl alcohol" "denopamine [inn:jan]" "(3,4-dimethoxyphenethylaminomethyl)-4-hydroxybenzyl alcohol" "1-(p-hydroxyphenyl)-2-((3,4-dimethoxyphenethyl)amino)ethanol" "(-)-alpha-(3,4-dimethoxyphenethylaminomethyl)-4-hydroxybenzylalcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -510520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     763.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108250.0
-    phase     gas;
 }

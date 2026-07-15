@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-phenylpiperidin-4-yl)ethanone" "methyl (4-phenyl-4-piperidyl) ketone" "1-(4-phenyl-4-piperidinyl)ethanone" "ethanone, 1-(4-phenyl-4-piperidinyl)-" "methyl (4-phenyl-piperidin-4-yl) ketone" "piperidinyl methyl ketone" "rkhwhrhoekyejw-uhfffaoysa-" "ethanone,1-(4-phenyl-4-piperidinyl)-" "methyl (4-phenyl-piperidin-4-yl)ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -80330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     615.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=148740.0
-    phase     gas;
 }

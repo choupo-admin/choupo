@@ -34,9 +34,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group C_ring; count 6; } { group dC_ring; count 1; } { group Cl; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,2,3,3,4,7,7-octakis(chloranyl)-5,5-dimethyl-6-methylidene-bicyclo[2.2.1]heptane" "1,2,2,3,3,4,7,7-octachloro-5,5-dimethyl-6-methylenebicyclo[2.2.1]heptane" "bicyclo(2.2.1)heptane, 2,2-dimethyl-3-methylene-, octachloro deriv." "bicyclo[2.2.1]heptane, 2,2-dimethyl-3-methylene-, octachloro deriv." "norbornane, 2,2-dimethyl-3-methylene-, octachloro deriv" "norbornane, 2,2-dimethyl-3-methylene-, octachloro deriv." "bicyclo(2.2.1)heptane, 2,2-dimethyl-3-methylene-, octachloro deriv" "1,2,2,3,3,4,7,7-octachloro-5,5-dimethyl-6-methylidenebicyclo[2.2.1]heptane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -141890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     873.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=36580.0
-    phase     gas;
 }

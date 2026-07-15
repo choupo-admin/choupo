@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group C; count 6; } { group F; count 13; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triethoxy-[3,3,4,4,5,5,6,6,7,7,8,8,8-tridecakis(fluoranyl)octyl]silane" "1h,1h,2h,2h-perfluorooctyltriethoxysilane" "triethoxy(3,3,4,4,5,5,6,6,7,7,8,8,8-tridecafluorooctyl)silane" "3,3,4,4,5,5,6,6,7,7,8,8,8-tridecafluorooctyltriethoxysilan" "silane, triethoxy(3,3,4,4,5,5,6,6,7,7,8,8,8-tridecafluorooctyl)-" "triethoxy-1h,1h,2h,2h-tridecafluoro-n-octylsilane" "tridecafluoro-1,1,2,2-tetrahydrooctyl-1-triethoxysilane" "1h,1h,2h,2h-perfluoroalkyltriethoxysilane" "1h,1h,2h,2h-perfluorooctyl triethoxysilane" "triethoxy-1h,1h,2h,2h-perfluoro-n-octylsilane" "1h,1h,2h,2h-perfluorooctyltriethoxysilane  97%" "1h,1h,2h,2h-tridecafluoro-n-octyltriethoxysilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3442500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1040.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2868250.0
-    phase     gas;
 }

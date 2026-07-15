@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2_ring; count 9; } { group CH_ring; count 5; } { group C_ring; count 6; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 2; } { group OdCH_al; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4ar,5r,6ar,6as,6br,8ar,9s,10s,12ar,14bs)-9-methanoyl-2,2,6a,6b,9,12a-hexamethyl-5,10-bis(oxidanyl)-1,3,4,5,6,6a,7,8,8a,10,11,12,13,14b-tetradecahydropicene-4a-carboxylic acid" "quillaja sapogenin" "3beta,16alpha-dihydroxy-23-oxoolean-12-en-28-oic acid" "(3beta,16alpha)-3,16-dihydroxy-23-oxoolean-12-en-28-oic acid" "(3beta,4alpha,16alpha)-3,16-dihydroxy-23-oxoolean-12-en-28-oic acid" "(4ar,5r,6ar,6as,6br,8ar,9s,10s,12ar,14bs)-9-formyl-5,10-dihydroxy-2,2,6a,6b,9,12a-hexamethyl-1,3,4,5,6,6a,7,8,8a,10,11,12,13,14b-tetradecahydropicene-4a-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1066250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1305.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-355170.0
-    phase     gas;
 }

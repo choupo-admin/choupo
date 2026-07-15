@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-ethoxy-4-methanoyl-phenyl) ethanoate" "ethyl vanillin acetate" "4-acetoxy-3-ethoxybenzaldehyde" "benzaldehyde, 4-(acetyloxy)-3-ethoxy-" "(2-ethoxy-4-formylphenyl) acetate" "2-ethoxy-4-formyl-phenyl acetate" "benzaldehyde,3-ethoxy-4-hydroxy-, acetate (7ci);4-acetoxy-3-ethoxybenzaldehyde;ethylvanillin acetate;ethyl vanillin acetate;benzaldehyde,4-(acetyloxy)-3-ethoxy-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -429830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     609.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236520.0
-    phase     gas;
 }

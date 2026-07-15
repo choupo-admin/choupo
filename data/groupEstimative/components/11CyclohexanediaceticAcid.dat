@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[1-(2-hydroxy-2-oxoethyl)cyclohexyl]ethanoic acid" "cyclohexanediacetic acid" "1,1-cyclohexane diacetic acid" "1,1-cyclohexanediaceticacid" "[1-(carboxymethyl)cyclohexyl]acetic acid" "2-[1-(carboxymethyl)cyclohexyl]acetic acid" "2-[(carboxymethyl)cyclohexyl]acetic acid" "yqpchpbgaalcrt-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -880710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     690.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-635540.0
-    phase     gas;
 }

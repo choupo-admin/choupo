@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 2; } { group dCH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethenoxyprop-1-ene" "ether, allyl vinyl" "vinyl allyl ether" "1-propene, 3-(ethenyloxy)-" "allyl ethenyl ether" "3-ethenoxy-1-propene" "1-propene, 3-(ethenyloxy)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -27890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     352.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=61900.0
-    phase     gas;
 }

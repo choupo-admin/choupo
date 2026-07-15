@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 9; } { group CH2; count 2; } { group CH; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl-(1-trimethylsilyl-3-trimethylsilyloxy-propan-2-yl)oxy-silane" "trimethyl-(1-trimethylsilyl-3-trimethylsilyloxypropan-2-yl)oxysilane" "3,6-dioxa-2,7-disilaoctane,2,2,7,7-tetramethyl-4-[(trimethylsilyl)methyl]-" "1-(trimethylsilyl)-2,3-bis(trimethylsilyloxy)propane;1-(trimethylsilyl)-2,3-bis(trimethylsilyl-oxy)pro;1-(trimethylsilyl)-2 3-bis(trimethylsil&;1-(trimethylsilyl)-2;1-(trimethylsilyl)-2,3-bis(trimethylsilyl-oxy)propane 99%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -895590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1015.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-476560.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "deca-2,4-dienoic acid" "(2e,4z)-2,4-decadienoic acid" "2,4-decadienoic acid" "2,4-decadienoic acid,(2e,4e)-" "2,4-decadienoic acid,(2e,4z)-" "2,4-decadienoic acid, (2z,4e)-" "2,4-decadienoicacid, (e,z)- (8ci); stillingic acid; trans-2-cis-4-decadienoic acid" "2,4-decadienoicacid, (e,e)- (8ci);2,4-decadienoic acid, trans-2,trans-4- (5ci);(2e,4e)-2,4-decadienoic acid;(e,e)-2,4-decadienoic acid;2(e),4(e)-decadienoicacid;2-trans,4-trans-decadienoic acid;trans-2-trans-4-decadienoic acid;(2e,4e)-deca-2,4-dienoic acid;2,4-decadienoic acid, (2e,4e)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -365560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     585.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-150150.0
-    phase     gas;
 }

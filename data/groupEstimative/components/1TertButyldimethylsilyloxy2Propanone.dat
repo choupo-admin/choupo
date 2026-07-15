@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 1; } { group C; count 1; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[tert-butyl(dimethyl)silyl]oxypropan-2-one" "1-((tert-butyldimethylsilyl)oxy)propan-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -594260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     632.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-310940.0
-    phase     gas;
 }

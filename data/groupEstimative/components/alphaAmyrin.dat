@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 8; } { group CH2_ring; count 9; } { group CH_ring; count 6; } { group C_ring; count 5; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s,4ar,6ar,6bs,8ar,11r,12s,12ar,14ar,14br)-4,4,6a,6b,8a,11,12,14b-octamethyl-2,3,4a,5,6,7,8,9,10,11,12,12a,14,14a-tetradecahydro-1h-picen-3-ol" "viminalol" "alpha-amyrenol" "alpha-amyrine" "a-amyrin" "urs-12-en-3beta-ol" ".alpha.-amyrenol" "urs-12-ene-3beta-ol" "5alpha-urs-12-en-3beta-ol" "(3beta)-urs-12-en-3-ol" "(3.beta.)-urs-12-en-3-ol" "urs-12-en-3-ol, (3beta)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -493410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1113.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=230570.0
-    phase     gas;
 }

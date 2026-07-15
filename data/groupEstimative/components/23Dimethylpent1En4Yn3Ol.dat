@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-dimethyl-1-penten-4-yn-3-ol" "1-penten-4-yn-3-ol, 2,3-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   58750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176440.0
-    phase     gas;
 }

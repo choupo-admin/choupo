@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(methylamino)ethanoic acid" "n-methylglycine" "sarcosinic acid" "methylglycine" "n-methylaminoacetic acid" "sarcosin" "glycine, n-methyl-" "(methylamino)acetic acid" "(methylamino)ethanoic acid" "methylaminoacetic acid" "sargosine hydrochloride" "n-methyl glycine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -402050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     366.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-280140.0
-    phase     gas;
 }

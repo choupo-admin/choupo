@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 17; } { group COOH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-hexadecylsulfanylpropanoic acid" "propanoic acid, 3-(hexadecylthio)-" "3-hexadecylthiopropanoic acid" "3-(hexadecylthio)propionic acid" "3-(hexadecylsulfanyl)propanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -743890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1010.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-201690.0
-    phase     gas;
 }

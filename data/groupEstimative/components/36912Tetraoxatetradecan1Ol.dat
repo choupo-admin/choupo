@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group OH; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-(2-ethoxyethoxy)ethoxy]ethoxy]ethanol" "tetraethylene glycol monoethyl ether" "tetraethylene glycol, monoethyl ether" "ethanol,2-[[2-(2-ethoxyethoxy)ethoxy]ethoxy]- (6ci); ethyltetraglycol; tetraethyleneglycol ethyl ether; tetraethylene glycol monoethyl ether; tetraethylene glycolmonoethyl ether, monoethyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -930840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     641.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-523500.0
-    phase     gas;
 }

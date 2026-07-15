@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "alkanes, c9-11-iso-" "nonane, 2-methyl-" "c9-11 isoparaffin" "iso-decane" "octane, dimethyl-" "isodecane" "c10-13 isoparaffin" "alkanes, c1o-13-iso-" "isodecane (7ci,8ci,9ci)" "nonane, 2-methyl- (8ci)(9ci)" "2-methylnonane;octane,dimethyl-;nonane,2-methyl-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -255010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     536.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=30880.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group COO; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diethyl 2-azanylpropanedioate" "diethyl 2-aminomalonate" "propanedioic acid, amino-, diethyl ester" "diethyl 2-aminopropanedioate" "2-aminomalonic acid diethyl ester" "13433-00-6 (hydrochloride)" "diethyl 2-aminopropane-1,3-dioate" "amino-propanedioic acid diethyl ester" "aminomalonic acid diethyl ester" "1,3-diethyl 2-aminopropanedioate" "2-amino-malonic acid diethyl ester" "2-amino-propanedioic acid 1,3-diethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -793860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     573.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-548670.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 14; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-octyloctan-1-amine" "di-n-octylamine" "1-octanamine, n-octyl-" "n-n-octyl-n-octylamine" "di(n-octyl)amine" "amines, di-c8-20-alkyl" "dioctyl-amine" "n-octyl-1-octanamine" "di(c8-c20)alkylamine" "n-(oct-1-yl)octan-1-amine" "dioctylamine(6ci,8ci);n-octyloctan-1-amine;n-n-octyl-n-octylamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -320100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     819.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=173230.0
-    phase     gas;
 }

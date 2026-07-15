@@ -33,9 +33,8 @@ groups
     joback ( { group tC; count 2; } { group Br; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-2-iodanyl-ethyne" "1-bromo-2-iodoacetylene" "brc.equiv.ci" "bromoiodoacetylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   290890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     312.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=241200.0
-    phase     gas;
 }

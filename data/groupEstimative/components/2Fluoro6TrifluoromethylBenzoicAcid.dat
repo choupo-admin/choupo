@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-fluoranyl-6-(trifluoromethyl)benzoic acid" "otf-boa-6f" "alpha,alpha,alpha,6-tetrafluoro-o-toluic acid" "6-fluoro-2-(trifluoromethyl)benzoic acid" "buttpark 29\06-66" "a,a,a,6-tetrafluoro-o-toluic acid" "2-fluoro-6-(trifluoromethyl)benzoate;" "2-fluoro-6-trifluoromethylbenzoic acid" "2-fluoro-6-trifluoromethyl-benzoic acid" "benzoic acid, 2-fluoro-6-(trifluoromethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1138320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     489.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1010680.0
-    phase     gas;
 }

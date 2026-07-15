@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 32; } { group dCH2; count 2; } { group dCH; count 3; } { group dC; count 1; } { group COOH; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-propenoic acid, 2-methyl-, octadecyl ester, polymer with 2-propenoic acid, compd. with (9z)-9-octadecen-1-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1429560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     2182.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-238820.0
-    phase     gas;
 }

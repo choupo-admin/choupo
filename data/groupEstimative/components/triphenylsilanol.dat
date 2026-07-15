@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 15; } { group dC_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxidanyl(triphenyl)silane" "hydroxytriphenylsilane" "silanol, triphenyl-" "triphenylhydroxysilane" "silane, (hydroxytriphenyl)-" "silane, hydroxytriphenyl-" "silanol, 1,1,1-triphenyl-" "triphenyl-silanol" "hydroxy(triphenyl)silane" "(hydroxytriphenyl)silane" "si(oh)ph3" "hydroxy-tri(phenyl)silane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   30890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     715.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=196330.0
-    phase     gas;
 }

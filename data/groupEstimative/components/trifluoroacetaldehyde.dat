@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group F; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(fluoranyl)ethanal" "fluoral" "acetaldehyde, trifluoro-" "acetaldehyde, 2,2,2-trifluoro-" "2,2,2-trifluoroacetaldehyde" "agn-pc-0d1vpe" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -767270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     308.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-715150.0
-    phase     gas;
 }

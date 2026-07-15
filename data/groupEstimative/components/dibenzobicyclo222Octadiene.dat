@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9,10-ethanoanthracene, 9,10-dihydro-" "9,10-ethanoanthracene" "agn-pc-02lwpw" "agn-pc-03dq26" "tetracyclo[6.6.2.0^{2,7}.0^{9,14}]hexadeca-2(7),3,5,9(14),10,12-hexaene" "{dibenzobicyclo[2.2.2]octadiene}; 1,4-endo-o-phenylenenaphthalene, 1,2,3,4-tetrahydro-; 9, 10-ethanoanthracene, 9,10-dihydro-; 9,10-dihydro-9,10-ethanoanthracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   234470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     333.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=435100.0
-    phase     gas;
 }

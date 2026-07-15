@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group CH_ring; count 5; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7-methano-1h-indenecarboxylic acid, octahydro-" "octahydro-4,7-methano-1h-indenecarboxylic acid" "4,7-methano-1h-indenecarboxylicacid, octahydro-" "tricyclo(5.2.1.02,6)decane-3(4)-carboxylic acid" "4,7-methanoindancarboxylicacid, hexahydro- (7ci); 3(or 4)-carboxytricyclo[5.2.1.02,6]decane; tcd acid s" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -449080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     302.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-147440.0
-    phase     gas;
 }

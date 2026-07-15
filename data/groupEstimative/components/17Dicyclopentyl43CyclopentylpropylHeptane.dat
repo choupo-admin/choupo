@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 9; } { group CH; count 1; } { group CH2_ring; count 12; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[7-cyclopentyl-4-(3-cyclopentylpropyl)heptyl]cyclopentane" "cyclopentane, 1,1'-[4-(3-cyclopentylpropyl)-1,7-heptanediyl]bis-" "cyclopentane,1'-[4-(3-cyclopentylpropyl)-1,7-heptanediyl]bis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -383170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     969.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=266830.0
-    phase     gas;
 }

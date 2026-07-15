@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-azanyl-6-oxidanylidene-hexanoic acid" "6-amino-6-oxohexanoic acid" "adipamic acid" "adipic acid monoamide" "5-carbamoylpentanoic acid" "hexanoic acid,6-amino-6-oxo-" "hexanoic acid, 6-amino-6-oxo-" "adipamicacid (6ci,8ci);adipic acid monoamide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -596230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     521.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-406740.0
-    phase     gas;
 }

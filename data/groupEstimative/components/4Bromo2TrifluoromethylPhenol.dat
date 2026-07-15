@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group Br; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-bromanyl-2-(trifluoromethyl)phenol" "4-bromo-2-trifluoromethylphenol" "4-bromo-2-(trifluoromethyl)benzenol" "5-bromo-2-hydroxybenzotrifluoride" "o-cresol, 4-bromo-alpha,alpha,alpha-trifluoro-" "bromotrifluoromethylbenzenol" "4-bromo-2-trifluoromethyl-phenol" "4-bromo-2-(trifluoromethyl)benzenol;4-bromo-2-(trifluoromethyl)phenol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -710810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-611050.0
-    phase     gas;
 }

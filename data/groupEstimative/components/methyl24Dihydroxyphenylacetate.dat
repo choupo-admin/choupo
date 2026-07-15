@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-[2,4-bis(oxidanyl)phenyl]ethanoate" "methyl(2,4-dihydroxyphenyl)acetate" "benzeneacetic acid, 2,4-dihydroxy-, methyl ester" "methyl 2-(2,4-dihydroxyphenyl)acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -664460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     504.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-482300.0
-    phase     gas;
 }

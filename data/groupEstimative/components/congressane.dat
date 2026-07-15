@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group CH_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diamantane" "diadamantane" "pentacyclo[7.3.1.1(4,12).0(2,7).0(6,11)]tetradecane" "decahydro-3,5,1,7-(1,2,3,4)butanetetraylnaphthalene" "decahydro-3,5,1,7-[1,2,3,4]butanetetraylnaphthalene" "diamantine" "ambap2292-79-7" "3,5,1,7-(1,2,3,4)butanetetraylnaphthalene, decahydro-" "4,4'-methylene-1,1'-methylene-5,6'-cyclo-3,2'-bicyclohexane" "pentacyclo[7.3.1.1.(4,12).0(2,7).0(6,11)]tetradecane(diamantan)" "pentacyclo[7.3.1.14,12.02,7.06,11]tetradecane (non-preferred name)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -23150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     103.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=359720.0
-    phase     gas;
 }

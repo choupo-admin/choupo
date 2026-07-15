@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 12; } { group CH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "decanoic acid, 2-hexyl-" "c16 guerbet fatty acid" "7-pentadecanecarboxylic acid" "2-hexyldecansaeure [german]" "2-hexyldecansaeure" "2-hexyl-decanoic acid" "pentadecane-7-carboxylic acid" "2-hexyldecanoicacid; c16 guerbet fatty acid; isocarb 16" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -729120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     822.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-262510.0
-    phase     gas;
 }

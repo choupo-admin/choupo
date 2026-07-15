@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 9; } { group CH_ring; count 5; } { group C_ring; count 2; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(5r,8r,9s,10s,13s,14s,17s)-10,13-dimethyl-17-oxidanyl-1,2,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-3-one" "5-beta-dihydrotestosterone" "5-beta-dht" "etiocholan-17beta-ol-3-one" "etiocholan-17-beta-ol-3-one" "etiocholane-17-beta-ol-3-one" "17beta-hydroxyetiocholan-3-one" "5beta-androstan-17beta-ol-3-one" "5beta,17beta-hydroxyandrostan-3-one" "17beta-hydroxy-5beta-androstan-3-one" "17-beta-hydroxy-5-beta-androstan-3-one" "etiocholan-17-beta-ol-3-one (5betadht)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -495560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     618.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1920.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 7; } { group CH; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 18; } { group OH_phenol; count 6; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethanoic acid;7-[8-methanoyl-3-methyl-1,6,7-tris(oxidanyl)-5-propan-2-yl-naphthalen-2-yl]-6-methyl-2,3,8-tris(oxidanyl)-4-propan-2-yl-naphthalene-1-carbaldehyde" "gossypol acetate" "acetic acid gossypol" "gossypol-acetic acid" "gossypol, acetate (salt)" "1,1',6,6',7,7'-hexahydroxy-5,5'-diisopropyl-3,3'-dimethyl-2,2'-binaphthalene-8,8'-dicarbaldehyde- acetic acid(1:1)" "r-(-)-gossypol acetic acid" "gosspyl acetate" "acetic acid; gossypol" "gossypol acetate, (r)-" "(r)-gossypol acetic acid" "gossypol acetic acid, r-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1323780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1384.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-713710.0
-    phase     gas;
 }

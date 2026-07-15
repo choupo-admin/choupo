@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-3-(dimethylamino)propanoic acid" "3-(dimethylamino)-l-alanine" "4-azaleucine" "l-4-azaleucine" "l-4-azaleucin" "3-(dimethylamino)alanine" "beta-(dimethylamino)alanine" "l-alanine, 3-(dimethylamino)-" "2-amino-3-dimethylaminopropionic acid" "2-amino-3-(dimethylamino)propionic acid" "propionic acid, 2-amino-3-(dimethylamino)-" "propionic acid, 2-amino-3-(dimethylamino)-, l-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -400760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-177900.0
-    phase     gas;
 }

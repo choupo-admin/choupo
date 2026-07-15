@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group C; count 1; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethyl-2-(hydroxymethyl)propane-1,3-diol" "ethriol" "2-ethyl-2-(hydroxymethyl)-1,3-propanediol" "hexaglycerine" "ettriol" "etriol" "trimethylol propane" "tmp (alcohol)" "1,3-propanediol, 2-ethyl-2-(hydroxymethyl)-" "1,1,1-tris(hydroxymethyl)propane" "ethyltrimethylolmethane" "tri(hydroxymethyl)propane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -632610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     503.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-407980.0
-    phase     gas;
 }

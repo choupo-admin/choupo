@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 11; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-tetradecen-1-ol, acetate, (9e)-" "9-tetradecen-1-ol, 1-acetate, (9e)-" "9-tetradecen-1-ol, 1-acetate, (9z)-" "9-tetradecen-1-ol,1-acetate, (9z)-" "9-tetradecen-1-ol,acetate, (9z)- (9ci); 9-tetradecen-1-ol, acetate, (z)- (8ci);(z)-1-acetoxy-9-tetradecene; (z)-9-tetradecen-1-ol acetate; (z)-9-tetradecenylacetate; 1-acetoxy-(z)-9-tetradecene; prodenialure a; cis-9-tetradecen-1-olacetate; cis-9-tetradecen-1-yl acetate; cis-9-tetradecenol acetate;cis-9-tetradecenyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -573630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     823.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-146310.0
-    phase     gas;
 }

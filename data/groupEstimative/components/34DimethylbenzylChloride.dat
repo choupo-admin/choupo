@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(chloromethyl)-1,2-dimethyl-benzene" "4-(chloromethyl)-1,2-dimethylbenzene" "benzene, 4-(chloromethyl)-1,2-dimethyl-" "4-(chloromethyl)-o-xylene" "benzene, 1-(chloromethyl)-3,4-dimethyl-" "1-(chloromethyl)-3,4-dimethylbenzene" "3,4-dimethyl benzylchloride" "3,4-dimethyl-benzylchloride" "1-chloromethyl-3,4-dimethylbenzene" "benzene,4-(chloromethyl)-1,2-dimethyl-" "q511" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -31240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     421.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=106120.0
-    phase     gas;
 }

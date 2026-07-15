@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "silane, tetrabutyl-" "tetra-n-butylsilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -485190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     905.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20920.0
-    phase     gas;
 }

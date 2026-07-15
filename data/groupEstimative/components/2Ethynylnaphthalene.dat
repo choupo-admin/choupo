@@ -33,9 +33,8 @@ groups
     joback ( { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethynyl-naphthalene" "naphthalene, 2-ethynyl-" "naphthylene-2-acetylene" "2-ethynyl naphtalene" "2-ethynylnaphthalene;2-naphthylethyne;b-ethynylnaphthalene;b-naphthylacetylene;(naphthalen-2-yl)ethyne;(2-naphthyl)acetylene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   417020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     371.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=482660.0
-    phase     gas;
 }

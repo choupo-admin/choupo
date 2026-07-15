@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 32; } { group dCH; count 4; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-octadec-9-enoyloxyethylsulfanyl)ethyl octadec-9-enoate" "9-octadecenoic acid (9z)-, 1,1'-(thiodi-2,1-ethanediyl) ester" "2-[2-[(e)-octadec-9-enoyl]oxyethylsulfanyl]ethyl (e)-octadec-9-enoate" "2-[2-[(z)-octadec-9-enoyl]oxyethylsulfanyl]ethyl (z)-octadec-9-enoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1227180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1864.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-141260.0
-    phase     gas;
 }

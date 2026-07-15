@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-n-pentylphenol" "phenol, 4-pentyl-" "4-amylphenol" "phenol, p-pentyl-" "p-amylphenol" "4-pentyl-phenol" "4-n-amylphenol" "p-pentylphenol" "amyl p-hydroxybenzene" "phenol,p-pentyl- (6ci,7ci,8ci);4-amylphenol;4-n-amylphenol;4-n-pentylphenol;amyl p-hydroxybenzene;p-amylphenol;p-hydroxy-n-pentylbenzene;p-pentylphenol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -211150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     504.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-470.0
-    phase     gas;
 }

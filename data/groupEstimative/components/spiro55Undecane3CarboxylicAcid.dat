@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 9; } { group CH_ring; count 1; } { group C_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "spiro(5.5)undecane-3-carboxylic acid" "spiro[5.5]undecane-9-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -511240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     665.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-238240.0
-    phase     gas;
 }

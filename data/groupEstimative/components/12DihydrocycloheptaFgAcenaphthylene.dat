@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohept(fg)acenaphthylene, 1,2-dihydro-" "cyclohept[fg]acenaphthylene, 1,2-dihydro-" "cyclohept[fg]acenaphthylene,1,2-dihydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   309990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     368.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=461220.0
-    phase     gas;
 }

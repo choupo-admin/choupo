@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(8s,9s,13s,14s)-13-methyl-3,17-bis(oxidanylidene)-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-10-yl] methanoate" "10-hedf" "10beta-hydroxy-4-estrene-3,17-dione formate" "estr-4-ene-3,17-dione, 10-(formyloxy)-" "[(8s,9s,13s,14s)-13-methyl-3,17-dioxo-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-10-yl] formate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -317590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     713.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=92020.0
-    phase     gas;
 }

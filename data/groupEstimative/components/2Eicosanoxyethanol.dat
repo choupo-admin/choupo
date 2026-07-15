@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 21; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-icosoxyethanol" "ethanol, 2-(eicosyloxy)-" "2-icosyloxyethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -781860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1075.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-107460.0
-    phase     gas;
 }

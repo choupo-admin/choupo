@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 1-bromanylcyclobutane-1-carboxylate" "ethyl 1-bromocyclobutane-1-carboxylate" "ethyl .alpha.-bromocyclobutanecarboxylate" "cyclobutanecarboxylic acid, 1-bromo-, ethyl ester" "ethyl alpha-bromocyclobutanecarboxylate" "ethyl abromocyclobutanecarboxylate" "cyclobutanecarboxylicacid, 1-bromo-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -396880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     530.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-244830.0
-    phase     gas;
 }

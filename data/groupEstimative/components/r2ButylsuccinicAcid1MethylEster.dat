@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3r)-3-methoxycarbonylheptanoic acid" "butanedioic acid,2-butyl-, 1-methyl ester, (2r)-" "butanedioicacid, butyl-, 1-methyl ester, (2r)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -901920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     601.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-631820.0
-    phase     gas;
 }

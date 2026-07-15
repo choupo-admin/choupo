@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 26; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octacosanoic acid methyl ester" "octacosanoic acid, methyl ester" "octacosanoic acid,methyl ester" "octacosanoic acid methyl ester (fame mix)" "29684d9a-0749-4587-9b65-aa00ae9c4fc6" "methylmontanate; methyl octacosanoate; montanic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -959170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1336.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-117070.0
-    phase     gas;
 }

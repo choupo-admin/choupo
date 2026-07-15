@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3-trimethylidenecyclopropane" "1,2,3-trimethylenecyclopropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   178690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     263.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=227340.0
-    phase     gas;
 }

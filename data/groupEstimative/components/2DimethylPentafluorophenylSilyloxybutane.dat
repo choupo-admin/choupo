@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 1; } { group dC_ring; count 6; } { group F; count 5; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butan-2-yloxy-dimethyl-[2,3,4,5,6-pentakis(fluoranyl)phenyl]silane" "sec-butoxy(dimethyl)(2,3,4,5,6-pentafluorophenyl)silane" "silane, dimethyl(1-methylpropoxy)(pentafluorophenyl)-" "butan-2-yloxy-dimethyl-(2,3,4,5,6-pentafluorophenyl)silane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1341500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     772.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1071830.0
-    phase     gas;
 }

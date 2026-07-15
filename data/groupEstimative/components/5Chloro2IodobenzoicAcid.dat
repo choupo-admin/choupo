@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group I; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-chloranyl-2-iodanyl-benzoic acid" "2-iodo-5-chlorobenzoic acid" "5-chloro-2-iodo-benzoic acid" "benzoic acid,5-chloro-2-iodo-" "buttpark 100\07-48" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -263360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-196510.0
-    phase     gas;
 }

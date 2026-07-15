@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbutan-1-amine" "isoamylamine" "monoisoamylamine" "1-butanamine, 3-methyl-" "3-methylbutylamine" "1-amino-3-methylbutane" "3-methylbutanamine" "leucamine" "butylamine, 3-methyl-" "len" "isovalerylamine" "monoisopentylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -118020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     392.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55230.0
-    phase     gas;
 }

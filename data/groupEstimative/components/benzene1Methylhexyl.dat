@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "heptan-2-ylbenzene" "heptane, 2-phenyl-" "heptan-2-ylcyclohexatriene" "agn-pc-0dbf7t" "benzene,(1-methylhexyl)-" "agn-pc-0d94ey" "heptane,2-phenyl- (6ci,7ci,8ci); (1-methylhexyl)benzene; (2-heptyl)benzene;2-phenylheptane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -80400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=168550.0
-    phase     gas;
 }

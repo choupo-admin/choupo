@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 5-methyl-2-oxidanyl-benzoate" "methyl 2-hydroxy-5-methylbenzoate" "benzoic acid, 2-hydroxy-5-methyl-, methyl ester" "2,5-cresotic acid, methyl ester" "p-cresotic acid methyl ester" "2-hydroxy-5-methylbenzoic acid methyl ester" "5-methylsalicylic acid methyl ester" "6-hydroxy-m-toluic acid methyl ester" "methyl-5-methylsalicylate" "methyl 5-methyl salicylate" "methyl-5-methyl salicylate" "methyl 6-hydroxy-m-toluate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -498620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     471.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-337310.0
-    phase     gas;
 }

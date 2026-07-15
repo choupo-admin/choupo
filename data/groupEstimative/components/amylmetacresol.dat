@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methyl-2-pentyl-phenol" "5-methyl-2-pentylphenol" "6-amyl-m-cresol" "6-pentyl-m-cresol" "6-n-amyl-m-cresol" "6-n-pentyl-m-cresol" "amylmetacresolum" "m-cresol, 6-pentyl-" "amylmetacresolum [latin]" "amilmetacresol" "5-methyl-2-n-pentylphenol" "amylmetacresol [inn:ban]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -243260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     537.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1680.0
-    phase     gas;
 }

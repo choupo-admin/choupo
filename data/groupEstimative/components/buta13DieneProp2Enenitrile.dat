@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 3; } { group dCH; count 3; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "buta-1,3-diene;prop-2-enenitrile" "2-propenenitrile, polymer with 1,3-butadiene, hydrogenated" "2-propenenitrile, polymer with 1,3-butadiene, 3-carboxy-1-cyano-1-methylpropyl-terminated" "prop-2-enenitrile - buta-1,3-diene (1:1)" "2-propenenitrile, polymer with 1,3-butadiene, 1-cyano-1-methyl-4-oxo-4-((2-(1-piperazinyl)ethyl)amino)butyl-terminated" "2-propenenitrile, polymer with 1,3-butadiene, 3-carboxy-1-cyano-1-methylpropyl-terminated, 2-hydroxy-3-((1-oxo-2-propen-1-yl)oxy)propyl ester" "2-propenenitrile, polymer with 1,3-butadiene, 3-carboxy-1-cyano-1-methylpropyl-terminated, 2-hydroxy-3-((1-oxo-2-propenyl)oxy)propyl ester" "2-propenenitrile,polymerwith1,3-butadiene,3-carboxy-1-cyano-1-methylpropyl-terminated;acrylonitrile-butadiene, carboxyl-terminated copolymer;poly(acrylonitrile-co-butadiene), dicarboxy terminated;poly(butadiene-co-acrylonitrile), dicarboxy terminated;poly(acrylonitrile-co-butadiene), dicarb oxy terminated, average mn 3,800;carboxy terminiertes homo-polymer des butadiens oder carboxy terminiertes co-polymer butadien-acrylnitril, restmonomerengehalt ;3-carboxy-1-cyano-1-methypropyl-terminated 1,3-butadiene- acrylonitrile polymer;acrylonitrile/ butadiene copolymer dicarboxy terminated" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   241740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     528.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=300000.0
-    phase     gas;
 }

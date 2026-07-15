@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 15; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phenol, 4-hexadecyl-" "p-hexadecylphenol" "4-n-hexadecylphenol" "phenol, p-hexadecyl-" "phenol,p-hexadecyl- (7ci,8ci); 4-hexadecylphenol; p-hexadecyl phenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -438190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     933.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=92150.0
-    phase     gas;
 }

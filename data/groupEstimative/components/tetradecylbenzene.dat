@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenyl-n-tetradecane" "1-phenyltetradecane" "benzene, tetradecyl-" "tetradecane, 1-phenyl-" "tetradecylbenzol" "n-tetradecylbenzene" "phenyl-n-tetradecane" "1-phenyltetradecane [HSDB]" "1-tetradecylbenzene" "myristylbenzene" "ntetradecylbenzene" "benzene, tetradecyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -219600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     828.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=229930.0
-    phase     gas;
 }

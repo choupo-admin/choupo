@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxy-2-phenyl-ethanol" "beta-methoxyphenethyl alcohol" "benzeneethanol, beta-methoxy-" "benzeneethanol, ss-methoxy-" "2-methoxy-2-phenylethan-1-ol" "benzeneethanol, .beta.-methoxy-" "phenethylalcohol, b-methoxy- (6ci,7ci,8ci);(?a'a a'a currency)-2-methoxy-2-phenylethanol;2-hydroxy-1-methoxy-1-phenylethane;2-methoxy-2-phenylethanol;2-phenyl-2-methoxyethanol;b-methoxybenzeneethanol;b-methoxyphenethyl alcohol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -282290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-106950.0
-    phase     gas;
 }

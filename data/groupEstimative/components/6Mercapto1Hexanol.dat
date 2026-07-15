@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group OH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-sulfanylhexan-1-ol" "6-sulfanyl-1-hexanol" "6-mercaptohexan-1-ol" "1-hexanol, 6-mercapto-" "6-mercaptohexanol" "6-hydroxy-1-hexanethiol" "6-mch" "6-hydroxy-1-hexanethiol;6-mercapto-1-hexanol;6-mercaptohexanol;mercaptohexanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -280920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     503.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-107790.0
-    phase     gas;
 }

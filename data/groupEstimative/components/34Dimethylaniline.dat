@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,4-xylidine" "4-amino-o-xylene" "benzenamine, 3,4-dimethyl-" "4-amino-1,2-dimethylbenzene" "3,4-xylylamine" "1-amino-3,4-dimethylbenzene" "3,4-dimethylphenylamine" "3,4-dimethylaminobenzene" "3,4-dimethylbenzenamine" "aniline, 3,4-dimethyl" "benzene, 4-amino-1,2-dimethyl-" "benzenamine,4-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   38930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176080.0
-    phase     gas;
 }

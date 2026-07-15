@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-methylphenyl)methyl ethanoate" "p-methylbenzyl acetate" "p-xylyl acetate" "p-tolubenzyl acetate" "4-methylbenzyl ethanoate" "(4-methylphenyl)methyl acetate" "p-acetoxymethyltoluene" "p-xylene, alpha-acetoxy" "benzenemethanol, 4-methyl-, acetate" "p-methylbenzyl alcohol acetate" "4-methylbenzenemethanol acetate" "benzenemethanol, 4-methyl-, 1-acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -341950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-174270.0
-    phase     gas;
 }

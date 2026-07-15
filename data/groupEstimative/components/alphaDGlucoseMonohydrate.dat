@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 1; } { group CH_ring; count 5; } { group OH; count 5; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s,3r,4s,5s,6r)-6-(hydroxymethyl)oxane-2,3,4,5-tetrol;hydrate" "delflex neutral ph" "dextrose (usp)" "a-glucose hydrate" "cartose (tn)" "dextrose 25%" "dextrose 60%" "dextrose 5% in plastic container" "dextrose 10% in plastic container" "dextrose 20% in plastic container" "dextrose 30% in plastic container" "dextrose 40% in plastic container" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1087360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     626.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-776970.0
-    phase     gas;
 }

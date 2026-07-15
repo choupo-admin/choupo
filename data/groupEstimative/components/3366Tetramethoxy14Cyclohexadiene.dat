@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C_ring; count 2; } { group dCH_ring; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,6,6-tetramethoxycyclohexa-1,4-diene" "1,4-cyclohexadiene,3,3,6,6-tetramethoxy-" "3,3,6,6-tetramethoxy-cyclohexa-1,4-diene" "p-benzoquinone,bis(dimethyl acetal) (7ci,8ci);1,1,4,4-tetramethoxy-2,5-cyclohexadiene;2,5-cyclohexadiene-1,4-dione bis(dimethyl acetal);3,3,6,6-tetramethoxy-1,4-cyclohexadiene;benzoquinone bis(dimethyl ketal);p-benzoquinone tetramethyl acetal;p-benzoquinone tetramethyl diacetal;p-benzoquinone tetramethyl diketal;p-benzoquinone tetramethyl ketal;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -598590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     582.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-321000.0
-    phase     gas;
 }

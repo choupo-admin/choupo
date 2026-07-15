@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,4-dimethylhexan-3-one" "3-hexanone, 4,4-dimethyl-" "3-hexanone,4,4-dimethyl-" "4,4-dimethyl-3-hexanone;ethyl 1,1-dimethylpropyl ketone; ethyl tert-pentyl ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -329780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-109600.0
-    phase     gas;
 }

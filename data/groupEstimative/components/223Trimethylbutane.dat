@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH; count 1; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triptan" "triptane" "butane, 2,2,3-trimethyl-" "pentamethylethane" "2,3-trimethylbutane" "butane,2,3-trimethyl-" "2,2,3-trimethyl-butane" "2,2,3-trimethyl butane" "agn-pc-00o9ts" "butane,2,2,3-trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -201840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     380.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8460.0
-    phase     gas;
 }

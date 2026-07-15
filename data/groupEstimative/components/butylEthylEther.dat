@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethoxybutane" "butane, 1-ethoxy-" "ether, butyl ethyl" "ethyl butyl ether" "n-butyl ethyl ether" "ether ethylbutylique [french]" "1-ethoxy-butane" "ether ethylbutylique" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -299390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-105360.0
-    phase     gas;
 }

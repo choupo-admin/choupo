@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 11; } { group CH_ring; count 9; } { group C_ring; count 3; } { group OH; count 1; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "parigenin" "sasarasapogenin" "(25s)-5beta-spirostan-3beta-ol" "(3b,5b,25s)-spirostan-3-ol" "sarsapogenine" "sarsasapogenenin" "(3beta,5beta,25s)-spirostan-3-ol" "ambap126-19-2" "(25s)-spirostan-3" "a-ol" "5beta-spirostan-3beta-ol, (25s)- (8ci)" "spirostan-3-ol, (3beta,5beta,25s)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -699480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     708.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=84470.0
-    phase     gas;
 }

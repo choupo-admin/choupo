@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethylsulfanyldecane" "decane, 1-(ethylthio)-" "n-decyl ethyl sulfide" "ethyl decyl sulfide" "1-(ethylsulfanyl)decane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -249140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     684.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83280.0
-    phase     gas;
 }

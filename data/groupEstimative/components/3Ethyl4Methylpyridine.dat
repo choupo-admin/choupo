@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethyl-4-methyl-pyridine" "pyridine, 3-ethyl-4-methyl-" "3-ethyl-4-picoline" "b-collidine" "beta-collidine" "4-picoline, 3-ethyl-" "4-methyl-3-ethylpyridine" ".beta.-collidine" "3-ethyl-gamma-picoline" "3-ethyl-.gamma.-picoline" "beta-ethyl-gamma-methylpyridine" "4-picoline, 3-ethyl- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   49400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     367.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=196310.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group OH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-oxidanyloctan-4-one" "5-hydroxy-4-octanone" "5-hydroxyoctan-4-one" "4-octanone, 5-hydroxy-" "5-octanol-4-one" "octan-4-ol-5-one" "5-hydroxy-octan-4-one" "agn-pc-00h0sa" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -478540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-251700.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(dimethylamino)ethyl prop-2-enoate" "dimethylaminoethyl acrylate" "2-propenoic acid, 2-(dimethylamino)ethyl ester" "adame" "n,n-dimethylaminoethyl acrylate" "acrylic acid, 2-(dimethylamino)ethyl ester" "2-dimethylaminoethyl prop-2-enoate" "dpbjavghaccnrl-uhfffaoysa-" "u811" "acrylic acid 2-(dimethylamino)ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -312130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     491.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-103690.0
-    phase     gas;
 }

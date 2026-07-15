@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 12; } { group CH; count 4; } { group Br; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 9,10,12,13-tetrakis(bromanyl)octadecanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -668570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1113.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-153750.0
-    phase     gas;
 }

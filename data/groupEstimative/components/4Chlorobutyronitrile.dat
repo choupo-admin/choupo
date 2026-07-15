@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group Cl; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-chloranylbutanenitrile" "4-chlorobutanenitrile" "butanenitrile, 4-chloro-" "butyronitrile, 4-chloro-" "1-chloro-3-cyanopropane" "gamma-chlorobutyronitrile" "4-chloro-butyronitrile" ".gamma.-chlorobutyronitrile" "4-chlorobutanenitrile 98%" "l695" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   23250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     351.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=104050.0
-    phase     gas;
 }

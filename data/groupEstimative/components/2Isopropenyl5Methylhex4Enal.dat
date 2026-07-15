@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dC; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methyl-2-prop-1-en-2-yl-hex-4-enal" "(r)-5-methyl-2-(1-methylvinyl)hex-4-enal" "4-hexenal, 5-methyl-2-(1-methylethenyl)-, (2r)-" "2-isopropenyl-5-methyl-4-hexenal" "5-methyl-2-isopropenyl-4-hexenal" "5-methyl-2-prop-1-en-2-ylhex-4-enal" "4-hexenal, 5-methyl-2-(1-methylethenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -117520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=82320.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-di(butan-2-yl)phenol" "phenol, 2,6-di-sec-butyl-" "2,6-di-sec-butylphenol" "di-sec-butylphenol, mixed isomers" "2,6-di-sec-butyl phenol" "2,6-di-sec-butylfenol" "2,6-bis(methylpropyl)phenol" "phenol,2,6-bis(1-methylpropyl)-" "di-sec-butylphenol,mixture of isomers" "p193" "di-sec-butylphenol, mixture of isomers, predom. 2,6-isomer" "phenol,2,6-di-sec-butyl- (6ci,7ci,8ci); 2,6-di-sec-butylphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -295100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     596.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=10280.0
-    phase     gas;
 }

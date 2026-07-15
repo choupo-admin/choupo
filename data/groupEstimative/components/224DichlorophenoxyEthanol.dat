@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2,4-bis(chloranyl)phenoxy]ethanol" "o,p-dichlorophenoxyethanol" "ethanol, 2-(2,4-dichlorophenoxy)-" "2,4-dichlorphenyl cellosolve" "2-(2,4-dichlorophenoxy)ethan-1-ol" "cellosolve, 2,4-dichlorophenyl-" "2,4-dichlorophenoxyethanol" "ethanol,4-dichlorophenoxy)-" "cellosolve,4-dichlorophenyl-" "2-(2,4-dichloro-phenoxy)-ethanol" "ethanol,2-(2,4-dichlorophenoxy)-" "2-(2',4'-dichlorophenoxy) ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -310790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     477.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-156050.0
-    phase     gas;
 }

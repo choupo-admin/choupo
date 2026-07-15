@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group C_ring; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 7; } { group COO; count 1; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-(dimethylamino)-3,3-bis[4-(dimethylamino)phenyl]-2-benzofuran-1-one" "3,3-bis(p-dimethylaminophenyl)-6-dimethylaminophthalide" "3,3-bis(4-dimethylaminophenyl)-6-dimethylaminophthalide" "3,3-bis(p-dimethylaminophenyl)-6-dimethylaminophthalate" "6-(dimethylamino)-3,3-bis(4-(dimethylamino)phenyl)phthalide" "1(3h)-isobenzofuranone, 6-(dimethylamino)-3,3-bis[4-(dimethylamino)phenyl]-" "6-dimethylamino-3,3-bis(4-dimethylaminophenyl)phthalide" "cvl 3,3-bis-4-dimethylaminophenyl7-6-dimethylaminophthalide" "phthalide, 6-(dimethylamino)-3,3-bis(p-(dimethylamino)phenyl)-" "phthalide, 6-(dimethylamino)-3,3-bis[p-(dimethylamino)phenyl]-" "1(3h)-isobenzofuranone, 6-(dimethylamino)-3,3-bis(4-(dimethylamino)phenyl)-" "phthalide,3-bis[p-(dimethylamino)phenyl]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   69410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     863.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=568180.0
-    phase     gas;
 }

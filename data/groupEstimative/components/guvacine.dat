@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,6-tetrahydropyridine-5-carboxylic acid" "1,2,5,6-tetrahydropyridine-3-carboxylic acid" "1,2,5,6-tetrahydro-3-pyridinecarboxylic acid" "1,2,5,6-tetrahydro-pyridine-3-carboxylic acid hydrochloride" "1,2,5,6-tetrahydronicotinic acid" "4-substituted 2,4-dioxobutanoic acids" "sdccgmls-0066665.p001" "5-p-tolyl-4h-1,2,4-triazol-3-amine" "1,2,5,6-tetrahydro-pyridine-3-carboxylic acid" "3-pyridinecarboxylic acid, 1,2,5,6-tetrahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -358660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     404.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-204070.0
-    phase     gas;
 }

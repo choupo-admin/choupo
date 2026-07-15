@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group Cl; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-hydroxyethyl 2-chloranylethanoate" "2-hydroxyethyl 2-chloroacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -611140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-476320.0
-    phase     gas;
 }

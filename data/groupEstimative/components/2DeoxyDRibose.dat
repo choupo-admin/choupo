@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 2; } { group OH; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,4,5-tris(oxidanyl)pentanal" "d-erythro-pentose, 2-deoxy-" "2-deoxyribose" "d-ribose, 2-deoxy-" "deoxyribose" "d -erythro -2-deoxypentose" "d-2-deoxyribose" "2-deoxypentose" "2'-deoxyribose" "ribose, 2-deoxy-" "3,4,5-trihydroxypentanal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -699360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     503.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-523640.0
-    phase     gas;
 }

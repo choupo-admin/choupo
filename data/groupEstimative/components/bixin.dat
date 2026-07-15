@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group dCH; count 14; } { group dC; count 4; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "20-methoxy-4,8,13,17-tetramethyl-20-oxidanylidene-icosa-2,4,6,8,10,12,14,16,18-nonaenoic acid" "20-methoxy-4,8,13,17-tetramethyl-20-oxoicosa-2,4,6,8,10,12,14,16,18-nonaenoic acid" "(2e,4e,6e,8e,10e,12e,14e,16e,18e)-20-methoxy-4,8,13,17-tetramethyl-20-oxo-icosa-2,4,6,8,10,12,14,16,18-nonaenoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -211060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1158.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=193120.0
-    phase     gas;
 }

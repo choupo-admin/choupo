@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group dCH; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-undec-2-en-1-ol" "(2e)-2-undecen-1-ol" "2-undecen-1-ol, (2z)-" "undec-2-enol" "cis-2-undecen-1-ol" "1-hydroxy-2-undecene" "(z)-2-undecen-1-ol" "2-undecen-1-ol, (e)-" "2-undecen-1-ol, (z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -305380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     628.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-14860.0
-    phase     gas;
 }

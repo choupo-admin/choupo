@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3-(hydroxymethyl)phenyl]methanol" "m-xylene-alpha,alpha'-diol" "[3-(hydroxymethyl)phenyl]methan-1-ol" "m-xylene glycol" "m-xylylene glycol" "1,3-phenylenedimethanol" "alpha,alpha'-dihydroxy-m-xylene" "m-xylene-" "a," "a inverted exclamation marka-diol" "m-xylene-a,a'-diol (6ci,7ci,8ci);(3-hydroxymethylphenyl)methanol;1,3-bis(hydroxymethyl)benzene;1,3-di(hydroxymethyl)benzene;1,3-phenylenedimethanol;2,6-bis(hydroxymethyl)benzene;isophthalyl alcohol;m-(hydroxymethyl)phenylmethanol;m-benzenedimethanol;m-bis(hydroxymethyl)benzene;m-xylylene glycol;m-xylylenediol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -287850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     456.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-154380.0
-    phase     gas;
 }

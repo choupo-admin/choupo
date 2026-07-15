@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylpropoxymethanol" "methanol, (2-methylpropoxy)-" "methanol, 1-(2-methylpropoxy)-" "methanol,1-(2-methylpropoxy)-" "methanol,(2-methylpropoxy)- (9ci); methanol, isobutoxy- (8ci); formit ib; isobutylhemiformal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -436260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     403.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-253040.0
-    phase     gas;
 }

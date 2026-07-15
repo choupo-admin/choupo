@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentyl 2-methylbutanoate" "butanoic acid, 2-methyl-, pentyl ester" "pentyl 2-methylbutyrate" "n-amyl 2-methylbutyrate" "butanoic acid,2-methyl-, pentyl ester;pentyl 2-methylbutanoate;pentyl 2-methylbutyrate;n-pentyl2-methylbutyrate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -572290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     587.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-279490.0
-    phase     gas;
 }

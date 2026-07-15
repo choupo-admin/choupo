@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 12; } { group dCH2; count 3; } { group dCH; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(4-ethenoxybutyl) benzene-1,2,4-tricarboxylate" "tris[4-(vinyloxy)butyl]-1,2,4-benzenetricarboxylate" "tris(4-(vinyloxy)butyl) trimellitate" "1,2,4-benzenetricarboxylic acid, 1,2,4-tris(4-(ethenyloxy)butyl) ester" "1,2,4-benzenetricarboxylic acid, 1,2,4-tris[4-(ethenyloxy)butyl] ester" "vectomer&reg; 5015 vinyl ether" "vectomer(tm) 5015 vinyl ether" "1,2,4-benzenetricarboxylic acid, tris(4-(ethenyloxy)butyl) ester" "1,2,4-benzenetricarboxylicacid, 1,2,4-tris[4-(ethenyloxy)butyl] ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1359230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1262.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-712980.0
-    phase     gas;
 }

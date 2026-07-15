@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 26; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-methyl-n-tetradecyl-tetradecan-1-amine" "n-methyl-n-tetradecyl-1-tetradecanamine" "1-tetradecanamine, n-methyl-n-tetradecyl-" "methyldimyristylamine" "dimyristylmethylamine" "methylditetradecylamine" "di(tetradecyl)methylamine" "amines, di-c8-20-alkylmethyl" "n-methyl-n-tetradecyltetradecan-1-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -574360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1301.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=304080.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group C; count 1; } { group F; count 3; } { group Cl; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanyl-2-chloranyl-1,1,1-tris(fluoranyl)ethane" "fluothane" "narcotan" "narcotane" "phthorothanum" "ftorotan" "rhodialothan" "halotan" "bromochlorotrifluoroethane" "2-bromo-2-chloro-1,1,1-trifluoroethane" "fluorotane" "anestan" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -676380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     365.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-615680.0
-    phase     gas;
 }

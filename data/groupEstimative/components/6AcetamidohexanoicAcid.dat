@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "acexamic acid" "acetaminocaproic acid" "plastenan" "acide acexamique" "6-(acetylamino)hexanoic acid" "6-acetamidocaproic acid" "aeah (base)" "6-acetamidohexansaeure" "6-acetylaminohexansaeure" "6-acetymidohexanoic acid" "6-acetylaminocaproic acid" "n-acetyl-.epsilon.-aminocaproic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -617830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     588.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-366960.0
-    phase     gas;
 }

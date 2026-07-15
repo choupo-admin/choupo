@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group dCH2; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyloct-1-ene" "1-octene, 2-methyl-" "2-methyl-oct-1-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -113450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     497.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=104190.0
-    phase     gas;
 }

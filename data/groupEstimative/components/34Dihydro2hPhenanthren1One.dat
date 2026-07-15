@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,4-dihydrophenanthren-1(2h)-one" "1,2,3,4-tetrahydrophenanthren-1-one" "1(2h)-phenanthrone,4-dihydro-" "1(2h)-phenanthrenone,4-dihydro-" "1,3,4-tetrahydrophenanthren-1-one" "1,3,4-tetrahydro-1-oxophenanthrene" "1-oxo-1,3,4-tetrahydrophenanthrene" "1-keto-1,2,3,4-tetra-hydrophenanthrene" "1,2,3,4-tetrahydro-1-phenanthrenone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   21650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     366.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=200570.0
-    phase     gas;
 }

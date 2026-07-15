@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 3; } { group OH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[1-(1-methoxypropan-2-yloxy)propan-2-yloxy]propan-2-ol" "arcosolv tpm" "dowanol tpm" "dowfroth 200" "mftg" "O-methyltripropylene glycol" "propanol, [2-(2-methoxymethylethoxy)methylethoxy]-" "tripropylene glycol monomethyl ether (6CI,7CI)" "tripropyleneglycol methyl ether" "xus 40782.00" "[2-(2-Methoxymethylethoxy)methylethoxy]propanol" "2-Propanol, 1-[2-(2-methoxy-1-methylethoxy)-1-methylethoxy]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -814460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     601.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-425820.0
-    phase     gas;
 }

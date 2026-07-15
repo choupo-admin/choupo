@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tridecyl methanoate" "agn-pc-00k6ov" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -255840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     884.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110960.0
-    phase     gas;
 }

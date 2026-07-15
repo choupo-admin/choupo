@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triethoxymethylbenzene" "(triethoxymethyl)benzene" "benzene, (triethoxymethyl)-" "(triethoxymethyl)benzol" "ethyl orthobenzoate" "benzene,(triethoxymethyl)-" "orthobenzoic acid, triethyl ester" "triethylorthobenzoate" "bqfpctxlbrvfjl-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -480530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     550.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-141170.0
-    phase     gas;
 }

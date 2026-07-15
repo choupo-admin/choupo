@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group O; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[2,4-bis(chloranyl)phenoxy]butanoic acid;n-methylmethanamine" "2,4-db-dimethylammonium [iso]" "dimethylamine 4-(2,4-dichlorophenoxy)butyrate" "4-(2,4-dichlorophenoxy)butyric acid dimethylamine salt" "butyric acid, 4-(2,4-dichlorophenoxy)-, dimethylamine salt" "2,4-db dimethylamine salt" "4-(2,4-dichlorophenoxy)butyric acid, compound with dimethylamine (1:1)" "butanoic acid, 4-(2,4-dichlorophenoxy)-, compd. with n-methylmethanamine (1:1)" "4-(2,4-dichlorophenoxy)butanoic acid; n-methylmethanamine" "4-(2,4-dichlorophenoxy)butanoic acid - n-methylmethanamine (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -649540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     784.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-344830.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group NH; count 1; } { group Nd_ring; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(pyridin-3-ylmethylamino)propanenitrile" "3-[(pyridin-3-ylmethyl)amino]propanenitrile" "3-pyridinemethanamine, n-(2-cyanoethyl)-" "3-(3-pyridylmethylamino)propanenitrile" "propanenitrile, 3-((3-pyridinylmethyl)amino)-" "propanenitrile, 3-[(3-pyridinylmethyl)amino]-" "3-[(3-pyridylmethyl)amino]propanenitrile" "3-{[(2-cyanoethyl)amino]methyl}pyridine" "3-((3-pyridylmethyl)amino)propiononitrile" "3-[(3-pyridinylmethyl)amino]propanenitrile" "3-[(pyridin-3-ylmethyl)-amino]-propionitrile" "propanenitrile,3-[(3-pyridinylmethyl)amino]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   258580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=436930.0
-    phase     gas;
 }

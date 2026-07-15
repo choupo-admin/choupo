@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentane-1-thiol" "n-amyl mercaptan" "amyl mercaptan" "pentyl mercaptan" "pentanethiol" "pentylmercaptan" "pentalarm" "amyl mercaptans" "amyl sulfhydrate" "amyl thioalcohol" "thioamyl alcohol" "amyl hydrosulfide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -108050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=20610.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 16; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nonadecan-2-one" "methyl heptadecyl ketone" "heptadecyl methyl ketone" "nonadeca-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -548070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     922.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-19820.0
-    phase     gas;
 }

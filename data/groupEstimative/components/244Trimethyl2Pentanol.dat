@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 1; } { group C; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4,4-trimethylpentan-2-ol" "2-hydroxy-2,4,4-trimethylpentane" "2-pentanol, 2,4,4-trimethyl-" "2-pentanol,4,4-trimethyl-" "2-pentanol,2,4,4-trimethyl-" "bsyjhylammjnrc-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -378180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     440.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-114660.0
-    phase     gas;
 }

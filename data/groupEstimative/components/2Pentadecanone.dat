@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 12; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentadecan-2-one" "methyl tridecyl ketone" "2-oxopentadecane;methyl tridecyl ketone;tridecyl methyl ketone;" "(3e,5e,7e,9e,11e,13e)-pentadeca-3,5,7,9,11,13-hexaen-2-one" "ssv" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -465510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     766.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-53500.0
-    phase     gas;
 }

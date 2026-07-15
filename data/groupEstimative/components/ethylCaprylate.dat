@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl octanoate" "octanoic acid, ethyl ester" "ethyl n-octanoate" "ethyl octoate" "ethyl octylate" "caprylic acid ethyl ester" "octanoic acid ethyl ester" "ethyl octanoate (natural)" "caprylic acid ethylester" "n-octanoic acid ethyl ester" "we(2:0/8:0)" "octanoic acid, ethyl ester;ethyl octanoate;ethyl n-octanoate;ethyl octoate;ethyl octylate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -567010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     596.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-277050.0
-    phase     gas;
 }

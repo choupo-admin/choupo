@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 3; } { group F; count 7; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,3,3,3-heptakis(fluoranyl)-2-methoxy-propane" "heptafluoroisopropyl methyl ether 99+%" "1,1,1,2,3,3,3-heptafluoro-2-methoxypropane" "propane,1,1,1,2,3,3,3-heptafluoro-2-methoxy-" "1,2,2,2-tetrafluoro-1-methoxy-1-(trifluoromethyl)ethane" "ether,methyl tetrafluoro-1-(trifluoromethyl)ethyl (8ci);1,1,1,2,3,3,3-heptafluoro-2-methoxypropane; hfe 347i; hfe 347mmy;heptafluoroisopropyl methyl ether; methyl perfluoroisopropyl ether;perfluoroisopropyl methyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1657130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1477350.0
-    phase     gas;
 }

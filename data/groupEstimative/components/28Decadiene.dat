@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "deca-2,8-diene" "2,8-decadiene, (2e,8e)-" "2,8-decadiene,(e,e)- (8ci,9ci); trans,trans-2,8-decadiene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -15290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     532.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=193760.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexane-1-thiol" "hexyl mercaptan" "n-hexyl mercaptan" "1-mercaptohexane" "hexanethiol" "hexylthiol" "n-hexylmercaptan" "1-hexylthiol" "mercaptan c6" "n-hexanethiol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -128690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=29030.0
-    phase     gas;
 }

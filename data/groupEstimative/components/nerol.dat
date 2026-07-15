@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH; count 2; } { group dC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7-dimethylocta-2,6-dien-1-ol" "2,6-octadien-1-ol, 3,7-dimethyl-" "2,6-dimethyl-2,6-octadien-8-ol" "1-octanol, 3,7-dimethyl-, tetradehydro deriv." "agn-pc-00ckf3" "3,7-dimethyl-trans-2, 6-octadien-1-ol;2,6-dimethyl-trans-2, 6-octadien-8-ol;trans-geraniol;geraniol alcohol;guaniol;(e)-3,7-dimethylocta-2,6-dien-1-ol;lemonol;2,6-octadien-1-ol,3,7-dimethyl-,(2e)-;geranyl alcohol;geraniol extra;trans-3,7-dimethyl-2,6-octadien-1-ol;nerol;geraniol;2,6-dimethyl-2,6-octadien-8-ol;" "cis-geraniol;b-nerol;2,6-octadien-1-ol,3,7-dimethyl-, (z)- (8ci);nerol (6ci);(2z)-3,7-dimethyl-2,6-octadien-1-ol;(z)-3,7-dimethyl-2,6-octadien-1-ol;(z)-geraniol;(z)-nerol;2-cis-3,7-dimethyl-2,6-octadien-1-ol;3,7-dimethyl-cis-2,6-octadien-1-ol;nerol900;neryl alcohol;cis-3,7-dimethyl-2,6-octadien-1-ol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -187100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     574.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=39840.0
-    phase     gas;
 }

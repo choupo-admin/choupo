@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxilorphane [inn-french]" "oxilorphanum [inn-latin]" "(-)-17-cyclopropylmethylmorphinan-3,4-diol" "l-n-cyclopropylmethyl-3,14-dihydroxymorphinan" "morphinan-3,14-diol, 17-(cyclopropylmethyl)-" "(-)-3,14-dihydroxy-n-(cyclobutylmethyl)morphinan" "oxilorfano" "oxilorphane" "oxilorphanum" "oxilorphan (usan/inn)" "oxilorphan [usan:inn]" "(-)-17-(cyclopropylmethyl)morphinan-3,14-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -177560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     713.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=259560.0
-    phase     gas;
 }

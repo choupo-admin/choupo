@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,5-dimethylhexan-3-one" "isobutyl isopropyl ketone" "3-hexanone, 2,5-dimethyl-" "3-hexanone,5-dimethyl-" "3-hexanone,2,5-dimethyl-" "tuiwmhdsxjwxoh-uhfffaoysa-" "3-hexanone, 2,5-dimethyl- (8ci)(9ci)" "2,5-dimethyl-3-hexanone;isobutyl isopropyl ketone;2,5-dimethylhexan-3-one;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -331590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-117320.0
-    phase     gas;
 }

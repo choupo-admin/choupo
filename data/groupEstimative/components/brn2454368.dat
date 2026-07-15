@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(7-bicyclo[4.2.0]octa-1,3,5-trienyl)-2-phenyl-ethanone" "bicyclo[4.2.0]octa-1,3,5-trien-7-yl benzyl ketone" "benzyl bicyclo(4.2.0)octa-1,3,5-trien-7-yl ketone" "bicyclo(4.2.0)octa-1,3,5-trien-7-yl benzyl ketone" "ketone, bicyclo(4.2.0)octa-1,3,5-trien-7-yl benzyl" "1-(7-bicyclo[4.2.0]octa-1,3,5-trienyl)-2-phenylethanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   54400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     476.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=242960.0
-    phase     gas;
 }

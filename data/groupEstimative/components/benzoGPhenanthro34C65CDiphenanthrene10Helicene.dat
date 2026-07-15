@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 24; } { group dC_ring; count 18; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo(g)phenanthro(3,4-c:6,5-c')diphenanthrene(10)helicene" "benzo[g[phenanthro[3,4-c:6,5-c']diphenanthrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   954190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     656.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1297980.0
-    phase     gas;
 }

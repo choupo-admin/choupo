@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH_phenol; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-5-chloranyl-phenol" "4-chloro-2-hydroxyaniline" "phenol, 2-amino-5-chloro-" "5-chloro-o-aminophenol" "5-chloro-2-aminophenol" "5-chloro-2-amino phenol" "2-hydroxy-4-chloroaniline" "fzcqmirjcgwwcl-uhfffaoysa-" "5-fluoro-2-chloropyridine" "4-chloro-2-hydroxyaniline;2-chloro-5-amino-phenol;phenol, 2-amino-5-chloro-;5-chloro-2-amino phenol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -101370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     388.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=2320.0
-    phase     gas;
 }

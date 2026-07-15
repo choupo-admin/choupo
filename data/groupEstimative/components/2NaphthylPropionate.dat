@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphthalen-2-yl propanoate" "2-naphthalenol, propanoate" "propionic acid 2-naphthyl ester" "2-naphthyl propanoate" "2-naphthalenol,2-propanoate" "beta-naphthyl propionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -212800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-42360.0
-    phase     gas;
 }

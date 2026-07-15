@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-dimethyl-4-(2,6,6-trimethylcyclohex-2-en-1-yl)but-3-enal" "3-butenal, 2,3-dimethyl-4-(2,6,6-trimethyl-2-cyclohexen-1-yl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -240830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     691.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=76710.0
-    phase     gas;
 }

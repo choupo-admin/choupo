@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[bis(bromanyl)methyl]-3-fluoranyl-benzene" "1-(dibromomethyl)-3-fluorobenzene" "fluorobenzene, meta-(dibromomethyl)-" "benzene,1-(dibromomethyl)-3-fluoro-" "o150" "toluene, a,a-dibromo-m-fluoro- (7ci,8ci);1-(dibromomethyl)-3-fluorobenzene; 3-fluorobenzal bromide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -111480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     440.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-57770.0
-    phase     gas;
 }

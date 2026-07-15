@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 16; } { group CH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nonadecan-10-amine" "10-aminononadecane" "decylamine,1-nonyl- (7ci,8ci); 1-nonyldecylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -406980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     938.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=173110.0
-    phase     gas;
 }

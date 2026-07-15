@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 9; } { group OH_phenol; count 1; } { group O; count 3; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,10-trimethoxy-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinoline-9-ol" "1,2,10-trimethoxy-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinolin-9-ol" "4h-dibenzo[de, 5,6,6a,7-tetrahydro-1,2,10-trimethoxy-, (s)-" "(6as)-1,2,10-trimethoxy-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinolin-9-ol" "4h-dibenzo[de,g]quinolin-9-ol,5,6,6a,7-tetrahydro-1,2,10-trimethoxy-, (6as)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -395310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     542.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=35540.0
-    phase     gas;
 }

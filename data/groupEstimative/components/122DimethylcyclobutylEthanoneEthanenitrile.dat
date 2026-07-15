@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group CdO; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2,2-dimethylcyclobutyl)ethanone; ethanenitrile" "acetonitrile; 1-(2,2-dimethylcyclobutyl)ethanone" "(1s,3s)-3-acetyl-2,2-dimethylcyclobutane acetonitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -247510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     642.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-31730.0
-    phase     gas;
 }

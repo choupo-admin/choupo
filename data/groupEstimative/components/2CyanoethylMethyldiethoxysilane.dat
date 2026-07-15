@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group O; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[diethoxy(methyl)silyl]propanenitrile" "propanenitrile, 3-(diethoxymethylsilyl)-" "(cyanoethyl)methyldiethoxysilane" "propionitrile, 3-(diethoxymethylsilyl)-" "(2-cyanoethyl)diethoxymethylsilane" "2-cyanoethyl methyl diethoxysilane" "methyl-beta-cyanoethyldiethoxysilane" "3-(diethoxymethylsilyl)propiononitrile" "methyl-.beta.-cyanoethyldiethoxysilane" "2-cyanoethylmethyldiethoxysilane" "propanenitrile,3-(diethoxymethylsilyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -419630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     622.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-165100.0
-    phase     gas;
 }

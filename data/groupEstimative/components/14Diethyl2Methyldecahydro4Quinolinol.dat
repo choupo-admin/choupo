@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4-diethyl-2-methyl-2,3,4a,5,6,7,8,8a-octahydroquinolin-4-ol" "4-quinolinol,1,4-diethyldecahydro-2-methyl-(2.alpha.,4.alpha.,4a.alpha.,8a.beta." "4-quinolinol,1,4-diethyldecahydro-2-methyl-(2.alpha.,4.alpha.,4a.beta.,8a.alpha.)" "4-quinolinol,1,4-diethyldecahydro-2-methyl-(2.alpha.,4.beta.,4a.alpha.,8a.beta.)" "4-quinolinol, 1,4-diethyldecahydro-2-methyl-, (2alpha,4beta,4aalpha,8abeta)-" "(2s,4r,4ar,8ar)-1,4-diethyl-2-methyl-2,3,4a,5,6,7,8,8a-octahydroquinolin-4-ol" "4-quinolinol, 1,4-diethyldecahydro-2-methyl-, (2alpha,4alpha,4aalpha,8abeta)-" "4-quinolinol, 1,4-diethyldecahydro-2-methyl-, (2alpha,4alpha,4abeta,8aalpha)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -315310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     632.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=105250.0
-    phase     gas;
 }

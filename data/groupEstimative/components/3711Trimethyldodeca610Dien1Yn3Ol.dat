@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group C; count 1; } { group dCH; count 2; } { group dC; count 2; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6,10-dodecadien-1-yn-3-ol, 3,7,11-trimethyl-" "3,7,11-trimethyl-6,10-dodecadien-1-yn-3-ol" "6,10-dodecadien-1-yn-3-ol, 3,7,11-trimethyl-, (e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -7150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     700.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=307850.0
-    phase     gas;
 }

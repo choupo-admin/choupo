@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 12; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4,7,10,13,16-hexaoxacyclooctadecane" "ethylene oxide cyclic hexamer" "18-crown-6 ether" "hexaoxacyclooctadecane" "1,4,7,10,13,16-hexanoxacyclooctadecane" "18-crown 6-ether" "wt603" "1,7,10,13,16-hexaoxacyclooctadecane" "1,7,10,13,16-hexanoxacyclooctadecane" "17455-13-9 18-crown-6" "3,6,9,12,15,18-hexaoxacyclooctadecan" "1,4,7,10,13,16-hexoxacyclooctadecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1082270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     566.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-579600.0
-    phase     gas;
 }

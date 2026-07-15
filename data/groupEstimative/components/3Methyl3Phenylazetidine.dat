@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-3-phenyl-azetidine" "azetidine, 3-methyl-3-phenyl-" "azetidine,3-methyl-3-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   106490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     432.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=276600.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7-dimethylocta-1,6-dien-3-yl 2-methylpropanoate" "linalool, isobutyrate" "linalool isobutyrate" "1,5-dimethyl-1-vinyl-4-hexenyl isobutyrate" "linalyl 2-methylpropanoate" "3,7-dimethyl-1,6-octadienyl isobutyrate" "1,5-dimethyl-1-vinylhex-4-enyl isobutyrate" "3,7-dimethyl-1,6-octadien-3-ol isobutyrate" "3,7-dimethyl-1,6-octadien-3-yl isobutyrate" "3,7-dimethyl-1,6-octadien-3-yl isobutanoate" "(1)-1,5-dimethyl-1-vinylhex-4-enyl isobutyrate" "1,6-octadien-3-ol, 3,7-dimethyl-, isobutyrate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -430740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     688.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-83460.0
-    phase     gas;
 }

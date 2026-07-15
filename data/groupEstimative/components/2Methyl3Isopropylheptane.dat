@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-3-propan-2-yl-heptane" "agn-pc-02xjy0" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -286210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     555.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=34420.0
-    phase     gas;
 }

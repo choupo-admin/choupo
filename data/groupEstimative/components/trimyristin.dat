@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 38; } { group CH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-di(tetradecanoyloxy)propyl tetradecanoate" "glycerol trimyristate" "glyceryl trimyristate" "myristin" "myristic acid triglyceride" "propane-1,2,3-triyl tritetradecanoate" "1,2,3-tritetradecanoylglycerol" "tetradecanoic acid, 1,2,3-propanetriyl ester" "1,2,3-tritetradecanoyl-rac-glycerol" "tetradecanoic acid, 1,1',1''-(1,2,3-propanetriyl) ester" "myristin, tri-" "myristin, tri- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1929250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     2053.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-605530.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetramethylene" "tetramethylene(7ci)" "agn-pc-0cpxhc" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -38910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     283.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=39160.0
-    phase     gas;
 }

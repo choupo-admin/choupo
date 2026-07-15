@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 12; } { group Br; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "12-bromanyldodecan-1-ol" "12-bromo-dodecan-1-ol" "bromo-dodecanol" "12-bromododecan-1-ol" "bdd" "1-dodecanol, 12-bromo-" "1-bromo-12-dodecanol;12-bromo-1-dodecanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -416910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     725.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-72340.0
-    phase     gas;
 }

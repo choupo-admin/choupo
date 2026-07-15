@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group CH2; count 3; } { group CH; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(5-chloranyl-2-ethoxy-phenyl)-3-methyl-n,n-di(propan-2-yl)pentan-1-amine" "phenethylamine, beta-(sec-butyl)-5-chloro-2-ethoxy-n,n-diisopropyl-" "phenethylamine,b-sec-butyl-5-chloro-2-ethoxy-n,n-diisopropyl-(8ci)" "2-(5-chloro-2-ethoxyphenyl)-3-methyl-n,n-di(propan-2-yl)pentan-1-amine" "benzeneethanamine,5-chloro-2-ethoxy-n,n-bis(1-methylethyl)-b-(1-methylpropyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -344090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     838.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=194760.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propan-2-yl 2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropane-1-carboxylate" "chrysanthemic acid, isopropylester" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2-methyl-1-propen-1-yl)-, 1-methylethyl ester" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2-methyl-1-propenyl)-, 1-methylethyl ester" "agn-pc-00eowo" "isopropyl 2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropanecarboxylate" "cyclopropanecarboxylic acid,2-dimethyl-3-(2-methyl-1-propenyl)-, 1-methylethyl ester" "cyclopropanecarboxylic acid,2-dimethyl-3-(2-methylpropenyl)-, isopropyl ester" "propan-2-yl (3r)-2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropane-1-carboxylate" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2-methyl-1-propenyl)-, 1-methylethyl ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -479420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     587.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-142720.0
-    phase     gas;
 }

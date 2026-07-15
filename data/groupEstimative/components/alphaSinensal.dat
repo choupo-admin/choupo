@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 4; } { group dC; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2e,6e,9e)-2,6,10-trimethyldodeca-2,6,9,11-tetraenal" "alpha-sinensal" ".beta.-sinensal" "2,6,9,11-dodecatetraenal, 2,6,10-trimethyl-, (e,e,e)-" "2,6,9,11-dodecatetraenal, 2,6,10-trimethyl-" "(e,e,e)-2,6,10-trimethyldodeca-2,6,9,11-tetraen-1-al" "2,6,9,11-dodecatetraenal, 2,6,10-trimethyl-, (2e,6e,9e)-" "2,6,10-trimethyl-2,6,9,11-dodecatetraenal" "(2e,6e,9e)-2,6,10-trimethyl-dodeca-2,6,9,11-tetraenal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   9210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     722.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=278750.0
-    phase     gas;
 }

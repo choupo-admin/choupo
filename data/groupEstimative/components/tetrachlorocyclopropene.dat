@@ -33,9 +33,8 @@ groups
     joback ( { group C_ring; count 1; } { group dC_ring; count 2; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,3-tetrakis(chloranyl)cyclopropene" "cyclopropene, tetrachloro-" "1,2,3,3-tetrachlorocyclopropene" "1,2,3,3-tetrachloro-cyclopropene" "cyclopropene,1,2,3,3-tetrachloro-" "1,2,3,3-tetrachlorocycloprop-1-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -45330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     336.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-7380.0
-    phase     gas;
 }

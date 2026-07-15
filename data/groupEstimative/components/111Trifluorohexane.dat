@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group C; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1-tris(fluoranyl)hexane" "hexane, 1,1,1-trifluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -764250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-581950.0
-    phase     gas;
 }

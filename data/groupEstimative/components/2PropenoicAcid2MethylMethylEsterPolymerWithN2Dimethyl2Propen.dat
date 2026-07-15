@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group dCH2; count 2; } { group dC; count 2; } { group CdO; count 1; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,2-dimethylprop-2-enamide;methyl 2-methylprop-2-enoate" "n,2-dimethyl-2-propenamide, methyl methacrylate polymer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -506460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     754.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-262760.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 11; } { group CH_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methoxycyclododecane" "cyclododecyl methyl ether" "methyl cyclododecyl ether" "cyclododecanolmethylether" "ether,cyclododecyl methyl (7ci,8ci); cyclododecyl methyl ether; methoxycyclododecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -426510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     762.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-94570.0
-    phase     gas;
 }

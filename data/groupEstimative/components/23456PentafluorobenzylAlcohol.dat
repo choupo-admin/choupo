@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dC_ring; count 6; } { group F; count 5; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2,3,4,5,6-pentakis(fluoranyl)phenyl]methanol" "pentafluorobenzyl alcohol" "(pentafluorphenyl)methanol" "(pentafluorophenyl)methanol" "2,3,4,5,6-pentafluorobenzenemethanol" "(2,3,4,5,6-pentafluorophenyl)methanol" "(hydroxymethyl)pentafluorobenzene" "2,3,4,5,6-pentafluorobenzylic alcohol" "2, 3, 4, 5, 6-pentafluorobenzyl alcohol" "benzyl alcohol, 2,3,4,5,6-pentafluoro-" "pfb" "(2,3,4,5,6-pentafluorophenyl)methan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1141410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     500.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1038550.0
-    phase     gas;
 }

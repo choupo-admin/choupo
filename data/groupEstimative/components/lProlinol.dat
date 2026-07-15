@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group OH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(2s)-pyrrolidin-2-yl]methanol" "l-(+)-prolinol" "(s)-(+)-2-pyrrolidinemethanol" "l(+)-prolinol" "(s)-pyrrolidin-2-ylmethanol" "l-2-pyrrolidinemethanol" "(s)-(+)-prolinol" "(s)-(+)-2-(hydroxymethyl)pyrrolidine" "prolinol" "(2s)-pyrrolidin-2-ylmethanol" "h-prolinol(oil)" "h-prolinol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -200470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     345.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-21340.0
-    phase     gas;
 }

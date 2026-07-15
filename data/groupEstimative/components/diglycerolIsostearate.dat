@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 18; } { group CH; count 3; } { group OH; count 4; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[2,3-bis(oxidanyl)propoxy]propane-1,2-diol;16-methylheptadecanoic acid" "diglyceryl isostearate" "isooctanoic acid, monoester with diglycerol" "polyglyceryl-2 isostearate" "isooctadecanoic acid, ester with oxybis(propanediol)" "3-(2,3-dihydroxypropoxy)propane-1,2-diol; 16-methylheptadecanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1757560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1437.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-957070.0
-    phase     gas;
 }

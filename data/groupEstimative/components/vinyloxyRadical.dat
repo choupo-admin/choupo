@@ -35,9 +35,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "$l^{1}-oxidanylethene" "formylmethyl" "vinyloxy" "ethenyloxidanyl" "2-oxoethyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   96630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     278.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=106180.0
-    phase     gas;
 }

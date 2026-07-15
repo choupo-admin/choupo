@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 25; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodecyl octadec-9-enoate" "9-octadecenoic acid (9z)-, dodecyl ester" "oleic acid lauryl ester" "9-octadecenoic acid(9z)-, dodecyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -862590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1369.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-28430.0
-    phase     gas;
 }

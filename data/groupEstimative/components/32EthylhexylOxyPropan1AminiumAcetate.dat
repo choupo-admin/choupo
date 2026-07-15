@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 1; } { group O; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethanoic acid;3-(2-ethylhexoxy)propan-1-amine" "1-propanamine, 3-((2-ethylhexyl)oxy)-, acetate" "3-((2-ethylhexyl)oxy)propylammonium acetate" "3-[(2-ethylhexyl)oxy]propylammonium acetate" "1-propanamine, 3-((2-ethylhexyl)oxy)-, acetate (1:1)" "3-(2-ethylhexyloxy)propylamine acetate" "acetic acid; 3-(2-ethylhexoxy)propan-1-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -877250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     876.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-431080.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl cyclohex-3-ene-1-carboxylate" "3-cyclohexene-1-carboxylic acid, ethyl ester" "ethyl 3-cyclohexene-1-carboxylate" "3-cyclohexene-1-carboxylic acid ethyl ester" "ethyl cyclohex-3-enecarboxylate" "3-cyclhexene-1-carboxylic acid, ethyl ester" "3-cyclohexene-1-carboxylicacid, ethyl ester" "ethyl3-cyclohexene-1-carboxylate; ethyl cyclohex-3-enecarboxylate; ethyl d3-cyclohexenecarboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -434270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     489.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-231060.0
-    phase     gas;
 }

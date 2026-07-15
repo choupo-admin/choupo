@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-iodanylprop-1-ene" "propene, 2-iodo-" "2-iodoprop-1-ene" "2-iodo-prop-1-ene" "1-propene, 2-iodo-" "1-propene, 2-iodo-(9ci)" "propene,2-iodo- (7ci,8ci); 2-iodo-1-propene; 2-iodopropene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   87260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     319.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=111790.0
-    phase     gas;
 }

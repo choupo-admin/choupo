@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group dC_ring; count 6; } { group F; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl-[2,3,4,5,6-pentakis(fluoranyl)phenyl]silane" "trimethylsilylpentafluorobenzene" "trimethyl(perfluorophenyl)silane" "(pentafluorophenyl)trimethylsilane" "silane, trimethyl(pentafluorophenyl)-" "trimethyl-(2,3,4,5,6-pentafluorophenyl)silane" "benzene,1,2,3,4,5-pentafluoro-6-(trimethylsilyl)-" "2-methyl-2-(2,3,4,5,6-pentafluorophenyl)-2-silapropane" "(pentafluorophenyl)trimethylsilane;trimethyl(pentafluorophenyl)silane;trimethylsilylpentafluorobenzene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1142080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     654.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-989650.0
-    phase     gas;
 }

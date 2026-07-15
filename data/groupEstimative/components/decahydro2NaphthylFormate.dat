@@ -38,9 +38,8 @@ groups
     joback ( { group CH2_ring; count 7; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,4a,5,6,7,8,8a-decahydronaphthalen-2-yl methanoate" "decalinyl formate" "santalozone" "2-naphthalenol, decahydro-, formate" "decahydro-beta-naphthyl formate" "2-naphthalenol, decahydro-, 2-formate" "2-naphthol, decahydro-, formate" "decahydronaphthalen-2-yl formate" "formic acid decahydro-2-naphthyl ester" "1,2,3,4,4a,5,6,7,8,8a-decahydronaphthalen-2-yl formate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -93300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     624.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=151090.0
-    phase     gas;
 }

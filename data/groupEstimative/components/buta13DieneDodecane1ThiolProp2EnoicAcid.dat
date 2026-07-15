@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH2; count 3; } { group dCH; count 3; } { group COOH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-propenoic acid, telomer with 1,3-butadiene and 1-dodecanethiol" "buta-1,3-diene; dodecane-1-thiol; prop-2-enoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -594230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1213.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-151420.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 2; } { group O; count 1; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[1,4-bis(oxidanyl)-1,4-bis(oxidanylidene)butan-2-yl]oxybutanedioic acid" "butanedioic acid, 2,2'-oxybis-" "malomalic ether" "butanedioic acid,2,2'-oxybis-" "2-(1,4-dihydroxy-1,4-dioxobutan-2-yl)oxybutanedioic acid" "succinicacid, 2,2'-oxydi- (7ci,8ci); 2,2'-oxydisuccinic acid;3-oxa-1,2,4,5-pentanetetracarboxylic acid; oxydisuccinic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1752310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     672.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1469040.0
-    phase     gas;
 }

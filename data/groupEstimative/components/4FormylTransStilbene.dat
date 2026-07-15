@@ -38,9 +38,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(2-phenylethenyl)benzaldehyde" "benzaldehyde, 4-[(1e)-2-phenylethenyl]-" "4-stilbenecarboxaldehyde(6ci,8ci); 4-(2-phenylethenyl)benzaldehyde; 4-formylstilbene;4-styrylbenzaldehyde; p-formylstilbene; p-styrylbenzaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   302330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     595.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=414790.0
-    phase     gas;
 }

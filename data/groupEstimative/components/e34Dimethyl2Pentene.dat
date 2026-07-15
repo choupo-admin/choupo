@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-3,4-dimethylpent-2-ene" "2-pentene, 3,4-dimethyl-, (e)-" "2-pentene, 3,4-dimethyl-" "trans-3,4-dimethyl-2-pentene" "(2e)-3,4-dimethyl-2-pentene" "3,4-dimethylpent-2-ene" "3,4-dimethyl-trans-2-pentene" "3,4-dimethyl-2-pentene(c,t)" "(2e)-3,4-dimethylpent-2-ene" "2-pentene, 3,4-dimethyl-, (2e)-" "2-pentene, 3,4-dimethyl-, (z)- (8ci)(9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -85660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     408.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77290.0
-    phase     gas;
 }

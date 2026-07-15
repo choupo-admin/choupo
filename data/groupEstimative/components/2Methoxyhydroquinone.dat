@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxybenzene-1,4-diol" "methoxyhydroquinone" "1,4-benzenediol, 2-methoxy-" "1,4-dihydroxy-2-methoxybenzene" "o-methoxyhydroquinone" "2,5-dihydroxyanisol" "2-mohydrop" "2-methoxyhydroquinone polymer" "2,5-dihydroxy-1-methoxybenzene" "p457" "hydroquinone,methoxy- (6ci,7ci,8ci);1,4-dihydroxy-2-methoxybenzene;1,4-dihydroxy-3-methoxybenzene;2,5-dihydroxyanisole;2-methoxy-1,4-benzenediol;2-methoxyhydroquinone;3-methoxy-1,4-benzenediol;methoxy-p-benzohydroquinone;methoxyhydroquinone;methoxyquinol;monomethoxyhydroquinone;o-methoxyhydroquinone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -438120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     386.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-293770.0
-    phase     gas;
 }

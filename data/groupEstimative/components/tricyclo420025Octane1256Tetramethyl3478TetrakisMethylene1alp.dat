@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group dCH2; count 4; } { group C_ring; count 4; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tricyclo[4.2.0.02,5]octane,1,2,5,6-tetramethyl-3,4,7,8-tetrakis(methylene)-(1.alpha.,2.beta.,5.beta.,6.alpha.)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   228570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     619.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=460840.0
-    phase     gas;
 }

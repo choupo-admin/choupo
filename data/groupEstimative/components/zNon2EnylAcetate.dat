@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "non-2-enyl ethanoate" "trans-2-nonenyl acetate" "2-nonen-1-ol, acetate, (2e)-" "2-nonen-1-ol, 1-acetate, (2e)-" "non-2-enyl acetate" "2-nonenylacetate" "[(z)-non-2-enyl] acetate" "2-nonen-1-ol,1-acetate, (2e)-" "2-nonen-1-ol,acetate, (2e)- (9ci); 2-nonen-1-ol, acetate, (e)- (8ci); (e)-2-nonen-1-olacetate; (e)-2-nonenyl acetate; trans-2-nonen-1-yl acetate; trans-2-nonenylacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -470430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     629.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-188410.0
-    phase     gas;
 }

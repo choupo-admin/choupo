@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 6; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 4; } { group dC; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7,11,15-tetramethyl-1,6,10,14-hexadecatetraene-3-ol" "1,6,10,14-hexadecatetraen-3-ol,3,7,11,15-tetramethyl-" "3,7,11,15-tetramethyl-3-hydroxyl-1,6,10,14-hexadecatetraen" "1,6,10,14-hexadecatetraen-3-ol,3,7,11,15-tetramethyl-, (e,e)- (8ci);(e,e)-geranyllinalool;geranyllinalool;linalool, geranyl-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -169390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     910.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=286390.0
-    phase     gas;
 }

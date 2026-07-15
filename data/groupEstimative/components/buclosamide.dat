@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH_phenol; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-butyl-4-chloranyl-2-oxidanyl-benzamide" "n-butyl-4-chloro-2-hydroxybenzamide" "n-butyl-4-chlorosalicylamide" "buclosamida" "buclosamidum" "buclosamidum [inn-latin]" "n-butyl-4-chlorsalicylamide" "buclosamide [inn:ban:dcf]" "n-butyl-4-chlor-2-hydroxybenzamid" "benzamide, n-butyl-4-chloro-2-hydroxy-" "u488" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -297470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     599.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-61560.0
-    phase     gas;
 }

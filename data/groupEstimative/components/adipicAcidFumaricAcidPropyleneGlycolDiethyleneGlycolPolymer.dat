@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 1; } { group dCH; count 2; } { group OH; count 4; } { group O; count 1; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-but-2-enedioic acid;hexanedioic acid;2-(2-hydroxyethyloxy)ethanol;propane-1,2-diol" "(e)-but-2-enedioic acid; hexanedioic acid; 2-(2-hydroxyethoxy)ethanol; propane-1,2-diol" "hexanedioic acid, polymer with (2e)-2-butenedioic acid, 2,2'-oxybis(ethanol) and 1,2-propanediol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2759350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1552.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2172160.0
-    phase     gas;
 }

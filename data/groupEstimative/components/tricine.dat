@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group C; count 1; } { group OH; count 3; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[[2-(hydroxymethyl)-1,3-bis(oxidanyl)propan-2-yl]amino]ethanoic acid" "n-(tri(hydroxymethyl)methyl)glycine" "n-[tris(hydroxymethyl)methyl]glycine" "n-tris(hydroxymethyl)methylglycine" "n-tris-[hydroxymethyl]methylglycine" "glycine, n-[2-hydroxy-1,1-bis(hydroxymethyl)ethyl]-" "glycine, n-(2-hydroxy-1,1-bis(hydroxymethyl)ethyl)-" "i999" "n-[2-hydroxy-1,1-bis(hydroxymethyl)ethyl]glycine" "n-ey(oc(1/4)x>>u)(1/4)x>>u e degrees +/-ea" "2-{[1,1-bis(hydroxymethyl)-2-hydroxyethyl]amino}acetic acid" "2-[[1,3-dihydroxy-2-(hydroxymethyl)propan-2-yl]amino]acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -929410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     597.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-662500.0
-    phase     gas;
 }

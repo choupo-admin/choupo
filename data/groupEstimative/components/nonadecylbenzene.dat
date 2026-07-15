@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzene, nonadecyl-" "1-phenylnonadecane" "nonadecane, 1-phenyl-" "benzene, c14-26-alkyl derivs." "n-nonadecyl benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -322800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1023.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=272030.0
-    phase     gas;
 }

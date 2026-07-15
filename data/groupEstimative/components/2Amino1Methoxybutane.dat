@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methoxybutan-2-amine" "2-butanamine, 1-methoxy-" "1-methoxy-2-butanamine" "1-methoxy-2-aminobutane" "(r)-1-(methoxymethyl)propylamine" "2-butanamine, 1-methoxy-, (2r)-" "1-(methoxymethyl)propylamine" "1-methoxy-sec-butylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -250240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     404.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-49770.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group COO; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 6-cyanohexanoate" "hexanoic acid, 6-cyano-, ethyl ester" "6-cyanohexanoic acid ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -381490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     563.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-152290.0
-    phase     gas;
 }

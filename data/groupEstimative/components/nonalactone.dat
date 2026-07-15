@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 8; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxecan-2-one" "2-oxecanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -484030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     609.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-277510.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triacetyloxysilyl ethanoate" "tetraacetyl orthosilicate" "tetraacetoxysilane" "triacetyloxysilyl acetate" "silanetetrol, tetraacetate" "silicon tetra acetate" "acetic acid, tetraanhydride with silicic acid (h4sio4)" "acetic acid, 1,1',1'',1'''-tetraanhydride with silicic acid (h4sio4)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1589190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     799.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1329760.0
-    phase     gas;
 }

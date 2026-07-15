@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloroethyl prop-2-enoate" "acrylic acid, 2-chloroethyl ester" "2-propenoic acid, 2-chloroethyl ester" "chloroethyl acrylate" "beta-chloroethyl acrylate" "ethanol, 2-chloro-, acrylate" "acrylic acid beta-chloroethyl ester" ".beta.-chloroethyl acrylate" "acrylic acid .beta.-chloroethyl ester" "2-chloroethylacrylate" "2-chlorethylester kyseliny akrylove" "2-propenoic acid,2-chloroethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -354120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     430.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-243240.0
-    phase     gas;
 }

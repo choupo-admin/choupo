@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-methylphenyl)propanal" "2-(p-tolyl)propanal" "p-methylhydratropaldehyde" "hydratropaldehyde p-methyl-" "2-(p-tolyl)propionaldehyde" "methylhydratropic aldehyde, p-" "2-(p-tolyl)propionic aldehyde" "2-(4'-methylphenyl)-propanal" "propionaldehyde, 2-(p-tolyl)-" "2-(p-methylphenyl)propionaldehyde" "2-(4-methylphenyl)propionaldehyde" "alpha,4-dimethylbenzeneacetaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -115530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=34140.0
-    phase     gas;
 }

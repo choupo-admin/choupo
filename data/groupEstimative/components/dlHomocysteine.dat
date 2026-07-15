@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-4-sulfanyl-butanoic acid" "homocysteine" "d,l-homocysteine" "2-amino-4-mercaptobutyric acid" "(+-)-homocysteine" "2-amino-4-sulfanylbutanoic acid" "usaf b-12" "homo-cys" "dl-2-amino-4-mercaptobutyric acid" "dl-homocysteine (free base)" "butyric acid, 2-amino-4-mercapto-, dl-" "butyric acid, 2-amino-4-mercapto-, dl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -409170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     469.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-267710.0
-    phase     gas;
 }

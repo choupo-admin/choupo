@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group F; count 1; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2-tris(chloranyl)-1-fluoranyl-ethane" "ethane, 1,1,2-trichloro-1-fluoro-" "sgpbadjhtaxchicup@" "zkvmmsgrdbqioq-uhfffaoysa-" "ethane,1,1,2-trichloro-1-fluoro-" "1-fluoro-1,1,2-trichloroethane" "1,1,2-trichloro-1-fluoroethane;1-fluoro-1,1,2-trichloroethane; f 131a; hcfc 131a; r 131a" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -336690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     327.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-261800.0
-    phase     gas;
 }

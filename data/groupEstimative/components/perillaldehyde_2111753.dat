@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-prop-1-en-2-ylcyclohexene-1-carbaldehyde" "perillyl aldehyde" "perilla aldehyde" "perillal" "perillic aldehyde" "l-perillaldehyde" "p-mentha-1,8-dien-7-al" "(-)-perillaldehyde" "1-perillaldehyde" "dihydrocuminyl aldehyde" "1-cyclohexene-1-carboxaldehyde, 4-(1-methylethenyl)-" "1-cyclohexene-1-carboxaldehyde, 4-isopropenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -119040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     481.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=57870.0
-    phase     gas;
 }

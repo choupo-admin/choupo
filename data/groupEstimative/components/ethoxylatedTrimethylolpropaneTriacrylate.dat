@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group C; count 1; } { group dCH2; count 3; } { group dCH; count 3; } { group O; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2,2-bis(2-prop-2-enoyloxyethoxymethyl)butoxy]ethyl prop-2-enoate" "trimethylolpropane ethoxytriacrylate" "trimethylolpropane ethoxylated, triacrylate" "trimethylolpropane polyoxyethylene triacrylate" "poly(oxy-1,2-ethanediyl), .alpha.-hydro-.omega.-[(1-oxo-2-propenyl)oxy]-, ether with 2-ethyl-2-(hydroxymethyl)-1,3-propanediol (3:1)" "2-(2,2-bis{[2-(acryloyloxy)ethoxy]methyl}butoxy)ethyl acrylate" "ethanol, 2,2',2''-(propylidynetris(methyleneoxy))tri-, triacrylate" "trimethylolpropane ethoxylate triacrylate" "(2-ethyl-2-((2-((1-oxoallyl)oxy)ethoxy)methyl)-1,3-propanediyl)bis(oxy-2,1-ethanediyl) diacrylate" "poly(oxy-1,2-ethanediyl), alpha-hydro-omega-((1-oxo-2-propenyl)oxy)-, ether with 2-ethyl-2-(hydroxymethyl)-1,3-propanediol (3:1)" "trimethylolpropane ethoxylate (7/3 eo/oh) triacrylate" "trimethylolpropane ethoxylate (14/3 eo/oh) triacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1457730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1108.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-853810.0
-    phase     gas;
 }

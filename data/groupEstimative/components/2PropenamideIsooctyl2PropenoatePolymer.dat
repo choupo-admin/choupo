@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group dCH2; count 2; } { group dCH; count 2; } { group CdO; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methylheptyl prop-2-enoate;prop-2-enamide" "2-propenoic acid, isooctyl ester, polymer with 2-propenamide" "6-methylheptyl prop-2-enoate; prop-2-enamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -594400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     919.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-237360.0
-    phase     gas;
 }

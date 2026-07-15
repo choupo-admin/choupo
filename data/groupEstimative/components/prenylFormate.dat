@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbut-2-enyl methanoate" "3-methylbut-2-enyl formate" "2-buten-1-ol, 3-methyl-, formate" "2-buten-1-ol, 3-methyl-, 1-formate" "3-methyl but-2-enyl formate" "3-methylbut-2-en-1-yl formate" "2-buten-1-ol,3-methyl-, 1-formate" "formic acid, 3-methyl-2-butenyl ester" "2-buten-1-ol,3-methyl-, formate (9ci);3-methyl-2-butenyl formate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   16710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     562.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=115270.0
-    phase     gas;
 }

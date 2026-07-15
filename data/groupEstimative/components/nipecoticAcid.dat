@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group CH_ring; count 1; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "piperidine-3-carboxylic acid" "3-piperidinecarboxylic acid" "hexahydronicotinic acid" "(+/-)-nipecotic acid" "h-dl-nip-oh" "dl-piperidine-3-carboxylic acid" "(r)-(-)-nipecoticacid" "h-nip-oh" "(?)-nipecotic acid" "h-dl-pic(3)-oh" "nipecotic acid (+/-)-" "piperidin-3-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -425310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     406.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-232110.0
-    phase     gas;
 }

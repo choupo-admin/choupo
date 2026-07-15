@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 2; } { group COOH; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pyridine-2,6-dicarboxylic acid" "dipicolinic acid" "2,6-dipicolinic acid" "dipicolinate" "2,6-dicarboxypyridine" "2,6-pyridinedicarboxylicacid" "2,6-pyridindicarbons" "pyridine carboxylate, 6d" "2,6-pyridinedicarboxylate" "tpc-i152" "63450-91-9 (di-potassium salt)" "17956-40-0 (di-hydrochloride salt)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -630500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-499930.0
-    phase     gas;
 }

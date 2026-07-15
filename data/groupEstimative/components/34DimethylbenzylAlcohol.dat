@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3,4-dimethylphenyl)methanol" "benzenemethanol, 3,4-dimethyl-" "(3,4-dimethylphenyl)methan-1-ol" "4-(hydroxymethyl)-o-xylene" "3, 4-dimethylbenzyl alcohol" "benzenemethanol,3,4-dimethyl-" "34-dimethylbenzyl-alcohol" "3,4-dimethyl-benzenemethanol;benzenemethanol, 3,4-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -167730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-18770.0
-    phase     gas;
 }

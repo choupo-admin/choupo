@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 6; } { group CH; count 2; } { group dCH; count 3; } { group dC; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3e,5e)-6,10,14-trimethylpentadeca-3,5-dien-2-one" "pentadeca-3,5-diene-2-one, 6,10,14-trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -313340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     847.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=118770.0
-    phase     gas;
 }

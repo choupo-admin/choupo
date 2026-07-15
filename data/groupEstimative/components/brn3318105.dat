@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 7; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo[a]anthracen-7-ylmethanethiol" "benz(a)anthracene-7-methanethiol" "tetraphen-7-ylmethanethiol" "benzo[b]phenanthren-7-yl-methanethiol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   378320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     507.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=541960.0
-    phase     gas;
 }

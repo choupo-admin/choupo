@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-thiophen-2-ylbutanoate" "2-thiophenebutanoic acid, methyl ester" "methyl 4-(2-thienyl)butanoate" "4-(2-thienyl)butanoic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -316200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     519.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-151060.0
-    phase     gas;
 }

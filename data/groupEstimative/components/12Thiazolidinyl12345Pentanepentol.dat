@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group OH; count 5; } { group NH_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(1,3-thiazolidin-2-yl)pentane-1,2,3,4,5-pentol" "1-thiazolidin-2-yl-pentane-1,2,3,4,5-pentaol" "1,2,3,4,5-pentanepentol, 1-(2-thiazolidinyl)-" "2-(1,2,3,4,5-pentahydroxy-n-pentyl)thiazolidine" "d-gluco-1-(2-thiazolidinyl)-1,2,3,4,5-pentanepentol" "pentahydroxy-1,2,3,4,5 pentyl-2 thiazolidine [french]" "1,2,3,4,5-pentanepentol, 1-(2-thiazolidinyl)-, d-gluco-" "pentahydroxy-1,2,3,4,5 pentyl-2 thiazolidine" "1-(1,3-thiazolan-2-yl)pentane-1,2,3,4,5-pentaol" "1-(1,3-thiazolidin-2-yl)pentane-1,2,3,4,5-pentaol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -847170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     677.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-513260.0
-    phase     gas;
 }

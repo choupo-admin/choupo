@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH; count 2; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-chloranylbut-2-en-1-ol" "(e)-4-chlorobut-2-en-1-ol" "trans-4-chloro-2-butene-1-ol" "4-chloro-2-buten-1-ol" "2-buten-1-ol,4-chloro-, (2z)-" "2-buten-1-ol,4-chloro-, (z)-;(z)-4-chloro-2-butenol;4-chloro-z-2-buten-1-ol;4-chloro-cis-2-buten-1-ol;z-4-chloro-2-buten-1-ol;cis-4-chlorbut-2-en-1-ol;cis-4-chloro-2-buten-1-ol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -176640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-85730.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-azanyl-2-methyl-propanoic acid" "dl-3-aminoisobutyric acid" "3-amino-2-methylpropanoic acid" "alpha-methyl-beta-alanine" "dl-beta-aminoisobutyric acid" "dl-3-amino-2-methylpropionic acid" "3-aminoisobutanoate" "2-methyl-beta-alanine" "beta-aminoisobutyric acid" "2-(aminomethyl)propionic acid" "dl-.beta.-aminoisobutyric acid" "3-aminoisobutanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -447650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     407.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-297100.0
-    phase     gas;
 }

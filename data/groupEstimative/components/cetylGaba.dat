@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadecyl 4-azanylbutanoate" "cetyl gamma-aminobutyrate" "hexadecyl 4-aminobutanoate" "gamma-aminobutyric acid cetyl ester" "butanoic acid, 4-amino-, hexadecyl ester" "butanoic acid,4-amino-, hexadecyl ester" "cetyl gaba;cetyl g-aminobutyrate; gaba cetyl ester;g-aminobutyric acid cetyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -739620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1037.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-126400.0
-    phase     gas;
 }

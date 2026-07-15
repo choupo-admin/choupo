@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-azanylpentan-1-ol" "5-aminopentan-1-ol" "pentanol, 5-amino-" "5-amino-1-pentanol solution" "5-aminopentanol" "1-pentanol, 5-amino-" "lqgkdmhenbfvrc-uhfffaoysa-" "5-aminopentan-1-ol, 50% aqueous solution" "1-amino-5-hydroxypentane;5-aminopentanol;5-hydroxy-1-pentanamine;5-hydroxypentylamine;pentanolamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -264970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-79150.0
-    phase     gas;
 }

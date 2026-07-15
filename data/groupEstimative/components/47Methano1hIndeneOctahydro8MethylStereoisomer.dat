@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7-methano-1h-indene, octahydro-8-methyl-, stereoisomer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -98810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     248.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=196470.0
-    phase     gas;
 }

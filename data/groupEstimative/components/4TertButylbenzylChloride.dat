@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-tert-butyl-4-(chloromethyl)benzene" "p-tert-butylbenzyl chloride" "4-(tert-butyl)benzylchloride" "1-(tert-butyl)-4-(chloromethyl)benzene" "benzene, 1-(chloromethyl)-4-(1,1-dimethylethyl)-" "1-chloromethyl-4-tert-butylbenzene" "p-tert-butyl-.alpha.-chlorotoluene" "4-(tert-butyl)-alpha-chlorotoluene" "4-(tert-butyl)benzyl chloride" "p-t-butylbenzyl chloride" "p-tert-butyl-alpha-chlorotoluene" "4-tert-butyl-alpha-chlorotoluene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -69800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     466.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=135430.0
-    phase     gas;
 }

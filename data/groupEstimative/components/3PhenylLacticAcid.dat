@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-oxidanyl-3-phenyl-propanoic acid" "l-(-)-3-phenyllactic acid" "l(-)-3-phenyllactic acid" "(s)-(-)-3-phenyllactic acid" "(s)-2-hydroxy-3-phenylpropionic acid" "d-3-phenyllactic acid" "l-3-phenyllactic acid" "(s)-(-)-2-hydroxy-3-phenylpropionic acid" "(s)-2-hydroxy-3-phenylpropanoic acid" "alpha-hydroxy-beta-phenyl-propionic acid" "l-2-hydroxy-3-phenyl-propionic acid" "(2s)-2-hydroxy-3-phenylpropanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -500340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-345860.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7-dimethylocta-1,6-dien-3-yl 2-phenylethanoate" "linalyl alpha-toluate" "benzeneacetic acid, 1-ethenyl-1,5-dimethyl-4-hexenyl ester" "3,7-dimethylocta-1,6-dien-3-yl phenylacetate" "1,5-dimethyl-1-vinyl-4-hexenyl phenylacetate" "3,7-dimethyl-1,6-octadien-3-yl phenylacetate" "1-ethenyl-1,5-dimethyl-4-hexenyl benzeneacetate" "acetic acid, phenyl-, 1,5-dimethyl-1-vinyl-4-hexenyl ester" "benzeneacetic acid, 1,5-dimethyl-1-ethenyl-4-hexenyl ester" "benzeneacetic acid, 1-ethenyl-1,5-dimethyl-4-hexen-1-yl ester" "benzeneacetic acid,5-dimethyl-4-hexenyl ester" "3,7-dimethylocta-1,6-dien-3-yl 2-phenylacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -271490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     747.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=65070.0
-    phase     gas;
 }

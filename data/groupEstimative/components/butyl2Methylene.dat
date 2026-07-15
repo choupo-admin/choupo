@@ -30,9 +30,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 2; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylbut-1-ene" "2-ethyl-2-propenyl" "2-ethylprop-2-en-1-yl" "2-methylidenebutyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   35930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     340.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=118240.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bicyclo[2.2.1]hept-2-ene, 7-oxa-" "bicyclo(2.2.1)hept-2-ene, 7-oxa-" "3,6-epoxycyclohexene" "tl469" "7-oxa-bicyclo[2.2.1]hept-2-ene" "7-oxabicyclo[2.2.1]hept-5-ene;7-oxanorbornene; cyclohexene, 3,6-epoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -101950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     140.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=52880.0
-    phase     gas;
 }

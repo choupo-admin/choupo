@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-(dipropylamino)-5,6,7,8-tetrahydronaphthalen-1-ol" "8-hydroxy-2-(di-n-propylamino)tetralin" "1-naphthalenol, 7-(dipropylamino)-5,6,7,8-tetrahydro-" "[3h]-8-oh-dpat" "7-(dipropylamino)-5,6,7,8-tetrahydronaphthalen-1-ol hydrobromide" "gtpl7" "8-hydroxy-dpat hydrobromide" "[3h]8-oh-dpat" "(s)-7-(dipropylamino)-5,6,7,8-tetrahydronaphthalen-1-ol" "7-(dipropylamino)tetralin-1-ol" "brd-a48015106-001-01-0" "1-naphthalenol,7-(dipropylamino)-5,6,7,8-tetrahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -191650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     638.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=191430.0
-    phase     gas;
 }

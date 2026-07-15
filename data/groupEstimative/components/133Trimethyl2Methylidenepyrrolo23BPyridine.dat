@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,3-trimethyl-2-methylidene-pyrrolo[2,3-b]pyridine" "1h-pyrrolo(2,3-b)pyridine, 2,3-dihydro-1,3,3-trimethyl-2-methylene-" "1h-pyrrolo[2,3-b]pyridine, 2,3-dihydro-1,3,3-trimethyl-2-methylene-" "2,3-dihydro-1,3,3-trimethyl-2-methylene-1h-pyrrolo(2,3-b)pyridine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   233450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     433.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=452790.0
-    phase     gas;
 }

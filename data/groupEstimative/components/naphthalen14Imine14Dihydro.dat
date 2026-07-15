@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphthalen-1,4-imine, 1,4-dihydro-" "11-aza-tricyclo[6.2.1.0(2,7)]undec-2,4,6,9-tetraene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   222680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     188.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=387370.0
-    phase     gas;
 }

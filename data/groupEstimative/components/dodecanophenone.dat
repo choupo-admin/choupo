@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenyldodecan-1-one" "laurophenone" "phenyl undecyl ketone" "1-phenyl-1-dodecanone" "1-dodecanone, 1-phenyl-" "n-dodecanophenone" "phenyl n-undecyl ketone" "1-phenyldodecan-1-one,80<90%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -290900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     777.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=84170.0
-    phase     gas;
 }

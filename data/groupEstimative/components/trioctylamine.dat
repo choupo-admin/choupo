@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 21; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dioctyloctan-1-amine" "tri-n-octylamine" "tricaprylamine" "tricaprylylamine" "1-octanamine, n,n-dioctyl-" "tri-n-caprylylamine" "alamine 336s" "tri-normal-octylamine" "farmin 08" "tri(n-octyl)amine" "1-octanamine,n-dioctyl-" "n,n-dioctyl-1-octanamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -471160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1106.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=261980.0
-    phase     gas;
 }

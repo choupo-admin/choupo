@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-4-[2-(4-methylphenyl)ethenyl]benzene" "benzene, 1,1'-(1,2-ethenediyl)bis[4-methyl-" "benzene,1,1'-(1e)-1,2-ethenediylbis[4-methyl-" "benzene,1,1'-(1,2-ethenediyl)bis[4-methyl-, (e)-; stilbene, 4,4'-dimethyl-, (e)- (8ci);stilbene, 4,4'-dimethyl-, trans- (6ci); (e)-1,2-bis(4-methylphenyl)ethene;(e)-1,2-bis(4-tolyl)ethene; (e)-1,2-di-p-tolylethylene;(e)-4,4'-dimethylstilbene; 1,1'-(1e)-1,2-ethenediylbis[4-methylbenzene];4,4'-dimethyl-trans-stilbene; trans-1,2-di-p-tolylethylene; trans-4,4'-dimethylstilbene;trans-p,p'-dimethylstilbene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   193770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     547.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=369620.0
-    phase     gas;
 }

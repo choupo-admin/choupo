@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-chloranylpropanoate" "ethyl 3-chloropropanoate" "propanoic acid, 3-chloro-, ethyl ester" "ethyl-3-chlorpropanoat" "3-chloropropionic acid ethyl ester" "ethyl beta-chloropropionate" "propionic acid, 3-chloro-, ethyl ester" "ethyl .beta.-chloropropionate" "3-chloropropionicacidethylester" "zclgvxaccazjox-uhfffaoysa-" "propionic acid, 3-chloro-, ethyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -479550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-331080.0
-    phase     gas;
 }

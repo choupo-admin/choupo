@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 1; } { group dCH; count 2; } { group dC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5,9-undecadien-2-ol, 6,10-dimethyl-" "(2r,5z)-6,10-dimethylundeca-5,9-dien-2-ol" "(2s,5e)-6,10-dimethylundeca-5,9-dien-2-ol" "(2s,5z)-6,10-dimethylundeca-5,9-dien-2-ol" "5,9-undecadien-2-ol, 6,10-dimethyl-, (5e)-" "5,9-undecadien-2-ol, 6,10-dimethyl-, (z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -254300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     682.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62660.0
-    phase     gas;
 }

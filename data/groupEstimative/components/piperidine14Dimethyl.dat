@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4-dimethylpiperidine" "1,4-dimethyl-piperidine" "agn-pc-0cj6ld" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -59800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     394.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=155390.0
-    phase     gas;
 }

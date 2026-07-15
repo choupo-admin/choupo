@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 6; } { group OH; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohexane-1,2,3,4,5,6-hexol" "inositol" "meso-inositol" "scyllo-inositol" "muco-inositol" "i-inositol" "myoinositol" "allo-inositol" "epi-inositol" "mesoinositol" "scyllitol" "dambose" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1127930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-835380.0
-    phase     gas;
 }

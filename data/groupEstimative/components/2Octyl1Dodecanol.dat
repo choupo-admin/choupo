@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 17; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-octyldodecan-1-ol" "octyldodecanol" "2-octyldodecanol" "standamul g" "eutanol g" "2-octyl dodecanol" "1-dodecanol, 2-octyl-" "octyl dodecanol" "isofol 20" "kalcohl 200g" "rilanit g 20" "exxal 20" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -613640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     976.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-21740.0
-    phase     gas;
 }

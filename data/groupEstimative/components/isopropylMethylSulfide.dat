@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylsulfanylpropane" "propane, 2-(methylthio)-" "methyl isopropyl sulfide" "sulfide, isopropyl methyl" "2-(methylthio)propane" "sulfide,isopropyl methyl (6ci,7ci,8ci);2-(methylthio)propane;3-methyl-2-thiabutane;isopropyl methyl sulfide;methyl isopropyl sulfide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -89300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     363.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13480.0
-    phase     gas;
 }

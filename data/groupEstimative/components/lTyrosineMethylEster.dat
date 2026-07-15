@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl (2s)-2-azanyl-3-(4-hydroxyphenyl)propanoate" "methyl l-tyrosinate" "h-tyr-ome" "tyrosine methyl ester" "methyl (2s)-2-amino-3-(4-hydroxyphenyl)propanoate" "l-tyrosine-methyl-ester" "(s)-methyl 2-amino-3-(4-hydroxyphenyl)propanoate" "(s)-2-amino-3-(4-hydroxy-phenyl)-propionic acid methyl ester" "tyrosine,methyl ester, l- (6ci,8ci);(s)-2-amino-3-(4-hydroxyphenyl)propionic acidmethyl ester;methyl (2s)-2-amino-3-(4-hydroxyphenyl)propionate;methyl(2s)-3-(4-hydroxyphenyl)-2-aminopropionate;methyltyrosinate;tyrosine methyl ester;l-tyrosine methyl ester;h-tyr-ome;l-tyrosine, methyl ester;methyl l-tyrosinate;tyrosine, methyl ester, l-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -479280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     558.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-255250.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 20; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triethoxy(octadecyl)silane" "triethoxyoctadecylsilane" "n-octadecyltriethoxysilane" "triethoxystearylsilane" "octadecyl triethoxysilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1046970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1251.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-268560.0
-    phase     gas;
 }

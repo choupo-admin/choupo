@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group tC; count 2; } { group O; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,4-diethoxybut-2-ynal" "2-butynal,4,4-diethoxy-" "2-butyne-1,4-dialdiethyl acetal; 4,4-diethoxy-2-butynal; acetylenedicarboxaldehyde monodiethylacetal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -291450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     471.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-92680.0
-    phase     gas;
 }

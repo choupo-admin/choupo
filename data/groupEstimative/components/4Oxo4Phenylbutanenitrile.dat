@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-oxidanylidene-4-phenyl-butanenitrile" "3-benzoylpropionitrile" "beta-cyanopropiophenone" "2-cyanoethyl phenyl ketone" "3-cyano-1-phenylpropan-1-one" "a-cyanopropiophenone" "a-benzoylpropionitrile" "beta-benzoylpropionitrile" ".beta.-cyanopropiophenone" "benzenebutanenitrile, g-oxo-" "4-oxo-4-phenyl-butyronitrile" "(" "a-oxo)-benzenebutanenitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   39100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     471.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=149990.0
-    phase     gas;
 }

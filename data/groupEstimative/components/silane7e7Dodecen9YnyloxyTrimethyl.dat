@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 7; } { group dCH; count 2; } { group tC; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodec-7-en-9-ynoxy(trimethyl)silane" "silane, [(7e)-7-dodecen-9-yn-1-yloxy]trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -207250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     843.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=148680.0
-    phase     gas;
 }

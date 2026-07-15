@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-adamantylmethanamine" "adamantan-1-ylmethanamine" "1-(aminomethyl)adamantane" "1-(1-adamantyl)methanamine" "1-aminomethyladamantane" "1-(aminomethyl)-adamantane" "1-adamantan-1-ylmethanamine" "c-adamantan-1-yl-methylamine" "tricyclo[3.3.1.1(3,7)-]decane-1-methanamine" "1-adma" "adamantan-1-yl-methanamine" "1-adamentinemethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -29440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=265140.0
-    phase     gas;
 }

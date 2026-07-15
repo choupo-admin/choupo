@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 22; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group COO; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "o2-[2-[(2-decoxycarbonylphenyl)carbonyloxymethyl]-2-(2-methylprop-2-enoyloxymethyl)butyl] o1-decyl benzene-1,2-dicarboxylate" "1,2-benzenedicarboxylic acid, 1,1'-(2-ethyl-2-(((2-methyl-1-oxo-2-propen-1-yl)oxy)methyl)-1,3-propanediyl) 2,2'-didecyl ester" "1,2-benzenedicarboxylic acid, 1,1'-[2-ethyl-2-[[(2-methyl-1-oxo-2-propen-1-yl)oxy]methyl]-1,3-propanediyl] 2,2'-didecyl ester" "1,2-benzenedicarboxylic acid, 2-ethyl-2-(((2-methyl-1-oxo-2-propenyl)oxy)methyl)-1,3-propanediyl didecyl ester" "1,2-benzenedicarboxylic acid, 2-ethyl-2-[[(2-methyl-1-oxo-2-propenyl)oxy]methyl]-1,3-propanediyl didecyl ester" "2-o-[2-[(2-decoxycarbonylbenzoyl)oxymethyl]-2-(2-methylprop-2-enoyloxymethyl)butyl] 1-o-decyl benzene-1,2-dicarboxylate" "decyl 2-[({2-[(decyloxy)carbonyl]benzoyl}oxy)methyl]-2-{[(2-methylacryloyl)oxy]methyl}butyl benzene-1,2-dicarboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2022160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1931.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-927720.0
-    phase     gas;
 }

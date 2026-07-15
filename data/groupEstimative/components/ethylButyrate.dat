@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl butanoate" "butyric acid ethyl ester" "butanoic acid, ethyl ester" "ethyl n-butyrate" "butyric acid, ethyl ester" "butyric ester" "butyric ether" "ethyl n-butanoate" "butanoic acid ethyl ester" "ethyl butyrate (natural)" "butyric ethee" "butyric acid ethyl estee" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -484450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     441.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-310730.0
-    phase     gas;
 }

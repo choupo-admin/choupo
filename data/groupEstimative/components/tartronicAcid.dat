@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group OH; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylpropanedioic acid" "hydroxymalonic acid" "2-hydroxypropanedioic acid" "2-tartronic acid" "propanedioic acid, hydroxy-" "2-hydroxymalonic acid" "hydroxypropanedioic acid" "malonic acid, hydroxy-" "2-hydroxymalonate" "tartronicacid" "propanedioic acid, hydroxy- (9ci)" "m568" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -963300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     420.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-852700.0
-    phase     gas;
 }

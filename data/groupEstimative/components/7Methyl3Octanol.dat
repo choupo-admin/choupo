@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-methyloctan-3-ol" "3-octanol, 7-methyl-" "agn-pc-02calt" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -391880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     538.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-116800.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 1; } { group CH; count 1; } { group dCH; count 2; } { group dC; count 2; } { group tCH; count 1; } { group tC; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(e)-4-methylhept-4-en-1-yn-3-yl] 2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropane-1-carboxylate" "vaporthrin" "d-empenthrin" "bunganon va plate" "empenthrin [iso]" "s 2852 forte" "(rs)-(e)-1-ethynyl-2-methyl-2-pentenyl(1r)-cis,trans-chrysanthemate" "1-ethynyl-2-methylpent-2-enyl 2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropanecarboxylate" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2-methyl-1-propenyl)-, 1-ethynyl-2-methyl-2-pentenyl ester" "1-ethinyl-2-methyl-2-penten-1-yl chrysanthemate" "1-ethynyl-2-methyl-2-pentenyl chrysanthemate" "o257" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -183290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     741.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=194120.0
-    phase     gas;
 }

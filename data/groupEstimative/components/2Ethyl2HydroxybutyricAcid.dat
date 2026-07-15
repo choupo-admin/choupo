@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethyl-2-oxidanyl-butanoic acid" "2-ethyl-2-hydroxybutanoic acid" "2-ethyl-2-hydroxy-butyric acid" "butanoic acid, 2-ethyl-2-hydroxy-" "2-ethyl-2-hydroxybutanoate" "2-ethyl-2-hydroxybutyrate" "2-ethyl-2-hydroxy-butanoic acid" "butanoic acid,2-ethyl-2-hydroxy-" "2-hydroxy-2-ethylbutanoic acid;2-ethyl-2-hydroxybutanoic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -678420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     454.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-478250.0
-    phase     gas;
 }

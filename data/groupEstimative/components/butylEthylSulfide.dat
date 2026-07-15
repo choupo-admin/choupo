@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethylsulfanylbutane" "butane, 1-(ethylthio)-" "sulfide, butyl ethyl" "ethylthiobutane" "ethyl butyl sulfide" "3-thiaheptane" "ethyl butyl sulphide" "2-(ethylthio)butane" "n-butyl ethyl sulfide" "ethyl butylsulfide" "ethyl isoamylsulfide" "xjirslhmkbugmr-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -125300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=32760.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-prop-2-enylaniline" "n-allyl-aniline" "benzenamine, n-2-propenyl-" "n-prop-2-en-1-ylaniline" "phenylprop-2-enylamine" "nyl" "allyl-phenyl-amine" "benzenamine,n-2-propen-1-yl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   186340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     436.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=314540.0
-    phase     gas;
 }

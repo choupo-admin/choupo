@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5-bis(chloranyl)-2-oxidanyl-benzaldehyde" "3,5-dichloro-2-hydroxybenzaldehyde" "benzaldehyde, 3,5-dichloro-2-hydroxy-" "3,5-dichloro salicylal" "salicylaldehyde, 3,5-dichloro-" "2-hydroxy-3,5-dichlorobenzaldehyde" "vhr bq cg eg" "salicylaldehyde,5-dichloro-" "benzaldehyde,5-dichloro-2-hydroxy-" "salicylaldehyde, 3,5-dichloro- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -106560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-33310.0
-    phase     gas;
 }

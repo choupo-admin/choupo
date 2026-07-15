@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 8; } { group O_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4,7,10-tetraoxacyclododecane" "eoct" "ethylene oxide cyclic tetramer" "12-crown-4 ether" "12-crown 4-ether" "3,6,9,12-tetraoxacyclododecan" "xqqzrzqvbfhbhl-uhfffaoysa-" "wt604" "12-crown-4, lithium ionophore v" "294-93-9 12-crown-4" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -698750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     393.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-368440.0
-    phase     gas;
 }

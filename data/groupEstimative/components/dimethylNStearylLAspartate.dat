@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 18; } { group CH; count 1; } { group COO; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethyl 2-(octadecylamino)butanedioate" "l-aspartic acid, n-octadecyl-, 1,4-dimethyl ester" "dimethyl n-octadecylaspartate" "dimethyl n-octadecyl-l-aspartate" "dimethyl (2s)-2-(octadecylamino)butanedioate" "l-aspartic acid, n-octadecyl-, dimethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1125060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1224.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-382590.0
-    phase     gas;
 }

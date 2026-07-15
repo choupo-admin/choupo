@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3-trimethoxypropane" "1,2,3-trimethyl glycerol triether" "glycerol trimethyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -569110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     414.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-317800.0
-    phase     gas;
 }

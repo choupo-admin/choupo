@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-propylthiolane" "thiophane, propyl-" "thiophene, tetrahydro-2-propyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -82070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=84470.0
-    phase     gas;
 }

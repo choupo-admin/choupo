@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 16; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-hydroxyethyl hexadecanoate" "glycol palmitate" "palmitic acid, 2-hydroxyethyl ester" "ethylene glycol monopalmitate" "hexadecanoic acid, 2-hydroxyethyl ester" "2-hydroxyethyl palmitate" "peg-6 palmitate" "peg-18 palmitate" "peg-20 palmitate" "mono-c16-eg" "polyethyleneglycol palmitate" "1-monopalmitoylethylene glycol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -884360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     959.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-346510.0
-    phase     gas;
 }

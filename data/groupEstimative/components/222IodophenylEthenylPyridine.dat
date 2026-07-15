@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group I; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-(2-iodanylphenyl)ethenyl]pyridine" "2-[(e)-2-(2-iodophenyl)ethenyl]pyridine" "pyridine,2-[2-(2-iodophenyl)ethenyl]-, (e)- (9ci)" "pyridine,2-(o-iodostyryl)-, (e)- (8ci); 2'-iodo-2-stilbazole" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   376820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     505.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=489160.0
-    phase     gas;
 }

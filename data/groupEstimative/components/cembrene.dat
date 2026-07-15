@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1e,3z,6e,10e)-3,7,11-trimethyl-14-propan-2-yl-cyclotetradeca-1,3,6,10-tetraene" "cembrene c" "(+)-cembrene" "thunbergen" "(+)-thunbergen" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -259660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     886.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=133680.0
-    phase     gas;
 }

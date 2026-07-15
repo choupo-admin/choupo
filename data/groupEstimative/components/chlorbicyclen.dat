@@ -34,9 +34,8 @@ groups
     joback ( { group CH2; count 2; } { group CH_ring; count 2; } { group C_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,7,7-hexakis(chloranyl)-5,6-bis(chloromethyl)bicyclo[2.2.1]hept-2-ene" "cyclodan" "alodan" "nodon" "alodane" "cyclodane" "alodan (pesticide)" "alodan (van)" "chlorbicyclen [iso]" "bicyclo[2.2.1]hept-2-ene, 1,2,3,4,7,7-hexachloro-5,6-bis(chloromethyl)-" "1,2,3,4,7,7-hexachloro-5,6-bis(chloromethyl)-2-norbornene" "5,6-bis(chloromethyl)-1,2,3,4,7,7-hexachloro-2-norbornene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -196030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     645.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=9960.0
-    phase     gas;
 }

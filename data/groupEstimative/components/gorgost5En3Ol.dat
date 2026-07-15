@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group CH; count 3; } { group CH2_ring; count 9; } { group CH_ring; count 6; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10,13-dimethyl-17-[1-[2-methyl-2-(3-methylbutan-2-yl)cyclopropyl]ethyl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-ol" "gorgosterol" "gorgost-5-en-3-ol, (3.beta.)-" "agn-pc-00gnya" "(3beta)-gorgost-5-en-3-ol" "pregn-5-en-3.beta.-ol, 20.alpha.-[(1r,2r)-2-(1r)-1,2-dimethylpropyl-2-methylcyclopropyl]-" "gorgost-5-en-3-ol, (3beta)- (9ci)" "pregn-5-en-3.beta.-ol,2r)-2-(1r)-1,2-dimethylpropyl)-2-methylcyclopropyl]-" "(3s,10r,13r,17r)-10,13-dimethyl-17-[(1s)-1-[(1s,2s)-2-methyl-2-[(2r)-3-methylbutan-2-yl]cyclopropyl]ethyl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-ol" "pregn-5-en-3beta-ol, 20alpha-(((1r,2r)-2-(1r)-1,2-dimethylpropyl)-2-methylcyclopropyl)- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -486730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     990.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=273850.0
-    phase     gas;
 }

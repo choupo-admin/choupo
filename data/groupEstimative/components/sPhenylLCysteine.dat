@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-azanyl-3-phenylsulfanyl-propanoic acid" "l-cysteine, s-phenyl-" "4-thia-l-homophenylalanine" "3-(phenylthio)-l-alanine" "s-phenylcysteine" "3-phenylcysteine" "beta-phenylcysteine" "(2r)-2-amino-3-phenylthiopropanoic acid" "2-amino-3-phenylsulfanyl-propionic acid" "i631" "(2r)-2-amino-3-phenylsulfanylpropanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -272450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     556.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-109470.0
-    phase     gas;
 }

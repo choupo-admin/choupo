@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group O; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-ethylbutoxy)propanenitrile" "3-(2-ethylbutoxy)propionitrile" "propionitrile, 3-(2-ethylbutoxy)-" "3-(2-ethylbutoxy)propannitril" "propanenitrile,3-(2-ethylbutoxy)-" "propionitrile,3-(2-ethylbutoxy)- (8ci); 3-(2-ethylbutoxy)propionitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -201710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     514.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50640.0
-    phase     gas;
 }

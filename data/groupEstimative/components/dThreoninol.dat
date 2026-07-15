@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 2; } { group OH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s,3s)-2-azanylbutane-1,3-diol" "h-d-thr-ol" "d(-)-threoninol" "1,3-butanediol,2-amino-, (2s,3s)-" "1,3-butanediol,2-amino-, [s-(r*,r*)]-;(2s,3s)-2-aminobutane-1,3-diol;1,3-butanediol, 2-amino-, (2s,3s)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -407120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     446.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-229270.0
-    phase     gas;
 }

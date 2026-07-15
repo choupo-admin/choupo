@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 15; } { group CH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadecanoic acid, 2-methyl-" "2-methyl-octadecanoic acid" "octadecanoic acid, methyl-" "(+/-)-2-methylstearic acid" "( inverted exclamation marka)-2-methylstearic acid" "stearicacid, a-methyl- (4ci);2-dl-methyloctadecanoic acid; 2-methyloctadecanoic acid;dl-2-methyloctadecanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -791040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     939.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-237250.0
-    phase     gas;
 }

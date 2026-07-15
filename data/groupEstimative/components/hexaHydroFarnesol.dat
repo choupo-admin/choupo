@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 8; } { group CH; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7,11-trimethyldodecan-1-ol" "1-dodecanol, 3,7,11-trimethyl-" "3,7,11-trimethyl-1-dodecanol" "1-dodecanol,3,7,11-trimethyl-" "1-dodececanol,3,7,11-trimethyl" "3,7,11-trimethyl-1-dodecanol;farnesanol; hexahydrofarnesol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -521000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     762.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-68720.0
-    phase     gas;
 }

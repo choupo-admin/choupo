@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 20; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "henicosan-1-ol" "1-henicosanol" "heneicosanol" "henicosanol" "heneicosan-1-ol" "heneicosyl alcohol" "n-heneicosanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -629000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1024.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-10880.0
-    phase     gas;
 }

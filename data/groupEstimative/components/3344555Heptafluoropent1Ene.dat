@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,4,4,5,5,5-heptakis(fluoranyl)pent-1-ene" "3,3,4,4,5,5,5-heptafluoro-1-pentene" "heptafluoropentene-1" "(perfluoropropyl)ethylene" "(heptafluoropropyl)ethylene" "1h,1h,2h-heptafluoropent-1-ene" "3,3,4,4,5,5,5-heptafluoropentene-1" "1-pentene,3,3,4,4,5,5,5-heptafluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1420120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1276090.0
-    phase     gas;
 }

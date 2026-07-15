@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group C; count 1; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tert-butyl 2,2-bis(chloranyl)ethanoate" "tert-butyl 2,2-dichloroacetate" "acetic acid, dichloro-, 1,1-dimethylethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -529960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-334190.0
-    phase     gas;
 }

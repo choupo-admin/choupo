@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-enal" "acrylaldehyde" "acrylic aldehyde" "propenal" "allyl aldehyde" "ethylene aldehyde" "acraldehyde" "aqualin" "magnacide h" "acquinite" "aqualine" "slimicide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -65400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     286.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37300.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(phenylmethylsulfanyl)ethanamine" "2-(benzylsulfanyl)ethanamine" "2-benzylsulfanylethanamine" "2-(benzylsulfanyl)ethan-1-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   83100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     513.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=236880.0
-    phase     gas;
 }

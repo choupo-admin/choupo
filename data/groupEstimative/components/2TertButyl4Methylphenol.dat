@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-tert-butyl-4-methyl-phenol" "2-tert-butyl-p-cresol" "p-cresol, 2-tert-butyl-" "phenol, 2-(1,1-dimethylethyl)-4-methyl-" "o-tert-butyl-p-cresol" "2-(tert-butyl)-4-methylphenol" "4-methyl-2-tert-butylphenol" "2-t-butyl-p-cresol" "2-tert-butyl-4-methyl-1-phenol" "2-terc.butyl-p-kresol" "4-methyl-2-t-butylphenol" "4-methyl-6-t-butylphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -231370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-7260.0
-    phase     gas;
 }

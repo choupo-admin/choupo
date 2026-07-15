@@ -38,9 +38,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group Br; count 1; } { group dO_oth; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanylthiolane 1,1-dioxide" "3-bromosulfolane" "bromosulfolane" "3-bromotetrahydrothiophene-1,1-dioxide" "tetrahydro-3-bromothiophene 1,1-dioxide" "thiophene, tetrahydro-3-bromo-, 1,1-dioxide" "3-bromothiolane-1,1-dione" "thiophene, 3-bromotetrahydro-, 1,1-dioxide (6ci,7ci,8ci,9ci)" "3-bromothiolane 1,1-dioxide" "3-bromo-1" "e6-thiolane-1,1-dione" "3-bromo-tetrahydro-thiophene 1,1-dioxide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -528140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     551.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-455890.0
-    phase     gas;
 }

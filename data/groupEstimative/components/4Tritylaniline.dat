@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 19; } { group dC_ring; count 5; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(triphenylmethyl)aniline" "p-tritylaniline" "p-aminotetraphenylmethane" "benzenamine, 4-(triphenylmethyl)-" "4-aminotetraphenylmethane" "4-(trityl)aniline" "triphenyl(p-aminophenyl)methane" "4-(triphenylmethyl)benzenamine" "p-toluidine, alpha,alpha,alpha-triphenyl-" "4-(triphenylmethyl)phenylamine" "p-tritylaniline;" "4-tritylbenzenamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   400360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     710.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=668920.0
-    phase     gas;
 }

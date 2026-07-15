@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 21; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "docosylbenzene" "benzene, c14-30-alkyl derivs." "docosane, 1-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -384720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1140.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=297290.0
-    phase     gas;
 }

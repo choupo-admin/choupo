@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 5; } { group F; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-anthracen-9-yl-2,2,2-tris(fluoranyl)ethanol" "1-(9-anthryl)-2,2,2-trifluoroethanol" "2-(9-anthryl)-1,1,1-trifluoroethanol" "pirkle's alcohol" "agn-pc-03vhli" "1-anthracen-9-yl-2,2,2-trifluoroethanol" "1-(9-anthracenyl)-2,2,2-trifluoroethanol" "alpha-(trifluoromethyl)-9-anthracenemethanol" "alpha-(trifluoromethyl)anthracene-9-methanol" "(-)-2,2,2-trifluoro-1-(9-anthryl)ethanol" "(s)-alpha-(trifluoromethyl)anthracene-9-methanol" "r-(-)-2,2,2-trifluoro-1-(9-anthryl)ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -532430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     540.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-330560.0
-    phase     gas;
 }

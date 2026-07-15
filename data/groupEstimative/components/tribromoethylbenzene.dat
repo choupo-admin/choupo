@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(bromanyl)ethylbenzene" "(2,2,2-tribromoethyl)benzene" "benzene, tribromoethyl-" "ar-tribromoethylbenzene" "2,2,2-tribromoethylbenzene" "1-(2,2,2-tribromoethyl)benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   98320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=174690.0
-    phase     gas;
 }

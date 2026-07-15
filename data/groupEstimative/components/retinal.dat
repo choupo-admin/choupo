@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group dCH; count 6; } { group dC; count 2; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2e,4e,6e,8e)-3,7-dimethyl-9-(2,6,6-trimethylcyclohexen-1-yl)nona-2,4,6,8-tetraenal" "all-trans-retinal" "vitamin a aldehyde" "retinaldehyde" "retinene" "axerophthal" "trans-retinal" "e-retinal" "all-e-retinal" "all-trans-retinaldehyde" "retinene 1" "all-trans-vitamin a aldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   11990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     908.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=351440.0
-    phase     gas;
 }

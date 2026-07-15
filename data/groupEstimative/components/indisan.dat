@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 8; } { group CH_ring; count 2; } { group C_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2,3,3-trimethyl-4-bicyclo[2.2.1]heptanyl)cyclohexan-1-ol" "isocamphyl cyclohexanol (mixed isomers)" "isocamphanyl cyclohexanol (mixed isomers)" "cyclohexanol, (2,2,3-trimethylnorbornanyl)- (mixed isomers)" "agn-pc-01m7ef" "cyclohexanol, (2,2,3-trimethylbicyclo[2.2.1]heptyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -327000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     762.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=48980.0
-    phase     gas;
 }

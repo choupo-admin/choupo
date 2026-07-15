@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(1-azanylpropyl)-n,n,3-trimethyl-aniline" "4-(dimethylamino)-alpha,2-dimethylphenethylamine" "benzeneethanamine, 4-(dimethylamino)-alpha,2-dimethyl-" "amiflamin" "55875-51-9 (di-hydrochloride)" "4-dimethylamino-alpha,2-dimethylphenethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   18620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     562.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=318100.0
-    phase     gas;
 }

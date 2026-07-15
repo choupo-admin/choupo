@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[2-[2-(2-methoxyethoxy)ethoxy]ethoxy]prop-1-ene" "allyloxymethoxytriglycol" "2,5,8,11-tetraoxatetradec-13-ene;allyloxymethoxytriglycol;allyloxy(triethylene oxide), methyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -653180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     586.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-298840.0
-    phase     gas;
 }

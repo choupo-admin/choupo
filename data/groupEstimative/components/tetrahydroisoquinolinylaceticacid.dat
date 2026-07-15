@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(1,2,3,4-tetrahydroisoquinolin-1-yl)ethanoic acid" "(1,2,3,4-tetrahydroisoquinoline-1-yl)acetic acid" "1,2,3,4-tetrahydroisoquinolin-1-ylacetic acid" "1,2,3,4-tetrahydroisoquinoline-1-acetic acid" "1-isoquinolineaceticacid, 1,2,3,4-tetrahydro-" "(1,2,3,4-tetrahydro-isoquinolin-1-yl)-acetic acid" "2-(1,2,3,4-tetrahydro-1-isoquinolinyl)acetic acid" "2-(1,2,3,4-tetrahydroisoquinolin-1-yl)acetic acid" "2-(1,2,3,4-tetrahydroisoquinolyl)acetic acid" "aa049" "tetrahydroisoquinolinylacetic acid" "1,2,3,4-tetrahydroisoquinoline-1acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -291130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     448.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-63030.0
-    phase     gas;
 }

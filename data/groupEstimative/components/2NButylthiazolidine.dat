@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group NH_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-butyl-1,3-thiazolidine" "thiazolidine, 2-butyl-" "2-butylthiazolidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -44260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     422.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=172180.0
-    phase     gas;
 }

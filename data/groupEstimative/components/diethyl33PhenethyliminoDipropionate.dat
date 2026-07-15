@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-[(3-ethoxy-3-oxidanylidene-propyl)-(2-phenylethyl)amino]propanoate" "ethyl 3-[(3-ethoxy-3-oxopropyl)-phenethylamino]propanoate" "diethyl 3,3 inverted exclamation marka-(phenethylimino)dipropionate" "b-alanine,n-(3-ethoxy-3-oxopropyl)-n-(2-phenylethyl)-, ethyl ester" "propionicacid, 3,3'-(phenethylimino)di-, diethyl ester (6ci); diethyl3,3'-(phenethylimino)dipropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -745350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     869.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-296870.0
-    phase     gas;
 }

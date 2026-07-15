@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenyl-2-propan-2-yl-benzene" "1-phenyl-2-propan-2-ylbenzene" "1,1'-biphenyl, 2-(1-methylethyl)-" "isopropylbiphenyl" "(1-methylethyl)-1,1'-biphenyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   103380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     511.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=288170.0
-    phase     gas;
 }

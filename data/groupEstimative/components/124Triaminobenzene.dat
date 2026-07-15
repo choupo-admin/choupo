@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzene-1,2,4-triamine" "1,2,4-benzenetriamine" "1,3,4-benzenetriamine" "1,3,4-triaminobenzene" "benzene-1,2,4-triyltriamine" "1,4-benzenetriamine" "615-47-4 (di-hydrochloride)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   147790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     425.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=292140.0
-    phase     gas;
 }

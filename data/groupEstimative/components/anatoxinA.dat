@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(9-azabicyclo[4.2.1]non-4-en-5-yl)ethanone" "(+)-anatoxin" "agn-pc-00ntt8" "1-[(1s,6s)-9-azabicyclo[4.2.1]non-2-en-2-yl]ethanone" "1-(9-azabicyclo[4.2.1]non-2-en-2-yl)-ethanone" "ethanone, 1-(9-azabicyclo[4.2.1]non-2-en-2-yl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -151070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97640.0
-    phase     gas;
 }

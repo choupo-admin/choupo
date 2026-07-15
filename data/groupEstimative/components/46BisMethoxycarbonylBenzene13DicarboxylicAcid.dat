@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group COOH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,4,5-benzenetetracarboxylic acid, 1,5-dimethyl ester" "4,6-bis(methoxycarbonyl)isophthalic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1423990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     707.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1174880.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzenamine, n-butyl-" "aniline, n-butyl-" "4-(phenylamino)butane" "n-(n-butyl)aniline" "n-butylbenzenamine" "benzamine, n-butyl-" "n-phenyl-n-butylamine" "butylphenylamine" "n-butyl aniline" "butyl-phenyl-amine" "n-phenylbutylamine" "m741" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   40270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=235120.0
-    phase     gas;
 }

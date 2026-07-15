@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bitriben" "benzene, 1,4-bis(trichloromethyl)-" "chloksil" "chloxil" "chloxyl" "hexichol" "khloksil" "khloxil" "cloxil" "hetol" "hexachloroparaxylol" "2,2-hexachloro-p-xylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -95330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     477.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=53360.0
-    phase     gas;
 }

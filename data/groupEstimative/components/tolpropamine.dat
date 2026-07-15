@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyl-3-(4-methylphenyl)-3-phenyl-propan-1-amine" "benzenepropanamine, n,n,4-trimethyl-.gamma.-phenyl-" "n,n-dimethyl-3-(4-methylphenyl)-3-phenylpropan-1-amine" "pragman" "tolpropamina" "tolpropaminum" "tolpropamine (inn)" "tolpropaminum [inn-latin]" "3339-11-5 (hydrochloride)" "n,n-4-trimethyl-gamma-phenylbenzenepropanamine" "[3-(4-methylphenyl)-3-(2-pyridyl)propyl]dimethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   108990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     644.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=424210.0
-    phase     gas;
 }

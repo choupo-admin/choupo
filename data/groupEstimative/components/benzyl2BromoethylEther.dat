@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromoethyloxymethylbenzene" "2-benzyloxy-1-bromoethane" "((2-bromoethoxy)methyl)benzene" "benzyl2-bromoethylether" "benzene, ((2-bromoethoxy)methyl)-" "benzene, [(2-bromoethoxy)methyl]-" "benzyloxyethyl bromide" "2-bromoethoxymethylbenzene" "ether, benzyl 2-bromoethyl" "(2-bromoethoxymethyl)benzene" "(2-bromo-ethoxymethyl)-benzene" "ether,benzyl 2-bromoethyl (7ci,8ci);1-(benzyloxy)-2-bromoethane;1-[(2-bromoethoxy)methyl]benzene;2-(benzyloxy)-1-bromoethane;2-(benzyloxy)ethyl bromide;2-bromoethyl benzyl ether;2-bromoethylphenylmethyl ether;[(2-bromoethoxy)methyl]benzene;1-bromo-2-benzyloxyethane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -98450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46630.0
-    phase     gas;
 }

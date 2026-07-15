@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-chloranylbenzaldehyde" "p-chlorobenzaldehyde" "benzaldehyde, 4-chloro-" "benzaldehyde, p-chloro-" "p-chlorobenzenecarboxaldehyde" "4-chloro-benzaldehyde" "4-chlorobenzenaldehyde" "pcad" "benzaldehyde,p-chloro-" "4-chlorobenzoic aldehyde" "para-chlorobenzaldehyde" "benzaldehyde, p-chloro-;benzaldehyde, 4-chloro-;4-chloro benzaldehyde;4-chlorobenzaldehyde;p-chlorobenzenecarboxaldehyde;4-chlorobenzaldehyde (pcba);para-chlorobenzaldehyde;p-chlorobenzenecarboxaldehyde;p-chlorobenzaldehyde;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   97960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     430.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=142870.0
-    phase     gas;
 }

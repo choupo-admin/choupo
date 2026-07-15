@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group COOH; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s,3s,4s)-3-(2-hydroxy-2-oxoethyl)-4-prop-1-en-2-yl-pyrrolidine-2-carboxylic acid" "kainate" "digenic acid" "digenin" "helminal" "l-alpha-kainic acid" "acide kainique" "acido kainico" "acidum kainicum" "acide kainique [inn-french]" "acidum kainicum [inn-latin]" "3-pyrrolidineacetic acid, 2-carboxy-4-isopropenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -777020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     501.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-466370.0
-    phase     gas;
 }

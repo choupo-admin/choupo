@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group dC_ring; count 2; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-2-oxidanyl-cyclopent-2-en-1-one" "corylon" "corylone" "cycloten" "maple lactone" "2-hydroxy-3-methyl-2-cyclopenten-1-one" "methyl cyclopentenolone" "2-cyclopenten-1-one, 2-hydroxy-3-methyl-" "2-hydroxy-3-methylcyclopent-2-enone" "cyclotene (ordorant)" "2-hydroxy-1-methylcyclopenten-3-one" "2-hydroxy-3-methyl-2-cyclopentenone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -341440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     304.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-204810.0
-    phase     gas;
 }

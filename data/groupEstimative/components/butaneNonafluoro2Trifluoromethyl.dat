@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 5; } { group F; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,4,4,4-nonakis(fluoranyl)-3-(trifluoromethyl)butane" "perflisopent" "1,1,1,2,2,3,4,4,4-nonafluoro-3-(trifluoromethyl)butane" "butane, 1,1,1,2,3,3,4,4,4-nonafluoro-2-(trifluoromethyl)-" "perflisopent (usan/inn)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2543600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     536.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2332300.0
-    phase     gas;
 }

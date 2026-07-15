@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group O; count 1; } { group NH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-[(4-methoxyphenyl)methyl]pyridin-2-amine" "[(4-methoxyphenyl)methyl]-2-pyridylamine" "p-anisyl(2-pyridyl)amine" "2-(4-methoxybenzylamino)pyridine" "n2-(4-methoxybenzyl)pyridin-2-amine" "(4-methoxy-benzyl)-pyridin-2-yl-amine" "2-(p-methoxybenzyl)aminopyridine" "2-pyridinamine,n-[(4-methoxyphenyl)methyl]-" "(4-methoxy-benzyl)-pyridin-2-yl-amine 2hcl salt" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   103980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     508.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=335210.0
-    phase     gas;
 }

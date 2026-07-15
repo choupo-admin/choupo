@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-enenitrile" "vinyl cyanide" "propenenitrile" "polyacrylonitrile" "cyanoethylene" "carbacryl" "fumigrain" "acritet" "acrylon" "ventox" "miller's fumigrain" "acrylonitrile monomer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   185060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     274.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=195400.0
-    phase     gas;
 }

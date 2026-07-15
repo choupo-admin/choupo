@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5-bis(fluoranyl)benzoic acid" "3,5-difluorobenzoicacid" "455-40-3 3,5-difluorobenzoic acid" "benzoic acid, 3,5-difluoro-" "wt262" "benzoic acid, 3,5-difluoro-;3,5-difluorobenzoate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -716710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     426.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-632320.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 2; } { group Cl; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-methylpropoxy)propan-2-yl 2-chloranylethanoate" "1-isobutoxypropan-2-yl chloroacetate" "acetic acid, 2-chloro-, 1-methyl-2-(2-methylpropoxy)ethyl ester" "acetic acid, chloro-, 1-methyl-2-(2-methylpropoxy)ethyl ester" "1-(2-methylpropoxy)propan-2-yl 2-chloroacetate" "acetic acid, 2-chloro-,1-methyl-2-(2-methylpropoxy)ethyl ester" "aceticacid, chloro-, 1-methyl-2-(2-methylpropoxy)ethyl ester (9ci);1-isobutoxy-2-propyl chloroacetate; 1-methyl-2-(2-methylpropoxy)ethylchloroacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -704890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     583.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-407280.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nonan-1-amine" "1-nonanamine" "1-aminononane" "n-nonylamine" "1-nonylamine" "nonyl-amine" "2016-39-9 (hydrochloride)" "72060-14-1 (sulfate[2:1])" "nonylamine(6ci,7ci,8ci);1-aminononane;1-nonylamine;monononylamine;n-nonylamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -195300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     558.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91350.0
-    phase     gas;
 }

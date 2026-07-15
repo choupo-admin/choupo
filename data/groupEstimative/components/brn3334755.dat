@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 9; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-bromanyl-7,12-dimethyl-benzo[a]anthracene" "5-bromo-9,10-dimethyl-1,2-benzanthracene" "benz(a)anthracene, 8-bromo-7,12-dimethyl-" "8-bromo-7,12-dimethylbenzo[a]anthracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   322590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=516050.0
-    phase     gas;
 }

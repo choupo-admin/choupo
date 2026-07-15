@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 2; } { group Cl; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-3-(6-methylheptoxy)propan-2-ol" "2-propanol, 1-chloro-3-(isooctyloxy)-" "1-chloro-3-(6-methylheptoxy)propan-2-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -581120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     661.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-216890.0
-    phase     gas;
 }

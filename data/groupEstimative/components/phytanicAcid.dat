@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 10; } { group CH; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7,11,15-tetramethylhexadecanoic acid" "phytanate" "3,7,11,15-tetramethyl-hexadecansaeure" "3,7,11,15-tetramethyl-hexadecanoic acid" "3,7,11,15-tetramethylhexadecanoate" "phytanoate" "3,11,15-tetramethylhexadecanoic acid" "3,7,11,15-tetramethylhexadecoanoate" "3,7,11,15-tetramethyl-hexadecanoate" "3,7,11,15-tetramethylhexadecoanoic acid" "hexadecanoic acid,7,11,15-tetramethyl-" "3,7,11,15-tetramethyl hexadecanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -827520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     950.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236150.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 17; } { group C; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tert-butyl-dimethyl-octadecoxy-silane" "silane, (1,1-dimethylethyl)dimethyl(octadecyloxy)-" "tert-butyl-dimethyl-octadecoxysilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -791280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1189.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-55720.0
-    phase     gas;
 }

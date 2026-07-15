@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-carboxybenzyl alcohol" "Benzoic acid, 4-(hydroxymethyl)-" "p-(hydroxymethyl)benzoic acid" "p-carboxybenzyl alcohol" "p-toluic acid, α-hydroxy-" "α-hydroxy-p-toluic acid" "4-hydroxymethylbenzoic acid" "4-hydroxymethyl-benzoic acid" "p-hydroxymethyl benzoic acid" "4-(hydroxymethyl)-benzoic acid" "CHEMBL4636837" ".alpha.-hydroxy-p-toluic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -485890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-361470.0
-    phase     gas;
 }

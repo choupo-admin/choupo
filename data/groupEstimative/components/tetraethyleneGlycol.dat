@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group OH; count 2; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-(2-hydroxyethyloxy)ethoxy]ethoxy]ethanol" "tetraglycol" "carbitol, diethyl" "hi-dry" "ethanol, 2,2'-[oxybis(2,1-ethanediyloxy)]bis-" "3,6,9-trioxaundecane-1,11-diol" "2,2'-[oxybis(ethane-2,1-diyloxy)]diethanol" "bis[2-(2-hydroxyethoxy)ethyl] ether" "2,2'-((oxybis(ethane-2,1-diyl))bis(oxy))diethanol" "2,2'-(oxybis(ethyleneoxy)) diethanol" "tetra(ethylene glycol)" "ethanol, 2,2'-(oxybis(ethyleneoxy))di-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -909570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     603.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-572160.0
-    phase     gas;
 }

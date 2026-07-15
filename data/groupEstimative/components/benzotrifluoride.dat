@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trifluoromethylbenzene" "(trifluoromethyl)benzene" "phenylfluoroform" "alpha,alpha,alpha-trifluorotoluene" "benzene, (trifluoromethyl)-" "benzenyl fluoride" "benzylidyne fluoride" "a,a,a-trifluorotoluene" "trifluoro toluene" "toluene trifluoride" "usaf ma-16" "(trifluoromethyl)-benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -548360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     378.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-461120.0
-    phase     gas;
 }

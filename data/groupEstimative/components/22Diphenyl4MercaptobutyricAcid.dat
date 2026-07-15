@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COOH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-diphenyl-4-sulfanyl-butanoic acid" "butyric acid, 2,2-diphenyl-4-mercapto-" "butyric acid,2-diphenyl-4-mercapto-" "2,2-diphenyl-4-sulfanylbutanoic acid" "benzeneacetic acid, alpha-(2-mercaptoethyl)-alpha-phenyl-" "benzeneacetic acid, .alpha.-(2-mercaptoethyl)-.alpha.-phenyl-" "benzeneacetic acid, alpha-(2-mercaptoethyl)-alpha-phenyl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -221050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     643.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3020.0
-    phase     gas;
 }

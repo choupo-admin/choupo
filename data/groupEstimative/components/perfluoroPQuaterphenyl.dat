@@ -33,9 +33,8 @@ groups
     joback ( { group dC_ring; count 24; } { group F; count 18; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5-pentakis(fluoranyl)-6-[2,3,5,6-tetrakis(fluoranyl)-4-[2,3,5,6-tetrakis(fluoranyl)-4-[2,3,4,5,6-pentakis(fluoranyl)phenyl]phenyl]phenyl]benzene" "p-quaterphenyl, octadecafluoro-" "1,1'':4'',1'''-quaterphenyl, 2,2',2'',2''',3,3',3'',3''',4,4''',5,5',5'',5''',6,6',6'',6'''-octadecafluoro-" "1,2,3,4,5-pentafluoro-6-[2,3,5,6-tetrafluoro-4-[2,3,5,6-tetrafluoro-4-(2,3,4,5,6-pentafluorophenyl)phenyl]phenyl]benzene" "2,2',2'',2''',3,3',3'',3''',4,4''',5,5',5'',5''',6,6',6'',6'''-octadecafluoro-1,1':4',1'':4'',1'''-quaterphenyl" "p-quaterphenyl,2',2'',2''',3,3',3'',3''',4,4''',5,5',5'',5''',6,6',6'',6'''-octadecafluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3351950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1112.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3098340.0
-    phase     gas;
 }

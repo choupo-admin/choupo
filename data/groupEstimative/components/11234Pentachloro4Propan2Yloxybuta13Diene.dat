@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group dC; count 4; } { group Cl; count 5; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,3,4-pentakis(chloranyl)-4-propan-2-yloxy-buta-1,3-diene" "1,3-butadiene, 1,1,2,3,4-pentachloro-4-(1-methylethoxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -208730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     567.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-32790.0
-    phase     gas;
 }

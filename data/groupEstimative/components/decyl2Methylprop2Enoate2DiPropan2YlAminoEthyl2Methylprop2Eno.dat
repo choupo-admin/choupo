@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group CH2; count 11; } { group CH; count 2; } { group dCH2; count 2; } { group dC; count 2; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(dipropan-2-ylamino)ethyl 2-methylprop-2-enoate- decyl 2-methylprop-2-enoate(1:1)" "2-propenoic acid, 2-methyl-, 2-(bis(1-methylethyl)amino)ethyl ester, polymer with decyl 2-methyl-2-propenoate" "2-(dipropan-2-ylamino)ethyl 2-methylprop-2-enoate - decyl 2-methylprop-2-enoate (1:1)" "decyl 2-methylprop-2-enoate; 2-[di(propan-2-yl)amino]ethyl 2-methylprop-2-enoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1037900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1358.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-292980.0
-    phase     gas;
 }

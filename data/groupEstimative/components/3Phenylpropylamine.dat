@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylpropan-1-amine" "benzenepropanamine" "gamma-phenylpropylamine" "hydrocinnamylamine" "1-amino-3-phenylpropane" "propylamine, 3-phenyl-" "3-phenyl-n-propylamine" "3-phenyl-1-propanamine" "gamma-aminopropylbenzene" "3-phenyl-1-propylamine" "gamma-phenyl-n-propylamine" "benzenepropanamine, hydrochloride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   41230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=203760.0
-    phase     gas;
 }

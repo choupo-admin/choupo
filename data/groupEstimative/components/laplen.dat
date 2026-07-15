@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1-bis(chloranyl)ethene;chloranylethene" "saran" "daran" "velon" "kurehalon a0" "latex svkh" "viniden 60" "winiden 60" "vkhvd 40" "ikhs 1" "svkh 1" "ethene, 1,1-dichloro-, polymer with chloroethene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -43660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=9380.0
-    phase     gas;
 }

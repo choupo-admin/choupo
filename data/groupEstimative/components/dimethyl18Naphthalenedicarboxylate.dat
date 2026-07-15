@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethyl naphthalene-1,8-dicarboxylate" "agn-pc-00l6x3" "1,8-naphthalenedicarboxylic acid, dimethyl ester" "1,8-naphthalenedicarboxylicacid, 1,8-dimethyl ester" "1,8-naphthalenedicarboxylicacid, dimethyl ester (9ci); naphthalic acid, dimethyl ester (7ci,8ci);1,8-dimethyl naphthalate; dimethyl 1,8-naphthalenedicarboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -562190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-353940.0
-    phase     gas;
 }

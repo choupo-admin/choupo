@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 14; } { group dC_ring; count 4; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[(3-methylphenyl)-[2-(phenylcarbonyloxy)ethyl]amino]ethyl benzoate" "ethanol, 2,2'-((3-methylphenyl)imino)bis-, 1,1'-dibenzoate" "ethanol, 2,2'-[(3-methylphenyl)imino]bis-, 1,1'-dibenzoate" "ethanol, 2,2'-((3-methylphenyl)imino)bis-, dibenzoate (ester)" "ethanol, 2,2'-[(3-methylphenyl)imino]bis-, dibenzoate (ester)" "benzoic acid, (m-tolylimino)diethylene ester" "2-[n-(2-benzoyloxyethyl)-3-methylanilino]ethyl benzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -428240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     923.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-22740.0
-    phase     gas;
 }

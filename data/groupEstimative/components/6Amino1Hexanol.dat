@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-azanylhexan-1-ol" "6-aminohexan-1-ol" "1-hexanol, 6-amino-" "1-amino-6-hexanol" "6-aminohexanol" "6-hydroxyhexylamine" "aminohexyl alcohol" "hexanol, 6-amino-" "amidohexylalkohol [german]" "6-amino-hexan-1-ol" "amidohexylalkohol" "6-hydroxy-1-hexylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -285610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-70730.0
-    phase     gas;
 }

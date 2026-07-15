@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 2; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(aminomethyl)-3,5,5-trimethyl-cyclohexan-1-ol" "cyclohexanol, 3-(aminomethyl)-3,5,5-trimethyl-" "3-aminomethyl-3,5,5-trimethylcyclohexan-1-ol" "3-(aminomethyl)-3,5,5-trimethylcyclohexan-1-ol" "cyclohexanol,3-(aminomethyl)-3,5,5-trimethyl-" "1-hydroxy-3-(aminomethyl)-3,5,5-trimethylcyclohexane;3,3,5-trimethyl-5-aminomethyl-1-cyclohexanol; 3-(aminomethyl)-3,5,5-trimethylcyclohexanol;3-(aminomethyl)-3,5,5-trimethylcyclohexyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -324050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     671.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-39000.0
-    phase     gas;
 }

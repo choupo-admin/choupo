@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranylbuta-1,3-diene" "chlorobutadiene" "1,3-butadiene, 2-chloro-" "2-chloro-1,3-butadiene" "2-chlorobuta-1,3-diene" "2-chlorobutadiene" "neoprene" "polychloroprene" "chloropreen" "cloroprene" "beta-chloroprene" "2-chlor-1,3-butadien" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   99440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     331.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=138000.0
-    phase     gas;
 }

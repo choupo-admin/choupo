@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylmethoxyphenol" "3-benzyloxyphenol" "benzyl 3-hydroxyphenyl ether" "3-(phenylmethoxy)phenol" "resorcinol monobenzyl ether" "phenol,3-(phenylmethoxy)-" "phenol, 3-(phenylmethoxy)-" "phenol,m-(benzyloxy)- (6ci,7ci,8ci);resorcinol monobenzyl ether;m-(benzyloxy)phenol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -148120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     487.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=23780.0
-    phase     gas;
 }

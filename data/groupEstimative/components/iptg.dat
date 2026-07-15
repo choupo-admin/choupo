@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CH_ring; count 5; } { group OH; count 4; } { group O_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r,3r,4s,5r,6s)-2-(hydroxymethyl)-6-propan-2-ylsulfanyl-oxane-3,4,5-triol" "isopropyl-beta-d-thiogalactopyranoside" "isopropyl thiogalactoside" "isopropyl-beta-d-thiogalactoside" "isopropyl beta-d-1-thiogalactopyranoside" "d-beta-isopropylthiogalactioside" "isopropyl-1-beta-d-thiogalactoside" "isopropyl beta-d-thiogalactoside" "ipt" "1-(isopropylthio)-beta-galactopyranside" "isopropyl 1-thio-beta-d-galactopyranoside" "beta-d-galactopyranoside, 1-methylethyl 1-thio-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -960460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     510.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-584210.0
-    phase     gas;
 }

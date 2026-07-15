@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1e,5e,9e,12r)-1,5,9-trimethyl-12-prop-1-en-2-yl-cyclotetradeca-1,5,9-triene" "neocembrene" "neocembrene-a" "1,5,9-trimethyl-12-(1-methylethenyl)-1,5,9-cyclotetradecatriene" "(1e,5e,9e,12r)-1,5,9-trimethyl-12-prop-1-en-2-ylcyclotetradeca-1,5,9-triene" "1,5,9-cyclotetradecatriene, 1,5,9-trimethyl-12-(1-methylethenyl)-, (r-(e,e,e))-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -196520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     924.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=185450.0
-    phase     gas;
 }

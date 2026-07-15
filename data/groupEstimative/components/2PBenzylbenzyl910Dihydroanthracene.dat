@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 2; } { group dCH_ring; count 16; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[[4-(phenylmethyl)phenyl]methyl]-9,10-dihydroanthracene" "9,10-dihydro-2-((p-benzylphenyl)methyl)anthracene" "9,10-dihydro-2-[(p-benzylphenyl)methyl]anthracene" "anthracene, 9,10-dihydro-2-((4-(phenylmethyl)phenyl)methyl)-" "anthracene, 9,10-dihydro-2-[[4-(phenylmethyl)phenyl]methyl]-" "2-[(4-benzylphenyl)methyl]-9,10-dihydroanthracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   378290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     728.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=676560.0
-    phase     gas;
 }

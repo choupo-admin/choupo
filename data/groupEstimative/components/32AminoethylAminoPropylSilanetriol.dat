@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 5; } { group OH; count 3; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n'-[3-tris(oxidanyl)silylpropyl]ethane-1,2-diamine" "(3-((2-aminoethyl)amino)propyl)silanetriol" "n-(2-aminoethyl)-3-aminopropyl-silantriol" "hydrolyzed (gamma-(beta-aminoethylamino)propyl)triethoxysilane polymer" "n'-(3-trihydroxysilylpropyl)ethane-1,2-diamine" "silanetriol, (3-((2-aminoethyl)amino)propyl)-, homopolymer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -627580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     722.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-368160.0
-    phase     gas;
 }

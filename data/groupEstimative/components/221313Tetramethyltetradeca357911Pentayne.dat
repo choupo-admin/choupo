@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group C; count 2; } { group tC; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5,7,9,11-tetradecapentayne, 2,2,13,13-tetramethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   929150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     638.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1120360.0
-    phase     gas;
 }

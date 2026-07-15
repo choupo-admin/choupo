@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-oxidanylidenebutan-2-yl ethanoate" "3-acetoxy-2-butanone" "2-butanone, 3-(acetyloxy)-" "2-acetoxy-3-butanone" "3-oxobutan-2-yl acetate" "2-butanon-3-ol, acetate" "2-butanon-3-yl acetate" "3-(acetyloxy)-2-butanone" "3-hydroxy-2-butanone acetate" "acetyl methyl carbinyl acetate" "2-butanone, 3-hydroxy-, acetate" "acetic acid 1-methyl-2-oxopropyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -602310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     458.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-442090.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylsulfanylpropan-1-ol" "3-methylthiopropanol" "3-(methylthio)-1-propanol" "3-hydroxypropyl methyl sulfide" "3-methylmercapto-1-propanol" "1-propanol, 3-(methylthio)-" "3-methylthio-1-propanol" "3-(methylthio)propanol" "gamma-methylmercaptopropyl alcohol" ".gamma.-methylmercaptopropyl alcohol" "3-(methylthio)propyl alcohol" "3-(methylsulfanyl)-1-propanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -236250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-120900.0
-    phase     gas;
 }

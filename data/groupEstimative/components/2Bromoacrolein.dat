@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dC; count 1; } { group Br; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylprop-2-enal" "2-bromopropenal" "2-bromoacrylaldehyde" "alpha-bromoacrolein" "2-bromopropenaldehyde" "2-bromo-2-propenal" "2-bromoprop-2-enal" "2-bromo-acrylaldehyde" "2-propenal, 2-bromo-" "2-propenal, 2-bromo-(9ci)" "2-propenal, 2-bromo- (9ci)" "acrolein,2-bromo- (8ci); 2-bromoacrolein; 2-bromopropenal; a-bromoacrolein" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -48860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     333.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-31530.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH2; count 3; } { group dCH; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(prop-2-enyl) benzene-1,3,5-tricarboxylate" "triallyl 1,3,5-benzenetricarboxylate" "triallyl benzene-1,3,5-tricarboxylate" "1,3,5-benzenetricarboxylic acid, tri-2-propenyl ester" "1,3,5-benzenetricarboxylic acid, 1,3,5-tri-2-propen-1-yl ester" "trimesic acid triallyl ester" "1,3,5-benzenetricarboxylic acid triallyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -776810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     878.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-473760.0
-    phase     gas;
 }

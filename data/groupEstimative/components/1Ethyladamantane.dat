@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethyl-adamantane" "1-ethyladamantane;" "ambap770-69-4" "lxthccweyokfsr-uhfffaoysa-" "tricyclo[3.3.1.13,7]decane,1-ethyl-" "tricyclo[3.3.1.13,7]decane, 1-ethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -83870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     399.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=207110.0
-    phase     gas;
 }

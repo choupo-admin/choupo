@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group tC; count 2; } { group CH2_ring; count 8; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-pyrrolidin-1-ylbut-2-ynyl)pyrrolidine" "tremorine" "tremorin" "1,4-dipyrrolidino-2-butyne" "1,4-dipyrrolidinyl-2-butyne" "pyrrolidine, 1,1'-(2-butyne-1,4-diyl)bis-" "1,4-dipyrrolidine-2-butyne" "2-butyne, 1,4-bis(1-pyrrolidinyl)-" "dipyrrolidine, 1,1'-(2-butynylene)-" "pyrrolidine, 1,1'-(2-butynylene)di-" "pyrrolidine,1'-(2-butynylene)di-" "(4-pyrrolidinylbut-2-ynyl)pyrrolidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   290310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     571.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=587240.0
-    phase     gas;
 }

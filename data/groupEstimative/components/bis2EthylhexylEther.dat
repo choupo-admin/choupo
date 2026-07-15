@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 10; } { group CH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-ethylhexoxymethyl)heptane" "ether, bis(2-ethylhexyl)" "di-2-ethylhexyl ether" "di-(2-ethylhexyl) ether" "hexane, 1,1'-oxybis(2-ethyl-" "heptane, 3,3'-(oxybis(methylene))bis-" "heptane, 3,3'-[oxybis(methylene)]bis-" "2-ethylhexyl ether" "di(2-ethylhexyl) ether" "heptane,3,3'-[oxybis(methylene)]bis-" "ether,bis(2-ethylhexyl) (6ci,7ci,8ci); bis(2-ethylhexyl) ether;di(2-ethylhexyl)ether; ethylhexyl oxide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -516350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     771.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-26040.0
-    phase     gas;
 }

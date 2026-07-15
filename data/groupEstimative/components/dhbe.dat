@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 2; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(3-oxidanylbutoxy)butan-2-ol" "2-butanol, 4,4'-oxybis-" "dyskinebyl" "boutybil" "discinil" "5-oxa-2,8-nonandiol" "4,4'-oxydi-2-butanol" "4,4'-oxybisbutan-2-ol" "4-(3-hydroxybutoxy)butan-2-ol" "1,1'-dimethyl-3,3'-oxydipropanol" "2-butanol,4,4'-oxydi- (6ci,7ci,8ci); 3,3'-dihydroxydibutyl ether; 4,4'-oxydi-2-butanol;bis(3-hydroxybutyl) ether; colenormol; dhbe; dis-cinil; diskin; dyskinebyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -655690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     561.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-367040.0
-    phase     gas;
 }

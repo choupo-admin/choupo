@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-methyl-3-oxidanyl-butanoate" "ethyl 3-hydroxy-3-methylbutyrate" "(ch3)2c(oh)ch2c(o)oc2h5" "butanoic acid,3-hydroxy-3-methyl-, ethyl ester" "butyricacid, 3-hydroxy-3-methyl-, ethyl ester (6ci,7ci,8ci); ethyl3-hydroxy-3-methylbutanoate; ethyl 3-hydroxy-3-methylbutyrate; ethyl b-hydroxyisovalerate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -666070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     491.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-436290.0
-    phase     gas;
 }

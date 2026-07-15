@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group dCH2; count 2; } { group dCH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bis(4-ethenoxybutyl) benzene-1,4-dicarboxylate" "1,4-benzenedicarboxylicacid, 1,4-bis[4-(ethenyloxy)butyl] ester" "1,4-benzenedicarboxylic acid, bis(4-(ethenyloxy)butyl) ester" "1,4-benzenedicarboxylic acid, bis[4-(ethenyloxy)butyl] ester" "1,4-benzenedicarboxylic acid, 1,4-bis(4-(ethenyloxy)butyl) ester" "1,4-benzenedicarboxylic acid, 1,4-bis[4-(ethenyloxy)butyl] ester" "1,4-benzenedicarboxylicacid, bis[4-(ethenyloxy)butyl] ester (9ci); bis[4-(vinyloxy)butyl] terephthalate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -879210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     938.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-434760.0
-    phase     gas;
 }

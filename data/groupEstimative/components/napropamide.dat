@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group O; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-diethyl-2-naphthalen-1-yloxy-propanamide" "napropamid" "devrinol" "waylay" "racemic devrinol" "n,n-diethyl-2-(1-naphthyloxy)propanamide" "propanamide, n,n-diethyl-2-(1-naphthalenyloxy)-" "propionamide, n,n-diethyl-2-(1-naphthyloxy)-" "napropamide [iso:prop]" "n,n-diethyl-2-(1-naphthyloxy)propionamide" "n,n-diethyl-2-(naphthalen-1-yloxy)propanamide" "n,n-diethyl-2-(1-naphthalenyloxy)propanamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -160630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     641.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176110.0
-    phase     gas;
 }

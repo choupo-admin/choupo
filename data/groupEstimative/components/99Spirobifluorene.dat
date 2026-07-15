@@ -33,9 +33,8 @@ groups
     joback ( { group C_ring; count 1; } { group dCH_ring; count 16; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9,9'-spirobi[fluorene]" "9,9'-spirobi[9h-fluorene]" "9,9'-spirobi(9h-fluorene)" "9,9-spirobi[9h-fluorene]" "bh779" "9,9 inverted exclamation mark -spirobi-fluorene" "9,9'-spirobifluorene(7ci,8ci);9,9-spirobifluorene;bis(2,2'-biphenylene)methane;spirobifluorene;spiro-difluorene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   552890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     511.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=754960.0
-    phase     gas;
 }

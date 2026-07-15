@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 17; } { group dCH; count 2; } { group O; count 3; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-4-[2-[2-(2-dodecoxyethoxy)ethoxy]ethoxy]-4-oxidanylidene-but-2-enoic acid" "2-butenedioic acid (2z)-, mono(2-(2-(2-(c12-14-alkyloxy)ethoxy)ethoxy)ethyl) esters" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1444400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1144.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-754700.0
-    phase     gas;
 }

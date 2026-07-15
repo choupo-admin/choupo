@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 20; } { group CH; count 1; } { group dCH; count 2; } { group OH; count 5; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-hydroxyethyloxy)ethanol;(z)-octadec-9-enoic acid;propane-1,2,3-triol" "9-octadecenoic acid (z)-, mixed esters with diethylene glycol and glycerol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1914270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1647.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1105130.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-bis(bromanyl)-1-methoxy-benzene" "2,4-dibromo-1-methoxybenzene" "benzene, 2,4-dibromo-1-methoxy-" "xgxugxpkrbqins-uhfffaoysa-" "benzene,2,4-dibromo-1-methoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -53780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     423.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=24850.0
-    phase     gas;
 }

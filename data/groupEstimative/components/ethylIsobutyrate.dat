@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-methylpropanoate" "isobutyric acid ethyl ester" "isobutyric acid, ethyl ester" "propanoic acid, 2-methyl-, ethyl ester" "ethyl isobutanoate" "ethyl 2-methylpropionate" "ethyl-2-methylpropanoat" "ethyl 2,2-dimethylacetate" "ethyl isobutyrate (natural)" "2-methyl-propionic acid ethyl ester" "propionic acid, 2-methyl-, ethyl ester" "ethyl 2-methyl-propionyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -489730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     431.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-313170.0
-    phase     gas;
 }

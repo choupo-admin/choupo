@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentyl 4-oxidanylbenzoate" "amyl 4-hydroxybenzoate" "pentyl p-hydroxybenzoate" "p-hydroxybenzoic acid pentyl ester" "n-amyl-4-hydroxybenzoate" "benzoic acid, 4-hydroxy-, pentyl ester" "4-hydroxybenzoic acid pentyl ester" "p-oxybenzoesaurepentylester [german]" "benzoic acid, p-hydroxy-, pentyl ester" "amylparaben" "pentylparaben" "pentyl paraben" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -549070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     594.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-302420.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "heptan-2-one" "methyl pentyl ketone" "butylacetone" "amyl methyl ketone" "methyl n-amyl ketone" "n-amyl methyl ketone" "methyl amyl ketone" "n-pentyl methyl ketone" "pentyl methyl ketone" "methyl n-pentyl ketone" "ketone, methyl pentyl" "amyl-methyl-cetone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -300390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-120860.0
-    phase     gas;
 }

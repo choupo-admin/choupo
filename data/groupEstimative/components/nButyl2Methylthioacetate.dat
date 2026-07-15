@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group COO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butyl 2-methylsulfanylethanoate" "acetic acid, (methylthio)-, butyl ester" "acetic acid, 2-(methylthio)-, butyl ester" "butyl (methylthio)acetate" "butyl 2-methylsulfanylacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -463220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     541.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-269190.0
-    phase     gas;
 }

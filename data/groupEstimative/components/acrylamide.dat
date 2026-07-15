@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-enamide" "propenamide" "acrylic amide" "ethylenecarboxamide" "acrylic acid amide" "akrylamid" "vinyl amide" "propeneamide" "acrylagel" "optimum" "2-propeneamide" "acrylamide solution" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -58610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     346.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-250.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group dCH2; count 1; } { group dCH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z,z)-heptadeca-1,8,11-triene" "1,8,11-heptadecatriene,(8z,11z)-" "1,8,11-heptadecatriene,(z,z)-; 1,8(cis),11(cis)-heptadecatriene; dihydroaplotaxene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -34340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     800.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=340540.0
-    phase     gas;
 }

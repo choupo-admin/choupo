@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-dimethylpyridine" "pyridine, 2,6-dimethyl-" "α,α′-dimethylpyridine" "α,α′-lutidine" "lutidine" "2,6-dimethypyridine" "alpha,alpha'-lutidine" "2,6-dimethyl-pyridine" "alpha,alpha'-dimethylpyridine" "fema no. 3540" "2,6-lutidene" "2,6-litidine-d6" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   70040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     328.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=187890.0
-    phase     gas;
 }

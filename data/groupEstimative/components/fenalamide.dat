@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 6; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group COO; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-[2-(diethylamino)ethylcarbamoyl]-2-phenyl-butanoate" "spasmamide" "femamide" "phenamide" "fenalamidum [inn-latin]" "ethyl n-(2-diethylaminoethyl)-2-phenyl-2-ethylmalonate" "n-(2-(diethylamino)ethyl)-2-ethyl-2-phenylmalonamic acid ethyl ester" "phenylaethylmalonsaeure-aethylester-diaethylaminoaethyl-amid [german]" "benzeneacetic acid, alpha-(((2-(diethylamino)ethyl)amino)carbonyl)-alpha-ethyl-, ethyl ester" "malonamic acid, n-(2-(diethylamino)ethyl)-2-ethyl-2-phenyl-, ethyl ester" "fenalamida" "fenalamidum" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -516570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     885.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-14770.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methylidenefuran-2-one" "5-methylenefuran-2(5h)-one" "4-methylenebut-2-en-4-olide" "5-methylene-2(5h)-furanone" "2(5h)-furanone, 5-methylene-" "cis-4-methylenebut-2-en-4-olide" "2,4-pentadienoicacid, 4-hydroxy-, g-lactone (7ci);protoanemonin (6ci);2,4-pentadien-4-olide;4-hydroxy-2,4-pentadienoic acid lactone;4-hydroxy-2,4-pentadienoic acid g-lactone;5-methylene-2(5h)-furanone;5-methylene-2,5-dihydrofuran-2-one;5-methylene-2-oxodihydrofuran;isomycin;protoanemonene;g-methylenebutenolide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -228650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     290.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-167650.0
-    phase     gas;
 }

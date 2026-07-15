@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group OH; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "13-methyl-6,9,11,12,14,15,16,17-octahydrocyclopenta[a]phenanthrene-3,17-diol" "dihydroequilin" "beta-dihydroequilin" "estra-1,3,5(10),7-tetraene-3,17-diol, (17.alpha.)-" "alpha-equilol" "alpha-dihydroequilin" "17alpha-dihydroequilin" "estra-1,3,5(10),7-tetraene-3,17alpha-diol" "estra-1,3,5(10),7-tetraene-3,17beta-diol" "dihydroequilin 17alpha-form" "agn-pc-00io98" "estra-1,3,5(10),7-tetraene-3,17-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -272040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     574.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77200.0
-    phase     gas;
 }

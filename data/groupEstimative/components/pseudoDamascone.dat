@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2,6,6-trimethylcyclohexen-1-yl)pentan-1-one" "1-(2,6,6-trimethyl-1-cyclohexen-1-yl)pentan-1-one" "1-pentanone, 1-(2,6,6-trimethyl-1-cyclohexen-1-yl)-" "(2,6,6-trimethyl-2-cyclohexenyl)-1-pentanone" "1-(2,6,6-trimethyl-1-cyclohexenyl)pentan-1-one" "1-pentanone,1-(2,6,6-trimethyl-1-cyclohexen-1-yl)-" "1-(2,6,6-trimethyl-1-cyclohexen-1-yl)pentan-1-one;1-pentanone, 1-(2,6,6-trimethyl-1-cyclohexen-1-yl)-;pseudodamascone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -340470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     717.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-32260.0
-    phase     gas;
 }

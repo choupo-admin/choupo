@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(3-hydroxyphenyl)propanoic acid" "3-(m-hydroxyphenyl)propionic acid" "dihydro-3-coumaric acid" "benzenepropanoic acid, 3-hydroxy-" "m-hydroxy-hydrocinnamic acid" "beta-(m-hydroxyphenyl)propionic acid" "m-hydroxyphenylpropionic acid" "3-hydroxyphenylpropionic acid" "beta-(3-hydroxyphenyl)propionic acid" "hydrocinnamic acid, m-hydroxy-" ".beta.-(m-hydroxyphenyl)propionic acid" "3-hydroxybenzenepropanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -520140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-361220.0
-    phase     gas;
 }

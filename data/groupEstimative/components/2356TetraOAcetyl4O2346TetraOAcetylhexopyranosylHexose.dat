@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 8; } { group CH2; count 2; } { group CH; count 4; } { group CH_ring; count 5; } { group O; count 1; } { group O_ring; count 1; } { group OdCH_al; count 1; } { group COO; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3,4,5-triacetyloxy-6-(1,2,4,5-tetraacetyloxy-6-oxidanylidene-hexan-3-yl)oxy-oxan-2-yl]methyl ethanoate" "octaacetyl-aldehydo-cellobiose" "d-glucose, 2,2',3,3',4,4',6,6'-octaacetate" "[3,4,5-triacetyloxy-6-(1,2,4,5-tetraacetyloxy-6-oxohexan-3-yl)oxyoxan-2-yl]methyl acetate" "d-glucose,3,4,6-tetra-o-acetyl-.beta.-d-glucopyranosyl)-, 2,3,5,6-tetraacetate" "[(2r,3r,4s,5r,6s)-3,4,5-triacetyloxy-6-[(2r,3r,4s,5r)-1,2,4,5-tetraacetyloxy-6-oxohexan-3-yl]oxyoxan-2-yl]methyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3557450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1397.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2604870.0
-    phase     gas;
 }

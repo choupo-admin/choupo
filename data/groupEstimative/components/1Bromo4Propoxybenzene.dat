@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-4-propoxy-benzene" "4-n-propoxybromobenzene" "1-(4-bromophenoxy)propane" "4-bromophenyl propyl ether" "p-propoxybromobenzene;p-bromopropoxybenzene;p-bromophenyl propyl ether;4-propoxy-1-bromobenzene;1-bromo-4-(propyloxy)benzene;ether,p-bromophenyl propyl (6ci);1-bromo-4-propoxybenzene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -109920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     456.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37000.0
-    phase     gas;
 }

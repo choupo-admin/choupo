@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-dimethylaminobenzoic acid" "benzoic acid, 3-(dimethylamino)-" "m-(dimethylamino)benzoic acid" "m-(dimethylamino)-benzoic acid" "n,n-dimethyl-m-aminobenzoic acid" "m-dimethylaminobenzoic acid" "benzoic acid, m-(dimethylamino)-" "3-dimethylamino benzoic acid" "3-dimethylamino-benzoic acid" "benzoic acid, m-(dimethylamino)- (8ci)" "o783" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -286770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     463.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-105450.0
-    phase     gas;
 }

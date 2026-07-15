@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-chloranyl-3-(4-chlorophenyl)propanoate" "bidisin" "chlorfenpropmethyl" "methachlorphenprop" "chlorphenprop-methyl" "chlorophenprop-methyl" "chlorfenprop-methyl [bsi:iso]" "methyl alpha-p-dichlorohydrocinnamate" "methyl alpha,4-dichlorophenylpropanoate" "2-chloro-3-(4-chlorophenyl)-methylpropionate" "methyl 2-chloro-3-(4-chlorophenyl)propionate" "methyl 2-chloro-3-(p-chlorophenyl)propionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -378710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     541.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-200570.0
-    phase     gas;
 }

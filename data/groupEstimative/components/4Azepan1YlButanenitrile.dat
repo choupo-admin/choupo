@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH2_ring; count 6; } { group N; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(hexamethyleneimino)butyronitrile" "hexahydro-1h-azepine-1-butyronitrile" "1h-azepine-1-butyronitrile, hexahydro-" "1-(hexahydro-1h-azepin-1-yl)butyronitrile" "butyronitrile, 1-(hexahydro-1h-azepin-1-yl)-" "4-azaperhydroepinylbutanenitrile" "1h-azepine-1-butanenitrile,hexahydro-" "4-hexamethyleneiminobutyronitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   57340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     579.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=309440.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 9; } { group OH; count 3; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-bis(2-hydroxyethyl)-6-oxidanyl-hexanamide" "6-hydroxy-n,n-bis(2-hydroxyethyl)hexanamide" "hexanamide, 6-hydroxy-n,n-bis(2-hydroxyethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -751470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     740.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-395280.0
-    phase     gas;
 }

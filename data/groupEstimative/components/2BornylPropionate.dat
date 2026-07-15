@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4,7,7-trimethyl-3-bicyclo[2.2.1]heptanyl) propanoate" "bicyclo[2.2.1]heptan-2-ol, 1,7,7-trimethyl-, propanoate" "borneol, propionate" "bicyclo(2.2.1)heptan-2-ol, 1,7,7-trimethyl-, propanoate" "bicyclo(2.2.1)heptan-2-ol, 1,7,7-trimethyl-, 2-propanoate" "bicyclo[2.2.1]heptan-2-ol, 1,7,7-trimethyl-, 2-propanoate" "bornyl propionate" "borneol, propionate (8ci)" "1,7,7-trimethylbicyclo(2.2.1)hept-2-yl propionate" "bicyclo[2.2.1]heptan-2-ol,7,7-trimethyl-, propanoate" "endo-1,7,7-trimethylbicyclo(2.2.1)hept-2-yl propionate" "bicyclo[2.2.1]heptan-2-ol,7,7-trimethyl-, propanoate, exo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -499690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     607.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-168790.0
-    phase     gas;
 }

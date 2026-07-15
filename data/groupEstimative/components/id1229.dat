@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group F; count 1; } { group OH_phenol; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-butanone, 1-(4-fluorophenyl)-4-(1,4,5,6-tetrahydro-8-hydroxy-6,11-dimethyl-2,6-methano-3-benzazocin-3(2h)-yl)-, (2-alpha,6-alpha,11r*)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -366540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     813.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97490.0
-    phase     gas;
 }

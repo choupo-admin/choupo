@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylpropanal" "hydrocinnamaldehyde" "3-phenylpropionaldehyde" "hydrocinnamic aldehyde" "benzylacetaldehyde" "propanal, phenyl-" "dihydrocinnamaldehyde" "3-phenyl-1-propanal" "3-phenylpropylaldehyde" "3-phenylpropyl aldehyde" "beta-phenylpropionaldehyde" "propionaidehyde, 3-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -78140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     418.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37790.0
-    phase     gas;
 }

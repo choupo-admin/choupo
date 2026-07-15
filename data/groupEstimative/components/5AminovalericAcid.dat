@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-azanylpentanoic acid" "5-aminopentanoic acid" "homopiperidinic acid" "delta-aminovaleric acid" "valeric acid, 5-amino-" "delta-amino-n-valeric acid" "5-amino-pentanoic acid" "5-aminopentanoate" "5-aminovalerate" "5-amino-n-valeric acid" "valeric acid, 5-amino- (8ci)" "pentanoic acid, 5-amino- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -463010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-286240.0
-    phase     gas;
 }

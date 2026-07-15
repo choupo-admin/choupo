@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-methoxyphenoxy)ethanoic acid" "2-(2-methoxyphenoxy)acetic acid" "guaiacoxyacetic acid" "2-methoxyphenoxyacetic acid" "(o-methoxyphenoxy)acetic acid" "acetic acid, (2-methoxyphenoxy)-" "acetic acid, (o-methoxyphenoxy)-" "acide o-methoxyphenoxyacetique [french]" "o-methoxy phenoxyacetic acid" "acide o-methoxyphenoxyacetique" "acetic acid,2-(2-methoxyphenoxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -618740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     469.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-426230.0
-    phase     gas;
 }

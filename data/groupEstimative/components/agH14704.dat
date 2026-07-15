@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH; count 6; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl deca-2,4,7-trienoate" "ethyl2,4,7-decatrienoate" "2,4,7-decatrienoicacid, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -256630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     654.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-19550.0
-    phase     gas;
 }

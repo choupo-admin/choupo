@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "aminohydroquinone dimethyl ether" "2,5-dimethoxy aniline" "benzenamine, 2,5-dimethoxy-" "aniline, 2,5-dimethoxy-" "1-amino-2,5-dimethoxybenzene" "2,5-dimethoxybenzenamine" "2,5-dimethoxyphenylamine" "2,5 dimethoxy aniline" "dimethoxyaniline(2,5-)" "2-amino-1,4-dimethoxybenzene" "2-aminohydroquinone dimethyl ether" "l096" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -225510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     423.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-33920.0
-    phase     gas;
 }

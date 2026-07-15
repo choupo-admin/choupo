@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "myristaldehyde" "myristic aldehyde" "n-tetradecanal" "tetradecyl aldehyde" "myristylaldehyde" "1-tetradecanal" "tetradecylaldehyde" "aldehyde c-14" "aldehyde c-14, myristic" "c-14 aldehyde, myristic" "tetradecanaldehyde" "myristyl aldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -417870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     719.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-32520.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(phenylmethyl)piperidin-4-amine" "1-benzylpiperidin-4-amine" "1-benzyl-piperidin-4-ylamine" "1-benzyl-4-aminopiperidine" "n-benzyl-4-amino piperidine" "4-amino-1-n-benzylpiperidine" "1-benzyl-4-piperidylamine" "4-amino-n-benzylpiperidine" "n-(4-aminobenzyl)piperidine" "4-amino-1-benzyl-piperidine" "4-piperidinamine, 1-(phenylmethyl)-" "1-benzyl-4-pyridinamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   107320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     534.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=376350.0
-    phase     gas;
 }

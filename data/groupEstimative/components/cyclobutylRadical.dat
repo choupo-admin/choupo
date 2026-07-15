@@ -30,9 +30,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group dCH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclobutane" "cyclobutanyl" "cyclobutan-1-yl" "cyclobutyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -10020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     265.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=54140.0
-    phase     gas;
 }

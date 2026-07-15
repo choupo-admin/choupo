@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 1; } { group dCH_ring; count 13; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-(phenylmethylidene)fluorene" "fluorene, 9-benzylidene-" "9h-fluorene, 9-(phenylmethylene)-" "9-(phenylmethylene)fluorene" "benzalfluorene" "9-benzylidene-9h-fluorene" "1-phenyl-2-biphenyleneethylene" "9h-fluorene,9-(phenylmethylene)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   412010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     487.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=573610.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylcyclopropane-1-carboxylic acid" "trans-2-phenylcyclopropanecarboxylic acid" "2-phenyl-cyclopropanecarboxylic acid" "trans-2-phenyl-1-cyclopropanecarboxylic acid" "cis-1-phenylcyclopropane-2-carboxylic acid" "agn-pc-01kc1w" "cyclopropanecarboxylic acid, 2-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     359.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-145140.0
-    phase     gas;
 }

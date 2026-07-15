@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 12; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methyl-2-[6-methyl-1,8-bis(oxidanyl)naphthalen-2-yl]naphthalene-1,8-diol" "6,6'-dimethyl-(2,2'-binaphthalene)-1,1',8,8'-tetrol" "(2,2'-binaphthalene)-1,1'-8,8'-tetrol, 6,6'-dimethyl-" "6,6'-dimethyl-2,2'-binaphthalene-1,1',8,8'-tetrol" "2-(1,8-dihydroxy-6-methylnaphthalen-2-yl)-6-methylnaphthalene-1,8-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -397330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     663.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-84520.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 14; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-naphthalen-1-ylbutyl)naphthalene" "naphthalene, 1,1'-(1,4-butanediyl)bis-" "1,1'-butane-1,4-diyldinaphthalene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   293570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     647.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=570060.0
-    phase     gas;
 }

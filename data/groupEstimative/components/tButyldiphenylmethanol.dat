@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-dimethyl-1,1-diphenyl-propan-1-ol" "tert-butyldiphenylmethanol" "2,2-dimethyl-1,1-diphenylpropan-1-ol" "2,2-dimethyl-1,1-diphenyl-1-propanol" "tert-butyldiphenyl-methanol" "benzenemethanol, " "a-(1,1-dimethylethyl)-" "a-phenyl-" "benzhydrol,a-tert-butyl- (7ci,8ci);1,1-diphenyl-2,2-dimethylpropanol;2,2-dimethyl-1,1-diphenyl-1-propanol;2,2-dimethyl-1,1-diphenylpropanol;tert-butyldiphenylmethanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -90880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     578.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=185940.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH_ring; count 5; } { group OH; count 4; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methyloxane-2,3,4,5-tetrol" "d(+)fucose" "6-methyltetrahydropyran-2,3,4,5-tetraol" "fucose" "alpha-l-rhamnopyranose" "l-galactose, 6-deoxy-" "fucose,l" "(2r,3r,4s,5s,6r)-6-methyloxane-2,3,4,5-tetrol" "agn-pc-00yot9" "6-desoxy-d-galactose" "?-l-galactopyranose, 6-deoxy-" "alpha-l-galactopyranose, 6-deoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -935130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     342.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-640150.0
-    phase     gas;
 }

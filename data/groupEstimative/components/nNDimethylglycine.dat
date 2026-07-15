@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(dimethylamino)ethanoic acid" "dimethylglycine" "glycine, n,n-dimethyl-" "(dimethylamino)acetic acid" "n,n-dimethylaminoacetic acid" "n-methylsarcosine" "2-(dimethylamino)acetic acid" "n,n-dimethyl glycine" "2-(dimethylamino)acetate" "dmg" "(dimethylamino)acetate" "n,n-dimethylaminoacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -408630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-250330.0
-    phase     gas;
 }

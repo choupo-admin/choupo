@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-chloranyl-4-fluoranyl-phenyl)methanol" "(2-chloro-4-fluorophenyl)methanol" "2-chloro-4-fluorobenzylalcohol" "(2-chloro-4-fluorophenyl)methan-1-ol" "2-chloro-4-fluorobenzyl alcohol 97%" "(2-chloro-4-fluoro-phenyl)methanol" "(2-chloro-4-fluorophenyl)methanol;2-chloro-4-fluorobenzyl alcohol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -338300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     425.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-242350.0
-    phase     gas;
 }

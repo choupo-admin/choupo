@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-2-(2-methylprop-1-enyl)oxane" "rosenoxide" "rosoxide" "trans-rose oxide" "2h-pyran, tetrahydro-4-methyl-2-(2-methyl-1-propenyl)-" "2h-pyran, tetrahydro-4-methyl-2-(2-methylpropenyl)-" "tetrahydro-4-methyl-2-(2-methyl-1-propenyl)-2h-pyran" "pyran, tetrahydro-4-methyl-2-(2-methylpropenyl)-" "tetrahydro-4-methyl-2-(2-methylprop-1-enyl)pyran" "tetrahydro-4-methyl-2-(2-methylpropen-1-yl)pyran" "tetrahydro-4-methyl-2-(2-methylpropenyl)-2h-pyran" "4-methyl-2-(2-methyl-1-propenyl)tetrahydro-2h-pyran" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -240320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     410.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=35610.0
-    phase     gas;
 }

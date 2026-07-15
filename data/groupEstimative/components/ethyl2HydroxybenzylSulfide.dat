@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(ethylsulfanylmethyl)phenol" "alpha-(ethylthio)-o-cresol" "phenol, 2-[(ethylthio)methyl]-" "2-[(ethylthio)methyl]phenol" "2-ethylthiomethylphenol" "2-[(ethylsulfanyl)methyl]phenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -128000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     488.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=15810.0
-    phase     gas;
 }

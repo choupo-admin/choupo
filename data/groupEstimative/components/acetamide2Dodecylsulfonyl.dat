@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group CdO; count 1; } { group dO_oth; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-dodecylsulfonylethanamide" "2-dodecylsulfonylacetamide" "2-(dodecanesulfonyl)acetamide" "2-(dodecylsulphonyl)acetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -906300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1038.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-497130.0
-    phase     gas;
 }

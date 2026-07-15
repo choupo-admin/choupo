@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 14; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-hexoxyphenyl) 4-decoxybenzoate" "4-(n-decyloxy)benzoic acid,4-(n-hexyloxy)phenyl ether" "4-n-hexoxyphenyl-4'-n-decyloxybenzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -773490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1134.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121510.0
-    phase     gas;
 }

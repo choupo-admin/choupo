@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 6; } { group Br; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[2-[3,4-bis(bromanyl)cyclohexyl]-1,2-bis(bromanyl)ethyl]-1,2-bis(bromanyl)cyclohexane" "cyclohexane, 1,1'-(1,2-dibromo-1,2-ethanediyl)bis(3,4-dibromo-" "cyclohexane, 1,1'-(1,2-dibromo-1,2-ethanediyl)bis[3,4-dibromo-" "1,1'-(1,2-dibromo-1,2-ethanediyl)bis(3,4-dibromocyclohexane)" "1,2-dibromo-4-[1,2-dibromo-2-(3,4-dibromocyclohexyl)ethyl]cyclohexane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -157590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     758.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166100.0
-    phase     gas;
 }

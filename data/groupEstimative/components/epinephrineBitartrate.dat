@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 3; } { group OH_phenol; count 2; } { group COOH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r,3r)-2,3-bis(oxidanyl)butanedioic acid;4-[(1r)-2-(methylamino)-1-oxidanyl-ethyl]benzene-1,2-diol" "asthmahaler" "bronitin" "adrenaline acid tartrate" "bronitin mist" "l-adrenaline tartrate" "l-epinephrine tartrate" "epinephrine d-bitartrate" "l-epinephrine bitartrate" "bronkaid mist suspension" "(-)-adrenaline tartrate" "l-adrenaline d-bitartrate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1660960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     987.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1259220.0
-    phase     gas;
 }

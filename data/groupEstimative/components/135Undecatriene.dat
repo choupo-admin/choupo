@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH2; count 1; } { group dCH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "undeca-1,3,5-triene" "(e,e)-undeca-1,3,5-triene" "(e,z)-undeca-1,3,5-triene" "(z,e)-undeca-1,3,5-triene" "(z,z)-undeca-1,3,5-triene" "1,3,5-undecatriene,(3e,5e)-" "1,3,5-undecatriene,(3e,5z)-" "1,3,5-undecatriene,(3z,5e)-" "1,3,5-undecatriene,(z,z)- (8ci,9ci)" "(z,z)-1,3,5-undecatriene;cis,cis-undeca-1,3,5-triene" "1,3,5-undecatriene,(e,z)-; cis,trans-1,3,5-undecatriene" "1,3,5-undecatriene,(e,e)- (8ci); (3e,5e)-1,3,5-undecatriene; (3e,5e)-1,3,5-undecatriene;(e,e)-1,3,5-undecatriene; trans,trans-1,3,5-undecatriene; trans-galbanolene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   89500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     566.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=290020.0
-    phase     gas;
 }

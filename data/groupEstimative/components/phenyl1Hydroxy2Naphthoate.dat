@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 11; } { group dC_ring; count 5; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phenyl 1-oxidanylnaphthalene-2-carboxylate" "1-hydroxy-2-naphthoic acid phenyl ester" "phenyl 1-hydroxynaphthalene-2-carboxylate" "phenyl 1-hydroxy-2-naphthalenecarboxylate" "2-naphthalenecarboxylic acid, 1-hydroxy-, phenyl ester" "2-naphthoic acid, phenyl ester" "qhdyimwkscjtim-uhfffaoysa-" "m820" "1-hydroxy-2-naphthalenecarboxylic acid phenyl ester" "2-naphthoic acid, 1-hydroxy-, phenyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -236140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     568.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-50890.0
-    phase     gas;
 }

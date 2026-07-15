@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[4-[2,4-bis(oxidanyl)phenyl]hexan-3-yl]benzene-1,3-diol" "resorcinol, 4,4'-(1,2-diethylethylene)di-" "agn-pc-00l54q" "4-[4-(2,4-dihydroxyphenyl)hexan-3-yl]benzene-1,3-diol" "4-[(3s,4r)-4-(2,4-dihydroxyphenyl)hexan-3-yl]benzene-1,3-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -661590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     731.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-297860.0
-    phase     gas;
 }

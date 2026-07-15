@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 8; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-fluoranyl-5-methyl-chrysene" "chrysene, 6-fluoro-5-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   132260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     470.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=308130.0
-    phase     gas;
 }

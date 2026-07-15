@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group N; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[ethyl-(4-methanoyl-3-methyl-phenyl)amino]propanenitrile" "2-methyl-n-ethyl-n-(2-cyanoethyl)-4-aminobenzaldehyde" "3-(ethyl(4-formyl-3-methylphenyl)amino)propanenitrile" "propanenitrile, 3-(ethyl(4-formyl-3-methylphenyl)amino)-" "propanenitrile, 3-[ethyl(4-formyl-3-methylphenyl)amino]-" "i654" "3-(ethyl(4-formyl-3-methylphenyl)amino)propiononitrile" "propanenitrile,3-[ethyl(4-formyl-3-methylphenyl)amino]-" "propionitrile,3-(n-ethyl-4-formyl-m-toluidino)- (8ci);o-tolualdehyde,4-[(2-cyanoethyl)ethylamino]- (7ci);" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   210800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     646.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=439650.0
-    phase     gas;
 }

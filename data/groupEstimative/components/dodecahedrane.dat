@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 20; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5,2,1,6,3,4-[2,3]butanediyl[1,4]diylidenedipentaleno[2,1,6-cde:2',1',6'-gha]pentalene, hexadecahydro-" "5,2,1,6,3,4-(2,3)butanediyl(1,4)diylidenedipentaleno(2,1,6-cde:2',1',6'-gha)pentalene, hexadecahydro-" "(c20-ih)[5]fullerane" "hexadecahydro-5,2,1,6,3,4-[2,3]butanediyl[1,4]diylidenedipentaleno[2,1,6-cde:2',1',6'-gha]pentalene" "undecacyclo[9.9.0.0(2,9).0(3,7).0(4,20).0(5,18).0(6,16).0(8,15).0(10,14).0(12,19).0(13,17)]icosane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   241690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     -698.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=873680.0
-    phase     gas;
 }

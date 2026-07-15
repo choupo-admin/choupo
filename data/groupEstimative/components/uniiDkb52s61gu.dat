@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(phenylmethylidene)heptan-1-ol" "a-amylcinnamyl alcohol" "1-heptanol,2-(phenylmethylene)-" "1-heptanol,2-benzylidene- (6ci,8ci); 2-amyl-3-phenyl-2-propen-1-ol;2-benzylidene-1-heptanol; 2-pentyl-3-phenyl-2-propen-1-ol; buxinol; a-amylcinnamic alcohol; a-amylcinnamyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -140560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     635.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=114260.0
-    phase     gas;
 }

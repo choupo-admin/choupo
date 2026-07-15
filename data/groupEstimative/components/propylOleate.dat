@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 16; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propyl octadec-9-enoate" "9-octadecenoic acid (9z)-, propyl ester" "oleic acid propyl ester" "9-octadecenoic acid(9z)-, propyl ester" "9-octadecenoicacid (z)-, propyl ester;oleic acid, propyl ester (6ci,7ci,8ci);emery 2302;propyl (z)-9-octadecenoate;propyl oleate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -676830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1018.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104210.0
-    phase     gas;
 }

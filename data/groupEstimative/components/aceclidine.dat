@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-azabicyclo[2.2.2]octan-3-yl ethanoate" "3-acetoxyquinuclidine" "glaucostat" "3-quinuclidinol acetate (ester)" "3-quinuclidinol acetate" "aceclidine [usan:inn]" "quinuclidin-3-yl acetate" "aceclidinum [inn-latin]" "3-quinuclidinol, acetate (ester)" "1-azabicyclo(2.2.2)octan-3-ol, acetate (ester)" "1-azabicyclo(2.2.2)octan-3-ol, acetate" "aceclidin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -339400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-65290.0
-    phase     gas;
 }

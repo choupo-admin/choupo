@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphthalen-1-yl ethanoate" "alpha-naphthyl acetate" "1-acetoxynaphthalene" "1-naphthol, acetate" "1-naphthalenol, acetate" "a-naphthyl acetate" "naphthalen-1-yl acetate" "naphthyl acetate" "naphthalene, 1-acetoxy-" "acetic acid 1-naphthyl ester" "alpha-naphthol acetate" "alpha-acetoxynaphthalene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -192160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-50780.0
-    phase     gas;
 }

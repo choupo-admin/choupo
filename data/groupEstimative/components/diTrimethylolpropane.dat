@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group C; count 2; } { group OH; count 4; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2,2-bis(hydroxymethyl)butoxymethyl]-2-ethyl-propane-1,3-diol" "2,2'-(oxydimethanediyl)bis(2-ethylpropane-1,3-diol)" "ditrimethylolpropane" "1,3-propanediol, 2,2'-(oxybis(methylene))bis(2-ethyl-" "1,3-propanediol, 2,2'-[oxybis(methylene)]bis[2-ethyl-" "2-ethyl-1h-imidazole-4-carboxylate" "2,2'-oxybis(methylene)bis(2-ethyl-1,3-propanediol)" "2,2'-(oxybis(methylene))bis(2-ethylpropane-1,3-diol)" "2-[2,2-bis(hydroxymethyl)butoxymethyl]-2-ethylpropane-1,3-diol" "2,2 inverted exclamation marka-oxybis(methylene)bis(2-ethyl-1,3-propanediol)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1049650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     760.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-596440.0
-    phase     gas;
 }

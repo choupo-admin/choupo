@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group tC; count 2; } { group Cl; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-1-iodanyl-prop-1-yne" "usaf do-18" "3-chloro-1-iodoprop-1-yne" "propyne, 3-chloro-1-iodo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   228180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     333.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=223370.0
-    phase     gas;
 }

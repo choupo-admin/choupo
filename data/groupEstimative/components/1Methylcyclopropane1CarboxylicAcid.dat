@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methylcyclopropanecarboxylic acid" "1-methyl-cyclopropanecarboxylic acid" "1-carboxy-1-methylcyclopropane" "dizklzklnkqfgb-uhfffaoysa-" "1-methyl cyclopropanecarboxylic acid" "cyclopropanecarboxylicacid, 1-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -408760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     383.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-297430.0
-    phase     gas;
 }

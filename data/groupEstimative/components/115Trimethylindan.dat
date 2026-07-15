@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,6-trimethyl-1,2-dihydroindene" "1h-indene, 2,3-dihydro-1,1,5-trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   10620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=198570.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(dimethylamino)-1-phenyl-propan-1-ol" "n-methylephedrine" "methylephedrin [german]" "2-(dimethylamino)-1-phenyl-1-propanol" "2-(dimethylamino)-1-phenylpropan-1-ol" "1-phenyl-2-dimethylaminopropanol" "benzyl alcohol, alpha-(1-(dimethylamino)ethyl)-" "(1r,2s)-(-)-n-methylephedrine" "benzenemethanol, .alpha.-[1-(dimethylamino)ethyl]-, [r-(r*,s*)]-" "(1s,2r)-2-(dimethylamino)-1-phenylpropan-1-ol" "benzyl alcohol, .alpha.-(1-(dimethylamino)ethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -129100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     525.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=123230.0
-    phase     gas;
 }

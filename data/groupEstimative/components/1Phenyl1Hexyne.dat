@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group tC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hex-1-ynylbenzene" "benzene, 1-hexynyl-" "1-hexyne, 1-phenyl-" "1-hexynylbenzene" "hex-1-ynyl-benzene" "hex-1-yn-1-ylbenzene" "1-butyl-2-phenylacetylene" "benzene, 1-hexyn-1-yl-" "1-hexyne,1-phenyl- (6ci,7ci,8ci); benzene, 1-hexynyl- (9ci); (1-hexyn-1-yl)benzene;1-butyl-2-phenylacetylene; 1-phenyl-1-hexyne; butylphenylacetylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   217820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     488.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=365370.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 7; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octyl 2-methylpropanoate" "isobutyric acid, octyl ester" "caprylyl isobutyrate" "n-octyl isobutyrate" "propanoic acid, 2-methyl-, octyl ester" "acetyl 2-methylpropanoate" "propanoic acid, 2-methyl-, acetyl ester" "isobutyric acid, octyl ester (6ci,7ci,8ci)" "octyl 2-methyl-propionyl" "we(8:0/3:0(2me))" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -613570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     665.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-262650.0
-    phase     gas;
 }

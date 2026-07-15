@@ -38,9 +38,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group Cl; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3,3-bis(chloranyl)oxolan-2-yl] methanoate" "(3,3-dichlorooxolan-2-yl) formate" "3,3-dichloro-2-formoxytetrahydrofuran" "2-furanol,3,3-dichlorotetrahydro-, formate (9ci);3,3-dichloro-2-(formyloxy)tetrahydrofuran" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -178180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     526.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-51450.0
-    phase     gas;
 }

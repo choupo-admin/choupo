@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 11; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1h,3h-cyclobuta(1,11)cycloundeca(1,2-c)furan, 4,5,7,8,9,10,11,12,13,13a-decahydro-" "4,5,7,8,9,10,11,12,13,13a-decahydro-1h,3h-cyclobuta(1,11)cycloundeca(1,2-c)furan" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -227760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     625.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=109400.0
-    phase     gas;
 }

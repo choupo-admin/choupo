@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 11; } { group dC_ring; count 9; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo[j]fluoranthene,9-fluoro-" "benzo(j)fluoranthene, 4-fluoro-" "benzo[j]fluoranthene,4-fluoro- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   257230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     397.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=417440.0
-    phase     gas;
 }

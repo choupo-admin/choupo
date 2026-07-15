@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 1; } { group dC_ring; count 5; } { group F; count 4; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,6-tetrakis(fluoranyl)aniline" "2,4,5,6-tetrafluoroaniline" "benzenamine, 2,3,4,6-tetrafluoro-" "2,3,4,6-tetrafluorophenylamine" "benzenamine,2,3,4,6-tetrafluoro-" "aniline,2,3,4,6-tetrafluoro- (8ci);2,3,4,6-tetrafluoroaniline;4-amino-1,2,3,5-tetrafluorobenzene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -727170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     437.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-639260.0
-    phase     gas;
 }

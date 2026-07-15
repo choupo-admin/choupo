@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-3,7-dimethyl-octane" "3,7-dimethyloctyl bromide" "perhydrogeranyl bromide" "tetrahydrogeranyl bromide" "dihydrocitronellyl bromide" "3,7-dimethyl-1-bromooctane" "( inverted exclamation marka)-1-bromo-3,7-dimethyloctane" "(?a'a a'a currency)-1-bromo-3,7-dimethyloctane;1-bromo-3,7-dimethyloctane;3,7-dimethyl-1-bromooctane;3,7-dimethyloctylbromide;dihydrocitronellyl bromide;geranyl bromide, perhydro-;tetrahydrogeranyl bromide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -233960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     577.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=42760.0
-    phase     gas;
 }

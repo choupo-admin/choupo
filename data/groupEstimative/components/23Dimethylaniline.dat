@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-xylidine" "benzenamine, 2,3-dimethyl-" "3-amino-o-xylene" "2,3-dimethylbenzenamine" "2,3-dimethylphenylamine" "ortho-xylidine" "vic-o-xylidine" "2,3-xylylamine" "1-amino-2,3-dimethylbenzene" "benzene, 1-amino-2,3-dimethyl-" "2,3-dimethyl-phenylamine" "agn-pc-00fryo" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   38930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176080.0
-    phase     gas;
 }

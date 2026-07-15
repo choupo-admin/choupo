@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group O; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxyethanenitrile" "acetonitrile, methoxy-" "acetonitrile, 2-methoxy-" "2-methoxyacetonitrile" "2-methoxy-acetonitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -72590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     290.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=2560.0
-    phase     gas;
 }

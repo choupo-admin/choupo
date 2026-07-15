@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(dibutylamino)butan-1-ol" "4-(dibutylamino)-1-butanol" "4-(dibutyl-amino)-butan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -375710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     690.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=24120.0
-    phase     gas;
 }

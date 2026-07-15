@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group C; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "a-methyl-" "a-(trifluoromethyl)-" "a-valerolactone" "gamma-methyl-a-(trifluoromethyl)-gamma-valerolactone" "5,5-dimethyl-3-(trifluoromethyl)dihydrofuran-2(3h)-one" "dihydro-5,5-dimethyl-3-(trifluoromethyl)-2(3h)-furanone" "gamma -methyl-alpha-(trifluoromethyl)- gamma-valerolactone" "5,5-dimethyl-3-(trifluoromethyl)-3,4,5-trihydrofuran-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1034470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     473.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-836350.0
-    phase     gas;
 }

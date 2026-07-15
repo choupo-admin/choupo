@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 1-azabicyclo[2.2.2]octane-2-carboxylate" "ethyl 1-aza-bicyclo[2.2.2]octane-2-carboxylate" "1-azabicyclo[2.2.2]octane-2-carboxylicacid, ethyl ester" "2-quinuclidinecarboxylicacid, ethyl ester (7ci); 2-(ethoxycarbonyl)quinuclidine; 2-carbethoxyquinuclidine;ethyl 2-quinuclidinecarboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -360040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-56870.0
-    phase     gas;
 }

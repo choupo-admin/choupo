@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propan-1-ol" "propanol" "propyl alcohol" "n-propanol" "ethylcarbinol" "n-propyl alcohol" "1-hydroxypropane" "optal" "osmosol extra" "propylic alcohol" "propanol-1" "n-propan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     323.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-162440.0
-    phase     gas;
 }

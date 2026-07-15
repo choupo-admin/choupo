@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group C; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-phenylpropan-2-yl)phenol" "2-cumylphenol" "o-(alpha,alpha-dimethylbenzyl)phenol" "phenol, o-(alpha,alpha-dimethylbenzyl)-" "o-(.alpha.,.alpha.-dimethylbenzyl)phenol" "phenol, o-(.alpha.,.alpha.-dimethylbenzyl)-" "phenol,2-(1-methyl-1-phenylethyl)-" "phenol, 2-(1-methyl-1-phenylethyl)-" "phenol, 2-(1-methyl-1-phenylethyl)- (9ci)" "phenol, o-(a,a-dimethylbenzyl)- (7ci,8ci); 2-cumylphenol; o-(a,a-dimethylbenzyl)phenol; o-cumylphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -65930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=148460.0
-    phase     gas;
 }

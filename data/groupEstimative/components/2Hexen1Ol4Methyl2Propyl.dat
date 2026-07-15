@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-2-propyl-hex-2-en-1-ol" "2-hexen-1-ol, 4(or 6)-methyl-2-propyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -299810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-34270.0
-    phase     gas;
 }

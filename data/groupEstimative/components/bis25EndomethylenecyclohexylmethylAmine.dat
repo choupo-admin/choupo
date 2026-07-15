@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 6; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3-bicyclo[2.2.1]heptanyl)-n-(3-bicyclo[2.2.1]heptanylmethyl)methanamine" "dimethylamine, 1,1'-di-2-norbornyl-, endo,endo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -81900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=376610.0
-    phase     gas;
 }

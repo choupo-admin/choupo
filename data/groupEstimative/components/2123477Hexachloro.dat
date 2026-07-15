@@ -34,9 +34,8 @@ groups
     joback ( { group C_ring; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,7,7-hexakis(chloranyl)bicyclo[2.2.1]hepta-2,5-diene" "1,2,3,4,7,7-hexachloronorbornadiene" "2,5-norbornadiene, 1,2,3,4,7,7-hexachloro-" "1,2,3,4,7,7-hexachlorobicyclo[2.2.1]hepta-2,5-diene" "bicyclo[2.2.1]hepta-2,5-diene, 1,2,3,4,7,7-hexachloro-" "1,2,3,4,7,7-hexachlorobicyclo(2.2.1)hepta-2,5-diene" "bicyclo(2.2.1)hepta-2,5-diene, 1,2,3,4,7,7-hexachloro-" "1,3,4,7,7-hexachloronorbornadiene" "1,3,4,7,7-hexachloro-2,5-norbornadiene" "1,2,3,4,7,7-hexachloro-2,5-norbornadiene" "1,3,4,7,7-hexachlorobicyclo[2.2.1]hepta-2,5-diene" "2,5-norbornadiene, 1,2,3,4,7,7-hexachloro- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -24810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     547.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62360.0
-    phase     gas;
 }

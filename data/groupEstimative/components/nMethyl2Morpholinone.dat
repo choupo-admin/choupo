@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methylmorpholin-2-one" "2-morpholinone, 4-methyl-," "4-methyl-2-morpholinone" "4-methyl-morpholin-2-one" "2-morpholinone, 4-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -303140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     370.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-139910.0
-    phase     gas;
 }

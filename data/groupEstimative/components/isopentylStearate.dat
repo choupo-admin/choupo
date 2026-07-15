@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 18; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbutyl octadecanoate" "3-methylbutyl stearate" "3-methyl-2-butenyl octadecanoate" "octadecanoic acid,3-methylbutyl ester" "we(4:1(2)(3me)/18:0)" "stearicacid, isopentyl ester (8ci); isopentyl alcohol, stearate (8ci); 3-methylbutylstearate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -840610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1093.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-170030.0
-    phase     gas;
 }

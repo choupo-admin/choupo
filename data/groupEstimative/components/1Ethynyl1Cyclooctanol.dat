@@ -33,9 +33,8 @@ groups
     joback ( { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 7; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethynylcyclooctan-1-ol" "cyclooctanol, 1-ethynyl-" "1-ethynylcyclooctanol" "1-aethinyl-cyclooctanol-(1) [german]" "1-aethinyl-cyclooctanol-(1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -52820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     644.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=114330.0
-    phase     gas;
 }

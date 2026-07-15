@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group Cl; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-n,n-dimethyl-propan-1-amine" "2-chloro-n,n-dimethylpropan-1-amine" "2-chloropropyldimethylamine" "propylamine, 2-chloro-n,n-dimethyl-" "(2-chloropropyl)dimethylamine" "2-chloro-n,n-dimethylpropylamine" "n,n-dimethyl-2-chloropropylamine" "2-chloro-n,n-dimethyl propylamine" "1-propanamine, 2-chloro-n,n-dimethyl-" "2-dimethylaminoisopropyl chloride hydrochloride" "1-propanamine,2-chloro-n,n-dimethyl-" "2-chloro-n,n-dimethyl-1-propylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -100020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     390.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=87630.0
-    phase     gas;
 }

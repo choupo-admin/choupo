@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-1-ethylsulfanylbut-1-ene" "(e)-1-ethylthio-1-butene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -8080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     444.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=112980.0
-    phase     gas;
 }

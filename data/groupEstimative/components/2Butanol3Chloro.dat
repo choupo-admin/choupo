@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 2; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranylbutan-2-ol" "3-chlorobutan-2-ol" "3-chloro-2-butanol" ".beta.-butylene chlorohydrin" "2-butanol, 3-chloro-, threo-" "2-butanol, 3-chloro-, erythro-" "2-butanol, 3-chloro-, (r*,r*)-" "2-butanol, 3-chloro-, (r*,s*)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -304420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     377.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-170830.0
-    phase     gas;
 }

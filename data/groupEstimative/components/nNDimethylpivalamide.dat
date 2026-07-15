@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group C; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n,2,2-tetramethylpropanamide" "n,n,2,2-tetramethylpropionamide" "nn-dimethylpivalamide" "n,n-dimethyl-tert-butylcarboxamide" "propanamide,n,n,2,2-tetramethyl-" "2,2-dimethyl-n,n-dimethylpropanamide" "propionamide,n,n,2,2-tetramethyl- (8ci); 2,2,n,n-tetramethylpropanamide;2,2,n,n-tetramethylpropionamide; n,n,2,2-tetramethylpropionamide;n,n-dimethylpivalamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -241610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     432.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-7240.0
-    phase     gas;
 }

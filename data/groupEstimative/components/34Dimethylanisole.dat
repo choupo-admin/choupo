@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methoxy-1,2-dimethyl-benzene" "4-methoxy-1,2-dimethylbenzene" "4-methoxy-o-xylene" "benzene, 4-methoxy-1,2-dimethyl-" "1,2-dimethyl-4-methoxybenzene" "3,4-dimethylphenyl methyl ether" "lvubsvwmowkpdj-uhfffaoysa-" "anisole,3,4-dimethyl- (6ci,7ci,8ci);1,2-dimethyl-4-methoxybenzene;1-methoxy-3,4-dimethylbenzene;2-methyl-4-methoxytoluene;3,4-dimethylanisole;3,4-dimethylphenol methyl ether;4-methoxy-1,2-dimethylbenzene;4-methoxy-o-xylene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -147720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     399.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13050.0
-    phase     gas;
 }

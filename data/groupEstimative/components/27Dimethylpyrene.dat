@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pyrene, 2,7-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   303550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     396.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=488760.0
-    phase     gas;
 }

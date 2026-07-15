@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanyl-2-oxidanyl-benzoic acid" "3-bromosalicylic acid" "3-bromo-2-hydroxybenzoicacid" "3-bromo-2-hydroxy-benzoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -464000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     446.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-373370.0
-    phase     gas;
 }

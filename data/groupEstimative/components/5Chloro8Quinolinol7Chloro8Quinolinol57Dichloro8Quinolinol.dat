@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 14; } { group dC_ring; count 13; } { group Cl; count 4; } { group OH_phenol; count 3; } { group Nd_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5,7-bis(chloranyl)quinolin-8-ol;5-chloranylquinolin-8-ol;7-chloranylquinolin-8-ol" "5-chloroquinolin-8-ol; 7-chloroquinolin-8-ol; 5,7-dichloroquinolin-8-ol" "5,7-dichloro-8-quinolino & 5-chloro-8-quinolino & 7-chloro-8-quinnolinol" "5,7-bis(chloranyl)quinolin-8-ol; 5-chloranylquinolin-8-ol; 7-chloranylquinolin-8-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -83450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1003.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=305170.0
-    phase     gas;
 }

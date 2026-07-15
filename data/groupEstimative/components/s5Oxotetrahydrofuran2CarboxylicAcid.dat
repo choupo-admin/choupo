@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-5-oxidanylideneoxolane-2-carboxylic acid" "(s)-5-oxotetrahydrofuran-2-carboxylic acid" "(2s)-5-oxooxolane-2-carboxylic acid" "(s)-gamma-carboxy-gamma-butyrolactone" "(s)-5-oxo-tetrahydrofuran-2-carboxylic acid" "(s)-(+)-5-oxotetrahydrofuran-2-carboxylicacid" "(s)-(+)-5-oxo-2-tetrahydrofuroic acid" "5-oxo-tetrahydro-furan-2-carboxylic acid" "2-furancarboxylic acid, tetrahydro-5-oxo-" "(2s)-(+)-2-carboxy-5-oxotetrahydrofuran" "(s)-(+)-gamma-carboxy-gamma-butyrolactone" "(s)-5-oxotetrahydro-2-furancarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -741280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     364.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-602310.0
-    phase     gas;
 }

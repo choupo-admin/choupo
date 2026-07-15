@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[4-(3,4-dimethoxyphenyl)-2,3-dimethyl-butyl]-1,2-dimethoxy-benzene" "tetra-o-methyl-ndga" "tetramethoxynordihydroguaiaretic acid" "tetra-o-methylnordihydroguaiaretic acid" "tetra-o-methyl nordihydroguaiaretic acid" "1,1'-(2,3-dimethylbutane-1,4-diyl)bis(3,4-dimethoxybenzene)" "4,4'-(2,3-dimethyl-1,4-butanediyl)bis-1,2-dimethoxybenzene" "meso-1,4-bis(3,4-dimethoxyphenyl)dimethylbutane" "1,1'-(2,3-dimethyl-1,4-butanediyl)bis(3,4-dimethoxybenzene)" "benzene, 1,1'-(2,3-dimethyl-1,4-butanediyl)bis(3,4-dimethoxy-" "terameprocol (inn/usan)" "tetramethyl nordihydroguaiaretic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -609670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     801.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104220.0
-    phase     gas;
 }

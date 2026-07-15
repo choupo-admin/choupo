@@ -33,9 +33,8 @@ groups
     joback ( { group tC; count 4; } { group CH2_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclotetradeca-1,8-diyne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   262330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     736.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=456360.0
-    phase     gas;
 }

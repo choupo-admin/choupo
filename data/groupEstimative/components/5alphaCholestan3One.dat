@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 2; } { group CH2_ring; count 9; } { group CH_ring; count 5; } { group C_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(5s,8r,9s,10s,13r,14s,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-1,2,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-3-one" "5a-cholestan-3-one" "5alpha-cholestanone" "5alpha-cholestane-3-one" "3-keto-5alpha-cholestane" "coprostanone" "5a-cholestanone" "5alpha-coprostanone" "(5alpha)-cholestanone" "3-keto-5" "a-cholestane" "5a(h)-cholestan-3-one" "(5alpha)-cholestan-3-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -519010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     860.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=197380.0
-    phase     gas;
 }

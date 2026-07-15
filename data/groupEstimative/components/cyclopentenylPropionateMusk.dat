@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 3; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2,2-dimethyl-3-(2-methyl-5-prop-1-en-2-yl-cyclopenten-1-yl)propyl] propanoate" "2-(2,2-dimethyl-3-propionyl)-1-methyl-3-(methylethenyl)cyclopentene" "5-isopropenyl-beta,beta,2-trimethylcyclopent-1-ene-1-propyl propionate" "1-cyclopentene-1-propanol, 5-(1-methylethenyl)-beta,beta,2-trimethyl-, propanoate" "1-cyclopentene-1-propanol, beta,beta,2-trimethyl-5-(1-methylethenyl)-, propanoate" "5-(1-methylethenyl)-beta,beta,2-trimethyl-1-cyclopentene-1-propanol propanoate" "[2,2-dimethyl-3-(2-methyl-5-prop-1-en-2-ylcyclopenten-1-yl)propyl] propanoate" "1-cyclopentene-1-propanol, .beta.,.beta.,2-trimethyl-5-(1-methylethenyl)-, 1-propanoate" "1-cyclopentene-1-propanol, .beta.,.beta.,2-trimethyl-5-(1-methylethenyl)-, propanoate" "1-cyclopentene-1-propanol, beta,beta,2-trimethyl-5-(1-methylethenyl)-, 1-propanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -509280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     721.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-88730.0
-    phase     gas;
 }

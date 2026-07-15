@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 7; } { group dC_ring; count 5; } { group Cl; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-bis(chloranyl)-6-phenyl-phenol" "3,5-dichloro-2-biphenylol" "4,6-dichloro-2-phenylphenol" "2-biphenylol, 3,5-dichloro-" "2-hydroxy-3,5-dichlorobiphenyl" "4,6-dichloro-o-phenylphenol" "[1,1'-biphenyl]-2-ol, 3,5-dichloro-" "3,5-dichloro-(1,1'-biphenyl)-2-ol" "(1,1'-biphenyl)-2-ol, 3,5-dichloro-" "[1, 3,5-dichloro-" "3,1'-biphenyl)-2-ol" "2-biphenylol,5-dichloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -49680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     491.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77240.0
-    phase     gas;
 }

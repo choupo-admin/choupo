@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(e)-3-chloranylprop-2-enyl]-trimethyl-silane" "1-chloro-3-trimethylsilylpropene" "[(e)-3-chloroprop-2-enyl]-trimethylsilane" "(3-chloroprop-2-en-1-yl)(trimethyl)silane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -177310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     543.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-36830.0
-    phase     gas;
 }

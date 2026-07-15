@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group dCH; count 1; } { group dC; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-butyloct-2-enal" "(e)-2-butyloct-2-enal" "2-octenal, 2-butyl-, (e)-" "octenal, 2-butyl-" "2-butyl-2-octen-1-al;2-butyl-2-octenal; 2-n-butyloct-2-enal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -269160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     631.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22310.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-amino-2,4-dimethylpentane" "3-pentanamine, 2,4-dimethyl-" "1-isopropyl-2-methylpropylamine" "2,4-dimethyl-3-pentylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -169860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=67190.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-propylsulfanylbutane" "sulfide, butyl propyl" "n-butyl-n-propyl sulfide" "propyl butyl sulfide" "4-thiaoctane" "butyl propyl sulfide" "n-butyl n-propyl sulfide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -145940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     490.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=41180.0
-    phase     gas;
 }

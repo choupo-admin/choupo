@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group dCH2; count 2; } { group dC; count 2; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[3-[3-(2-methylprop-2-enoyloxy)propoxy]propoxy]propyl 2-methylprop-2-enoate" "propane-1,3-diylbis(oxypropane-3,1-diyl) bis(2-methylprop-2-enoate)" "2-propenoic acid, 2-methyl-, 1,3-propanediylbis(oxy-3,1-propanediyl) ester" "2-propenoic acid, 2-methyl-, 1,1'-(1,3-propanediylbis(oxy-3,1-propanediyl)) ester" "2-propenoic acid, 2-methyl-, 1,1'-[1,3-propanediylbis(oxy-3,1-propanediyl)] ester" "2-propenoic acid,2-methyl-, 1,1'-[1,3-propanediylbis(oxy-3,1-propanediyl)] ester" "2-propenoicacid, 2-methyl-, 1,3-propanediylbis(oxy-3,1-propanediyl) ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1061930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     925.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-579900.0
-    phase     gas;
 }

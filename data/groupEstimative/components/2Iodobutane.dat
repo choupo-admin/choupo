@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-iodanylbutane" "sec-butyl iodide" "butane, 2-iodo-" "2-butyl iodide" "sec-iodobutane" "2-iodo-butane" "2-jodbutan" "sjphavilup@" "s-butyl iodide" "iqrusquypchekn-uhfffaoysa-" "butane, 2-iodo-, (.+/-.)-" "u542" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -54300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     357.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=38480.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH; count 4; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(5e,9e)-undeca-5,9-dien-1-ol" "(c11) isomeric alcohols" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -188160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     622.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=65360.0
-    phase     gas;
 }

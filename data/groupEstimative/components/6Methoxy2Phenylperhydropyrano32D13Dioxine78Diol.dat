@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 6; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 2; } { group O; count 1; } { group O_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methoxy-2-phenyl-4,4a,6,7,8,8a-hexahydropyrano[3,2-d][1,3]dioxine-7,8-diol" "methyl 4,6-o-benzylidene-alpha-d-glucopyranoside" "altropyranoside,6-o-benzylidene-, .alpha.-d-" ".alpha.-d-altropyranoside,6-o-(phenylmethylene)-" "6-methoxy-2-phenyl-4,4a,6,7,8,8a-hexahydropyrano[3,2-d][1,3]dioxin-7,8-diol" "methyl-4,6-o-benzylidene-a-d-galactopyranoside" "(+)-(4,6-o-benzylidene)methyl-alpha-d-glucopyranoside" "4,6-benzylidene-.alpha.-methyl-d-glucoside" "glucopyranoside,6-o-benzylidene-, .alpha.-d-" "mannopyranoside,6-o-benzylidene-, .alpha.-d-" "methyl-4,6-o-benzylidene-.alpha. d-glucoside" "methyl-4,6-o-benzylidene-b-d-galactopyranoside" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -888840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     283.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-415330.0
-    phase     gas;
 }

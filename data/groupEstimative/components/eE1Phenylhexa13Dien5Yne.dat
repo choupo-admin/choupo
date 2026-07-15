@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 4; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(1e,3e)-hexa-1,3-dien-5-ynyl]benzene" "(e,e)-1-phenylhexa-1,3-dien-5-yne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   471860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     473.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=546080.0
-    phase     gas;
 }

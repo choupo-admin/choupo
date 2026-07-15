@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methoxycyclopropane" "cyclopropane, methoxy-" "methyl cyclopropyl ether" "cyprome ether" "1-methoxycyclopropane" "ether, cyclopropyl methyl" "cyclopropane, methoxy- (9ci)" "ether,cyclopropyl methyl (8ci); 1-methoxycyclopropane; cyclopropyl methyl ether;cyprome ether; methoxycyclopropane; methyl cyclopropyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -185310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     232.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-61450.0
-    phase     gas;
 }

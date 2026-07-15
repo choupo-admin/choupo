@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 40; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentacosyl octadecanoate" "c18-32-alkyl stearates" "(c18-32)alkyl stearate" "octadecanoic acid, c18-32-alkyl esters" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1248130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1882.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=810.0
-    phase     gas;
 }

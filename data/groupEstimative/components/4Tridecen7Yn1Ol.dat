@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group dCH; count 2; } { group tC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tridec-4-en-7-yn-1-ol" "4-tridecen-7-yn-1-ol, (4e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -74360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     678.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=204780.0
-    phase     gas;
 }

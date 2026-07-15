@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 11; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cactus normal paraffin n 13" "n 13" "n 13 (paraffin)" "paraffin n 13" "n-tridecane" "tridekan" "tridecane, n-" "N-tridecane [HSDB]" "EC 211-093-4" "CH3-[CH2]11-ch3" "dodecane, methyl-" "trd" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     662.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58580.0
-    phase     gas;
 }

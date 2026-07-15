@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group O; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-3-[4-[bis(2-chloroethyl)amino]-3-methoxy-phenyl]propanoic acid" "p-bis(2-chloroethyl)amino-o-methoxyphenylalanine" "3p" "alanine, 3-(4-(bis(2-chloroethyl)amino)-3-methoxyphenyl)-" "2-amino-3-[4-[bis(2-chloroethyl)amino]-3-methoxyphenyl]propanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -536630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     771.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-137830.0
-    phase     gas;
 }

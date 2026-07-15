@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propan-2-yl 2-methylpropanoate" "isobutyric acid isopropyl ester" "propanoic acid, 2-methyl-, 1-methylethyl ester" "isobutyric acid, isopropyl ester" "isopropyl 2-methylpropanoate" "1-methylethyl 2-methylpropanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -515650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     460.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-307190.0
-    phase     gas;
 }

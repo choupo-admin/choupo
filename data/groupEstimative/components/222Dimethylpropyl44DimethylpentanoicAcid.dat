@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 1; } { group C; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2,2-dimethylpropyl)-4,4-dimethyl-pentanoic acid" "pentanoic acid,2-(2,2-dimethylpropyl)-4,4-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -664060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     589.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-290510.0
-    phase     gas;
 }

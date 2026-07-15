@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-tridecyloxan-2-one" "octadecanoic acid, 5-hydroxy-, .delta.-lactone" "5-octadecanolide" "delta-stearolactone" "delta-octadecalactone" "(+-)-delta-octadecalactone" "delta-octadecalactone, (+-)-" "octadecanoic acid, 5-hydroxy-, delta-lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -665490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     838.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-161040.0
-    phase     gas;
 }

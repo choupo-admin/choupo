@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group CdO; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-ethanoyl-2-oxidanyl-benzamide" "5-acetyl-2-hydroxybenzamide" "benzamide, 5-acetyl-2-hydroxy-" "5-acetyl salicylamide" "5-acetyl-2-hydroxy-benzamide;benzamide, 5-acetyl-2-hydroxy-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -372710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     525.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-218330.0
-    phase     gas;
 }

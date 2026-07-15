@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group OH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3,4-dichlorophenyl)-2-(propan-2-ylamino)ethanol" "dichlorisoproterenol" "dichloroisoprenaline" "dichlorisoprenaline [german]" "1-(3,4-dichlorophenyl)-2-isopropylaminoethanol" "3,4-dichlor-isoproterenol [german]" "beta-hydroxy-n-isopropyl-3,4-dichlorophenethylamine" "3,4-dichloro-alpha-(isopropylaminomethyl)benzyl alcohol" "n-(beta-(3,4-dichlorophenyl)-beta-hydroxyethyl)isopropylamine" "3,4-dichloro-alpha-(((1-methylethyl)amino)methyl)benzenemethanol" "benzyl alcohol, 3,4-dichloro-alpha-((isopropylamino)methyl)-" "dichlorisoprenaline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -197580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     605.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58720.0
-    phase     gas;
 }

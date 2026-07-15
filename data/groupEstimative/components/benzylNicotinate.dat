@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 2; } { group COO; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(phenylmethyl) pyridine-3-carboxylate" "nicotinic acid benzyl ester" "benzyl pyridine-3-carboxylate" "pycaril" "pykaryl" "rubriment" "benzylis nicotinas" "3-pyridinecarboxylic acid, phenylmethyl ester" "niacin benzyl ester" "nicotinsaeurebenzylester" "pyridin-3-carbonsaeurebenzylester" "phenylmethyl 3-pyridinecarboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -123080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     513.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50080.0
-    phase     gas;
 }

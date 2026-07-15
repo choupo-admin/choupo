@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 2; } { group dCH; count 2; } { group dC; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-dimethylocta-1,5,7-trien-3-yl ethanoate" "1,5,7-octatrien-3-ol, 2,6-dimethyl-, 3-acetate, (5e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -265070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     641.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23850.0
-    phase     gas;
 }

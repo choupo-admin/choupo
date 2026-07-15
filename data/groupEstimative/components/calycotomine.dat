@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH; count 1; } { group O; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(6,7-dimethoxy-1,2,3,4-tetrahydroisoquinolin-1-yl)methanol" "(6,7-dimethoxy-1,2,3,4-tetrahydro-isoquinolin-1-yl)-methanol" "(+)-calycotomine" "aa277" "(6,7-dimethoxy-1,2,3,4-tetrahydroisoquinolyl)methan-1-ol" "1,2,3,4-tetrahydro-6,7-dimethoxy-1-isoquinolinemethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -401110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     495.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76780.0
-    phase     gas;
 }

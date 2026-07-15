@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group COOH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylsulfanylbutanoic acid" "3-(methylsulfanyl)butanoic acid" "3-(methylthio)butyric acid" "agn-pc-00nm3p" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -460210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-322010.0
-    phase     gas;
 }

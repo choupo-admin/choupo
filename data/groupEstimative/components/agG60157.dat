@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group COO; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxyethyl 3-[(5-azanyl-2-methoxy-phenyl)amino]propanoate" "2-methoxyethyl n-(5-amino-2-methoxyphenyl)-beta-alaninate" "2-methoxyethyl n-(5-amino-2-methoxyphenyl)-" "a-alaninate" "n-(5-amino-2-methoxyphenyl)-beta-alanine, 2-methoxyethyl ester" "2-methoxyethyl 3-(5-amino-2-methoxyanilino)propanoate" ".beta.-alanine, n-(5-amino-2-methoxyphenyl)-, 2-methoxyethyl ester" "beta-alanine, n-(5-amino-2-methoxyphenyl)-, 2-methoxyethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -592520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     709.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-212800.0
-    phase     gas;
 }

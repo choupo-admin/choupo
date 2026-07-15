@@ -38,9 +38,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,6,7-tetrahydro-8-hydroxy-1h,5h-benzo[ij]quinolizine-9-carboxaldehyde" "2,3,6,7-tetrahydro-8-hydroxy-1h,5h-benzo(ij)quinolizine-9-carboxaldehyde" "8-hydroxy-1,2,3,5,6,7-hexahydropyrido[3,2,1-ij]quinoline-9-carbaldehyde" "2,3,6,7-tetrahydro-8-hydroxy-1h,5h-benzo[ij]quinolizine-9-carbaldehyde" "8-hydroxy-2,3,6,7-tetrahydro-1h,5h-pyrido[3,2,1-ij]quinoline-9-carbaldehyde" "1h,5h-benzo(ij)quinolizine-9-carboxaldehyde, 2,3,6,7-tetrahydro-8-hydroxy-" "1h,5h-benzo[ij]quinolizine-9-carboxaldehyde, 2,3,6,7-tetrahydro-8-hydroxy-" "8-hydroxyjulolidine-9-aldehyde" "8-hydroxyjulolidine-9-carboxaldehyde" "8-hydroxy-1-azatricyclo[7.3.1.0^{5,13}]trideca-5,7,9(13)-triene-7-carbaldehyde" "8-hydroxy-1-azatricyclo[7.3.1.05,13]trideca-5,7,9(13)-triene-7-carbaldehyde" "1h,5h-benzo(ij)quinolizine-9-carboxaldehyde, 2,3,6,7-tetrahydro-8-hydroxy-;2,3,6,7-tetrahydro-8-hydroxy-1h,5h-benzo(ij)quinolizine-9-carboxaldehyde;8-hydroxy-2,3,6,7-tetrahydro-1h,5h-pyrido[3,2,1-ij]quinoline-9-carbaldehyde;8-hydroxy-2,3,6,7-tetrahydro-1h,5h-pyrido[3,2,1-ij]quinoline-9-carbaldehyde   (im ocs);" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   43420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     565.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=279140.0
-    phase     gas;
 }

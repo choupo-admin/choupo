@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(4-methoxyphenyl)propanenitrile" "3-(p-methoxyphenyl)propionitrile" "p-methoxyhydrocinnamonitrile" "4-methoxybenzenepropanenitrile" "4-methoxy-benzenepropanenitrile" "hydrocinnamonitrile, p-methoxy-" "beta-(4-methoxyphenyl)propionitrile" ".beta.(p-methoxyphenyl)propionitrile" "b-(p-methoxyphenyl)propionitrile" "benzenepropanenitrile,4-methoxy-" "3-(p methoxyphenyl)propionitrile" "benzenepropanenitrile, 4-methoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   7990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     450.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=164280.0
-    phase     gas;
 }

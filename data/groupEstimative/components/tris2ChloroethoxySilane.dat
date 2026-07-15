@@ -35,9 +35,8 @@ groups
     joback ( { group CH2; count 6; } { group Cl; count 3; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(2-chloroethyloxy)silicon" "silane, tris(2-chloroethoxy)-" "tris(2-chloroethoxy)silicon" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -666860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     596.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-403530.0
-    phase     gas;
 }

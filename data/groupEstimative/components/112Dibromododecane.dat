@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 12; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,12-bis(bromanyl)dodecane" "dodecamethylene dibromide" "dodecane, 1,12-dibromo-" "alpha,omega-dibromododecane" "a,w-dibromododecane;" "agn-pc-04uhfj" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -238350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     725.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=78800.0
-    phase     gas;
 }

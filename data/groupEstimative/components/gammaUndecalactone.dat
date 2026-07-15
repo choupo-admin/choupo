@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-heptyloxolan-2-one" "4-undecanolide" "2(3h)-furanone, 5-heptyldihydro-" "persicol" "peach aldehyde" "peach lactone" "aldehyde c-14 peach" "1,4-undecanolide" "gamma-undecanolactone" "5-heptyldihydro-2(3h)-furanone" "undecan-4-olide" "gamma-undecanolide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -514850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     545.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-207880.0
-    phase     gas;
 }

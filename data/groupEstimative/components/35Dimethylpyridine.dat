@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5-lutidine" "pyridine, 3,5-dimethyl-" "3,5-dimethyl-pyridine" "EC 209-708-6" "3,5-dimethylpyridine; nsc 60736" "3,5-lutdcine" "3,5lutidine" "3,5 lutidine" "NSC60736" "pyridine, 3,5dimethyl" "nciopen2_004681" "3,5-lutidine, analytical standard" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   70040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     328.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=187890.0
-    phase     gas;
 }

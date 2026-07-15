@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-methylnonan-1-amine" "methyl-nonyl-amine" "1-nonanamine, n-methyl-" "n-methyl n-nonylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -196260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     586.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=122710.0
-    phase     gas;
 }

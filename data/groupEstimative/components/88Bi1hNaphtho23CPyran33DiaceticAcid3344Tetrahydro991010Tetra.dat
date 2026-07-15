@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 16; } { group OH_phenol; count 4; } { group O; count 2; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-[7-methoxy-8-[7-methoxy-3-(2-methoxy-2-oxidanylidene-ethyl)-9,10-bis(oxidanyl)-1-oxidanylidene-3,4-dihydrobenzo[g]isochromen-8-yl]-9,10-bis(oxidanyl)-1-oxidanylidene-3,4-dihydrobenzo[g]isochromen-3-yl]ethanoate" "3,3',4,4'-tetrahydro-9,9',10,10'-tetrahydroxy-7,7'-dimethoxy-1,1'-dioxo(8,8'-bi-1h-naphtho(2,3-c)pyran)-3,3'-diacetic acid, dimethyl ester" "methyl 2-[8-[9,10-dihydroxy-7-methoxy-3-(2-methoxy-2-oxoethyl)-1-oxo-3,4-dihydrobenzo[g]isochromen-8-yl]-9,10-dihydroxy-7-methoxy-1-oxo-3,4-dihydrobenzo[g]isochromen-3-yl]acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2066530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1113.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1327780.0
-    phase     gas;
 }

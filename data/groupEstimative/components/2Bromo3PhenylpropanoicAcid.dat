@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanyl-3-phenyl-propanoic acid" "2-bromo-3-phenyl-propionic acid" "2-bromo-3-phenylpropionic acid" "(2r)-2-bromo-3-phenylpropanoic acid" "agn-pc-00fblf" "2-bpp" "benzenepropanoic acid, a-bromo-" "benzenepropanoic-beta-14c acid, alpha-bromo-" "4-iso-propylamino-1-boc-piperidine; tert-butyl 4-(isopropylamino)piperidine-1-carboxylate" "hydrocinnamicacid, a-bromo- (6ci,8ci);2-bromo-3-phenylpropionic acid;dl-a-bromo-b-phenylpropionicacid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -321780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-194720.0
-    phase     gas;
 }

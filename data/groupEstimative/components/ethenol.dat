@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "polyvinyl alcohol" "hydroxyethene" "hydroxyethylene" "vinyl alcohol" "elvanol" "ethenol, homopolymer" "polyviol" "alkenols" "enol" "enols" "vinylalcohol" "alkotex" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -111410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     280.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-83020.0
-    phase     gas;
 }

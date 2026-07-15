@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group tC; count 4; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "12-chloranyldodeca-3,5-diyne" "12-chloro-3,5-dodecadiyne" "12-chlorododeca-3,5-diyne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   237850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     600.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=443830.0
-    phase     gas;
 }

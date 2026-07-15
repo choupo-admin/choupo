@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethyl-3-propan-2-yl-benzene" "benzene, 1-ethyl-3-(1-methylethyl)-" "m-ethylcumene" "1-ethyl-3-iso-propylbenzene" "1-ethyl-3-propan-2-ylbenzene" "benzene,1-ethyl-3-(1-methylethyl)-" "cumene,m-ethyl- (6ci,7ci,8ci); 1-ethyl-3-(1-methylethyl)benzene;1-ethyl-3-isopropylbenzene; m-isopropyl ethyl benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -50590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=142080.0
-    phase     gas;
 }

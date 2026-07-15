@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7,7-trimethylbicyclo[2.2.1]heptan-2-one" "3-bornanone, (1s,4s)-(-)-" "bicyclo[2.2.1]heptan-2-one, 4,7,7-trimethyl-" "bicyclo[2.2.1]heptan-2-one, 4,7,7-trimethyl-, (1r)-" "bicyclo[2.2.1]heptan-2-one, 4,7,7-trimethyl-, (1s)-" "epicamphor" "bicyclo(2.2.1)heptan-2-one, 4,7,7-trimethyl-, (1s)-" "d-3-bornanone" "(1s)-4,7,7-trimethylbicyclo(2.2.1)heptan-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -237850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     402.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1440.0
-    phase     gas;
 }

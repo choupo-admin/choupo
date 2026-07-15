@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dideuterioethanamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -50820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     285.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=32410.0
-    phase     gas;
 }

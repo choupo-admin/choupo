@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenyloctan-1-one" "caprylophenone" "heptyl phenyl ketone" "1-octanone, 1-phenyl-" "n-octanophenone" "ketone, heptyl phenyl" "1-phenyl-1-octanone" "1-phenyl-octan-1-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -208340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     621.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50490.0
-    phase     gas;
 }

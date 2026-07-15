@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-(diethylamino)pentan-2-one" "novol ketone" "2-pentanone, 5-(diethylamino)-" "novalketone" "1-(diethylamino)-4-pentanone" "5-(n,n-diethylamino)pentan-2-one" "5-diethylaminopentan-2-one" "5-(diethylamino)-2-pentanone" "5-diethylamino-pentan-2-one" "2-pentanone,5-(diethylamino)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -274140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     549.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=6760.0
-    phase     gas;
 }

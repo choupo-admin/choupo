@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-[(e)-but-2-en-2-yl]-2,2-dimethyl-oxolane" "5-(but-2-en-2-yl)-2,2-dimethyltetrahydrofuran" "2,2-dimethyl-5-(1-methylpropen-1-yl)tetrahydrofuran" "furan, tetrahydro-2,2-dimethyl-5-(1-methyl-1-propenyl)-" "2,2-dimethyl-5-[(1e)-1-methyl-1-propenyl]tetrahydrofuran" "(+/-)-2,2-dimethyl-5-(1-methyl-1-propenyl)tetrahydrofuran" "(e)-tetrahydro-2,2-dimethyl-5-(1-methyl-1-propenyl)furan" "5-[(e)-but-2-en-2-yl]-2,2-dimethyloxolane" "(e)-5-(but-2-en-2-yl)-2,2-dimethyltetrahydrofuran" "furan, tetrahydro-2,2-dimethyl-5-(1-methyl-1-propenyl)-, (e)-" "( inverted exclamation marka)-2,2-dimethyl-5-(1-methyl-1-propenyl)tetrahydrofuran" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -218920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     460.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=42220.0
-    phase     gas;
 }

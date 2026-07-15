@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 1; } { group dC_ring; count 4; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5-pentakis(chloranyl)cyclopenta-1,3-diene" "1,2,3,4,5-pentachlorocyclopentadiene" "1,2,3,4,5-pentachlorocyclopenta-1,3-diene" "1,3-cyclopentadiene, 1,2,3,4,5-pentachloro-" "pentachloro-2,4-cyclopentadien-1-yl" "cyclopentadiene, 1,2,3,4,5-pentachloro- (6ci,7ci)" "1,2,3,4,5-pentachlorocyclo pentadiene" "1,3-cyclopentadiene,1,2,3,4,5-pentachloro-" "cyclopentadiene,1,2,3,4,5-pentachloro- (6ci,7ci); 1,2,3,4,5-pentachloro-1,3-cyclopentadiene;1,2,3,4,5-pentachlorocyclopentadiene; pentachlorocyclopentadiene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -95070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     368.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-10480.0
-    phase     gas;
 }

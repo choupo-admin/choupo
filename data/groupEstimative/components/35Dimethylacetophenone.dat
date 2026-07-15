@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3,5-dimethylphenyl)ethanone" "3',5'-dimethylacetophenone" "1-(3,5-dimethylphenyl)ethan-1-one" "ethanone, 1-(dimethylphenyl)-" "ethanone, 1-(3,5-dimethylphenyl)-" "1-acetyl-3,5-dimethylbenzene" "1-(dimethylphenyl)ethan-1-one" "3,5-(ch3)=c6h3-coch3" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -148720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2450.0
-    phase     gas;
 }

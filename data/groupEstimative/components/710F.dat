@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group dCH_ring; count 5; } { group dC_ring; count 4; } { group O; count 1; } { group NH; count 1; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n',n'-diethyl-n-(6-methoxyquinolin-8-yl)propane-1,3-diamine" "plasmocid" "304-24-5 (hydriodide)" "1,3-propanediamine, n,n-diethyl-n'-(6-methoxy-8-quinolinyl)-" "1,3-propanediamine,n1,n1-diethyl-n3-(6-methoxy-8-quinolinyl)-" "1,3-propanediamine,n,n-diethyl-n'-(6-methoxy-8-quinolinyl)- (9ci); quinoline, 8-[[3-(diethylamino)propyl]amino]-6-methoxy-(6ci,7ci,8ci); 6-methoxy-8-(3-diethylaminopropylamino)quinoline; 710f;8-(3-diethylaminopropylamino)-6-methoxyquinoline; antimalarine; fourneau 710;plasmocid; rhodochin; rhodoquine; s. n. 3115; sn 3,115" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   32020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     671.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=464280.0
-    phase     gas;
 }

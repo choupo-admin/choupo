@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group C_ring; count 4; } { group F; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2,3,4-hexakis(fluoranyl)-3,4-bis(trifluoromethyl)cyclobutane" "1,1,2,2,3,4-hexafluoro-3,4-bis(trifluoromethyl)cyclobutane" "cyclobutane, 1,1,2,2,3,4-hexafluoro-3,4-bis(trifluoromethyl)-" "agn-pc-03zzf8" "perfluoro-1,2-dimethylcyclobutane" "cyclobutane,hexafluorobis(trifluoromethyl)-" "hexafluoro-1,2-bis(trifluoromethyl)cyclobutane" "(3s,4s)-1,1,2,2,3,4-hexafluoro-3,4-bis(trifluoromethyl)cyclobutane" "bis(trifluoromethyl)hexafluorocyclobutane;fc-c 51-12; perfluorodimethylcyclobutane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2471410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     773.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2328840.0
-    phase     gas;
 }

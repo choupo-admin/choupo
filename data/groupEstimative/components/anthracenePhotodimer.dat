@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 4; } { group dCH_ring; count 16; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "anthracene, dimer" "dianthracene" "5,11-di-o-benzenodibenzo[a,e]cyclooctene, 5,6,11,12-tetrahydro-" "5,2']:6,11[1'',2'']-dibenzenodibenzo[a,e]cyclooctene, 5,6,11,12-tetrahydro-" "heptacyclo[8.6.6.6~2,9~.0~3,8~.0~11,16~.0~17,22~.0~23,28~]octacosa-3,5,7,11,13,15,17,19,21,23,25,27-dodecaene (non-preferred name)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   507850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     383.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=831040.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group I; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(8r,9s,13s,14s)-13-methyl-17-oxidanylidene-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthren-3-yl] 2-iodanylbenzoate" "estra-1,3,5(10)-triene-17-one, 3-((2-iodobenzoyl)oxy)-" "[(8r,9s,13s,14s)-13-methyl-17-oxo-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthren-3-yl] 2-iodobenzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -297810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     722.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=125560.0
-    phase     gas;
 }

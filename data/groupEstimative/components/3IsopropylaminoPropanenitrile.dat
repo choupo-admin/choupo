@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group NH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(propan-2-ylamino)propanenitrile" "propionitrile, 3-(isopropylamino)-" "propanenitrile, 3-[(1-methylethyl)amino]-" "propanenitrile, 3-((1-methylethyl)amino)-" "3-(isopropylamino)propionitrile" "propanenitrile,3-[(1-methylethyl)amino]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   45900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     426.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=219770.0
-    phase     gas;
 }

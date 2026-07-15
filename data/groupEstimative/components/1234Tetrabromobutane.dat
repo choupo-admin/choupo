@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 2; } { group Br; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4-tetrakis(bromanyl)butane" "tetrabromobutane" "butane, 1,2,3,4-tetrabromo-" "meso-1,2,3,4-tetrabromobutane" "1,3,4-tetrabromobutane" "butane,2,3,4-tetrabromo-" "butane,1,2,3,4-tetrabromo-" "agn-pc-03v735" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -31130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     496.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=35200.0
-    phase     gas;
 }

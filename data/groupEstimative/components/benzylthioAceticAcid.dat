@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(phenylmethylsulfanyl)ethanoic acid" "s-benzylthioglycolic acid" "2-(benzylthio)acetic acid" "2-(benzylsulfanyl)acetic acid" "benzylmercaptoacetic acid" "acetic acid, [(phenylmethyl)thio]-" "acetic acid, (benzylthio)-" "(benzylsulfanyl)acetic acid" "2-(phenylmethylthio)acetic acid" "acetic acid, ((phenylmethyl)thio)-" "acetic acid, 2-((phenylmethyl)thio)-" "acetic acid, 2-[(phenylmethyl)thio]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -300960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     514.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-173480.0
-    phase     gas;
 }

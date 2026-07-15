@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group Cl; count 1; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-[3-chloranylpropyl-(3-ethoxy-3-oxidanylidene-propyl)amino]propanoate" "diethyl 3,3'-[(3-chloropropyl)imino]dipropanoate(non-preferred name)" "ethyl 3-(3-chloropropyl-(2-ethoxycarbonylethyl)amino)propanoate" "beta-alanine, n-(3-chloropropyl)-n-(3-ethoxy-3-oxopropyl)-, ethyl ester" "ethyl 3-[3-chloropropyl-(3-ethoxy-3-oxopropyl)amino]propanoate" ".beta.-alanine, n-(3-chloropropyl)-n-(3-ethoxy-3-oxopropyl)-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -894420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     814.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-463310.0
-    phase     gas;
 }

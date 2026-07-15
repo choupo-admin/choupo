@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 10; } { group OH; count 2; } { group O; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-hydroxyethyl(3-triethoxysilylpropyl)amino]ethanol" "n-(3-triethoxysilylpropyl)diethanolamine" "(bis(2-hydroxyethyl)aminopropyl)triethoxysilane" "2,2'-{[3-(triethoxysilyl)propyl]imino}diethanol" "ethanol, 2,2'-[[3-(triethoxysilyl)propyl]imino]bis-" "3-[bis(2-hydroxyethyl)amino]propyl-triethoxysilane solution" "[bis(2-hydroxyethyl)aminopropyl]triethoxysilane" "ethanol, 2,2'-((3-(triethoxysilyl)propyl)imino)bis-" "2,2'-((3-(triethoxysilyl)propyl)imino)bisethanol" "3-[bis(2-hydroxyethyl)amino]propyl-triethoxysilane" "bis-(2-hydroxyethyl)-3-aminopropyltriethoxysilane" "2-(2-hydroxyethyl-(3-triethoxysilylpropyl)amino)ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1056860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     940.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-524040.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(5-bicyclo[2.2.1]hept-2-enyl)ethanone" "2-acetyl-5-norbornene" "methyl 5-norbornen-2-yl ketone" "1-(bicyclo[2.2.1]hept-5-en-2-yl)ethanone" "2-acetyl-5-norbornene, mixture of endo and exo" "5-norbornene-2-acetyl" "nimlcwclvjrpfy-uhfffaoysa-" "2-acetylbicyclo[2.2.1]hept-5-ene" "1-(6-bicyclo[2.2.1]hept-2-enyl)ethanone" "(bicyclo[2.2.1]hept-2-en-2-yl)-1-ethanone" "ethanone, 1-bicyclo[2.2.1]hept-2-en-2-yl-" "ethanone, 1-bicyclo[2.2.1]hept-5-en-2-yl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -164790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     292.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=27630.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group Cl; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloranyl(iodanyl)methane" "chloro(iodo)methane" "methane, chloroiodo-" "chlor(iod)methan" "chloro-iodomethane" "chloromethyl iodide" "chloro-iodo-methane" "qmablxaih@" "chloro-iodo-methane;" "methylene chloroiodide" "pjgjqvrxeuvaft-uhfffaoysa-" "chloroiodomethane, stab. with copper" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     283.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3730.0
-    phase     gas;
 }

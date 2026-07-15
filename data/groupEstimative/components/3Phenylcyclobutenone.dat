@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylcyclobut-2-en-1-one" "3-phenyl-cyclobut-2-en-1-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -17610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     288.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=99830.0
-    phase     gas;
 }

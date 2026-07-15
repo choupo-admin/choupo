@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetrakis(chloranyl)methane" "tetrachloromethane" "methane, tetrachloro-" "carbona" "tetrasol" "carbon chloride" "perchloromethane" "vermoestricid" "benzinoform" "flukoids" "necatorina" "necatorine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -135680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     289.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-87340.0
-    phase     gas;
 }

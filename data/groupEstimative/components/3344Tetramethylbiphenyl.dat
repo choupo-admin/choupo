@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group dCH_ring; count 6; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(3,4-dimethylphenyl)-1,2-dimethyl-benzene" "biphenyl, 3,3',4,4'-tetramethyl-" "3,3',4,4'-tetramethyl-1,1'-biphenyl" "1,1'-biphenyl, 3,3',4,4'-tetramethyl-" "3,3',4,4'-tetramethyldiphenyl" "3,4,3',4'-tetramethylbiphenyl" "4-(3,4-dimethylphenyl)-1,2-dimethylbenzene" "1,1'-biphenyl,3,3',4,4'-tetramethyl-" "1,1'-biphenyl, 3,3',4,4'-tetramethyl- (9ci)" "biphenyl,3,3',4,4'-tetramethyl- (6ci,7ci,8ci); 3,3',4,4'-tetramethylbiphenyl;3,3',4,4'-tetramethyldiphenyl; 3,4,3',4'-tetramethylbiphenyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   53610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     541.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=270140.0
-    phase     gas;
 }

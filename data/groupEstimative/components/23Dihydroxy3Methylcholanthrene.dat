@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 7; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2as,3r)-3-methyl-1,2-dihydrobenzo[j]aceanthrylene-2a,3-diol" "3-methylcholanthrene-cis-2a,3-diol" "cis-2a,3-dihydroxy-3-methylcholanthrene" "benz(j)aceanthrylene-2a,3(3h)-diol, 1,2-dihydro-3-methyl-, (z)-" "cis-2-alpha,3-dihydrodihydroxy-3-methylcholanthrene" "cholanthrene-2a,3-diol, 2a,3-dihydro-3-methyl-, (z)-" "cis-1,2-dihydro-3-methylbenz(j)aceanthrylene-2a,3(3h)-diol" "benz(j)aceanthrylene-2a,3(3h)-diol, 1,2-dihydro-3-methyl-, cis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   25420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     648.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=279970.0
-    phase     gas;
 }

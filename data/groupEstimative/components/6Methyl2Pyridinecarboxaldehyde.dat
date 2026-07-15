@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methylpyridine-2-carbaldehyde" "6-methylpicolinaldehyde" "2-formyl-6-methylpyridine" "6-methylpyridine-2-carboxaldehyde" "2-picoline-6-carboxaldehyde" "6-methylpyridine-2-aldehyde" "2-formyl-6-picoline" "2-pyridinecarboxaldehyde, 6-methyl-" "6-methyl-2-pyridinecarbaldehyde" "6-methyl-2-picolinaldehyde" "6-methylpyridyl-2-aldehyde" "picolinaldehyde, 6-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   146490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     409.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=231850.0
-    phase     gas;
 }

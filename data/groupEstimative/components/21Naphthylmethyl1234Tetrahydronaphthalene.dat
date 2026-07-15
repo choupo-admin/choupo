@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(1,2,3,4-tetrahydronaphthalen-2-ylmethyl)naphthalene" "naphthalene, 1,2,3,4-tetrahydro-2-(1-naphthalenylmethyl)-" "2-(1-naphthylmethyl)-[1,2,3,4-tetrahydronaphthalene]" "1',2',3',4'-tetrahydro-1,2-dinaphthylmethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   231060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     569.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=486800.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,8-bis(bromanyl)octane" "octamethylene dibromide" "octane, 1,8-dibromo-" "octamethylene bromide" "octane,8-dibromo-" "1,8-dibromo-octane" "1,8-dibromo-octan;dibromo-1,8 octane" "k908" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -155790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     569.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=45120.0
-    phase     gas;
 }

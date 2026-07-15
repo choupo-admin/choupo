@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 16; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "stearamide" "stearic acid amide" "octadecamide" "octadecylamide" "stearoylamide" "stearoylamine" "stearylamide" "stearic amide" "kemamide s" "adogen 42" "amide c18" "octadecanoic acid amide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -493640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     935.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=38210.0
-    phase     gas;
 }

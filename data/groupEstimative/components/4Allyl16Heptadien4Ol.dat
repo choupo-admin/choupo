@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group C; count 1; } { group dCH2; count 3; } { group dCH; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-prop-2-enylhepta-1,6-dien-4-ol" "4-allyl-1,6-heptadiene-4-ol" "triallyl carbinol" "4-allyl-hepta-1,6-dien-4-ol" "1,6-heptadien-4-ol,4-(2-propen-1-yl)-" "1,6-heptadien-4-ol,4-(2-propenyl)- (9ci); 1,6-heptadien-4-ol, 4-allyl- (6ci,7ci,8ci);triallylcarbinol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -34420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     543.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=162860.0
-    phase     gas;
 }

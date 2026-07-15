@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(dimethylamino)ethyl propanoate" "propanoic acid, 2-(dimethylamino)ethyl ester" "agn-pc-0cqxke" "2-dimethylaminoethyl propanoate" "propanoicacid, 2-(dimethylamino)ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -437560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     496.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-191530.0
-    phase     gas;
 }

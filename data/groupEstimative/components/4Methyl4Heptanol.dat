@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group C; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methylheptan-4-ol" "4-heptanol, 4-methyl-" "4-hydroxy-4-methylheptane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -369430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-117500.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group COOH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-sulfanylpropanoic acid" "3-mercaptopropanoic acid" "propanoic acid, 3-mercapto-" "mercaptopropionic acid" "3-thiopropionic acid" "beta-mercaptopropionic acid" "3-thiopropanoic acid" "beta-thiopropionic acid" "hydracrylic acid, 3-thio-" "propionic acid, 3-mercapto-" "2-mercaptoethanecarboxylic acid" "3-mercaptopropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -417040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     388.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-340140.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 5; } { group dCH2; count 1; } { group dCH; count 3; } { group CH2_ring; count 5; } { group CH_ring; count 5; } { group C_ring; count 3; } { group OH; count 1; } { group CdO_ring; count 1; } { group COOH; count 2; } { group COO; count 1; } { group N; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dynamutilin" "tiavet" "thiamutilin fumarate" "tiamulin hydrogen fumarate" "14-deoxy-14-((2-diethylaminoethyl)-mercaptoacetoxy)-mutilin hydrogen fumarate" "((2-(diethylamino)ethyl)thio)acetic acid 8-ester with (3as,4r,5s,6s,8r,9r,9ar,10r)-octahydro-5,8-dihydroxy-4,6,9,10-tetramethyl-6-vinyl-3a,9-propano-3ah-cyclopentacycloocten-1(4h)-one fumarate (1:1) (salt)" "acetic acid, ((2-(diethylamino)ethyl)thio)-, 6-ethenyldecahydro-5-hydroxy-4,6,9,10-tetramethyl-1-oxo-3-alpha,9-propano-3-alpha-h-cyclopentacycloocten-8-yl ester, (e)-2-butenedioate (1:1) (salt)" "acetic acid, ((2-(diethylamino)ethyl)thio)-, 6-ethenyldecahydro-5-hydroxy-4,6,9,10-tetramethyl-1-oxo-3a,9-propano-3ah-cyclopentacycloocten-8-yl ester, (3as-(3aalpha,4beta,5alpha,6alpha,8beta,9alpha,9abeta,10s*))-, (e)-2-butenedioate (1:1) (salt)" "14-desossi-14-((2-dietilaminoetil)mercapto-acetossi)mutilin idrogeno fumarato" "((2-(diethylamino)ethyl)thio)-, 6-ethenyldecahydro-5-hydroxy-4,6,9,10-tetramethyl-1-oxo-3a,9-propano-3ah-cyclopentacycloocten-8-yl ester (3as-(3aalpha,4beta,5alpha,6alpha,8beta,9alpha,9abeta,10s*))-, (e)-2-butenedioate (1:1) (salt)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1639510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1531.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-765110.0
-    phase     gas;
 }

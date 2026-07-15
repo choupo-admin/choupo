@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanyl-3-methyl-pentane" "pentane, 3-bromo-3-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -149590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=16800.0
-    phase     gas;
 }

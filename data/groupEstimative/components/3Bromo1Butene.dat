@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanylbut-1-ene" "3-bromobut-1-ene" "1-butene, 3-bromo-" "1-butene, 3-bromo-(6ci,7ci,8ci,9ci)" "1-methallylbromide; 1-methylallyl bromide; 3-bromo-1-butene; a-methallyl bromide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   20590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     348.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=82520.0
-    phase     gas;
 }

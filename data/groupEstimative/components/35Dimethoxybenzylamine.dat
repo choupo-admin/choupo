@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3,5-dimethoxyphenyl)methanamine" "3,5-dimethoxybenzyl amine" "1-(3,5-dimethoxyphenyl)methanamine" "3,5-dimethoxy benzyl amine" "(3,5-dimethoxyphenyl)methylamine" "3, 5-dimethoxybenzylamine" "(3,5-dimethoxy-phenyl)-methyl-amine" "benzylamine,3,5-dimethoxy- (6ci);(3,5-dimethoxyphenyl)methanamine;1-aminomethyl-3,5-dimethoxybenzene;3,5-bis(methyloxy)benzylamine;3,5-dimethoxybenzenemethanamine;3,5-dimethoxybenzylamine;[(3,5-dimethoxyphenyl)methyl]amine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -246150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     461.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-25500.0
-    phase     gas;
 }

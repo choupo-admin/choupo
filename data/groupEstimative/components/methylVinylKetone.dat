@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "but-3-en-2-one" "3-buten-2-one" "butenone" "vinyl methyl ketone" "1-buten-3-one" "methylene acetone" "2-butenone" "methylvinyl ketone" "methyl ethenyl ketone" "acetyl ethylene" "methylvinylketon" "3-butenone-2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -113040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     333.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-58280.0
-    phase     gas;
 }

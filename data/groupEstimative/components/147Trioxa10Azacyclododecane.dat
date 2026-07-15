@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 8; } { group O_ring; count 3; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-aza-12-crown-4" "1-aza-12-crown 4-ether" "1-aza-12-crown-4;1-aza-4,7,10-trioxacyclododecane; 10-aza-12-crown-4; 12-crown-o3n;aza-12-crown-4; monoaza-12-crown-4" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -528940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-194610.0
-    phase     gas;
 }

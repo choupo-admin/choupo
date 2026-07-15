@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-but-3-ynoxyoxane" "2h-pyran, 2-(3-butynyloxy)tetrahydro-" "3-butynyl tetrahydro-2h-pyran-2-yl ether" "2-(but-3-yn-1-yloxy)tetrahydro-2h-pyran" "agn-pc-03eacf" "2-(3-butynyl-oxy)tetrahydro-2 h-pyran" "4-[(tetrahydro-2h-pyran-2-yl)oxy]-1-butyne;2h-pyran, 2-(3-butynyloxy)tetrahydro-;2-(3-butynyloxy)tetrahydropyran" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -147090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     405.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=81300.0
-    phase     gas;
 }

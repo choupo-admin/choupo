@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 2; } { group OH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s,3s)-butane-1,2,3,4-tetrol" "d-treitol" "l-1,2,3,4-butanetetrol" "(2s,3s)-1,2,3,4-butanetetrol" "l-threo-tetritol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -745370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     496.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-569360.0
-    phase     gas;
 }

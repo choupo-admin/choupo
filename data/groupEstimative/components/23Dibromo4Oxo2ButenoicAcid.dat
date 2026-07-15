@@ -33,9 +33,8 @@ groups
     joback ( { group dC; count 2; } { group Br; count 2; } { group OdCH_al; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(bromanyl)-4-oxidanylidene-but-2-enoic acid" "2-butenoic acid,2,3-dibromo-4-oxo-" "m689" "(2z)-2,3-dibromo-4-oxo-2-butenoic acid" "2-butenoicacid, 2,3-dibromo-4-oxo-, (2z)-" "2-butenoicacid, 2,3-dibromo-4-oxo-, (z)-;malealdehydic acid, dibromo- (7ci,8ci);mucobromicacid (6ci);bromomucic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -411440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     470.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-368870.0
-    phase     gas;
 }

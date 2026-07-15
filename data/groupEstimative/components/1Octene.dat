@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oct-1-ene" "caprylene" "n-1-octene" "alpha-octene" "1-caprylene" ".alpha.-octene" "1-octylene" "octylene" "octene-1" "hexylethylene" "alpha-octylene" ".alpha.-octylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -83020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     463.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=104320.0
-    phase     gas;
 }

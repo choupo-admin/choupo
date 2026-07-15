@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-5-methyl-heptane" "2-ethylhexyl-6-chloride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -229470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     491.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=2110.0
-    phase     gas;
 }

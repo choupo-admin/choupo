@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyltetradecane" "myristyl bromide" "tetradecane, 1-bromo-" "tetradecyl bromide" "n-tetradecyl-1-bromide" "n-tetradecyl bromide" "1-tetradecyl bromide" "bromotetradecane" "1-bromo-n-tetradecane" "i869" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -305960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     752.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=81320.0
-    phase     gas;
 }

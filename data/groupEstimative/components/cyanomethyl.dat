@@ -30,9 +30,8 @@ groups
     joback ( { group dCH2; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ch2cn" "ethanenitrile" "cyanomethyl radical" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   147090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     238.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=146870.0
-    phase     gas;
 }

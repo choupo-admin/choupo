@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 3; } { group dCH; count 2; } { group dC; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dC_ring; count 6; } { group Cl; count 1; } { group OH_phenol; count 2; } { group O_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-5-[(2e,6e)-7-[(2s)-5,5-dimethyl-4-oxidanylidene-oxolan-2-yl]-3-methyl-octa-2,6-dienyl]-2-methyl-4,6-bis(oxidanyl)benzaldehyde" "ascofuranon" "benzaldehyde, 3-chloro-4,6-dihydroxy-2-methyl-5-(3-methyl-7-(tetrahydro-5,5-dimethyl-4-oxo-2-furanyl)-2,6-octadienyl)-, (s-(e,e))-" "5-chloro-3-[(2e,6e)-7-[(2s)-5,5-dimethyl-4-oxooxolan-2-yl]-3-methylocta-2,6-dienyl]-2,4-dihydroxy-6-methylbenzaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -609300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     919.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-92930.0
-    phase     gas;
 }

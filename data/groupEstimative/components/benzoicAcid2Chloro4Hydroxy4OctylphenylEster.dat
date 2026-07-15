@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group Cl; count 1; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-octylphenyl) 2-chloranyl-4-oxidanyl-benzoate" "4-octylphenyl 2-chloro-4-hydroxybenzoate" "(4-octylphenyl) 2-chloro-4-hydroxybenzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -536980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     859.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-145420.0
-    phase     gas;
 }

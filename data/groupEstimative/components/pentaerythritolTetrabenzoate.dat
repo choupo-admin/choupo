@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group C; count 1; } { group dCH_ring; count 20; } { group dC_ring; count 4; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3-(phenylcarbonyloxy)-2,2-bis(phenylcarbonyloxymethyl)propyl] benzoate" "2,2-bis((benzoyloxy)methyl)-1,3-propanediol dibenzoate" "propanediol (2,2-bis (benzoyloxy)methyl)-dibenzoate" "3-(benzoyloxy)-2,2-bis[(benzoyloxy)methyl]propyl benzoate" "1,3-propanediol, 2,2-bis((benzoyloxy)methyl)-, dibenzoate" "benzoic acid, tetraester with pentaerythritol" "2,2-bis((benzoyloxy)methyl)dibenzoate propanediol" "2,2-bis[(benzoyloxy)methyl]dibenzoate propanediol" "1,3-propanediol, 2,2-bis[(benzoyloxy)methyl]-, dibenzoate" "1,3-propanediol, 2,2-bis((benzoyloxy)methyl)-, 1,3-dibenzoate" "1,3-propanediol, 2,2-bis[(benzoyloxy)methyl]-, 1,3-dibenzoate" "3-[(phenylcarbonyl)oxy]-2,2-bis{[(phenylcarbonyl)oxy]methyl}propyl benzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1056200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1182.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-562020.0
-    phase     gas;
 }

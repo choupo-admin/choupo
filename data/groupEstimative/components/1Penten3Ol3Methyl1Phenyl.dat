@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-1-phenyl-pent-1-en-3-ol" "styryl methyl ethyl carbinol" "3-methyl-1-phenylpent-1-en-3-ol" "1-penten-3-ol, 3-methyl-1-phenyl-, (1z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -98240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=108810.0
-    phase     gas;
 }

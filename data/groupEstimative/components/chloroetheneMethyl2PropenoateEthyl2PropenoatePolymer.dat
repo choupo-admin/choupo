@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH2; count 4; } { group dCH; count 2; } { group dC; count 2; } { group Cl; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloranylethene;ethyl prop-2-enoate;3-methylbuta-1,3-dien-2-ol" "2-propenoic acid, ethyl ester, polymer with chloroethene and methyl 2-propenoate" "chloroethene; ethyl prop-2-enoate; 3-methylbuta-1,3-dien-2-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -517360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     947.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-284220.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 2; } { group dCH; count 2; } { group CdO; count 1; } { group OdCH_al; count 2; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethanedial;prop-2-enamide;prop-2-enoic acid" "2-propenoic acid, polymer with ethanedial and 2-propenamide" "acrylamide-acrylic acid-glyoxal copolymer" "oxaldehyde; prop-2-enamide; prop-2-enoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -781050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     842.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-622780.0
-    phase     gas;
 }

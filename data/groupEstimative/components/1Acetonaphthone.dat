@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-naphthalen-1-ylethanone" "1-acetylnaphthalene" "1-acetonaphthone" "ethanone, 1-(1-naphthalenyl)-" "methyl 1-naphthyl ketone" "1-acetonaphthalene" "1-(1-naphthalenyl)ethanone" "1-naphthyl methyl ketone" "alpha-naphthyl methyl ketone" "alpha-acetonaphthone" "alpha-acetylnaphthalene" "methyl alpha-naphthyl ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   12540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=130670.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group CH2_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 5; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyl-2-[3-(1-pyridin-2-ylethyl)-1h-inden-2-yl]ethanamine" "dimethindene" "forhistal" "dimethpyrindene" "fenistil" "foristal" "triten" "dimetindeno" "dimetindenum" "pecofenil" "fengel" "dimetindene [inn:ban]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   228480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     637.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=597260.0
-    phase     gas;
 }

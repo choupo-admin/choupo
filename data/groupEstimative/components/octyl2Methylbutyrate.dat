@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octyl 2-methylbutanoate" "n-octyl 2-methyl butyrate" "butanoic acid, 2-methyl-, octyl ester" "octyl 2-methyl-butanoate" "butanoic acid,2-methyl-, octyl ester" "butyric acid, 2-methyl-, octyl ester" "we(8:0/4:0(2me))" "butyricacid, 2-methyl-, octyl ester (8ci); ent 33625; octyl 2-methylbutanoate; octyl2-methylbutyrate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -634210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     704.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-254230.0
-    phase     gas;
 }

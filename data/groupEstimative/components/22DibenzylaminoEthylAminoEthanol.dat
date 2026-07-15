@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[bis(phenylmethyl)amino]ethylamino]ethanol" "2-[2-(dibenzylamino)ethylamino]ethanol" "ethanol, 2-((2-(bis(phenylmethyl)amino)ethyl)amino)-" "ethanol, 2-[[2-[bis(phenylmethyl)amino]ethyl]amino]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   26980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     751.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=388850.0
-    phase     gas;
 }

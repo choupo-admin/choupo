@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group F; count 3; } { group OH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(5s,6r)-5,6-bis(oxidanyl)-4-(trifluoromethyl)cyclohexa-1,3-diene-1-carboxylic acid" "ho" "bpavwbprprprjpqjkkrujfjzzqjt@" "(5s,6r)-5,6-dihydroxy-4-(trifluoromethyl)cyclohexa-1,3-diene-1-carboxylic acid" "(5s,6r)-5,6-dihydroxy-4-(trifluoromethyl)cyclohexa-1,3-dienecarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1333660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     518.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1125260.0
-    phase     gas;
 }

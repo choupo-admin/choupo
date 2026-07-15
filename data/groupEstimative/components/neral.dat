@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group dCH; count 2; } { group dC; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2z)-3,7-dimethylocta-2,6-dienal" "cis-citral" "neroli aldehyde" "citral b" "2,6-octadienal, 3,7-dimethyl-, (z)-" "(z)-3,7-dimethylocta-2,6-dienal" "2,6-octadienal, 3,7-dimethyl-, (2z)-" ".beta.-citral" "3,7-dimethylocta-2,6-dienal" "beta-citral" "(z)-citral" "(z)-neral" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -120450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     542.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77140.0
-    phase     gas;
 }

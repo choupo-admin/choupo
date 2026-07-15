@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-bromophenyl)ethanamine" "4-bromo-alpha-methylbenzylamine" "4-bromo-alpha-phenethylamine" "4-bromo-a-methylbenzylamine" "1-(4-bromophenyl)ethan-1-amine" "(+)-p-bromo-.alpha.-phenethylamine" "benzenemethanamine, 4-bromo-.alpha.-methyl-, (r)-" "(-)-1-(4-bromophenyl)ethylamine" "p-bromo-alpha-methylbenzylamine" "[1-(4-bromophenyl)ethyl]amine" "p-bromo-a-methylbenzylamine" "(r)-4-bromo-alpha-methylbenzylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   71450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     448.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=197590.0
-    phase     gas;
 }

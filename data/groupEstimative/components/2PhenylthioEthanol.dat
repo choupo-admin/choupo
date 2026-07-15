@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylsulfanylethanol" "phenylthioethanol" "ethanol, 2-(phenylthio)-" "2-hydroxyethyl phenyl sulfide" "2-phenylmercaptoethanol" "2-(phenylsulfanyl)ethanol" "2-phenylthioethanol" "2-(phenylthio) ethanol" "2-phenylthioethan-1-ol" "agn-pc-04wzj1" "hydroxyethylphenylsulfide(2-)" "2-hydroxyethyl phenyl sulphide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -82280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     473.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=25190.0
-    phase     gas;
 }

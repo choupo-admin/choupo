@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group tC; count 2; } { group dCH_ring; count 20; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,3-triphenylprop-2-ynylbenzene" "benzene, 1,1',1'',1'''-(1-propyn-1-yl-3-ylidyne)tetrakis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   609060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     714.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=831740.0
-    phase     gas;
 }

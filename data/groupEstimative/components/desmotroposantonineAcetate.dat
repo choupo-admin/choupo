@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3,6,9-trimethyl-2-oxidanylidene-3a,4,5,9b-tetrahydro-3h-benzo[g][1]benzofuran-8-yl) ethanoate" "(+)-beta-desmotroposantonin acetate" "(-)-alpha-desmotroposantonin acetate" "(+).beta.-desmotroposantonin acetate" "(-).alpha.-desmotroposantonin acetate" "(3,6,9-trimethyl-2-oxo-3a,4,5,9b-tetrahydro-3h-benzo[g][1]benzofuran-8-yl) acetate" "3,6,9-trimethyl-2-oxo-2,3,3a,4,5,9b-hexahydronaphtho[1,2-b]furan-8-yl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -706700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-328700.0
-    phase     gas;
 }

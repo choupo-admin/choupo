@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-(4-chloranyl-2-methyl-phenoxy)propanoic acid" "d-mecoprop" "(+)-mcpp" "duplosan kv" "(r)-mecoprop" "mecoprop, d-" "2m-4xp" "mecoprop-p [iso]" "(r)-2-(4-chloro-2-methylphenoxy)propanoic acid" "(r)-2-(4-chloro-2-methylphenoxy)propionic acid" "(r)-2-(4-chloro-o-tolyloxy)propionic acid" "(2r)-2-(4-chloro-2-methylphenoxy)propanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -539650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-336810.0
-    phase     gas;
 }

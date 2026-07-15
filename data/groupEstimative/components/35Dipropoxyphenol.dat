@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phenol, 3,5-dipropoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -507700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     559.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-211680.0
-    phase     gas;
 }

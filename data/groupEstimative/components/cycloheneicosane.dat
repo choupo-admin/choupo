@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 21; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohenicosane" "agn-pc-00ni2m" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -494510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1284.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23400.0
-    phase     gas;
 }

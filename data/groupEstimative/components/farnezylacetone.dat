@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 6; } { group dCH; count 3; } { group dC; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6,10,14-trimethylpentadeca-5,9,13-trien-2-one" "agn-pc-03d5ir" "5,9,13-pentadecatrien-2-one, 6,10,14-trimethyl-, (z,e)-" "5,9,13-pentadecatrien-2-one, 6,10,14-trimethyl-, (5e,9z)-" "5,9,13-pentadecatrien-2-one, 6,10,14-trimethyl-, (5z,9z)-" "5,9,13-pentadecatrien-2-one,6,10,14-trimethyl-, (5e,9e)-" "5,9,13-pentadecatrien-2-one,6,10,14-trimethyl-, (e,e)- (8ci);(e,e)-6,10,14-trimethyl-5,9,13-pentadecatrien-2-one;e,e-farnesylacetone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -205140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     851.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=186770.0
-    phase     gas;
 }

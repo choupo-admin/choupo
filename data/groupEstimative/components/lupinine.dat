@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 2; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(1r,9ar)-2,3,4,6,7,8,9,9a-octahydro-1h-quinolizin-1-yl]methanol" "lupinine" "octahydroquinolizine-1-methanol" "((1r,9ar)-octahydro-1h-quinolizin-1-yl)methanol" "(1r-trans)-octahydro-2h-quinolizine-1-methanol" "(1r,9ar)-octahydro-2h-quinolizin-1-ylmethanol" "((1r,2r)-6-azabicyclo[4.4.0]dec-2-yl)methan-1-ol" "(+/-)-lupinine" "lupinine dl-form [mi]" "lupinine, (+/-)-" "2h-quinolizine-1-methanol, octahydro-, (1r-trans)-" "sdccgmls-0066745.p001" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -207310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     491.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=92480.0
-    phase     gas;
 }

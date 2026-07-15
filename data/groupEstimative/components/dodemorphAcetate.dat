@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 13; } { group CH_ring; count 3; } { group O_ring; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-cyclododecyl-2,6-dimethyl-morpholine;ethanoic acid" "mehltaumittel" "cyclomorph" "meltox" "milban" "basf mehltaumittel" "dodemorfe [french]" "dodemorph acetate [bsi:iso]" "bas 238f" "acetate de dodemorphe [french]" "4-cyclododecyl-2,6-dimethylmorpholine acetate" "cyclododecyl-2,6-dimethylmorpholine acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -924990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1056.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-325800.0
-    phase     gas;
 }

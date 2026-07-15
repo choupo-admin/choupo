@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-propylsulfanylhexane" "hexane, 1-(propylthio)-" "propyl hexyl sulfide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -187220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     567.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58020.0
-    phase     gas;
 }

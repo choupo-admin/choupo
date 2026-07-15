@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 4; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2-fluoranyl-6-(trifluoromethyl)phenyl]methanol" "[2-fluoro-6-(trifluoromethyl)phenyl]methanol" "(2-fluoro-6-(trifluoromethyl)phenyl)methanol" "[6-fluoro-2-(trifluoromethyl)phenyl]methan-1-ol" "otf-byl-6f" "2-fluoro-6-(trifluoromethyl)benzylalcohol" "benzenemethanol,2-fluoro-6-(trifluoromethyl)-" "2-fluoro-6-(trifluoromethyl)benzenemethanol;2-fluoro-6-(trifluoromethyl)benzyl alcohol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -940280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     487.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-803590.0
-    phase     gas;
 }

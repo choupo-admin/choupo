@@ -35,9 +35,8 @@ groups
     joback ( { group CH3; count 2; } { group tC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethyl(2-phenylethynyl)silicon" "1-(dimethylsilyl)-2-phenylacetylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   203290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=296150.0
-    phase     gas;
 }

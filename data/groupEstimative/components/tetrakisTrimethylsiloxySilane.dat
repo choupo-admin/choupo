@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 12; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetrakis(trimethylsilyl) silicate" "tetrakis(trimethylsilyloxy)silane" "trisiloxane, 1,1,1,5,5,5-hexamethyl-3,3-bis[(trimethylsilyl)oxy]-" "trisiloxane, 1,1,1,5,5,5-hexamethyl-3,3-bis((trimethylsilyl)oxy)-" "1,1,5,5,5-hexamethyl-3,3-bis((trimethylsilyl)oxy)trisiloxane" "trisiloxane, 1,1,1,5,5,5-hexamethyl-3,3-bis(trimethylsiloxy)-" "trisiloxane,1,1,1,5,5,5-hexamethyl-3,3-bis(trimethylsiloxy)- (6ci,7ci,8ci);silicic acid, tetrakis(trimethylsilyl)ester (6ci);silanol, trimethyl-, tetraester with silicic acid (h4sio4);silicic acid (h4sio4), tetrakis(trimethylsilyl) ester;tetrakis(trimethylsilyl) silicate;silicic acid (h4sio4), tetrakis(trimethylsilyl) ester;tetrakis(trimethylsilyl) orthosilicate;trisiloxane, 1,1,1,5,5,5-hexamethyl-3,3-bis((trimethylsilyl)oxy)-;trisiloxane, 1,1,1,5,5,5-hexamethyl-3,3-bis(trimethylsiloxy)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1377990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1300.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-893640.0
-    phase     gas;
 }

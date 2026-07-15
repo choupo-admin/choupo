@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group CH2; count 7; } { group CH; count 3; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(3s,8s,9s,10r,13r,14s,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl] 2-ethylhexanoate" "cholest-5-en-3-ol (3beta)-, 2-ethylhexanoate" "cholest-5-en-3-ol (3beta)-, 3-(2-ethylhexanoate)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -822680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1249.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=94850.0
-    phase     gas;
 }

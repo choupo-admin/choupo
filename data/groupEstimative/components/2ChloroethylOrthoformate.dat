@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group CH; count 1; } { group Cl; count 3; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[bis(2-chloroethyloxy)methoxy]-2-chloranyl-ethane" "tris(2-chloroethyl) orthoformate" "tris(chloroethyl)orthoformate" "tris-(2-chloroethyl)orthoformate" "1-[bis(2-chloroethoxy)methoxy]-2-chloroethane" "orthoformic acid, tris(2-chloroethyl) ester" "ethane, 1,1',1''-(methylidynetris(oxy))tris(2-chloro-" "ethane, 1,1',1''-[methylidynetris(oxy)]tris[2-chloro-" "rkhrvkjtcshzcr-uhfffaoysa-" "ethane,1',1''-[methylidynetris(oxy)]tris[2-chloro-" "ethane,1,1',1''-[methylidynetris(oxy)]tris[2-chloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -636970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     553.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-345170.0
-    phase     gas;
 }

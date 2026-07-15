@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 17; } { group dCH; count 2; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[(z)-octadec-9-enoxy]ethanol" "volpo 20" "brij 96" "emulphor o" "genapol o" "trycol hcs" "ethosperse oa 2" "standamul o20" "ameroxol oe 2" "emulphor surfactants" "brij 92" "brij 98" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -623360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     990.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-44080.0
-    phase     gas;
 }

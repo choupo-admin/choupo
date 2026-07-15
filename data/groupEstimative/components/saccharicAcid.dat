@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 4; } { group OH; count 4; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s,3s,4s,5r)-2,3,4,5-tetrakis(oxidanyl)hexanedioic acid" "d-glucaric acid" "d-glucarate" "glucaric acid" "l-gularic acid" "d-saccharic acid" "d-glucosaccharic acid" "glucosaccharic acid" "dl-glucaric acid" "glucarate" "d-(+)-saccharic acid" "d-saccharate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1497750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     661.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1245220.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2,4-dimethylcyclohex-3-en-1-yl)-1,3-dioxolane" "1,3-dioxolane, 2-(2,4-dimethyl-3-cyclohexen-1-yl)-" "2-(2,4-dimethyl-3-cyclohexenyl)-1,3-dioxolane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -393600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     315.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-56880.0
-    phase     gas;
 }

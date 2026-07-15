@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 3; } { group Br; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanyl-1,1,3,3-tetramethoxy-propane" "propane, 2-bromo-1,1,3,3-tetramethoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -706200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     496.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-404940.0
-    phase     gas;
 }

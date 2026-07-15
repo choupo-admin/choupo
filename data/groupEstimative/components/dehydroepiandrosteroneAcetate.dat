@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(3s,8r,9s,10r,13s,14s)-10,13-dimethyl-17-oxidanylidene-1,2,3,4,7,8,9,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-3-yl] ethanoate" "dehydroisoandrosterone acetate" "androstenolone acetate" "dehydroisoandrosterone 3-acetate" "trans-dehydroandrosterone acetate" "prasterone acetate" "dehydroisoandosterone 3-acetate" "dehydroepiandrosterone 3-acetate" "3-beta-acetoxydehydroepiandrosterone" "3beta-acetoxy-5-androstene-17-one" "5-androsten-3beta-ol-7-one acetate" "17-oxoandrost-5-en-3beta-yl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -635240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     695.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-130590.0
-    phase     gas;
 }

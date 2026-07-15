@@ -34,9 +34,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 2; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,3-pentakis(chloranyl)-2-methyl-propane" "propane,1,1,1,2,3-pentachloro-2-methyl-" "1,1,1,2,3-pentachloro-2-methyl-propane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -222090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-71170.0
-    phase     gas;
 }

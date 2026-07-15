@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2,2-diphenylethanoate" "ethyl 2,2-diphenylacetate" "diphenyl-acetic acid ethyl ester" "acetic acid, diphenyl-, ethyl ester" "diphenylacetic acid, ethyl ester" "diphenylacetic acid ethyl ester" "diphenylacetic acid ethyl ester [mi]" "benzeneacetic acid, a-phenyl-, ethyl ester" "benzeneacetic acid, .alpha.-phenyl-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -223070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     608.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4150.0
-    phase     gas;
 }

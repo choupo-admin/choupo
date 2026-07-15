@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-methylcyclohex-3-en-1-yl)propan-2-yl methanoate" "p-1-menthen-8-yl formate" "p-menth-1-en-8-yl formate" "p-menth-1-en-8-ol, formate" "2-(4-methylcyclohex-3-en-1-yl)propan-2-yl formate" "p-menth-1-en-8-ol, formate (mixed isomers)" "alpha,alpha,4-trimethyl-3-cyclohexene-1-methyl formate" "3-cyclohexene-1-methanol, alpha,alpha,4-trimethyl-, formate" "p-menth-1-en-8-yl-formate" "3-cyclohexene-1-methanol, ?,?,4-trimethyl-, formate" "3-cyclohexene-1-methanol, alpha,alpha,4-trimethyl-, 1-formate" "3-cyclohexene-1-methanol, .alpha.,.alpha.,4-trimethyl-, 1-formate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -102040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     655.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=133320.0
-    phase     gas;
 }

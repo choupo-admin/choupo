@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group Br; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylpropyl 2-bromanylethanoate" "1-bromoacetoxy-2-propanol" "2-propanol, 1-bromoacetoxy-" "acetic acid, bromo-, 2-hydroxypropyl ester" "1,2-propanediol 1-(bromoacetate)" "2-hydroxypropyl 2-bromoacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -594990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-444090.0
-    phase     gas;
 }

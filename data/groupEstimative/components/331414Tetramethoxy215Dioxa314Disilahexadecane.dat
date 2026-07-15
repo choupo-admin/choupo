@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 10; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethoxy(10-trimethoxysilyldecyl)silane" "1,10-bis-trimethoxysilyldecane" "2,15-dioxa-3,14-disilahexadecane, 3,3,14,14-tetramethoxy-" "2,15-dioxa-3,14-disilahexadecane,3,3,14,14-tetramethoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1390130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1099.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-755680.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 6; } { group C_ring; count 2; } { group dCH_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4ar,8ar)-8a-methyl-1,2,3,4,7,8-hexahydronaphthalen-4a-ol" "4a(2h)-naphthalenol,1,3,4,7,8,8a-hexahydro-8a-methyl-cis-" "4a(2h)-naphthalenol,1,3,4,7,8,8a-hexahydro-8a-methyl-trans-" "4a-(2h)-naphthalenol, 1,3,4,7,8,8a-hexahydro-8a-methyl-, trans-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -213380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     636.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3000.0
-    phase     gas;
 }

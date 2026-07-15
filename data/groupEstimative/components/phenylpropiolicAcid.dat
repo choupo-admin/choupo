@@ -33,9 +33,8 @@ groups
     joback ( { group tC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylprop-2-ynoic acid" "phenylpropynoic acid" "3-phenylpropiolic acid" "phenylacetylenecarboxylic acid" "3-phenylpropynoic acid" "2-propynoic acid, 3-phenyl-" "phenylpropiolate" "3-phenyl-2-propynoic acid" "phenyl-propiolic acid" "phenylacetylene monocarboxylic acid" "propiolic acid, 3-phenyl-" "phenyl propiolic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -70530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     425.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3800.0
-    phase     gas;
 }

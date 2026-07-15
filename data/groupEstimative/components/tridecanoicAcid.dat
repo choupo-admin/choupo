@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-tridecanoic acid" "tridecylic acid" "n-tridecoic acid" "tridecanoic acid anion" "fatty acids, c10-16" "tridecylate" "n-tridecanoate" "n-tridecoate" "tridecans&#xe4;ure" "(s)-2-aminotridecanoate" "(c10-c16) carboxylic acid" "(c10-c16)alkylcarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -661920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     715.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-285330.0
-    phase     gas;
 }

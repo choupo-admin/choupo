@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-4-(2,4,4-trimethylpentan-2-yl)phenol" "2-chloro-4-(1,1,3,3-tetramethylbutyl)phenol" "2-chloro-4-(2,4,4-trimethylpentan-2-yl)phenol" "phenol, 2-chloro-4-(1,1,3,3-tetramethylbutyl)-" "2-chloro-4-(1,3,3-tetramethylbutyl)phenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -317780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     570.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8910.0
-    phase     gas;
 }

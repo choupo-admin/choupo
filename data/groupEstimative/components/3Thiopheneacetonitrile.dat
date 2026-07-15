@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group CN; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-thiophen-3-ylethanenitrile" "thiophene-3-acetonitrile" "3-thienylacetonitrile" "3-thiophene acetonitrile" "3-cyanomethylthiophene" "2-(thiophen-3-yl)acetonitrile" "2-(3-thienyl)ethanenitrile" "thien-3-ylacetonitrile" "3-(cyanomethyl)thiophene" "2-thiophen-3-ylacetonitrile" "thiophen-3-acetonitrile" "(thien-3-yl)acetonitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   227880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     357.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=267230.0
-    phase     gas;
 }

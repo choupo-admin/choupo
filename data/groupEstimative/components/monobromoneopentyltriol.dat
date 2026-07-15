@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group C; count 1; } { group Br; count 1; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(bromomethyl)-2-(hydroxymethyl)propane-1,3-diol" "tris(hydroxymethyl)(bromomethyl)methane" "1,3-propanediol, 2-(bromomethyl)-2-(hydroxymethyl)-" "2-(bromomethyl)-2-(hydroxymethyl)-1,3-propanediol" "1, 2-(bromomethyl)-2-(hydroxymethyl)-" "2,2-bis(hydroxymethyl)-3-bromopropan-1-ol" "1,3-propanediol,2-(bromomethyl)-2-(hydroxymethyl)-" "2-(bromomethyl)-2-(hydroxymethyl)-propane-1,3-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -585640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-402080.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-dimethylaminophenol" "p-(dimethylamino)phenol" "dmap (antidote)" "n,n-dimethyl-4-aminophenol" "phenol, p-(dimethylamino)-" "phenol, 4-(dimethylamino)-" "n,n-dimethyl-p-hydroxyaniline" "p-hydroxy-n,n-dimethylaniline" "4-dmap" "4-dimethylamino-phenol" "phenol,4-(dimethylamino)-" "5882-48-4 (hydrochloride)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -81700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     403.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=85050.0
-    phase     gas;
 }

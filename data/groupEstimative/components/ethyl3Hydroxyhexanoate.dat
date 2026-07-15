@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-oxidanylhexanoate" "hexanoic acid, 3-hydroxy-, ethyl ester" "3-hydroxyhexanoic acid ethyl ester" "hexanoic acid,3-hydroxy-, ethyl ester, (3s)-" "ethyl 3-hydroxy-hexanoate" "ethyl beta-hydroxycaproate" "3-hydroxy-hexanoic acid ethyl ester" "s581" "we(2:0/6:0(3oh))" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -683240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     560.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-433150.0
-    phase     gas;
 }

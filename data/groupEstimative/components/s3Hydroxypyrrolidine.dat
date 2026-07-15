@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group OH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s)-pyrrolidin-3-ol" "(s)-3-pyrrolidinol" "(s)-pyrrolidin-3-ol" "(s)-(-)-3-pyrrolidinol" "3-pyrrolidinol, (3s)-" "(3s)pyrrolidin-3-ol" "3s-pyrrolidinol" "s-hp" "s-(-)-3-pyrrolidinol" "(3s)-3-pyrrolidinol" "s-(+)-3-pyrrolidinol" "(3s)-3-hydroxypyrrolidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -179830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     306.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-29760.0
-    phase     gas;
 }

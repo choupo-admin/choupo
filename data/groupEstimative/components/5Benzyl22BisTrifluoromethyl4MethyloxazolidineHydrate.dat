@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group F; count 6; } { group O_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-5-(phenylmethyl)-2,2-bis(trifluoromethyl)-1,3-oxazolidine" "oxazolidine, 5-benzyl-2,2-bis(trifluoromethyl)-4-methyl-, hydrate" "5-benzyl-4-methyl-2,2-bis(trifluoromethyl)-1,3-oxazolidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1328430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     545.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-974960.0
-    phase     gas;
 }

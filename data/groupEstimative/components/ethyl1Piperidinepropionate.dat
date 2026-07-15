@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH2_ring; count 5; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-piperidin-1-ylpropanoate" "1-piperidinepropanoic acid, ethyl ester" "ethyl 3-(piperidin-1-yl)propanoate" "1-piperidinepropionic acid, ethyl ester" "ethyl 3-(1-piperidinyl)propionate" "ethyl 3-piperidylpropanoate" "ethyl piperidine-1-propionate" "ethyl 3-(piperidino)propionate" "ethyl 3-(1-piperidinyl)propanoate" "ethyl 3-(piperidin-1-yl)propionate" "1-piperidinepropanoic acid ethyl ester" "1-piperidinepropanoicacid, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -418660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     604.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-122010.0
-    phase     gas;
 }

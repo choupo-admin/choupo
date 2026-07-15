@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group CH2_ring; count 5; } { group OH; count 2; } { group O; count 1; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexanedioic acid;2-(2-hydroxyethyloxy)ethanol;oxepan-2-one" "adipic acid, diethylene glycol, epsilon-caprolactone polymer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1970490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1257.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1458250.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "p-butoxybenzaldehyde" "benzaldehyde, 4-butoxy-" "4-n-butoxybenzaldehyde" "4-butoxy-benzaldehyde" "p-n-butoxybenzaldehyde" "4-n-butyloxybenzaldehyde" "benzaldehyde, p-butoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -101080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     564.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83480.0
-    phase     gas;
 }

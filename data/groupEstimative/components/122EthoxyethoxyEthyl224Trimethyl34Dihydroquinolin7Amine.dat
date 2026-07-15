@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-quinolinamine, 1-(2-(2-ethoxyethoxy)ethyl)-1,2,3,4-tetrahydro-2,2,4-trimethyl-" "7-quinolinamine, 1-[2-(2-ethoxyethoxy)ethyl]-1,2,3,4-tetrahydro-2,2,4-trimethyl-" "1-[2-(2-ethoxyethoxy)ethyl]-1,2,3,4-tetrahydro-2,2,4-trimethyl-7-quinolinamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -296680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     765.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=208610.0
-    phase     gas;
 }

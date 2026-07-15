@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 3; } { group NH2; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "quinolin-8-amine" "8-quinolinamine" "quinoline, 8-amino-" "8-quinolylamine" "quinolin-8-ylamine" "agn-pc-0cq93w" "5330-29-0 (di-hcl)" "sdccgmls-0065843.p001" "quinolin-8-amine;8-quinolylamine;quinoline, 8-amino-;wr 6920;nc 066;" "q8a" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   253620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     349.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=377830.0
-    phase     gas;
 }

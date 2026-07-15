@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohexane, 1,2,4-trimethyl-" "cyclohexane, 1,2,4-trimethyl-, trans,cis-" "1,4-trimethylcyclohexane" "cyclohexane,2,4-trimethyl-" "1,2,4-trimethyl cyclohexane" "cyclohexane, 1,2,4-trimethyl-, (1.alpha.,2.beta.,4.beta.)-" "cyclohexane, 1,2,4-trimethyl-, (1r,2r,4r)-rel-" "1,2,4-trimethylcyclohexane mixture of isomers" "1,2,4-trimethylcyclohexane, mixture of isomers" "cyclohexane, 1,2,4-trimethyl- (8ci)(9ci)" "cyclohexane, 1,2,4-trimethyl-, (1alpha,2beta,4beta)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -215450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     391.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=33930.0
-    phase     gas;
 }

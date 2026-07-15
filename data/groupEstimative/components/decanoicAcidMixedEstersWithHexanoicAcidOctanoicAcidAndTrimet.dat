@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 22; } { group C; count 1; } { group OH; count 3; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "decanoic acid;2-ethyl-2-(hydroxymethyl)propane-1,3-diol;hexanoic acid;octanoic acid" "decanoic acid mixed esters with hexanoic acid octanoic acid and trimethylolpropane" "trimethylolpropane, caproic acid, caprylic acid, capric acid mixed esters" "decanoic acid; 2-ethyl-2-(hydroxymethyl)propane-1,3-diol; hexanoic acid; octanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2513640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1920.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1551910.0
-    phase     gas;
 }

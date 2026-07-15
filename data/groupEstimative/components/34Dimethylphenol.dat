@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,4-xylenol" "1-hydroxy-3,4-dimethylbenzene" "3,4-dmp" "3,4-xylenol" "4,5-dimethylphenol" "4-hydroxy-1,2-dimethylbenzene" "phenol, 3,4-dimethyl-" "3,4-dimethyl phenol" "3,4-dimethyl-phenol" "fema no. 3596" "4-hydroxy-o-xylene" "1,2-dimethyl-4-hydroxybenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -160700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-35360.0
-    phase     gas;
 }

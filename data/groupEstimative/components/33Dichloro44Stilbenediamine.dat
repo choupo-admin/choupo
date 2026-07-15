@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group Cl; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[(e)-2-(4-azanyl-3-chloranyl-phenyl)ethenyl]-2-chloranyl-aniline" "4:4'-diamino-3:3'-dichlorostilbene" "4,4'-stilbenediamine, 3,3'-dichloro-" "4-[(e)-2-(4-amino-3-chlorophenyl)ethenyl]-2-chloroaniline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   248210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     627.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=442560.0
-    phase     gas;
 }

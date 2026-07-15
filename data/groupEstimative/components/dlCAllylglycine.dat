@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanylpent-4-enoic acid" "allylglycine" "2-aminopent-4-enoic acid" "dl-2-allylglycine" "4-pentenoic acid, 2-amino-" "dl-2-amino-4-pentenoic acid" "dl-2-amino-1-pentenoic acid" "d-allylglycine" "2-allyl-l-glycine" "2-amino-4-pentenoic acid" "(s)-(-)-2-amino-4-pentenoic acid" "dl-2-aminopent-4-enoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -342860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     441.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-200840.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group O_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4,6-trimethyl-1,3-oxathiane" "1,3-oxathiane, 2,4,6-trimethyl-, cis-2,4,trans-2,6-" "1,3-oxathiane, 2,4,6-trimethyl-, trans-2,4,cis-2,6-" "1,3-oxathiane, 2,4,6-trimethyl-, (2.alpha.,4.alpha.,6.alpha.)-" "1,3-oxathiane, 2,4,6-trimethyl-, (2.alpha.,4.alpha.,6.beta.)-" "1,3-oxathiane, 2,4,6-trimethyl-, (2.alpha.,4.beta.,6.alpha.)-" "(2s,4r,6s)-2,4,6-trimethyl-1,3-oxathiane" "1,3-oxathiane, 2,4,6-trimethyl-, (2alpha,4alpha,6alpha)-" "1,3-oxathiane, 2,4,6-trimethyl-, (2alpha,4alpha,6beta)-" "1,3-oxathiane, 2,4,6-trimethyl-, (2alpha,4beta,6alpha)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -260910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     312.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-29170.0
-    phase     gas;
 }

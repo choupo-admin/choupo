@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 14; } { group CH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propan-2-yl 16-methylheptadecanoate" "isopropyl 16-methylheptadecanoate" "nikkol ipis" "isostearic acid, isopropyl ester" "2-propyl isooctadecanoate" "1-methylethyl isooctadecanoate" "isooctadecanoic acid, 1-methylethyl ester" "isopropyl 16-methylheptadecanoate;" "heptadecanoic acid,16-methyl-, 1-methylethyl ester" "heptadecanoic acid, 16-methyl-, 1-methylethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -804610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1006.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-189310.0
-    phase     gas;
 }

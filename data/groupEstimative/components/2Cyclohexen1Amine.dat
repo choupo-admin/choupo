@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohex-2-en-1-amine" "(s)-cyclohex-2-enylamine" "2-cyclohexen-1-amine,(1s)-" "1-cyclohex-2-enyl-amine" "agn-pc-0cjv5j" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -21280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     373.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120500.0
-    phase     gas;
 }

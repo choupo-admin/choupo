@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylpropylbenzene" "2-bromo-1-phenylpropane" "2-bromopropylbenzene" "benzene, (2-bromopropyl)-" "nvyocaozcsnihr-uhfffaoysa-" "(2-bromopropyl)benzene;(?a'a a'a currency)-2-bromo-1-phenylpropane;1-bromo-1-methyl-2-phenylethane; 1-phenyl-2-bromopropane;2-bromo-1-phenylpropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   28490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     441.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=149190.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group I; count 1; } { group OH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(5r,6r)-4-iodanyl-5,6-bis(oxidanyl)cyclohexa-1,3-diene-1-carboxylic acid" "(5r,6r)-5,6-dihydroxy-4-iodocyclohexa-1,3-diene-1-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -639070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-493970.0
-    phase     gas;
 }

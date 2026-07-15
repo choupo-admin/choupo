@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group CH; count 1; } { group OH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(oxidanyl)propyl dodecanoate" "1-monolaurin" "lauricidin" "2,3-dihydroxypropyl dodecanoate" "glyceryl monolaurate" "laurin, 1-mono-" "1-monolauroyl-rac-glycerol" "dodecanoic acid, 2,3-dihydroxypropyl ester" "1-glyceryl laurate" "glycerol 1-laurate" "glycerol monolaurate" "2,3-dihydroxypropyl laurate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -979950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     883.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-511030.0
-    phase     gas;
 }

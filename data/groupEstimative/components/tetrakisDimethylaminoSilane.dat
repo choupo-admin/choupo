@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 8; } { group N; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-methyl-n-[tris(dimethylamino)silyl]methanamine" "octamethylsilanetetramine" "silanetetramine, octamethyl-" "octamethylsilatetramine" "silane, tetrakis(dimethylamino)-" "silane 48-12 tetrakis" "tetrakis(dimethylamido)silane" "dimethylamine, n,n',n'',n'''-silanetetrayltetrakis-" "n,n,n',n',n'',n'',n''',n'''-octamethylsilanetetramine" "silanetetramine, n,n,n',n',n'',n'',n''',n'''-octamethyl-" "dimethylamine,n',n'',n'''-silanetetrayltetrakis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -49950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     658.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=354840.0
-    phase     gas;
 }

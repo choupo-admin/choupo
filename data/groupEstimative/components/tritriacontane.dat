@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 31; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-tritriacontane" "CH3-[CH2]31-ch3" "CH3-(CH2)31-CH3" "tritriacontane, 98%" "tritriacontane; n-tritriacontane" "tritriacontane, analytical standard" "N-c-33" "HY-W540836" "bs-49205" "NS00010792" "t0968" "C08393" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -724450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1441.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=226980.0
-    phase     gas;
 }

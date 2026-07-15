@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group OH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-propylsulfanylethanol" "2-hydroxyethyl propyl sulfide" "2-hydroxyethyl n-propyl sulfide" "2-propylthioethan-1-ol" "2-(n-propylthio)ethanol" "2-(propylsulfanyl)ethanol" "t300" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -256890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     463.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-112480.0
-    phase     gas;
 }

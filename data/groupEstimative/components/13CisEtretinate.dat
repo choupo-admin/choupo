@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group CH2; count 1; } { group dCH; count 6; } { group dC; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl (2z,4e,6e,8e)-9-(4-methoxy-2,3,6-trimethyl-phenyl)-3,7-dimethyl-nona-2,4,6,8-tetraenoate" "ethyl (13-cis)-9-(4-methoxy-2,3,6-trimethylphenyl)-3,7-dimethyl-2,4,6,8-nonatetraenoate" "2,4,6,8-nonatetraenoic acid, 9-(4-methoxy-2,3,6-trimethylphenyl)-3,7-dimethyl-, ethyl ester, (z,e,e,e)-" "ethyl (2z,4e,6e,8e)-9-(4-methoxy-2,3,6-trimethylphenyl)-3,7-dimethylnona-2,4,6,8-tetraenoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -327600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     948.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=105080.0
-    phase     gas;
 }

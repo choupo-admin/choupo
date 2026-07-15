@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 11; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(8r,9s,10r,13s,14s)-10,13-dimethyl-3-pyrrolidin-1-yl-1,2,7,8,9,11,12,14,15,16-decahydrocyclopenta[a]phenanthren-17-one" "3-pyrrolidin-1-ylandrosta-3,5-dien-17-one" "3-(1-pyrrolidinyl)androsta-3,5-dien-17-one" "androsta-3,5-dien-17-one, 3-(1-pyrrolidinyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -138080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     709.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=391800.0
-    phase     gas;
 }

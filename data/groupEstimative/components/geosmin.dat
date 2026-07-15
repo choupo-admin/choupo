@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 1; } { group C_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4s,4as,8ar)-4,8a-dimethyl-1,2,3,4,5,6,7,8-octahydronaphthalen-4a-ol" "(-)-geosmin" "octahydro-4alpha,8abeta-dimethyl-4aalpha(2h)-naphthol" "(4s-(4alpha,4aalpha,8abeta))-octahydro-4,8a-dimethyl-4a(2h)-naphthol" "4a(2h)-naphthalenol, octahydro-4,8a-dimethyl-, (4s-(4-alpha,4a-alpha,8a-beta))-" "4a(2h)-naphthalenol, octahydro-4,8a-dimethyl-, [4s-(4.alpha.,4a.alpha.,8a.beta.)]-" "4a(2h)-naphthalenol, octahydro-4,8a-dimethyl-,(4.alpha.,4a.alpha.,8a.beta.)-" "trans-1,10-dimethyl-trans-decalol" "4,8a-dimethyl-decahydronaphthalen-4a-ol" "octahydro-4,8a-dimethyl-4a(2h)-naphthalenol" "4,8alpha-dimethyl-octahydro-naphthalen-4alpha-ol" "(4s,4as,8ar)-4,8a-dimethyloctahydronaphthalen-4a(2h)-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -312140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     670.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-32250.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methoxy-5-oxidanylidene-pentanoic acid" "methyl hydrogen glutarate" "5-methoxy-5-oxopentanoic acid" "glutaric acid monomethyl ester" "mono-methyl glutarate" "glutaric acid, monomethyl ester" "monomethyl glutaric acid" "pentanedioic acid, monomethyl ester" "4-methoxycarbonylbutanoic acid" "glutaric acid methyl half ester" "4-(methoxycarbonyl)butyric acid" "4-(methoxycarbonyl)butanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -834720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-654640.0
-    phase     gas;
 }

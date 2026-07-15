@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 16; } { group dCH2; count 2; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "icosa-1,19-diene" "1,19-icosadiene" "1,19-icosadiene;1 19-eicosadiene;1 19-eicosadiene 97%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -205270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     925.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=293200.0
-    phase     gas;
 }

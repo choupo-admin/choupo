@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group NH2; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n'-(2-azanylethyl)propane-1,3-diamine" "1,3-propanediamine, n-(2-aminoethyl)-" "n-(3-aminopropyl)ethylenediamine" "(2-aminoethyl)(3-aminopropyl)amine" "n-(2-aminoethyl)propane-1,3-diamine" "1,3-propanediamine, n1-(2-aminoethyl)-" "dtsdbgvdesrkkd-uhfffaoysa-" "n'-(2-aminoethyl)propane-1,3-diamine" "n1-(2-aminoethyl)propane-1,3-diamine" "3-(2-aminoethylamino)propylamine" "m698" "n-(2-aminoethyl)-n-(3-aminopropyl)amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -25480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=213510.0
-    phase     gas;
 }

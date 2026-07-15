@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 9; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dibutylbutan-1-amine" "1-butanamine, n,n-dibutyl-" "tri-n-butylamine" "n,n-dibutyl-1-butanamine" "tris-n-butylamine" "amine, tributyl-" "tributilamina [romanian]" "tributilamina" "tributyl-amine" "tris[n-butylamine]" "n,n,n-tributylamine" "6309-30-4 (hydrochloride)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -223480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     639.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=160940.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 4; } { group OH_phenol; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5,7-bis(oxidanyl)chromen-2-one" "5,7-dihydroxy-2h-chromen-2-one" "5,7-dihydroxychromen-2-one" "5,7-dihydroxy-coumarin" "coumarin derivative, 1a" "5,7-dihydroxy-chromen-2-one" "5,7-dihydroxy-1-benzopyran-2-one" "2h-1-benzopyran-2-one, 5,7-dihydroxy-" "coumarin,5,7-dihydroxy- (6ci,7ci,8ci);5,7-dihydroxy-2h-chromen-2-one;2h-1-benzopyran-2-one,5,7-dihydroxy-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -518850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     393.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-381410.0
-    phase     gas;
 }

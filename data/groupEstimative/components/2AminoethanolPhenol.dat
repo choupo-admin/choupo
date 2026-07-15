@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group OH_phenol; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanylethanol;phenol" "ethanolamine phenolate" "phenol, compd. with 2-aminoethanol (1:1)" "phenol, compound with 2-aminoethanol (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -367820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     603.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-191230.0
-    phase     gas;
 }

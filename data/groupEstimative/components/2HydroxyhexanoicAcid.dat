@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylhexanoic acid" "2-hydroxycaproic acid" "dl-2-hydroxycaproic acid" "dl-2-hydroxyhexanoic acid" "dl-alpha-hydroxycaproic acid" "2-hydroxy-hexanoic acid" "dl-2-hydroxy caproic acid" "2-hydroxyhexanoate" "hydroxycaproate" "hydroxyhexanoate" "2-hydroxycaproate" "dl-hydroxycaproate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -674950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-483530.0
-    phase     gas;
 }

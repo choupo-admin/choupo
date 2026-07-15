@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 13-cyclopent-2-en-1-yltridecanoate" "chaulmoogric acid ethyl ester" "ethy6l chaulmoograte" "2-cyclopentene-1-tridecanoic acid, ethyl ester" "ethyl 2-cyclopentene-1-tridecanoate" "2-cyclopentene-1-tridecanoic acid, ethyl ester, (s)-" "ethyl 13-(cyclopent-2-enyl)tridecanoate" "ethyl 13-(cyclopent-2-en-1-yl)tridecanoate" "ethyl chaulmoograte" "ethyl 13-[(1s)-cyclopent-2-en-1-yl]tridecanoate" "2-cyclopentene-1-tridecanoicacid, ethyl ester, (1s)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -655150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     898.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-126340.0
-    phase     gas;
 }

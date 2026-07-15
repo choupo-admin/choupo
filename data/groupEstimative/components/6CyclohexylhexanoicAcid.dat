@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohexanehexanoic acid" "6-cyclohexyl-hexanoic acid" "cyclohexane-caproic acid" "wt756" "6283-88-1 6-cyclohexylhexanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -586960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     646.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-269300.0
-    phase     gas;
 }

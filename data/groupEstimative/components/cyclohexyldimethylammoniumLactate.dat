@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group OH; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethylcyclohexanamine;2-oxidanylpropanoic acid" "n,n-dimethylcyclohexanaminium2-hydroxypropanoate" "n,n-dimethylcyclohexanamine; 2-hydroxypropanoic acid" "n,n-dimethylcyclohexylamine, lactate salt" "2-hydroxypropanoic acid - n,n-dimethylcyclohexanamine (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -767920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     772.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-410960.0
-    phase     gas;
 }

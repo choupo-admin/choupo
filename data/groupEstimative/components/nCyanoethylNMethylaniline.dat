@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group N; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[methyl(phenyl)amino]propanenitrile" "n-(2-cyanoethyl)-n-methylaniline" "n-methyl-n-(2-cyanoethyl)aniline" "propanenitrile, 3-(methylphenylamino)-" "3-(methyl(phenyl)amino)propanenitrile" "3-(n-methyl-n-phenylamino)propionitrile" "3-(n-methylanilino)propionitrile" "3-(n-methylanilino)propanenitrile" ".beta.-n-methylanilinopropionitrile" "3-(methylphenylamino)propanenitrile" "3-(n-methylanilino)propiononitrile" "beta-(n-methylanilino)propionitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   219210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     461.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=389690.0
-    phase     gas;
 }

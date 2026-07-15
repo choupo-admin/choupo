@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranylethanamine" "2-chloroethanamine" "ethanamine, 2-chloro-" "ethanamine, 2-chloro-(9ci)" "2-aminoethyl hydrochloride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -66560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     318.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=20480.0
-    phase     gas;
 }

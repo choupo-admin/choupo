@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-oxidanylpropanoic acid" "3-hydroxypropanoic acid" "hydracrylic acid" "hydroxypropionic acid" "3-hydroxy-propanoic acid" "beta-hydroxypropionic acid" "beta-lactic acid" "ethylene lactic acid" "3-hydroxypropionate" "hydroxypropionate" "beta-hydroxypropionate" "3oh" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -607750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     376.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-506350.0
-    phase     gas;
 }

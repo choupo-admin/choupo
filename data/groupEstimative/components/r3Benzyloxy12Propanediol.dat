@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-3-phenylmethoxypropane-1,2-diol" "3-benzyl-sn-glycerol" "3-o-benzyl-sn-glycerol" "(r)-glycerol 1-benzyl ether" "(r)-3-(benzyloxy)propane-1,2-diol" "l-alpha-o-benzylglycerol" "(r)-3-benzyloxy-1,2-propanediol" "(r)-(+)-glycerol alpha-benzyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -455160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     542.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-235350.0
-    phase     gas;
 }

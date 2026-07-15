@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 9; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzene, 1,3,5-tributyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -201260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     738.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=193830.0
-    phase     gas;
 }

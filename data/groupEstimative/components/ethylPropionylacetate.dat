@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-oxidanylidenepentanoate" "ethyl 3-oxopentanoate" "ethyl 3-oxovalerate" "ethyl 3-oxo-n-valerate" "3-oxovaleric acid ethyl ester" "3-oxopentanoic acid ethyl ester" "propionylacetic acid ethyl ester" "ethylpropionylacetate" "3-ketovaleric acid ethyl ester" "udrconfhwygwfi-uhfffaoysa-" "3-oxo-pentanoic acid ethyl ester" "pentanoic acid, 3-oxo-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -617670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-431230.0
-    phase     gas;
 }

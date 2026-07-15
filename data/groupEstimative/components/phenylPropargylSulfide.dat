@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-ynylsulfanylbenzene" "phenyl2-propynylsulfide" "prop-2-ynylthiobenzene" "2-(phenylthio)-1-propyne" "bis(3-phenylprop-2-ynyl)sulfane" "(prop-2-yn-1-ylsulfanyl)benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   341210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     431.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=393500.0
-    phase     gas;
 }

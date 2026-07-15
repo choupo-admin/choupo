@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH; count 2; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethyl benzene-1,4-dicarboxylate; ethane-1,2-diol; methyl 4-(4-methoxycarbonylphenyl)benzoate" "(1,1'-biphenyl)-4,4'-dicarboxylic acid, 4,4'-dimethyl ester, polymer with 1,4-dimethyl 1,4-benzenedicarboxylate and 1,2-ethanediol" "(1,1'-biphenyl)-4,4'-dicarboxylic acid, dimethyl ester, polymer with 1,4-benzenedicarboxylic acid, dimethyl ester and 1,2-ethanediol" "(1,1'-biphenyl)-4,4'-dicarboxylic acid, dimethyl ester, polymer with dimethyl 1,4-benzenedicarboxylate and 1,2-ethanediol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1742890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1431.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1231420.0
-    phase     gas;
 }

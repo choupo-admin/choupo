@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-hexyl-5-methyl-oxolan-2-one" "2(3h)-furanone, 5-hexyldihydro-5-methyl-" "dihydrojasmone lactone" "gamma-methyl-gamma-decanolactone" "gamma-methyldecalactone" "gamma-methyl decalactone" "5-hexyl-5-methyldihydrofuran-2(3h)-one" "5-hexyldihydro-5-methyl-2(3h)-furanone" "5-hexyldihydro-5-methylfuran-2(3h)-one" "4-hydroxy-4-methyldecanoic acid gamma-lactone" "decanoic acid, 4-hydroxy-4-methyl-, gamma-lactone" ".gamma.-methyldecalactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -499610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     615.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-213370.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH; count 4; } { group OH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-oxidanylhexa-2,4-dienal" "6-hydroxyhexa-2,4-dienal" "2,4-hexadienal,6-hydroxy-, (e,e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -170540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     446.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76260.0
-    phase     gas;
 }

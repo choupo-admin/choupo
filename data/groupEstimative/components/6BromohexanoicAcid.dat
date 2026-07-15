@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-bromanylhexanoic acid" "6-bromocaproic acid" "hexanoic acid, 6-bromo-" "6-bromo-hexanoic acid" "6-bromo-n-caproic acid" "nvrvnshhlpqgcu-uhfffaoysa-" "6-bromocaproicacid;w-bromohexanoic acid;" "h246" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -491110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     493.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-329950.0
-    phase     gas;
 }

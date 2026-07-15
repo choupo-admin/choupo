@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group F; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,3-tris(fluoranyl)propanoic acid" "3,3,3-trifluoropropanoic acid" "tfpa" "3,3,3-trifluoro-propionic acid" "propanoic acid, 3,3,3-trifluoro-" "3,3,3-trifluoro-propanoic acid" "propionicacid, 3,3,3-trifluoro- (7ci,8ci);3,3,3-trifluoropropanoic acid;b,b,b-trifluoropropionic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1052600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     382.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-951120.0
-    phase     gas;
 }

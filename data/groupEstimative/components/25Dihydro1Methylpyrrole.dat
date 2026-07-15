@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-2,5-dihydropyrrole" "1h-pyrrole,2,5-dihydro-1-methyl-" "agn-pc-0d621s" "1h-pyrrole, 2,5-dihydro-1-methyl-" "2,5-dihydro-1-methyl-1h-pyrrole" "3-pyrroline,1-methyl- (7ci,8ci); 1-methyl-3-pyrroline; 1-methyl-d3-pyrroline; n-methyl-2,5-dihydropyrrole;n-methyl-3-pyrroline; n-methylpyrroline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   65760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     301.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=188320.0
-    phase     gas;
 }

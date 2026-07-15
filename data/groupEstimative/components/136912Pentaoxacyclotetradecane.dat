@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 9; } { group O_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,6,9,12-pentaoxacyclotetradecane(8ci,9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -863710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     421.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-470340.0
-    phase     gas;
 }

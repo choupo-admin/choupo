@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylaminophenol" "n-methyl-2-hydroxyaniline" "2-methylamino-phenol" "o-(methylamino)phenol" "n-methyl-2-aminophenol" "phenol, o-(methylamino)-" "phenol, 2-(methylamino)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -75120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55240.0
-    phase     gas;
 }

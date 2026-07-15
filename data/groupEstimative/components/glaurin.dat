@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group OH; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-hydroxyethyloxy)ethyl dodecanoate" "diethylene glycol laurate" "diglycol laurate" "dodecanoic acid, 2-(2-hydroxyethoxy)ethyl ester" "lauro-sebum" "diethylene glycol monolaurate" "pegosperse 100l" "diglycol monolaurate" "peg-2 laurate" "emcol rdc-d" "diethylene glycol mono laurate" "diethylene glycol sesquilaurate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -975300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     892.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-468350.0
-    phase     gas;
 }

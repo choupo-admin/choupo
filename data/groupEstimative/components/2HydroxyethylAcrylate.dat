@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-hydroxyethyl prop-2-enoate" "hydroxyethyl acrylate" "ethylene glycol monoacrylate" "2-propenoic acid, 2-hydroxyethyl ester" "acrylic acid 2-hydroxyethyl ester" "acrylic acid, 2-hydroxyethyl ester" "bisomer 2hea" "2-(acryloyloxy)ethanol" "ethylene glycol, acrylate" "ethylene glycol, monoacrylate" "poly(2-hydroxyethyl acrylate)" "2-propenoic acid, 2-hydroxyethyl ester, homopolymer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -490610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     448.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-368130.0
-    phase     gas;
 }

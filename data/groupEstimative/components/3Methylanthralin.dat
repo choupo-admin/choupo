@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 8; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylanthracene-1,8,9-triol" "3-methyl-1,8,9-anthracenetriol" "chrysophanic acid anthranol" "1,8,9-anthracenetriol, 3-methyl-" "1,8-dihydroxy-3-methylanthron" "1,8,9-trihydroxy-3-methylanthracene" "3-methyl-1,8,9-trihydroxyanthracene" "3-methyl-1,8-dihydroxy-9,10-dihydro-9-oxoanthracen" "ambap491-59-8" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -289130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-81990.0
-    phase     gas;
 }

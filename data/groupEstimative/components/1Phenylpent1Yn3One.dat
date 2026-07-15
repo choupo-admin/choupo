@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group tC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-pentyn-3-one, 1-phenyl-" "1-phenyl-1-pentyn-3-one" "1-phenylpenta-1-yn-3-one" "1-phenyl-pent-1-yn-3-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   125880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     476.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=228030.0
-    phase     gas;
 }

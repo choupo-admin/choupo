@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group Br; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3-bromanylpropoxy)oxane" "2-(3-bromopropoxy)oxane" "2-(3-bromopropoxy)-tetrahydro-2h-pyran" "1-bromo-3-(tetrahydropyranyloxy)propane" "2-(3-bromo-propoxy)-tetrahydro-pyran" "2-(3-bromopropoxy)tetrahydropyran" "1-(2h-3,4,5,6-tetrahydropyran-2-yloxy)-3-bromopropane" "pyran,2-(3-bromopropoxy)tetrahydro- (6ci);1-bromo-3-(tetrahydropyran-2-yloxy)propane;2-(3-bromopropoxy)oxane;2-(3-bromopropoxy)tetrahydropyran;3-(tetrahydropyran-2-yloxy)-1-bromopropane;3-(tetrahydropyran-2-yloxy)propyl bromide;3-(tetrahydropyranyloxy)propylbromide;3-bromo-1-(2-tetrahydropyranyloxy)propane;3-bromopropyl tetrahydropyran-2-ylether;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -392020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     448.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-135870.0
-    phase     gas;
 }

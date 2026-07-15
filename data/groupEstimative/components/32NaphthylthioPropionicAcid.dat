@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group COOH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-naphthalen-2-ylsulfanylpropanoic acid" "3-(2-naphthylthio)propanoic acid" "3-(2-naphthylsulfanyl)propanoic acid" "3-(naphthalen-2-ylsulfanyl)propanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -203920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     555.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-42780.0
-    phase     gas;
 }

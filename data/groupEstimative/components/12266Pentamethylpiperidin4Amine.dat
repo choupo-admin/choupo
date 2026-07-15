@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 2; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-amino-1,2,2,6,6-pentamethylpiperidine" "1,2,2,6,6-pentamethyl-4-piperidylamine" "4-piperidinamine,1,2,2,6,6-pentamethyl-" "piperidine,4-amino-1,2,2,6,6-pentamethyl- (7ci);(1,2,2,6,6-pentamethylpiperidin-4-yl)amine;1,2,2,6,6-pentamethyl-4-aminopiperidine;1,2,2,6,6-pentamethyl-4-piperidinamine;4-amino-1,2,2,6,6-pentamethylpiperidine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -98130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     617.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=220700.0
-    phase     gas;
 }

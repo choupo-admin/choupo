@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 14; } { group F; count 29; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14-nonacosakis(fluoranyl)-16-iodanyl-hexadecane" "hexadecane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14-nonacosafluoro-16-iodo-" "1,1,2,2-tetrahydroperfluorohexadecyl iodide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -6106390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1209.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-5467770.0
-    phase     gas;
 }

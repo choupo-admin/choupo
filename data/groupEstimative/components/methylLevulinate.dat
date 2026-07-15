@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-oxidanylidenepentanoate" "methyl 4-oxopentanoate" "levulinic acid, methyl ester" "methyl 4-oxovalerate" "pentanoic acid, 4-oxo-, methyl ester" "levulinic acid methyl ester" "4-oxovaleric acid methyl ester" "uagjvsrufnsihr-uhfffaoysa-" "4-oxo-pentanoic acid methyl ester" "levulinic acid, methyl ester (8ci)" "o315" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -597030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-439650.0
-    phase     gas;
 }

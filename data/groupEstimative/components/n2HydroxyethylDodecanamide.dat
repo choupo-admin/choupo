@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group OH; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "amisol lde" "n-lauroylethanolamine" "dodecanamide, n-(2-hydroxyethyl)-" "laurylethanolamide" "copramyl" "vistalan" "ultrapole h" "comperlan lm" "cyclomide lm" "lauramide mea" "lauridit lm" "laurylamidoethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -543630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     819.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-109350.0
-    phase     gas;
 }

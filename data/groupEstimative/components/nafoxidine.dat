@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 6; } { group dCH_ring; count 12; } { group dC_ring; count 8; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[2-[4-(6-methoxy-2-phenyl-3,4-dihydronaphthalen-1-yl)phenoxy]ethyl]pyrrolidine" "nafoxidine [inn]" "nafoxidinum [inn-latin]" "pyrrolidine, 1-(2-(4-(3,4-dihydro-6-methoxy-2-phenyl-1-naphthalenyl)phenoxy)ethyl)-" "pyrrolidine, 1-(2-(p-(3,4-dihydro-6-methoxy-2-phenyl-1-naphthyl)phenoxy)ethyl)-" "1-(2-(p-(3,4-dihydro-6-methoxy-2-phenyl-1-naphthyl)phenoxy)ethyl)pyrrolidine" "1-{2-[4-(6-methoxy-2-phenyl-3,4-dihydronaphthalen-1-yl)phenoxy]ethyl}pyrrolidine" "nafoxidina" "nafoxidinum" "11100a (*hydrochloride*)" "u 11100 (*hydrochloride*)" "u 11100a (*hydrochloride*)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   45180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     880.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=525840.0
-    phase     gas;
 }

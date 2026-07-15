@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2,2,6-trimethylcyclohexyl)pentan-3-ol" "alpha-ethyl-2,2,6-trimethylcyclohexanepropanol" "cyclohexanepropanol, alpha-ethyl-2,2,6-trimethyl-" "1-[(1s,6s)-2,2,6-trimethylcyclohexyl]pentan-3-ol" "cyclohexanepropanol, .alpha.-ethyl-2,2,6-trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -460920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     697.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-68720.0
-    phase     gas;
 }

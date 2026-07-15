@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group COOH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methylpyridine-2-carboxylic acid" "6-methyl-2-pyridinecarboxylic acid" "6-methyl-2-picolinic acid" "6-methyl-2-picolinicacid" "2-carboxy-6-methylpyridine" "picolinic acid, 6-methyl-" "2-pyridinecarboxylic acid, 6-methyl-" "2-picoline-6-carboxylic acid" "6-methyl picolinic acid" "tpc-py028" "ltuugsgsuzrprv-uhfffaoysa-" "picolinic acid, 6-methyl- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -280230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-156020.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group COOH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanylbutanedioic acid" "aspartic acid" "h-asp-oh" "asparagic acid" "l-asparaginic acid" "l-aspartate" "asparaginic acid" "l-asparagic acid" "(2s)-aspartic acid" "aspatofort" "(s)-2-aminosuccinic acid" "aspartate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -797920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     460.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-641010.0
-    phase     gas;
 }

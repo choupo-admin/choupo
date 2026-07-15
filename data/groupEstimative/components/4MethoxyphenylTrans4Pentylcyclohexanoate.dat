@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-methoxyphenyl) 4-pentylcyclohexane-1-carboxylate" "4-methoxyphenyl 4-pentylcyclohexanecarboxylate" "cyclohexanecarboxylic acid, 4-pentyl-, 4-methoxyphenyl ester, trans-" "4-methoxyphenyl trans-4-pentylcyclohexanecarboxylate" "trans-4-pentyl-cyclohexanecarboxylic acid 4-methoxy-phenyl ester" "trans-4-pentylcyclohexanecarboxylic acid, 4-methoxyphenyl ester" "trans-4-methoxy-phenyl 4-pentyl-cyclohexanecarboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -625950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     773.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-186750.0
-    phase     gas;
 }

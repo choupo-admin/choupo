@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group COOH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[bis(2-hydroxy-2-oxoethyl)amino]ethanoic acid" "triglycollamic acid" "aminotriacetic acid" "complexon i" "titriplex i" "trilon a" "versene nta acid" "hampshire nta acid" "2,2',2''-nitrilotriacetic acid" "nta" "nitrilotriacetate" "n,n-bis(carboxymethyl)glycine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1150450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     565.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-921310.0
-    phase     gas;
 }

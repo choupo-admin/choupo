@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 27; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octacosan-1-ol" "octacosanol" "montanyl alcohol" "octacosyl alcohol" "cluytyl alcohol" "n-octacosanol" "octacosanol-1" "octacosyl" "polycosanol" "octanosol" "67905-27-5 (aluminum[1:3]salt)" "k972" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -773480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1297.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=48060.0
-    phase     gas;
 }

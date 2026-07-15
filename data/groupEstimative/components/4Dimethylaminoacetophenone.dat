@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[4-(dimethylamino)phenyl]ethanone" "p-dimethylaminoacetophenone" "4-dimethylaminoacetophenone" "1-(4-(dimethylamino)phenyl)ethanone" "p-n,n-dimethylaminoacetophenone" "4'-(n,n-dimethylamino)acetophenone" "ethanone, 1-[4-(dimethylamino)phenyl]-" "1-acetyl-4-(dimethylamino)benzene" "ethanone, 1-(4-(dimethylamino)phenyl)-" "4'-(dimethylamino)acetophenone" "4-n,n-dimethylaminoacetophenone" "1-(4-dimethylaminophenyl)ethanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -69720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=117960.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH2; count 3; } { group dCH; count 4; } { group dC; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(prop-2-enyl) (z)-prop-1-ene-1,2,3-tricarboxylate" "triprop-2-en-1-yl prop-1-ene-1,2,3-tricarboxylate" "1-propene-1,3-tricarboxylic acid, triallyl ester" "1-propene-1,2,3-tricarboxylic acid, triallyl ester" "1-propene-1,2,3-tricarboxylic acid, triallyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -821050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     869.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-520500.0
-    phase     gas;
 }

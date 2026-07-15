@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-nonenal, 4,8-dimethyl-" "4,8-dimethyl-7-nonenal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -253800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     582.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=11450.0
-    phase     gas;
 }

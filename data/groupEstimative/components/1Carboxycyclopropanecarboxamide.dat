@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group C_ring; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-aminocarbonylcyclopropane-1-carboxylic acid" "1-carbamoylcyclopropane-1-carboxylic acid" "1-(aminocarbonyl)-1-cyclopropanecarboxylic acid" "cyclopropane, 5" "1-carbamoylcyclopropanecarboxylic acid" "cyclopropanecarboxylicacid, 1-(aminocarbonyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -487550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     461.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-359900.0
-    phase     gas;
 }

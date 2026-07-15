@@ -30,9 +30,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pent-2-ene" "1-methyl-2-buten-1-yl" "1-methylbut-2-en-1-yl" "pent-2-en-4-yl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   29300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     340.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=111550.0
-    phase     gas;
 }

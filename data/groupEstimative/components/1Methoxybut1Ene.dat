@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-1-methoxybut-1-ene" "1-butene, 1-methoxy-,(1e)-" "1-butene, 1-methoxy-, (1z)-" "1-butene,1-methoxy-, (e)-; ether, 1-butenyl methyl, (e)- (8ci); (e)-1-butenyl methylether; 1-methoxy-trans-2-butene; trans-methylbutenyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -161530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     355.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-33560.0
-    phase     gas;
 }

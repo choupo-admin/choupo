@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(2-azanylethyl)-3-oxidanyl-naphthalene-2-carboxamide" "2-naphthalenecarboxamide, n-(2-aminoethyl)-3-hydroxy-" "n-(2-aminoethyl)(3-hydroxy(2-naphthyl))carboxamide" "n-(2-aminoethyl)-3-hydroxy-2-naphthamide" "2-naphthalenecarboxamide,n-(2-aminoethyl)-3-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -98150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     586.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=140310.0
-    phase     gas;
 }

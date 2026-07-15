@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 13; } { group dC_ring; count 9; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphtho[1,2-b]phenanthren-14-amine" "dibenz(a,h)anthracene, 7-amino-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   491310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     497.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=701300.0
-    phase     gas;
 }

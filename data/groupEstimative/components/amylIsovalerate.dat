@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentyl 3-methylbutanoate" "n-amyl isovalerate" "butanoic acid, 3-methyl-, pentyl ester" "pentyl isovalerate" "1-pentyl isovalerate" "pentyl 3-methylbutyrate" "isovaleric acid, pentyl ester" "amyl iso valerate" "isovaleric acid, pentyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -572290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     587.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-279490.0
-    phase     gas;
 }

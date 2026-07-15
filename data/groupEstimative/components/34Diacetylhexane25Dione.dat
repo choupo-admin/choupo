@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 2; } { group CdO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,4-diethanoylhexane-2,5-dione" "3,4-diacetyl-2,5-hexanedione" "sym-tetraacetylethane" "1,1,2,2-tetraacetylethane" "tetraacetylethane" "3,5-hexanedione" "bis(acetylacetone)" "2, 3,4-diacetyl-" "1,2,2-tetraacetylethane" "3,4-diacetyl-hexane-2,5-dione" "2,5-hexanedione,3,4-diacetyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -710610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     633.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-487240.0
-    phase     gas;
 }

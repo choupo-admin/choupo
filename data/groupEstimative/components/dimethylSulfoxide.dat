@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group dO_oth; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methylsulfinylmethane" "dmso" "methyl sulfoxide" "dimethyl sulphoxide" "demasorb" "dimexide" "domoso" "methane, sulfinylbis-" "dimethylsulfoxide" "infiltrina" "demavet" "demsodrox" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -332220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     379.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-284870.0
-    phase     gas;
 }

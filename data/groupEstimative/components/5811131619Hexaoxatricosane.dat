@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 15; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[2-[2-[2-(2-butoxyethoxy)ethoxymethoxy]ethoxy]ethoxy]butane" "butylcarbitol formal" "cryoflex" "dibutylcarbitol formal" "bis(butylcarbitol)formal" "dibutoxyethoxyethyl formal" "bis(butoxyethoxyethyl)formal" "bis(butoxyethoxyethoxy)methane" "dibutylcarbitolformal" "tp 90b" "methane, bis(2-(2-butoxyethoxy)ethoxy)-" "bis(2-(2-butoxyethoxy)ethoxy)methane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1187530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     885.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-537740.0
-    phase     gas;
 }

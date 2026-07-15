@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 8; } { group OH_phenol; count 1; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(6as)-2,11-dimethoxy-6-methyl-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinoline-1-ol" "1-hydroxy-2,11-dimethoxyaporphine" "2,11-dimethoxy-1-hydroxyaporphine" "6a-alpha-aporphin-1-ol, 2,11-dimethoxy-" "4h-dibenzo(de,g)quinolin-1-ol, 5,6,6a,7-tetrahydro-2,11-dimethoxy-6-methyl-, (s)-" "ambap568-21-8" "6aalpha-aporphin-1-ol, 2,11-dimethoxy-" "6aalpha-aporphin-1-ol, 2,11-dimethoxy- (8ci)" "(6as)-2,11-dimethoxy-6-methyl-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinolin-1-ol" "4h-dibenzo(de,g)quinolin-1-ol, 5,6,6a,7-tetrahydro-2,11-dimethoxy-6-methyl-, (s)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -215740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     539.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=185340.0
-    phase     gas;
 }

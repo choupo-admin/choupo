@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group dCH; count 7; } { group dC; count 1; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 3; } { group OH; count 2; } { group O; count 1; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methoxy-5-methyl-6-[(1e,3e,5e,7e)-7-methyl-8-[(2s,3r,4r,5r)-2,4,5-trimethyl-3,4-bis(oxidanyl)oxolan-2-yl]octa-1,3,5,7-tetraenyl]pyran-2-one" "citreoviridine" "citreoviridin a" "citreoviridine a" "2h-pyran-2-one, 4-methoxy-5-methyl-6-(7-methyl-8-(tetrahydro-3,4-dihydroxy-2,4,5-trimethyl-2-furanyl)-1,3,5,7-octatetraenyl)-" "2h-pyran-2-one, 4-methoxy-5-methyl-6-(7-methyl-8-(tetrahydro-3,4-dihydroxy-2,4,5-trimethyl-2-furyl)-1,3,5,7-octatetraenyl)-" "4-methoxy-5-methyl-6-(7-methyl-8-(tetrahydro-3,4-dihydroxy-2,4,5-trimethyl-2-furyl)-1,3,5,7-octatetraenyl)-2h-pyran-2-one" "ambotz25425-12-1" "6-[(1e,3e,5e,7e)-8-[(2s,3r,4r,5r)-3,4-dihydroxy-2,4,5-trimethyloxolan-2-yl]-7-methylocta-1,3,5,7-tetraenyl]-4-methoxy-5-methylpyran-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -746850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     974.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-230190.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group Cl; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(2-chloroethyl)-1-phenoxy-n-(phenylmethyl)propan-2-amine" "dibenyline" "dibenzyran" "bensylyt" "benzylyt" "dibenylene" "dibenylin" "fenoxibenzamina" "dibenziran" "dibenzylin" "fenossibenzamina" "phenoxybenzaminum" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -27500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     695.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=316910.0
-    phase     gas;
 }

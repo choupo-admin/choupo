@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(bromomethyl)-1,2-bis(chloranyl)benzene" "4-(bromomethyl)-1,2-dichlorobenzene" "alpha-bromo-3,4-dichlorotoluene" "3,4-dichlorobenzylbromide" "1-bromomethyl-3,4-dichlorobenzene" "benzene, 4-(bromomethyl)-1,2-dichloro-" "18880-04-1 3,4-dichlorobenzyl bromide" "toluene, a-bromo-3,4-dichloro-(6ci,7ci,8ci);1-bromomethyl-3,4-dichlorobenzene;4-bromomethyl-1,2-dichlorobenzene;1,2-dichloro-4-(bromomethyl)benzene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   20630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     427.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91670.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6,7,8,9-tetrahydro-5h-cyclohepta[b]pyridine" "5h-cyclohepta[b]pyridine, 6,7,8,9-tetrahydro-" "6,7,8,9-tetrahydro-5h-cyclohepta(b)pyridine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   88940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     437.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=257410.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "thiophene, 2-pentyl-" "2-amylthiophene" "2-n-pentylthiophene" "1-methylbutylthiophene" "2-pentylthiophene;1-methylbutylthiophene;2-pentyl thiophene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   1080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=159310.0
-    phase     gas;
 }

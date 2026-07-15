@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group Cl; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-chloranyl-3-oxidanylidene-butanoate" "ethyl 2-chloro-3-oxobutanoate" "ethyl-2-chloracetoacetate" "2-chloroacetoacetic acid ethyl ester" "butanoic acid, 2-chloro-3-oxo-, ethyl ester" "ethyl alpha-chloroacetoacetate" "ethyl2-chloroacetoacetate" "2-chloro-3-oxobutyric acid ethyl ester" "ethyl2-chloro-3-oxobutanoate" "2-chloro-3-oxobutanoic acid, ethyl ester" "acetoacetic acid, 2-chloro-, ethyl ester" "2-cl-ace" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -618050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     491.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-454020.0
-    phase     gas;
 }

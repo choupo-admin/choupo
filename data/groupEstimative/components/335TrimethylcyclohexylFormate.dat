@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3,3,5-trimethylcyclohexyl) methanoate" "cyclohexanol, 3,3,5-trimethyl-, formate" "cyclohexanol, 3,3,5-trimethyl-, 1-formate" "(3,3,5-trimethylcyclohexyl) formate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -144400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     683.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=80820.0
-    phase     gas;
 }

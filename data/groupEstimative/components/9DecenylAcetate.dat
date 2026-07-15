@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dec-9-enyl ethanoate" "9-decen-1-ol, acetate" "9-decen-1-yl acetate" "decenyl acetate" "acetic acid 9-decenyl ester" "9-decen-1-ol, 1-acetate" "dec-9-enyl acetate" "10-acetoxy-1-decene" "9-decen-1-ol,acetate (6ci,9ci); 1-acetoxy-9-decene; 9-decenyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -482860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     670.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-172370.0
-    phase     gas;
 }

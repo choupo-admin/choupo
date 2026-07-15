@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methyl-2,5,7,10-tetraoxaundecane" "1,1-di-(2-methoxyethoxy)ethane" "2,5,7,10-tetraoxaundecane, 6-methyl-" "acetaldehyde, bis(2-methoxyethyl) acetal" "2,5,7,10-tetraoxaundecane,6-methyl-" "1,1-di(2-methoxy ethoxy)ethane" "acetaldehyde,bis(2-methoxyethyl) acetal (8ci); 1,1-bis(2-methoxyethoxy)ethane;1,1-di(2-methoxyethoxy)ethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -742610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     503.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-405960.0
-    phase     gas;
 }

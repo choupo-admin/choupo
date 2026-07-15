@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopropane, 1,1',1-(1-ethenyl-2-ylidene)tris-" ""cyclopropane,1,1',1""-(1-ethenyl-2-ylidene)tris-"" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   55460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     302.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=295660.0
-    phase     gas;
 }

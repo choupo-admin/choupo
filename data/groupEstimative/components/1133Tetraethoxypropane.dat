@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 2; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "malonaldehyde bis(diethyl acetal)" "tetraethoxypropane" "malonaldehyde tetraethyl acetal" "malonaldehyde, bis(diethyl acetal)" "propane, 1,1,3,3-tetraethoxy-" "malonaldehyde diethyl acetal" "tetraethoxy propane" "usaf kf-26" "malondialdehyde tetraethylacetal" "malonaldehyde tetraethyl diacetal" "tetraethyl malondialdehyde acetal" "1,3,3-tetraethoxypropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -809810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     610.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383140.0
-    phase     gas;
 }

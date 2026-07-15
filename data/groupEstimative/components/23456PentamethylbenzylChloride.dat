@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 1; } { group dC_ring; count 6; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(chloromethyl)-2,3,4,5,6-pentamethyl-benzene" "pentamethylbenzyl chloride" "benzene, (chloromethyl)pentamethyl-" "(chloromethyl)pentamethylbenzene" "1-(chloromethyl)-2,3,4,5,6-pentamethylbenzene" "benzene, 1-(chloromethyl)-2,3,4,5,6-pentamethyl-" "cxuaebdtjfkmbv-uhfffaoysa-" "2,4,5,6-pentamethylbenzyl chloride" "alpha-chloro-2,3,4,5,6-pentamethyltoluene" "2-(chloromethyl)-1,3,4,5,6-pentamethylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -127570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     519.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102490.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl bicyclo[2.2.1]heptane-3-carboxylate" "2,5-endomethylene cyclohexanecarboxylic acid, ethyl ester (mixed formyl isomers)" "2-norbornanecarboxylic acid, ethyl ester, endo-" "agn-pc-00s8kl" "ethyl (1s,3s,4r)-bicyclo[2.2.1]heptane-3-carboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -447910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     393.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-175360.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group CH; count 2; } { group OH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "13,14-bis(oxidanyl)docosanoic acid" "docosanoic acid, 13,14-dihydroxy-" "13,14-dihydroxy-docosanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1162700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1148.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-488070.0
-    phase     gas;
 }

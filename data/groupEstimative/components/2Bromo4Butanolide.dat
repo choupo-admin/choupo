@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanyloxolan-2-one" "alpha-bromo-gamma-butyrolactone" "2-bromobutyrolactone" "2(3h)-furanone, 3-bromodihydro-" "3-bromo-2-furanone" "3-bromooxolan-2-one" ".alpha.-bromo-.gamma.-butyrolactone" "3-bromdihydrofuran-2(3h)-on" "a-bromo-" "a-butyrolatone" ".alpha.-bromobutyrolactone" "2-bromo-.gamma.-butyrolactone" "3-bromo-3,4,5-trihydrofuran-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -344040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     323.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-252500.0
-    phase     gas;
 }

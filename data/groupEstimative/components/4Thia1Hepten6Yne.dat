@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group tCH; count 1; } { group tC; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-prop-2-ynylsulfanylprop-1-ene" "1-propene, 3-(2-propynylthio)-" "ch.equiv.cch2sch2ch=ch2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   292030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     416.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=343670.0
-    phase     gas;
 }

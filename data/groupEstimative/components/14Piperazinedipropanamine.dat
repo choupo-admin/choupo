@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group CH2_ring; count 4; } { group NH2; count 2; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[4-(3-azanylpropyl)piperazin-1-yl]propan-1-amine" "1,4-bis(3-aminopropyl)piperazine" "bis(aminopropyl)piperazine" "3,3'-piperazine-1,4-diyldipropan-1-amine" "1,4-di(3-aminopropyl)piperazine" "n,n'-bis(p-aminopropyl)piperazine" "n,n'-bis(3-aminopropyl)piperazine" "1,4-bis-(3-aminoprop-1-yl)piperazine" "3,3'-(piperazine-1,4-diyl)bis(propan-1-amine)" "3-[4-(3-aminopropyl)piperazinyl]propylamine" "1,4-bis(aminopropyl)piperazine" "1,4-bis(3-aminopropyl)-piperazine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   39890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     652.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=444140.0
-    phase     gas;
 }

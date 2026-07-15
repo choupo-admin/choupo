@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6,6-dimethylbicyclo[3.1.1]heptan-4-one" ".beta.-pinone" "nopinon" "bicyclo[3.1.1]heptan-2-one, 6,6-dimethyl-" "(1r)-(+)-norinone" "6,6-dimethylbicyclo[3.1.1]heptan-2-one" "bicyclo[3.1.1]heptan-2-one, 6,6-dimethyl-, (1r)-" "6,6-dimethylbicyclo(3.1.1)heptan-2-one" "bicyclo(3.1.1)heptan-2-one, 6,6-dimethyl-" "bicyclo(3.1.1)heptan-2-one, 6,6-dimethyl-, (1r)-" "(1r,5s)-(+)-6,6-dimethylbicyclo[3.1.1]heptan-2-one" "beta-pinone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -232450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     294.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1490.0
-    phase     gas;
 }

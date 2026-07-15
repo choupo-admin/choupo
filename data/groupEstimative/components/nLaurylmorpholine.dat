@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group CH2_ring; count 4; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-dodecylmorpholine" "morpholine, 4-dodecyl-" "n-dodecylmorpholine" "dodecyl morpholine" "4-dodecyl-morpholine" "4-(n-dodecyl)morpholine;4-dodecylmorpholine; 4-laurylmorpholine; busan 2180; busperse 2180; ddm;n-dodecylmorpholine; n-laurylmorpholine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -357220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     735.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=152760.0
-    phase     gas;
 }

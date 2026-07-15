@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 1-methylpiperidine-2-carboxylate" "ethyl n-methylpipecolinate" "ethyl 1-methyl-2-piperidinecarboxylate" "ethyl 1-methylpipecolate" "zicbnhlulhjetl-uhfffaoysa-" "1-methylpipecolic acid ethyl ester" "1-methylpipecolinic acid ethyl ester" "methyl 1-methyl piperidine-2-carboxylate" "s939" "1-methyl-2-piperidinecarboxylic acid ethyl ester" "2-piperidinecarboxylic acid, 1-methyl-, ethyl ester" "pipecolicacid, 1-methyl-, ethyl ester (6ci,7ci,8ci);ethyl 1-methylpipecolate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -418360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     523.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-138140.0
-    phase     gas;
 }

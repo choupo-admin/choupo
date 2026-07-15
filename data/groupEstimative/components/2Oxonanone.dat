@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxonan-2-one" ".eta.-caprylolactone" "octanoicacid, 8-hydroxy-, lactone (6ci); octanoic acid, 8-hydroxy-, h-lactone (7ci); 8-octanolactone;8-octanolide; oxacyclononan-2-one; h-caprylolactone; w-hydroxyoctanoic acid lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -457230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     550.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-273830.0
-    phase     gas;
 }

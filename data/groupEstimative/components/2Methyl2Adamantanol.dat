@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 4; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyladamantan-2-ol" "2-methyl-2-adamantol" "tricyclo(3.3.1.1(3,7))decan-2-ol, 2-methyl-" "2-adamantanol, 2-methyl-" "ambap702-98-7" "2-hydroxy-2-methyladamantane" "tricyclo[3.3.1.13, 2-methyl-" "(1r,3r,5r,7r)-2-methyladamantan-2-ol" "k186" "2-methyltricyclo[3.3.1.1~3,7~]decan-2-ol" "tricyclo[3.3.1.13,7]decan-2-ol, 2-methyl-" "tricyclo[3.3.1.13,7]decan-2-ol, 2-methyl-;2-methyladamantan-2-ol;2-adamantanol, 2-methyl-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -235800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     369.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=54160.0
-    phase     gas;
 }

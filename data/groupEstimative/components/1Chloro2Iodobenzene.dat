@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-2-iodanyl-benzene" "o-chloroiodobenzene" "2-chloroiodobenzene" "2-iodochlorobenzene" "o-iodochlorobenzene" "benzene, 1-chloro-2-iodo-" "2-chloro-1-iodobenzene" "2-chlorophenyl iodide" "1-chloro-2-iodo-benzene" "i746" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   119020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     366.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=148610.0
-    phase     gas;
 }

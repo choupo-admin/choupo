@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-chloranyl-n,n-diethyl-aniline" "n-(4-chlorophenyl)-n,n-diethylamine" "benzenamine, 4-chloro-n,n-diethyl-" "(4-chlorophenyl)diethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   27120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     482.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=234950.0
-    phase     gas;
 }

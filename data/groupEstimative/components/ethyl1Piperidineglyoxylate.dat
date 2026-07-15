@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 5; } { group CdO; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-oxidanylidene-2-piperidin-1-yl-ethanoate" "ethyl oxo(piperidin-1-yl)acetate" "ethyl 1-piperidineoxoacetate" "e1p" "ethyl 2-oxo-2-piperidylacetate" "ethyl 2-oxo-2-piperidin-1-ylacetate" "1-piperidineaceticacid, a-oxo-, ethyl ester" "1-piperidineacetic acid, alpha-oxo-, ethyl ester" "1-piperidineacetic acid, .alpha.-oxo-, ethyl ester" "ethyl oxo(piperidin-1-yl)acetate;ethyl 1-piperidineoxoacetate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -510600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     592.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-259350.0
-    phase     gas;
 }

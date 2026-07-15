@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group dCH_ring; count 2; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,5-tetramethylbenzene" "benzene, 1,2,3,5-tetramethyl-" "1,3,4,5-tetramethylbenzene" "1,3,5-tetramethylbenzene" "isodurene, 85%" "benzene,2,3,5-tetramethyl-" "1,2,3,5-tetramethyl-benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -47610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     420.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116840.0
-    phase     gas;
 }

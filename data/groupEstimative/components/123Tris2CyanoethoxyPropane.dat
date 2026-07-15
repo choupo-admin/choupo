@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group CH; count 1; } { group O; count 3; } { group CN; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[2,3-bis(2-cyanoethoxy)propoxy]propanenitrile" "propanenitrile, 3,3',3''-(1,2,3-propanetriyltris(oxy))tris-" "propanenitrile, 3,3',3''-[1,2,3-propanetriyltris(oxy)]tris-" "tris(beta-cyanoethoxy)propane" "tris(.beta.-cyanoethoxy)propane" "1,3-tris(2-cyanoethoxy)propane" "glycerol tris(2-cyanoethyl) ether" "1,2,3-tris(2'-cyanoethoxy)propane" "1,2,3-tris(beta-cyanoethoxy)propane" "1,3-tris(.beta.-cyanoethoxy)propane" "1,2,3-tris-(2-cyanoethoxy)-propane" "3,3',3''-propane-1,2,3-triyltrioxytripropiononitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -198310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     666.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=132260.0
-    phase     gas;
 }

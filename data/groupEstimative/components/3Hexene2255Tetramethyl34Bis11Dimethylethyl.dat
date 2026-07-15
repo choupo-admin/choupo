@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 9; } { group C; count 3; } { group dCH; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-tert-butyl-2,2,5,5-tetramethyl-hex-3-ene" "((ch3)3c)2c=chc(ch3)3" "3-tert-butyl-2,2,5,5-tetramethylhex-3-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -251110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     573.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=147190.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-but-2-enamide" "2-butenamide" "trans-crotonamide" "2-butenamide (9ci)" "2-butenamide, (e)-" "but-2-enamide" "trans-2-butenamide" "but-2-enoic acid amide" "trans-2-butenoic acid amide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -87460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     383.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=550.0
-    phase     gas;
 }

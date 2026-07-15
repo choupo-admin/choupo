@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-chloranylbenzoate" "methyl p-chlorobenzoate" "4-chlorobenzoic acid methyl ester" "benzoic acid, 4-chloro-, methyl ester" "benzoic acid, p-chloro-, methyl ester" "p-chlorobenzoic acid methyl ester" "methyl-p-chlorobenzoate" "methyl-4-chlorobenzoate" "4-chloro-benzoic acid methyl ester" "benzoic acid, p-chloro-, methyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -316410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     439.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-203040.0
-    phase     gas;
 }

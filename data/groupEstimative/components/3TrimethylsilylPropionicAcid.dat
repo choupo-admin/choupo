@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-trimethylsilylpropanoic acid" "propanoic acid, 3-(trimethylsilyl)-" "3-(trimethylsilyl)propanoic acid" "propionic acid, 3-(trimethylsilyl)-" "2-silapentan-5-oic acid, 2,2-dimethyl-" "3-trimethylsilylpropanoate" "3-trimethylsilyl-propionate-2,2,3,3,-d4" "tsd" "trimethylsilyl propanoic acid" "propanoic acid,3-(trimethylsilyl)-" "3-trimethylsilylpropionic acid" "2-silapentan-5-oic acid,2-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -629060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     569.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-449030.0
-    phase     gas;
 }

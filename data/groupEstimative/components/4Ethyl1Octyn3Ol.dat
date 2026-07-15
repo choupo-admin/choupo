@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 2; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-ethyloct-1-yn-3-ol" "1-octyn-3-ol, 4-ethyl-" "ethyloctynol" "4-ethyl-1-octyn-3-0l" "1-octyne-3-ol, 4-ethyl-" "(2-ethyl-1-hydroxyhexyl)acetylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -120620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=114690.0
-    phase     gas;
 }

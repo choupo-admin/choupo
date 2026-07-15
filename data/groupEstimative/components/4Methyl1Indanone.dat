@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-2,3-dihydroinden-1-one" "4-methyl-2,3-dihydro-1h-inden-1-one" "4-methylindan-1-one" "4-methyl-indanone" "am872" "1h-inden-1-one,2,3-dihydro-4-methyl-" "1h-inden-1-one, 2,3-dihydro-4-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -80700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     300.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72340.0
-    phase     gas;
 }

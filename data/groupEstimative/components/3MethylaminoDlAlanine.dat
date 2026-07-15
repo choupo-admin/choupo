@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-3-(methylamino)propanoic acid" "dl-alanine, 3-(methylamino)-" "dl-alpha-amino-beta-methylaminopropionic acid" "propionic acid, 2-amino-3-(methylamino)-, dl-" "propionic acid, alpha-amino-beta-methylamino-, dl-" "l-bmaa" "2-amino-3-(methylamino)propanoic acid" "(s)-2-amino-3-(methylamino)propanoicacid" "propionic acid, alpha-amino-beta-methylamino-" "alanine, 3-(methylamino)-" "2-amino-3(methylamino)propionic acid" "2-amino-3-methylamino-propionic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -394180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-207710.0
-    phase     gas;
 }

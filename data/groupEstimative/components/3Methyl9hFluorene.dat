@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9h-fluorene, 3-methyl-" "fluorene,3-methyl- (6ci,7ci,8ci); 3-methylfluorene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   211820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     382.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=355590.0
-    phase     gas;
 }

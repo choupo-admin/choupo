@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethenoxy-6-methyl-heptane" "isooctane, (ethenyloxy)-" "ether, 6-methylheptyl vinyl" "1-ethenoxy-6-methylheptane" "1-(ethenyloxy)-6-methylheptane" "1-ethenoxy-2, 2, 4-trimethylpentane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -261800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     542.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13720.0
-    phase     gas;
 }

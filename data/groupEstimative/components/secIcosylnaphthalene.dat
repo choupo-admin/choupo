@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 17; } { group CH; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-icosan-2-ylnaphthalene" "naphthalene, (1-methylnonadecyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -251680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1093.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=408710.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 11; } { group C; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tributyl 2-acetyloxypropane-1,2,3-tricarboxylate" "citroflex a" "tributyl o-acetylcitrate" "blo-trol" "citroflex a 4" "2-acetyltributylcitrate" "tributyl citrate acetate" "acetyltributyl citrate" "tributyl acetyl citrate" "1,2,3-propanetricarboxylic acid, 2-(acetyloxy)-, tributyl ester" "acetylcitric acid, tributyl ester" "tributyl 2-acetoxypropane-1,2,3-tricarboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1734000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1101.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1121120.0
-    phase     gas;
 }

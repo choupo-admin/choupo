@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group F; count 2; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2-tetrachloro-1,2-difluoroethane" "1,1,2,2-tetrachlorodifluoroethane" "1,2-difluoro-1,1,2,2-tetrachloroethane" "1,2-difluorotetrachloroethane" "CFC 112" "CFC 122" "daiflon 112" "daiflon s 2" "ethane, 1,1,2,2-tetrachloro-1,2-difluoro-" "f 112" "fc 112" "freon 112" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -557290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     353.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-465700.0
-    phase     gas;
 }

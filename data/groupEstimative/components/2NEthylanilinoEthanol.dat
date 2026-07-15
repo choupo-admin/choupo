@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[ethyl(phenyl)amino]ethanol" "ethylphenylethanolamine" "ethanol, 2-(ethylphenylamino)-" "n-ethylanilinoethanol" "n-ethyl-n-(2-hydroxyethyl)aniline" "phenylethylethanolamine" "n-ethyl-n-hydroxyethylaniline" "hydroxyethylethylaniline" "ethanol, 2-(n-ethylanilino)-" "2-(ethylphenylamino)ethanol" "n-ethyl-n-phenylaminoethanol" "n-ethyl-n-phenylethanolamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -97900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=119690.0
-    phase     gas;
 }

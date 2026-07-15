@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-chloranylpropanoate" "methyl 3-chloropropionate" "usaf do-7" "propanoic acid, 3-chloro-, methyl ester" "3-chloropropionic acid methyl ester" "methyl-3-chloropropionate" "propionic acid, 3-chloro-, methyl ester" "methyl beta-chloropropionate" "methyl(or ethyl) (s)-(-)-2-chloropropionate" "methyl-beta-chloropropionate" "3-chloropropanoic acid methyl ester" "3-chloro-propionic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -458910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     396.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-339500.0
-    phase     gas;
 }

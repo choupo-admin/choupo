@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 5; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "piperidine, 1-ethyl-" "n-ethylpiperidine" "n-aethylpiperidin" "n-ethyl piperidine" "ethylpiperidine" "1-ethyl-piperidine" "n-aethylpiperidin [german]" "n-ethyl-piperidine" "piperidine, ethyl-" "agn-pc-0cpu6x" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -39460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     436.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=163100.0
-    phase     gas;
 }

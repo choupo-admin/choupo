@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methylthiophene-2-carbaldehyde" "5-methylthiophene-2-carboxaldehyde" "5-methyl-2-thiophenecarbaldehyde" "2-formyl-5-methylthiophene" "5-methylthiophene-2-aldehyde" "5-methyl-2-formylthiophene" "5-methyl-2-thiophene carboxaldehyde" "2-thiophenecarboxaldehyde, 5-methyl-" "5-methly-2-thiophenecarboxaldehyde" "5-methyl-2-thiophene-carboxaldehyde" "5-methyl-2-thenaldehyde" "5-methyl-2-thiophencarboxaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   127980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     425.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=168380.0
-    phase     gas;
 }

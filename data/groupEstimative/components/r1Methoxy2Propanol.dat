@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-1-methoxypropan-2-ol" "(r)-1-methoxy-2-propanol" "r-(-)-1-methoxy-2-propanol" "(r)-1-methoxy-propan-2-ol" "(20s)-2,5,8,11,14,17-hexamethyl-3,6,9,12,15,18-hexaoxahenicosane-1,20-diol" "r-1-methoxy-2-propanol" "(r)-()-propylene glycol 1-methyl ether" "(r)-(-)-propylene glycol 1-methyl ether" "(r)-(&#8722;)-1-methoxy-2-propanol" "(r)-(-)-propylene glycol 1-monomethyl ether" "2-propanol,1-methoxy-, (r)-;2-propanol, 1-methoxy-, d-(-)- (8ci);(-)-1-methoxy-2-propanol;(r)-(-)-1-methoxy-2-propanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -415620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     364.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-261460.0
-    phase     gas;
 }

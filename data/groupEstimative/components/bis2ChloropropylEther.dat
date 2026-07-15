@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group Cl; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-1-(2-chloranylpropoxy)propane" "2-chloro-1-(2-chloropropoxy)propane" "propane,1'-oxybis[2-chloro-" "propane, 1,1'-oxybis[2-chloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -341430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     448.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134100.0
-    phase     gas;
 }

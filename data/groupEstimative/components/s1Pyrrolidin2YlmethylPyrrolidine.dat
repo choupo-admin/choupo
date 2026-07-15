@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 1; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[[(2s)-pyrrolidin-2-yl]methyl]pyrrolidine" "(s)-(+)-1-(2-pyrrolidinylmethyl)pyrrolidine" "1-[(2s)-pyrrolidin-2-ylmethyl]pyrrolidine" "[((2s)pyrrolidin-2-yl)methyl]pyrrolidine" "pyrrolidine,1-(2-pyrrolidinylmethyl)-, (s)-; (+)-1-(2-pyrrolidinylmethyl)pyrrolidine;(2s)-1-(2-pyrrolidinylmethyl)pyrrolidine;(2s)-2-((pyrrolidin-1-yl)methyl)pyrrolidine;(2s)-2-(pyrrolidin-1-ylmethyl)pyrrolidine;(s)-(+)-1-(2-pyrrolidinomethyl)pyrrolidine;(s)-(+)-1-(2-pyrrolidinylmethyl)pyrrolidine;(s)-(+)-1-[(pyrrolidin-2-yl)methyl]pyrrolidine; (s)-(+)-2-(1-pyrrolidinylmethyl)pyrrolidine;(s)-1-(2-pyrrolidinylmethyl)pyrrolidine;(s)-1-(2-pyrrolidinylmethyl)pyrrolidne;(s)-2-(1-pyrrolidinylmethyl)pyrrolidine;(s)-2-[(pyrrolidino)methyl]pyrrolidine; 1-((2s)-pyrrolidinylmethyl)pyrrolidine;1-[(2s)-2-pyrrolidinylmethyl]pyrrolidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   23710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=316300.0
-    phase     gas;
 }

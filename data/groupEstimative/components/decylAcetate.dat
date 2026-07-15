@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "decyl ethanoate" "n-decyl acetate" "acetic acid, decyl ester" "n-decyl ethanoate" "1-decanol acetate" "acetate c 10" "decanyl acetate" "1-decyl acetate" "acetic acid n-decyl ester" "acetate c-10" "decyl alcohol, acetate" "acetic acid decyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -608290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     674.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-260210.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "e-5-decen-1-yl acetate" "(e)-5-decen-1-ol acetate" "5-decen-1-ol, acetate, (5z)-" "5-decen-1-ol, 1-acetate, (5e)-" "5-decen-1-ol, 1-acetate, (5z)-" "dec-5-enyl acetate" "5-decen-1-ol,1-acetate, (5e)-" "5-decen-1-ol,1-acetate, (5z)-" "5-decen-1-ol,acetate, (5e)- (9ci); 5-decen-1-ol, acetate, (e)-; (e)-5-decen-1-ol acetate;(e)-5-decenyl acetate; e-5-decen-1-yl acetate; trans-5-decenyl acetate" "5-decen-1-ol,acetate, (5z)- (9ci); 5-decen-1-ol, acetate, (z)-; (z)-5-decen-1-ol acetate;(z)-5-decen-1-yl acetate; (z)-5-decenyl acetate; cis-5-decen-1-ol acetate;cis-5-decenyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -491070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     668.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-179990.0
-    phase     gas;
 }

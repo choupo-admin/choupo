@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 4; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopentane-1,2,3,4-tetracarboxylic acid" "1,2,3,4-tetracarboxycyclopentane" "agn-pc-00hrd4" "1,2,3,4-tetracarboxycyclopentane;" "1,2,3,4-cyclopentanetetracarboxylicacid" "r-1,c-2,c-3,c-4-cyclopentanetetracarboxylic acid" "1,2,3,4-cyclopentanetetracarboxylic acid, (1alpha,2alpha,3alpha,4alpha)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1630710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     541.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1337320.0
-    phase     gas;
 }

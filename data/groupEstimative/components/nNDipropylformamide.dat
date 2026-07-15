@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dipropylmethanamide" "n,n-di-n-propylformamide" "nn-dipropylformamide" "formamide, n,n-di-n-propyl-" "formamide, dipropyl-" "formamide,n-dipropyl-" "n,n-dipropylcarboxamide" "n-n-di-n-propylformamide" "formamide,n-di-n-propyl-" "formamide, n,n-dipropyl- (8ci)" "formamide, n,n-dipropyl- (8ci)(9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -43830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     525.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=162800.0
-    phase     gas;
 }

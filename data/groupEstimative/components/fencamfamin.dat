@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-ethyl-2-phenyl-bicyclo[2.2.1]heptan-3-amine" "fencamfamine" "reactivan" "fencamfaminum" "euvitol" "fenacamfamin" "fencanfamina" "fencamfamina [dcit]" "2-ethylamino-3-phenylnorbornane" "fencamfamine [inn-french]" "fencamfaminum [inn-latin]" "fencamfamina" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   35830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     429.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=371200.0
-    phase     gas;
 }

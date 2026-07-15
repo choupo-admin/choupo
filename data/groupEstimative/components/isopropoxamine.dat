@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2,5-dimethoxyphenyl)-2-(propan-2-ylamino)propan-1-ol" "isopropylmethoxamine" "n-isopropylmethoxamine" "1-(2,5-dimethoxyphenyl)-2-(isopropylamino)propan-1-ol" "1-(2,5-dimethoxyphenyl)-2-(isopropylamino)-1-propanol" "2,5-dimethoxy-alpha-(1-((1-methylethyl)amino)ethyl)benzenemethanol" "benzenemethanol, 2,5-dimethoxy-alpha-(1-((1-methylethyl)amino)ethyl)-" "benzenemethanol, 2,5-dimethoxy-alpha-(1-((1-methylethyl)amino)ethyl)- (van)" "benzyl alcohol, alpha-(1-(isopropylamino)ethyl)-2,5-dimethoxy- (7ci,8ci)" "dl-erythro-hydroxy(2',5'-dimethoxyphenyl)-2-isopropylaminopropane hydrochloride" "61-15-4 (hydrochloride)" "1-(2,5-dimethoxyphenyl)-2-[(methylethyl)amino]propan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -497740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     668.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104600.0
-    phase     gas;
 }

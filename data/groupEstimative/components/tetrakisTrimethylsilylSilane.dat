@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetrakil(trimethylsilyl)silane" "1,1,1,3,3,3-hexamethyl-2,2-bis(trimethylsilyl)trisilane" "si(si(ch3)3)4" "2,2-bis(trimethylsilyl)-1,1,1,3,3,3-hexamethyl-trisilane" "bojsdhzzkkywas-uhfffaoysa-" "tetra(trimethylsilyl)silane;tetrakis(trimethylsilyl)silane;2,2-bis(trimethylsilyl)-1,1,1,3,3,3-hexamethyl-trisilane;1,1,1,3,3,3-hexamethyl-2,2-bis(trimethylsilyl)trisilane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -849110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1255.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-473640.0
-    phase     gas;
 }

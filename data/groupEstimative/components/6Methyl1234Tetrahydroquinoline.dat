@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "civettal" "1,2,3,4-tetrahydro-6-methylquinoline" "quinoline, 1,2,3,4-tetrahydro-6-methyl-" "p-methyltetrahydroquinoline" "quinoline, tetrahydro-6-methyl-" "xokmrxsmohcnix-uhfffaoysa-" "1,3,4-tetrahydro-6-methylquinoline" "6-methyl-1,3,4-tetrahydroquinoline" "quinoline,2,3,4-tetrahydro-6-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   88650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     392.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=270540.0
-    phase     gas;
 }

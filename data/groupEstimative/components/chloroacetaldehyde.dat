@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group Cl; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranylethanal" "2-chloroacetaldehyde" "chloroethanal" "2-chloroethanal" "acetaldehyde, chloro-" "chloroaldehyde" "monochloroacetaldehyde" "2-chloro-1-ethanal" "acetaldehyde, 2-chloro-" "chloroacetaldehyde monomer" "clach" "chloroacetaldehyde solution" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -185930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     285.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-145490.0
-    phase     gas;
 }

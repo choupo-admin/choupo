@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n1-ethyl-4-(trifluoromethyl)benzene-1,2-diamine" "1,2-benzenediamine, n1-ethyl-4-(trifluoromethyl)-" "1-n-ethyl-4-(trifluoromethyl)benzene-1,2-diamine" "1,2-benzenediamine,n1-ethyl-4-(trifluoromethyl)-" "toluene-3,4-diamine,n4-ethyl-a,a,a-trifluoro- (8ci); n-ethyl-4-(trifluoromethyl)benzene-1,2-diamine;n1-ethyl-4-(trifluoromethyl)-1,2-benzenediamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -525320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     536.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-307700.0
-    phase     gas;
 }

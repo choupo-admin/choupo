@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bis(chloranyl)-phenyl-methanol" "dichloro(phenyl)methanol" "benzenemethanol, dichloro-" "benzyl alcohol, dichloro-" "dichlorobenzyl alcohol, mixed isomers" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -143740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37370.0
-    phase     gas;
 }

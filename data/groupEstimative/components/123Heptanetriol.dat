@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 2; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "heptane-1,2,3-triol" "1,2,3-trihydroxyheptane" "1,2,3-heptanetriol solution" "1,2,3-heptanetriol isomer t 1 m solution" "1,2,3-heptanetriol isomer h 0.5 solution" "1-butylglycerol" "1-n-butylglycerol" "1,2,3-heptanetriol isomer t 1 m  solution" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -655060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     562.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-407280.0
-    phase     gas;
 }

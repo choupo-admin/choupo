@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 15; } { group CH; count 2; } { group OH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-hydroxyethyl 2-oxidanyloctadecanoate" "2-hydroxyethyl hydroxystearate" "octadecanoic acid, hydroxy-, 2-hydroxyethyl ester" "ethylene glycol monohydroxystearate" "glycol hydroxystearate" "glycol monohydroxystearate" "2-hydroxyethyl hydroxyoctadecanoate" "ethylene glycol monohydroxy stearate" "hydroxyoctadecanoic acid, 2-hydroxyethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1088430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1069.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-471370.0
-    phase     gas;
 }

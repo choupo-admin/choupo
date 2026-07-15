@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 7; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(cyclopenten-1-yl)pyrrolidine" "1-pyrrolidino-1-cyclopentene" "pyrrolidine, 1-(1-cyclopenten-1-yl)-" "1-cyclopentenylpyrrolidine" "1-(1-cyclopenten-1-yl)pyrrolidine" "1-pyrrolidinocyclopentene" "1-(cyclopent-1-en-1-yl)pyrrolidine" "1-(1-pyrrolidino)cyclopentene" "1-(1-pyrrolidinyl)cyclopentene" "1-(cyclopent-1'-enyl)pyrrolidine" "n-(1-cyclopenten-1-yl)pyrrolidine" "1-(1-pyrrolidinyl)-1-cyclopentene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   52550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     443.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=256630.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-2-methyl-aniline" "3-chloro-o-toluidine" "2-amino-6-chlorotoluene" "benzenamine, 3-chloro-2-methyl-" "o-toluidine, 3-chloro-" "scarlet tr base" "6-chloro-2-aminotoluene" "fast scarlet tr base" "3-chloro-2-toluidine" "o-methyl-m-chloroaniline" "azoic diazo component 46" "3-chloro-2-methylphenylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   43830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     394.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=155730.0
-    phase     gas;
 }

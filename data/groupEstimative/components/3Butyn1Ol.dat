@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "but-3-yn-1-ol" "1-butyn-4-ol" "3-butynol" "3-butynyl alcohol" "3-butyne-1-ol" "4-hydroxy-1-butyne" "2-hydroxyethylacetylene" "4-hydroxy-butyne" "(2-hydroxyethyl)acetylene" "homopropargyl alcohol" "4-butyne-1-ol" "4-hydroxy-but-1-yne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   13780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     332.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=69050.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 5; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 11; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3,3,4,4,5,6,6,6-octakis(fluoranyl)-5-(trifluoromethyl)hexyl] 2-methylprop-2-enoate" "[3,3,4,4,5,6,6,6-octafluoro-5-(trifluoromethyl)hexyl] 2-methylprop-2-enoate" "1h,1h,2h,2h-perfluoro(5-methylhex-1-yl) methacrylate" "2-methyl-2-propenoic acid [3,3,4,4,5,6,6,6-octafluoro-5-(trifluoromethyl)hexyl] ester" "2-propenoic acid,2-methyl-, 3,3,4,4,5,6,6,6-octafluoro-5-(trifluoromethyl)hexyl ester" "3,3,4,4,5,6,6,6-octafluoro-5-(trifluoromethyl)hex-1-yl 2-methylprop-2-enoate" "3,3,4,4,5,6,6,6-octafluoro-5-(trifluoromethyl)hexyl 2-methylprop-2-enoate" "1h,1h,2h,2h-perfluoro-5-methylhexyl methacrylate;3,3,4,4,5,6,6,6-octafluoro-5-(trifluoromethyl)hexyl methacrylate;2-(perfluoro-3-methylbutyl)ethyl methacrylate;daikin m-3420;2-(perfluoro-3-methylbutyl)ethyl methacrylate 97%;2-(perfluoro-3-methylbutyl)ethylmethacrylate97%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2672970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     781.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2318050.0
-    phase     gas;
 }

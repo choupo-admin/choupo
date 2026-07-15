@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 1; } { group CH; count 2; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,6-dimethylhept-5-en-2-yl ethanoate" "5-hepten-2-ol, 3,6-dimethyl-, acetate" "5-hepten-2-ol, 3,6-dimethyl-, 2-acetate" "3,6-dimethylhept-5-en-2-yl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -490780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     605.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-201840.0
-    phase     gas;
 }

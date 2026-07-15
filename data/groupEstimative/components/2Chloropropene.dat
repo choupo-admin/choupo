@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranylprop-1-ene" "isopropenyl chloride" "1-propene, 2-chloro-" "2-chloro-1-propene" "2-chloroprop-1-ene" "2-chloropropylene" "beta-chloropropene" "beta-chloropropylene" "propene, 2-chloro-" "pnlqpwwbhxmfca-uhfffaoysa-" "propene,2-chloro- (8ci); 1-methylvinyl chloride; 2-chloro-1-propene; 2-chloropropene;2-chloropropylene; isopropenyl chloride; b-chloropropene; b-chloropropylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -5350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     297.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=41740.0
-    phase     gas;
 }

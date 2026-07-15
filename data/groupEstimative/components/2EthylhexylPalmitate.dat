@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 19; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethylhexyl hexadecanoate" "ethylhexyl palmitate" "elfacos ehp" "hexadecanoic acid, 2-ethylhexyl ester" "palmitic acid, 2-ethylhexyl ester" "hexadecanoic acid,2-ethylhexyl ester" "o206" "palmiticacid, 2-ethylhexyl ester (8ci);2-ethylhexyl palmitate;cegesoft c 24;ceraphyl368;crodamol op;dermol 816;exceparl eh-p;jeechem op;kessco op;kesscooctyl palmitate;lexol ehp;octyl palmitate;palmitic acid-2-ethylhexylmonoester;saboderm op;salacos p 8;tegosoft o;tegosoft op;wickenol 155;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -861250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1132.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-161610.0
-    phase     gas;
 }

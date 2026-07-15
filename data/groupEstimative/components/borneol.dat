@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7,7-trimethylbicyclo[2.2.1]heptan-3-ol" "isoborneol" "(+/-)-borneol" "d-borneol" "(+)-borneol" "(-)-borneol" "1,7,7-trimethylbicyclo[2.2.1]heptan-2-ol" "bicyclo[2.2.1]heptan-2-ol, 1,7,7-trimethyl-" "sumatra camphor" "dl-isoborneol" "endo-2-bornanol" "(+/-)-isoborneol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -272720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     490.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20500.0
-    phase     gas;
 }

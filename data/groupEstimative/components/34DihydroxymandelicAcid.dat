@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[3,4-bis(oxidanyl)phenyl]-2-oxidanyl-ethanoic acid" "dihydroxymandelic acid" "3,4-dihydroxymandelate" "dl-3,4-dihydroxymandelic acid" "dhma" "2-(3,4-dihydroxyphenyl)-2-hydroxyacetic acid" "mandelic acid, 3,4-dihydroxy-" "3,4-dihydroxyphenylglycolic acid" "3,4 dihydroxymandelic acid" "(3,4-dihydroxyphenyl)(hydroxy)acetic acid" "benzeneacetic acid, .alpha.,3,4-trihydroxy-" "dihydroxymandelate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -834320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     508.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-663520.0
-    phase     gas;
 }

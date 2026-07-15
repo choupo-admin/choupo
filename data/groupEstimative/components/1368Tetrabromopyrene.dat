@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 10; } { group Br; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,6,8-tetrakis(bromanyl)pyrene" "1,3,6,8-tetrabromo-pyrene" "pyrene, 1,3,6,8-tetrabromo-" "pyrene,1,3,6,8-tetrabromo-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   427210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     510.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=509940.0
-    phase     gas;
 }

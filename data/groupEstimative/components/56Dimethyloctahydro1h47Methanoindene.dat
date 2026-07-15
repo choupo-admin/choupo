@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7-methano-1h-indene, octahydrodimethyl-" "methylcyclopentadiene, dimer, hydrogenated" "octahydrodimethyl-4,7-methano-1h-indene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -139790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     245.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=197180.0
-    phase     gas;
 }

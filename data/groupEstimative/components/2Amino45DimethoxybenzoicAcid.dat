@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group O; count 2; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-4,5-dimethoxy-benzoic acid" "4,5-dimethoxyanthranilic acid" "6-aminoveratric acid" "benzoic acid, 2-amino-4,5-dimethoxy-" "2-amino-4,5-dimethoxy benzoic acid" "agn-pc-0d1uj6" "benzoicacid, 2-amino-4,5-dimethoxy-" "2-amino-4,5-bis(methyloxy)benzoic acid" "6-aminoveratric acid;4,5-dimethoxyanthranilic acid" "2-amino-4,5-dimethoxybenzoic acid6-aminoveratric acid" "14f" "veratricacid, 6-amino- (8ci);2-amino-4,5-bis(methyloxy)benzoic acid;2-carboxy-4,5-dimethoxyaniline;4,5-dimethoxy-2-aminobenzoic acid;4,5-dimethoxyanthranilic acid;6-amino-3,4-dimethoxybenzoic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -607890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     508.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-379040.0
-    phase     gas;
 }

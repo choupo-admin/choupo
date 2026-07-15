@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-oxidanylideneoxolane-2,3-dicarboxylic acid" "isocitric acid lactone" "dl-isocitric lactone" "5-oxooxolane-2,3-dicarboxylic acid" "dl-2-oxotetrahydrofuran-4,5-dicarboxylic acid" "isocitric lactone" "dl-isocitric acid gamma-lactone" "beta,gamma-dicarboxy-gamma-butyrolactone" "5-oxotetrahydrofuran-2,3-dicarboxylic acid;" "tetrahydro-5-oxofuran-2,3-dicarboxylic acid" "dl-butyrolactone-beta,gamma-dicarboxylic acid" "5-oxo-2,3,4-trihydrofuran-2,3-dicarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1132530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     414.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-945510.0
-    phase     gas;
 }

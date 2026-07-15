@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 12; } { group CH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadecane, 2,6,10,14-tetramethyl-" "octadecane,2,6,10,14-tetramethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -518530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     974.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=124600.0
-    phase     gas;
 }

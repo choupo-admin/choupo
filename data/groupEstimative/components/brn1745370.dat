@@ -34,9 +34,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group Cl; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(chloranyl)-2-methyl-propanal" "2,3-dichloro-2-methylpropanal" "2,3-dichloro-2-methylpropionaldehyde" "propanal, 2,3-dichloro-2-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -251700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     358.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-137740.0
-    phase     gas;
 }

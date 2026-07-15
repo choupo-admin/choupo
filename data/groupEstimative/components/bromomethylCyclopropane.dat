@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bromomethylcyclopropane" "cyclopropylmethyl bromide" "cyclopropane, (bromomethyl)-" "bromomethyl cyclopropane" "cyclopropyl bromo methane" "bromocyclopropylmethane" "cyclopropylmethylbromide" "bromomethyl-cyclopropane" "cyclopropyl methylbromide" "(bromomethyl)-cyclopropane" "(bromomethyl)cyclopropane," "1-(bromomethyl)cyclopropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -26760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     272.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=57870.0
-    phase     gas;
 }

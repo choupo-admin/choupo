@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethenyl-2-fluoranyl-benzene" "1-ethenyl-2-fluorobenzene" "benzene, 1-ethenyl-2-fluoro-" "o-fluorostyrene" "1-fluoro-2-vinylbenzene" "1-ethenyl-2-fluoro-benzene" "styrene,o-fluoro- (6ci,7ci,8ci);1-ethenyl-2-fluorobenzene;1-fluoro-2-vinylbenzene;o-fluorostyrene;6-fluorostyrene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -54070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     382.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=12290.0
-    phase     gas;
 }

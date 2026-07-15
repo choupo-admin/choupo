@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 13; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadecan-3-one" "ethyl n-tridecyl ketone" "ethyl tridecyl ketone" "oo>>ue(r)eyie>>u(1/4)xi feminine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -486150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     805.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-45080.0
-    phase     gas;
 }

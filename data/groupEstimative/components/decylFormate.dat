@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "decyl methanoate" "formic acid, decyl ester" "n-decyl methanoate" "n-decyl formate" "formic acid, decylester" "formic acid decyl ester" "we(10:0/1:0)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -193920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     767.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=85700.0
-    phase     gas;
 }

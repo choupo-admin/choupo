@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octoxybenzene" "n-octyl phenyl ether" "(octyloxy)benzene" "octyl phenyl ether" "ether, octyl phenyl" "n-octyloxybenzene" "ether,octyl phenyl (6ci,8ci); (octyloxy)benzene; 1-(octyloxy)benzene; 1-octyl phenylether; 1-phenoxyoctane; octyl phenyl ether; phenyl octyl ether; n-octyl phenylether; n-octyloxybenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -227980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     606.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=74410.0
-    phase     gas;
 }

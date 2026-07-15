@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-chloranyl-4-fluoranyl-phenyl)ethanoic acid" "2-(2-chloro-4-fluorophenyl)acetic acid" "(2-chloro-4-fluorophenyl)acetic acid" "(2-chloro-4-fluoro-phenyl)-acetic acid" "2-chloro-4-fluorophenylaceticacid" "2-chloro-4-fluoro phenylacetic acid" "benzeneacetic acid,2-chloro-4-fluoro-" "2-(2-chloro-4-fluorophenyl)aceticacid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -556980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-441020.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group F; count 3; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pyridine, 4-trifluoromethyl-" "p-trifluoromethylpyridine" "4-trifluoromethylpyridine" "4-trifluoromethylpiperidine;" "4-(trifluoromethyl)pyridine," "4-(trifluoromethyl)pyridine, 98%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -494930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     352.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-392490.0
-    phase     gas;
 }

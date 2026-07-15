@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 2; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyl-2-trimethylsilyloxy-ethanamine" "(2-dimethylaminoethoxy)trimethylsilane" "silane, (2-dimethylaminoethoxy)trimethyl-" "ethanamine, n,n-dimethyl-2-[(trimethylsilyl)oxy]-" "n,n-dimethyl-2-trimethylsilyloxyethanamine" "n,n-dimethyl-2-[(trimethylsilyl)oxy]ethanamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -364120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     582.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-90920.0
-    phase     gas;
 }

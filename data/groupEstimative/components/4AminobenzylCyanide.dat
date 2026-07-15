@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-aminophenyl)ethanenitrile" "4-aminophenylacetonitrile" "(4-aminophenyl)acetonitrile" "p-aminobenzyl cyanide" "2-(4-aminophenyl)acetonitrile" "4-aminobenzyl" "(p-aminophenyl)acetonitrile" "4-aminobenzyl cyanid" "benzeneacetonitrile, 4-amino-" "(4-amino-phenyl)-acetonitrile" "2-(4-aminophenyl)-acetonitrile" "l630" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   215280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=318890.0
-    phase     gas;
 }

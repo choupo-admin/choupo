@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(oxidanyl)propyl benzoate" "1-monobenzoylglycerol" "agn-pc-04y271" "1,2,3-propanetriol,1-benzoate" "[(2r)-3-deuterio-2,3-dihydroxypropyl] benzoate" "glycerol,1-benzoate (6ci,7ci,8ci); 1-o-benzoylglycerol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -640220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     582.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-440720.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranylprop-1-ene" "3-chloro-1-propene" "1-propene, 3-chloro-" "3-chloroprop-1-ene" "chlorallylene" "3-chloropropene" "3-chloropropylene" "3-chloropropene-1" "2-propenyl chloride" "1-chloro-2-propene" "propene, 3-chloro-" "allylchlorid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   4440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     301.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50290.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "thiophene, 2,3-dihydro-" "dihydrothiophene" "2,3-dihydrothiophene;4,5-dihydrothiophene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   57970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     316.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=96880.0
-    phase     gas;
 }

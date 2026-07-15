@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 14; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "11-oxahexadecanolide" "musk r 1" "11-oxahexadecan-16-olide" "16-hydroxy-11-oxahexadecanoic acid, omega-lactone" "decanoic acid, 10-((5-hydroxypentyl)oxy)-, o-lactone" "1,7dioxa-cycloheptadecan-8-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -782990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     931.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-397810.0
-    phase     gas;
 }

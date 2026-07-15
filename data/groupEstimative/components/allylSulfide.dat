@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 2; } { group dCH; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-prop-2-enylsulfanylprop-1-ene" "diallyl sulfide" "garlic oil" "oil garlic" "1-propene, 3,3'-thiobis-" "diallylsulfide" "thioallyl ether" "allyl monosulfide" "diallyl thioether" "diallyl monosulfide" "diallyl sulphide" "2-propenyl sulphide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   125560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     441.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=208440.0
-    phase     gas;
 }

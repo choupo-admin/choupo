@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-chloranyl-2-phenyl-ethanoate" "methyl chloro(phenyl)acetate" "methyl alpha-chlorophenylacetate" "methyl .alpha.-chlorophenylacetate" "methyl 2-chloro-2-phenylacetate," "methyl (2r)-chloro(phenyl)ethanoate" "2-chloro-2-phenylacetic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -330860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-187430.0
-    phase     gas;
 }

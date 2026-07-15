@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octan-2-yl 2-cyclopent-2-en-1-ylethanoate" "2-cyclopentene-1-acetic acid, 1-methylheptyl ester" "1-methylheptyl cyclopent-2-ene-1-acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -557230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     694.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-170880.0
-    phase     gas;
 }

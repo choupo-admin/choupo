@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propyl 2-chloranylbutanoate" "n-propyl 2-chlorobutyrate" "butanoic acid, 2-chloro-, propyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -526110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     503.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-316680.0
-    phase     gas;
 }

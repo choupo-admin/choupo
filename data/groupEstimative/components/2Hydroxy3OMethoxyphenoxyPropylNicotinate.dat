@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 2; } { group COO; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3-(2-methoxyphenoxy)-2-oxidanyl-propyl] pyridine-3-carboxylate" "methoxyphenoxy hydroxypropyl nicotinate" "3-(o-methoxyphenoxy)-2-hydroxypropyl-1-nicotinate" "nicotinic acid, 2-hydroxy-3-(o-methoxyphenoxy)propyl ester" "3-pyridinecarboxylic acid, 2-hydroxy-3-(2-methoxyphenoxy)propyl ester" "nicotinic acid, monoester with 3-(o-methoxyphenoxy)-1,2-propanediol" "h-1" "[2-hydroxy-3-(2-methoxyphenoxy)propyl] pyridine-3-carboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -618420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     688.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-283550.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group C; count 1; } { group dCH2; count 2; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(diethylamino)ethyl 2-phenyl-2-prop-2-enyl-pent-4-enoate" "2-allyl-2-phenyl-4-pentenoic acid 2-(diethylamino)ethyl ester hydrochloride" "4-pentenoic acid, 2-allyl-2-phenyl-, 2-(diethylamino)ethyl ester, hydrochloride" "benzeneacetic acid, alpha,alpha-di-2-propenyl-, 2-(diethylamino)ethyl ester hydrochloride" "2-diethylaminoethyl 2-phenyl-2-prop-2-enylpent-4-enoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -227240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     847.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=208860.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 2; } { group dCH; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1s)-3-[(z)-2-[(1r,3ar,7ar)-7a-methyl-1-[(2r)-6-methylheptan-2-yl]-1,2,3,3a,6,7-hexahydroinden-4-yl]ethenyl]-4-methyl-cyclohex-3-en-1-ol" "previtamin d3" "(3beta,6z)-9,10-secocholesta-5(10),6,8-trien-3-ol" "precalciferol" "precholecalciferol" "(6z)-(3s)-9,10-seco-5(10),6,8-cholestatrien-3-ol" "9,10-secocholesta-5(10),6,8-trien-3" "a-ol" "previtamin d3 / precholecalciferol / (6z)-tacalciol" "(3" "a,6z)-9,10-secocholesta-5(10),6,8-trien-3-ol" "(1s)-3-[(1z)-2-[(1r,3ar,7ar)-1-[(1r)-1,5-dimethylhexyl]-2,3,3a,6,7,7a-hexahydro-7a-methyl-1h-inden-4-yl]ethenyl]-4-methyl-3-cyclohexen-1-ol" "(1s)-3-[(z)-2-[(1r,3ar,7ar)-7a-methyl-1-[(2r)-6-methylheptan-2-yl]-1,2,3,3a,6,7-hexahydroinden-4-yl]ethenyl]-4-methylcyclohex-3-en-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -388690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1015.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=242460.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group C; count 1; } { group dCH2; count 2; } { group dC; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[2,2-bis(prop-1-en-2-yloxymethyl)butoxycarbonyl]benzene-1,3-dicarboxylic acid" "1,2,4-benzenetricarboxylic acid 2,2-bis[(2-allyloxy)methyl]butyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1322910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     978.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-827680.0
-    phase     gas;
 }

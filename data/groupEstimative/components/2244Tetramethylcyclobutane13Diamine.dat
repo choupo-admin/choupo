@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH_ring; count 2; } { group C_ring; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3-cyclobutanediamine, 2,2,4,4-tetramethyl-" "1,3-diamino-2,2,4,4-tetramethylcyclobutane" "1,2,4,4-tetramethylcyclobutane" "2,4,4-tetramethylcyclobutane-1,3-diamine" "2,2,4,4-tetramethyl-1,3-cyclobutane diamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -104770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     512.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=163920.0
-    phase     gas;
 }

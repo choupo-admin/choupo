@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethanoyl-3-methyl-oxolan-2-one" "3-acetyl-3-methyldihydrofuran-2(3h)-one" "2(3h)-furanone, 3-acetyldihydro-3-methyl-" "alpha-acetyl-alpha-methyl-gamma-butyrolactone" "3-acetyl-3-methyl-2-oxo-3,4,5-trihydrofuran" "alpha-acet yl-alpha-methyl-gamma-but yorlactone" "a-acetyl-a-methyl-gamma-butyrolactone" "2(3h)-furanone,3-acetyldihydro-3-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -529630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     485.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-375970.0
-    phase     gas;
 }

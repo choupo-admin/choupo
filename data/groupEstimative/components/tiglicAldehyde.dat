@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 1; } { group dC; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-2-methylbut-2-enal" "tiglaldehyde" "trans-2-methyl-2-butenal" "2-butenal, 2-methyl-, (e)-" "tiglic acid aldehyde" "tiglinaldehyde" "e-2-methyl-2-butenal" "crotonaldehyde, 2-methyl-, (e)-" "tigaldehyde, trans-" "2-methylbut-2-enal" "2-butenal, 2-methyl-" "trans-2,3-dimethylacrolein" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -124680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     358.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-36630.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-oxidanylidene-5-phenyl-pentanoic acid" "5-oxo-5-phenylpentanoic acid" "5-oxo-5-phenylvaleric acid" "benzenepentanoic acid, .delta.-oxo-" "4-benzoyl-butyric acid" "5-keto-5-phenyl-valeric acid" "shkwsbavrqzyle-uhfffaoysa-" "benzenepentanoic acid, delta-oxo- (9ci)" "brd-k86245308-001-01-0" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -496690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     557.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-318680.0
-    phase     gas;
 }

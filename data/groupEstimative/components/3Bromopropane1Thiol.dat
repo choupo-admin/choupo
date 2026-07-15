@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group Br; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanylpropane-1-thiol" "1-propanethiol, 3-bromo-" "3-bromopropane-1-thiol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -40440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     386.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=18090.0
-    phase     gas;
 }

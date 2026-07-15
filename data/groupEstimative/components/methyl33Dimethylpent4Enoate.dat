@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3,3-dimethyl-4-pentenoate" "3,3-dimethyl-4-pentenoic acid methyl ester" "4-pentenoic acid, 3,3-dimethyl-, methyl ester" "3,3-dimethyl-4-pentenoic acid, methyl ester" "penten-4-oic acid, 3,3-dimethyl, methyl ester" "mklkduhmzcibsj-uhfffaoysa-" "k010" "urea,3-(p-acetamidophenyl)-1-(cyanomethyl)-1-methyl- (6ci,7ci,8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -409050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-203210.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 18; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-anthracen-9-ylanthracene" "9,9'-bianthryl" "9,9-bianthracene" "9,9'-bianthranyl" "9,9'-dianthracene" "9,9'-bianthracenyl" "9-(9-anthryl)anthracene" "9-(9-anthracenyl)anthracene" "r499" "9,9 inverted exclamation mark -bianthracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   570210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     573.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=797780.0
-    phase     gas;
 }

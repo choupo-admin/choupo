@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(6-methylhept-5-en-2-yl)-6-methylidene-cyclohexene" ".beta.-sesquiphellandrene" "cyclohexene, 3-(1,5-dimethyl-4-hexenyl)-6-methylene-, [s-(r*,s*)]-" "beta-sesquiphellandrene" "cyclohexene, 3-(1,5-dimethyl-4-hexenyl)-6-methylene-, (s-(r*,s*))-" "3-(6-methylhept-5-en-2-yl)-6-methylidenecyclohexene" "3-(1,5-dimethyl-4-hexenyl)-6-methylene-1-cyclohexene" "2-methyl-6-(4-methylidene-1-cyclohex-2-enyl)hept-2-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -54440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     625.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=252140.0
-    phase     gas;
 }

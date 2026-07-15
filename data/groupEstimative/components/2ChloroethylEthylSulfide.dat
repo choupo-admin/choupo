@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group Cl; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-2-ethylsulfanyl-ethane" "1-chloro-2-(ethylthio)ethane" "ethane, 1-chloro-2-(ethylthio)-" "half-mustard gas" "2-ethylthioethyl chloride" "2-(ethylthio)chloroethane" "sulfide, chloroethyl ethyl" "ethyl 2-chloroethyl sulfide" "2-chloroethyl ethyl thioether" "sulfide, 2-chloroethyl ethyl" "h-mg" "h-mg; half-mustard gas" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -99760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     406.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3990.0
-    phase     gas;
 }

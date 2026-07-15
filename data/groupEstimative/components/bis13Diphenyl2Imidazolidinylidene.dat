@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group dCH_ring; count 20; } { group dC_ring; count 6; } { group N; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(1,3-diphenylimidazolidin-2-ylidene)-1,3-diphenyl-imidazolidine" "2-(1,3-diphenylimidazolidin-2-ylidene)-1,3-diphenylimidazolidine" "imidazolidine, 2-(1,3-diphenyl-2-imidazolidinylidene)-1,3-diphenyl-" ".delta.(2, 1,1',3,3'-tetraphenyl-" "delta(2,2')-biimidazolidine, 1,1',3,3'-tetraphenyl-" ""n,n',n"",n""-tetraphenyl(2-imidazolidenyl)imidazolidi e"" ".delta.(2,2')-biimidazolidine, 1,1',3,3'-tetraphenyl-" "imidazolidine,3-diphenyl-2-imidazolidinylidene)-1,3-diphenyl-" "imidazolidine,2-(1,3-diphenyl-2-imidazolidinylidene)-1,3-diphenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   774830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     817.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1242100.0
-    phase     gas;
 }

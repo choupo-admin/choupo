@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,4-dimethyl-1,3-oxazolidine" "4,4-dimethyloxazolidine" "oxazolidine, 4,4-dimethyl-" "oxadine a" "dimethyl oxazolidine" "4,4-dimethyloxazolidine solution" "oxazolidine,4,4-dimethyl-" "4,4-dimethyl-1,3-oxazolidine;4,4-dimethyl-1-oxa-3-azacyclopentane; 4,4-dimethyloxazolidine; nuosept 101;nuospet 101; oxaban a; oxadine a; oxazolidine a; zoldine za" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -165000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     312.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=23870.0
-    phase     gas;
 }

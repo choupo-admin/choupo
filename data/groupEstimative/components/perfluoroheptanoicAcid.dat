@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 6; } { group F; count 13; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,7-tridecakis(fluoranyl)heptanoic acid" "tridecafluoroheptanoic acid" "perfluoro-n-heptanoic acid" "perfluoroenanthic acid" "tridecafluoro-1-heptanoic acid" "2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptanoic acid" "heptanoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoro-" "n-perfluoroheptanoic acid" "tridecafluoroenanthic acid" "ipc-pffa-7" "ipc-pffa-7 hg" "heptanoic acid, tridecafluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3140010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     660.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2851340.0
-    phase     gas;
 }

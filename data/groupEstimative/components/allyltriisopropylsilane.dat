@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 1; } { group CH; count 3; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tri(propan-2-yl)-prop-2-enyl-silane" "tri(propan-2-yl)-prop-2-enylsilane" "akqhujrzkbyzlc-uhfffaoysa-" "silane,tris(1-methylethyl)-2-propen-1-yl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -293040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     716.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=25920.0
-    phase     gas;
 }

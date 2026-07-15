@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propionitrile" "ethyl cyanide" "propiononitrile" "propylnitrile" "cyanoethane" "ether cyanatus" "hydrocyanic ether" "propionic nitrile" "propionitril" "ethylkyanid" "propannitril" "propanenitrile, 3-(c12-18-alkyloxy) derivs." );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   59630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     278.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107560.0
-    phase     gas;
 }

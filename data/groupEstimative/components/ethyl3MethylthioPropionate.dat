@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group COO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-methylsulfanylpropanoate" "3-(methylthio)propanoic acid ethyl ester" "propanoic acid, 3-(methylthio)-, ethyl ester" "3-(methylthio)propionic acid ethylester" "ethyl beta-methylthiopropionate" "ethyl methyl mercaptopropionate" "ethyl 3-(methylthio)propanoate" "ethyl 3-methylmercaptopropionate" "ethyl .beta.-methylthiopropionate" "3-(methylthio)propionic acid ethyl ester" "m394" "propionic acid, 3-(methylthio)-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -442580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     502.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-277610.0
-    phase     gas;
 }

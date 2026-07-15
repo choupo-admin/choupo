@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl propanoate" "propanoic acid, ethyl ester" "propionic ester" "propionic ether" "propionic acid, ethyl ester" "propionate d'ethyle" "propionic acid ethyl ester" "ethyl propionate (natural)" "propionate d'ethyle [french]" "propanoic acid ethyl ester" "ethylester kyseliny propionove" "we(2:0/3:0)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -463810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     402.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-319150.0
-    phase     gas;
 }

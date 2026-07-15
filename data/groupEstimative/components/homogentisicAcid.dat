@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2,5-bis(oxidanyl)phenyl]ethanoic acid" "2,5-dihydroxyphenylacetic acid" "homogentisate acid" "alcapton" "homogentisinic acid" "homogentisate" "benzeneacetic acid, 2,5-dihydroxy-" "2,5-dihydroxy-alpha-toluic acid" "2,5-dihydroxyphenylacetate" "acetic acid, (2,5-dihydroxyphenyl)-" "2,5-dihydroxybenzeneacetic acid" "(2,5-dihydroxyphenyl)acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -676810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-524260.0
-    phase     gas;
 }

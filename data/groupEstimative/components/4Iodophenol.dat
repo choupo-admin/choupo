@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group I; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-iodanylphenol" "p-iodophenol" "phenol, 4-iodo-" "phenol, p-iodo-" "iodophenol" "4-iodo-phenol" "p-hydroxyiodobenzene" "4-hydroxyiodobenzene" "4-hydroxyphenyl iodide" "iol" "4 iodophenol" "540-38-5 4-iodophenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -31080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     365.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=15550.0
-    phase     gas;
 }

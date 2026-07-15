@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 41; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "62479d2d-191f-4ebb-85e5-9bfeab9bb03c" "Q18456290" "C43" "nc43" "n-c43" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -930850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1830.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=311180.0
-    phase     gas;
 }

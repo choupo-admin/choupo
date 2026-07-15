@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group S_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "s-trithiane" "trithioformaldehyde" "thioform" "sym-trithian" "trimethylene trisulfide" "thioformaldehyde trimer" "sym-trithiane" "sym.-trithiane" "1,3,5-trithiacyclohexane" "trimethylentrisulfid" "formaldehyde, thio-, trimer" "thioforr" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   105190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=126120.0
-    phase     gas;
 }

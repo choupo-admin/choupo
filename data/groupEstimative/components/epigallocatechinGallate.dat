@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 12; } { group OH_phenol; count 8; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(2r,3r)-5,7-bis(oxidanyl)-2-[3,4,5-tris(oxidanyl)phenyl]-3,4-dihydro-2h-chromen-3-yl] 3,4,5-tris(oxidanyl)benzoate" "egcg" "epigallocatechin gallate" "epigallocatechin 3-gallate" "epigallocatechin-3-gallate" "tea catechin" "teavigo" "catechin deriv." "(-)-epigallocatechin-3-o-gallate" "(-)-epigallocatechol gallate" "(-)-egcg" "epigallocatechol, 3-gallate, (-)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1620750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     786.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1130550.0
-    phase     gas;
 }

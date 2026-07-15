@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group dCH; count 6; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl octadeca-6,9,12-trienoate" "methyl .gamma.-linolenate" "6,9,12-octadecatrienoicacid, methyl ester, (6z,9z,12z)-" "6,9,12-octadecatrienoicacid, methyl ester, (z,z,z)-; g-linolenic acid, methyl ester (7ci,8ci); methyl all-cis-6,9,12-octadecatrienoate;methyl octadeca-6,9,12-trienoate; methyl g-linolenate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -401110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     927.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=39390.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group OH; count 2; } { group OH_phenol; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-bis(2-hydroxyethyl)-3-oxidanyl-naphthalene-2-carboxamide" "3-hydroxy-n,n-bis(2-hydroxyethyl)naphthalene-2-carboxamide" "2-naphthalenecarboxamide, 3-hydroxy-n,n-bis(2-hydroxyethyl)-" "2-hydroxynaphthalene-3-carbonyldiethanolamide" "2-hydroxy-3-naphthoic acid diethanolamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -463620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     689.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-161550.0
-    phase     gas;
 }

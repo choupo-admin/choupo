@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group CH; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxidanyl-tri(propan-2-yl)silane" "silanol, tris(1-methylethyl)-" "hydroxy-tri(propan-2-yl)silane" "silanol,1,1,1-tris(1-methylethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -508780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     655.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-224000.0
-    phase     gas;
 }

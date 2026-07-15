@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopropanecarbaldehyde" "cyclopropancarbaldehyd" "1-(formyl)cyclopropane" "formylcyclopropane" "cyclopropylmethanal" "cyclopropanecarboxyldehyde" "agn-pc-04y235" "1-(formyl)cyclopropane;cyclopropylcarboxaldehyde;formylcyclopropane;ac1l3vvo;ac1q6q4z;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -138670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     240.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-55970.0
-    phase     gas;
 }

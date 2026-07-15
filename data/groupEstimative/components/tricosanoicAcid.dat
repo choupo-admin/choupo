@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 21; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-tricosanoic acid" "n-tricosanoic" "f23" "n-tricosanoate" "1-tricosanoic acid" "22fa;n-tricosanoic acid" "93966-37-1 (lead salt)" "94087-10-2 (aluminum salt)" "98978-62-2 (calcium salt)" "tricosanoic acid (6ci,7ci,8ci,9ci)" "c23:0" "72fa153a-99bb-4577-a2f8-d9824b79deac" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -868320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1105.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-201130.0
-    phase     gas;
 }

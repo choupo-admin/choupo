@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 11; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradec-11-enyl ethanoate" "[(e)-tetradec-11-enyl] acetate" "11-tetradecen-1-ol, 1-acetate, (11e)-" "11-tetradecen-1-ol, 1-acetate, (11z)-" "tetradec-11-enyl acetate" "11-tetradecen-1-ol,1-acetate" "(z)-11-tetradecen-1-yl acetate" "11-tetradecen-1-ol,1-acetate, (11z)-" "11-tetradecen-1-ol,acetate (8ci,9ci); 11-tetradecenyl acetate; ao 81; ostramone;tetradec-11-en-1-yl acetate" "11-tetradecen-1-ol,acetate, (11z)- (9ci);11-tetradecen-1-ol, acetate, (z)- (8ci);(z)-11-tetradecen-1-ol acetate;(z)-11-tetradecen-1-yl acetate;(z)-11-tetradecenyl acetate;11-cis-tetradecen-1-yl acetate;hamaki-con;z11-14ac;cis-11-tetradecen-1-ol acetate;cis-11-tetradecen-1-yl acetate;cis-11-tetradecenyl acetate;" "11-tetradecenyl acetate;(11e)-tetradec-11-en-1-yl acetate;11-tetradecen-1-ol, acetate;(11e)-11-tetradecen-1-yl acetate;(11e)-11-tetradecenyl acetate;11-tetradecen-1-ol acetate;trans-11-tetradecen-1-yl acetate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -573630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     823.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-146310.0
-    phase     gas;
 }

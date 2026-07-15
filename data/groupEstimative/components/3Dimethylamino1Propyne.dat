@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethylprop-2-yn-1-amine" "n,n-dimethylpropargylamine" "2-propyn-1-amine, n,n-dimethyl-" "1-dimethylamino-2-propyne" "n,n-dimethyl-2-propynylamine" "dimethyl(prop-2-yn-1-yl)amine" "n,n-dimethyl-2-propyn-1-amine" "dimethylprop-2-ynylamine" "dimethyl(prop-2-ynyl)amine" "2-propynylamine,n,n-dimethyl- (6ci,7ci,8ci); 1-dimethylaminoprop-2-yne;3-(dimethylamino)-1-propyne; 3-(dimethylamino)propyne; 3-(n,n-dimethylamino)-1-propyne;3-(n,n-dimethylamino)propyne; n,n-dimethyl-2-propyn-1-amine;n,n-dimethyl-2-propynamine; n,n-dimethyl-2-propynylamine;n,n-dimethyl-n-(2-propynyl)amine; n,n-dimethylpropargylamine;propargyldimethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   212900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     336.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=325070.0
-    phase     gas;
 }

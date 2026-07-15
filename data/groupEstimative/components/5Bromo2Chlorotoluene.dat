@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-bromanyl-1-chloranyl-2-methyl-benzene" "4-bromo-1-chloro-2-methylbenzene" "benzene, 4-bromo-1-chloro-2-methyl-" "2-chloro-5-bromotoluene" "5-bromo-2-chlorotoulene" "ozfqmhjkaodeon-uhfffaoysa-" "s138" "toluene,5-bromo-2-chloro- (6ci);2-chloro-5-bromotoluene;4-chloro-3-methylbromobenzene;5-bromo-2-chlorotoluene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   36370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     394.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=103600.0
-    phase     gas;
 }

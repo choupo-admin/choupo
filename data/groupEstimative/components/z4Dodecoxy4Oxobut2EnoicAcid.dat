@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-4-dodecoxy-4-oxidanylidene-but-2-enoic acid" "2-butenedioic acid (z)-, monododecyl ester" "(2z)-4-(dodecyloxy)-4-oxo-2-butenoic acid" "(c12-c22) alkyl alcohol, maleic anhydride monoester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -923900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     877.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-490220.0
-    phase     gas;
 }

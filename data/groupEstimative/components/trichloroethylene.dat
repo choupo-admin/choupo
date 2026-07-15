@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 1; } { group dC; count 1; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2-tris(chloranyl)ethene" "trichloroethene" "ethene, trichloro-" "1,1,2-trichloroethene" "ethinyl trichloride" "trilene" "acetylene trichloride" "trichlorethylene" "ethylene trichloride" "triciene" "narcogen" "trethylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -24400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     323.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1840.0
-    phase     gas;
 }

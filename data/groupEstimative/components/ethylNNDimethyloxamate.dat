@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CdO; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-(dimethylamino)-2-oxidanylidene-ethanoate" "ethyl nn-dimethyloxamate" "acetic acid, (dimethylamino)oxo-, ethyl ester" "n,n-dimethyl ethyl oxamate" "ethyl 2-(dimethylamino)-2-oxoacetate" "acetic acid, 2-(dimethylamino)-2-oxo-, ethyl ester" "ethyl (dimethylamino)oxoacetate" "agn-pc-0d1hxq" "ethyl (dimethylcarbamoyl)formate" "ethyl (n,n-dimethylcarbamoyl)formate" "oxamic acid, dimethyl-, ethyl ester" "acetic acid,2-(dimethylamino)-2-oxo-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -529500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-328870.0
-    phase     gas;
 }

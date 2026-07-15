@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2-tetrakis(chloranyl)ethane" "ethane, 1,1,1,2-tetrachloro-" "1,1,1,2-tetrachlorethane" "asym-tetrachloroethane" "tca;tetrachloroethane" "agn-pc-01ze8s" "1,1,1,2-tetrachloraethan" "1,1,1,2-tetrachloro-ethane" "1112-tetrachloroethane" "tetrachloroethane, 1,1,1,2-" "r-130a" "ethyl, 1,2,2,2-tetrachloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -156320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     328.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-78920.0
-    phase     gas;
 }

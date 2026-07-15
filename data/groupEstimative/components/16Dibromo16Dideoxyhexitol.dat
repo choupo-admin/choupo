@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 4; } { group Br; count 2; } { group OH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,6-bis(bromanyl)hexane-2,3,4,5-tetrol" "mitolactol" "dibromodulcitol" "mitobronitol" "1,6-dibromohexane-2,3,4,5-tetraol" "dibromannit" "dibromannitol" "mielobromol" "myelobromol" "dibromomannitol" "1,6-dibromomannitol" "1,6-dibromo-d-mannitol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -744550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     657.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-528760.0
-    phase     gas;
 }

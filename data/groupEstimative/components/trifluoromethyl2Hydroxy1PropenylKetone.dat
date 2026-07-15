@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group dCH; count 1; } { group dC; count 1; } { group F; count 3; } { group OH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-5,5,5-tris(fluoranyl)-4-oxidanyl-pent-3-en-2-one" "5,5,5-trifluoro-4-hydroxypent-3-en-2-one" "(z)-5,5,5-trifluoro-4-hydroxypent-3-en-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -900990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     473.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-784440.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 9; } { group CH_ring; count 1; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-piperidin-4-ylpiperidine" "1,4'-bipiperidine" "4-piperidino-piperidine" "1,4-bipiperidine" "1,4'-bipiperidin" "4-(1-piperidinyl)piperidine" "[1,4']bipiperidinyl" "1,4'-bipiperidyl" "1-(piperidin-4-yl)piperidine" "4-(piperidin-1-yl)piperidine" "4-piperidylpiperidine" "4-piperidino piperidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -9250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     516.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=300520.0
-    phase     gas;
 }

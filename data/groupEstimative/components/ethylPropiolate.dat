@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl prop-2-ynoate" "ethyl acetylenecarboxylate" "ethyl propynoate" "2-propynoic acid, ethyl ester" "(ethoxycarbonyl)acetylene" "propiolic acid ethyl ester" "propargylic acid ethyl ester" "ethylpropiolate" "ethyl 2-propynoate" "propynoic acid ethyl ester" "2-propynoic acid ethyl ester" "h399" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -171910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     371.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96080.0
-    phase     gas;
 }

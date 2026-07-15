@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methyloxan-2-one" "delta-caprolactone" ".delta.-caprolactone" "5-methyl-delta-valerolactone" "5-hydroxyhexanoic acid lactone" "delta-hexanolactone" "2h-pyran-2-one, tetrahydro-6-methyl-" "6-methylvalerolactone" "tetrahydro-6-methyl-2h-pyran-2-one" "delta-methyl-delta-valerolactone" ".delta.-hexalactone" "hexanoic acid, .delta.-lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -417810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     370.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-262080.0
-    phase     gas;
 }

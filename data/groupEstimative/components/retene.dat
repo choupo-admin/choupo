@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-7-propan-2-yl-phenanthrene" "reten" "7-isopropyl-1-methylphenanthrene" "phenanthrene, 1-methyl-7-(1-methylethyl)-" "1-methyl-7-isopropylphenanthrene" "phenanthrene, 7-isopropyl-1-methyl-" "1-methyl-7-(1-methylethyl)phenanthrene" "7-isopropyl-1-methylphenanthren" "ambap483-65-8" "retene, 98%" "1-methyl-7-propan-2-ylphenanthrene" "phenanthrene, 7-isopropyl-1-methyl- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   164130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     504.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=395060.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenyldecane" "benzene, decyl-" "n-decylbenzene" "decane, 1-phenyl-" "n-decyl benzene" "decane, 1-phenyl- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -137040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     672.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=196250.0
-    phase     gas;
 }

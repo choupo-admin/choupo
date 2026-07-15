@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-lutidine" "pyridine, 2,4-dimethyl-" "α,γ-dimethylpyridine" "2,4-lutidene" "alpha,gamma-dimethylpyridine" "2,4-dimethyl-pyridine" "BRN 0001506" "ai3-24281" ".alpha.,.gamma.-dimethylpyridine" "CHEMBL5286019" "fema no. 4389" "5-20-06-00019 (Beilstein Handbook Reference)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   70040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     328.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=187890.0
-    phase     gas;
 }

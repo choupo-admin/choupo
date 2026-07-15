@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-(diethylamino)pentan-1-ol" "1-pentanol, 5-(diethylamino)-" "5-(diethylamino)pentanol" "1-pentanol,5-(diethylamino)-" "5-(diethylamino)pentyl alcohol" "5-diethylamino-1-naphthalenesulfonyl chloride" "5-(diethylamino)-1-pentanol;5-(diethylamino)pentanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -313790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     573.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1140.0
-    phase     gas;
 }

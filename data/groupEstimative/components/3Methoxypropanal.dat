@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group O; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propanal, 3-methoxy-" "3-methoxy-propionaldehyde" "3-methoxy propionaldehyde" "propionaldehyde,3-methoxy- (7ci,8ci); 3-methoxypropanal; 3-methoxypropionaldehyde; b-methoxypropionaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -343690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     341.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-221720.0
-    phase     gas;
 }

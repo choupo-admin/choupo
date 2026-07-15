@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dec-9-yn-1-ol" "10-hydroxy-1-decyne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -110060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     565.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=119570.0
-    phase     gas;
 }

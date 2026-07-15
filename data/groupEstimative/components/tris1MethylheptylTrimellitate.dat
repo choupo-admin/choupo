@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 15; } { group CH; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trioctan-2-yl benzene-1,2,4-tricarboxylate" "1,2,4-benzenetricarboxylic acid, 1,2,4-tris(1-methylheptyl) ester" "1,2,4-benzenetricarboxylic acid, tris(1-methylheptyl) ester" "1,2,4-benzenetricarboxylic acid, tricapryl ester" "tris(1-methylheptyl) benzene-1,2,4-tricarboxylate" "1,2,4-benzenetricarboxylicacid, 1,2,4-tris(1-methylheptyl) ester" "1,2,4-benzenetricarboxylicacid, tris(1-methylheptyl) ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1478540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1447.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-618300.0
-    phase     gas;
 }

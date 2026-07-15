@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 3; } { group OH; count 4; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,5-tetrakis(oxidanyl)pentanal" "pentose" "l-arabinose" "dl-arabinose" "lyxose, d-" "l-xylose" "dl-xylose" "l-(+)-arabinose" "d-ribofuranose" "arabinose, l-" "l-(-)-xylose" "ribose, d-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -856870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     544.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-662900.0
-    phase     gas;
 }

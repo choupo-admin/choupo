@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-propan-2-yloxyethanol" "isopropyl oxitol" "ethanol, 2-(1-methylethoxy)-" "ethanol, 2-isopropoxy-" "isopropyl cellosolve" "isopropoxyethanol" "isopropyl glycol" "dowanal eipat" "isopropylethanediol" "ucar ac" "ethylene glycol monoisopropyl ether" "ethylene glycol isopropyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -436260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     403.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-253040.0
-    phase     gas;
 }

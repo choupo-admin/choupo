@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group tCH; count 1; } { group tC; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hept-6-ynoic acid" "hept-6-ynoic acid;" "ofcpmjgtzuvusm-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -246180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-112780.0
-    phase     gas;
 }

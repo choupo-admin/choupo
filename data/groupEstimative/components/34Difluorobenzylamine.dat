@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3,4-bis(fluoranyl)phenyl]methanamine" "(3,4-difluorophenyl)methanamine" "3, 4-difluorobenzylamine" "3,4-difluorobenzyl amine" "(3,4-difluorophenyl)methylamine" "benzenemethanamine, 3,4-difluoro-" "z1r cf df" "phlzudxebcqhkm-uhfffaoysa-" "n621" "1-(3,4-difluorophenyl)methanamine" "(3,4-difluorophenyl)methanamine;3,4-difluorobenzenemethanamine" "(3,4-difluorophenyl)methylazanium;(3,4-difluorophenyl)methanamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -332650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-221960.0
-    phase     gas;
 }

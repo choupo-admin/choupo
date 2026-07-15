@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 8; } { group CH2; count 8; } { group O; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diethyl bis(triethoxysilyl) silicate" "trisiloxane, 1,1,1,3,3,5,5,5-octaethoxy-" "octaethyl trisilicate" "agn-pc-00nvjg" "silicic acid, octaethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2030630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1271.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1280440.0
-    phase     gas;
 }

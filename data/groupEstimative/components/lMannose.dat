@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 5; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r,3r,4s,5s)-2,3,4,5,6-pentakis(oxidanyl)hexanal" "l-(-)-mannose" "(2r,3r,4s,5s)-2,3,4,5,6-pentahydroxyhexanal" "aldehydo-l-mannose" "aldehydo-l-manno-hexose" "mannose, l-(8ci);6-(hydroxymethyl)tetrahydro-2h-pyran-2,3,4,5-tetrol;6-(hydroxyma'a a'a" "thyl)ta'a a'a" "trahydro-2h-pyran-2,3,4,5-ta'a a'a" "trol;6-(hydroxymethyl)tetrahydropyran-2,3,4,5-tetraol;hexopyranose;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1035020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     624.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-793740.0
-    phase     gas;
 }

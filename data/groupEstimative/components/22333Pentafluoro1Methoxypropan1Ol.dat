@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group C; count 2; } { group F; count 5; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,3-pentakis(fluoranyl)-1-methoxy-propan-1-ol" "pentafluoropropionaldehyde methyl hemiacetal" "1-propanol, 2,2,3,3,3-pentafluoro-1-methoxy-" "agn-pc-04t8sm" "1-methoxy-1h-pentafluoropropanol" "1-methoxy-1h-perfluoropropan-1-ol" "2,2,3,3,3-pentafluoro-1-methoxypropanol" "2,2,3,3,3-pentafluoro-1-methoxy-1-propanol" "pentafluoro propionaldehyde methylhemiacetal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1413670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1229830.0
-    phase     gas;
 }

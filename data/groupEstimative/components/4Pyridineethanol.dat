@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group OH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-pyridin-4-ylethanol" "4-(2-hydroxyethyl)pyridine" "4-ethanolpyridine" "2-(pyridin-4-yl)ethanol" "2-(4-pyridyl)ethanol" "2-(gamma-pyridyl)ethanol" "4-(beta-hydroxyethyl)pyridine" "2-(pyridin-4-yl)ethan-1-ol" "4-pyridinethanol" "4- pyridineethanol" "4-(2-hydroxyethyl) pyridine" "bh353" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -70720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     385.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=60700.0
-    phase     gas;
 }

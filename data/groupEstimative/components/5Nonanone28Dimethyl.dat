@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,8-dimethylnonan-5-one" "2,8-dimethyl-5-nonanone" "diisoamyl ketone" "5-nonanone,2,8-dimethyl-" "2,8-dimethyl-5-nonanone;diisopentyl ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -393510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     592.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-92060.0
-    phase     gas;
 }

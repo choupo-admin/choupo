@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 15; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadecyl 2-oxidanylpropanoate" "cetyl lactate" "propanoic acid, 2-hydroxy-, hexadecyl ester" "n-hexadecyl lactate" "lactic acid hexadecyl ester" "hexadecyl 2-hydroxypropanoate" "hexadecyl 2-hydroxypropionate" "n-hexadecyl-2-hydroxypropanoate" "2-hydroxypropionic acid hexadecyl ester" "propanoic acid,2-hydroxy-, hexadecyl ester" "lacticacid, hexadecyl ester (7ci);cetyl lactate;cyclochem cl;hexadecyl lactate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -910280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     988.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-340530.0
-    phase     gas;
 }

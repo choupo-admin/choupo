@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,3,3,5-pentamethyl-2h-indene" "1h-indene, 2,3-dihydro-1,1,3,3,5-pentamethyl-" "1,1,3,3,5-pentamethyl indane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -35760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     589.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=202210.0
-    phase     gas;
 }

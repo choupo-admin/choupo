@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-4,4-dimethyl-pentanoic acid" "2-amino-4,4-dimethylpentanoic acid" "neopentylglycine" "4-methyl-leucine" "2-amino-3-tert-butylpropionic acid" "dl-neopentylglycine" "a-methyl-dl-leucine" "dl-" "a-neopentylglycine" "dl-alpha-neopentylglycine" "3-tert-butyl dl-alanine" "a-tert-butyl-dl-alanine" "dl-2-amino-4,4-dimethyl pentanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -518320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     485.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-269000.0
-    phase     gas;
 }

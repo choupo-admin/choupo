@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 2; } { group OH; count 2; } { group CdO; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(oxidanyl)butanediamide" "tartramide" "2,3-dihydroxysuccinamide" "2,3-dihydroxybutanediamide" "dl-tartaramide" "(2r,3r)-2,3-dihydroxybutanediamide" "butanediamide, 2,3-dihydroxy-, (r,r)-(+)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -598490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     551.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-420660.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 11; } { group CH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6,10,15-tetramethyl-heptadecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -497890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     935.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116180.0
-    phase     gas;
 }

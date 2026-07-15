@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methoxyprop-1-yne" "methyl 2-propynyl ether" "3-methoxypropyne" "3-methoxy-propyne" "methylpropargylether" "3-methoxyprop-1-in" "3-methoxy-1-propyne" "1-propyne, 3-methoxy-" "ghl.pd_mitscher_leg0.442" "propyne,3-methoxy   methylpropargylether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   33790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     292.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=100870.0
-    phase     gas;
 }

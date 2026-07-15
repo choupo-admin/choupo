@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group I; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-iodanyl-3-methoxy-benzene" "m-iodoanisole" "1-iodo-3-methoxybenzene" "benzene, 1-iodo-3-methoxy-" "anisole, m-iodo-" "m-methoxyiodobenzene" "3-methoxyiodobenzene" "3-methoxyphenyl iodide" "rshbaggasajqch-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -18100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     382.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=63960.0
-    phase     gas;
 }

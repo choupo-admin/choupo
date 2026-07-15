@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(8r,9s,10r,13s,14s,17r)-10,13-dimethylspiro[2,8,9,11,12,14,15,16-octahydro-1h-cyclopenta[a]phenanthrene-17,5'-oxolane]-2',3-dione" "phanurane" "aldadiene" "luvion" "aldadiene (van)" "canrenone [usan:inn]" "canrenonum [inn-latin]" "17-hydroxy-3-oxo-17alpha-pregna-4,6-diene-21-carboxylic acid gamma-lactone" "17alpha-(2-carboxyethyl)-17beta-hydroxyandrosta-4,6-dien-3-one lactone" "pregna-4,6-diene-21-carboxylic acid, 17-hydroxy-3-oxo-, gamma-lactone (17alpha)-" "canrenonum" "canrenona" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -483560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     699.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-17140.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-azanyl-3-oxidanyl-propanoic acid" "h-d-ser-oh" "serine d-form" "(r)-2-amino-3-hydroxypropanoic acid" "d-serin" "(2r)-2-amino-3-hydroxypropanoic acid" "d-(+)-serine" "d-2-amino-3-hydroxypropionic acid" "dsn" "d-2-amino-3-hydroxypropanoic acid" "serine d-" "d-ser" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -579240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     418.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-442340.0
-    phase     gas;
 }

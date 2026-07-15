@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 26; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group O; count 9; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-[2-[2-[2-[2-[2-[2-(4-nonylphenoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethanol" "nonoxynol-9" "today" "gynoll" "nonoxynol, n=9" "nonaethylene glycol nonylphenyl ether" "nonylphenol octa(oxyethylene) ethanol" "nonaethylene glycol mono(nonylphenyl) ether" "26-(nonylphenoxy)-3,6,9,12,15,18,21,24-octaoxahexacosan-1-ol" "n-9" "vcf" "staycept" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1841600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1481.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-752060.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dicyclopropyl carbinol" "cyclopropanemethanol, .alpha.-cyclopropyl-" "dicyclopropyl-methanol" "dicyclopropylmethan-1-ol" "cyclopropanemethanol, a-cyclopropyl-" "methanol,dicyclopropyl- (6ci,7ci,8ci);dicyclopropyl carbinol;dicyclopropylmethan-1-ol;dicyclopropylmethanol;dicyclopropylmethyl alcohol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -199720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     289.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-9700.0
-    phase     gas;
 }

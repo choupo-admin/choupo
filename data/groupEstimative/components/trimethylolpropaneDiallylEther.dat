@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group C; count 1; } { group dCH2; count 2; } { group dCH; count 2; } { group OH; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-bis(prop-2-enoxymethyl)butan-1-ol" "2,2-bis(allyloxymethyl)-1-butanol" "2,2-bis(allyloxymethyl)butan-1-ol" "2,2-bis((2-propenyloxy)methyl)-1-butanol" "1-butanol, 2,2-di((2-propenyloxy)methyl)-" "1-butanol, 2,2-bis((2-propenyloxy)methyl)-" "2,2-bis[(prop-2-en-1-yloxy)methyl]butan-1-ol" "1,3-propanediol, 2-ethyl-2-(hydroxymethyl)-, diallyl ether" "1-butanol, 2,2-bis((2-propen-1-yloxy)methyl)-" "1-butanol, 2,2-bis[(2-propen-1-yloxy)methyl]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -465570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     648.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-118140.0
-    phase     gas;
 }

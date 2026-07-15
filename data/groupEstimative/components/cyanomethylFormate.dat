@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyanomethyl methanoate" "(formyloxy)acetonitrile" "acetonitrile,2-(formyloxy)-" "formic acid cyanomethyl ester" "acetonitrile,(formyloxy)- (9ci);cyanomethyl formate;o-formylhydroxyacetonitrile;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   136080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=151520.0
-    phase     gas;
 }

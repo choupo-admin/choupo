@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 13; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradecyl ethanoate" "myristyl acetate" "1-tetradecanol, acetate" "1-tetradecanol, 1-acetate" "1-tetradecanol,1-acetate" "1-tetradecanol,acetate (7ci,8ci,9ci); 1-tetradecyl acetate; acetic acid tetradecan-1-yl ester;myristyl acetate; tetradecanol acetate; tetradecyl acetate; n-tetradecylacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -690850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     830.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-226530.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-methoxyphenyl)propan-1-ol" "benzenemethanol, .alpha.-ethyl-4-methoxy-" "benzyl alcohol, .alpha.-ethyl-p-methoxy-" "benzenemethanol, alpha-ethyl-4-methoxy-" "agn-pc-00k3hy" "rac-1-(4'-methoxyphenyl)propanol" "a-ethyl-p-methoxy-benzyl alcohol" "alpha-ethyl-p-methoxybenzyl alcohol" "benzenemethanol, a-ethyl-4-methoxy-" "benzyl alcohol, alpha-ethyl-p-methoxy- (8ci)" "2,2-dideuterio-1-(4-methoxyphenyl)propan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -314400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     485.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108160.0
-    phase     gas;
 }

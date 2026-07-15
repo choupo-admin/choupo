@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group Cl; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bromanyl(chloranyl)methane" "methane, bromochloro-" "methylene chlorobromide" "chlorobromomethane" "bromo(chloro)methane" "chloromethyl bromide" "monochloromonobromomethane" "methylene bromochloride" "mono-chloro-mono-bromo-methane" "borothene" "qmacdxaih@" "bromo-chloro-methane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -53380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     279.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-40070.0
-    phase     gas;
 }

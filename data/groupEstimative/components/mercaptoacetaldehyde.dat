@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group OdCH_al; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-sulfanylethanal" "2-sulfanylacetaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -131710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     315.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104170.0
-    phase     gas;
 }

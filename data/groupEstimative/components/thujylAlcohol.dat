@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-1-propan-2-yl-bicyclo[3.1.0]hexan-3-ol" ".delta.3-thujanol" "neoisothujyl alcohol" "thujanol" "thujol" "bicyclo[3.1.0]hexan-3-ol, 4-methyl-1-(1-methylethyl)-" "(+)-thujol" "bicyclo[3.1.0]hexan-3-ol, 4-methyl-1-(1-methylethyl)-, (1.alpha.,3.beta.,4.beta.,5.alpha.)-" "bicyclo(3.1.0)hexan-3-ol, 4-methyl-1-(1-methylethyl)-" "isothujol" "bicyclo(3.1.0)hexan-3-ol, 4-methyl-1-(1-methylethyl)-, (1r,3r,4s,5s)-" "bicyclo[3.1.0]hexan-3-ol, 4-methyl-1-(1-methylethyl)-, (1r,3r,4s,5s)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -287080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     391.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-5350.0
-    phase     gas;
 }

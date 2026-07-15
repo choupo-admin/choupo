@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r,4r)-1-methyl-4-prop-1-en-2-yl-cyclohex-2-en-1-ol" "2-cyclohexen-1-ol, 1-methyl-4-(1-methylethenyl), cis" "2-cyclohexen-1-ol, 1-methyl-4-(1-methylethenyl)-, trans-" "cis-2,8-menthadien-1-ol" "2-cyclohexen-1-ol, 1-methyl-4-(1-methylethenyl)-, (1r,4r)-rel-" "p-mentha-2,8-dien-1-alpha-ol" "(+-)-trans-p-mentha-2,8-dien-1-ol" "2,8-p-menthadien-1-ol, trans-(+-)-" "trans-1-methyl-4-(1-methylvinyl)cyclohex-2-en-1-ol" "(1r,4r)-1-methyl-4-(prop-1-en-2-yl)cyclohex-2-enol" "trans-1-methyl-4-(1-methylethenyl)-2-cyclohexen-1-ol" "(1r,4r)-1-methyl-4-prop-1-en-2-ylcyclohex-2-en-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -179320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=17000.0
-    phase     gas;
 }

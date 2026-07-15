@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group CH; count 1; } { group OH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[bis(2-hydroxyethyl)amino]hexadecan-2-ol" "1-(bis(2-hydroxyethyl)amino)hexadecan-2-ol" "2-hexadecanol, 1-(bis(2-hydroxyethyl)amino)-" "2-hexadecanol, 1-[bis(2-hydroxyethyl)amino]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -850570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1094.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184600.0
-    phase     gas;
 }

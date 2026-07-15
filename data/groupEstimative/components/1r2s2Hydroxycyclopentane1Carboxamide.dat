@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 2; } { group OH; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r,2s)-2-oxidanylcyclopentane-1-carboxamide" "cyclopentanecarboxamide,2-hydroxy-, (1r,2s)-rel-" "cyclopentanecarboxamide,2-hydroxy-, cis-; cis-2-hydroxycyclopentanecarboxamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -358050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     426.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-170810.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 21; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "docosyl ethanoate" "1-docosanol, acetate" "behenyl acetate" "acetic acid behenyl ester" "docosan-1-yl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -855970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1142.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-159170.0
-    phase     gas;
 }

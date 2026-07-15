@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-1,4-bis(fluoranyl)benzene" "2-chloro-1,4-difluorobenzene" "2,5-difluorochlorobenzene" "benzene,2-chloro-1,4-difluoro-" "h611" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -361540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     367.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-308760.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group CH; count 4; } { group C; count 5; } { group Cl; count 12; } { group OH; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(chloranyl)-1-[3-[2,2,2-tris(chloranyl)-1-oxidanyl-ethoxy]-2,2-bis[[2,2,2-tris(chloranyl)-1-oxidanyl-ethoxy]methyl]propoxy]ethanol" "perichlor" "periclor" "petrichloral [inn]" "pentaerythritol chlorol" "petrichloralum [inn-latin]" "pentaerythritol chloral" "1,1',1'',1'''-(neopentanetetrayltetraoxy)tetrakis(2,2,2-trichloroethanol)" "1,1',1'',1'''-(neopentanetetryltetraoxy)tetrakis(2,2,2-trichloroethanol)" "1,1',1',1'''-(neopentanetetryltetraoxy)tetrakis(2,2,2-trichloroethanol)" "ethanol, 1,1',1'',1'''-(neopentanetetrayltetraoxy)tetrakis(2,2,2-trichloro-" "petrichloralum" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1703200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1079.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1047420.0
-    phase     gas;
 }

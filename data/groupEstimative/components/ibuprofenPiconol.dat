@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group COO; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pyridin-2-ylmethyl 2-[4-(2-methylpropyl)phenyl]propanoate" "staderm" "vesicum" "pimeprofen" "ibuprofen piconol [usan:jan]" "2-pyridylmethyl 2-(4-isobutylphenyl)propionate" "pyridin-2-ylmethyl 2-(4-isobutylphenyl)propanoate" "2-(p-isobutylphenyl)propionic acid 2-pyridylmethyl ester" "2-pyridylmethyl 2-(p-(2-methylpropyl)phenyl)propionate" "propionic acid, 2-(p-isobutylphenyl)-, 2-pyridylmethyl ester" "alpha-methyl-4-(2-methylpropyl)benzeneacetic acid 2-pyridinylmethyl ester" "benzeneacetic acid, alpha-methyl-4-(2-methylpropyl)-, 2-pyridinylmethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -268950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     722.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=86090.0
-    phase     gas;
 }

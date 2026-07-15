@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,5,6-pentadeuterioaniline" "aniline-d5" "aniline-2,3,4,5,6-d5" "phenyl-d5-amine" "(2h5)aniline" "(2,3,4,5,6-2h5)aniline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   103150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     334.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=178500.0
-    phase     gas;
 }

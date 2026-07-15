@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[diethoxy(methyl)silyl]propan-1-amine" "3-(diethoxymethylsilyl)propylamine" "3-aminopropyl(diethoxy)methylsilane" "3-aminopropyl-methyl-diethoxysilane" "gamma-aminopropylmethyldiethoxysilane" "propylamine, 3-(diethoxymethylsilyl)-" "(3-aminopropyl)diethoxymethylsilane" "silane, (3-aminopropyl)diethoxymethyl-" "aminopropylmethyldiethoxy silane" "3-aminopropylmethyldiethoxysilane" "3-aminopropylmethyl diethoxysilane" "l369" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -550720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     668.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-231830.0
-    phase     gas;
 }

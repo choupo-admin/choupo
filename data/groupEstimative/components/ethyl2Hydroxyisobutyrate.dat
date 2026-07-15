@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-methyl-2-oxidanyl-propanoate" "ethyl 2-hydroxy-2-methylpropionate" "ethyl 2-methyllactate" "ethyl " "a-hydroxyisobutyrate" "ethyl alpha-hydroxyisobutyrate" "propanoic acid, 2-hydroxy-2-methyl-, ethyl ester" "ethyl 2-hydroxy-2-methylpropanoate" "lactic acid, 2-methyl-, ethyl ester" "2-methyllactic acid ethyl ester" "ambap80-55-7" "alpha (or beta) - hydroxyisobutyric acid, ethyl ester" "ethyl .alpha.-hydroxyisobutyrate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -645430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-444710.0
-    phase     gas;
 }

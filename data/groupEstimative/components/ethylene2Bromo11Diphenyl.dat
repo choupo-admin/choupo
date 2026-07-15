@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-bromanyl-1-phenyl-ethenyl)benzene" "(2-bromo-1-phenylethenyl)benzene" "(2-bromo-1-phenylvinyl)benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   274530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     528.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=377810.0
-    phase     gas;
 }

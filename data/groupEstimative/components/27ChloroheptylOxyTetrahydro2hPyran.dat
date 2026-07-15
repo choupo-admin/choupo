@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 7; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group Cl; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(7-chloranylheptoxy)oxane" "2h-pyran, 2-((7-chloroheptyl)oxy)tetrahydro-" "2h-pyran, 2-[(7-chloroheptyl)oxy]tetrahydro-" "2-(7-chloroheptoxy)oxane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -516650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     586.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-128440.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group dCH; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanylundec-2-ene" "1-bromoundec-2-ene" "2-undecene, 1-bromo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -126820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     628.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=136280.0
-    phase     gas;
 }

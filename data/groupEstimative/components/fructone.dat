@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-(2-methyl-1,3-dioxolan-2-yl)ethanoate" "ethyl 2-(2-methyl-1,3-dioxolan-2-yl)acetate" "ethyl acetoacetate ethylene ketal" "1,3-dioxolane-2-acetic acid, 2-methyl-, ethyl ester" "ethyl acetoacetate 3-ethylene acetal" "ethyl 2-methyl-1,3-dioxolane-2-acetate" "ethyl acetoacetate ethylene acetal" "ethyl 3-oxobutyrate ethylene ketal" "ethylacetoacetate ethyleneglycol ketal" "ethyl acetoacetate ethylene glycol ketal" "2-methyl-1,3-dioxolane-2-acetic acid ethyl ester" "1,3-dioxolane-2-aceticacid, 2-methyl-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -714010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-435070.0
-    phase     gas;
 }

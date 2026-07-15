@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "palmitamide" "palmitic amide" "cetyl amide" "amide 16" "palmityl amide" "n-hexadecanamide" "amide hpl" "palmitic acid amide" "palmiticamide" "hexadecanoic acid amide" "palmitamide (acd/name 4.0)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -452360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     857.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=21370.0
-    phase     gas;
 }

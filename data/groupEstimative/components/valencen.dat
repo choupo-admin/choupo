@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4a,5-dimethyl-3-prop-1-en-2-yl-2,3,4,5,6,7-hexahydro-1h-naphthalene" "4a,5-dimethyl-3-(prop-1-en-2-yl)-1,2,3,4,4a,5,6,7-octahydronaphthalene" "4.beta.h,5.alpha.-eremophila-1(10),11-diene" "naphthalene, 1,2,3,5,6,7,8,8a-octahydro-1,8a-dimethyl-7-(1-methylethenyl)-, [1r-(1.alpha.,7.beta.,8a.alpha.)]-" "eremophila-1(10),11-diene" "4.alpha.,9-octalin" "4.beta.h,11-diene" "naphthalene, 1,2,3,5,6,7,8,8a-octahydro-1,8a-dimethyl-7-(1-methylethenyl)-, (1r,7r,8as)-" "naphthalene, 1,2,3,5,6,7,8,8a-octahydro-1,8a-dimethyl-7-(1-methylethenyl)-, [1s-(1.alpha.,7.alpha.,8a.alpha.)]-" "5,6-dimethyl-8-(1-methylvinyl)bicyclo[4.4.0]dec-1-ene" "naphthalene,1,2,3,5,6,7,8,8a-octahydro-1,8a-dimethyl-7-(1-methylethenyl)-, (1r,7r,8as)-" "naphthalene,2,3,5,6,7,8,8a-octahydro-1,8a-dimethyl-7-(1-methylethenyl)-, [1r-(1.alpha.,7.beta.,8a.alpha.)]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -75120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     614.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=234940.0
-    phase     gas;
 }

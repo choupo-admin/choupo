@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group F; count 4; } { group Br; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-1,1,2,2-tetrakis(fluoranyl)-2-iodanyl-ethane" "1-bromotetrafluoro-2-iodoethane" "1-bromo-1,1,2,2-tetrafluoro-2-iodoethane" "ethane, 1-bromo-1,1,2,2-tetrafluoro-2-iodo-" "ethane,1-bromo-1,1,2,2-tetrafluoro-2-iodo-" "1-bromo-1,1,2,2-tetrafluoro-2-iodoethane;1-bromo-2-iodo-1,1,2,2-tetrafluoroethane;1-bromo-2-iodoperfluoroethane;1-bromotetrafluoro-2-iodoethane;1-bromo-2-iodotetrafluoroethane;1-iodo-2-bromotetrafluoroethane;2-iodo-1-bromotetrafluoroethane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -783350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-735160.0
-    phase     gas;
 }

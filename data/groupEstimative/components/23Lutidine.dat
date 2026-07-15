@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-dimethylpyridine" "pyridine, 2,3-dimethyl-" "dimethylpyridine" "2,3-dimethyl-pyridine" "pyridine, dimethyl-" "2-3-lutidine" "pyridine,3-dimethyl-" "2,3-d1methylpyridine" "ai3-24280" "CHEMBL3303914" "NSC2157" "BCP26360" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   70040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     328.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=187890.0
-    phase     gas;
 }

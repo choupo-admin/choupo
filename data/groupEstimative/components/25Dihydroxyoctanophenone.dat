@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[2,5-bis(oxidanyl)phenyl]octan-1-one" "1-(2,5-dihydroxyphenyl)octan-1-one" "1-octanone, 1-(2,5-dihydroxyphenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -562960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     674.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-258750.0
-    phase     gas;
 }

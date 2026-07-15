@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[3,5-bis(trifluoromethyl)phenyl]ethanone" "3,5-bis(trifluoromethyl)acetophenone" "mbt-ac" "1-[3,5-bis(trifluoromethyl)phenyl]ethan-1-one" "1-[3,5-di(trifluoromethyl)phenyl]ethan-1-one" "1-acetyl-3,5-bis(trifluoromethyl)benzene" "3',5'-bis(triftuaromethyl) acetophenone" "3,5-bis(trifluoromethyl) acetophenone" "3',5'-bis(triftuaromethyl)acetophenone" "1-(3,5-bis(trifluoromethyl)phenyl)ethanone" "3,5-bis(trifluoromethyl)phenylmethylketone" "1-(3,5-bis(trifluoromethyl)phenyl)ethan-1-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1342880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     565.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1165630.0
-    phase     gas;
 }

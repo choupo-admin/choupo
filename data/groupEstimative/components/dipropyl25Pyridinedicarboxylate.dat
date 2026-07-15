@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group COO; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dipropyl pyridine-2,5-dicarboxylate" "dipropyl isocinchomeronate" "di-n-propyl isocinchomeronate" "2,5-pyridinedicarboxylic acid, dipropyl ester" "di-propylisocinchomeronate" "isocinchomeronic acid, dipropyl ester" "di-n-propyl 2,5-pyridinedicarboxylate" "di-n-propyl-isocinchomeronate" "mgk repellent 326 (van)" "di-n-propyl-isocinchomeronate [german]" "pyridin-2,5-dicarbonsaeure-di-n-propylester" "pyridin-2,5-dicarbonsaeure-di-n-propylester [german]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -688360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     665.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-382330.0
-    phase     gas;
 }

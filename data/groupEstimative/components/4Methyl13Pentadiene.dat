@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methylpenta-1,3-diene" "1,3-pentadiene, 4-methyl-" "(ch3)2c=chch=ch2" "methylpentadiene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   65690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     374.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=159150.0
-    phase     gas;
 }

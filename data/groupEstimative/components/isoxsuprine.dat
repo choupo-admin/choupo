@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 3; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 1; } { group O; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[1-oxidanyl-2-(1-phenoxypropan-2-ylamino)propyl]phenol" "vasodilian" "vasosurpine" "dilavase" "isoxsuprine [inn:ban]" "isoxsuprinum [inn-latin]" "benzenemethanol, 4-hydroxy-.alpha.-[1-[(1-methyl-2-phenoxyethyl)amino]ethyl]-" "benzenemethanol, 4-hydroxy-alpha-(1-((1-methyl-2-phenoxyethyl)amino)ethyl)-" "p-hydroxy-n-(1-methyl-2-phenoxyethyl)norephedrine" "1-(4-hydroxyphenyl)-2-(1-methyl-2-phenoxyethylamino)propanol" "2-(3-phenoxy-2-propylamino)-1-(p-hydroxyphenyl)-1-propanol" "1-(p-hydroxyphenyl)-2-(1-methyl-2-phenoxyethylamino)-1-propanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -365920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     745.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=11130.0
-    phase     gas;
 }

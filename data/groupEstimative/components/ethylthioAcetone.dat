@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CdO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethylsulfanylpropan-2-one" "2-propanone, 1-(ethylthio)-" "1-(ethylthio)acetone" "ethyl 2-oxopropyl sulfide" "1-(ethylthio)propan-2-one" "2-propanone,1-(ethylthio)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -217240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104580.0
-    phase     gas;
 }

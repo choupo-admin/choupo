@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group OH; count 2; } { group CdO; count 1; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-bis(2-hydroxyethyl)pyridine-4-carboxamide" "n,n-bis(2-hydroxyethyl)-4-pyridinecarboxamide" "4-pyridinecarboxamide, n,n-bis(2-hydroxyethyl)-" "n,n-bis(2-hydroxyethyl)-4-pyridylcarboxamide" "n, n-bis(2-hydroxyethyl)isonicotinamide" "4-pyridinecarboxamide, n, n-bis(2-hydroxyethyl)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -329920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     596.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-69000.0
-    phase     gas;
 }

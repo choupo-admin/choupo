@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradecyl prop-2-enoate" "2-propenoic acid, tetradecyl ester" "acrylic acid tetradecyl ester" "2-propenoic acid, n-tetradecyl ester" "tetradecyl 2-propenoate" "2-propenoic acid, tetradecyl ester, homopolymer" "2-propenoic acid,tetradecyl ester" "acrylicacid, tetradecyl ester (8ci);1-tetradecanol, acrylate (8ci);myristylacrylate;tetradecyl acrylate;n-tetradecyl acrylate;acrylic acid tetradecyl ester;tetradecyl prop-2-enoate;2-propenoic acid, n-tetradecyl ester;tetradecyl 2-propenoate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -586060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     864.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-130270.0
-    phase     gas;
 }

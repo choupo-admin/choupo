@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-oxidanylidene-2-phenyl-propanoate" "benzeneacetic acid, alpha-formyl-, methyl ester" "malonaldehydic acid, phenyl-, methyl ester" "methyl formylphenylacetate" "benzeneacetic acid, .alpha.-formyl-, methyl ester" "malonaldehydicacid, phenyl-, methyl ester (7ci,8ci);methyl formylphenylacetate;methyl a-formylbenzeneacetate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -421340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     499.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-266600.0
-    phase     gas;
 }

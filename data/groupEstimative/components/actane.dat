@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group CH2_ring; count 3; } { group OH; count 3; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[3,5-bis(2-hydroxyethyl)-1,3,5-triazinan-1-yl]ethanol" "grotan" "grotan b" "grotan bk" "kalpur te" "grotan hd" "1,3,5-triazine-1,3,5(2h,4h,6h)-triethanol" "rancidity control agent" "roksol t 1-7" "km 200 (alcohol)" "eta 75" "hexahydro-1,3,5-tris(2-hydroxyethyl)-s-triazine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -390050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     659.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=15240.0
-    phase     gas;
 }

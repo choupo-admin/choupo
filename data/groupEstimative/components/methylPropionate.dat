@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl propanoate" "propanoic acid, methyl ester" "methyl propylate" "propionic acid, methyl ester" "propionate de methyle" "propanoic acid methyl ester" "methyl propionate (natural)" "propionate de methyle [french]" "propionic acid methyl ester" "formyl propionate" "agn-pc-0cqxkd" "methylester kyseliny propionove" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -443170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     363.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-327570.0
-    phase     gas;
 }

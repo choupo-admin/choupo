@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group COOH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methylpyridine-3-carboxylic acid" "6-methyl nicotinic acid" "3-pyridinecarboxylic acid, 6-methyl-" "2-methyl-5-pyridinecarboxylic acid" "2-methylpyridine-5-carboxylic acid" "2-methyl-5-pyridine carboxylic acid" "agn-pc-00gqtk" "5-carboxy-2-methylpyridine" "u239" "6-methylpyridine-3-carboxylate;6-methylpyridine-3-carboxylic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -280230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-156020.0
-    phase     gas;
 }

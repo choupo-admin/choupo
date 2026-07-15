@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH_ring; count 6; } { group C_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetracyclo[6.1.0.0(2,4).0(5,7)]nonane,3,3,6,6,9,9-hexamethyl-(1.alpha.,2.alpha.,4.alpha.,5.beta.,7.beta.,8.alpha.)-" "tetracyclo[6.1.0.0(2,4).0(5,7)]nonane, 3,3,6,6,9,9-hexamethyl-, cis,cis,trans--" "tetracyclo(6.1.0.02,4.05,7)nonane, 3,3,6,6,9,9-hexamethyl-, (1alpha,2alpha,4alpha,5beta,7beta,8alpha)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -99230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     316.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=299700.0
-    phase     gas;
 }

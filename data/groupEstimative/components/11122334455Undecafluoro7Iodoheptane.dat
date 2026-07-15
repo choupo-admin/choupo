@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 5; } { group F; count 11; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,3,4,4,5,5-undecakis(fluoranyl)-7-iodanyl-heptane" "heptane, 1,1,1,2,2,3,3,4,4,5,5-undecafluoro-7-iodo-" "heptane,1,1,1,2,2,3,3,4,4,5,5-undecafluoro-7-iodo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2311900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     638.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2062530.0
-    phase     gas;
 }

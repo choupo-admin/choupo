@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-methoxyphenyl)-n-methyl-methanamine" "n-(4-methoxybenzyl)-n-methylamine" "n-methyl-p-methoxybenzylamine" "(4-methoxy-benzyl)-methyl-amine" "benzenemethanamine, 4-methoxy-n-methyl-" "4-[(methylamino)methyl]anisole" "(4-methoxy-benzyl)methyl-amine" "[(4-methoxyphenyl)methyl]methylamine" "(4-methoxyphenyl)-n-methylmethanamine" "[(4-methoxyphenyl)methyl](methyl)amine" "1-(4-methoxyphenyl)-n-methylmethanamine" "p-methoxy-n-methylbenzylamine;n-methyl-p-methoxybenzylamine;n-methyl-4-methoxybenzylamine;n-benzyl-n-methyl-p-anisidine;n-(4-methoxybenzyl)-n-methylamine;(p-methoxybenzyl)methylamine;4-methoxy-n-methylbenzenemethanamine;(4-methoxyphenyl)-n-methylmethanamine;benzylamine,p-methoxy-n-methyl- (6ci,7ci,8ci);" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -82780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=112070.0
-    phase     gas;
 }

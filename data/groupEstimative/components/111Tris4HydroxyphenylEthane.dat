@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[1,1-bis(4-hydroxyphenyl)ethyl]phenol" "phenol, 4,4',4''-ethylidynetris-" "4,4',4''-ethylidynetrisphenol" "tris(4-hydroxyphenyl)ethane" "4,4',4''-(ethane-1,1,1-triyl)triphenol" "agn-pc-0cr297" "triphenylmethane derivative, 7" "phenol, 4,4',4''-ethylidynetri-" ""4,4,4""-ethane-1,1,1-triyltriphenol"" ""4,4',4""-ethane-1,1,1-triyltriphenol"" "o215" "phenol, 4,4',4''-ethylidynetri- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -287220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     656.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-6270.0
-    phase     gas;
 }

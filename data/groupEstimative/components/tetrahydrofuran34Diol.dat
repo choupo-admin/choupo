@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group OH; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxolane-3,4-diol" "1,4-anhydro-l-threitol" "3,4-furandiol, tetrahydro-, trans-" "erythritan" "cis-tetrahydrofuran-3,4-diol" "trans-tetrahydrofuran-3,4-diol" "agn-pc-00ash3" "3,4-furandiol, tetrahydro-, cis-" "(3s,4s)-tetrahydro-furan-3,4-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -522210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     269.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-348120.0
-    phase     gas;
 }

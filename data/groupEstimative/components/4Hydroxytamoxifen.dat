@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group dC; count 2; } { group dCH_ring; count 13; } { group dC_ring; count 5; } { group OH_phenol; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[(z)-1-[4-[2-(dimethylamino)ethoxy]phenyl]-2-phenyl-but-1-enyl]phenol" "hydroxytamoxifen" "(z)-4-hydroxytamoxifen" "afimoxifene" "tamogel" "trans-4-hydroxytamoxifen" "4-monohydroxytamoxifen" "4-oh-tam" "tamoxifen, 4-hydroxy-, (z)-" "ici 79,280" "phenol, 4-(1-(4-(2-(dimethylamino)ethoxy)phenyl)-2-phenyl-1-butenyl)-," "4-hydroxy-(z)-tamoxifen" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -26210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     882.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=409920.0
-    phase     gas;
 }

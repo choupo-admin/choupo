@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 9; } { group dC_ring; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pyrene-1-carbaldehyde" "1-formylpyrene" "pyrenecarboxaldehyde" "1-pyrenealdehyde" "1-pyrene-carboxaldehyde" "3-formylpyrene" "pyrenecarbaldehyde" "3-pyrenealdehyde" "3-pyrenylaldehyde" "pyrene-1-aldehyde" "1-pyrenecarbaldehyde" "3-pyrenecarboxaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   412110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     444.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=533930.0
-    phase     gas;
 }

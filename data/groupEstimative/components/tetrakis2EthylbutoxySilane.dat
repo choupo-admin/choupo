@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 8; } { group CH2; count 12; } { group CH; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetrakis(2-ethylbutyl) silicate" "coolanol 25" "silane, tetrakis(2-ethylbutoxy)-" "2-ethylbutyl orthosilicate" "tetra(2-ethylbutoxy) silane" "silicic acid (h4sio4), tetrakis(2-ethylbutyl) ester" "2-ethyl-1-butanol, silicate" "tetra (2-ethylbutyl) orthosilicate" "tetrakis(2-ethylbutyl) orthosilicate" "1-butanol, 2-ethyl-, silicate (6ci,7ci)" "silicic acid, tetra(2-ethylbutyl) ester" "silicic acid (h4sio4),tetrakis(2-ethylbutyl) ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1200310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1224.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383320.0
-    phase     gas;
 }

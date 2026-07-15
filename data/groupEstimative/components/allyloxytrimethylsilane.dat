@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl(prop-2-enoxy)silane" "allyl trimethylsilyl ether" "3-(trimethylsiloxy)propene" "trimethyl(2-propenyloxy)silane" "silane, trimethyl(2-propen-1-yloxy)-" "o-trimethylsilylallyl alcohol" "silane, trimethyl(2-propenyloxy)-" "silane,(allyloxy)trimethyl- (6ci,7ci,8ci);silane, trimethyl(2-propenyloxy)- (9ci);(allyloxy)trimethylsilane;1-trimethylsiloxy-2-propene;1-trimethylsilyloxy-2-propene;allyl trimethylsilyl ether;trimethyl(2-propenyloxy)silane;trimethylallyloxysilane;trimethylsilylallylether;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -285580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-122280.0
-    phase     gas;
 }

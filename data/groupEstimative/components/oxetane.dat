@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethylene oxide" "1,3-propylene oxide" "oxacyclobutane" "cyclooxabutane" "trimethylenoxid" "oxetan" "propane, 1,3-epoxy-" "trimethylenoxid [german]" "alpha,gamma-propane oxide" "1,3-trimethylene oxide" "trimethylene oxide (8ci)" "503-30-0 oxetane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -150270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     193.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-55380.0
-    phase     gas;
 }

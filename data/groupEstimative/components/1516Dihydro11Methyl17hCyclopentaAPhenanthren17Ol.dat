@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 7; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "11-methyl-16,17-dihydro-15h-cyclopenta[a]phenanthren-17-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   78510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     468.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=311800.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group OH; count 1; } { group O; count 1; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2,3,6-trimethyl-4-[2-oxidanyl-3-(propan-2-ylamino)propoxy]phenyl] ethanoate" "trimepranol" "disorat" "optipranolol" "metipranololum" "turoptin" "metipranololum [inn-latin]" "metipranolol (usan/inn)" "vuab6453 (spofa)" "metipranolol [usan:ban:inn]" "metipranolol hydrochloride" "1-(4-acetoxy-2,3,5-trimethylphenoxy)-3-isopropylamino-2-propanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -762380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     822.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-301530.0
-    phase     gas;
 }

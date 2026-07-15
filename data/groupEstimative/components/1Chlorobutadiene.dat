@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 3; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1e)-1-chloranylbuta-1,3-diene" "1-chloro-1,3-butadiene" "1-chlorobuta-1,3-diene" "1,3-butadiene, 1-chloro-" "trans-1-chloro-1,3-butadiene" "(1e)-1-chlorobuta-1,3-diene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   101020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     334.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=138930.0
-    phase     gas;
 }

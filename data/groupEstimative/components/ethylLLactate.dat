@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl (2s)-2-oxidanylpropanoate" "ethyl (2s)-2-hydroxypropanoate" "ethyl (s)-2-hydroxypropionate" "propanoic acid, 2-hydroxy-, ethyl ester, (2s)-" "l-ethyl lactate" "(-)-ethyl (s)-2-hydroxypropionate" "2-hydroxy-(2s)-propanoic acid ethyl ester" "l-lactic acid ethyl ester" "(-)-ethyl l-lactate" "2-hydroxy-propionic acid ethyl ester" "(s)-(-)-2-hydroxypropionic acid ethyl ester" "ethyl l-(-)-lactate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -621320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     443.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-458410.0
-    phase     gas;
 }

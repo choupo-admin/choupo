@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group C; count 1; } { group F; count 4; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloro-1,1,1,2-tetrafluoroethane" "1,1,1,2-tetrafluoro-2-chloroethane" "1,1,1,2-tetrafluorochloroethane" "1-chloro-1,2,2,2-tetrafluoroethane" "CFC 124" "ethane, 2-chloro-1,1,1,2-tetrafluoro-" "f 124" "f 124 (halocarbon)" "fc 124" "freon 124" "fron 124" "khladon 124" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -898820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     345.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-824810.0
-    phase     gas;
 }

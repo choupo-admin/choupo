@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propan-2-yl 2-azanylbenzoate" "isopropyl anthranilate" "iso-propyl anthranilate" "benzoic acid, 2-amino-, 1-methylethyl ester" "anthranilic acid, isopropyl ester" "methylethyl 2-aminobenzoate" "propan-2-yl 2-aminobenzoate" "benzoic acid, 2-amino-,1-methylethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -313440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     526.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-110260.0
-    phase     gas;
 }

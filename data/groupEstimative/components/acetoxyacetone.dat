@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylidenepropyl ethanoate" "acetonyl acetate" "acetol acetate" "2-oxopropyl acetate" "2-propanone, 1-(acetyloxy)-" "acetoxypropanone" "o-acetylacetol" "1-acetoxyacetone" "acetylmethyl acetate" "1-acetoxy-2-propanone" "1-hydroxy-2-propanone acetate" "2-propanone, 1-hydroxy-, acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -576390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-448070.0
-    phase     gas;
 }

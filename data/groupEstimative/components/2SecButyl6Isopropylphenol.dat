@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-butan-2-yl-6-propan-2-yl-phenol" "phenol, 2-sec-butyl-6-isopropyl-" "agn-pc-04wzfu" "2-butan-2-yl-6-propan-2-ylphenol" "2-[(2s)-butan-2-yl]-6-propan-2-ylphenol" "phenol,2-(1-methylethyl)-6-(1-methylpropyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -274460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     557.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1860.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 1; } { group dC; count 1; } { group Br; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylbut-2-enal" "(z)-2-bromobut-2-enal" "crotonaldehyde,2-bromo- (6ci,7ci,8ci); 2-bromo-2-butenal; 2-bromocrotonaldehyde; a-bromocrotonaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -77710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     370.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-30730.0
-    phase     gas;
 }

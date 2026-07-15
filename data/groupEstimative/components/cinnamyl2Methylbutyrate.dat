@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylprop-2-enyl 2-methylbutanoate" "butanoic acid, 2-methyl-, 3-phenyl-2-propen-1-yl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -301100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     630.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-53180.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "heptyl butanoate" "butanoic acid, heptyl ester" "butyric acid, heptyl ester" "butanoic acid, heptylester" "u491" "we(7:0/4:0)" "butyricacid, heptyl ester (6ci,7ci,8ci); heptyl butanoate; heptyl butyrate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -587650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     635.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-268630.0
-    phase     gas;
 }

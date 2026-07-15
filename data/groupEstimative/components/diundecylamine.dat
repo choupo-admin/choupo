@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 20; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-undecylundecan-1-amine" "di-n-undecylamine" "n.-undecylamine, n-(n.-undecyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -443940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1053.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=223750.0
-    phase     gas;
 }

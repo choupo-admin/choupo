@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-azanyl-3-methylsulfanyl-propanoic acid" "s-methylcysteine" "h-cys(me)-oh" "s-methyl-dl-cysteine" "l-cysteine, s-methyl-" "(r)-2-amino-3-(methylthio)propanoic acid" "(r)-2-amino-3-(methylmercapto)propionic acid" "methylcysteine, l-" "(2r)-2-amino-3-methylthiopropanoic acid" "(2r)-2-amino-3-methylsulfanylpropanoic acid" "usaf cb-24" "methylcysteine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -405780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     468.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-263980.0
-    phase     gas;
 }

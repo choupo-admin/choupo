@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 12; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-pentyl-n-(phenylmethyl)octan-1-amine" "benzylamine, n-octyl-n-pentyl-" "benzylamine, n-octyl-n-pentyl-," );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -152070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     844.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=340710.0
-    phase     gas;
 }

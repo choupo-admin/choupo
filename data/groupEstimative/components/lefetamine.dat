@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r)-n,n-dimethyl-1,2-diphenyl-ethanamine" "lefetamina" "lefetaminum" "lephetamine" "n,n-dimethyl-1,2-diphenylethanamine" "lefetamine [inn]" "lefetaminum [inn-latin]" "1-dimethylamino-1,2-diphenylethane" "(-)-n,n-dimethyl-1,2-diphenylethylamine" "(1r)-n,n-dimethyl-1,2-diphenylethanamine" "benzeneethanamine, n,n-dimethyl-alpha-phenyl-, (r)-" "ethylamine, n,n-dimethyl-1,2-diphenyl-, (-)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   161740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     572.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=417000.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 13; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylpropyl tetradecanoate" "tetradecanoic acid, monoester with 1,2-propanediol" "propylene glycol myristate" "propylene glycol monomyristate" "2-hydroxypropyl tetradecanoate" "tetradecanoic acid,2-hydroxypropyl ester" "myristic acid, monoester with propane-1,2-diol" "myristicacid, 2-hydroxypropyl ester (7ci,8ci); myristic acid, ester with1,2-propanediol (6ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -869000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     910.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-357370.0
-    phase     gas;
 }

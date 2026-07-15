@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH; count 2; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-1-chloranyl-2-ethoxy-ethene" "cis-2-chlorovinyl ethyl ether" "(z)-1-chloro-2-ethoxyethene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -156630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     349.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-53910.0
-    phase     gas;
 }

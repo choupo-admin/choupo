@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-dimethyl-1-butanol" "2,2-dimethylbutanol" "1-butanol, 2,2-dimethyl-" "1-butanol,2-dimethyl-" "butanol, 2,2-dimethyl-" "2,2-dimethyl-butan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -328150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134340.0
-    phase     gas;
 }

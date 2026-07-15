@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "palmitaldehyde" "n-hexadecanal" "palmitoyl aldehyde" "palmitoyl" "ply" "hexadecanaldehyde" "1-hexadecanal" "palmitic aldehyde" "palmityl aldehyde" "16-hexadecanal" "hexadecyl aldehyde" "pl3" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -459150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     797.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-15680.0
-    phase     gas;
 }

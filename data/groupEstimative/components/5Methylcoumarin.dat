@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methylchromen-2-one" "coumarin, 5-methyl-" "5-methyl-2h-1-benzopyran-2-one" "2h-1-benzopyran-2-one, 5-methyl-" "2h-1-benzopyran-2-one, 5-methyl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -196340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     372.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-73380.0
-    phase     gas;
 }

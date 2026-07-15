@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-bicyclo[2.2.1]hept-2-enylmethyl prop-2-enoate" "5-norbornene-2-methylolacrylate" "5-norbornene-2-methanol, acrylate" "acrylic acid, 5-norbornen-2-methyl ester" "acrylic acid, 5-norbornen-2-ylmethyl ester" "bicyclo(2.2.1)hept-2-en-5-ylmethyl acrylate" "bicyclo(2.2.1)hept-5-ene-2-methylol acrylate" "(bicyclo(2.2.1)hept-5-en-2-yl)methyl acrylate" "2,5-endomethylene-delta(3)-tetrahydrobenzyl acrylate" "bicyclo[2.2.1]hept-5-en-2-ylmethyl prop-2-enoate" "2,5-endo-methylene-delta(sup 3)-tetrahydrobenzyl acrylate" "2-propenoic acid, bicyclo(2.2.1)hept-5-en-2-ylmethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -285340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     390.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-49140.0
-    phase     gas;
 }

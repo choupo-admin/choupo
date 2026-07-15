@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-[2-(phenylmethyl)-1,3-dioxolan-2-yl]propanoate" "ethyl 4-ethylenedioxy-5-phenylvalerate" "ethyl 2-benzyl-1,3-dioxolane-2-propionate" "1,3-dioxolane-2-propanoic acid, 2-(phenylmethyl)-, ethyl ester" "ethyl-4-ethylenedioxy-5-phenyl valerate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -621960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     601.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-263720.0
-    phase     gas;
 }

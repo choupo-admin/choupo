@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group F; count 5; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-1,1,2,2,2-pentakis(fluoranyl)ethane" "ethane, bromopentafluoro-" "1-bromo-1,1,2,2,2-pentafluoroethane" "2-bromo-1,1,1,2,2-pentafluoroethane" "ethane,1-bromo-1,1,2,2,2-pentafluoro-" "ethane,bromopentafluoro- (6ci,7ci,8ci,9ci);bromopentafluoroethane;pentafluoroethylbromide;perfluoroethyl bromide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1056330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     365.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-988090.0
-    phase     gas;
 }

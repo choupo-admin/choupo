@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e,z)-trideca-4,7-dien-1-yl acetate" "(z,e)-trideca-4,7-dien-1-yl acetate" "4,7-tridecadien-1-ol, acetate, (4z,7e)-" "4,7-tridecadien-1-ol, 1-acetate, (4z,7e)-" "trans,cis-4,7-tridecadienyl acetate" "4,7-tridecadien-1-ol,1-acetate, (4e,7z)-" "4,7-tridecadien-1-ol,acetate, (4e,7z)- (9ci); 4,7-tridecadien-1-ol, acetate, (z,e)-;(4e,7z)-tridecadienyl acetate; (e,z)-4,7-tridecadienyl acetate; ptm 1;trideca-4e,7z-dien-1-yl acetate; trans-4,cis-7-tridecadien-1-ol acetate;trans-4,cis-7-tridecadienyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -435770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     778.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-74510.0
-    phase     gas;
 }

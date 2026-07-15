@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2,4-dimethylphenyl)methanamine" "benzenemethanamine, 2,4-dimethyl-" "benzylamine, 2,4-dimethyl-" "omega-amino-psi-cumene" "2,4-dimethylbenzenemethanamine" "1-(2,4-dimethylphenyl)methanamine" "omega-amino-1,2,4-trimethylbenzene" "(2,4-dimethyl-phenyl)-methyl-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   18290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     439.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=184500.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzoic acid phenyl ester" "benzoic acid, phenyl ester" "diphenylcarboxylate" "phenol, benzoate" "phenol, benzoate (7ci)" "cyclohexanecarboxylic acid, phenyl ester;" "u010" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -155870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     500.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-26970.0
-    phase     gas;
 }

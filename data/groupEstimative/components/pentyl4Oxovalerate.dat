@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentyl 4-oxidanylidenepentanoate" "n-amyl levulinate" "pentanoic acid, 4-oxo-, pentyl ester" "pentyl 4-oxopentanoate" "pentanoic acid, 4-oxo-,pentyl ester" "levulinicacid, pentyl ester (8ci);pentyl 4-oxopentanoate;pentyl levulinate;n-amyl levulinate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -679590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     623.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-405970.0
-    phase     gas;
 }

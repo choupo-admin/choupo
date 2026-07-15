@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 17; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-nonadecane" "nonadekan" "istd" "nonadecane, n-" "ai3-36122" "CH3-[CH2]17-ch3" "nonadecane, analytical standard" "CH3-(CH2)17-CH3" "nonadecane; nsc 77136; n-nonadecane" "nonadecan" "nonadecane,(S)" "qspl 079" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -435490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     896.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=109100.0
-    phase     gas;
 }

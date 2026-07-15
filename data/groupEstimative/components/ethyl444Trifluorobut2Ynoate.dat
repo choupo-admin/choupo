@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group tC; count 2; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 4,4,4-tris(fluoranyl)but-2-ynoate" "ethyl 4,4,4-trifluoro-2-butynoate" "4,4,4-trifluoro-2-butynoic acid ethyl ester" "ethyl 4,4,4-trifluorobutynoate" "ethyl4,4,4-trifluoro-2-butynoate97%;" "2-butynoic acid,4,4,4-trifluoro-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -809230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     468.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-689520.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dC_ring; count 6; } { group Cl; count 4; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,5,6-tetrakis(chloranyl)-4-methoxycarbonyl-benzoic acid" "chlorthal-monomethyl" "monomethyl 2,3,5,6-tetrachloroterephthalate" "1,4-benzenedicarboxylic acid, 2,3,5,6-tetrachloro-, monomethyl ester" "monomethyl tetrachloroterephthalate" "dacthal monoacid" "chlorthal-monomethyl [iso]" "methyl 2,3,5,6-tetrachloroterephthalate" "tetrachloroterephthalic acid monomethyl ester" "2,3,5,6-tetrachloro-4-methoxycarbonylbenzoic acid" "2,3,5,6-tetrachloro-4-(methoxycarbonyl)benzoic acid" "2,3,5,6-tetrachloro-1,4-benzenedicarboxylic acid 4-methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -780420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     607.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-612840.0
-    phase     gas;
 }

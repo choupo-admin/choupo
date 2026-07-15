@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzenamine" "phenylamine" "aminobenzene" "aminophen" "kyanol" "arylamine" "anilin" "benzeneamine" "krystallin" "benzidam" "anyvim" "cyanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   103150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     334.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=178500.0
-    phase     gas;
 }

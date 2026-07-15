@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-fluoranyl-4-methyl-benzoic acid" "3-fluoro-p-toluic acid" "3-fluoro-4-methylbenzoicacid" "3-fluoro-4-methyl-benzoic acid" "benzoic acid, 3-fluoro-4-methyl-" "4-carboxy-2-fluorotoluene" "q032" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -541240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     433.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-429090.0
-    phase     gas;
 }

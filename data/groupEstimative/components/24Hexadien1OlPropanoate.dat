@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexa-2,4-dienyl propanoate" "2,4-hexadien-1-ol, 1-propanoate" "hexa-2,4-dienyl propionate" "2,4-hexadien-1-ol propionate" "2,4-hexadien-1-ol,1-propanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     544.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-125030.0
-    phase     gas;
 }

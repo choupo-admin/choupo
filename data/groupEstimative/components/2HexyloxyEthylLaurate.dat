@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 17; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-hexoxyethyl dodecanoate" "dodecanoic acid, 2-(hexyloxy)ethyl ester" "lauric acid, 2-(hexyloxy)ethyl ester" "dodecanoic acid 2-(hexyloxy)ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -905630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     997.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-297850.0
-    phase     gas;
 }

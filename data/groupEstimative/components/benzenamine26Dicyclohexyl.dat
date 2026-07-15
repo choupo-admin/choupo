@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 10; } { group CH_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-dicyclohexylaniline" "aniline, 2,6-dicyclohexyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -58830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     728.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=309180.0
-    phase     gas;
 }

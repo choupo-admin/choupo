@@ -33,9 +33,8 @@ groups
     joback ( { group C_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,3,4,4,5,5-octakis(chloranyl)cyclopentene" "perchlorocyclopentene" "cyclopentene, octachloro-" "octachlorocyclopent-1-ene" "s719" "1,2,3,3,4,4,5,5-octachlorocyclopentene" "cyclopentene,1,2,3,3,4,4,5,5-octachloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -172090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     641.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-88860.0
-    phase     gas;
 }

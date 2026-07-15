@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 7; } { group CH_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4ar,8ar)-3,4,4a,5,6,7,8,8a-octahydro-1h-naphthalen-2-one" "(4ar,8ar)-octahydronaphthalen-2(1h)-one" "2(1h)-naphthalenone, octahydro-, (4ar,8ar)-rel-" "(4ar,8ar)-2-decalone" "trans-octahydronaphthalene-2(1h)-one" "2(1h)-naphthalenone, octahydro-, trans- (8ci)(9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -266470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     365.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-16170.0
-    phase     gas;
 }

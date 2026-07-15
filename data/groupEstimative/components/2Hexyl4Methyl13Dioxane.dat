@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-2-hexyl-1,3-dioxane" "heptanal, cyclic trimethylene acetal" "m-dioxane, 2-hexyl-4-methyl-" "1,3-dioxane, 2-hexyl-4-methyl-" "heptaldehyde-1,3-butylene glycol acetal" "heptanal, cyclic 1-methyltrimethylene acetal" "heptanal,3-propanediyl acetal" "heptanal, cyclic 1,3-propanediyl acetal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -500390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     409.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-113760.0
-    phase     gas;
 }

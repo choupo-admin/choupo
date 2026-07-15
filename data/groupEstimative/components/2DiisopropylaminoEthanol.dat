@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[di(propan-2-yl)amino]ethanol" "(diisopropylamino)ethanol" "2-diisopropylaminoethanol" "n,n-diisopropylethanolamine" "n,n-diisopropyl ethanolamine" "diisopropylethanolamine" "ethanol, 2-[bis(1-methylethyl)amino]-" "ethanol, 2-(diisopropylamino)-" "diisopropyl ethanolamine" "n,n-diisopropylaminoethanol" "(n,n-diisopropylamino)ethanol" "2-(diisopropylamino)ethyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -303710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-14440.0
-    phase     gas;
 }

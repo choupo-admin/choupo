@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7,7-trimethylbicyclo[2.2.1]heptan-3-amine" "(r)-(+)-bornylamine" "1,7,7-trimethylbicyclo[2.2.1]hept-2-ylamine" "endo-1,7,7-trimethylbicyclo(2.2.1)heptan-2-amine" "2-bornanamine, endo-" "(1r,2s,4r)-born-2-ylamine" "bicyclo[2.2.1]heptan-2-amine, 1,7,7-trimethyl-, endo-" "(1s,2r,4s)-1,7,7-trimethylbicyclo[2.2.1]heptan-2-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -86700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     490.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=182770.0
-    phase     gas;
 }

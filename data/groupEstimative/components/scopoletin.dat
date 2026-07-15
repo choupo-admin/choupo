@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methoxy-7-oxidanyl-chromen-2-one" "gelseminic acid" "chrysatropic acid" "6-methylesculetin" "murrayetin" "scopoletine" "scopoletol" "7-hydroxy-6-methoxycoumarin" "escopoletin" "6-o-methylesculetin" "6-methoxyumbelliferone" "6-methoxy-7-hydroxycoumarin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -505870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     410.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-333000.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group F; count 5; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,3-pentakis(fluoranyl)propanoic acid" "perfluoropropionic acid" "pentafluoropropanoic acid" "propanoic acid, pentafluoro-" "2,2,3,3,3-pentafluoropropionic acid" "ipc-pffa-3" "2,2,3,3,3-pentafluoropropanoic acid" "propionic acid, pentafluoro-" "propanoic acid, 2,2,3,3,3-pentafluoro-" "pentafluoro-propionic acid" "perfluoropropanoic acid" "378-76-7 (potassium salt)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1453570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     406.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1337900.0
-    phase     gas;
 }

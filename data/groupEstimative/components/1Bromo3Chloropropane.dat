@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group Cl; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-3-chloranyl-propane" "1-chloro-3-bromopropane" "propane, 1-bromo-3-chloro-" "3-bromopropyl chloride" "trimethylene chlorobromide" "3-chloropropyl bromide" "3-chloro-1-bromopropane" "3-bromo-1-chloropropane" ".omega.-chlorobromopropane" "trimethylene bromide chloride" "1,3-chlorbromopropane" "omega-chlorobromopropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -94660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     357.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23230.0
-    phase     gas;
 }

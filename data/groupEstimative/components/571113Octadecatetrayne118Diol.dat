@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 10; } { group tC; count 8; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadeca-5,7,11,13-tetrayne-1,18-diol" "5,7,11,13-octadecatrayne-1,18-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   369890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     845.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=638240.0
-    phase     gas;
 }

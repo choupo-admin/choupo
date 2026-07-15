@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group CH; count 1; } { group dCH; count 4; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group OH; count 2; } { group CdO_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-[5-oxidanyl-3-oxidanylidene-2-(3-oxidanyloct-1-enyl)cyclopentyl]hept-5-enoic acid" "5-trans prostaglandin d2" "9,15-dihydroxy-11-oxoprosta-5,13-dien-1-oic acid" "agn-pc-00lww6" "[5z,9alpha,13e,15s]9,15-dihydroxy-11-oxoprosta-5,13-dien-1-oic acid" "prostaglandin d2 lipid maps ms standard" "11-dehydroprostaglandinf2a; pgd2; prostaglandin d2" "7-[5-hydroxy-2-(3-hydroxyoct-1-enyl)-3-oxocyclopentyl]hept-5-enoic acid" "(z)-7-[(1r,2s,5s)-5-hydroxy-2-[(e,3s)-3-hydroxyoct-1-enyl]-3-oxocyclopentyl]hept-5-enoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -999600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     853.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-443490.0
-    phase     gas;
 }

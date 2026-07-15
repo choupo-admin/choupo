@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(chloranyl)methane" "trichloromethane" "formyl trichloride" "trichloroform" "methenyl trichloride" "methane, trichloro-" "methyl trichloride" "methane trichloride" "chloroforme" "trichlormethan" "freon 20" "cloroformio" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -116470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     285.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-80690.0
-    phase     gas;
 }

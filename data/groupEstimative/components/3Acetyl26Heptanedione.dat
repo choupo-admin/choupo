@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group CdO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethanoylheptane-2,6-dione" "3-acetylheptane-2,6-dione" "2,6-heptanedione, 3-acetyl-" "3-acetyl-heptane-2,6-dione" "2,6-heptanedione,3-acetyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -572110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     577.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-364300.0
-    phase     gas;
 }

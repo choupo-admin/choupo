@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 34; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-octadecyloctadecan-1-amine" "distearylamine" "1-octadecanamine, n-octadecyl-" "doda" "dioctadecyl amine" "n-octadecyl-1-octadecanamine" "1-octadecanamine,n-octadecyl-" "1-octadecanamine, n -octadecyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -732900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1598.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=341630.0
-    phase     gas;
 }

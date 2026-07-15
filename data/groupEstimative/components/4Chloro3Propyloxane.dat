@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group Cl; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-chloranyl-3-propyl-oxane" "pyran, 4-chloro-3-propyltetrahydro-" "4-chloro-3-propyltetrahydro-2h-pyran" "pyran, 4-chloro-3-propyltetrahydro-," "2h-pyran, 4-chlorotetrahydro-3-propyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -322210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     376.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-64830.0
-    phase     gas;
 }

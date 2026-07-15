@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 9; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-biphenylcarboxaldehyde" "p-phenylbenzaldehyde" "p-biphenylcarboxaldehyde" "4-biphenylaldehyde" "p-biphenylylaldehyde" "biphenyl-4-carboxaldehyde" "4-biphenylylcarboxaldehyde" "4-formylbiphenyl" "p-biphenylaldehyde" "(1,1'-biphenyl)-4-carboxaldehyde" "[1,1'-biphenyl]-4-carboxaldehyde" "biphenyl-4-carbaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   226390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     524.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=317730.0
-    phase     gas;
 }

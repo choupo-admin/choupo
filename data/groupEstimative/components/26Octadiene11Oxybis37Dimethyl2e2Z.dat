@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 6; } { group dCH; count 4; } { group dC; count 4; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3,7-dimethylocta-2,6-dienoxy)-3,7-dimethyl-octa-2,6-diene" "2,6-octadiene, 1,1'-oxybis[3,7-dimethyl-, (2e,6e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -158630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     903.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=299200.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-oxidanyl-2,2-diphenyl-ethanoate" "methyl benzillate" "methyl 2-hydroxy-2,2-diphenylacetate" "methyl diphenylglycolate" "benzilic acid, methyl ester" "methyl 2-hydroxy-2,2-di(phenyl)acetate" "benzeneacetic acid, .alpha.-hydroxy-.alpha.-phenyl-, methyl ester" "methylbenzilate" "benzilic acid methyl ester" "methyl hydroxy(diphenyl)acetate" "ljfihtfntgqzjl-uhfffaoysa-" "diphenylglycolic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -358130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     590.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-144110.0
-    phase     gas;
 }

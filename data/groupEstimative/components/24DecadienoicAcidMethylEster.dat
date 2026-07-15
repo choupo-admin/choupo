@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl deca-2,4-dienoate" "2,4-decadienoic acid, methyl ester, (z,e)-" "2,4-decadienoic acid, methyl ester, (z,z)-" "2,4-decadienoic acid, methyl ester, (2e,4e)-" "2,4-decadienoic acid, methyl ester, (2e,4z)-" "agn-pc-00ko08" "2,4-decadienoic acid, methyl ester" "2,4-decadienoic acid,methyl ester, (2e,4e)-" "2,4-decadienoic acid,methyl ester, (2e,4z)-" "2,4-decadienoicacid, methyl ester, (e,e)- (8ci); methyl (2e,4e)-2,4-decadienoate; methyl(e,e)-2,4-decadienoate; methyl 2-trans-4-trans-decadienoate; methyltrans-2-trans-4-decadienoate" "2,4-decadienoicacid, methyl ester, (e,z)- (8ci); (2e,4z)-2,4-decadienoic acid methyl ester;methyl (2e,4z)-2,4-decadienoate; methyl (2e,4z)-2,4-decadienoate; methyl(e,z)-2,4-decadienoate; methyl 2-trans-4-cis-decadienoate; methyl2e,4z-decadienoate; methyl trans-2,cis-4-decadienoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -353210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     622.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108190.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethenoxy-1,1,1-tris(fluoranyl)ethane" "2,2,2-trifluoroethyl vinyl ether" "(2,2,2-trifluoroethoxy)ethene" "fluoromar" "flurossene [dcit]" "fluroxenum [inn-latin]" "ethene, (2,2,2-trifluoroethoxy)-" "2-ethenoxy-1,1,1-trifluoroethane" "fluroxene [anaesthetics, volatile]" "ether, 2,2,2-trifluoroethyl vinyl" "flurossene" "fluroxenum" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -729760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     374.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-615950.0
-    phase     gas;
 }

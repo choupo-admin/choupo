@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propane, 2-methoxy-" "methyl isopropyl ether" "ether, isopropyl methyl" "isopropyl methyl ether" "isopryl" "agn-pc-00ldty" "i-c3h7och3" "propane, 2-methoxy- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -263390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     313.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-124640.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentylsilane" "amylsilane;pentylsilane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -90720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     511.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=43600.0
-    phase     gas;
 }

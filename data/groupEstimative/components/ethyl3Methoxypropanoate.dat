@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-methoxypropionate" "propanoic acid, 3-methoxy-, ethyl ester" "propionic acid, 3-methoxy-, ethyl ester" "ijuhlfualmuwom-uhfffaoysa-" "3-methoxypropionic acid ethyl ester" "propanoic acid,3-methoxy-, ethyl ester" "3-methoxypropanoic acid ethyl ester" "propanoic acid, 3-methoxy-, ethyl ester (9ci)" "propionicacid, 3-methoxy-, ethyl ester (6ci,7ci,8ci); ethyl 3-methoxypropanoate; ethyl3-methoxypropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -616670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-415730.0
-    phase     gas;
 }

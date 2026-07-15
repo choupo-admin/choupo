@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "decyl 2-chloranylpropanoate" "2- chloropropionic acid, decyl ester" "propanoic acid, 2-chloro-, decyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -649950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     737.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-266160.0
-    phase     gas;
 }

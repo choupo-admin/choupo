@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylpropane-1,2,3-tricarboxylic acid" "citro" "citrate" "aciletten" "citretten" "citric acid, anhydrous" "anhydrous citric acid" "chemfill" "2-hydroxypropane-1,2,3-tricarboxylic acid" "hydrocerol a" "2-hydroxytricarballylic acid" "1,2,3-propanetricarboxylic acid, 2-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1378960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     561.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1166070.0
-    phase     gas;
 }

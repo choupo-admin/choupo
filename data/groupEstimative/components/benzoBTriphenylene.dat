@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 14; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzotriphenylene" "dibenzo[a,c]anthracene" "dibenz[a,c]anthracene" "1,2:3,4-dibenzanthracene" "benzo[f]tetraphene" "benzo(b)triphenylene" "dibenz(a,c)anthracene" "dibenzo(a,c)anthracene" "2,3-benzotriphenylene" "1,2,3,4-dibenzanthracene" "1,2:3,4-dibenzoanthracene" "2,3-benztriphenylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   468990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=644480.0
-    phase     gas;
 }

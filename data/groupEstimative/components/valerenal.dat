@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-3-[(4s,7r,7ar)-3,7-dimethyl-2,4,5,6,7,7a-hexahydro-1h-inden-4-yl]-2-methyl-prop-2-enal" "2-propenal, 3-(2,4,5,6,7,7a-hexahydro-3,7-dimethyl-1h-inden-4-yl)-2-methyl-, (4s-(4alpha(e),7beta,7aalpha))-" "ambap4176-16-3" "(e)-3-[(4s,7r,7ar)-3,7-dimethyl-2,4,5,6,7,7a-hexahydro-1h-inden-4-yl]-2-methylprop-2-enal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -189460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=135760.0
-    phase     gas;
 }

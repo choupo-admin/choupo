@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 27; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyldodecan-1-amine;octadecanoic acid" "octadecanoic acid, compd. with n,n-dimethyl-1-dodecanamine(1:1)" "octadecanoic acid compd. with n,n-dimethyl-1-dodecanamine (1:1)" "lauryldimethylamine stearate" "stearic acid, compound with n,n-dimethyldodecylamine (1:1)" "n,n-dimethyldodecan-1-amine; octadecanoic acid" "octadecanoic acid - n,n-dimethyldodecan-1-amine (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1098170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1579.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-119330.0
-    phase     gas;
 }

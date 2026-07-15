@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 9; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl-[phenyl-bis(trimethylsilyl)methyl]silane" "silane,(phenylmethylidene)tris[trimethyl-" "silane, (phenylmethylidene)tris(trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -480650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1013.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-115190.0
-    phase     gas;
 }

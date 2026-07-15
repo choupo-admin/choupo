@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group OH_phenol; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-5-(4-methoxyphenyl)phenol" "3-hydroxy-4'-methoxy-4-aminodiphenyl" "4-amino-4'-methoxy-3-biphenylol" "2-amino-5-(4-methoxyphenyl)phenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -137270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     526.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70970.0
-    phase     gas;
 }

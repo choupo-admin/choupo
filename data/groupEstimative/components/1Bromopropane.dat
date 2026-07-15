@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanylpropane" "n-propyl bromide" "propyl bromide" "propane, 1-bromo-" "propane, bromo-" "bromopropane" "1-bromo-propane" "3br" "bromomethylethane" "1-propyl bromide" "1-propyl bromide;ascusol mc;drysolv;leksol;propyl bromide;n-propyl bromide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -78920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     323.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11300.0
-    phase     gas;
 }

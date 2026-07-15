@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 7; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphthalen-2-amine" "2-naphthalenamine" "2-aminonaphthalene" "beta-naphthylamine" "6-naphthylamine" "beta-naftilamina" "2-naphthalamine" "2-naphthylamin" "2-naphtylamine" "beta-naphthylamin" "naphthalen-2-ylamine" "fast scarlet base b" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   200190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     375.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=309200.0
-    phase     gas;
 }

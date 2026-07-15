@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 4; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-fluoranyl-4-(trifluoromethyl)phenol" "2-fluoro-4-trifluoromethyl-phenol" "phenol,2-fluoro-4-(trifluoromethyl)-" "2-fluoro-4-(trifluoromethyl)phenol;3-fluoro-4-hydroxybenzotrifluoride;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -933250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     430.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-820180.0
-    phase     gas;
 }

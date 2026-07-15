@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group tC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-1-phenyl-pent-1-yn-3-ol" "1-pentyn-3-ol, 3-methyl-1-phenyl-" "3-methyl-1-phenylpent-1-yn-3-ol" "agn-pc-04stsq" "1-phenyl-3-methyl-1-pentyn-3-ol" "1-pentyn-3-ol,3-methyl-1-phenyl-" "1-pentyn-3-ol, 3-methyl-1-phenyl-, (+)-" "timtec-bb sbb008968;timtec-bb sbb008969;1-phenyl-4-methyl-1-pentyn-3-ol;1-phenyl-3-methyl-1-pentyn-3-ol;4-methyl-1-phenyl-pent-1-yn-3-ol;4-methyl-1-phenyl-1-pentyn-3-ol;3-methyl-1-phenyl-1-pentyn-3-ol;3-methyl-1-phenylpent-1-yn-3-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   56840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     500.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=231390.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyladamantan-1-amine" "1-adamantanamine, n,n-dimethyl-" "(dimethylamino)adamantane" "n,n-dimethyl-1-adamantanamine" "n,n-dimethyltricyclo(3.3.1.1(sup 3,7))decan-1-amine" "n,n-dimethyladamantyl-amine" "n,n-dimethyl-1-adamantylamine" "(3s,5s,7s)-n,n-dimethyladamantan-1-amine" "tricyclo[3.3.1.1]decan-1-amine, n,n-dimethyl-" "n,n-dimethyltricyclo[3.3.1.1~3,7~]decan-1-amine" "tricyclo(3.3.1.1(sup 3,7))decan-1-amine, n,n-dimethyl-" "tricyclo(3.3.1.1(sup 3,7))decan-1-amine, n,n-dimethyl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -16340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     415.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=317890.0
-    phase     gas;
 }

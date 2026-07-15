@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group Br; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-bromophenyl)-2-phenyl-ethanone" "1-(4-bromophenyl)-2-phenylethanone" "4-bromodesoxybenzoin" "4'-bromo-2-phenylacetophenone" "1-(4-bromophenyl)-2-phenylethan-1-one" "benzyl 4-brornophenyl ketone" "ethanone,1-(4-bromophenyl)-2-phenyl-" "u330" "brd-k64462698-001-01-5" "acetophenone,4'-bromo-2-phenyl- (7ci,8ci); 1-(4-bromophenyl)-2-phenylethanone;4-bromodeoxybenzoin; 4-bromodesoxybenzoin; 4-bromophenyl benzyl ketone;4'-bromo-2-phenylacetophenone; benzyl 4-bromophenyl ketone; p-bromophenylbenzyl ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   43050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     560.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=167590.0
-    phase     gas;
 }

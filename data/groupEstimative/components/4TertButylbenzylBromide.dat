@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(bromomethyl)-4-tert-butyl-benzene" "p-tert-butylbenzyl bromide" "1-(bromomethyl)-4-tert-butylbenzene" "4-tert-butylbenzylbromide" "4-(tert-butyl)benzylbromide" "1-(bromomethyl)-4-(tert-butyl)benzene" "1-(bromomethyl)-4-(1,1-dimethylethyl)benzene" "1-(tert-butyl)-4-(bromomethyl)benzene" "qznqsihcdagzia-uhfffaoysa-" "1-bromomethyl-4-tert-butylbenzene" "alpha-bromo-4-(tert-butyl)toluene" "q495" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -27730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=161680.0
-    phase     gas;
 }

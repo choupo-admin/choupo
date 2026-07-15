@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-fluoranylphenol" "o-fluorophenol" "phenol, 2-fluoro-" "phenol, o-fluoro-" "1-fluoro-2-hydroxybenzene" "2-fluorohydroxybenzene" "2-fluoro-phenol" "phenol, fluoro-" "fp2" "phenol, o-fluoro-;phenol, 2-fluoro-;o-fluorophenol;1-fluoro-2-hydroxybenzene;2-fluoro phenol;o-fluoro phenol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -304060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     341.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-237380.0
-    phase     gas;
 }

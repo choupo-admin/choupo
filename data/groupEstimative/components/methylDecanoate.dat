@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl caprate" "decanoic acid, methyl ester" "capric acid methyl ester" "methyl caprinate" "methyl-n-caprate" "decanoic acid methyl ester" "uniphat a30" "methyl n-caprate" "methyl n-decanoate" "methyl decanoate (natural)" "formyl decanoate" "decanoic acid,methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -587650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     635.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-268630.0
-    phase     gas;
 }

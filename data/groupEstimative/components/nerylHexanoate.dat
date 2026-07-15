@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 7; } { group dCH; count 2; } { group dC; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7-dimethylocta-2,6-dienyl hexanoate" "hexanoic acid, (2e)-3,7-dimethyl-2,6-octadien-1-yl ester" "hexanoic acid, (2z)-3,7-dimethyl-2,6-octadien-1-yl ester" "hexanoic acid,(2e)-3,7-dimethyl-2,6-octadien-1-yl ester" "hexanoicacid, (2e)-3,7-dimethyl-2,6-octadienyl ester (9ci); hexanoic acid,3,7-dimethyl-2,6-octadienyl ester, (e)- (8ci); 2,6-octadien-1-ol,3,7-dimethyl-, hexanoate, (e)- (8ci); geraniol caproate; geraniol hexanoate;geranyl caproate; geranyl hexanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -475990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     809.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-83190.0
-    phase     gas;
 }

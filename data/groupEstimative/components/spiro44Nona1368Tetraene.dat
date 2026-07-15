@@ -33,9 +33,8 @@ groups
     joback ( { group C_ring; count 1; } { group dCH_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "spiro(4.4)nona-1,3,6,8-tetraene" "spiro[4.4]nonatetraene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   164730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     348.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=232160.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 2; } { group O_ring; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5-dimethyl-1,4,7-trioxacycloundec-9-ene-8,11-dione" "2-butenedioic acid(2z)-, 1,1'-[oxybis(methyl-2,1-ethanediyl)] ester" "2-butenedioicacid (2z)-, oxybis(methyl-2,1-ethanediyl) ester (9ci); 2-butenedioic acid (z)-,oxybis(methyl-2,1-ethanediyl) ester; ateval vnr 1; dipropylene glycol dimaleate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -930690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-638940.0
-    phase     gas;
 }

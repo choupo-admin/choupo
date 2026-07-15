@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group C_ring; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-oxidanylcyclopropane-1-carboxylic acid" "1-hydroxycyclopropanecarboxylic acid" "1-hydroxy-cyclopropanecarboxylic acid" "1-hydroxycyclopropane-1-carboxylic acid" "1-hydroxy-1-cyclopropanecarboxylicacid" "1-carboxy-1-hydroxycyclopropane" "bh780" "cyclopropanecarboxylicacid, 1-hydroxy-" "1-hydroxy-cyclopropane-1-carboxylic acid" "1-hydroxy-1-cyclopropanecarboxylicacid;1-hydroxycyclopropanecarboxylic acid;1-hydroxy-1-cyclopropanecarboxylic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -540350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     395.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-442670.0
-    phase     gas;
 }

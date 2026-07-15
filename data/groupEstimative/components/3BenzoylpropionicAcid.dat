@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-oxidanylidene-4-phenyl-butanoic acid" "4-oxo-4-phenylbutanoic acid" "4-oxo-4-phenylbutyric acid" "3-benzoylpropanoic acid" "beta-benzoylpropionic acid" "benzoylpropionic acid" "benzenebutanoic acid, .gamma.-oxo-" "propanoic acid, 3-benzoyl-" "propionic acid, 3-benzoyl-" ".beta.-benzoylpropionic acid" "4-phenyl-4-oxobutyric acid" "agn-pc-00f3pq" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -476050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     518.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-327100.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphthalene, 2-nonyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -19360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     674.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=318530.0
-    phase     gas;
 }

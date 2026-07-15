@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 7; } { group CH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-propan-2-yloxyoctane" "1-isopropoxyoctane" "1-isopropoxy-octane" "agn-pc-00poig" "octane, 1-(1-methylethoxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -407870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     586.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-65700.0
-    phase     gas;
 }

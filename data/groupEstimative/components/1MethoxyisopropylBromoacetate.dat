@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group Br; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxypropan-2-yl 2-bromanylethanoate" "1-methoxy-1-methylethyl bromoacetate" "2-methoxypropan-2-yl 2-bromoacetate" "acetic acid, 2-bromo-,1-methoxy-1-methylethyl ester" "aceticacid, bromo-, 1-methoxy-1-methylethyl ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -599090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     464.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-398570.0
-    phase     gas;
 }

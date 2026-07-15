@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 39; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-di(tetradecyl)tetradecan-1-amine" "1-tetradecanamine,n,n-ditetradecyl-" "tritetradecylamine(8ci); ttda; trimyristylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -842680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1808.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=413540.0
-    phase     gas;
 }

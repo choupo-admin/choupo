@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group C; count 1; } { group Cl; count 3; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(chloranyl)-n,n-dimethyl-ethanamide" "acetamide, 2,2,2-trichloro-n,n-dimethyl-" "2,2,2-trichloro-nn-dimethylacetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -226910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     415.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-68290.0
-    phase     gas;
 }

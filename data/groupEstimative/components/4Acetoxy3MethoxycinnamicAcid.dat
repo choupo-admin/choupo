@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(4-acetyloxy-3-methoxy-phenyl)prop-2-enoic acid" "3-(4-acetyloxy-3-methoxyphenyl)prop-2-enoic acid" "2-propenoicacid, 3-[4-(acetyloxy)-3-methoxyphenyl]-" "(2e)-3-[4-(acetyloxy)-3-methoxyphenyl]acrylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -759970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     613.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-535750.0
-    phase     gas;
 }

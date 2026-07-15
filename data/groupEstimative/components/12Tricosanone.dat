@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 20; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tricosan-12-one" "diundecyl ketone" "laurone" "undecyl ketone" "di-n-undecyl ketone" "lauron" "lauron (van)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -630630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1078.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13860.0
-    phase     gas;
 }

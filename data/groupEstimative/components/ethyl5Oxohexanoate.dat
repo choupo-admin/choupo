@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 5-oxidanylidenehexanoate" "ethyl 4-acetylbutyrate" "hexanoic acid, 5-oxo-, ethyl ester" "5-oxohexanoic acid ethyl ester" "ethyl 4-acetylbutanoate" "ethyl 4-acetyl-butyrate" "5-oxo-hexanoic acid ethyl ester" "mgpsidgtlfkdey-uhfffaoysa-" "hexanoic acid, 5-oxo-,ethyl ester" "5-oxohexanoicacid ethyl ester; ethyl 5-oxocaproate; ethyl 5-oxohexanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -638310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     545.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-422810.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenoxypropanoic acid" "propanoic acid, 3-phenoxy-" "phenoxypropionic acid" "beta-phenoxypropionic acid" "b-phenoxypropionate" "3-phenoxypropionate" "3-phenoxy-propanoate" "beta-phenoxypropionate" "b-phenoxypropionic acid" "a-phenoxypropionic acid" "3-phenoxy-propanoic acid" "propionicacid, 3-phenoxy- (6ci,7ci,8ci); 3-phenoxypropanoic acid; 3-phenoxypropionicacid; phenoxy-b-propionicacid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -475050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     464.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-311600.0
-    phase     gas;
 }

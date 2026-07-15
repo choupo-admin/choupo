@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-6-fluoranyl-benzoic acid" "6-fluoroanthranilic acid" "anthralic acid, 6-fluoro-" "2,amino-6-fluorobenzoic acid" "6-amino-2-fluorobenzoic acid" "2-carboxy-3-fluoroaniline" "2-amino-6-fluoro benzoic acid" "benzoicacid, 2-amino-6-fluoro-" "buttpark 44\01-59" "benzoic acid, 2-amino-6-fluoro-" "wt112" "2-amino-6-fluorobenzoic acid 97%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -486810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     446.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-371060.0
-    phase     gas;
 }

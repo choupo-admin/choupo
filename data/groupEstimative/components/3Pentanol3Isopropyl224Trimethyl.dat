@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group CH; count 2; } { group C; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,4-trimethyl-3-propan-2-yl-pentan-3-ol" "2,2,4-trimethyl-3-propan-2-ylpentan-3-ol" "3-pentanol,2,4-trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -450660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     538.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-94280.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 2; } { group tC; count 4; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,8-dimethyldeca-4,6-diyne-3,8-diol" "4,6-decadiyne-3,8-diol, 3,8-dimethyl-" "4,6-decadiyne-3,8-diol,3,8-dimethyl-" "3,8-dimethyl-4,6-decadiyn-3,8-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -68370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     590.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=187800.0
-    phase     gas;
 }

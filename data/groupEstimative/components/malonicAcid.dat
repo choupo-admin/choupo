@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propanedioic acid" "dicarboxymethane" "carboxyacetic acid" "methanedicarboxylic acid" "malonate" "dicarboxylate" "dicarboxylic acid" "malons" "1,3-propanedioic acid" "propanediolic acid" "kyselina malonova" "metahnedicarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -805790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     379.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-713440.0
-    phase     gas;
 }

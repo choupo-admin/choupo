@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group Br; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-[(2-bromophenyl)methyl]-2-chloranyl-n-ethyl-ethanamine" "az-dsp 4" "n-(2-chloroethyl)-n-ethyl-2-bromobenzylamine" "n-(2-bromobenzyl)-2-chloro-n-ethylethanamine" "2-bromo-n-(2-chloroethyl)-n-ethylbenzenemethanamine" "benzenemethanamine, 2-bromo-n-(2-chloroethyl)-n-ethyl-" "40616-75-9 (hydrochloride)" "n-(2-chloroethyl)-n-ethyl-2-bromo benzylamine" "n-[(2-bromophenyl)methyl]-2-chloro-n-ethylethanamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   32810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     572.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=257690.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phenethyl alcohol" "benzeneethanol" "benzyl carbinol" "phenylethyl alcohol" "phenethanol" "2-phenyl-ethanol" "phenylethanol" "2-phenylethyl alcohol" "beta-phenylethanol" "benzylmethanol" "methanol, benzyl-" "2-phenethyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -124150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-7930.0
-    phase     gas;
 }

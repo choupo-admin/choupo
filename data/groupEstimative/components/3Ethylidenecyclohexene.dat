@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3e)-3-ethylidenecyclohexene" "e,z-3-ethylidenecyclohexene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   20.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=124060.0
-    phase     gas;
 }

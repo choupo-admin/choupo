@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 8; } { group N; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,6,8-tetraazatricyclo[4.4.1.13,8]dodecane" "1,3,6,8-tetraazatricyclo(4.4.1.1(sup 3,8))dodecane" "1,3,6,8-tetraazatricyclo(4.4.1.13,8)dodecane" "1,4,6,9-tetrazatricyclo(4.4.1.1.4,9)dodecane" "1,4,6,9-tetraaza-tricyclo-(4.4.1.1(sup 9,4))dodecan [german]" "1,3,6,8-tetraazatricyclo[4.4.1.1(3,8)]dodecane" "dezant" "1,6,8-tetraazatricyclo[4.4.1.13,8]dodecane" "1,6,9-tetrazatricyclo[4.4.1.1.4,9]dodecane" "1,4,6,9-tetraazatricyclo-(4.4.1.19,4)dodecan" "1,6,8-tetraazatricyclo(4.4.1.1(3,8))dodecane" "1,3,6,8-tetraazatricyclo[4.4.1.1<3,8>]dodecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   347250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     368.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=677080.0
-    phase     gas;
 }

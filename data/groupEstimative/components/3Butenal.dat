@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "but-3-enal" "vinylacetaldehyde" "3-butenal(6ci,7ci,8ci,9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -86040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     325.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-28880.0
-    phase     gas;
 }

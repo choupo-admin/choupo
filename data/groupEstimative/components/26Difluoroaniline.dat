@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-bis(fluoranyl)aniline" "benzenamine, 2,6-difluoro-" "2,6-difluoro-phenylamine" "2,6-difluoranilin" "2,6-difluorobenzenamine" "2,6-difluorophenylamine" "2-amino-1,3-difluorobenzene" "wt014" "5509-65-9 2,6-difluoroaniline" "d155" "benzenamine, 2,6-difluoro-;2,6-difluorobenzenamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -312010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     385.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-230380.0
-    phase     gas;
 }

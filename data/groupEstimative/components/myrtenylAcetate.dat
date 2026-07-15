@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(6,6-dimethyl-4-bicyclo[3.1.1]hept-3-enyl)methyl ethanoate" "(-)-myrtenyl acetate" "2-pinen-10-yl acetate" "2-pinen-10-ol, acetate" "2-pinen-10-ol, acetate (6ci,7ci,8ci)" "(1r)-6,6-dimethylbicyclo[3.1.1]hept-2-ene-2-methyl acetate" "(1s)-6,6-dimethylbicyclo(3.1.1)hept-2-ene-2-methanol acetate" "(1s)-(6,6-dimethylbicyclo(3.1.1)hept-2-en-2-yl)methyl acetate" "bicyclo(3.1.1)hept-2-ene-2-methanol, 6,6-dimethyl-, acetate, (1s,5r)-" "(1r)-(6,6-dimethylbicyclo(3.1.1)hept-2-en-2-yl)methyl acetate" "bicyclo[3.1.1]hept-2-ene-2-methanol, 6,6-dimethyl-, acetate, (1s)-" "bicyclo[3.1.1]hept-2-ene-2-methanol, 6,6-dimethyl-, acetate, (1s,5r)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -427640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     497.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-143680.0
-    phase     gas;
 }

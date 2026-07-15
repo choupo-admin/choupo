@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-fluoranyl-5-methyl-phenol" "6-fluoro-m-cresol" "4-fluoro-3-hydroxytoluene" "phenol, 2-fluoro-5-methyl-" "2-fluoro-5-methyl-phenol" "2-fluoro-5-methylphenol 98%" "3-hydroxy-4-fluorotoluene" "buttpark 13\03-06" "63762-79-8 2-fluoro-5-methylphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -336170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     374.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-238590.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2,3-dihydro-1,4-benzodioxin-6-yl)ethanone" "6-acetyl-1,4-benzodioxane" "1,4-benzodioxan-6-yl methyl ketone" "1-(2,3-dihydrobenzo[b][1,4]dioxin-6-yl)ethanone" "6-acetyl-2h,3h-benzo[e]1,4-dioxin" "3',4'-ethylenedioxyacetophenone" "sdccgmls-0065885.p001" "q701" "1-(2,3-dihydro-1,4-benzodioxin-6-yl)ethan-1-one" "ethanone, 1-(2,3-dihydro-1,4-benzodioxin-6-yl)-" "ethanone,1-(2,3-dihydro-1,4-benzodioxin-6-yl)-" "3',4'-ethylenedioxyacetophenone;1-(2,3-dihydro-1,4-benzodioxin-6-yl)ethan-1-one;1-(2,3-dihydro-1,4-benzodioxin-6-yl)ethanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -325740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     322.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-118330.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 3; } { group F; count 7; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[1,1,1,2,3,3,3-heptakis(fluoranyl)propan-2-yloxy]propyl-trimethoxy-silane" "3-(1,1,1,2,3,3,3-heptafluoropropan-2-yloxy)propyl-trimethoxysilane" "3-heptafluoroisopropoxypropyltrimethoxysilane" "trimethoxy[3-[tetrafluoro-1-(trifluoromethyl)ethoxy]propyl]silane" "silane,trimethoxy[3-[tetrafluoro-1-(trifluoromethyl)ethoxy]propyl]- (8ci);" "trimethoxy[3-[1,2,2,2-tetrafluoro-1-(trifluoromethyl)ethoxy]propyl]silane" "silane,trimethoxy[3-[1,2,2,2-tetrafluoro-1-(trifluoromethyl)ethoxy]propyl]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2268610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     783.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1855010.0
-    phase     gas;
 }

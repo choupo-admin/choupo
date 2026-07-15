@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group CH2_ring; count 4; } { group O_ring; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-morpholin-4-ylnonan-1-one" "4-nonanoylmorpholine" "pelargonic morpholide" "n-morpholino nonanamide" "n-pelargonyl morpholide" "4-morpholinenonylic acid" "morpholine, 4-nonanoyl-" "pelargonic acid morpholide" "4-(1-oxononyl)morpholine" "morpholine, 4-(1-oxononyl)-" "1-nonanone, 1-(4-morpholino)-" "4-morpholinenonylic acie" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -407880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     645.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1420.0
-    phase     gas;
 }

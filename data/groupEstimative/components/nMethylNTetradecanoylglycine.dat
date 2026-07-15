@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 13; } { group CdO; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[methyl(tetradecanoyl)amino]ethanoic acid" "glycine, n-methyl-n-(1-oxotetradecyl)-" "myristoyl sarcosine" "myristoyl n-methylglycine" "n-myristoylsarcosine acid" "n-(1-oxotetradecyl)sarcosine" "n-methyl-n-(1-oxotetradecyl)glycine" "glycine,n-methyl-n-(1-oxotetradecyl)-" "2-[methyl(tetradecanoyl)amino]acetic acid" "sarcosine,n-myristoyl- (6ci,7ci); crodasinic m; hamposyl m; myristoyl sarcosinate;myristoyl sarcosine; n-myristoylsarcosine; n-tetradecanoylsarcosine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -789530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     914.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-269790.0
-    phase     gas;
 }

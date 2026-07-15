@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 10; } { group CH_ring; count 8; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group O_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "spirosol-5-en-3-ol" "solasod-5-en-3.beta.-ol" "purapuridine" "solancarpidine" "solasodin" "solanidine-s" "spirosol-5-en-3-ol,22.alpha.,25r)-" "solasod-5-en-3beta-ol" "solassodine" "spirosol-5-en-3-ol, (3.beta.,22.alpha.,25r)-" "agn-pc-00apkt" "solasod-5-en-3 beta-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -463020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     752.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=286340.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methoxybenzene-1,2-diol" "1,2-benzenediol, 3-methoxy-" "pyrocatechol, 3-methoxy-" "1,2-dihydroxy-3-methoxybenzene" "3-methoxypyrocatechol" "2,3-dihydroxyanisole" "pyrogallol 1-methyl ether" "3-methoxy-1,2-benzenediol" "pyrogallol 1-monomethyl ether" "6-methoxycatechol" "3-(methyloxy)benzene-1,2-diol" "benzenediol, methoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -438120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     386.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-293770.0
-    phase     gas;
 }

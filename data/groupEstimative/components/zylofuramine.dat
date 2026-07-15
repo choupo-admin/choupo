@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r)-n-ethyl-1-[(2r)-oxolan-2-yl]-2-phenyl-ethanamine" "zylofuraminum [inn-latin]" "d-threo-alpha-benzyl-n-ethyltetrahydrofurfurylamine" "zilofuramina" "zylofuraminum" "zylofuramine [inn]" "(1r)-n-ethyl-1-[(2r)-oxolan-2-yl]-2-phenylethanamine" "furfurylamine, alpha-benzyl-n-ethyl-tetrahydro-, d-threo-" "2-furanmethanamine, n-ethyltetrahydro-alpha-(phenylmethyl)-, (r-(r*,r*))-" "2-furanmethanamine, n-ethyltetrahydro-alpha-(phenylmethyl)-, (r-(r*,r*))- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -119090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     524.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=216790.0
-    phase     gas;
 }

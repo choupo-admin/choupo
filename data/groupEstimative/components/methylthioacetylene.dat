@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group tCH; count 1; } { group tC; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methylsulfanylethyne" "ch3sc.equiv.ch" "(methylsulfanyl)ethyne" "ethyne, (methylthio)-" "agn-pc-0d9h0v" "ethyne, (methylthio)-(9ci)" "sulfide,ethynyl methyl (6ci,7ci,8ci); (methylthio)ethyne; 1-(methylthio)ethyne; ethynylmethyl sulfide; methyl ethynyl sulfide; methylthioacetylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   228520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     303.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=230570.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r,2s)-2-azanyl-1-phenyl-propan-1-ol" "mydriatin" "l-norephedrine" "(1r,2s)-(-)-norephedrine" "(-)-norephedrin" "l-phenylpropanolamine" "(1r,2s)-norephedrine" "usaf cs-6" "(r,s)-(-)-norephedrine" "l-(-)-ephedrine" "erythro-(1r,2s)-norephedrine" "(1r,2s)-2-amino-1-phenyl-1-propanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -121560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62060.0
-    phase     gas;
 }

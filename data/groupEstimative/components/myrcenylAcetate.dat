@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-methyl-6-methylidene-oct-7-en-2-yl) ethanoate" "acetic acid, myrcenyl ester" "7-octen-2-ol, 2-methyl-6-methylene-, acetate" "2-methyl-6-methylideneoct-7-en-2-yl acetate" "2-methyl-6-methylene-7-octen-2-yl acetate" "3-methylene-7-methyl-1-octen-7-yl acetate" "7-octen-2-ol, 2-methyl-6-methylene-, 2-acetate" "acetic acid, 2-methyl-6-methylene-7-octen-2-yl ester" "neobergamate" "pseudolinalyl acetate" "terpenes and terpenoids, turpentine-oil, myrcene fraction, hydroxy, acetates" "2-acetoxy-2-methyl-6-methylene-7-octene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -375970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     622.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-90240.0
-    phase     gas;
 }

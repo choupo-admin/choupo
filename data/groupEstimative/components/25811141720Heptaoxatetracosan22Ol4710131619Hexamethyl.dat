@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 8; } { group CH2; count 8; } { group CH; count 7; } { group OH; count 1; } { group O; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[1-[1-[1-[1-[1-(1-methoxypropan-2-yloxy)propan-2-yloxy]propan-2-yloxy]propan-2-yloxy]propan-2-yloxy]propan-2-yloxy]butan-2-ol" "5,8,11,14,17,20,23-heptaoxatetracosan-3-ol, 6,9,12,15,18,21-hexamethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1632780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1115.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-746120.0
-    phase     gas;
 }

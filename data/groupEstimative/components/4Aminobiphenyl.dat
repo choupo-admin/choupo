@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 9; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-phenylaniline" "4-biphenylamine" "4-aminodiphenyl" "biphenyl-4-ylamine" "xenylamine" "biphenyl-4-amine" "4-biphenylylamine" "[1,1'-biphenyl]-4-amine" "p-aminodiphenyl" "p-biphenylamine" "p-phenylaniline" "p-xenylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   204370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     456.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=331800.0
-    phase     gas;
 }

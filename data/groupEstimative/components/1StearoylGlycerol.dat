@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group CH; count 1; } { group OH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(2s)-2,3-bis(oxidanyl)propyl] octadecanoate" "(s)-1-monostearin" "1-stearoyl-sn-glycerol" "l-(+)-1-monostearin" "1-octadecanoyl-sn-glycerol" "1-o-octadecanoyl-2n-glycerol" "sn-1-octadecanoyl-monoglyceride" "(s)-(+)-1-o-stearoylglycerol" "(2s)-2,3-dihydroxypropyl octadecanoate" "mag(18:0/0:0)" "mg(18:0/0:0)" "octadecanoic acid (2s)-2,3-dihydroxypropyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1103790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1117.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-460510.0
-    phase     gas;
 }

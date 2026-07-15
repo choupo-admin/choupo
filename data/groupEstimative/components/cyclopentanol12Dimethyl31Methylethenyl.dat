@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-dimethyl-3-prop-1-en-2-yl-cyclopentan-1-ol" "agn-pc-00pufs" "3-isopropenyl-1,2-dimethylcyclopentan-1-ol" "1,2-dimethyl-3-isopropylcyclopentanol" "1,2-dimethyl-3-(1-methylethenyl)cyclopentanol" "1,2-dimethyl-3-prop-1-en-2-ylcyclopentan-1-ol" "cyclopentanol, 3-isopropenyl-1,2-dimethyl-, (1r,2r,3r)-(+)-" "cyclopentanol, 3-isopropenyl-1,2-dimethyl-, (1r,2r,3s)-(-)-" "cyclopentanol, 3-isopropenyl-1,2-dimethyl-, (1r,2s,3r)-(-)-" "cyclopentanol, 3-isopropenyl-1,2-dimethyl-, (1r,2s,3s)-(-)-" "cyclopentanol,1,2-dimethyl-3-(1-methylethenyl)-, (1r,2r,3s)-" "1,2-dimethyl-3-(1-methylethenyl)cyclopentanol (1r-(1alpha,2alpha,3beta))-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -251280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-8570.0
-    phase     gas;
 }

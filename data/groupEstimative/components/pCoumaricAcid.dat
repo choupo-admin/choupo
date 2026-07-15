@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-3-(4-hydroxyphenyl)prop-2-enoic acid" "p-hydroxycinnamic acid" "4-coumaric acid" "4-hydroxycinnamic acid" "trans-p-coumaric acid" "para-coumaric acid" "p-cumaric acid" "hydroxycinnamic acid" "3-(4-hydroxyphenyl)acrylic acid" "trans-4-hydroxycinnamic acid" "naringeninic acid" "4'-hydroxycinnamic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -402920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     473.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-281000.0
-    phase     gas;
 }

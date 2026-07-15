@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylethyl 2-oxidanylbenzoate" "2-phenylethyl 2-hydroxybenzoate" "2-phenylethyl salicylate" "phenylethyl salicyalte" "benzylcarbinyl salicylate" ".beta.-phenylethyl salicylate" "salicylic acid, phenethyl ester" "benzoic acid, 2-hydroxy-, 2-phenylethyl ester" "benzyl carbinyl salicylate" "beta-phenylethyl salicylate" "phenethyl 2-hydroxybenzoate" "benzylcarbinyl 2-hydroxybenzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -374460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     605.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-164750.0
-    phase     gas;
 }

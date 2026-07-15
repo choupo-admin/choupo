@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 16; } { group F; count 33; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16-tritriacontakis(fluoranyl)-16-iodanyl-hexadecane" "hexadecane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16-tritriacontafluoro-16-iodo-" "tritriacontafluoro-16-iodohexadecane" "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16-tritriacontafluoro-16-iodohexadecane" "hexadecane,1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16-tritriacontafluoro-16-iodo-" "hexadecane,tritriacontafluoro-1-iodo- (7ci,8ci); perfluorohexadecyl iodide;tritriacontafluoro-1-iodohexadecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -6908330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1258.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-6241330.0
-    phase     gas;
 }

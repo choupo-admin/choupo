@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7-methano-1h-indene-1-carboxylic acid, octahydro-, ethyl ester" "4,7-methanoindan-1-carboxylic acid, hexahydro-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -457370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     378.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-97060.0
-    phase     gas;
 }

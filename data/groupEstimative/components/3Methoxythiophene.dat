@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group O; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "thiophene, 3-methoxy-" "p-methoxythiophene" "3-methoxy-thiophene" "3-methoxythiofuran;methyl 3-thienyl ether;" "(1s,4s)-tert-butyl 2,5-diaza-bicyclo[2.2.1]heptane-2-carboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -48580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     323.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=20630.0
-    phase     gas;
 }

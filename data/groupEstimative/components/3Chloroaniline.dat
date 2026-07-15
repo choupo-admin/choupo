@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranylaniline" "m-chloroaniline" "benzenamine, 3-chloro-" "3-chlorobenzenamine" "m-chloraniline" "3-chlorophenylamine" "orange gc base" "m-chlorophenylamine" "m-aminochlorobenzene" "m-chloroaminobenzene" "aniline, m-chloro-" "fast orange gc base" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   75940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     362.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=156940.0
-    phase     gas;
 }

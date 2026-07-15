@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[(1r,3s,4s)-4-ethenyl-4-methyl-3-prop-1-en-2-yl-cyclohexyl]propan-2-ol" "2-[(1r,3s,4s)-4-ethenyl-4-methyl-3-(prop-1-en-2-yl)cyclohexyl]propan-2-ol" "(1s,2s,4r)-(-)-alpha,alpha-dimethyl-1-vinyl-o-menth-8-ene-4-methanol" "2-[(1r,3s,4s)-4-ethenyl-4-methyl-3-prop-1-en-2-ylcyclohexyl]propan-2-ol" "cyclohexanemethanol, 4-ethenyl-alpha,alpha,4-trimethyl-3-(1-methylethenyl)-, (1r,3s,4s)-" "cyclohexanemethanol, 4-ethenyl-alpha,alpha,4-trimethyl-3-(1-methylethenyl)-, (1r-(1alpha,3alpha,4beta))-" "cyclohexanemethanol, 4-ethenyl-alpha,alpha,4-trimethyl-3-(1-methylethenyl)-, (1theta-(1alpha,3alpha,4beta))-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -243960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     693.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=112110.0
-    phase     gas;
 }

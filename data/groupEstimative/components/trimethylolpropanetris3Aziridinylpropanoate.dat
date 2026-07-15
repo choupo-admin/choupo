@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group C; count 1; } { group CH2_ring; count 6; } { group COO; count 3; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-bis[3-(aziridin-1-yl)propanoyloxymethyl]butyl 3-(aziridin-1-yl)propanoate" "trimethylolpropane tris(3-aziridinylpropanoate)" "2,2-bis({[3-(aziridin-1-yl)propanoyl]oxy}methyl)butyl 3-(aziridin-1-yl)propanoate" "2-((3-aziridin-1-ylpropionyl)methyl)-2-ethylpropane-1,3-diyl bis(aziridine-1-propionate)" "2-(((3-(aziridin-1-yl)propanoyl)oxy)methyl)-2-ethylpropane-1,3-diyl bis(3-(aziridin-1-yl)propanoate)" "trimethylolpropane tris(3-(1-aziridinyl)propionate)" "trimethylolpropane tris[3-(1-aziridinyl)propionate]" "1-aziridinepropanoic acid, 1,1'-(2-((3-(1-aziridinyl)-1-oxopropoxy)methyl)-2-ethyl-1,3-propanediyl) ester" "1-aziridinepropanoic acid, 1,1'-[2-[[3-(1-aziridinyl)-1-oxopropoxy]methyl]-2-ethyl-1,3-propanediyl] ester" "trimethylolpropane tris(3-aziridinyl propanoate)" "trimethylolpropane-tris-(beta-n-aziridinyl)propionate" "trimethylolpropane, tris(beta-(n-aziridinyl)propionate)ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -936870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     933.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-228310.0
-    phase     gas;
 }

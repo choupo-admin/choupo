@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 3; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methyl-isoquinoline" "isoquinoline, 6-methyl-" "6-methylisoquinoline," );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   199190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     336.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=319800.0
-    phase     gas;
 }

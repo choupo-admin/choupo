@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 3; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n',n'-tri(propan-2-yl)ethane-1,2-diamine" "n,n,n'-triisopropyl-ethylenediamine" "1,2-ethanediamine, n,n,n'-tris(1-methylethyl)-" "1,2-ethanediamine, n1,n1,n2-tris(1-methylethyl)-" "ethylenediamine, n,n,n'-triisopropyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -165210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     612.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=234590.0
-    phase     gas;
 }

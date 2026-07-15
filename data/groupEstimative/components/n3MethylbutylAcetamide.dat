@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(3-methylbutyl)ethanamide" "acetamide, n-(3-methylbutyl)-" "n-(iso-pentyl)acetamide" "n-isopentylacetamide" "n-(3-methylbutyl)acetamide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -252200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     486.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-33910.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[(2-methoxy-5-phenyl-phenyl)methyl]pyrrolidine" "1-((4-methoxy(1,1'-biphenyl)-3-yl)methyl)pyrrolidine" "pyrrolidine, 1-((4-methoxy(1,1'-biphenyl)-3-yl)methyl)-" "1-[(2-methoxy-5-phenylphenyl)methyl]pyrrolidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   57560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     631.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=368380.0
-    phase     gas;
 }

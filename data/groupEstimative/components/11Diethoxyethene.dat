@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethene, 1,1-diethoxy-" "ketene, diethyl acetal" "ketene diethylacetal" "1,1-diethoxyethylene" "1-ethoxy-ethenoxy-ethane" "ketene,diethyl acetal (6ci,7ci,8ci); 1,1-diethoxyethene; 1,1-diethoxyethylene; diethylketene acetal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -315970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     403.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-131070.0
-    phase     gas;
 }

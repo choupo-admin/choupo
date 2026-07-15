@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "p-dioxanone" "dioxanone" "4-dioxanone" "p-dioxan-2-one" "2-p-dioxanone" "(2-hydroxyethoxy)acetic acic gamma-lactone" "acetic acid, (2-hydroxyethoxy)-, gamma-lactone (6ci,7ci)" "poly-p-dioxanone" "poly-4-dioxan-2-one" "1,4-dioxane-2-one" "1,4-dioxan-2-one (9ci)" "1,4-dioxan-2-one, homopolymer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -488190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     283.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-357330.0
-    phase     gas;
 }

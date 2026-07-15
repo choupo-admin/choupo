@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethynoxyethane" "ethoxyethyne" "ethyl ethynyl ether" "ethyne, ethoxy-" "ethoxy-ethyne" "ether, ethyl ethynyl" "ethyne, ethoxy- (9ci)" "1-ethoxyacetylene" "ethoxyacetylene solution" "ethoxyacetylene 927-80-0" "ethyl ethynyl ether (50% by wt.in hexane)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   33790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     292.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=100870.0
-    phase     gas;
 }

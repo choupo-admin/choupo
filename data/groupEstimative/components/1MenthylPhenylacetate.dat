@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(5-methyl-2-propan-2-yl-cyclohexyl) 2-phenylethanoate" "l-menthyl phenylacetate" "(-)-menthyl phenylacetate" "2-isopropyl-5-methylcyclohexyl phenylacetate" "phenylacetic acid,(-)-menthyl ester" "menthol phenylacetate, (1r,3r,4s)-(-)-" "(1r-(1alpha,2beta,5alpha))-p-menthyl phenylacetate" "benzeneacetic acid, (1r,2s,5r)-5-methyl-2-(1-methylethyl)cyclohexyl ester" "benzeneacetic acid, 5-methyl-2-(1-methylethyl)cyclohexyl ester, (1r-(1-alpha,2-beta,5-alpha))-" "benzeneacetic acid, 5-methyl-2-(1-methylethyl)cyclohexyl ester, (1theta-(1alpha,2beta,5alpha))-" "(5-methyl-2-propan-2-ylcyclohexyl) 2-phenylacetate" "phenylacetic acid, (-)-menthyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -487240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     677.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-90690.0
-    phase     gas;
 }

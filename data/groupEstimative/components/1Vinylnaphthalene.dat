@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethenylnaphthalene" "1-vinyl naphthalene" "poly(1-vinylnaphthalene)" "vinylnaphthalene" "a-vinylnaphthalene" "1-vinyl-naphthalene" "naphthalene, ethenyl-" "(naphthalen-1-yl)ethene" "naphthalene, 1-ethenyl-" "naphthalene,1-vinyl- (6ci,8ci);(naphthalen-1-yl)ethene;1-ethenylnaphthalene;1-vinylnaphthalene;a-vinylnaphthalene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   250550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     397.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=347430.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 2; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butane-1,2,3,4-tetracarboxylic acid" "ggauuqhscnmcau-uhfffaoysa-" "1,3,4-butanetetracarboxylic acid" "k844" "meso-1,2,3,4-butanetetracarboxylic acid" "1,2,3,4-butanetetracarboxylicacid (8ci)" "1,2,3,4-butanetetracarboxylic acid (8ci) (9ci)" "1,2,3,4-tetracarboxybutane;butanetetracarboxylic acid;butane-1,2,3,4-tetracarboxylic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1620090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     661.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1364040.0
-    phase     gas;
 }

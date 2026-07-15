@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 8; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dibenzo-18-crown-6-ether" "crown 18" "dibenzo-18-crown 6-ether" "6,7,9,10,17,18,20,21-octahydrodibenzo[b,k][1,4,7,10,13,16]hexaoxacyclooctadecine" "2,3,11,12-dibenzo-1,4,7,10,13,16-hexaoxacyclooctadeca-2,11-diene" "dibenzo[b,k][1,4,7,10,13,16]hexaoxacyclooctadecin, 6,7,9,10,17,18,20,21-octahydro-" "dibenzo(b,k)(1,4,7,10,13,16)hexaoxacyclooctadecane" "dibenzocrown" "2,3:11,12-dibenzo-1,4,7,10,13,16-hexaoxacyclooctadecane" "dibenzo(a,j)-1,4,7,10,13,16-hexaoxacyclooctadeca-2,11-diene" "6,7,9,10,17,18,20,21-octahydrodibenzo(b,k)(1,4,7,10,13,16)hexaoxacyclooctadecin" "6,7,9,10,17,18,20,21-octahydrodibenzo[b,k][1,4,7,10,13,16]hexaoxacyclooctadecene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -772630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     573.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-258280.0
-    phase     gas;
 }

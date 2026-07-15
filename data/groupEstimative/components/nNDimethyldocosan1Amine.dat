@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 21; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "behenyl dimethyl amine" "n,n-dimethyldocosylamine" "1-docosanamine,n,n-dimethyl-" "docosylamine,n,n-dimethyl- (7ci,8ci);armeen dm 22d;dm 22d;dimethylbehenylamine;farmin dm2285;farmin dm 2298;n,n-dimethyldocosylamine;n-docosyldimethylamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -471160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1106.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=261980.0
-    phase     gas;
 }

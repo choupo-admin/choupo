@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 10; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "20-ethenyl-2,5,8,11,14,17-hexaoxabicyclo[16.4.0]docosa-1(18),19,21-triene" "4'-vinylbenzo-18-crown-6" "4 inverted exclamation marka-vinylbenzo-18-crown-6" "18-ethenyl-2,3,5,6,8,9,11,12,14,15-decahydro-1,4,7,10,13,16-benzohexaoxacyclooctadecine" "18-vinyl-1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16-hexadecahydrobenzo[a][18]annul ene" "18-vinyl-2,3,5,6,8,9,11,12,14,15-decahydrobenzo[b][1,4,7,10,13,16]hexaoxacyclooctadecine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -854770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     637.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-323890.0
-    phase     gas;
 }

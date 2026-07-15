@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group tC; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-propyne, 1-[(2-methylpropyl)thio]-" "1-propyne, 1-((2-methylpropyl)thio)-" "2-methyl-1-prop-1-ynylsulfanylpropane" "1-propyne, 1-((2-methylpropyl)thio)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   121080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=241540.0
-    phase     gas;
 }

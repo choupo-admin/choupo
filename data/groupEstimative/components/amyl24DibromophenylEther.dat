@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-bis(bromanyl)-1-pentoxy-benzene" "2,4-dibromo-1-pentoxybenzene" "benzene, 2,4-dibromo-1-(pentyloxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -136340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     579.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58530.0
-    phase     gas;
 }

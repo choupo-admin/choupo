@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 4; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-bromanyl-3,3,4,4-tetrakis(fluoranyl)but-1-ene" "4-bromo-3,3,4,4-tetrafluoro-1-butene" "1-butene, 4-bromo-3,3,4,4-tetrafluoro-" "gvcwgfzdsiwlmo-uhfffaoysa-" "4-bromo-3,3,4,4-tetrafluorobutene" "4-bromo-3,3,4,4-tetrafluorobutene-1" "1-butene,4-bromo-3,3,4,4-tetrafluoro-" "4-bromo-3,3,4,4-tetrafluoro-1-butene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -776070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     407.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-688600.0
-    phase     gas;
 }

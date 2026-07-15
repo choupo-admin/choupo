@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 2; } { group dCH_ring; count 16; } { group dC_ring; count 8; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[1,2,2-tris(4-hydroxyphenyl)ethyl]phenol" "4,4',4'',4'''-(ethane-1,1,2,2-tetrayl)tetraphenol" "1,1,2,2-tetrakis(p-hydroxyphenyl)ethane" "4,4',4'',4'''-ethanediylidenetetraphenol" "phenol, 4,4',4'',4'''-(1,2-ethanediylidene)tetrakis-" "ethanediylidenetetrakisphenol" "1,1,2,2-tetrakis(4-hydroxyphenyl)ethane" "4,4'',4'''-(1,2-ethanediylidene)tetrakis(phenol)" "phenol,4',4'',4'''-(1,2-ethanediylidene)tetrakis-" "4,4',4'',4'''-(1,2-ethanediylidene)tetrakis-phenol" "4,4',4'',4'''-(1,2-ethanediylidene)tetrakis(phenol)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -353650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     829.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-5680.0
-    phase     gas;
 }

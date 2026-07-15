@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-4-fluoranyl-aniline" "benzenamine, 2-chloro-4-fluoro-" "2-chloro-4-fluorophenylamine" "2-chloro-4-fluoro-phenylamine" "2-chloro-4-fluoro-aniline" "wt083" "(2-chloro-4-fluoro-phenyl)-amine" "2106-2-7 2-chloro-4-fluoroaniline" "l233" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -131640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     387.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-47500.0
-    phase     gas;
 }

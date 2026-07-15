@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-ethyl-3-methyl-oct-5-en-1-ol" "5-octen-1-ol, 6-ethyl-3-methyl-" "3-methyl-6-ethyl-5-octen-1-ol" "6-ethyl-3-methyl-5-octen-1-ol" "5-octen-1-ol,6-ethyl-3-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -320450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     615.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-25850.0
-    phase     gas;
 }

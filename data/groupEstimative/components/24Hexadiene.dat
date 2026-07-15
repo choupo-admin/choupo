@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexa-2,4-diene" "2,4-hexadiene, (2e)-" "cis-2-trans-4-hexadiene" "2,4-hexadiene, (2e,4e)-" "agn-pc-03pmqo" "agn-pc-0cz8oc" "2,4-hexadiene, (2e,4z)-" "2,4-hexadiene, (2z,4z)-" "2,4-hexadiene,(z,z)- (8ci,9ci); (z,z)-2,4-hexadiene; cis,cis-2,4-hexadiene" "2,4-hexadiene,(e,e)- (8ci,9ci);(2e,4e)-2,4-hexadiene;(2e,4e)-hexadiene;(e,e)-2,4-hexadiene;trans,trans-1,4-dimethyl-1,3-butadiene;trans,trans-2,4-hexadiene;(2e,4e)-hexa-2,4-diene;2,4-hexadiene, (e,z)-;" "2,4-hexadiene,(e,z)- (8ci,9ci);(2e,4z)-2,4-hexadiene;(2e,4z)-hexadiene;(e,z)-2,4-hexadiene;2-cis-4-trans-hexadiene;cis,trans-2,4-hexadiene;cis-2-trans-4-hexadiene;trans,cis-2,4-hexadiene;trans-2-cis-4-hexadiene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   67270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     376.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=160080.0
-    phase     gas;
 }

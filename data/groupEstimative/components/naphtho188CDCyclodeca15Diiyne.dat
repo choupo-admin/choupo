@@ -33,9 +33,8 @@ groups
     joback ( { group tC; count 4; } { group CH2_ring; count 3; } { group dCH_ring; count 6; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphtho[1,8',8:c,d]cyclodeca-1,5-diiyne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   648190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     486.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=766120.0
-    phase     gas;
 }

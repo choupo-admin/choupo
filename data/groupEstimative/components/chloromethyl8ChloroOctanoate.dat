@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloromethyl 8-chloranyloctanoate" "chloromethyl 8-chlorooctanoate" "8-chlorooctanoic acid, chloromethyl ester" "octanoic acid, 8-chloro-, chloromethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -577850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     624.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-309330.0
-    phase     gas;
 }

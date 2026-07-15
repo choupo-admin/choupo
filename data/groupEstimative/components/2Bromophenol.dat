@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylphenol" "o-bromophenol" "phenol, 2-bromo-" "phenol, o-bromo-" "bromophenol" "2-bromfenol" "2-bromo phenol" "2-bromo-phenol" "phenol, bromo-" "bromophenol, 2-" "2-bromo-1-hydroxybenzene" "2br" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -81620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     360.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-28250.0
-    phase     gas;
 }

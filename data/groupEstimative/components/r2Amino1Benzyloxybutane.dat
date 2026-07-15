@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-1-phenylmethoxybutan-2-amine" "(2r)-1-(phenylmethoxy)but-2-ylamine" "2-butanamine,1-(phenylmethoxy)-, (2r)-" "(r)-1-(benzyloxy)butan-2-amine" "(2r)-1-(benzyl-oxy)butan-2-amine" "2-butanamine,1-(phenylmethoxy)-, (r)-;((r)-1-((phenylmethoxy)methyl)propyl)amine;(r)-o-benzyl-2-amino-1-butanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -137550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     531.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=113160.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butyl 2,3-bis(chloranyl)propanoate" "butyl 2,3-dichloropropanoate" "propanoic acid,2,3-dichloro-, butyl ester" "propanoic acid, 2,3-dichloro-, butyl ester" "2,3-dichloropropionicacid butyl ester; butyl 2,3-dichloropropionate; n-butyl 2,3-dichloropropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -541850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     537.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-328610.0
-    phase     gas;
 }

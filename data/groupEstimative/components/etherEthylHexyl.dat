@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethoxyhexane" "hexane, 1-ethoxy-" "alcohols, c6-10, ethoxylated" "1-ethoxy-hexane" "hexyl ethyl ether" "alcohols, c6-1o, ethoxylated" "(c6-c10) alkyl alcohol, ethoxylated" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -340670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     478.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-88520.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group dCH; count 1; } { group dC; count 1; } { group F; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,4,4-tris(fluoranyl)-3-methyl-but-2-enoic acid" "?trifluoromethylcrotonic acid" "3-(trifluoromethyl)crotonic acid 95%" "2-butenoic acid,4,4,4-trifluoro-3-methyl-" "crotonicacid, 4,4,4-trifluoro-3-methyl- (6ci); 4,4,4-trifluoro-3-methyl-2-butenoicacid; b-(trifluoromethyl)crotonic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -986450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-862610.0
-    phase     gas;
 }

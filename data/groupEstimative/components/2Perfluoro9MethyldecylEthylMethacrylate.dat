@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 11; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 23; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-icosakis(fluoranyl)-11-(trifluoromethyl)dodecyl] 2-methylprop-2-enoate" "(3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-eicosafluoro-11-trifluoromethyl)-dodecyl methacrylate;2-(perfluoro-9-methyldecyl)ethyl methacrylate;3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-icosafluoro-11-(trifluoromethyl)dodecyl methacrylate;eicosafluoro-11-(trifluoromethyl)dodecyl  methacrylate, 96%;2-(perfluoro-9-methyldecyl)ethyl methacrylate 97%;2-(perfluoro-9-methyldecyl)ethylmethacrylate97%" "[3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-icosafluoro-11-(trifluoromethyl)dodecyl] 2-methylprop-2-enoate" "2-methyl-2-propenoic acid [3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-eicosafluoro-11-(trifluoromethyl)dodecyl] ester" "2-propenoic acid,2-methyl-,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-eicosafluoro-11-(trifluoromethyl)dodecylester" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-icosafluoro-11-(trifluoromethyl)dodecyl 2-methylprop-2-enoate" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-icosafluoro-11-(trifluoromethyl)dodecyl methacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -5202630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1162.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4588210.0
-    phase     gas;
 }

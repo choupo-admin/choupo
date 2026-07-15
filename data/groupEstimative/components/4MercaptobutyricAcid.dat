@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group COOH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-sulfanylbutanoic acid" "gmba" "butanoic acid, 4-mercapto-" "gamma-mercaptobutyric acid" "butyric acid, 4-mercapto-" "4-mercaptobutanoic acid" "4-thiobutyric acid" "delta-mercaptobutyricacid" "butanoic acid,4-mercapto-" "13095-66-4 (parent)" "4-mercaptobutyric acid, technical grade" "butyricacid, 4-mercapto- (7ci,8ci); 4-mercaptobutanoic acid; 4-mercaptobutyric acid; g-mercaptobutyric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -437680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     427.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-331720.0
-    phase     gas;
 }

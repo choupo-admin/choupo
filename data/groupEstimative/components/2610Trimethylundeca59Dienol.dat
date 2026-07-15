@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 1; } { group dCH; count 2; } { group dC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6,10-trimethylundeca-5,9-dien-1-ol" "5,9-undecadien-1-ol, 2,6,10-trimethyl-" "2,6,10-trimethyl-5,9-undecadien-1-ol" "(e)-2,6,10-trimethylundeca-5,9-dienol" "5,9-undecadien-1-ol, 2,6,10-trimethyl-, (e)-" "apofarnesol,dihydro-; dihydroapofarnesol" "5,9-undecadien-1-ol,2,6,10-trimethyl-" "5,9-undecadien-1-ol,2,6,10-trimethyl-, (e)-; (e)-2,6,10-trimethyl-5,9-undecadien-1-ol.;(e)-dihydroapofarnesol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -274940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     721.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=71080.0
-    phase     gas;
 }

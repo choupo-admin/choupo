@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-(chloromethyl)oxolan-2-one" "agn-pc-00l1nk" "gamma-chloromethyl-gamma-butyrolactone" "5-(chloromethyl)-tetrahydro-furan-2-one" "5-(chloromethyl)dihydro-2(3h)-furanone" "2(3h)-furanone, 5-(chloromethyl)dihydro-" "5-(chloromethyl)-3,4,5-trihydrofuran-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -406750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     345.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-270330.0
-    phase     gas;
 }

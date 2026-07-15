@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(oxidanyl)propyl 4-azanylbenzoate" "glyceryl paba" "glycerol 1-(p-aminobenzoate)" "1,2,3-propanetriol, 1-(4-aminobenzoate)" "glyceryl p-aminobenzoate" "glyceryl paraaminobenzoate" "lisadimatum [inn-latin]" "glyceryl para-aminobenzoate" "monoglycerol p-aminobenzoate" "glycerol 1-(4-aminobenzoate)" "2,3-dihydroxypropyl 4-aminobenzoate" "(+-)-glycerol 1-(p-aminobenzoate)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -617900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     628.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383900.0
-    phase     gas;
 }

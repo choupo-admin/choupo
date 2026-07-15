@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hex-3-enyl 2-oxidanylbenzoate" "salicylic acid cis-3-hexen-1-yl ester" "cis-3-hexenyl salicylate" "(e)-3-hexenyl salicylate" "benzoic acid, 2-hydroxy-, (3e)-3-hexenyl ester" "benzoic acid, 2-hydroxy-, (3e)-3-hexen-1-yl ester" "benzoic acid, 2-hydroxy-, (3z)-3-hexen-1-yl ester" "cis-3-hexenylsalicylate" "benzoic acid, 2-hydroxy-, 3-hexenyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -452490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     627.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-213780.0
-    phase     gas;
 }

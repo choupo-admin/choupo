@@ -33,9 +33,8 @@ groups
     joback ( { group dC_ring; count 10; } { group F; count 7; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,5,6,7,8-heptakis(fluoranyl)naphthalen-1-ol" "2,3,4,5,6,7,8-heptafluoro-1-naphthalenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1452500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1333320.0
-    phase     gas;
 }

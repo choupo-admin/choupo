@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 8; } { group C; count 1; } { group COO; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diethyl 2-(2-cyanoethyl)-2-pentyl-propanedioate" "diethyl 2-(2-cyanoethyl)-2-pentylpropanedioate" "propanedioic acid, (2-cyanoethyl)pentyl-, diethyl ester" "propanedioic acid,2-(2-cyanoethyl)-2-pentyl-, 1,3-diethyl ester" "malonicacid, (2-cyanoethyl)pentyl-, diethyl ester (8ci); propanedioic acid,(2-cyanoethyl)pentyl-, diethyl ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -831360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     810.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-409300.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group dCH2; count 1; } { group dCH; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-bromanyloct-1-ene" "8-bromooct-1-ene" "1-octene, 8-bromo-" "7-octenyl bromide" "snmomuylflgqqs-uhfffaoysa-" "1-octene, 8-bromo-;bromo-8 octene-1" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -56690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     514.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=118640.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-octyloxolan-2-one" "2(3h)-furanone, dihydro-5-octyl-" "4-dodecanolide" "dodecanolide-1,4" "gamma-dodecanolactone" ".gamma. dodecalactone" "4-hydroxydodecanoic acid lactone" "gamma-dodecalactone (natural)" "gamma-octyl-gamma-butyrolactone" "5-octyl-tetrahydro-furan-2-one" "dihydro-5-octyl-2(3h)-furanone" "dihydro-5-octylfuran-2(3h)-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -535490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     584.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-199460.0
-    phase     gas;
 }

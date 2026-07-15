@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propane-1-thiol" "propanethiol" "propyl mercaptan" "n-propylmercaptan" "n-propyl mercaptan" "1-propylmercaptan" "propylthiol" "n-propylthiol" "1-mercaptopropane" "thiopropyl alcohol" "1-propyl mercaptan" "n-thiopropyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -66770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     335.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3770.0
-    phase     gas;
 }

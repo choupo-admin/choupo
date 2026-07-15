@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH; count 2; } { group O; count 1; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "morphinan, 3-methoxy-17-phenethyl-, tartrate, (-)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1156160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1203.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-501800.0
-    phase     gas;
 }

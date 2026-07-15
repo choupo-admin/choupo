@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphthalen-2-yl octanoate" "2-naphthyl caprylate" "octanoic acid, 2-naphthalenyl ester" "beta-naphthyl caprylate" "octanoic acid,2-naphthalenyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -316000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     686.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-260.0
-    phase     gas;
 }

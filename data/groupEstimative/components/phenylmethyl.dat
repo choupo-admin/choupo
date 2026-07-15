@@ -30,9 +30,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methylbenzene" "benzyl radical" "methyl,phenyl-" "methyl, phenyl-" "phenyl(2h2)methyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   115540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     320.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=168200.0
-    phase     gas;
 }

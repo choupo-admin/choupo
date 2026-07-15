@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2,6-bis(bromanyl)phenyl] ethanoate" "2,6-dibromophenyl acetate" "phenol,2,6-dibromo-,acetate" "phenol, 2,6-dibromo-, acetate" "(2,6-dibromophenyl) acetate" "2,6-dibromo-phenol 1-acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -259480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     502.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-172100.0
-    phase     gas;
 }

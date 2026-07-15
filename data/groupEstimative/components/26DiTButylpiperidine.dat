@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group C; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-ditert-butylpiperidine" "2,6-di-tert-butylpiperidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     505.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=168710.0
-    phase     gas;
 }

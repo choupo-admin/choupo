@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 3; } { group C_ring; count 1; } { group OH; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,4,5-tetrakis(oxidanyl)cyclohexane-1-carboxylic acid" "cyclohexanecarboxylic acid, 1,3,4,5-tetrahydroxy-" "1,3,4,5-tetrahydroxycyclohexane-1-carboxylic acid" "1,3,4,5-tetrahydroxycyclohexane-carboxylic acid" "agn-pc-01lrlx" "(1r,3r,4r,5r)-(-)-quinic acid" "hexahydro-1,4,5-tetrahydroxybenzoic acid" "1,4,5-tetrahydroxycyclohexanecarboxylic acid" "hexahydro-1,3,4,5-tetrahydroxybenzoic acid" "cyclohexanecarboxylic acid,3,4,5-tetrahydroxy-" "(3r,5s)-1,3,4,5-tetrahydroxycyclohexanecarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1138460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     597.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-887300.0
-    phase     gas;
 }

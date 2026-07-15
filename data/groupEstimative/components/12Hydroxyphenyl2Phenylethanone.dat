@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-hydroxyphenyl)-2-phenyl-ethanone" "1-(2-hydroxyphenyl)-2-phenylethan-1-one" "acetophenone, 2'-hydroxy-2-phenyl-" "acetophenone, 2'-hydroxy-2-phenyl-," "ethanone,1-(2-hydroxyphenyl)-2-phenyl-" "acetophenone,2'-hydroxy-2-phenyl- (6ci,7ci,8ci); 2-hydroxydeoxybenzoin; 2-hydroxyphenylbenzyl ketone; 2'-hydroxy-2-phenylacetophenone; benzyl 2-hydroxyphenyl ketone;benzyl o-hydroxyphenyl ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -149120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     541.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8280.0
-    phase     gas;
 }

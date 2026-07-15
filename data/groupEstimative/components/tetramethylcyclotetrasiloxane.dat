@@ -35,9 +35,8 @@ groups
     joback ( { group CH3; count 4; } { group O_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4,6,8-tetramethyl-1,3,5,7,2$l^{3},4$l^{3},6$l^{3},8$l^{3}-tetraoxatetrasilocane" "2,4,6,8-tetramethylcyclotetrasiloxane" "cyclotetrasiloxane, 2,4,6,8-tetramethyl-" "1,3,5,7-tetramethylcyclotetrasiloxane" "tmcts" "agn-pc-0coh4e" "agn-pc-0coh4i" "agn-pc-0coh4k" "1,2,5,7-tetramethylcyclotetrasiloxane" "2,4,6,8-tetramethyl-1,3,5,7,2" "2,4,6,8-tetramethyl-1,3,5,7,2,4,6,8$l^{3}-tetraoxatetrasilocane" "2,4,6,8-tetramethyl-1,3,5,7,2,4$l^{3},6$l^{3},8$l^{3}-tetraoxatetrasilocane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -790150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     369.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-514840.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-bromanylaniline" "p-bromoaniline" "4-bromobenzenamine" "benzenamine, 4-bromo-" "aniline, p-bromo-" "p-bromophenylamine" "4-bromo-aniline" "4-bromobenzenamide" "para bromo aniline" "bromoaniline(4-)" "4-bromobenzeneamine" "4-bromo-phenylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   118010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     379.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=183190.0
-    phase     gas;
 }

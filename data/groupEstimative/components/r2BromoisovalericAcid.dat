@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 2; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-bromanyl-3-methyl-butanoic acid" "(r)-2-bromo-3-methylbutyric acid" "(r)-(+)-2-bromo-3-methylbutyric acid" "(2r)-2-bromo-3-methylbutanoic acid" "r-2-bromo-3-methylbutyric acid" "(r)-2-bromo-3-methylbutanoic acid" "(r)-2-bromo-3-methyl butyric acid" "n107" "butanoicacid, 2-bromo-3-methyl-, (2r)-" "butanoic acid, 2-bromo-3-methyl-, (2r)-" "(r )-(+)-2-bromo-3-methylbutyric acid" "(2r)-2-bromo-3-methyl-butanoic acid;butanoic acid, 2-bromo-3-methyl-, (2r)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -481030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-343250.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-2-bromanyl-3-phenyl-prop-2-enal" "alphabrocine" "bromocinnamal" "2-propenal, 2-bromo-3-phenyl-" "2-bromo-3-phenylacrylaldehyde" "2-bromo-3-phenyl-2-propenal" "alpha-bromocinnamic aldehyde" "2-bromo-3-phenylprop-2-enal" "cinnamaldehyde, alpha-bromo-" "b 37 (van)" "(z)-2-bromo-3-phenylprop-2-enal" "(2z)-2-bromo-3-phenylprop-2-enal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   55620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=123780.0
-    phase     gas;
 }

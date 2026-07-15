@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-[2-cyanoethyl(phenyl)amino]propanoate" "methyl n-(2-cyanoethyl)-n-phenyl-" "a-alaninate" "3-((2-(carbomethoxy)ethyl)phenylamino)propanenitrile" "methyl 3-[n-(2-cyanoethyl)anilino]propanoate" "beta-alanine, n-(2-cyanoethyl)-n-phenyl-, methyl ester" ".beta.-alanine, n-(2-cyanoethyl)-n-phenyl-, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -159990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     629.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=104580.0
-    phase     gas;
 }

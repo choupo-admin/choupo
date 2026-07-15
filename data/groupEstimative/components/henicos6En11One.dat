@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 16; } { group dCH; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-6-heneicosane-11-one" "6-heneicosen-11-one,(6z)-" "6-heneicosen-11-one,(z)-; (6z)-heneicos-6-en-11-one; (z)-6-heneicosen-11-one;cis-6-heneicosene-11-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -472130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     994.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77240.0
-    phase     gas;
 }

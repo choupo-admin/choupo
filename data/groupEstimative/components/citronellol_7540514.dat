@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s)-3,7-dimethyloct-6-en-1-ol" "(-)-beta-citronellol" "beta-rhodinol" "(s)-3,7-dimethyloct-6-en-1-ol" "(s)-(-)-citronellol" "(3s)-3,7-dimethyl-6-octen-1-ol" "(s)-3,7-dimethyl-6-octen-1-ol" "(-)-3,7-dimethyloct-6-en-1-ol" "(s)-(-)-3,7-dimethyl-6-octen-1-ol" "6-octen-1-ol, 3,7-dimethyl-, (s)-" "(s)-(-)-beta-citronellol" "citronellol (natural)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -299810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-34270.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(phenylmethyl) 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, phenylmethyl ester" "methacrylic acid benzyl ester" "methacrylic acid, benzyl ester" "phenylmethyl 2-methylprop-2-enoate" "benzyl 2-methylprop-2-enoate" "benzyl-methacrylate" "benzyl 2-methylacrylate" "poly(benzylmethacrylate)" "poly(benzyl methacrylate)" "aojoefvrhozdfn-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -235480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     520.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76930.0
-    phase     gas;
 }

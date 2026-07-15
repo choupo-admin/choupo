@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 2; } { group C; count 1; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-hydroxyethyloxy)-2,2,4-trimethyl-pentan-3-ol" "1-(2-hydroxyethoxy)-2,2,4-trimethylpentan-3-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -705720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     600.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-347360.0
-    phase     gas;
 }

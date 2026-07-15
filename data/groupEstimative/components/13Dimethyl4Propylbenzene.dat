@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-dimethyl-1-propyl-benzene" "benzene, 1,3-dimethyl-4-propyl" "m-xylene, 4-propyl-" "2,4-dimethyl-1-propylbenzene" "1,3-dimethyl-4-n-propylbenzene" "benzene,2,4-dimethyl-1-propyl-" "m-xylene,4-propyl- (7ci); 1,3-dimethyl-4-propylbenzene; 2,4-dimethyl-1-propylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -56780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     465.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=134890.0
-    phase     gas;
 }

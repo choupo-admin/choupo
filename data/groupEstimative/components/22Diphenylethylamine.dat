@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-diphenylethanamine" "2,2-diphenyl-ethylamine" "1-amino-2,2-diphenylethane" "2,2-di(phenyl)ethanamine" "2,2-diphenyl-ethyl-amine" "2,2-diphenylethan-1-amine" "benzeneethanamine, b-phenyl-" "diphenylalkylamine (dpa), 4a" "rxmtuvikzrxssm-uhfffaoysa-" "ppa-0-0" "1-amino-2,2-diphenyl ethane" "l010" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   169280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     530.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=355830.0
-    phase     gas;
 }

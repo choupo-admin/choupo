@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-azanylpentanoic acid" "d(-)-norvaline" "(2r)-2-aminopentanoic acid" "(r)-2-aminovaleric acid" "d-ape" "d-2-aminovaleric acid" "(r)-(-)-2-aminopentanoic acid" "h-d-nva-oh" "d-2-aminopentanoic acid" "(r)-norvaline" "d-nva" "h-d-norvaline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -468290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-288680.0
-    phase     gas;
 }

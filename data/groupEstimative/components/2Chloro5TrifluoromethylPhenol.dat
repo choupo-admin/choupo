@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group Cl; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-5-(trifluoromethyl)phenol" "4-chloro-3-hydroxybenzotrifluoride" "2-chloro-5-trifluoromethylphenol" "3-hydroxy-4-chlorobenzotrifluoride" "m-cresol, 6-chloro-.alpha.,.alpha.,.alpha.-trifluoro-," "2-chloro-5-trifluoromethyl-phenol" "4-chloro-3-hydroxybenzotrifluoride 98%" "phenol, 2-chloro-5-(trifluoromethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -752880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     432.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-637300.0
-    phase     gas;
 }

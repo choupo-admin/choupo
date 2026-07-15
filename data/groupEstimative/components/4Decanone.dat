@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "decan-4-one" "hexyl propyl ketone" "mkjduhzplqyucb-uhfffaoysa-" "4-decanone;hexyl propyl ketone;n-propyl n-hexyl ketone;n-hexyl n-propyl ketone;4-decanon;decan-4-one;propyl hexyl ketone;decan-1-oyl chloride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -362310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     572.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-95600.0
-    phase     gas;
 }

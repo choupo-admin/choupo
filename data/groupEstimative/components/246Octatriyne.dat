@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group tC; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octa-2,4,6-triyne" "agn-pc-0ckkhm" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   608450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     382.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=624880.0
-    phase     gas;
 }

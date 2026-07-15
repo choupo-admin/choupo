@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(2-phenylethenyl)aniline" "benzenamine,4-[(1e)-2-phenylethenyl]-" "4-stilbenamine,(e)- (8ci); benzenamine, 4-(2-phenylethenyl)-, (e)-; (e)-4-aminostilbene;4-amino-trans-stilbene; trans-4-aminostilbene; trans-p-aminostilbene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   280310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     527.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=428860.0
-    phase     gas;
 }

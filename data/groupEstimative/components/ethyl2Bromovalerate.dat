@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-bromanylpentanoate" "ethyl 2-bromopentanoate" "ethyl .alpha.-bromovalerate" "pentanoic acid, bromo-, ethyl ester" "ambap615-83-8" "pentanoic acid, 2-bromo-, ethyl ester" "u174" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -484040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     521.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-290430.0
-    phase     gas;
 }

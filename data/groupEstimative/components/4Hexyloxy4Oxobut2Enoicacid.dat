@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-4-hexoxy-4-oxidanylidene-but-2-enoic acid" "(c6-c8)alcohol, fumaric acid ester" "2-butenedioic acid (2e)-, c6-8-alkyl esters" "(e)-4-hexoxy-4-oxobut-2-enoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -800060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     643.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-540740.0
-    phase     gas;
 }

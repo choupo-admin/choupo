@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 9; } { group CH2; count 3; } { group O; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-tris(trimethylsilyloxy)silylpropan-1-amine" "(3-aminopropyl)tris(trimethylsiloxy)silane" "3-(1,1,1,5,5,5-hexamethyl-3-((trimethylsilyl)oxy)trisiloxan-3-yl)propan-1-amine" "3-[tris(trimethylsiloxy)silyl]propylamine" "1-propanamine, 3-[3,3,3-trimethyl-1,1-bis[(trimethylsilyl)oxy]-1-disiloxanyl]-" "1-propanamine, 3-[3,3,3-trimethyl-1,1-bis[(trimethylsilyl)oxy]disiloxanyl]-" "1-propanamine,3-[3,3,3-trimethyl-1,1-bis[(trimethylsilyl)oxy]-1-disiloxanyl]-" "propylamine, 3-[3,3,3-trimethyl-1,1-bis(trimethylsiloxy)disiloxanyl]- (8ci);3-tris[(trimethylsilyl)oxy]silyl]propylamine;a 0805;tris(trimethylsiloxy)(3-aminopropyl)silane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1100360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1214.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-617430.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group OH; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[2-hydroxyethyl-[2-(octanoylamino)ethyl]amino]propanoic acid" "n-(2-hydroxyethyl)-n-(2-((1-oxooctyl)amino)ethyl)-beta-alanine" "n-(2-hydroxyethyl)-n-[2-[(1-oxooctyl)amino]ethyl]-beta-alanine" "n-(2-hydroxyethyl)-n-[2-(octanoylamino)ethyl]-beta-alanine" "b-alanine,n-(2-hydroxyethyl)-n-[2-[(1-oxooctyl)amino]ethyl]-" "beta-alanine, n-(2-hydroxyethyl)-n-(2-((1-oxooctyl)amino)ethyl)-" ".beta.-alanine, n-(2-hydroxyethyl)-n-[2-[(1-oxooctyl)amino]ethyl]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -847010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     927.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-334060.0
-    phase     gas;
 }

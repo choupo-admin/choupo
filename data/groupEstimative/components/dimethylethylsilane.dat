@@ -35,9 +35,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl(dimethyl)silicon" "ethyldimethylsilane" "silane, ethyldimethyl-" "ethyl-dimethylsilicon" "agn-pc-0d76g4" "2-deuterioethyl(dimethyl)silicon" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -181700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     384.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-69580.0
-    phase     gas;
 }

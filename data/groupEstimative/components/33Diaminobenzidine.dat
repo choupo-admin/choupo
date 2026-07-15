@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 6; } { group NH2; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[3,4-bis(azanyl)phenyl]benzene-1,2-diamine" "3,3',4,4'-tetraaminobiphenyl" "3,3',4,4'-tetraaminodiphenyl" "3,3'-diaminobenzidene" "[1,1'-biphenyl]-3,3',4,4'-tetramine" "4-(3,4-diaminophenyl)benzene-1,2-diamine" "3,3',4,4'-diphenyltetramine" "3,3',4,4'-tetraminobiphenyl" "3,3'4,4'-biphenyltetramine" "biphenyl-3,3',4,4'-tetrayltetraamine" "(1,1'-biphenyl)-3,3',4,4'-tetramine" "3,3',4,4'-biphenyltetramine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   271330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     592.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=502260.0
-    phase     gas;
 }

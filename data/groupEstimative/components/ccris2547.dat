@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 11; } { group dC_ring; count 11; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "indeno(1,2,3-cd)pyren-8-ol" "8-hydroxyindeno(1,2,3-cd)pyrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   380360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     358.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=575360.0
-    phase     gas;
 }

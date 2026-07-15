@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 12; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "13-oxidanyltridecanoic acid" "13-hydroxy-tridecanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -814150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     766.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-422150.0
-    phase     gas;
 }

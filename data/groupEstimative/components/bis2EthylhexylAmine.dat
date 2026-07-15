@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 10; } { group CH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethyl-N-(2-ethylhexyl)hexan-1-amine" "1-Hexanamine, 2-ethyl-N-(2-ethylhexyl)-" "2,2′-diethyldihexylamine" "2-Ethyl-N-(2-ethylhexyl)-1-hexanamine" "Di(2-ethylhexyl)amine" "dihexylamine, 2,2′-diethyl-" "N,N-Bis(2-ethylhexyl)amine" "N,N-Di(2-ethylhexyl)amine" "bis-2-ethylhexylamine" "diisooctylamine" "2,2'-diethyldihexylamine" "diethylhexylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -330660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     800.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=168350.0
-    phase     gas;
 }

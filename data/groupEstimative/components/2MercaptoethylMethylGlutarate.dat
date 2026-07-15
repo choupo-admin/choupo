@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group COO; count 2; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "o1-methyl o5-(2-sulfanylethyl) pentanedioate" "pentanedioic acid, 2-mercaptoethyl methyl ester" "pentanedioic acid, 1-(2-mercaptoethyl) 5-methyl ester" "2'-mercaptoethyl 4-carbomethoxybutanoate" "1-o-methyl 5-o-(2-sulfanylethyl) pentanedioate" "pentanedioic acid,1-(2-mercaptoethyl) 5-methyl ester" "pentanedioicacid, 2-mercaptoethyl methyl ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -804530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     632.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-574870.0
-    phase     gas;
 }

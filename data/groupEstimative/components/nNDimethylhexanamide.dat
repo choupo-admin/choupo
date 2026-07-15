@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexanamide, n,n-dimethyl-" "n,n-dimethylcaproamide" "n,n-dimethylhexanoamide" "nn-dimethylhexanamide" "hexanamide,n,n-dimethyl-" "n,n-dimethylhexanamide, tech" "caproamide,n,n-dimethyl- (4ci); n,n-dimethylcaproamide; n,n-dimethylhexanamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -253500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     510.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1660.0
-    phase     gas;
 }

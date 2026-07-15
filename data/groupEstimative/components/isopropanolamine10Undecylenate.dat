@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-azanylpropan-2-ol;undec-10-enoic acid" "10-undecenoic acid, compd. with 1-amino-2-propanol (1:1)" "1-aminopropan-2-ol; undec-10-enoic acid" "undec-10-enoic acid - 1-aminopropan-2-ol (1:1)" "undec-10-enoic acid, compound with 1-aminopropan-2-ol (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -792470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     950.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-366640.0
-    phase     gas;
 }

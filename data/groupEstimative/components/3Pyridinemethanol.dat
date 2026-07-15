@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group OH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pyridin-3-ylmethanol" "nicotinyl alcohol" "3-pyridylcarbinol" "nicotinic alcohol" "3-(hydroxymethyl)pyridine" "roniacol" "3-pyridylmethanol" "3-pyridinylmethanol" "pyridine-3-carbinol" "pyridylcarbinol" "pyridine-3-methanol" "3-picolyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -50080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     346.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=52280.0
-    phase     gas;
 }

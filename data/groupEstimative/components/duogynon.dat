@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 14; } { group CH_ring; count 8; } { group C_ring; count 3; } { group dCH_ring; count 9; } { group dC_ring; count 5; } { group OH; count 1; } { group CdO; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(8s,9s,10r,13s,14s,17s)-17-ethanoyl-10,13-dimethyl-1,2,6,7,8,9,11,12,14,15,16,17-dodecahydrocyclopenta[a]phenanthren-3-one;[(8r,9s,13s,14s,17s)-13-methyl-17-oxidanyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthren-3-yl] benzoate" "limovanil" "duogynon forte" "duogynon simplex" "estroprogyn" "jephagynon" "klimovan" "menstrogen forte" "synovex c" "tonevex s" "implus s" "implus-c" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -896910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1383.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=52110.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dC_ring; count 10; } { group Cl; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5,6,7,8-octakis(chloranyl)naphthalene" "perna" "perchloronaphthalene" "naphthalene, octachloro-" "octachloro naphthalene" "1,2,3,4,5,6,7,8-octachloronaphthalene" "naphthalene, 1,2,3,4,5,6,7,8-octachloro-" "1,3,4,5,6,7,8-octachloronaphthalene" "p860" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -39810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     548.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=79900.0
-    phase     gas;
 }

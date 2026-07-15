@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 30; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10-heptyl-10-octyl-icosane" "eicosane, 10-heptyl-10-octyl-" "10-heptyl-10-octylicosane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -774480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1480.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=246660.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethylmesidine" "2-(dimethylamino)mesitylene" "n,n,2,4,6-pentamethylbenzenamine" "2-dimethylaminomesitylene" "dimethyl(2,4,6-trimethylphenyl)amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=236040.0
-    phase     gas;
 }

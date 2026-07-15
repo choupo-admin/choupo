@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[diacetyloxy(methyl)silyl] ethanoate" "methylsilanetriyl triacetate" "silanetriol, methyl-, triacetate" "triacetoxy(methyl)silane" "silane, methyltriacetoxy-" "methylsilanetriol triacetate" "methyltrihydroxysilane triacetate" "apk 1 (silane derivative)" "k 10s" "silanetriol, 1-methyl-, 1,1,1-triacetate" "triacetoxy-methylsilane" "[diacetyloxy(methyl)silyl] acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1251270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     709.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1027810.0
-    phase     gas;
 }

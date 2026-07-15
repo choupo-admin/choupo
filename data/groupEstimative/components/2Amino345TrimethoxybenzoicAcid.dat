@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group O; count 3; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-3,4,5-trimethoxy-benzoic acid" "benzoic acid, 2-amino-3,4,5-trimethoxy-" "3,4,5-trimethoxyanthranilic acid" "benzoic acid,2-amino-3,4,5-trimethoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -772220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     552.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-485250.0
-    phase     gas;
 }

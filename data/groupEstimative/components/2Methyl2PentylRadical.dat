@@ -30,9 +30,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylpentane" "dimethylbutyl" "n-c3h7c(ch3)2" "2-methylpentan-2-yl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -118350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     382.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=31200.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3,4-dimethoxyphenyl)propan-2-amine" "alpha-methylhomoveratrylamine" "3,4-dimethoxy-alpha-methylphenethylamine" "3,4-dimethoxyphenylisopropylamine" "benzeneethanamine, 3,4-dimethoxy-alpha-methyl-" "benzeneethanamine, 3,4-dimethoxy-.alpha.-methyl-" "phenethylamine, 3,4-dimethoxy-alpha-methyl-" "1-(3,4-dimethoxyphenyl)prop-2-ylamine" "(r)-1-(3,4-dimethoxyphenyl) 2-propanamine" "(s)-1-(3,4-dimethoxyphenyl) 2-propanamine" "agn-pc-00fskt" "13078-75-6 (hydrochloride)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -292710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     530.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11100.0
-    phase     gas;
 }

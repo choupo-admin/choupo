@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-bis(chloranyl)-1-prop-2-ynoxy-benzene" "2,4-dichloro-1-(prop-2-yn-1-yloxy)benzene" "2,4-dichloro-1-prop-2-ynoxybenzene" "2,4-dichlorophenyl propargyl ether" "2,4-dichloro-1-prop-2-ynyloxybenzene" "2,4-dichloro-1-(2-propynyloxy)benzene" "2,4-dichloro-1-(prop-2-ynyloxy)benzene" "benzene,2,4-dichloro-1-(2-propyn-1-yloxy)-" "benzene,2,4-dichloro-1-(2-propynyloxy)- (9ci);ether, 2,4-dichlorophenyl 2-propynyl(8ci);2,4-dichloro-1-(prop-2-ynyloxy)benzene;2,4-dichlorophenyl 2-propynylether;2,4-dichlorophenyl propargyl ether;3-(2,4-dichlorophenoxy)-1-propyne;3-(2,4-dichlorophenoxy)propyne;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   112700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=212260.0
-    phase     gas;
 }

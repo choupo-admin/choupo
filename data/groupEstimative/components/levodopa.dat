@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-3-[3,4-bis(oxidanyl)phenyl]propanoic acid" "l-dopa" "dopar" "3-hydroxy-l-tyrosine" "3,4-dihydroxy-l-phenylalanine" "bendopa" "larodopa" "levopa" "cidandopa" "dopaidan" "dopalina" "insulamina" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -668940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     548.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-451830.0
-    phase     gas;
 }

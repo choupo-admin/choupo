@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group CH2_ring; count 12; } { group CH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2,2-pentacyclopropylethylcyclopropane" "ethane,hexacyclopropyl- (8ci)" "cyclopropane,1,1',1'',1''',1'''',1'''''-(1,2-ethanediylidyne)hexakis- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -36830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     315.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=487700.0
-    phase     gas;
 }

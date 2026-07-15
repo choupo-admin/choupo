@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group OH; count 1; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-[2-(2-methoxyethoxy)ethoxy]ethoxy]ethoxy]ethanol" "3,6,9,12,15-pentaoxahexadecan-1-ol" "3,6,9,12,15-pentaoxahexadecanol" "Ethanol, 2-[2-[2-[2-(2-methoxyethoxy)ethoxy]ethoxy]ethoxy]-" "methoxypentaethylene glycol" "pentaethylene glycol methyl ether" "pentaethylene glycol, monomethyl ether" "pentaethylene glycol monomethyl ether" "m-peg5-alcohol" "mpeg5-oh" "methyl-peg5-alcohol" "2-(2-{2-[2-(2-METHOXY-ETHOXY)-ETHOXY]-ETHOXY}-ETHOXY)-ETHANOL" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1083700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     691.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-620080.0
-    phase     gas;
 }

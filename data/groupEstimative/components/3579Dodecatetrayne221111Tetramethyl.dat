@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group C; count 2; } { group tC; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,11,11-tetramethyldodeca-3,5,7,9-tetrayne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   698130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     588.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=900720.0
-    phase     gas;
 }

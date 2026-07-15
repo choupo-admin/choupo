@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group tCH; count 1; } { group tC; count 1; } { group Cl; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-ynyl 2,2,2-tris(chloranyl)ethanoate" "2-propynyl trichloroacetate" "prop-2-ynyl 2,2,2-trichloroacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -227880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     432.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-129030.0
-    phase     gas;
 }

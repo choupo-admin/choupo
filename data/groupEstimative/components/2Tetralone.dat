@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,4-dihydro-1h-naphthalen-2-one" "beta-tetralone" ".beta.-tetralone" "2(1h)-naphthalenone, 3,4-dihydro-" "b-tetralone" "3,4-dihydro-2(1h)-naphthalenone" "3,4-dihydro-2-oxonaphthalene" "3,4-dihydronaphthalen-2(1h)-one" "1,2,3,4-tetrahydro-2-naphthalenone" "dihydro-naphthalenone, 4e" "3,4-dihydro-2-naphthol" "1,3,4-trihydronaphthalen-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -75390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     326.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=69870.0
-    phase     gas;
 }

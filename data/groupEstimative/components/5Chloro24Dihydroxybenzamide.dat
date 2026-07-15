@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 1; } { group OH_phenol; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-chloranyl-2,4-bis(oxidanyl)benzamide" "benzamide, 5-chloro-2,4-dihydroxy-" "5-chloro-beta-resorcylamide" "5-chloro-2,4-dihydroxy-benzamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -411900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     480.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-272800.0
-    phase     gas;
 }

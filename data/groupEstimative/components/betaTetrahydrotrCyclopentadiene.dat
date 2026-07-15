@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 7; } { group CH_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "agn-pc-00qsnd" "tetrahydro-alpha-tricyclopentadiene" "beta-tetrahydro-tri-cyclopentadiene" "tetrahydro-alpha--tri-cyclopentadiene" "dodecahydro-1h-4,9:5,8-dimethanocyclopenta[b]naphthalene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -49950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     161.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=356040.0
-    phase     gas;
 }

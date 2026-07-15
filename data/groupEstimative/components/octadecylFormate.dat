@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 17; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadecyl methanoate" "1-octadecanol, formate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -359040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1079.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=153060.0
-    phase     gas;
 }

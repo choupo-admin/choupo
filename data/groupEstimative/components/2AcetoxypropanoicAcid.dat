@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-acetyloxypropanoic acid" "acetolactate" "o-acetyllactic acid" "alpha-acetolactate" "lactic acid, acetate" "alpha-acetoxypropionic acid" ".alpha.-acetoxypropionic acid" "(+/-)-2-acetoxypropionic acid" "propanoic acid, 2-(acetyloxy)-" "o-acetyl-l-lactic acid" "2-acetoxypropionic acid" "lactic acid, acetate (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -819360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-665500.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group F; count 5; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2-pentakis(fluoranyl)-2-iodanyl-ethane" "pentafluoroethyl iodide" "pentafluoroethyliodide" "ethane, pentafluoroiodo-" "c2f5i" "iodopentafluoroethane" "1,1,1,2,2-pentafluoro-2-iodoethane" "ethane, 1,1,1,2,2-pentafluoro-2-iodo-" "iodoperfluoroethane" "perfluoroiodoethane" "perfluoroethyl iodide" "nc971" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1005790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     370.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-944290.0
-    phase     gas;
 }

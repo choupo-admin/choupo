@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethylcycloheptanecarboxylate" "cycloheptanecarboxylicacid, ethyl ester" "cycloheptanecarboxylic acid, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -518850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     586.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-264700.0
-    phase     gas;
 }

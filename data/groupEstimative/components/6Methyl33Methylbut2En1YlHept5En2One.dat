@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 2; } { group CH; count 1; } { group dCH; count 2; } { group dC; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methyl-3-(3-methylbut-2-enyl)hept-5-en-2-one" "2,7-nonadiene,2,8-dimethyl-5-acetyl-" "5-hepten-2-one, 6-methyl-3-(3-methyl-2-butenyl)-" "5-hepten-2-one, 6-methyl-3-(3-methyl-2-buten-1-yl)-" "3-(3-methyl-2-butenyl)-6-methyl-5-hepten-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -214650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     658.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70560.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,2-hexakis(chloranyl)ethane" "perchloroethane" "avlothane" "ethane, hexachloro-" "carbon hexachloride" "ethylene hexachloride" "distokal" "distopan" "distopin" "falkitol" "mottenhexe" "phenohep" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -196550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     356.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-99940.0
-    phase     gas;
 }

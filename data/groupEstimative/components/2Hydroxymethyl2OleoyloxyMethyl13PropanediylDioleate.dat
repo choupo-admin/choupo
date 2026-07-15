@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 46; } { group C; count 1; } { group dCH; count 6; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2-(hydroxymethyl)-3-octadec-9-enoyloxy-2-(octadec-9-enoyloxymethyl)propyl] octadec-9-enoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2022250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     2600.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-378530.0
-    phase     gas;
 }

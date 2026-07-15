@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5-bis(fluoranyl)phenol" "phenol, 3,5-difluoro-" "3,5-difluoro phenol" "phenol,3,5-difluoro-" "3.5-difluorophenol" "phenol derivative, 6" "hjssbimvtmykpd-uhfffaoysa-" "phenol, 3,5-difluoro-;3,5-difluoro phenol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -511640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     366.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-441820.0
-    phase     gas;
 }

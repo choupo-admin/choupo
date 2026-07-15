@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,2-dimethylpropan-2-amine" "n-tert-butylmethylamine" "2-propanamine, n,2-dimethyl-" "n-methyl-tert.-butylamine" "methyl-tert-butylamine" "tert-butyl(methyl)amine" "agn-pc-0d8inn" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -101810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     352.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83450.0
-    phase     gas;
 }

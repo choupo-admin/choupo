@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group dCH_ring; count 4; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzene, 1,4-dibutyl" "1,4-di-n-butylbenzene" "benzene, 1,4-dibutyl-" "p-di-tert-butyl benzene" "1,4-di-n-butylbenzene;1,4-dibutylbenzene;benzene,p-dibutyl- (6ci,7ci,8ci);p-dibutylbenzene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -107230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     588.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=169780.0
-    phase     gas;
 }

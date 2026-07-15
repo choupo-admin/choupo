@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 17; } { group OH; count 3; } { group CdO; count 1; } { group COOH; count 1; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[bis(2-hydroxyethyl)amino]ethanol;2-[dodecanoyl(methyl)amino]ethanoic acid" "n-dodecanoyl-n-methylglycine- 2,2',2''-nitrilotriethanol(1:1)" "tea-lauroyl sarcosinate" "lauroyl sarcosine, triethanolamine salt" "2-[bis(2-hydroxyethyl)amino]ethanol; 2-[dodecanoyl(methyl)amino]acetic acid" "glycine, n-methyl-n-(1-oxododecyl)-, compd. with 2,2',2''-nitrilotris(ethanol) (1:1)" "glycine, n-methyl-n-(1-oxododecyl)-, compd. with 2,2,2-nitrilotris(ethanol) (1:1)" "n-methyl-n-(1-oxododecyl)glycine, compound with 2,2',2''-nitrilotri(ethanol) (1:1)" "n-methyl-n-(1-oxododecyl)glycine, compound with 2,2a'a inverted exclamation marka'a ,2a'a inverted exclamation marka'a a'a inverted exclamation marka'a -nitrilotri(ethanol) (1:1);tea-lauroyl sarcosinate;n-lauroyl sarcosine, triethanolamine salt;glycine, n-methyl-n-(1-oxododecyl)-, compd. with 2,2,2-nitrilotrisethanol (1:1);n-methyl-n-(1-oxododecyl)glycin, verbindung mit 2,2a'a inverted exclamation markafa currency,2a'a inverted exclamation markafa currencya'a inverted exclamation markafa currency-nitrilotri(ethanol) (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1372870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1346.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-640550.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group OH; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-ethyloxetan-3-yl)methanol" "3-oxetanemethanol, 3-ethyl-" "3-hydroxymethyl-3-ethyloxetane" "2-hydroxymethyl-2-ethyl-1,3-epoxypropane" "3-ethyl-3-hydroxymethyloxetane" "3-ethyloxetane-3-methanol" "3-ethyl-3-hydroxymethyl oxetane" "(3-ethyl-oxetan-3-yl)-methanol" "3-ethyl-(hydroxymethyl)oxetane" "3-ethyl-3-hydroxylmethyl oxetane" "3-ethyl-3-(hydroxymethyl)-oxetane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -369520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     388.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-180140.0
-    phase     gas;
 }

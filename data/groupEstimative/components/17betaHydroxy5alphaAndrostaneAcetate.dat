@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 10; } { group CH_ring; count 5; } { group C_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(5r,8r,9s,10s,13s,14s,17s)-10,13-dimethyl-2,3,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthren-17-yl] ethanoate" "17.beta.-hydroxy-5.alpha.-androstane acetate" "17" "a-acetoxy-5" "a-androstane" "17beta-acetoxy-5alpha-androstane" "17.beta.-acetoxy-5.alpha.-androstane" "[(5r,8r,9s,10s,13s,14s,17s)-10,13-dimethyl-2,3,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthren-17-yl] acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -564190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     775.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-36040.0
-    phase     gas;
 }

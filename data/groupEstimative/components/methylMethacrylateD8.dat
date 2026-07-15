@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trideuteriomethyl 3,3-dideuterio-2-(trideuteriomethyl)prop-2-enoate" "methyl-d3 methacrylate-d5" "perdeutero(methyl methacrylate)" "2-propenoic-3,3-d2 acid, 2-(methyl-d3)-, methyl-d3 ester" "de320" "methyl methacrylate-d8 99.50 atom % d" "(2h3)methyl (3,3,alpha,alpha,alpha-2h5)methacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -348170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     393.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-239860.0
-    phase     gas;
 }

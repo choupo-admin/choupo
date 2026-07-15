@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 1; } { group Br; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanylthiophene" "3-thienyl bromide" "thiophene, 3-bromo-" "3-bromo thiophene" ".beta.-bromothiophene" "beta-bromothiophene" "3-bromo-thiophene" "bromothiophene(3-)" "3-bromothiophene 97%" "3-bromo thiophene;3-bromothiophene anhydrous;beta-bromothiophene;thiophene, 3-bromo-;3-thienyl bromide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   130610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     324.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=131530.0
-    phase     gas;
 }

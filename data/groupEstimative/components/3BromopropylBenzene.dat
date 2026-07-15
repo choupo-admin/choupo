@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanylpropylbenzene" "1-bromo-3-phenylpropane" "3-phenylpropyl bromide" "benzene, (3-bromopropyl)-" "3-bromo-1-phenylpropane" "(.gamma.-bromopropyl)benzene" "3-bromopropylbenzene" "4-bromopropylbenzene" "hydrocinnamyl bromide" "(3-bromoprop-1-yl)benzene" "propylbromide, g-phenyl" "(gamma-bromopropyl)benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   33770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=151630.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-prop-2-ynoxyoxane" "tetrahydro-2-(2-propynyloxy)-2h-pyran" "2-(2-propynyloxy)tetrahydropyran" "2-(propargyloxy)tetrahydropyran" "propargyl alcohol tetrahydropyranyl ether" "2h-pyran, tetrahydro-2-(2-propynyloxy)-" "propargyl 2-tetrahydropyranyl ether" "2-propynyl 2-pyranyl ether" "3-(2'-tetrahydropyranyloxy)propyne" "1-(2'-tetrahydropyranyloxy)-2-propyne" "2-(prop-2-yn-1-yloxy)tetrahydro-2h-pyran" "2-prop-2-ynoxy-tetrahydro-pyran" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -126450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     366.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72880.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 11; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-methyldodecan-1-amine" "dodecylmethylamine" "dodecyl-methyl-amine" "dodecyl(methyl)amine" "n-dodecyl-n-methylamine" "1-dodecanamine,n-methyl-" "1-dodecanamine, n-methyl-" "2292-50-4 (hydrochloride)" "1-dodecanamine, n-methyl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -258180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     703.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=147970.0
-    phase     gas;
 }

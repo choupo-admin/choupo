@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-2-iodanyl-3-methyl-benzene" "1-chloro-2-iodo-3-methylbenzene" "toluene, 3-chloro-2-iodo-" "buttpark 121\11-21" "3-chloro-2-iodotoluene;toluene,3-chloro-2-iodo- (7ci,8ci);3-chloro-2-iodotoluene,98%;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   86910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     398.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=147400.0
-    phase     gas;
 }

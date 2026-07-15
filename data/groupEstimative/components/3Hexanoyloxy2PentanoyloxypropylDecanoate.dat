@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 17; } { group CH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-hexanoyloxy-2-pentanoyloxy-propyl) decanoate" "decanoic acid mixed esters with 2-ethylhexanoic acid heptanoic acid, hexanoic acid trimethylolpropane and valeric acid" "decanoic acid, mixed esters with 2-ethylhexanoic acid, heptanoic acid, hexanoic acid, trimethylolpropane and valeric acid" "trimethylolpropane, pentanoic, heptanoic, hexanoic, 2-ethylhexanoic and decanoic mixed esters" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1495810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1235.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-782350.0
-    phase     gas;
 }

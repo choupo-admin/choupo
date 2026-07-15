@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-ethylnaphthalen-1-amine" "1-naphthalenamine, n-ethyl-" "1-(ethylamino)naphthalene" "1-naphthylamine, n-ethyl-" "2-(ethylamino)naphthalene" "ethylnaphthylamine" "alpha-ethylaminonaphthalene" "ethyl(1-naphthyl)amine" "a-ethylaminonaphthalene" "ethyl-alpha-naphthylamine" "n-ethyl-1-naphthalenamine" "n-ethyl-alpha-naphthylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   178590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=348980.0
-    phase     gas;
 }

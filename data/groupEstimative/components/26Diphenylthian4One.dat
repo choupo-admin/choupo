@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group CdO_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-diphenyl-thiacyclohexanone-4" "2,6-diphenyl-tetrahydro-thiopyran-4-one" "cis-2,6-diphenyl-4-tetrahydrothiopyranone" "2,6-diphenyltetrahydro-4h-thiopyran-4-one" "2,6-diphenyldihydro-2h-thiopyran-4(3h)-one" "4h-thiopyran-4-one,tetrahydro-2,6-diphenyl-" "4h-thiopyran-4-one, tetrahydro-, 2,6-diphenyl-(trans)" "2,6-diphenyl-1-thiacyclohexan-4-one;2,6-diphenyltetrahydrothiopyran-4-one; tetrahydro-2,6-diphenyl-4h-thiopyran-4-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   20390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     503.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=251090.0
-    phase     gas;
 }

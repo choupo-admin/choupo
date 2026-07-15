@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethanol,2'-(p-hydroxyanilino)bis-" "2,2'-(p-hydroxyphenylimino)diethanol" "2,2'-(p-hydroxyphenylamino) diethanol" "ethanol,2'-[(p-hydroxyphenyl)imino]di-" "phenol, 4-[bis(2-hydroxyethyl)amino]-" "ethanol, 2,2'-(p-hydroxyphenyl-imino)di-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -427440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     583.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-171750.0
-    phase     gas;
 }

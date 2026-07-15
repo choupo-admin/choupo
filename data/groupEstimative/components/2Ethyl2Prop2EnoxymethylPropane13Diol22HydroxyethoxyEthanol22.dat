@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 6; } { group O; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethyl-2-(prop-2-enoxymethyl)propane-1,3-diol;2-(2-hydroxyethyloxy)ethanol;2-(2-hydroxyethylsulfanyl)ethanol" "1,3-propanediol, 2-ethyl-2-((2-propen-1-yloxy)methyl)-, polymer with 2,2'-oxybis(ethanol) and 2,2'-thiobis(ethanol)" "1,3-propanediol, 2-ethyl-2-((2-propenyloxy)methyl)-, polymer with 2,2'-oxybis(ethanol) and 2,2'-thiobis(ethanol)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1636720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1379.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1024380.0
-    phase     gas;
 }

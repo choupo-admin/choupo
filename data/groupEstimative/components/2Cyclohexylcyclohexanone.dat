@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 9; } { group CH_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-cyclohexylcyclohexan-1-one" "bicyclohexanone" "lavamenthe" "[1,1'-bicyclohexyl]-2-one" "cyclohexanone, 2-cyclohexyl-" "2-cyclohexyl cyclohexanone" "(1,1'-bicyclohexyl)-2-one" "1,1'-bicyclohexyl -2-one" "1,1'-bi(cyclohexyl)-2-one" "cyclohexanone, 2-cyclohexyl- (6ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -320070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23530.0
-    phase     gas;
 }

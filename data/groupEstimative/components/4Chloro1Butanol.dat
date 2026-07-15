@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-chloranylbutan-1-ol" "tetramethylene chlorohydrin" "4-chlorobutan-1-ol" "1-butanol, 4-chloro-" "4-chlorobutanol" "4-chloro-1-butane-ol" "4-chlorbutan-1-ol [german]" "butenechlorohydrin;" "4-chlorbutan-1-ol" "4-chloro-butan-1-ol" "butylene chlorohydrin" "4-chlorobutanol-1, 75%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -293860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     396.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-165950.0
-    phase     gas;
 }

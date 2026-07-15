@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 1; } { group dC; count 1; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-3-chloranylbut-2-enoic acid" "trans-3-chlorocrotonic acid" "(e)-3-chlorobut-2-enoic acid" "(e)-3-chloro-2-butenoic acid" "(2e)-3-chlorobut-2-enoic acid" "crotonic acid, 3-chloro-, (e)-" "2-butenoic acid, 3-chloro-, (e)-" "2-butenoic acid, 3-chloro-, (2e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -384470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     387.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-301370.0
-    phase     gas;
 }

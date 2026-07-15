@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2,2-bis(chloranyl)ethanoate" "acetic acid, dichloro-, ethyl ester" "dichloroacetic acid, ethyl ester" "ethyl 2,2-dichloroacetate" "ethyl dichloroethanoate" "acetic acid, 2,2-dichloro-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -479930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     420.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-353870.0
-    phase     gas;
 }

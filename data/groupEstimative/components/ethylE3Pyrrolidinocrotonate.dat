@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl (e)-3-pyrrolidin-1-ylbut-2-enoate" "ethyl(2e)-3-(1-pyrrolidinyl)-2-butenoate" "(2e)-3-(1-pyrrolidinyl)-2-butenoic acid ethyl ester" "ethyl (2e)-3-(1-pyrrolidinyl)-2-butenoate" "ethyl 3-(1-pyrrolidinyl)crotonate" "ethyl (2e)-3-pyrrolidinylbut-2-enoate" "ethyl (e)-3-(1-pyrrolidinyl)crotonate" "ethyl (e)-3-(1-pyrrolidinyl)-2-butenoate" "(e)-ethyl 3-(pyrrolidin-1-yl)but-2-enoate" "(e)-3-(1-pyrrolidinyl)-2-butenoic acid ethyl ester" "(e)-3-pyrrolidin-1-yl-but-2-enoic acid ethyl ester" "2-propenoic acid, 2-methyl-3-(1-pyrrolidinyl)-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -305070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     574.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-38240.0
-    phase     gas;
 }

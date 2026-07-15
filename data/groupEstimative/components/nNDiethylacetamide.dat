@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-diethylethanamide" "diethylacetamide" "acetamide, n,n-diethyl-" "n-acetyldiethylamine" "n,n-diaethylacetamid [german]" "acetic acid, amide, n,n-diethyl" "n,n-diaethylacetamid" "n,n-diethylacetoamide" "n,n-diethyl acetamide" "n,n-diethyl-acetamide" "acetic acid diethylamide" "p948" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -212220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     432.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-18500.0
-    phase     gas;
 }

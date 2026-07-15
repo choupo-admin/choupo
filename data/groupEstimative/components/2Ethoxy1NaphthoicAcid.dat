@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethoxynaphthalene-1-carboxylic acid" "1-naphthalenecarboxylic acid, 2-ethoxy-" "2-ethoxynaphthalenecarboxylic acid" "1-naphthalenecarboxylicacid, 2-ethoxy-" "1-naphthoicacid, 2-ethoxy- (7ci,8ci);2-ethoxy-1-naphthoic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -389480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     499.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-190530.0
-    phase     gas;
 }

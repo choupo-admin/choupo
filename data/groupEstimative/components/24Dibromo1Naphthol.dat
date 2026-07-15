@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 5; } { group dC_ring; count 5; } { group Br; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-bis(bromanyl)naphthalen-1-ol" "2,4-dibromonaphthalen-1-ol" "1-naphthalenol, 2,4-dibromo-" "psgudvjpewtbrm-uhfffaoysa-" "2,4-dibromo-naphthalen-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   30280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     446.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107140.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-3-phenyl-but-2-en-1-ol" "2-buten-1-ol, 3-phenyl-" "2-buten-1-ol, 3-phenyl-, (e)-" "1-hydroxy-3-phenyl-2-butene;3-methyl-3-phenyl-2-propenol; 3-methyl-3-phenylprop-2-en-1-ol;3-phenyl-2-buten-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -58000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=80580.0
-    phase     gas;
 }

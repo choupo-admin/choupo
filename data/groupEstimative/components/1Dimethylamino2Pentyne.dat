@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group tC; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethylpent-2-yn-1-amine" "dimethylpent-2-ynylamine" "2-pentyn-1-amine,n,n-dimethyl-" "2-pentynylamine,n,n-dimethyl- (6ci,7ci,8ci); 1-(dimethylamino)pent-2-yne;n,n-dimethyl(2-pentynyl)amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   152020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     416.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=321640.0
-    phase     gas;
 }

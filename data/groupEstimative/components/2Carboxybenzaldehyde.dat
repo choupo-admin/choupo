@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-formylbenzoic acid" "benzoic acid, 2-formyl-" "phthalaldehydic acid" "o-carboxybenzaldehyde" "o-formylbenzoic acid" "benzoic acid, formyl-" "BRN 0742381" "benzaldehyde-2-carboxylic acid" "phthalaldehydsure" "formylbenzoic acid" "carboxybenzaldehyde" "phthalaldehydic acid; 2-formylbenzoic acid; nsc 5045; o-carboxybenzaldehyde; o-formylbenzoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     489.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-180690.0
-    phase     gas;
 }

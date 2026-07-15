@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group CH_ring; count 6; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-azanyl-1,2,3,3a,4,5,5a,6,7,8,8a,8b-dodecahydro-as-indacen-4-ol" "5-amino-1,2,3,3a,4,5,5a,6,7,8,8a,8b-dodecahydro-as-indacen-4-ol" "(7s,8r)-7-hydroxy-8-amino-trans-anti-trans-tricyclo[7.3.0.0(2,6)]dodecane" "3-amino-tricyclo(7.3.0.04,8)dodecan-2-ol" "3-amino-tricyclo [7.3.0.04,8]dodecan-2-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -270550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     387.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102610.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 17; } { group CH; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group OH; count 3; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2-[(2r,3s,4r)-3,4-bis(oxidanyl)oxolan-2-yl]-2-oxidanyl-ethyl] octadecanoate" "liposorb s" "sorbitan c" "sorbitan stearate" "armotan ms" "sorbitan 0" "hodag sms" "drewsorb 60" "arlacel 60" "crill 3" "montane 60" "liposorb s-20" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1430140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1098.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-637060.0
-    phase     gas;
 }

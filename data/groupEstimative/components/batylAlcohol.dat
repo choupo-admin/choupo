@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 19; } { group CH; count 1; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-octadecoxypropane-1,2-diol" "batilol" "1-o-octadecylglycerol" "stearyl monoglyceride" "glycerol 1-octadecyl ether" "batilolum" "3-(octadecyloxy)-1,2-propanediol" "glyceryl-1-octadecyl ether" "glycerol monooctadecyl ether" "c18:0 glyceryl 1-ether" "glycerine 1-monostearyl ether" "monooctadecyl ether of glycerol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -918730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1077.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-255140.0
-    phase     gas;
 }

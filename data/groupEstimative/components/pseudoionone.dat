@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH; count 4; } { group dC; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3e,5e)-6,10-dimethylundeca-3,5,9-trien-2-one" "citrylideneacetone" "pseudoionones" "3,5,9-undecatrien-2-one, 6,10-dimethyl-" "6,10-dimethylundeca-3,5,9-trien-2-one" ".psi.-ionone" "trans-.psi.-ionone" "6,10-dimethyl-3,5,9-undecatrien-2-one" "psi-ionone" "2,6-dimethylundeca-2,6,8-triene-10-one" "6,10-dimethyl-3,5,9-undecatriene-2-one" "3,5,9-undecatrien-2-one, 6,10-dimethyl-, (e,e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -92150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     661.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=153220.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 16; } { group CH; count 1; } { group OH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(oxidanyl)propyl hexadecanoate" "monopalmitin" "glycerol 1-palmitate" "palmitin, 1-mono-" "1-monopalmitoylglycerol" "alpha-monopalmitin" "1-palmitoylglycerol" "glycerol 3-palmitate" "2,3-dihydroxypropyl palmitate" "hexadecanoic acid, 2,3-dihydroxypropyl ester" "glycerol 1-monopalmitate" "glyceryl palmitate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1062510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1039.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-477350.0
-    phase     gas;
 }

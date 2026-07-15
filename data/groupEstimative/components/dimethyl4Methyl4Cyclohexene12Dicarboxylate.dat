@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethyl 4-methylcyclohex-4-ene-1,2-dicarboxylate" "4-cyclohexene-1,2-dicarboxylic acid, 4-methyl-, dimethyl ester" "agn-pc-00jsv0" "4-cyclohexene-1, 4-methyl-, dimethyl ester, trans-" "4-cyclohexene-1,2-dicarboxylic acid, 4-methyl-, dimethyl ester, trans-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -824640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     570.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-541930.0
-    phase     gas;
 }

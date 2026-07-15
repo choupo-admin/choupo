@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group CdO; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(8r,9s,10r,13s,14s,17r)-17-ethanoyl-10,13-dimethyl-3-oxidanylidene-2,8,9,11,12,14,15,16-octahydro-1h-cyclopenta[a]phenanthren-17-yl] ethanoate" "megestil" "delta(sup 6)-dehydro-17-acetoxyprogesterone" "17-hydroxypregna-4,6-diene-3,20-dione acetate" "6-methyl-17alpha-acetoxypregna-4,6-diene-3,20-dione" "17-hydroxypregna-4,6-diene-3,20-dione acetate (ester)" "6-methyl-delta(sup 6)-dehydro-17alpha-acetoxyprogesterone" "pregna-4,6-diene-3,20-dione, 17-hydroxy-, acetate (ester)" "6-methyl-delta(sup 4,6)-pregnadien-17alpha-ol-3,20-dione acetate" "(8r,9s,10r,13s,14s,17r)-17-acetyl-10,13-dimethyl-3-oxo-2,3,8,9,10,11,12,13,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-17-yl acetate" "[(8r,9s,10r,13s,14s,17r)-17-acetyl-10,13-dimethyl-3-oxo-2,8,9,11,12,14,15,16-octahydro-1h-cyclopenta[a]phenanthren-17-yl] acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -716080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     832.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-218200.0
-    phase     gas;
 }

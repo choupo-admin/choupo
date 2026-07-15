@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-iodanylpropylbenzene" "3-iodopropylbenzene" "benzene, (3-iodopropyl)-" "(3-iodopropyl)benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   84310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=195430.0
-    phase     gas;
 }

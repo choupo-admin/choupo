@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2,4-bis(oxidanyl)phenyl]ethanamide" "benzeneacetamide, 2,4-dihydroxy-" "2,4-resorcylic acetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -405330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-242820.0
-    phase     gas;
 }

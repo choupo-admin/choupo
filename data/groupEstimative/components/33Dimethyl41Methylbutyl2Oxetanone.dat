@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-dimethyl-4-pentan-2-yl-oxetan-2-one" "3,3-dimethyl-4-pentan-2-yloxetan-2-one" "2-oxetanone, 3,3-dimethyl-4-(1-methylbutyl)-" "heptanoic acid, 2,2,4-trimethyl-3-hydroxy-, beta-lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -498430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     504.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-219840.0
-    phase     gas;
 }

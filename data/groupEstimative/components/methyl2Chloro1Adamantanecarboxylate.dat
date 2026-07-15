@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 4; } { group C_ring; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-chloranyladamantane-1-carboxylate" "methyl 2-chloroadamantane-1-carboxylate" "2-chlorotricyclo[3.3.1.13,7decane-1-carboxylic acid, methyl ester" "tricyclo[3.3.1.13,7]decane-1-carboxylicacid, 2-chloro-, methyl ester" "2-chlorotricyclo(3.3.1.13,7decane-1-carboxylic acid, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -437230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-122900.0
-    phase     gas;
 }

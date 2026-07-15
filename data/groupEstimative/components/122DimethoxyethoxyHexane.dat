@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexane, 1-(2,2-dimethoxyethoxy)-" "hexoxy dimethyl acetal" "hexoxyacetaldehyde dimethyl acetal" "acetaldehyde, (hexyloxy)-, dimethyl acetal" "hexoxyacetaldehyde dimethylacetal" "2-hexoxyacetaldehyde dimethylacetal" "2-hexoxyacetaldehyde dimethyl acetal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -651670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     569.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-284120.0
-    phase     gas;
 }

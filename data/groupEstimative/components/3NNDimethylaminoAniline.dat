@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n3,n3-dimethylbenzene-1,3-diamine" "n,n-dimethyl-m-phenylenediamine" "1,3-benzenediamine, n,n-dimethyl-" "n1,n1-dimethylbenzene-1,3-diamine" "1,3-benzenediamine, n1,n1-dimethyl-" "n,n-dimethyl-m-phenylenediaminedihydrochloride" "n,n-dimethyl-3-phenylenediamine" "n,n-dimethyl-1,3-benzenediamine" "n,n-dimethylbenzene-1,3-diamine" "3575-32-4 (di-hydrochloride)" "n,n-dimethyl-1,3-phenylenediamine" "1,3-benzenediamine,n1,n1-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   117930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     422.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=296490.0
-    phase     gas;
 }

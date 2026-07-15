@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-ethylhexoxycarbonyl)benzoic acid" "mono(2-ethylhexyl) phthalate" "mono(2-ethylhexyl)phthalate" "2-ethylhexyl hydrogen phthalate" "mono-(2-ethylhexyl)phthalate" "monoethylhexyl phthalate" "mono-2-ethylhexyl phthalate" "phthalic acid mono-2-ethylhexyl ester" "2-(((2-ethylhexyl)oxy)carbonyl)benzoic acid" "(2-ethylhexyl) hydrogen phthalate" "1,2-benzenedicarboxylic acid, mono(2-ethylhexyl) ester" "bar 1" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -821340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     761.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-470100.0
-    phase     gas;
 }

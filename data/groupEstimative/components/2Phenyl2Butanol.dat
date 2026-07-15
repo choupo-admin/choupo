@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylbutan-2-ol" "2-phenyl-butanol-2" "2-butanol, 2-phenyl-" ".alpha.-ethyl-.alpha.-methylbenzyl alcohol" "alpha-ethyl-alpha-methylbenzyl alcohol" "benzenemethanol, alpha-ethyl-alpha-methyl-" "benzyl alcohol, alpha-ethyl-alpha-methyl-" "(2s)-2-phenylbutan-2-ol" "benzenemethanol, a-ethyl-a-methyl-" "benzenemethanol, .alpha.-ethyl-.alpha.-methyl-, (.+/-.)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -174180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=11750.0
-    phase     gas;
 }

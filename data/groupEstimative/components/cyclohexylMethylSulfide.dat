@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methylsulfanylcyclohexane" "sulfide, cyclohexyl methyl" "cyclohexane, (methylthio)-" "(methylthio)cyclohexane" "cyclohexyl methylsulfide" "cyclohexyl methyl sulphide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -91620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=65630.0
-    phase     gas;
 }

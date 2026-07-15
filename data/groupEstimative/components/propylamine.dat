@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propan-1-amine" "1-propanamine" "1-aminopropane" "n-propylamine" "monopropylamine" "propanamine" "mono-n-propylamine" "1-propylamine" "propyl amine" "propyl amines" "n-propyl amine" "3-aminopropyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -71460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     324.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=40830.0
-    phase     gas;
 }

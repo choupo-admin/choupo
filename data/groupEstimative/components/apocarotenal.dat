@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group dCH; count 12; } { group dC; count 4; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2e,4e,6e,8e,10e,12e,14e,16e)-2,6,11,15-tetramethyl-17-(2,6,6-trimethylcyclohexen-1-yl)heptadeca-2,4,6,8,10,12,14,16-octaenal" "8'-apo-beta-carotenal" "c.i. food orange 6" "food orange 6" "beta-apo-carotenal" "c orange 16" "8'-apo-beta-caroten-8'-al" "8'apo-beta,psi-carotenal" "beta-apocarotenal" "beta-apo-8'-carotenal (c30)" "all-trans-8'-apo-beta-carotenal" "all-trans-beta-apo-8'-carotenal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   254890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1263.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=739420.0
-    phase     gas;
 }

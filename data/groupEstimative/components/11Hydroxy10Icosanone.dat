@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 16; } { group CH; count 1; } { group OH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "11-oxidanylicosan-10-one" "11-hydroxyicosan-10-one" "10-eicosanone,11-hydroxy-" "10-eicosanone, 11-hydroxy-" "11-hydroxy-10-eicosanone;decanoin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -726220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1003.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-150660.0
-    phase     gas;
 }

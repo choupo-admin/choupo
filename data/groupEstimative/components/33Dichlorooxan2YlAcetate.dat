@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 1; } { group Cl; count 2; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3,3-bis(chloranyl)oxan-2-yl] ethanoate" "2h-pyran-2-ol,3,3-dichlorotetrahydro-, 2-acetate" "3,3-dichloro-2h-3,4,5,6-tetrahydropyran-2-yl acetate" "(3,3-dichlorooxan-2-yl) acetate" "2-acetoxy-3,3-dichlorotetrahydropyran" "3,3-dichlorotetrahydro-2h-pyran-2-yl acetate" "2h-pyran-2-ol,3,3-dichlorotetrahydro-, acetate (9ci); 2-acetoxy-3,3-dichlorotetrahydropyran" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -619350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-401040.0
-    phase     gas;
 }

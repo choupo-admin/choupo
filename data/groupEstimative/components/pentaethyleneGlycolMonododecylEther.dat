@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 21; } { group OH; count 1; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-[2-(2-dodecoxyethoxy)ethoxy]ethoxy]ethoxy]ethanol" "laureth-5" "polyoxyethylene (5) lauryl ether" "dodecylpentaglycol" "peg-5 lauryl ether" "pentaethylene glycol lauryl ether" "pentaoxyethylene monododecyl ether" "dodecyl pentaethylene glycol ether" "pentaethylene glycol dodecyl ether" "c12e5" "polyethylene glycol (5) lauryl ether" "lauryl alcohol tetra(oxyethylene) ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1310740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1120.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-527460.0
-    phase     gas;
 }

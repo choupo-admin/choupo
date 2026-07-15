@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "lauraldehyde" "dodecyl aldehyde" "lauric aldehyde" "lauryl aldehyde" "dodecanaldehyde" "n-dodecanal" "1-dodecanal" "n-dodecyl aldehyde" "n-lauraldehyde" "duodecylic aldehyde" "1-dodecyl aldehyde" "n-dodecylic aldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -376590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     642.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-49360.0
-    phase     gas;
 }

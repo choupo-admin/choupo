@@ -38,9 +38,8 @@ groups
     joback ( { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "deuterio deuteriomethanoate" "deuterio deuterioformate" "(2h)formic (2)acid" "de490" "formic acid-d2 >99.0 atom % d (95% in d2o)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -358430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     259.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-333990.0
-    phase     gas;
 }

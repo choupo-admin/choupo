@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,5,6-(ch3)4-c6h-cooch3" "2,3,5,6-tetramethyl-benzoic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -417640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     543.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-186320.0
-    phase     gas;
 }

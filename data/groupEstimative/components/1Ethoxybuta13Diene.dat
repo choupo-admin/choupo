@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3-butadiene, 1-ethoxy-" "1,3-butadiene, 1-ethoxy-, (e)-" "1,3-butadiene,1-ethoxy-, (z)- (9ci)" "ether,1,3-butadienyl ethyl, (z)- (8ci); cis-1-ethoxy-1,3-butadiene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -56740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62700.0
-    phase     gas;
 }

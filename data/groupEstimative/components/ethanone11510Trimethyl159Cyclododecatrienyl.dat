@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[(1r,2e,6e,10e)-2,7,11-trimethylcyclododeca-2,6,10-trien-1-yl]ethanone" "1,6,9-trimethyl-1,5,9-cyclododecatrienyl methyl ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -350500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     803.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23820.0
-    phase     gas;
 }

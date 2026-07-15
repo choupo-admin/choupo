@@ -33,9 +33,8 @@ groups
     joback ( { group tC; count 4; } { group CH2_ring; count 5; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2h-thiecin,5,6,7,10-tetrahydro-" "2h-thiecin,3,4,8,9-tetradehydro-5,6,7,10-tetrahydro- (9ci); 1-thiacyclodeca-3,8-diyne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   435430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     512.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=502520.0
-    phase     gas;
 }

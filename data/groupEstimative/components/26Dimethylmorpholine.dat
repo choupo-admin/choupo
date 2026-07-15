@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group O_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "morpholine, 2,6-dimethyl-" "dimethylmorpholine" "2,6-dimethyl morpholine" "2,6-dimethyl-2,3,5,6-tetrahydro-4h-1,4-oxazine" "2,6-dimethylmorfolin" "morpholine, 2,6-dimethyl-, cis-" "2,3,5,6-tetrahydro-4h-1,4-oxazine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -227380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     259.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=17970.0
-    phase     gas;
 }

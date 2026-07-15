@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-[3,5-bis(oxidanyl)phenyl]benzene-1,3-diol" "[1,1'-biphenyl]-3,3',5,5'-tetrol" "(1,1'-biphenyl)-3,3',5,5'-tetrol" "biphenyl-3,3',5,5'-tetrol" "5-(3,5-dihydroxyphenyl)benzene-1,3-diol" "(1,1'-biphenyl)-3,3',5,5'-tetraol" "3,3',5,5'-biphenyltetrol(8ci); 3,3',5,5'-tetrahydroxybiphenyl; 3,5,3',5'-tetrahydroxydiphenyl;5,5'-biresorcinol; biphenyl-3,5,3',5'-tetraol; diresorcinol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -527190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     516.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-343500.0
-    phase     gas;
 }

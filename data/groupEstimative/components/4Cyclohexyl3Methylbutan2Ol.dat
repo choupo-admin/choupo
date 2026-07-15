@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-cyclohexyl-3-methyl-butan-2-ol" "alpha,beta-dimethylcyclohexanepropanol" "3-methyl-4-cyclohexyl-2-butanol" "cyclohexanepropanol, alpha,beta-dimethyl-" "cyclohexanepropanol, .alpha.,.beta.-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -378840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     585.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-75510.0
-    phase     gas;
 }

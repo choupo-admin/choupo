@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group Cl; count 1; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3-chloranylpropyl)-2-(4-fluorophenyl)-1,3-dioxolane" "r379" "1,3-dioxolane,2-(3-chloropropyl)-2-(4-fluorophenyl)-" "2-(3-chloroprop-1-yl)-2-(4-fluorophenyl)-1,3-dioxolane" "4-[2-(3-chloroprop-1-yl)-1,3-dioxolan-2-yl]fluorobenzene" "1,3-dioxolane,2-(3-chloropropyl)-2-(p-fluorophenyl)- (7ci,8ci);1,1-(ethylenedioxy)-4-chloro-1-(4-fluorophenyl)butane;1-chloro-4,4-(ethylenedioxy)-4-(4-fluorophenyl)butane;2-(3-chloropropyl)-2-(4-fluorophenyl)dioxolane;2-(3-chloropropyl)-2-(4'-fluorophenyl)-1,3-dioxolane;2-(3-chloropropyl)-2-(p-fluorophenyl)dioxolane;3-chloropropyl4-fluorophenyl ketone ethylene ketal;3-p-fluorobenzoylpropyl chloride ethyleneketal;4,4-(ethylenedioxy)-4-(4-fluorophenyl)butyl chloride;4-(p-fluorophenyl)-4,4-ethylenedioxy-1-chlorobutane;4-chloro-1-(p-fluorophenyl)-1-butanonecyclic ethylene acetal;4-chloro-p-fluorobutyrophenone cyclic ethylene acetal;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -466080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-194980.0
-    phase     gas;
 }

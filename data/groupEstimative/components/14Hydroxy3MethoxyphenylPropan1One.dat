@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3-methoxy-4-oxidanyl-phenyl)propan-1-one" "3-methoxy-4-hydroxypropiophenone" "4-hydroxy-3-methoxypropiophenone" "1-propanone, 1-(4-hydroxy-3-methoxyphenyl)-" "4'-hydroxy-3'-methoxypropiophenone" "1-propanone, 1-(4-hydroxy-3-methoxyphenyl)" "propiovanillone" "propioguaiacol" "propioguaiacone" "2-methoxy-4-propionyl phenol" "fbgxenqfsmmbny-uhfffaoysa-" "propiophenone, 4'-hydroxy-3'-methoxy" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -446780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     497.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-252440.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 11; } { group CH_ring; count 10; } { group C_ring; count 2; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(22s,25r)-5-alpha-solanidan-3-beta-ol" "(22s,25r)-5-alpha-solanidanine-3-beta-ol" "(3" "a,5" "a,22" "a,25" "a)-solanidan-3-ol" "5-alpha-solanidan-3-beta-ol, (22s,25r)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -370870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     717.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=397180.0
-    phase     gas;
 }

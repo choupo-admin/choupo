@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group OH; count 2; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[[3,3-dimethyl-2,4-bis(oxidanyl)butanoyl]amino]butanoic acid" "4-[(2,4-dihydroxy-3,3-dimethyl-1-oxobutyl)amino]butanoic acid" "pantogab" "4-((2,4-dihydroxy-3,3-dimethyl-1-oxobutyl)amino)butanoic acid" "gaba-pantoyl" "pantoyl-gaba" "4-{[(2r)-2,4-dihydroxy-3,3-dimethylbutanoyl]amino}butanoic acid" "4-{[(2s)-2,4-dihydroxy-3,3-dimethylbutanoyl]amino}butanoic acid" "1990-07-4 (calcium[2:1] salt)" "butanoic acid, 4-((2,4-dihydroxy-3,3-dimethyl-1-oxobutyl)amino)-" "butanoic acid,4-[(2,4-dihydroxy-3,3-dimethyl-1-oxobutyl)amino]-, calcium salt (2:1)" "butyricacid, 4-(2,4-dihydroxy-3,3-dimethylbutyramido)-, calcium salt (2:1) (8ci);butyric acid, 4-(2,4-dihydroxy-3,3-dimethylbutyramido)-, calcium salt (7ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -977600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     719.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-623360.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 16; } { group O_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16-hexadecamethyl-1,3,5,7,9,11,13,15-octaoxa-2,4,6,8,10,12,14,16-octasilacyclohexadecane" "hexadecamethylcyclooctasiloxane" "hexadecamethyl-cyclooctasioxane" "cyclooctasiloxane,2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16-hexadecamethyl-" "cyclooctasiloxane,hexadecamethyl- (7ci,8ci,9ci); hexadecamethylcyclooctasiloxane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2260190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1432.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1435240.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group tC; count 2; } { group F; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,4,4,4-hexakis(fluoranyl)but-2-yne" "butyne 06" "bis(trifluoromethyl)acetylene" "1,1,1,4,4,4-hexafluorobut-2-yne" "2-butyne, 1,1,1,4,4,4-hexafluoro-" "perfluoro-2-butyne" "hexafluorobut-2-yne" "1,1,1,4,4,4-hexafluoro-2-butyne" "2-butyne, hexafluoro- (6ci,7ci)" "1,1,1,4,4,4-hexafluoro-but-2-yne" "2-butyne,1,1,1,4,4,4-hexafluoro-" "2-butyne,hexafluoro- (6ci,7ci);1,1,1,4,4,4-hexafluoro-2-butyne;bis(trifluoromethyl)acetylene;hexafluoro-2-butyne;perfluoro-2-butyne;1,1,1,4,4,4-hexafluorobut-2-yne;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1047750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     396.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-977580.0
-    phase     gas;
 }

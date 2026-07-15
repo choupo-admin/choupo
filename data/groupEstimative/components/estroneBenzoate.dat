@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(8r,9s,14s)-13-methyl-17-oxidanylidene-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthren-3-yl] benzoate" "oestronbenzoat [german]" "ketohydroxyestrin benzoate" "ketohydroxyoestrin benzoate" "3-(benzoyloxy)estr-1,3,5(10)-trien-17-one" "benzoate d'oestrone [french]" "oestronbenzoat" "3-(benzoyloxy)estra-1,3,5(10)-trien-17-one" "3-hydroxyestra-1,3,5(10)-trien-17-one benzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -363210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     673.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77070.0
-    phase     gas;
 }

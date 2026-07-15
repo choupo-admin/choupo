@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group CH_ring; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group F; count 3; } { group O_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-5-phenyl-2-(trifluoromethyl)-1,3-oxazolidine" "4-methyl-5-phenyl-2-trifluoromethoxazolidine" "oxazolidine, 4-methyl-5-phenyl-2-trifluoromethyl-" "oxazolidine, 4-methyl-5-phenyl-2-(trifluoromethyl)-" "agn-pc-00sppe" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -705310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     341.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-404720.0
-    phase     gas;
 }

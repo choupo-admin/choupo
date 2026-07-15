@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-methylprop-2-yn-1-amine" "2-propyn-1-amine, n-methyl-" "3-methylamino-1-propyne" "methyl-prop-2-ynyl-amine" "n-methyl-n-prop-2-ynylamine (n-methylpropargylamine)" "methyl(propargyl)amine" "methyl(2-propynyl)amine" "3-methylaminoprop-1-yne" "n-methylpropyn-2-ylamine" "n-methyl-n-propargylamine" "n-(2-propynyl)methylamine" "n-methyl-n-2-propynylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   219480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     321.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=295260.0
-    phase     gas;
 }

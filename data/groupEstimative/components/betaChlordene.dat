@@ -34,9 +34,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dC_ring; count 4; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,6-methano-1h-indene, 2,3,3a,4,5,7-hexachloro-3a,6,7,7a-tetrahydro-, (1r,3ar,6s,7s,7ar)-rel-" "1,6-methano-1h-indene, 2,3,3a,4,5,7-hexachloro-3a,6,7,7a-tetrahydro-,     (1alpha,3abeta,6alpha,7alpha,7abeta)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -87690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     380.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=132380.0
-    phase     gas;
 }

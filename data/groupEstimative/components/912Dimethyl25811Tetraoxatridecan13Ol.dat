@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 2; } { group OH; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-(2-methoxyethoxy)ethoxy]propoxy]propan-1-ol" "2,5,8,11-tetraoxatridecan-13-ol, 9,12(9,13-,10,12 or 10,13)-dimethyl-" "propylene oxide, methyl carbitol adduct" "2,5(1,5-,2,4 or 1,4)-dimethyl-3,6,9,12-tetraoxatridecan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -962040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     661.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-519960.0
-    phase     gas;
 }

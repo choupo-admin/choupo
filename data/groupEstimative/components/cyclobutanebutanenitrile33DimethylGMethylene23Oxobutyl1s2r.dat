@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group CdO; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[(1s,2r)-3,3-dimethyl-2-(3-oxidanylidenebutyl)cyclobutyl]pent-4-enenitrile" "cyclobutanebutanenitrile,3,3-dimethyl-g-methylene-2-(3-oxobutyl)-,(1s-trans)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -143790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     678.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=186710.0
-    phase     gas;
 }

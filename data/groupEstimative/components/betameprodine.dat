@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-ethyl-1-methyl-4-phenyl-piperidin-4-yl) propanoate" "betameprodina" "betameprodinum" "agn-pc-02ls5b" "betameprodinum [inn-latin]" "betameprodine [inn:ban:dcf]" "3-ethyl-1-methyl-4-phenylpiperidin-4-yl propanoate" "(3-ethyl-1-methyl-4-phenylpiperidin-4-yl) propanoate" "beta-3-ethyl-1-methyl-4-phenyl-4-propionoxypiperidine" "beta-1-methyl-3-ethyl-4-phenyl-4-propionoxy-piperidin" "beta-3-ethyl-1-methyl-4-phenyl-4-propionyloxypiperidine" "[(3s,4s)-3-ethyl-1-methyl-4-phenylpiperidin-4-yl] propanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -352050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     755.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=28430.0
-    phase     gas;
 }

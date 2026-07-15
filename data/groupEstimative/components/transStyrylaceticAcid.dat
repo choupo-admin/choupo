@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-phenylbut-3-enoic acid" "3-butenoic acid, 4-phenyl-, (z)-" "styrylacetic acid;trans 4-phenyl-3-butenoic acid;(3e)-4-phenyl-3-butenoic acid;3-butenoic acid, 4-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -246250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     485.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-117960.0
-    phase     gas;
 }

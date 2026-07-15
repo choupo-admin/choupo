@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group F; count 4; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2,3,4,5-tetrakis(fluoranyl)phenyl]methanol" "(2,3,4,5-tetrafluorophenyl)methanol" "(2,3,4,5-tetrafluorophenyl)methan-1-ol" "benzenemethanol,2,3,4,5-tetrafluoro-" "(2,3,4,5-tetrafluoro-phenyl)-methanol" "2, 3, 4, 5-tetrafluorobenzyl alcohol" "t216" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -933830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-834110.0
-    phase     gas;
 }

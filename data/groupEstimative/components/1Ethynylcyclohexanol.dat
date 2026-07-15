@@ -33,9 +33,8 @@ groups
     joback ( { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethynylcyclohexan-1-ol" "1-ethynyl-1-cyclohexanol" "cyclohexanol, 1-ethynyl-" "ethynylcyclohexanol" "(1-hydroxycyclohexyl)ethyne" "1-ethynyl-1-hydroxycyclohexane" "1-ethynyl-cyclohexanol" "1-ethynyl cyclohexanol" "cyclohexanol, ethynyl-" "ethynylcyclohexan-1-ol" "1-ethynyl-cyclohexan-1-ol" "o305" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     527.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=121690.0
-    phase     gas;
 }

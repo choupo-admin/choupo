@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2,2-dimethoxyethoxy)-1,3-dimethyl-benzene" "benzene, 2-(2,2-dimethoxyethoxy)-1,3-dimethyl-" "(2,6-dimethylphenoxy)acetaldehyde dimethyl acetal" "2-(2,2-dimethoxyethoxy)-1,3-dimethylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -479360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     528.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-174130.0
-    phase     gas;
 }

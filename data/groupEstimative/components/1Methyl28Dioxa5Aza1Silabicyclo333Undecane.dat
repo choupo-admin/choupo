@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 7; } { group O_ring; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methyl-4,6-dioxa-1-aza-5-silabicyclo[3.3.3]undecane" "2,8-dioxa-5-aza-1-silabicyclo(3.3.3)undecane, 1-methyl-" "2,8-dioxa-5-aza-1-silabicyclo[3.3.3]undecane, 1-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -348740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     471.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-49120.0
-    phase     gas;
 }

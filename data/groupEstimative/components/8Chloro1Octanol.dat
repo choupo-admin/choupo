@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-chloranyloctan-1-ol" "8-chlorooctan-1-ol" "1-octanol, 8-chloro-" "8-chloro-1-n-octanol" "8-chlor-octan-1-ol" "8-chloro-octan-1-ol" "8-chlorooctanol" "q040" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -376420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     551.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-132270.0
-    phase     gas;
 }

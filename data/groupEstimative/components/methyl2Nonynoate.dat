@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group tC; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl non-2-ynoate" "2-nonynoic acid methyl ester" "methyl octine carbonate" "methyl octyne carbonate" "2-nonynoic acid, methyl ester" "methyloctyne carboxylate" "methyloctyne carbonate" "methyl octin carbonate" "octynecarboxylic acid, methyl ester" "agn-pc-03eaxb" "nonynoic acid, methyl ester" "non-2-ynoic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -294710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     568.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-74250.0
-    phase     gas;
 }

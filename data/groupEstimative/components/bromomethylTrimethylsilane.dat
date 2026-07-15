@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bromomethyl(trimethyl)silane" "(trimethylsilyl)methyl bromide" "silane, (bromomethyl)trimethyl-" "(bromomethyl)(trimethyl)silane" "bromomethyltrimethylsilane" "silane,(bromomethyl)trimethyl-" "(trimethylsilyl)methylbromide;[trimethyl][bromomethyl]silane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -211180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     489.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-107640.0
-    phase     gas;
 }

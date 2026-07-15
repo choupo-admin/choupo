@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2,6-bis(chloranyl)phenyl]ethanoic acid" "(2,6-dichlorophenyl)acetic acid" "2-(2,6-dichlorophenyl)acetic acid" "2,6-dichlorophenylaceticacid" "2,6-dichloro benzeneacetic acid" "2,6-dichlorophenyl acetic acid" "2,6-dichlorobenzeneaceticacid" "benzeneacetic acid, 2,6-dichloro-" "2cl" "benzeneaceticacid, 2,6-dichloro-" "6575-24-2 2,6-dichlorophenylacetic acid" "aceticacid, (2,6-dichlorophenyl)- (6ci,7ci,8ci);2,6-dichlorobenzeneacetic acid;2-(2,6-dichlorophenyl)acetic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -376610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     468.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-258140.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "non-1-ene" "n-non-1-ene" "nonylene" "alpha-nonene" "nonene (petroleum)" "alkenes, c8-10, c9-rich" "alkenes, c8-1o, c9-rich" "1-n-none" "alkenes, c6-12 alpha-" "(c6-c12) alpha-olefin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -103660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     501.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=112740.0
-    phase     gas;
 }

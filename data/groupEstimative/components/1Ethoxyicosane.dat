@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 20; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "alcohols, c20-28, ethoxylated" "alcohols, c20-30, ethoxylated" "aliphatic (c20-c30)alchol, ethoxylated" "poly(oxy-1,2-ethanediyl)-alpha-(c20-c28)alkyl-omega-hydroxy" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -629630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1024.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=29360.0
-    phase     gas;
 }

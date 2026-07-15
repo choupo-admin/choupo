@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group OH; count 1; } { group COOH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexanedioic acid;2-(methylamino)ethanol" "hexanedioic acid, polymer with 2-(methylamino)ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1140010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     812.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-815110.0
-    phase     gas;
 }

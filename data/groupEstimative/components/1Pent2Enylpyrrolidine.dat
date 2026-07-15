@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH; count 2; } { group CH2_ring; count 4; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-1-pyrrolidin-1-yl-2-pentene" "agn-pc-02pgec" "1-[(e)-pent-2-enyl]pyrrolidine" "pyrrolidine,1-(1-ethyl-1-propen-1-yl)-" "pyrrolidine,1-(1-ethyl-1-propenyl)- (9ci); pyrrolidine, 1-(1-ethylpropenyl)- (7ci,8ci);1-(2-penten-3-yl)pyrrolidine; n-(2-penten-3-yl)pyrrolidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   42640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     488.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=272260.0
-    phase     gas;
 }

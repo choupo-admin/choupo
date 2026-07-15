@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 20; } { group O; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propanoic acid;n'-(3-tetradecoxypropyl)propane-1,3-diamine" "propanoic acid- n-[3-(tetradecyloxy)propyl]propane-1,3-diamine(1:1)" "propanoic acid compd. with n-[3-(tetradecyloxy)propyl]-1,3-propanediamine" "n-(3-myristyloxypropyl)-1,3-propanediamine propionic acid salt" "propanoic acid, compd. with n1-(3-(tetradecyloxy)propyl)-1,3-propanediamine (1:?)" "propanoic acid, compd. with n-(3-(tetradecyloxy)propyl)-1,3-propanediamine" "n-(tetradecyloxypropyl)-1,3-propanediamine propionate" "propanoic acid; n'-(3-tetradecoxypropyl)propane-1,3-diamine" "propionic acid, compound with n-(3-(tetradecyloxy)propyl)propane-1,3-diamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1024900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1316.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-255050.0
-    phase     gas;
 }

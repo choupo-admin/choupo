@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 2; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(aziridin-1-yl)but-3-en-2-ol" "ethoxene" "tetramin" "alpha-vinyl ae" "tetramin (secondary isomer)" ".alpha.-vinyl ae" "1-ethylenimino-2-hydroxybutene" "2-(1-aziridinyl)-1-vinylethanol" "1-(2-hydroxybut-1-enyl)aziridine" "1-ethyleneimino-2-hydroxy-3-butene" "4-aziridinyl-3-hydroxy-1,2-butene" "aziridine, 1-(2-hydroxybut-1-enyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -32420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     374.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=139560.0
-    phase     gas;
 }

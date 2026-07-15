@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group F; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1-tris(fluoranyl)propan-2-one" "methyl trifluoromethyl ketone" "2-propanone, 1,1,1-trifluoro-" "1,1,1-trifluoropropan-2-one" "trifluoroacetone" "1,1,1-trifluoro-2-propanone" "trifluoromethyl methyl ketone" "1,1-trifluoroacetone" "3,3-trifluoroacetone" "3,3,3-trifluoroacetone" "1,1-trifluoro-2-propanone" "2-propanone,1,1-trifluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -814910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     355.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-736130.0
-    phase     gas;
 }

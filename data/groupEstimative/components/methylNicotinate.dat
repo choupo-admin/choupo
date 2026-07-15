@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group COO; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl pyridine-3-carboxylate" "nikomet" "3-pyridinecarboxylic acid, methyl ester" "nicotinic acid methyl ester" "nicometh" "methylnicotinate" "methyl-nicotinate" "methyl 3-pyridinecarboxylate" "nicotinic acid, methyl ester" "3-(carbomethoxy)pyridine" "m-(methoxycarbonyl)pyridine" "3-(methoxycarbonyl)pyridine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -235770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     386.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-112850.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "petroselenic acid" "petroselaidic acid" "6-octadecenoicacid, (z)- (8ci); petroselinic acid (6ci); (6z)-octadecenoic acid;(z)-6-octadecenoic acid; 6(z)-octadecenoic acid; petroselic acid;cis-6-octadecenoic acid; cis-petroselinic acid; cis-d6-octadecenoic acid; d6-cis-octadecenoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -647900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     903.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-163010.0
-    phase     gas;
 }

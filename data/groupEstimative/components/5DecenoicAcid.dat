@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dec-5-enoic acid" "5-decenoic acid, (5e)-" "5-decenoic acid, (5z)-" "(e)-5-decenoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -482780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     592.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-230370.0
-    phase     gas;
 }

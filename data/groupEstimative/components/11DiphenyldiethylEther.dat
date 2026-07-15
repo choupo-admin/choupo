@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(1-phenylethoxy)ethylbenzene" "bis(alpha-phenylethyl) ether" "ether, bis(.alpha.-methylbenzyl)" "alpha-methylbenzyl ether" "benzene, 1,1'-(oxydiethylidene)bis-" "alpha-methyl benzyl ether" "bis(alpha-phenylethyl)ether" "bis(alpha-methylbenzyl) ether" "ether, bis(alpha-methylbenzyl)" "1,1'-(oxydiethylidene)bisbenzene" ".alpha.-methyl benzyl ether" "bis(.alpha.-phenylethyl) ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -43290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     558.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=198780.0
-    phase     gas;
 }

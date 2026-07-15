@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-diphenylpropan-2-ol" "benzeneethanol, .alpha.-methyl-.alpha.-phenyl-" "1,2-diphenyl-propan-2-ol" "benzeneethanol, a-methyl-a-phenyl-" "alpha-methyl-alpha-phenylbenzeneethanol" "benzeneethanol, alpha-methyl-alpha-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -40850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     539.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166260.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[methyl(2-oxidanylpropyl)amino]propan-2-ol" "2-propanol, 1,1'-(methylimino)bis-" "n-methyl diisopropanolamine" "1-[2-hydroxypropyl(methyl)amino]propan-2-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -435300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     527.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-159680.0
-    phase     gas;
 }

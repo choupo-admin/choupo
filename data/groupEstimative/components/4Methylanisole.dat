@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methoxy-4-methyl-benzene" "p-methylanisole" "1-methoxy-4-methylbenzene" "4-methoxytoluene" "benzene, 1-methoxy-4-methyl-" "anisole, p-methyl-" "p-cresol methyl ether" "p-methoxytoluene" "methyl p-tolyl ether" "p-tolyl methyl ether" "methyl p-cresyl ether" "p-cresyl methyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -115610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     366.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=14260.0
-    phase     gas;
 }

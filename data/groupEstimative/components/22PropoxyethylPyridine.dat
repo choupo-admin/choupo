@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group O; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-propoxy-ethyl)-pyridine" "pyridine, 2-(2-propoxyethyl)-" "1-propoxy-2-(2-pyridyl)ethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -112630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     463.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=117780.0
-    phase     gas;
 }

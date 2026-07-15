@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 24; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cerotic acid" "ceric acid" "ceratinic acid" "cerinic acid" "cerylic acid" "hexacosanic acid" "n-hexacosanoic acid" "cerotinic acid" "cerate" "ceratinate" "cerinate" "n-hexacosanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -930240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1221.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-175870.0
-    phase     gas;
 }

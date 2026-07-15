@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 2; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-ethanoyl-3-methyl-butanoate" "ethyl 2-isopropylacetoacetate" "butanoic acid, 2-acetyl-3-methyl-, ethyl ester" "2-isopropylacetoacetic acid ethyl ester" "acetoacetic acid, 2-isopropyl-, ethyl ester" "ethyl .alpha.-isopropylacetoacetate" "ghl.pd_mitscher_leg0.994" "ethyl alpha-isopropylacetoacetate" "ethyl 2-acetyl-3-methylbutyrate" "2-acetyl-3-methyl-butyric acid ethyl ester" "ethyl-alpha-isopropylacetoacetate, pract" "butanoic acid,2-acetyl-3-methyl-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -669510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     565.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-419270.0
-    phase     gas;
 }

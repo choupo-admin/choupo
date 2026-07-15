@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group COOH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-ethylsulfanylbutanoic acid" "4-(ethylthio)butanoic acid" "butyric acid, 4-ethylthio-" "4-(ethylsulfanyl)butanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -475570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     504.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-311150.0
-    phase     gas;
 }

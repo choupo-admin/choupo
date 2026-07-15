@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 18; } { group CH; count 1; } { group OH; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(2-azanylethyl)-n-(2-hydroxyethyl)-16-methyl-heptadecanamide" "n-(2-aminoethyl)-n-(2-hydroxyethyl)-16-methylheptadecanamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -666180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1148.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=43410.0
-    phase     gas;
 }

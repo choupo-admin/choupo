@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 13; } { group dC_ring; count 5; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[4-(4-phenylphenyl)phenyl]ethanamide" "p-terphenyl-4-ylacetamide" "acetamide, p-terphenyl-4-yl-" "4-acetylamino-p-diphenylbenzene" "2-[4-(4-phenylphenyl)phenyl]acetamide" "2-(1,1':4',1''-terphenyl-4-yl)acetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   151730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     681.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=373020.0
-    phase     gas;
 }

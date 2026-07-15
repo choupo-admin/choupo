@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group Cl; count 1; } { group COOH; count 2; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-but-2-enedioic acid;(3s)-3-(4-chlorophenyl)-n,n-dimethyl-3-pyridin-2-yl-propan-1-amine" "(+)-chlorpheniramine maleate" "d-chlorpheniramine maleate" "dexchloropheniramine maleate" "polaramine" "dextrochlorpheniramine maleate" "s-(+)-chlorpheniramine maleate salt" "chlorpheniramine d-form maleate" "s-(+)-chlorpheniramine maleate" "polamin" "rescon jr" "rescon mx" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -610180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     976.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-206190.0
-    phase     gas;
 }

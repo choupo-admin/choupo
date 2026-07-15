@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3h-2-benzofuran-1-one" "1-phthalanone" "1(3h)-isobenzofuranone" "phthalolactone" "2-benzofuran-1(3h)-one" "isobenzofuran-1(3h)-one" "isobenzofuranone" "phthalanone" "phthalid" "2-hydroxymethylbenzoic acid, gamma-lactone" "1-isobenzofuranone" "3-hydroisobenzofuran-1-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -195210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     318.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-98450.0
-    phase     gas;
 }

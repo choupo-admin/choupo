@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2,6-bis(fluoranyl)phenyl]ethanenitrile" "2,6-difluorobenzyl cyanide" "2-(2,6-difluorophenyl)acetonitrile" "(2,6-difluorophenyl)acetonitrile" "2-(2,6-difluorophenyl)ethanenitrile" "2,6-difluorobenzeneacetonitrile" "n-dodecyl-beta-maltoside" "3,5-dichloro-4-fluronitrobenzene" "benzeneacetonitrile, 2,6-difluoro-" "2,6-difluorophenylacetonitrile 98%" "654-01-3 2,6-difluorobenzyl cyanide" "acetonitrile,(2,6-difluorophenyl)- (7ci,8ci);(2,6-difluorophenyl)acetonitrile;2,6-difluorobenzyl cyanide;2,6-difluorophenylacetonitrile;3,5-dichloro-4-fluronitrobenzene;2,6-difluorobenzeneacetonitrile;2-(2,6-difluorophenyl)acetonitrile;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -222200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     418.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-146810.0
-    phase     gas;
 }

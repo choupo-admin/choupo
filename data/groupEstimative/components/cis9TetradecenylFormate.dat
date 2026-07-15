@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradec-9-enyl methanoate" "(z)-9-tetradecen-1-ol formate" "9-tetradecen-1-ol, 1-formate, (9z)-" "9-tetradecen-1-ol,1-formate, (9z)-" "9-tetradecen-1-ol,formate, (9z)- (9ci);9-tetradecen-1-ol, formate, (z)-;(z)-9-tetradecen-1-olformate;(z)-9-tetradecenyl formate;cis-9-tetradecen-1-yl formate;cis-9-tetradecenyl formate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -159260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     917.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=199600.0
-    phase     gas;
 }

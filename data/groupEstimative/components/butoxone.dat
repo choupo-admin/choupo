@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[2,4-bis(chloranyl)phenoxy]butanoic acid" "4-(2,4-dichlorophenoxy)butanoic acid" "4-(2,4-dichlorophenoxy)butyric acid" "butyrac" "2,4-db" "2,4-d butyric acid" "legumex d" "buratal" "butirex" "butormone" "butoxon" "butoxone amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -550110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     558.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-346300.0
-    phase     gas;
 }

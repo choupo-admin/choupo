@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohexylmethanamine" "(aminomethyl)cyclohexane" "hexahydrobenzylamine" "aminomethylcyclohexane" "cyclohexanemethanamine" "1-cyclohexylmethanamine" "4-aminomethylcyclohexane" "cyclohexyl-methanamine" "cyclohexyl-methyl-amine" "decarboxylated derivative" "phenylmethanamine;1-phenylmethanamine;monobenzylamine;.omega.-aminotoluene;benzylazanium;(phenylmethyl)amine;benzenemethanamine;.alpha.-aminotoluene;benzylamine(ba);benzyl amine;n-benzylamine;benzylamine 99%;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -99700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=98960.0
-    phase     gas;
 }

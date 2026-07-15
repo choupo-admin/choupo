@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethoxy-2-fluoranyl-benzene" "1-ethoxy-2-fluorobenzene" "benzene, 1-ethoxy-2-fluoro-" "o-fluorophenetole" "phenetole, o-fluoro-" "o-fluorophenatole" "2-ethoxyfluorobenzene" "2-ethoxy-1-fluorobenzene" "benzene,1-ethoxy-2-fluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     398.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-180550.0
-    phase     gas;
 }

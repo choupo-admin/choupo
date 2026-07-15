@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diethyl 2-cyclohexylpropanedioate" "diethyl cyclohexylmalonate" "diethylcyclohexylmalonate" "diethyl cyclohexyl malonate" "diethyl cyclohexylpropanedioate" "1,3-diethyl 2-cyclohexylpropanedioate" "diethyl 2-cyclohexylpropane-1,3-dioate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -897170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     724.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-540150.0
-    phase     gas;
 }

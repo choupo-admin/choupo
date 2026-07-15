@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-[(phenylmethyl)amino]ethanoate" "ethyl 2-(benzylamino)acetate" "ethyl (benzylamino)acetate" "bzl-gly-oet" "ethyl-n-benzylglycinat" "ethyl n-benzylglycinate" "n-benzyl glycine ethyl ester" "n-benzyl-glycine ethyl ester" "glycine, n-(phenylmethyl)-, ethyl ester" "ethyl 2-[benzylamino]acetate" "n-bzl-gly-oet" "ethyl benzylaminoacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -297650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     570.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-66830.0
-    phase     gas;
 }

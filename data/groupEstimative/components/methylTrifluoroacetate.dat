@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2,2,2-tris(fluoranyl)ethanoate" "trifluoroacetic acid methyl ester" "methyltrifluoroacetate" "methyl 2,2,2-trifluoroacetate" "acetic acid, trifluoro-, methyl ester" "2,2,2-trifluoromethylacetate" "acetic acid, 2,2,2-trifluoro-, methyl ester" "tfamt" "methyl 2,2,2-trifluoroethanoate" "acetic acid, trifluoro-, methyl ester;methyl 2,2,2-trifluoroacetate;2,2,2-trifluoroacetic acid methyl ester a'a pounda'a trifluoroacetic acid methyl ester a'a pounda'a(c);mthyl trifluoroacetate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1019610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     380.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-917580.0
-    phase     gas;
 }

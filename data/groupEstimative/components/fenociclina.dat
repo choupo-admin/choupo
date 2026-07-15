@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 5; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethyl-7-methoxy-2-methyl-3,4-dihydro-1h-phenanthrene-2-carboxylic acid" "fenocyclin" "fenocycline" "fenocylin" "phenocyclin" "surestrine" "surestryl" "doisynoestrol" "bdda me" "dehydrofolliculinic acid" "dl-cis-bisdehydrodoisynolic acid methyl ether" "7-methylbisdehydrodoisynolic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -463250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     683.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-114190.0
-    phase     gas;
 }

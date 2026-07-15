@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-2-propan-2-yloxy-but-1-ene" "3-methyl-2-propan-2-yloxybut-1-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -235590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-14110.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 9; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(cyclohexen-1-yl)piperidine" "1-(1-cyclohexen-1-yl)piperidine" "piperidine, 1-(1-cyclohexen-1-yl)-" "1-(cyclohex-1-en-1-yl)piperidine" "1-(1-piperidino)cyclohexene" "n-(1-cyclohexenyl)piperidine" "n-(1-cyclohexen-1-yl)piperidine" "a-(1-piperidino)cyclohexene" "1-(1-cyclohexenyl)piperidine" "1-(1-piperidinyl)cyclohexene" "piperidine,1-(1-cyclohexen-1-yl)-" "1-(1-cyclohexen-1-yl)piperidine;1-(cyclohex-1-enyl)piperidine;1-piperidino-1-cyclohexene;1-piperidinocyclohexene;1-piperidinylcyclohexene;n-(1-cyclohexen-1-yl)piperidine;n-(1-cyclohexenyl)piperidine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     560.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=249270.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 4; } { group F; count 9; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,3,3,3-hexakis(fluoranyl)-2-iodanyl-2-(trifluoromethyl)propane" "1,1,1,3,3,3-hexafluoro-2-iodo-2-(trifluoromethyl)propane" "iodoperfluoro-tert-butane" "nonafluoro-tert-butyl iodide" "perfluoro(2-iodo-2-methylpropane)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1849010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     497.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1701010.0
-    phase     gas;
 }

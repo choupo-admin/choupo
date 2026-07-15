@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[dimethyl-(phenylmethyl)silyl]oxy-dimethyl-(phenylmethyl)silane" "1,3-dibenzyl-1,1,3,3-tetramethyldisiloxane" "disiloxane, 1,1,3,3-tetramethyl-1,3-bis(phenylmethyl)-" "benzyl-[benzyl(dimethyl)silyl]oxy-dimethylsilane" "1,1,3,3-tetramethyl-1,3-bis(phenylmethyl)disiloxane" "disiloxane,1,1,3,3-tetramethyl-1,3-bis(phenylmethyl)-" "disiloxane,1,3-dibenzyl-1,1,3,3-tetramethyl- (7ci);1,3-dibenzyl-1,1,3,3-tetramethyldisiloxane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -297250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     908.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=10980.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group OH; count 1; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-[2-(2-ethoxyethoxy)ethoxy]ethoxy]ethoxy]ethanol" "pentaethylene glycol, monoethyl ether" "ae4" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1104340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     730.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-611660.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group OH; count 2; } { group S; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[4-(2-hydroxyethylsulfanyl)butylsulfanyl]ethanol" "ethanol, 2,2'-[1,4-butanediylbis(thio)]bis-" "2-[4-(2-hydroxyethylthio)butylthio]ethan-1-ol" "1,4-bis(2-hydroxyethyl thio)butane" "2,2'-(butane-1,4-diylbis(thio))bisethanol" "2,2'-(butane-1,4-diyldisulfanediyl)diethanol" "ethanol,2,2'-[1,4-butanediylbis(thio)]bis-" "2,2'-(tetramethylenedithio)diethanol;ethanol,2,2'-(tetramethylenedithio)di- (6ci,7ci,8ci);1,4-bis(2-hydroxyethylthio)butane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -429170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     692.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-190920.0
-    phase     gas;
 }

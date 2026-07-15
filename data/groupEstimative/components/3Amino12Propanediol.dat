@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-azanylpropane-1,2-diol" "1-aminoglycerol" "3-aminopropane-1,2-diol" "1-amino-2,3-propanediol" "2,3-dihydroxypropylamine" "2,3-propandiol-1-amine" "1-aminopropanediol" "1,2-propanediol, 3-amino-" "(+/-)-3-amino-1,2-propanediol" "3-aminopropan-1,2-diol" "3-amino-1,2-proopanediol" "3-amino-1,2-propandiol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -381200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     416.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-235250.0
-    phase     gas;
 }

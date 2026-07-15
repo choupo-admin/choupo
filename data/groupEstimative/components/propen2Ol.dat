@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-1-en-2-ol" "1-propen-2-ol" "2-hydroxypropene" "agn-pc-0cvmyn" "ch2=c(oh)ch3" "1-propen-2-ol(6ci,7ci,8ci,9ci)" "2-hydroxypropene;acetone enol; isopropenyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -141840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     314.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-83150.0
-    phase     gas;
 }

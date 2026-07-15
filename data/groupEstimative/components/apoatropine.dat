@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(8-methyl-8-azabicyclo[3.2.1]octan-3-yl) 2-phenylprop-2-enoate" "apoatropin" "apohyoscyamin" "apohyoscyamine" "atropamine" "atropyltropeine" "atropamin" "tropine, atropate (ester)" "1-.alpha.-h,5-.alpha.-h-tropan-3-.alpha.-ol, atropate" "1-alpha-h,5-alpha-h-tropan-3-alpha-ol, atropate (ester)" "benzeneacetic acid, .alpha.-methylene-, 8-methyl-8-azabicyclo[3.2.1]oct-3-yl ester, endo-" "benzeneacetic acid, alpha-methylene-, (3-endo)-8-methyl-8-azabicyclo(3.2.1)oct-3-yl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -172690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     567.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=186060.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "silane, trimethyl-tert-butyl-" "(ch3)3csi(ch3)3" "silane, (1,1-dimethylethyl)trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -308180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     516.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-93860.0
-    phase     gas;
 }

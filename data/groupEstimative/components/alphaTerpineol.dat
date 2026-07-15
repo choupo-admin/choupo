@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-methylcyclohex-3-en-1-yl)propan-2-ol" "terpineol" "p-menth-1-en-8-ol" "dl-alpha-terpineol" "1-p-menthen-8-ol" "1-alpha-terpineol" "1-menthene-8-ol" "terpineol schlechthin" "carvomenthenol" "terpenol" ".alpha.-terpineol" "terpilenol, alpha-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -310080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-55880.0
-    phase     gas;
 }

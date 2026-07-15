@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methylheptyl 2-chloranylethanoate" "acetic acid, 2-chloro-, isooctyl ester" "isooctyl chloroacetate" "6-methylheptyl 2-chloroacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -588030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     620.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-291420.0
-    phase     gas;
 }

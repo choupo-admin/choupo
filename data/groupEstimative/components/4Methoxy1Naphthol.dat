@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methoxynaphthalen-1-ol" "1-naphthalenol, 4-methoxy-" "1-hydroxy-4-methoxynaphthalene" "4-methoxynaphthol" "4-methoxy-1-naphthalenol" "1-naphthol, 4-methoxy-" "1-naphthol,4-methoxy- (7ci,8ci);1-hydroxy-4-methoxynaphthalene;4-methoxy-1-naphthalenol;4-methoxy-1-naphthol;4-methoxy-a-naphthol;c.i. 76620;et 2111;ursol grounding blue bl;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -163770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-8450.0
-    phase     gas;
 }

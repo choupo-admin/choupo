@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[3,4-bis(fluoranyl)phenyl]ethanoic acid" "2-(3,4-difluorophenyl)acetic acid" "(3,4-difluorophenyl)acetic acid" "benzeneacetic acid, 3,4-difluoro-" "3,4-difluorophenylaceticacid" "3,4-difluorobenzeneacetic acid" "qv1r cf df" "l427" "2-(3,4-difluorophenyl)acetic acid;2-(3,4-difluorophenyl)acetate;3,4-difluoro phenylacetic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -737350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     465.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-623900.0
-    phase     gas;
 }

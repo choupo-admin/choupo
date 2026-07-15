@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 2; } { group CH2_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-enylidenecyclohexane" "2-propenylidenecyclohexane" "cyclohexane,2-propen-1-ylidene-" "cyclohexane,2-propenylidene- (9ci); cyclohexane, allylidene- (8ci);3-(cyclohexylidene)-1-propene; allylidenecyclohexane; prop-2-enylidenecyclohexane;propenylidenecyclohexane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   47030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     485.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=190360.0
-    phase     gas;
 }

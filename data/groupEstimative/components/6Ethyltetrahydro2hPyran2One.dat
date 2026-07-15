@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-ethyloxan-2-one" "2h-pyran-2-one, 6-ethyltetrahydro-" "heptanoic acid, 5-hydroxy-, .delta.-lactone" "hepta-1,5-lactone" "2h-pyran-2-one, 6-ethyltetrahydro-, (s)-" "6-ethyl-tetrahydro-pyran-2-one" "2h-pyran-2-one,6-ethyltetrahydro-" "heptanoicacid, 5-hydroxy-, d-lactone (7ci);(rs)-d-heptalactone;6-ethyltetrahydro-2h-pyran-2-one;hepta-1,5-lactone;5-heptanolide;5-hydroxyheptanoic acid lactone;d-ethyl-d-valerolactone;d-heptalactone;d-heptanolactone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -438450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     409.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-253660.0
-    phase     gas;
 }

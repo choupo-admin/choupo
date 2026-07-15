@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 10; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyllauramide" "hallcomid m 12" "dodecanamide, n,n-dimethyl-" "n,n-dimethyldodecamide" "lauryl n,n-dimethylamide" "lauric acid n,n-dimethylamide" "nn-dimethyldodecanamide" "dodecanamide,n-dimethyl-" "n,n-dimethyl dodecanamide" "dodecanamide,n,n-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -377340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     744.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=48860.0
-    phase     gas;
 }

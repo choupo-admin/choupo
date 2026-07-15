@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pent-4-ynylbenzene" "benzene, 4-pentynyl-" "pent-4-yn-1-ylbenzene" "5-phenyl pentyne" "pent-4-ynyl-benzene" "5-phenypent-1-yne" "1-(pent-4-yn-1-yl)benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   258060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=377220.0
-    phase     gas;
 }

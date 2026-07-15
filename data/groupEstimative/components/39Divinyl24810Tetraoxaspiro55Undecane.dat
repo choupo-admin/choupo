@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 2; } { group dCH; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,9-bis(ethenyl)-2,4,8,10-tetraoxaspiro[5.5]undecane" "3,9-divinylspirobi(m-dioxane)" "diallylidenepentaerythritol" "diallylidene pentaerythritol" "acrolein pentaerythritol bisacetal" "acrolein, cyclic diacetal with pentaerythritol" "acrolein-pentaerythritol dicyclic acetal" "acrolein, cyclic neopentanetetrayl acetal" "pentaerythritol diacrolein acetal" "3,9-divinyl-2,4,8,10-tetraoxaspiro(5.5)undecane" "2,4,8,10-tetraoxaspiro(5.5)undecane, 3,9-divinyl-" "2,4,8,10-tetraoxaspiro[5.5]undecane, 3,9-diethenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -437810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     316.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-79260.0
-    phase     gas;
 }

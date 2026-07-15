@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group CdO; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(6-ethanoylpyridin-2-yl)ethanone" "2,6-diacetyl pyridine" "1-(6-acetylpyridin-2-yl)ethanone" "pyridine-2,6-diacetyl" "bezvgihgzplgbl-uhfffaoysa-" "1,1'-pyridine-2,6-diyldiethanone" "1-(6-acetylpyridin-2-yl)ethan-1-one" "p368" "ethanone, 1,1'-(2,6-pyridinediyl)bis-" "pyridine-2,6-diacetyl;1-(6-acetyl-pyridin-2-yl)-ethanone;1-(6-acetylpyridin-2-yl)ethanone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -196400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     460.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-53110.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 9; } { group CH; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-pentadecanone, 6,10,14-trimethyl-" "hexahydrofarnesyl acetone" "fitone" "hexahydrofarnesylacetone" "hexahydrofarnezylacetone" "(6r,10r)-6,10,14-trimethylpentadecan-2-one" "2-pentadecanone,6,10,14-trimethyl-" "6,10,14-trimethyl-2-pentadecanone" "(?a'a a'a currency)-phytone; 6,10,14-trimethylpentadecane-2-one; 6,10,14-trimethyl-2-pentadecanone; hexahydrofarnesylacetone; perhydrofarnesyl acetone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -543270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     855.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-35560.0
-    phase     gas;
 }

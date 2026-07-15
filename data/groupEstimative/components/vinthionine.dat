@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-4-ethenylsulfanyl-butanoic acid" "s-vinyl-dl-homocysteine" "dl-homocysteine, s-ethenyl-" "s-vinylhomocysteine" "homocysteine,s-ethenyl-" "2-amino-4-ethenylsulfanylbutanoic acid" "dl-homocysteine,s-ethenyl-; s-vinyl-dl-homocysteine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -321630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     541.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-159300.0
-    phase     gas;
 }

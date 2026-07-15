@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group Br; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanylpropanamide" "3-bromopropanamide" "propanamide, 3-bromo-" "propionamide, 3-bromo-," "propionamide,3-bromo- (6ci);3-bromopropionamide 98+%;bromopropionamide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -157710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     402.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-73770.0
-    phase     gas;
 }

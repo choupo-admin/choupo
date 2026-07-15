@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 4; } { group F; count 8; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,4,4,5,5-octakis(fluoranyl)hexane-1,6-diol" "2,2,3,3,4,4,5,5-octafluorohexane-1,6-diol" "1,6-dihydroxy-2,2,3,3,4,4,5,5-octafluorohexane" "1,6-hexanediol, 2,2,3,3,4,4,5,5-octafluoro-" "nhekbxplfjssbz-uhfffaoysa-" "2,2,3,3,4,4,5,5-octafluorohexan-1,6-diol" "2,2,3,3,4,4,5,5octafluoro-1,6-hexanediol" "1,6-dihydroxy-2,2,3,3,4,4,5,5-octafluorohexane;2,2,3,3,4,4,5,5-octafluoro-1,6-hexanediol;2,2,3,3,4,4,5,5-octafluorohexanediol;a 7412;c 6di0l;2,2,3,3,4,4,5,5-octafluorohexane-1,6-diol;1,6-hexanediol, 2,2,3,3,4,4,5,5-octafluoro-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2075510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     589.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1821120.0
-    phase     gas;
 }

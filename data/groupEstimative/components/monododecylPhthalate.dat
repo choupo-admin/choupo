@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-dodecoxycarbonylbenzoic acid" "2-[(dodecyloxy)carbonyl]benzoic acid" "1,2-benzenedicarboxylic acid, monododecyl ester" "dodecyl hydrogen phthalate" "1,2-benzenedicarboxylicacid, 1-dodecyl ester" "1,2-benzenedicarboxylicacid, monododecyl ester (9ci); phthalic acid, dodecyl ester (6ci); phthalicacid, monododecyl ester (8ci); dodecyl hydrogen phthalate; dodecyl phthalate;lauryl phthalate; monododecyl phthalate; monolauryl phthalate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -898620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     926.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-433980.0
-    phase     gas;
 }

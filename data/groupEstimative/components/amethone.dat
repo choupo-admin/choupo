@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group C_ring; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[2-(diethylamino)ethyl]-3-phenyl-1-benzofuran-2-one" "amolanone" "amocaine" "amolanone [inn]" "ap 43" "amolanonum [inn-latin]" "3-[2-(diethylamino)ethyl]-3-phenyl-2(3h)-benzofuranone" "3-(beta-diethylaminoethyl)-3-phenyl-2-benzofuranone" "3-(2-(diethylamino)ethyl)-3-phenyl-2(3h)-benzofuranone" "2(3h)-benzofuranone, 3-(.beta.-diethylaminoethyl)-3-phenyl-" "2(3h)-benzofuranone, 3-(beta-diethylaminoethyl)-3-phenyl-" "3-(2-(diethylamino)ethyl)-2-oxo-3-phenyl-2,3-dihydrobenzofuran" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -143930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     722.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=212580.0
-    phase     gas;
 }

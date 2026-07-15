@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group Cl; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-n-(2-chloroethyl)-n-ethyl-ethanamine" "ethyl-s" "2-chloro-n-(2-chloroethyl)-n-ethylethanamine" "nitrogen mustard (hn-1)" "2,2'-dichlorotriethylamine" "ethanamine, 2-chloro-n-(2-chloroethyl)-n-ethyl-" "ethylbis(beta-chloroethyl)amine" "hn-1" "triethylamine, 2,2'-dichloro-" "ethylbis(2-chloroethyl)amine" "hn1" "agn-pc-0dajon" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -131120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     472.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=86560.0
-    phase     gas;
 }

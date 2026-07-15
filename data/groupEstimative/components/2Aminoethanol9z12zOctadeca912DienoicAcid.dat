@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 26; } { group dCH; count 8; } { group OH; count 1; } { group COOH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanylethanol;(9z,12z)-octadeca-9,12-dienoic acid" "9,12-octadecadienoic acid (9z,12z)-, dimer, compd. with 2-aminoethanol (1:?)" "(9z,12z)-octadeca-9,12-dienoic acid, dimer, compound with 2-aminoethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1400990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     2033.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-377750.0
-    phase     gas;
 }

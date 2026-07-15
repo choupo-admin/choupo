@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group COO; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl piperidine-4-carboxylate" "methyl 4-piperidinecarboxylate" "4-piperidinecarboxylic acid methyl ester" "piperidine-4-carboxylic acid methyl ester" "4-piperidinecarboxylic acid, methyl ester" "isonipecotic acid methyl ester" "methyl 4-piperidinecarboxylate hydrochloride" "methyl piperidin-4-carboxylate" "methylpiperidine-4-carboxylate" "isonipecotic acid, methyl and ethyl esters" "4-piperdinecarboxylic acid, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -412960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     443.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-190150.0
-    phase     gas;
 }

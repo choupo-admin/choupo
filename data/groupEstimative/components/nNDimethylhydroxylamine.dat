@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methanamine, n-hydroxy-n-methyl-" "n,n-dimethylhydroxyamine" "16645-06-0 (hydrochloride)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -169310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     300.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-60080.0
-    phase     gas;
 }

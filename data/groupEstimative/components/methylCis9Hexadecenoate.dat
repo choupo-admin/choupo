@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 12; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl hexadec-9-enoate" "methyl (e)-hexadec-9-enoate" "palmitelaidic acid methyl ester" "9-hexadecenoic acid methyl ester" "9-hexadecenoic acid, methyl ester" "methyl trans-9-hexadecenoate;methyl palmitelaidate;c16:1 (trans-9) methyl ester;delta 9 trans hexadecenoic acid methyl ester;palmitelaidic acid methyl ester;trans-9-hexadecenoic acid-methyl ester;methyl palmitelaidate, standard for gc;palmitelaidic acid methyl ester 99%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -594270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     862.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-137890.0
-    phase     gas;
 }

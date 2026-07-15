@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-methylprop-1-enyl)azetidine" "1-azetidin-1-yl-isobutene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   80290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     386.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=258970.0
-    phase     gas;
 }

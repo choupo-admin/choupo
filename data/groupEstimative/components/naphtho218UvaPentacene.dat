@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 16; } { group dC_ring; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphtho[2,1,8-uva]pentacene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   658890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=883280.0
-    phase     gas;
 }

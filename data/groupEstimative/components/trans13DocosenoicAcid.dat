@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group dCH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-docos-13-enoic acid" "(e)-13-docosenoic acid" "brassidic acid" "13-docosenoic acid" "13-docosenoic acid, (e)-" "trans-brassidic acid" "13e-docosenoic acid" "ambap506-33-2" "13-docosenoic acid, (e)- (8ci)(9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -730460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1059.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-129330.0
-    phase     gas;
 }

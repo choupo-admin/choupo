@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group Cl; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diethyl 2-chloranylpropanedioate" "ethyl chloromalonate" "ethylmonochloromalonate" "diethyl 2-chloromalonate" "chloromalonic acid, diethyl ester" "diethyl chloropropanedioate" "propanedioic acid, chloro-, diethyl ester" "malonic acid, chloro-, diethyl ester" "propanedioic acid, 2-chloro-, 1,3-diethyl ester" "diethyl-chloromalonate" "diethyl 2-chloropropanedioate" "wlwcqkmqyzftdr-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -843390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     555.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-627050.0
-    phase     gas;
 }

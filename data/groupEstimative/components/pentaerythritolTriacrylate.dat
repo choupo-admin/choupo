@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group C; count 1; } { group dCH2; count 3; } { group dCH; count 3; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2-(hydroxymethyl)-3-prop-2-enoyloxy-2-(prop-2-enoyloxymethyl)propyl] prop-2-enoate" "peta" "kayarad pet 30" "light acrylate pe 3a" "p 300 (acrylate)" "nk ester a-tmm 3" "nk ester tmm 50t" "nk ester a-tmm 3l" "pentaerythrityl triacrylate" "acrylic acid, triester with pentaerythritol" "tetramethylolmethane triacrylate" "sr 444c" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1068820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     853.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-734570.0
-    phase     gas;
 }

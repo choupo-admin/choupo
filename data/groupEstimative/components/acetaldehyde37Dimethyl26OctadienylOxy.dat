@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group dCH; count 2; } { group dC; count 2; } { group O; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3,7-dimethylocta-2,6-dienoxy)ethanal" "acetaldehyde, 2-[(3,7-dimethyl-2,6-octadien-1-yl)oxy]-" "acetaldehyde, 2-[[(2e)-3,7-dimethyl-2,6-octadien-1-yl]oxy]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -293950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     631.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11020.0
-    phase     gas;
 }

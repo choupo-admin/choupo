@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "but-1-en-2-ylcyclopropane" "cyclopropane, (1-methylenepropyl)-" "1-butene, 2-cyclopropyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     329.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=148100.0
-    phase     gas;
 }

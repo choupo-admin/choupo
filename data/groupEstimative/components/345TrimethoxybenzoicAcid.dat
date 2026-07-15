@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group O; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "eudesmic acid" "gallic acid trimethyl ether" "tri-o-methylgallic acid" "benzoic acid, 3,4,5-trimethoxy-" "veratric acid, 5-methoxy-" "trimethylgallic acid" "5-methoxy-veratric acid" "3,5-trimethoxybenzoic acid" "benzoic acid,4,5-trimethoxy-" "3,4,5-trimethoxy-benzoic acid" "3,4,5-trimethoxy benzoic acid" "gallic acid trimethyl ether; trimethylgallic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -794540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     507.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-542070.0
-    phase     gas;
 }

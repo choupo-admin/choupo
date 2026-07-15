@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl methyl ether" "ethane, methoxy-" "methyl ethyl ether" "ether, ethyl methyl" "methane, ethoxy" "ethane, methoxy- (9ci)" "2me" "methoxyethan" "alcohols, c1-2, ethoxylated" "1-methoxyethane" "aethylmethylaether" "methylaethylaether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -237470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     284.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-130620.0
-    phase     gas;
 }

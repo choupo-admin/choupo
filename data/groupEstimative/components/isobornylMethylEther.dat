@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methoxy-4,7,7-trimethyl-bicyclo[2.2.1]heptane" "exo-2-methoxybornane" "isoborneol methyl ether" "ether, isobornyl methyl" "bornane, 2-methoxy-, exo-" "exo-2-methoxy-1,7,7-trimethylnorbornane" "bicyclo[2.2.1]heptane, 2-methoxy-1,7,7-trimethyl-" "exo-2-methoxy-1,7,7-trimethylbicyclo(2.2.1)heptane" "bicyclo(2.2.1)heptane, 2-methoxy-1,7,7-trimethyl-, exo-" "bicyclo(2.2.1)heptane, 2-methoxy-1,7,7-trimethyl-, (1r,2r,4r)-rel-" "exo-2-methoxy-1,7,7-trimethylbicyclo[2.2.1]heptane" "bicyclo[2.2.1]heptane, 2-methoxy-1,7,7-trimethyl-, (1r,2r,4r)-rel-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -273350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     489.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=19740.0
-    phase     gas;
 }

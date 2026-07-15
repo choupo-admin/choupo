@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 5; } { group NH; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3e)-3-(4,5-dihydrobenzo[1,2]cyclohepta[3,4-b]thiophen-10-ylidene)-n-methyl-propan-1-amine" "4-(3'-methylaminopropylidene)-9,10-dihydro-4h-benzo(4,5)cyclohepta(1,2-b)thiophen" "4h-benzo(4,5)cyclohepta(1,2-b)thiophene, 9,10-dihydro-4-(3-methylaminopropylidene)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   272190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     625.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=523130.0
-    phase     gas;
 }

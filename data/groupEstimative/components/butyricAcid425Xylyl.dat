@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(2,5-dimethylphenyl)butanoic acid" "benzenebutanoic acid, 2,5-dimethyl-" "4-(2,5-dimethylphenyl)butyric acid" "butyric acid,5-xylyl)-" "4-(2,5-xylyl)butyric acid" "4-(2,5-xylyl)butanoic acid" "benzenebutanoic acid,5-dimethyl-" "benzenebutanoic acid,2,5-dimethyl-" ".gamma.-(2,5-dimethylphenyl)-n-butyric acid" "gamma-(2,4-dimethylphenyl)butyric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -427690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     557.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-200600.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dC_ring; count 6; } { group Br; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5-pentakis(bromanyl)-6-methyl-benzene" "pentabromotoluene" "pentabromomethylbenzene" "benzene, pentabromomethyl-" "flammex 5bt" "1,2,3,4,5-pentabromo-6-methylbenzene" "toluene, 2,3,4,5,6-pentabromo-" "benzene, 1,2,3,4,5-pentabromo-6-methyl-" "benzene, methyl-, pentabromo deriv." "benzene,pentabromomethyl- (9ci);toluene, 2,3,4,5,6-pentabromo- (6ci,7ci,8ci);2,3,4,5,6-pentabromomethylbenzene;2,3,4,5,6-pentabromotoluene;flammex 5bt;pbt;pbt (flame retardant);pentabromomethylbenzene;pentabromotoluene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   123020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=143920.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 14; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cetane" "mpcm 18d" "s 6 (alkane)" "ts 6" "ts paraffin ts 6" "n-cetane" "n-hexadecane" "hexadekan" "cetan" "zetan" "CCRIS 5833" "BRN 1736592" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -373570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     779.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83840.0
-    phase     gas;
 }

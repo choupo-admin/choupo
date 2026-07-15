@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4,6-tri(propan-2-yl)benzoic acid" "2,4,6-triisopropyl benzoic acid" "benzoic acid, 2,4,6-tris(1-methylethyl)-" "2,4,6-tris(methylethyl)benzoic acid" "2,4,6-tris(1-methylethyl)benzoic acid" "benzoic acid,2,4,6-tris(1-methylethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -537560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     678.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-183870.0
-    phase     gas;
 }

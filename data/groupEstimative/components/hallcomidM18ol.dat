@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 14; } { group dCH; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-n,n-dimethyloctadec-9-enamide" "n,n-dimethyloleamide" "n,n-dimethyl oleylamide" "n,n-dimethyl-cis-9-octadecenamide" "9-octadecenamide, n,n-dimethyl-, (z)-" "9-octadecenamide, n,n-dimethyl-, (9z)-" "oleamide,n-dimethyl-" "oleamide, n,n-dimethyl- (8ci)" "(z)-n,n-dimethyl-9-octadecenamide" "9-octadecenamide,n-dimethyl-, (z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -383960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     971.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=179600.0
-    phase     gas;
 }

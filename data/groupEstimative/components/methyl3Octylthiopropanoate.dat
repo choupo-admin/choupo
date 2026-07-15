@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group COO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-octylsulfanylpropanoate" "methyl 3-(octylthio)propionate" "propanoic acid, 3-(octylthio)-, methyl ester" "4-thiadodecanoic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -566420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     736.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-227090.0
-    phase     gas;
 }

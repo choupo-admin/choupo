@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "undecan-2-ol" "sec-undecyl alcohol" "methyl nonyl carbinol" "2-hendecanol" "2-hydroxyundecane" "undecylic alcohol, sec-" "methylnonylcarbinol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -427880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     625.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-97520.0
-    phase     gas;
 }

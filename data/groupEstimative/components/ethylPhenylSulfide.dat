@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethylsulfanylbenzene" "(ethylthio)benzene" "benzene, (ethylthio)-" "ethylthiobenzene" "sulfide, ethyl phenyl" "thiophenetole" "phenylethyl sulfide" "(phenylthio)ethane" "phenyl ethyl sulfide" "(ethylsulfanyl)benzene" "(1-thiapropyl)benzene" "ethylphenylsulfide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   69950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     422.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=162010.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group tCH; count 1; } { group tC; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-ynamide" "propynoic acid amide" "2-propynamide" "propiolic acid amide" "hc.equiv.cconh2" "2-propynamide (9ci)" "hc.$.cconh2" "propynoic acid amide, propynamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   107860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     320.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=134980.0
-    phase     gas;
 }

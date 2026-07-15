@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 21; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "docosan-1-amine" "docosylamine" "docosylamine(6ci,7ci,8ci); 1-aminodocosane; 1-docosylamine; behenylamine; kemamine p 298d;n-docosylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -463620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1064.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=200810.0
-    phase     gas;
 }

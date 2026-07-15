@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group dCH; count 3; } { group dC; count 3; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-3,7,11-trimethyl-dodeca-2,6,10-triene" "1-bromo-3,7,11-trimethyldodeca-2,6,10-triene" "2,6,10-dodecatriene, 1-bromo-3,7,11-trimethyl-" "2,6,10-dodecatriene,1-bromo-3,7,11-trimethyl-, (e,e)- (8ci);(2e,6e)-1-bromo-3,7,11-trimethyl-2,6,10-dodecatriene;(2e,6e)-3,7,11-trimethyldodeca-2,6,10-trienyl bromide; (2e,6e)-farnesylbromide; (e,e)-farnesyl bromide; all-trans-farnesyl bromide;trans,trans-farnesyl bromide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -4310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     759.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=304750.0
-    phase     gas;
 }

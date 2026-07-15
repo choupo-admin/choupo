@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dC; count 1; } { group CH2_ring; count 2; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propan-2-ylidenecyclopropane" "propane, 2-cyclopropylidene-" "2-cyclopropylidenepropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -7790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     309.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=105010.0
-    phase     gas;
 }

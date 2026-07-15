@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(4-chloranyl-2-methyl-phenoxy)butanoic acid" "trifolex" "4-(4-chloro-2-methylphenoxy)butanoic acid" "legumex" "thitrol" "bexone" "trotox" "mcp-butyric" "4-(4-chloro-2-methylphenoxy)butyric acid" "4mcpb" "butanoic acid, 4-(4-chloro-2-methylphenoxy)-" "2m 4khm" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -555010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     563.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-325950.0
-    phase     gas;
 }

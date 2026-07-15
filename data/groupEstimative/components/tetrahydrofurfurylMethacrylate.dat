@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxolan-2-ylmethyl 2-methylprop-2-enoate" "tetrahydrofurfurylmethacrylate" "methacrylic acid tetrahydrofurfuryl ester" "methacrylic acid, tetrahydrofurfuryl ester" "2-propenoic acid, 2-methyl-, (tetrahydro-2-furanyl)methyl ester" "tetrahydrofuran-2-ylmethyl 2-methylprop-2-enoate" "tetrahydrofuran-2-ylmethyl 2-methylacrylate" "methacrylic acid, tetrahydrofurfuryl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -502250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-255750.0
-    phase     gas;
 }

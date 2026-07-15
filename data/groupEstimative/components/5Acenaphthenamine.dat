@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 5; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-dihydroacenaphthylen-5-amine" "5-aminoacenaphthene" "5-acenaphtheneamine" "1,2-dihydro-5-acenaphthylenamine" "5-acenaphthylenamine, 1,2-dihydro-" "acenaphthen-5-amine" "acenaphthen-5-ylamine" "acenaphthene-5-ylamine" "5-acenaphthylenamine,2-dihydro-" "5-acenaphthylenamine, 1,2-dihydro- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   235270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     373.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=387340.0
-    phase     gas;
 }

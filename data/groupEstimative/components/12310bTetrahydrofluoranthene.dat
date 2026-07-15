@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "fluoranthene, 1,2,3,10b-tetrahydro-" "1,3,4-tetrahydrofluoranthene" "1,3,10b-tetrahydrofluoranthene" "fluoranthene,2,3,10b-tetrahydro-" "fluoranthene, 1,2,3,10b-tetrahydro- (8ci)(9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   243340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     369.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=433180.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 24; } { group O; count 6; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-[2-[2-(2-tridecoxyethoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethyl ethanoate" "3,6,9,12,15,18-hexaoxahentriacontan-1-ol, acetate" "3,6,9,12,15,18-hexaoxahentriacontan-1-ol, 1-acetate" "2-[2-[2-[2-[2-(2-tridecoxyethoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1711210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1326.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-763910.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diethoxymethoxyethane" "ethyl orthoformate" "triethoxymethane" "aethon" "ethone" "methane, triethoxy-" "ethyl formate(ortho)" "orthoformic acid triethyl ester" "orthoformic acid, triethyl ester" "orthomravencan ethylnaty" "1,1,1-triethoxymethane" "ethane, 1,1',1''-[methylidynetris(oxy)]tris-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -589750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-309380.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-buten-1-ol, 4-(phenylmethoxy)-, (e)-" "2-buten-1-ol,4-(phenylmethoxy)-, (2z)-" "2-buten-1-ol,4-(phenylmethoxy)-, (z)-;(2z)-4-(phenylmethoxy)-2-buten-1-ol;(z)-4-benzyloxy-2-buten-1-ol;o-monobenzyl cis-2-butenediol;o-monobenzylcis-2-butenediol;z-4-benzyloxy-2-butene-1-ol;cis-4-benzyloxy-2-buten-1-ol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -201070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     533.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-7450.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 3; } { group dCH; count 1; } { group dC; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethenyl-1-methyl-2,4-bis(prop-1-en-2-yl)cyclohexane" "beta-elemene, (-)-" "beta-elemen" "levo-beta-elemene" "(-)-beta-elemene" "cyclohexane, 2,4-diisopropenyl-1-methyl-1-vinyl-, (1s,2s,4r)-" "cyclohexane, 1-ethenyl-1-methyl-2,4-bis(1-methylethenyl)-, (1r,2r,4s)-rel-" "cyclohexane, 1-ethenyl-1-methyl-2,4-bis(1-methylethenyl)-, (1s-(1-alpha,2-beta,4-beta))-" "2,4-diisopropenyl-1-methyl-1-vinylcyclohexane" "(- )-bete-elemene" "cyclohexane, 2,4-diisopropenyl-1-methyl-1-vinyl-, (1s,2r,4r)- (-)-" "cyclohexane, 1-ethenyl-1-methyl-2,4-bis(1-methylethenyl)-, [1s-(1.alpha.,2.beta.,4.beta.)]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   32660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     672.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=325380.0
-    phase     gas;
 }

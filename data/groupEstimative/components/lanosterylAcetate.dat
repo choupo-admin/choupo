@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 9; } { group CH2; count 2; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 3; } { group C_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(3s,10s,13r,14r,17r)-4,4,10,13,14-pentamethyl-17-[(2r)-6-methylhept-5-en-2-yl]-2,3,5,6,7,11,12,15,16,17-decahydro-1h-cyclopenta[a]phenanthren-3-yl] ethanoate" "lanosterol acetate" "lanosta-8,24-dien-3-beta-ol, acetate" "lanosta-8,24-dien-3-ol, acetate, (3beta)-" "lanosta-8,24-dien-3-ol, acetate, (3-beta)-" "[(3s,10s,13r,14r,17r)-4,4,10,13,14-pentamethyl-17-[(2r)-6-methylhept-5-en-2-yl]-2,3,5,6,7,11,12,15,16,17-decahydro-1h-cyclopenta[a]phenanthren-3-yl] acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -623760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1273.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=125530.0
-    phase     gas;
 }

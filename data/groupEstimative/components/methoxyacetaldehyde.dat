@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group O; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxyethanal" "2-methoxyacetaldehyde" "methoxyethanal" "acetaldehyde, methoxy-" "acetaldehyde, 2-methoxy-" "acetaldehyde, methoxy- (8ci,9ci)" "acetaldehyde, methoxy-(6ci,7ci,8ci,9ci)" "2-methoxyacetaldehyde;2-methoxyethanal; methoxyacetaldehyde; o-methylglycolaldehyde; a-methoxyacetaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -323050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     302.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-230140.0
-    phase     gas;
 }

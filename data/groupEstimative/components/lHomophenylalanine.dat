@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-4-phenyl-butanoic acid" "(s)-2-amino-4-phenylbutanoic acid" "(s)-2-amino-4-phenylbutyric acid" "(2s)-2-amino-4-phenylbutanoic acid" "l-homophe" "h-homophe-oh" "h-hfe-oh" "h-hph-oh" "(+)-2-amino-4-phenylbutyric acid" "(s)-homophenylalanine" "homophenylalanine, l-" "l-(+)-homophenylalanine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -334960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     534.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134170.0
-    phase     gas;
 }

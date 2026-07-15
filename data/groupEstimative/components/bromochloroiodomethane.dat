@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group Cl; count 1; } { group Br; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bromanyl-chloranyl-iodanyl-methane" "methane, bromochloroiodo-" "methane, bromochloroiodo-, (s)-" "bromo(chloro)iodomethane" "bromo-chloro-iodomethane" "bromo-chloro-iodo-methane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   18210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     325.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=15610.0
-    phase     gas;
 }

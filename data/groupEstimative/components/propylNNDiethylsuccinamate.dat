@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group CdO; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propyl 4-(diethylamino)-4-oxidanylidene-butanoate" "propyl-n,n-diethylsuccinamate" "succinamic acid, n,n-diethyl-, propyl ester" "propyl 4-(diethylamino)-4-oxobutanoate" "succinamic acid,n-diethyl-, propyl ester" "butanoic acid, 4-(diethylamino)-4-oxo-, propyl ester" "butanoic acid, 4-(diethylamino)-4-oxo-, propyl ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -632700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     678.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-286770.0
-    phase     gas;
 }

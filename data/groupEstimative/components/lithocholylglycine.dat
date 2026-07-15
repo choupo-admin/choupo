@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 6; } { group C_ring; count 2; } { group OH; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[[(4r)-4-[(3r,5r,8r,9s,10s,13r,14s,17r)-10,13-dimethyl-3-oxidanyl-2,3,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthren-17-yl]pentanoyl]amino]ethanoic acid" "glycolithocholic acid" "lithocholic acid glycine conjugate" "glycolithocholate" "glycolithocholic acid (6ci,7ci)" "n-((3-alpha,5-beta)-3-hydroxy-24-oxocholan-24-yl)glycine" "glycine, n-((3alpha,5beta)-3-hydroxy-24-oxocholan-24-yl)-" "glycine, n-((3-alpha,5-beta)-3-hydroxy-24-oxocholan-24-yl)-" "b-d-glucopyranosiduronic acid,(3a,5b)-24-[(carboxymethyl)amino]-24-oxocholan-3-yl" "lithocholoyglycine" "3a-hydroxy-5b-cholanoylglycine" "3" "a-hydroxy-5" "a-cholanoylglycine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -937340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1038.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-213980.0
-    phase     gas;
 }

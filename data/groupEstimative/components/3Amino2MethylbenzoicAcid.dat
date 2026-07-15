@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-azanyl-2-methyl-benzoic acid" "3-amino-o-toluic acid" "2-methyl-3-aminobenzoic acid" "3-amino-2-methyl-benzoic acid" "3-amino-2-methylbenzoicacid" "3-amino-2-methyl benzoic acid" "tpc-b006" "3-amino-2-toluic acid" "h-(3)atl(2)-oh" "h-(3)abz(2-me)-oh" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-167830.0
-    phase     gas;
 }

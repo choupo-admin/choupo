@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group CH_ring; count 5; } { group OH; count 4; } { group O_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(hydroxymethyl)-6-octylsulfanyl-oxane-3,4,5-triol" "octyl thioglucoside" "octyl-thioglucoside" "octyl-beta-d-thioglucopyranoside" "agn-pc-02yz37" "octyl " "a-d-thiogalactopyranoside" "galactopyranoside, 1-octylthio-1-deoxy-" "n-octyl-beta-d-thioglucopyranoside ultrapure" "2-(hydroxymethyl)-6-octylsulfanyloxane-3,4,5-triol" "(2r,3r,4s,5r)-2-(hydroxymethyl)-6-octylsulfanyloxane-3,4,5-triol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1058380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     715.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-539670.0
-    phase     gas;
 }

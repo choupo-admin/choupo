@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylcyclopentan-1-ol" "cyclopentanol, 3-methyl-" "3-methylcyclopentanol, mixture of isomers" "cyclopentanol,3-methyl-" "3-methyl-1-cyclopentanol" "3-methylcyclopentanol, mixed isomers" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -279260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     347.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108340.0
-    phase     gas;
 }

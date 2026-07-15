@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 3; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(oxidanyl)butanedioic acid;2-(dimethylamino)ethanol" "dmae tartrate" "deanol bitartrate" "dimethylaminoethanol bitartrate" "2-(dimethylamino)-ethanol tartrate" "ethanol, 2-dimethylamino-, tartrate" "n,n-dimethylethanolamine-tartrate acid salt" "(2-hydroxyethyl)dimethylammonium hydrogen tartrate" "agn-pc-00beaa" "ethanol, 2-(dimethylamino)-, (2r,3r)-2,3-dihydroxybutanedioate (1:?)" "ethanol, 2-(dimethylamino)-, (2r,3r)-2,3-dihydroxybutanedioate (salt)" "ethanol, 2-(dimethylamino)-, tartrate (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1420330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     831.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1080660.0
-    phase     gas;
 }

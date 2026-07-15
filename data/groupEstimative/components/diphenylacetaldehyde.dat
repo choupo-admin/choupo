@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-diphenylethanal" "diphenylketen" "acetaldehyde, diphenyl-" "2,2-diphenylacetaldehyde" "benzeneacetaldehyde, .alpha.-phenyl-" "alpha-phenylbenzeneacetaldehyde" "diphenyl-acetaldehyd" "2,2-diphenyl-acetaldehyde" "diphenyl acetaldehyde" "diphenyl-acetaldehyde" "2,2-di(phenyl)acetaldehyde" "benzeneacetaldehyde, " "a-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   49910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     497.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=189860.0
-    phase     gas;
 }

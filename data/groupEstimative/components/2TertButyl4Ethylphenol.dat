@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-tert-butyl-4-ethyl-phenol" "2-t-butyl-4-ethylphenol" "2-(tert-butyl)-4-ethylphenol" "phenol, 2-(1,1-dimethylethyl)-4-ethyl-" "4-ethyl-2-tert-butylphenol" "lzhcvniaruxhal-uhfffaoysa-" "phenol, 2-tert-butyl-4-ethyl-" "benzene, 2-tert-butyl-4-ethyl-1-hydroxy-" "[2-(methylamino)acetyl] (2s)-2-[[(2r)-2-[[(2s)-2-amino-3-(4-hydroxyphenyl)propanoyl]amino]-5-guanidino-pentanoyl]amino]-3-phenyl-propanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -252010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     498.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1160.0
-    phase     gas;
 }

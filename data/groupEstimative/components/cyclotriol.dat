@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "14alpha,17alpha-ethano-1,3,5(10)-estratriene-3,16alpha,17-beta-triol" "(16-alpha,17-alpha)-14,21-cyclo-19-norpregna-1,3,5(10)-triene-3,16,17-triol" "14,21-cyclo-19-norpregna-1,3,5(10)-triene-3,16,17-triol, (16-alpha,17-alpha)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -422760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     733.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-8950.0
-    phase     gas;
 }

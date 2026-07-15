@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-4-methyl-2-oxidanyl-pentanoic acid" "(s)-leucic acid" "(s)-2-hydroxy-4-methylpentanoic acid" "(2s)-2-hydroxy-4-methylpentanoic acid" "l-leucicacid" "l-2-hydroxy-4-methylvaleric acid" "(s)-2-hydroxy-4-methylvaleric acid" "l-2-hydroxyisocaproic acid" "(s)-2-hydroxyisocaproic acid" "(+)-2-hydroxyisocaproic acid" "(+)-alpha-hydroxyisocaproic acid" "s-2-hydroxy-4-methylpentanoicacid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -680230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     474.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-485970.0
-    phase     gas;
 }

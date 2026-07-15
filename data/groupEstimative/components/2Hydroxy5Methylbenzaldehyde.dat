@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methyl-2-oxidanyl-benzaldehyde" "5-methylsalicylaldehyde" "5-methylsalicylic aldehyde" "benzaldehyde, 2-hydroxy-5-methyl-" "2,5-cresotaldehyde" "2-hydroxy-5-methyl-benzaldehyde" "q092" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -84250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8600.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group N; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(dimethylamino)ethanenitrile" "dimethylaminoacetonitrile" "acetonitrile, (dimethylamino)-" "n-(cyanomethyl)dimethylamine" "n,n-dimethylglycinonitrile" "2-dimethylaminoacetonitrile" "glycinonitrile, n,n-dimethyl-" "dimethylcyanocacetamide" "glycinonitrile,n-dimethyl-" "(dimethylamino)acetonitrile hcl" "dimethyylaminoacetonitrile" "(dimethylamino)acetonitrile monohydrochloride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   106520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     333.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=226760.0
-    phase     gas;
 }

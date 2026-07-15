@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 14; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3:6,7-dibenzphenanthrene" "pentapheno" "2,3:6,7-dibenzophenanthrene;2,3:6,7-dibenzphenanthrene; dibenzo[b,h]phenanthrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   468990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=644480.0
-    phase     gas;
 }

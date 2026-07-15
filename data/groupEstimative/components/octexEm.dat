@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 17; } { group CH2_ring; count 2; } { group CdO; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-octadecylaziridine-1-carboxamide" "primenit ld" "octadecylethyleneurea" "n-octadecylethyleneurea" "1-aziridinecarboxamide, n-octadecyl-" "n-octadecyl-n'-ethyleneurea" "3-octadecyl-1,1-ethyleneurea" "n-stearyl-n',n'-ethyleneurea" "1-(octadecylcarbamoyl)aziridine" "octadecyl-1-aziridinecarboxamide" "n-octadecyl-n',n'-ethyleneurea" "n-stearyl-1-aziridinecarboxamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -369050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     989.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=277750.0
-    phase     gas;
 }

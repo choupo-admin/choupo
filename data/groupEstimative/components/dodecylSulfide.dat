@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 22; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-dodecylsulfanyldodecane" "dilauryl sulfide" "didodecyl sulfide" "dodecane, 1,1'-thiobis-" "n-dodecyl sulfide" "bis(dodecyl)sulfide" "bis(n-dodecyl)sulfide" "dodecylthiododecane" "lauryl sulfide" "didodecyl sulphide" "dodecane,1'-thiobis-" "dodecyl sulfide (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -496820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1152.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=184320.0
-    phase     gas;
 }

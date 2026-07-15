@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2,4-dimethylphenyl)methyl 2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropane-1-carboxylate" "dimetrin" "dimethrine" "dimethrin [ansi]" "2,4-dimethylbenzylchrysanthemumate" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2-methyl-1-propenyl)-, (2,4-dimethylphenyl)methyl ester" "chrysanthemumic acid 2,4-dimethylbenzyl ester" "chrysanthemumic acid, 2,4-dimethylbenzyl ester" "2,4-dimethylbenzyl-(i)-cis-trans-chrysanthemumate" "2,4-dimethylbenzyl ester of cis,trans-chrysanthemumic acid" "2,4-dimethylbenzyl 2,2-dimethyl-3-(2-methylpropenyl)cyclopropanecarboxylate" "(2,4-dimethylphenyl)methyl 2,2-dimethyl-3-(2-methyl-1-propenyl)cyclopropanecarboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -384390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     712.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3390.0
-    phase     gas;
 }

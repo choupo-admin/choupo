@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tricyclo(4.3.2.0(1,6))undeca-2,4-diene" "3a,7a-ethano-1h-indene,2,3-dihydro- (9ci)" "3a,7a-ethanoindan(8ci); 2,3-dihydro-3a,7a-ethanoindene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   102090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     460.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=256440.0
-    phase     gas;
 }

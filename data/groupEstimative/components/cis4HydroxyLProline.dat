@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group OH; count 1; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s,4s)-4-oxidanylpyrrolidine-2-carboxylic acid" "(2s,4s)-4-hydroxypyrrolidine-2-carboxylic acid" "(4s)-4-hydroxy-l-proline" "l-allo-hydroxyproline" "l-cis-4-hydroxyproline" "(2s,4s)-(-)-4-hydroxy-2-pyrrolidinecarboxylic acid" "allo-4-hydroxy-l-proline" "cis -4-hydroxy-d-proline" "cis -4-hydroxy-l-proline" "cis-hydroxyproline" "l-allohydroxyproline" "cis-4-hydroxyproline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -571080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     355.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-372960.0
-    phase     gas;
 }

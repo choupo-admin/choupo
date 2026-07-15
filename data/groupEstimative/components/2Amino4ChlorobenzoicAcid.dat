@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-4-chloranyl-benzoic acid" "4-chloroanthranilic acid" "4-chloro anthranilic acid" "2-carboxy-5-chloroaniline" "4-chloroanthranil acid" "2,4-acba" "benzoic acid, 2-amino-4-chloro-" "4-chloro-2-aminobenzoic acid" "anthranilic acid, 4-chloro- (6ci,7ci,8ci)" "2-amino-4-chlorobenzoic" "anthranilic acid, 4-chloro-" "2-amino-4-chloro benzoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -306440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     448.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-188180.0
-    phase     gas;
 }

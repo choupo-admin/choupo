@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group C_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,7,7-tetramethyl-4-oxabicyclo[4.1.0]heptan-5-one" "3-oxabicyclo[4.1.0]heptan-2-one, 4,4,7,7-tetramethyl-" "(1r)-chrysanthemolactone" "agn-pc-01lrlc" "(-)-dihydrochrysanthemolactone" "(1s)-chrysanthemolactone" "3-oxabicyclo(4.1.0)heptan-2-one, 4,4,7,7-tetramethyl-, (+-)-" "4,4,7,7-tetramethyl-3-oxabicyclo(4.1.0)heptan-2-one (1s-cis)-" "3-oxabicyclo(4.1.0)heptan-2-one, 4,4,7,7-tetramethyl-, (1s-cis)-" "3-oxabicyclo[4.1.0]heptan-2-one,4,4,7,7-tetramethyl-, (1s-cis)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -425450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     450.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-169850.0
-    phase     gas;
 }

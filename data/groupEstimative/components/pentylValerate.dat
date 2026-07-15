@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentyl pentanoate" "amyl valerate" "pentanoic acid, pentyl ester" "n-pentyl valerate" "valeric acid, pentyl ester" "amyl valerianate" "1-pentyl n-valerate" "pentanoic acid pentyl ester" "amyl pentanoate" "valeric acid pentyl ester" "pentanoicacid, pentyl ester" "valeric acid, pentyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -567010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     596.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-277050.0
-    phase     gas;
 }

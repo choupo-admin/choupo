@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-azanylphthalic acid" "4-amino-1,2-benzenedicarboxylic acid" "4-aminobenzene-1,2-dicarboxylic acid" "1,2-benzenedicarboxylic acid, 4-amino-" "4-amino phthalic acid" "l643" "4-amino-1,2-benzenedicarboxylic acid;1,2-benzenedicarboxylic acid, 4-amino-;1,2 benzenedicarboxylicacid, 4-amino-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -661610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-511740.0
-    phase     gas;
 }

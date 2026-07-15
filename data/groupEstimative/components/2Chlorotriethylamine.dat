@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group Cl; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-n,n-diethyl-ethanamine" "triethylamine, 2-chloro-" "2-(diethylamino)ethyl chloride" "n,n-diethyl-2-chloroethylamine" "beta-chlorotriethylamine" "2-chloroethyldiethylamine" "diethylaminoethyl chloride" "n-diethylaminoethyl chloride" "(2-chloroethyl)diethylamine" "diethyl(2-chloroethyl)amine" "2-(diethylamino)chloroethane" "n-(2-chloroethyl)diethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -115380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     439.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=98490.0
-    phase     gas;
 }

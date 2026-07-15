@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propylsulfanylbenzene" "(propylthio)benzene" "phenyl propyl sulfide" "sulfide, phenyl propyl" "propyl phenyl sulfide" "(1-thiabutyl)benzene" "n-propyl phenyl sulfide" "fenyl-propylsulfid" "(propylsulfanyl)benzene" "phenyl n-propyl sulfide" "phenyl n-propyl sulphide" "benzene, (propylthio)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   49310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     461.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=170430.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2,3-dihydro-1h-inden-5-yl)ethanone" "5-acetylindane" "1-(2,3-dihydro-1h-inden-5-yl)ethan-1-one" "ethanone,3-dihydro-1h-inden-5-yl)-" "indan-5-ylethan-1-one" "ketone,5-indanyl methyl (6ci,7ci,8ci);1-(indan-5-yl)ethanone;5-acetylindan;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -76220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     444.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=74430.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbutan-2-yl butanoate" "1,2-dimethylpropyl butanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -556930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     538.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-290350.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group C; count 4; } { group F; count 8; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,4,4,5,5-octakis(fluoranyl)octyl pentanoate" "2,2,3,3,4,4,5,5-octafluorooctyl pentanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2232810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     811.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1798910.0
-    phase     gas;
 }

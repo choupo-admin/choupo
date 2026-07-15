@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH; count 1; } { group CH2_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 5; } { group O_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3z)-3-(6h-benzo[c][1]benzoxepin-11-ylidene)propan-1-amine" "dibenz(b,e)oxepin-delta(sup 11(6h)), gamma-propylamine" "1-propanamine, 3-dibenz(b,e)oxepin-11(6h)-ylidene-" "1-propanamine, 3-dibenz(b,e)oxepin-11(6h)-ylidene- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   126870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     517.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=392070.0
-    phase     gas;
 }

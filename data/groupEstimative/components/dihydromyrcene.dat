@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7-dimethylocta-1,6-diene" "citronellene" "1,6-octadiene, 3,7-dimethyl-" "3,7-dimethyl-1,6-octadiene" "3,7-dimethyl-octa-1,6-diene" "r(-)3,7-dimethyl-1,6-octadiene" "l462" "1,6-octadiene, 3,7-dimethyl-, (s)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -22150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     520.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=190390.0
-    phase     gas;
 }

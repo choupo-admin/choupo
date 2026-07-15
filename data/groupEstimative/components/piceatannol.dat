@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[(e)-2-[3,5-bis(oxidanyl)phenyl]ethenyl]benzene-1,2-diol" "astringinin" "3-hydroxyresveratol" "3,5,3',4'-tetrahydroxystilbene" "3,3',4'5-tetrahydroxystilbene" "3,3',4,5'-tetrahydroxystilbene" "3,3',4,5'-stilbenetetrol" "4-[(e)-2-(3,5-dihydroxyphenyl)ethenyl]benzene-1,2-diol" "3,3',4,5'-tetrahydroxy-trans-stilbene" "trans-3,3&prime;,4,5&prime;-tetrahydroxystilbene" "4-[2-(3,5-dihydroxyphenyl)ethenyl]benzene-1,2-diol" "1,2-benzenediol, 4-(2-(3,5-dihydroxyphenyl)ethenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -451250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     587.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-246440.0
-    phase     gas;
 }

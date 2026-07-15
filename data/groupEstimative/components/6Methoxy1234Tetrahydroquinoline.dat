@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "thallin" "thalline" "6-methoxy-1,2,3,4-tetrahydro-quinoline" "6-methoxytetrahydroquinoline" "quinoline, 1,2,3,4-tetrahydro-6-methoxy-" "1,3,4-tetrahydro-6-methoxyquinoline" "6-methoxy-1,3,4-tetrahydroquinoline" "quinoline l,3,4-tetrahydro-6-methoxy" "1,2,3,4-tetrahydro-6-methoxyquinoline" "quinoline,2,3,4-tetrahydro-6-methoxy-" "quinoline l,2,3,4-tetrahydro-6-methoxy" "methyl 1,2,3,4-tetrahydro-6-quinolyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -43570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     403.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=165540.0
-    phase     gas;
 }

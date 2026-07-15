@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH_ring; count 1; } { group dC_ring; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-dimethyl-4-oxidanyl-2h-furan-5-one" "sotolon" "4,5-dimethyl-3-hydroxy-2,5-dihydrofuran-2-one" "caramel furanone" "sugar lactone" "4,5-dimethyl-3-hydroxy-2(5h)-furanone" "fenugreek lactone" "2(5h)-furanone, 3-hydroxy-4,5-dimethyl-" "3-hydroxy-4,5-dimethylfuran-2(5h)-one" "3-hydroxy-4,5-dimethyl-2(5h)-furanone" "2-hydroxy-3-methyl-2-penten-4-olide" "4-hydroxy-2,3-dimethyl-2h-furan-5-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -529040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     351.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-376100.0
-    phase     gas;
 }

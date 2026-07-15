@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group F; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1-tris(fluoranyl)-2-methoxy-ethane" "1,1,1-trifluoro-2-methoxyethane" "ethane,1,1,1-trifluoro-2-methoxy-" "ethane, 1,1,1-trifluoro-2-methoxy-" "ether,methyl 2,2,2-trifluoroethyl (6ci,8ci); 1,1,1-trifluoro-2-methoxyethane;2,2,2-trifluoroethyl methyl ether; r-e 143a" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -834550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     340.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-712210.0
-    phase     gas;
 }

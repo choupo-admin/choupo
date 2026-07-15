@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[2,4-bis(chloranyl)phenoxy]ethane-1,2-diol" "1,2-ethanediol, 2,4-dichlorophenoxy-" "1-(2,4-dichlorophenoxy)ethane-1,2-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -468300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     519.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-295310.0
-    phase     gas;
 }

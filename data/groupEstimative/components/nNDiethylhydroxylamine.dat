@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diethylhydroxylamine" "ethanamine, n-ethyl-n-hydroxy-" "n-hydroxydiethylamine" "n,n-diethylhydroxyamine" "hydroxylamine, n,n-diethyl-" "n,n-diethyl hydroxylamine" "n,n-diethyl hydroxyl amine" "n-ethyl-n-hydroxyethanamine" "n-ethyl-n-hydroxy-ethanamine" "fvcoiaysjzgecg-uhfffaoysa-" "n,n-diethylhydroxylamine solution" "33008-17-2 (oxalate)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -210590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     378.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-43240.0
-    phase     gas;
 }

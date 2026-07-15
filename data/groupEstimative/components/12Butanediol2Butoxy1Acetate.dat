@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group C; count 1; } { group OH; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-butoxy-2-oxidanyl-butyl) ethanoate" "2-butoxy-2-hydroxybutyl acetate" "(2-butoxy-2-hydroxybutyl) acetate" "acetic acid 2-butoxy-2-hydroxybutyl ester" "acetic acid, (2-hydroxy-2-butoxybutyl) ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -860210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     620.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-516030.0
-    phase     gas;
 }

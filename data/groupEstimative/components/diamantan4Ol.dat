@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group CH_ring; count 7; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5,1,7-[1,2,3,4]butanetetraylnaphthalen-3(2h)-ol, octahydro" "pentacyclo[7.3.1.14,12.02,7.06,11]tetradecan-4-ol (non-preferred name)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -160140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     223.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=217410.0
-    phase     gas;
 }

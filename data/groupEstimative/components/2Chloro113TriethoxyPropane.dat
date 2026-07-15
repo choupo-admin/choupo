@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 2; } { group Cl; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-1,1,3-triethoxy-propane" "propane,1,3-triethoxy-" "propionaldehyde, 2-chloro-3-ethoxy-, diethyl acetal" "2-chloro-1,3-triethoxy propane" "2-chloro-1,1,3-triethoxypropane" "propane, 2-chloro-1,1,3-triethoxy-" "propane, 2-chloro-1,1,3-triethoxy- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -652050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     554.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-306910.0
-    phase     gas;
 }

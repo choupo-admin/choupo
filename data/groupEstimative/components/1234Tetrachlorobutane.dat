@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 2; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4-tetrakis(chloranyl)butane" "butane, 1,2,3,4-tetrachloro-" "1,3,4-tetrachlorobutane" "agn-pc-00bzho" "butane,2,3,4-tetrachloro-" "butane,1,2,3,4-tetrachloro-" "(+-)-1,2,3,4-tetrachlorobutane" "meso-1,2,3,4-tetrachlorobutane" "(r*,s*)-1,2,3,4-tetrachlorobutane" "(r,s)-1,2,3,4-tetrachlorobutane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -199410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     426.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-69800.0
-    phase     gas;
 }

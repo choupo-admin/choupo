@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 3; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 2; } { group CH2_ring; count 12; } { group CH_ring; count 11; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 2; } { group OH; count 4; } { group O_ring; count 7; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[2-[(e)-4-[2-[3-(3,11-dimethyl-1,7-dioxaspiro[5.5]undecan-2-yl)-1-oxidanyl-butyl]-3-methylidene-4-oxidanyl-spiro[4a,7,8,8a-tetrahydro-4h-pyrano[3,2-b]pyran-6,5'-oxolane]-2'-yl]but-3-en-2-yl]-4-methyl-11-oxidanyl-1,7-dioxaspiro[5.5]undec-4-en-8-yl]-2-methyl-2-oxidanyl-propanoic acid" "dinophysistoxin-1" "35-methylokadaic acid" "okadaic acid, 35-methyl-" "acanthifolicin, 9,10-deepithio-9,10-didehydro-35-methyl-" "1,7-dioxaspiro(5.5)undec-10-ene-2-propanoic acid, 8-((1r,2e)-3-((2r,4'ar,5r,6's,8'r,8'as)-6'-((1s,3s)-3-((2-s,3r,6r,11r)-3,11-dimethyl-1,7-dioxaspiro(5.5)undec-2-yl)-1-hydroxybutyl)octahydro-8'-hydroxy-7'-methylenespiro(furan-2(3h),2'(3'h)-pyrano(3,2-b)pyran)-5-yl)-1-methyl-2-propenyl)-alpha,5-dihydroxy-alpha,10-dimethyl-, (alphar,2s,5r,6r,8s)-" "3-[4-[(e)-4-[2-[3-(3,7-dimethyl-5,11-dioxaspiro[5.5]undecan-4-yl)-1-hydroxybutyl]-4-hydroxy-3-methylidenespiro[4a,7,8,8a-tetrahydro-4h-pyrano[3,2-b]pyran-6,5'-oxolane]-2'-yl]but-3-en-2-yl]-7-hydroxy-2-methyl-5,11-dioxaspiro[5.5]undec-1-en-10-yl]-2-hydroxy-2-methylpropanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2311600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1241.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-843550.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 16; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethylstearamide" "hallcomid m 18" "octadecanamide, n,n-dimethyl-" "octadecanoic acid dimethylamide" "dimethylamid kyseliny stearove" "octadecanamide,n,n-dimethyl-" "stearamide,n,n-dimethyl- (4ci);hallcomid m 18;n,n-dimethyloctadecanamide;n,n-dimethylstearamide;n,n-dimethylstearylamide;octadecanoic aciddimethylamide;stearic acid n,n-dimethylamide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -501180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     977.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=99380.0
-    phase     gas;
 }

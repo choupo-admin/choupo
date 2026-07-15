@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 20; } { group CH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodecanedioic acid, bis(2-ethylhexyl) ester" "dodecanedioic acid, bis(2-ethylhexyl)ester" "di(2-ethylhexyl) dodecanedioate" "dodecanedioic acid dioctyl ester" "dodecanedioic acid di(2-ethylhexyl) ester" "dodecanedioic acid,1,12-bis(2-ethylhexyl) ester" "dodecanedioicacid, bis(2-ethylhexyl) ester (6ci,7ci,8ci,9ci); 1,10-decanedicarboxylic aciddi-2-ethylhexyl ester; 1,12-dodecanedioic acid bis(2-ethylhexyl) ester;bis(2-ethylhexyl) 1,12-dodecanedioate; bis(2-ethylhexyl) dodecanedioate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1266370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1330.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-440740.0
-    phase     gas;
 }

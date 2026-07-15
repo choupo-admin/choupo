@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2,4-dimethylphenyl)piperazin" "1-(2,4-xylyl)piperazine" "(2,4-dimethylphenyl)piperazine" "piperazine,1-(2,4-dimethylphenyl)-" "o335" "piperazine,1-(2,4-xylyl)- (7ci,8ci);1-(2,4-xylyl)piperazine;4-(2,4-dimethylphenyl)piperazine;n-(2,4-dimethylphenyl)piperazine;n-(2,4-xylyl)piperazine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   108740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=386060.0
-    phase     gas;
 }

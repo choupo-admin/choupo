@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 5; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl(piperidin-1-ylmethyl)silane" "piperidine,1-[(trimethylsilyl)methyl]-" "piperidine, 1-((trimethylsilyl)methyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -192360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     641.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=75180.0
-    phase     gas;
 }

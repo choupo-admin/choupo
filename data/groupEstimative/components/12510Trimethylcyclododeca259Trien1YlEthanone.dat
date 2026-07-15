@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "acetic acid, anhydride,reaction products with 1,5,10-trimethyl-1,5,9-cyclododecatriene" "2,5,10-trimethyl-2,5,9-cyclododecatrien-1-yl methyl ketone" "2,5,10-trimethyl-2,5,9-cyclododecatrien-1-yl methyl ketone;trimofix a'a inverted exclamation marka'a a'a inverted exclamation marka'a oa'a inverted exclamation marka'a a'a inverted exclamation marka'a ;aceticacid,anhydride,reactionproductswith1,5,10-trimethyl-1,5,9-cyclodode;catriene;aceticacid,anhydride,reactionproductswith1,5,10-trimethyl-1,5,9-cyclododecatriene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -350500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     803.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23820.0
-    phase     gas;
 }

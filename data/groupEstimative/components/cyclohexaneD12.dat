@@ -38,9 +38,8 @@ groups
     joback ( { group CH2_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2,3,3,4,4,5,5,6,6-dodecadeuteriocyclohexane" "(2h12)cyclohexane" "cyclohexane, d12" "de45" "cyclohexane-d12 >99.50 atom % d" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -92510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=31800.0
-    phase     gas;
 }

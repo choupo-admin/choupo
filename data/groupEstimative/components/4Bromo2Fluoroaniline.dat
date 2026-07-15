@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Br; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-bromanyl-2-fluoranyl-aniline" "2-fluoro-4-bromoaniline" "benzenamine, 4-bromo-2-fluoro-" "4-bromo-2-fluoro-phenylamine" "4-brom-2-fluoranilin" "4-bromo-2-fluoro-aniline" "4-bromo-2-fluorophenylamine" "4-brome-2-fluoroaniline" "4-bromo-2-fluoro aniline" "4-bromo-2-fluoro-benzenamine" "b126" "4-bromo-2-fluoro-aniline;2-fluoro-4-bromoaniline;benzenamine, 4-bromo-2-fluoro-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -89570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     405.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-21250.0
-    phase     gas;
 }

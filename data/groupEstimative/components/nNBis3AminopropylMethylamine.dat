@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group NH2; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n'-(3-azanylpropyl)-n'-methyl-propane-1,3-diamine" "3,3'-diamino-n-methyldipropylamine" "bis(3-aminopropyl)methylamine" "methyliminobispropylamine" "5-methyldipropylenetriamine" "n-methyliminobis propylamine" "methylbis(3-aminopropyl)amine" "3,3'-methyliminobispropylamine" "1,3-propanediamine, n-(3-aminopropyl)-n-methyl-" "dipropylamine, 3,3'-diamino-n-methyl-" "n-methyl-n,n-bis(3-aminopropyl)amine" "di(gamma-aminopropyl)methylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -52700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     547.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=251740.0
-    phase     gas;
 }

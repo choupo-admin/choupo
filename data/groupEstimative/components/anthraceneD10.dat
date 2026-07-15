@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 10; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5,6,7,8,9,10-decadeuterioanthracene" "anthracene-d10-" "anthracene. perdeutero-" "(2h10)anthracene" "perdeuterioanthracene" "anthracene-d10 >98 atom % d" "de740" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   274910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     370.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=383080.0
-    phase     gas;
 }

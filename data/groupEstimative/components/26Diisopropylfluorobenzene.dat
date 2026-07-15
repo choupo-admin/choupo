@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-fluoranyl-1,3-di(propan-2-yl)benzene" "2-fluoro-1,3-di(propan-2-yl)benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -284090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     517.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-56380.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4s)-4-methylhexan-1-ol" "(s)-4-methyl-1-hexanol" "1-hexanol,4-methyl-, (+)- (8ci);1-hexanol, 4-methyl-, (s)-;(+)-(4s)-methylhexan-1-ol;(s)-(+)-4-methyl-1-hexanol;(s)-4-methyl-1-hexanol;(s)-4-methylhexyl alcohol;(4s)-4-methylhexan-1-ol;1-hexanol, 4-methyl-, (4s)-;1-hexanol, 4-methyl-, (s)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -345320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     470.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-131200.0
-    phase     gas;
 }

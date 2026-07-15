@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyl-2-phenyl-ethanamine" "n,n-dimethyl-2-phenylethanamine" "n-phenethyldimethylamine" "dimethyl-phenethyl-amine" "benzeneethanamine, dimethyl-" "n,n-dimethylbenzeneethanamine" "phenethylamine, n,n-dimethyl-" "benzeneethanamine, n,n-dimethyl-" "n,n-dimethylphenylethylamine" "n,n-dmpea" "dimethylphenethylamine" "n,n-dimethyl-2-phenylethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   54330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=256510.0
-    phase     gas;
 }

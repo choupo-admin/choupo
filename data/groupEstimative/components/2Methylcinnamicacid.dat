@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-3-(2-methylphenyl)prop-2-enoic acid" "(2e)-3-(2-methylphenyl)acrylic acid" "2-methylcinnamic acid" "2-methylcinnamic acid, predominantly trans" "(e)-3-(2-methylphenyl)-2-propenoic acid" "3-(2-methylphenyl)acrylic acid" "(2e)-3-(2-methylphenyl)prop-2-enoic acid" "o-methylcinnamic acid" "3-(2-methylphenyl)prop-2-enoic acid" "(e)-3-o-tolylacrylic acid" "rarechem bk hc t303" "methylcinnamic acid,2-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-127590.0
-    phase     gas;
 }

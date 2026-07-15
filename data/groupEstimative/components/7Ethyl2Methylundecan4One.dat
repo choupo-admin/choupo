@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-ethyl-2-methyl-undecan-4-one" "7-ethyl-2-methyl-4-undecanone" "4-undecanone, 7-ethyl-2-methyl-" "4-undecanone,7-ethyl-2-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -455430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     708.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-66800.0
-    phase     gas;
 }

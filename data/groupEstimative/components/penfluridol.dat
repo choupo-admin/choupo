@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 7; } { group F; count 5; } { group Cl; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[4,4-bis(4-fluorophenyl)butyl]-4-[4-chloranyl-3-(trifluoromethyl)phenyl]piperidin-4-ol" "semap" "1-(4,4-bis(4-fluorophenyl)butyl)-4-(4-chloro-3-(trifluoromethyl)phenyl)piperidin-4-ol" "penfluridolum [inn-latin]" "mcn-jr-16,341" "4-piperidinol, 1-(4,4-bis(4-fluorophenyl)butyl)-4-(4-chloro-3-(trifluoromethyl)phenyl)-" "1-[4,4-bis(4-fluorophenyl)butyl]-4-[4-chloro-3-(trifluoromethyl)phenyl]-4-piperidinol" "4-piperidinol, 1-[4,4-bis(4-fluorophenyl)butyl]-4-[4-chloro-3-(trifluoromethyl)phenyl]-" "1-(4,4-bis(p-fluorophenyl)butyl)-4-(4-chloro-alpha,alpha,alpha-trifluoro-m-tolyl)-4-piperidinol" "4-piperidinol, 1-(4,4-bis(p-fluorophenyl)butyl)-4-(4-chloro-alpha,alpha,alpha-trifluoro-m-tolyl)-" "4-piperidinol, 4-(4-chloro-alpha,alpha,alpha-trifluoro-m-tolyl)-1-(4,4-bis(p-fluorophenyl)butyl)-" "hydroxamates" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -976840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1132.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-496970.0
-    phase     gas;
 }

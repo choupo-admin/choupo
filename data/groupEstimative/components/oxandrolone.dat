@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 3; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1s,3as,3br,5as,9as,9bs,11as)-1,9a,11a-trimethyl-1-oxidanyl-2,3,3a,3b,4,5,5a,6,9,9b,10,11-dodecahydroindeno[4,5-h]isochromen-7-one" "oxandrin" "anavar" "protivar" "oxandrolonum" "oxandrolona" "provitar" "vasorome" "lonavar" "ossandrolone" "ossandrolone [dcit]" "oxandrolonum [inn-latin]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -647580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     778.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-170990.0
-    phase     gas;
 }

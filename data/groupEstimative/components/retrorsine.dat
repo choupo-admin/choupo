@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 2; } { group OH; count 2; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "beta-longilobine" "retrorsin" "12,18-dihydroxysenecionan-11,16-dione" "usaramine" "cis-retronecic acid ester of retronecine" "12,18-dihydroxy-senecionan-11,16-dione" "senecionan-11,16-dione, 12,18-dihydroxy-" "(15z)-12,18-dihydroxysenecionan-11,16-dione" "trans-15-ethylidene-12beta-hydroxy-12alpha-hydroxymethyl-13beta-methylsenec-1-enine" "3-ethylidene-3,4,5,6,9,11,13,14,14a,14b-decahydro-6-hydroxy-6-hydroxymethyl-5-methyl(1,6)dioxacyclododeca(2,3,4-gh)pyrrolizidine-2,7-dione" "a-longilobine" "prestwick_562" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -969180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     822.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-484380.0
-    phase     gas;
 }

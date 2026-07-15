@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 9; } { group CH; count 3; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7,11,15-tetramethylhexadec-1-en-3-ol" "3,7,11,15-tetramethyl-1-hexadecen-3-ol" "1-hexadecen-3-ol, 3,7,11,15-tetramethyl-" "1-hexadecene-3-ol, 3,7,11,15-tetramethyl" "1-phyten-3-ol" "iso-phytol" "1-hexadecyl-3-ol, 3,7,11,15-tetramethyl" "1-hexadecen-3-ol,7,11,15-tetramethyl- (van8c" "3, 7, 11, 15 - tetramethyl-1-hexadecen-3-ol" "1-hexadecen-3-ol, 3,7,11,15-tetramethyl- (van) (8ci)" "1-hexadecen-3-ol, 3,7,11,15-tetramethyl- (van) (8ci)(9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -507520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     913.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=64060.0
-    phase     gas;
 }

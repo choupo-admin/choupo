@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopropaneethanol" "2-cyclopropylethan-1-ol" "2-cyclopropyl-ethanol" "(2-hydroxyethyl)cyclopropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -225960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     311.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-84850.0
-    phase     gas;
 }

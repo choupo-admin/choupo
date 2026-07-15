@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 31; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadecyl octadecanoate" "palmityl stearate" "octadecanoic acid, hexadecyl ester" "stearic acid, hexadecyl ester" "we(16:0/18:0)" "hexadecyl stearate" "n-hexadecyl stearate" "cetyl alcohol stearate" "1-hexadecyloctadecanoate" "hexadecanyl octadecanoate" "1-o-hexadecyl octadecanoate" "stearic acid hexadecyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1062370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1531.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-74970.0
-    phase     gas;
 }

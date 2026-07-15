@@ -34,9 +34,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 6; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7-methanoisobenzofuran, 4,5,6,7,8,8-hexachloro-1,3,3a,4,7,7a-hexahydro-" "1,3,3a,4,7,7a-hexahydro-4,5,6,7,8,8-hexachloro-4,7-methanoisobenzofuran" "4,7-methanoisobenzofuran, 1,3,3a,4,7,7a-hexahydro-4,5,6,7,8,8-hexachloro-" "4, 4,5,6,7,8,8-hexachloro-1,3,3a,4,7,7a-hexahydro-" "4,5,6,7,8,8-hexachloro-1,3,3a,4,7,7a-hexahydro-4,7-methano-2-benzofuran" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -203410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=16160.0
-    phase     gas;
 }

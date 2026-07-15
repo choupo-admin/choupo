@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-6-propan-2-ylidene-cyclohexene" "p-mentha-2,4(8)-diene" "cyclohexene, 3-methyl-6-(1-methylethylidene)-" "3-methyl-6-(1-methylethylidene)cyclohexene" "isoterpinolene" "2,4(8)-p-menthadiene" "3-methyl-6-propan-2-ylidenecyclohexene" "cyclohexene,3-methyl-6-(1-methylethylidene)-" "p-mentha-2,4(8)-diene(8ci); 2,4(8)-p-menthadiene; isoterpinolene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -71390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=124640.0
-    phase     gas;
 }

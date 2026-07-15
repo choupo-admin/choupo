@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-chloranylbutoxybenzene" "(4-chlorobutoxy)benzene" "4-chlorobutyl phenyl ether" "benzene, (4-chlorobutoxy)-" "4-chlorobutoxybenzene" "4-chlorobutylphenylether" "1-chloro-4-phenoxybutane" "4-chloro-1-phenoxybutane" "1-(4-chlorobutoxy)benzene" "benzene,(4-chlorobutoxy)-" "jkxcpavecbfboc-uhfffaoysa-" "u779" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -161160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=28800.0
-    phase     gas;
 }

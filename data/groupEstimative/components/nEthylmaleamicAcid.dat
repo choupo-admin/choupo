@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH; count 2; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(ethylamino)-4-oxidanylidene-but-2-enoic acid" "4-(ethylamino)-4-oxobut-2-enoic acid" "2-butenoic acid, 4-(ethylamino)-4-oxo-, (2z)-" "2-butenoic acid,4-(ethylamino)-4-oxo-, (2z)-" "2-butenoicacid, 4-(ethylamino)-4-oxo-, (z)-;maleamic acid, n-ethyl- (6ci,7ci,8ci);maleic acid ethylamide;n-ethylmaleamic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -459330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     503.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-303580.0
-    phase     gas;
 }

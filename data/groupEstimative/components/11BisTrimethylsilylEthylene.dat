@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group dCH2; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl(1-trimethylsilylethenyl)silane" "silane, ethenylidenebis(trimethyl-" "silane, ethenylidenebis[trimethyl-" "ethylene, 1,1-bis(trimethylsilyl)-" "ethylene,1-bis(trimethylsilyl)-" "trimethyl(1-(trimethylsilyl)vinyl)silane" "2, 2,2,4,4-tetramethyl-3-methylene-" "silane,1,1'-ethenylidenebis[1,1,1-trimethyl-" "trimethyl(1-(trimethylsilyl)vinyl)silane; 2,4-disilapentane, 2,2,4, 4-tetramethyl-3-methylene-; ethylene, 1,1-bis(trimethylsilyl)-; silane, {ethenylidenebis[trimethyl-}" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -316050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     711.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-113750.0
-    phase     gas;
 }

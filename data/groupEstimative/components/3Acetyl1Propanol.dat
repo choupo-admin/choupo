@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-oxidanylpentan-2-one" "5-hydroxypentan-2-one" "5-hydroxy-2-pentanone" "3-acetopropanol" "3-acetylpropanol" ".gamma.-acetopropanol" "5-hydroxy-pentan-2-one" "2-pentanone, 5-hydroxy-" "acetopropyl alcohol" "gamma-acetopropanol" "propanol, 3-acetyl-" "gamma-acetylpropyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -411340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-274520.0
-    phase     gas;
 }

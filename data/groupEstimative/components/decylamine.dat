@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "decan-1-amine" "1-decanamine" "1-aminodecane" "n-decylamine" "aminodecane" "monodecylamine" "1-decylamine" "kemamine p 190d" "decyl-amine" "decyl amine" "1-decaneamine" "decane,1-amino" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -215940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     597.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=99770.0
-    phase     gas;
 }

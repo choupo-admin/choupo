@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-2-prop-2-enyl-phenol" "phenol, 4-methyl-2-(2-propenyl)-" "2-allyl-p-cresol" "4-methyl-2-prop-2-enylphenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -76550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     454.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=69320.0
-    phase     gas;
 }

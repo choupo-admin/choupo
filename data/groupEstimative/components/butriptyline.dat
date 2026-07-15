@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(6,11-dihydro-5h-dibenzo[1,2-a:1',2'-e][7]annulen-11-yl)-n,n,2-trimethyl-propan-1-amine" "butriptylene" "evadyne" "butriptyline [inn:ban]" "butriptylinum [inn-latin]" "butriptyline hydrochloride" "evadene" "(.+-.)-evadyne" "butriptylene hydrochloride" "10,11-dihydro-n,n,beta-trimethyl-5h-dibenzo(a,d)cycloheptene-5-propylamine" "3-(10,11-dihydro-5h-dibenzo[a,d][7]annulen-5-yl)-n,n,2-trimethylpropan-1-amine" "5h-dibenzo(a,d)cycloheptene-5-propanamine, 10-11-dihydro-n,n,beta-trimethyl-, (+-)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   108400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     665.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=500590.0
-    phase     gas;
 }

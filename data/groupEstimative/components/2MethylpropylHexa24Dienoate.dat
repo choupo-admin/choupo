@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-hexadienoic acid, 2-methylpropyl ester" "2,4-hexadienoic acid 2-methylpropyl ester" "2,4-hexadienoic acid,2-methylpropyl ester, (2e,4e)-" "2,4-hexadienoicacid, 2-methylpropyl ester, (e,e)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -337850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     574.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-119050.0
-    phase     gas;
 }

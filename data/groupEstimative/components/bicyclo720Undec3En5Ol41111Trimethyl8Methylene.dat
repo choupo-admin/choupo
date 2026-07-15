@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,11,11-trimethyl-8-methylidene-bicyclo[7.2.0]undec-3-en-5-ol" "bicyclo[7.2.0]undec-3-en-5-ol, 4,11,11-trimethyl-8-methylene-, (1r,3e,5r,9s)-" "bicyclo[7.2.0]undec-3-en-5-ol, 4,11,11-trimethyl-8-methylene-, (1r,3e,5s,9s)-" "bicyclo[7.2.0]undec-3-en-5-ol, 4,11,11-trimethyl-8-methylene-, (1r,3z,5s,9s)-rel-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -285250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     625.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=52100.0
-    phase     gas;
 }

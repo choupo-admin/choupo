@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group OH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-3-(tert-butylamino)propane-1,2-diol" "(s)-(-)-3-tert-butylamino-1,2-propanediol" "s-(-)-3-(3-tert-butylamino)-1,2-propanediol" "(s)-( pound inverted question mark)-3-tert-butylamino-1,2-propanediol" "(s)-3-(tert-butylamino)propane-1,2-diol" "jwbmvcazxjmsox-lurjtmiesa-" "r770" "(s)-3-tert-butylamino-propane-1,2-diol" "(s)-(&#8722;)-3-tert-butylamino-1,2-propanediol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -452830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-175790.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-azanyl-3-methyl-benzoic acid" "4-amino-m-toluic acid" "3-methyl-4-aminobenzoic acid" "4-amino-3-methyl benzoic acid" "benzoic acid, 3-methyl-4-amino" "benzoic acid, 4-amino-3-methyl-" "4-amino-3-methyl benzoate" "3-methyl-4-aminobenzoicacid" "4-amino-3-methylbenzoicacid" "4-amino-3-methylbenzenecarboxylic acid" "4-amino-3-methylbenzoic" "2-amino-5-carboxytoluene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-167830.0
-    phase     gas;
 }

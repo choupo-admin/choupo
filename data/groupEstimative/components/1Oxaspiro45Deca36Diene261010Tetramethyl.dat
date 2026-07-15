@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6,6,10-tetramethyl-1-oxaspiro[4.5]deca-3,9-diene" "2,6,10,10-tetramethyl-1-oxaspiro(4.5)deca-3,6-diene" "2,6,10,10-tetramethyl-1-oxaspiro[4.5]deca-3,6-diene" "1-oxaspiro(4.5)deca-3,6-diene, 2,6,10,10-tetramethyl-" "3,6,10,10-tetramethyl-4-oxaspiro[4.5]deca-1,6-diene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -208460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     526.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77160.0
-    phase     gas;
 }

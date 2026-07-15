@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 1; } { group dCH2; count 2; } { group dCH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-[(1s,4as,8as)-5,5,8a-trimethyl-2-methylidene-3,4,4a,6,7,8-hexahydro-1h-naphthalen-1-yl]-3-methyl-pent-1-en-3-ol" "3-methyl-5-[(1s,4as,8as)-5,5,8a-trimethyl-2-methylidenedecahydronaphthalen-1-yl]pent-1-en-3-ol" "labda-8(20),14-dien-13-ol, (13r)-" "labda-8(20),14-dien-13-ol, (13s)-" "1-naphthalenepropanol, .alpha.-ethenyldecahydro-.alpha.,5,5,8a-tetramethyl-2-methylene-, [1s-[1.alpha.(r*),4a.beta.,8a.alpha.]]-" "labda-8(20),14-dien-13-ol, (13r)- (8ci)" "3-methyl-5-(5,5,8a-trimethyl-2-methylenedecahydronaphthalen-1-yl)pent-1-en-3-ol" "3-methyl-5-(5,5,8a-trimethyl-2-methylidenedecahydronaphthalen-1-yl)pent-1-en-3-ol" "1-naphthalenepropanol, alpha-ethenyldecahydro-alpha,5,5,8a-tetramethyl-2-methylene-, (1s-(1alpha(s*),4abeta,8aalpha))-" "1-naphthalenepropanol, alpha-ethenyldecahydro-alpha,5,5,8a-tetramethyl-2-methylene-, (1s-(1alpha(s*),4abeta,8aalpha))- (9ci)" "4ar-trans-5-(1,5,5,8as-tetramethyl-2-methylenedecahydro-1-naphthalenyl)-3-r-methyl-1-penten-3-ol" "5-[(1s,4as,8as)-5,5,8a-trimethyl-2-methylidene-3,4,4a,6,7,8-hexahydro-1h-naphthalen-1-yl]-3-methylpent-1-en-3-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -296680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     869.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=171160.0
-    phase     gas;
 }

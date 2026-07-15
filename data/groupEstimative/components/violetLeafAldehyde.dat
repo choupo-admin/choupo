@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH; count 4; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2e,6z)-nona-2,6-dienal" "trans-2,cis-6-nonadienal" "cucumber aldehyde" "2,6-nonadienal, (2e,6z)-" "nona-2,6-dienal" "2,6-nonadienal, (e,z)-" "nonadien-2(trans)-6-(cis)-al" "(2e,6z)-nonadienal" "trans,cis-2,6-nonadienal" "(2e,6z)-nona-2,6-dien-1-al" "(e,z)-2,6-nonadienal" "2-trans-6-cis-nonadienal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -80230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     512.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=85820.0
-    phase     gas;
 }

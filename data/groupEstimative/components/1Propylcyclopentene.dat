@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopentene, 1-propyl-" "cyclopentene, propyl-" "1-n-propylcyclopentene" "1-propyl-1-cyclopentene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -81320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     416.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=81070.0
-    phase     gas;
 }

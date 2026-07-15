@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 1; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-oxidanylpyran-2-one" "3-hydroxy-2-pyrone" "3-hydroxy-2-pyranone" "3-hydroxypyrone" "3-hydroxypyran-2-one" "2h-pyran-2-one,3-hydroxy-" "2h-pyran-2-one, 3-hydroxy-" "2h-pyran-4-one, 3-hydroxy-" "2,4-pentadienoicacid, 2,5-dihydroxy-, d-lactone (6ci,7ci);3-hydroxy-2-pyrone;3-hydroxy-2h-pyran-2-one;3-hydroxy-a-pyrone;3-hydroxypyran-2-one;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -438580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     325.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-357490.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 15; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-diphenylethylbenzene" "benzene, 1,1',1''-(1-ethanyl-2-ylidene)tris-" "1,2-triphenylethane" "1,1,2-triphenylethane" "ethane,1,2-triphenyl-" "benzene,1',1''-(1-ethanyl-2-ylidene)tris-" "benzene,1,1',1''-(1-ethanyl-2-ylidene)tris-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   248180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     606.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=452310.0
-    phase     gas;
 }

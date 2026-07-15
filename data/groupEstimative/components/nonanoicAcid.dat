@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pelargonic acid" "n-nonanoic acid" "nonylic acid" "pelargic acid" "nonoic acid" "n-nonylic acid" "1-octanecarboxylic acid" "n-nonoic acid" "cirrasol 185a" "nonanoate" "pelargon" "hexacid c-9" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -579360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     559.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-319010.0
-    phase     gas;
 }

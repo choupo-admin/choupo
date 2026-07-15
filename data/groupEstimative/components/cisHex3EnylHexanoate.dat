@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hex-3-enyl hexanoate" "(e)-hex-3-enyl hexanoate" "cis-3-hexen-1-yl hexanoate" "hexanoic acid, (3z)-3-hexen-1-yl ester" "hexanoic acid,3-hexen-1-yl ester" "hexanoicacid, 3-hexenyl ester (9ci); 3-hexen-1-yl caproate; 3-hexenyl hexanoate" "hexanoicacid, (3z)-3-hexenyl ester (9ci);hexanoic acid, 3-hexenyl ester, (z)- (8ci);(z)-3-hexen-1-yl hexanoate;(z)-3-hexenyl hexanoate;cis-3-hexen-1-yl caproate;cis-3-hexenyl hexanoate;cis-hex-3-en-1-yl hexanoate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -491070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     668.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-179990.0
-    phase     gas;
 }

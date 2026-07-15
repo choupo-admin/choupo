@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 2; } { group NH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(pyridin-2-ylmethyl)aniline" "phenyl-pyridin-2-ylmethyl-amine" "2-pyridinemethanamine, n-phenyl-" "n-(2-picolyl)aniline" "alpha-benzylaminopyridine" "phenyl(2-pyridylmethyl)amine" "n-(2-pyridinylmethyl)aniline" "n-(2-pyridylmethyl)phenylamine" "n-phenylpyridine-2-methylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   268310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     463.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=441420.0
-    phase     gas;
 }

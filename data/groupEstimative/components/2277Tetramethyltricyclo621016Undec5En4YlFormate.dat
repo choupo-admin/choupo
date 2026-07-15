@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2h-2,4a-methanonaphthalen-7-ol, 1,3,4,5,6,7-hexahydro-1,1,5,5-tetramethyl-, 7-formate" "2h-2,4a-methanonaphthalen-7-ol, 1,3,4,5,6,7-hexahydro-1,1,5,5-tetramethyl-, formate" "1,3,4,5,6,7-hexahydro-1,1,5,5-tetramethyl-2h-2,4a-methanonaphthalen-7-yl formate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -39690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     812.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=274290.0
-    phase     gas;
 }

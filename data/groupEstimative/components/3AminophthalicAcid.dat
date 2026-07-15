@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-azanylphthalic acid" "3-amino-1,2-benzenedicarboxylic acid" "3-amino-phthalic acid" "phthalic acid, 3-amino-" "1,2-benzenedicarboxylic acid, 3-amino-" "3-amino-1,2-benzenedicarboxylicacid" "3-aminobenzene-1,2-dicarboxylic acid" "3-aminophthalicacid" "1,2-benzenedicarboxylic acid, amino-" "1,2-benzenedicarboxylic acid,3-amino-" "1,2-benzenedicarboxylic acid, diisooctyl ester_gurudeeban & satyavani" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -661610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-511740.0
-    phase     gas;
 }

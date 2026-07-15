@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 6; } { group F; count 14; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,3,4,4,4-octakis(fluoranyl)-2,3-bis(trifluoromethyl)butane" "butane, octafluoro-2,3-bis(trifluoromethyl)-" "perfluoro(2,3-dimethylbutane) 84%" "1,1,1,2,3,4,4,4-octafluoro-2,3-bis(trifluoromethyl)butane" "2,3-bis(trifluoromethyl)-1,1,1,2,3,4,4,4-octafluorobutane" "butane,1,1,1,2,3,4,4,4-octafluoro-2,3-bis(trifluoromethyl)-" "butane,octafluoro-2,3-bis(trifluoromethyl)- (6ci,7ci,8ci);2,3-bis(trifluoromethyl)-perfluorobutane; perfluoro-2,3-dimethylbutane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2965210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     600.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2710660.0
-    phase     gas;
 }

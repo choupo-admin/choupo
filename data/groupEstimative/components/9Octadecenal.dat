@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadec-9-enal" "9-octadecenal, (9e)-" "octadecenylaldehyde" "9-octadecenal, (9z)-" "9-octadecenal,(z)-; olealdehyde (6ci,7ci,8ci); (z)-9-octadecenal; (z)-9-octadecenylaldehyde;oleic aldehyde; oleylaldehyde; cis-9-octadecenal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -383210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     869.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=81380.0
-    phase     gas;
 }

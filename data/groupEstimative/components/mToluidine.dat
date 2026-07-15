@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylaniline" "benzenamine, 3-methyl-" "3-toluidine" "3-aminotoluene" "m-toluidin" "m-methylaniline" "m-aminotoluene" "m-tolylamine" "3-amino-1-methylbenzene" "m-methylbenzenamine" "3-methylbenzenamine" "3-aminophenylmethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   71040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     367.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=177290.0
-    phase     gas;
 }

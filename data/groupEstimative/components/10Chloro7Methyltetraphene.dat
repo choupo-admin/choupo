@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 8; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10-chloranyl-7-methyl-benzo[a]anthracene" "10-chloro-7-methylbenz(a)anthracene" "benz(a)anthracene, 10-chloro-7-methyl" "7-chloro-10-methyl-1,2-benzanthracene" "10-chloro-7-methylbenzo[a]anthracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   312630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     471.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=491010.0
-    phase     gas;
 }

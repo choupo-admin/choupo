@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-1,4-diazepane" "n-methyl homopiperazine" "1-methylhomopiperazine" "1h-1,4-diazepine, hexahydro-1-methyl-" "hexahydro-1-methyl-1h-1,4-diazepine" "1-methyl-1,4-diazaperhydroepine" "agn-pc-0cq738" "ht471" "4318-37-0 1-methyl-1,4-diazepane" "1-methyl-1,4-diazepane;n-methyl-homopiperazine;1-methylhomopiperazine;n-methylhomopiperazinen-methyl-1,4-diazacycloheptane;hexahydro-1-methyl-1h-1,4-diazepine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   12830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     411.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=230290.0
-    phase     gas;
 }

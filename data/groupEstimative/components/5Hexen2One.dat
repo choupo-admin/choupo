@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hex-5-en-2-one" "allylacetone" "5-hexene-2-one" "1-hexen-5-one" "3-buten-1-yl methyl ketone" "allyl acetone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -154320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     411.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-41440.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranylcyclohexene" "cyclohexene, 3-chloro-" "3-cyclohexenyl chloride" "3-chloro-1-cyclohexene" "1,2,3,4-tetrahydrochlorobenzene" "cyclohexene, 3-chloro-, (r)-" "3-chloro-cyclohexene" "3-chlorocyclohexene-1" "2-cyclohexenylchloride; 3-chloro-1-cyclohexene; 3-chlorocyclohexene; 3-cyclohexenyl chloride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -70810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     355.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=42120.0
-    phase     gas;
 }

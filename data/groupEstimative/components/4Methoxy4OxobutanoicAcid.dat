@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methoxy-4-oxidanylidene-butanoic acid" "monomethyl succinate" "succinic acid monomethyl ester" "methyl hydrogen succinate" "mono-methyl succinate" "butanedioic acid, monomethyl ester" "mono-methyl hydrogen succinate" "succinic acid, monomethyl ester" "3-carbomethoxypropanoic acid" "butanedioic acid, 1-methyl ester" "butanedioic acid monomethyl ester" "3-(methoxycarbonyl)propanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -814080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-663060.0
-    phase     gas;
 }

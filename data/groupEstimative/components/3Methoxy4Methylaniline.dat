@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methoxy-4-methyl-aniline" "o-cresidine" "benzenamine, 3-methoxy-4-methyl-" "2-methoxy-4-aminotoluene" "3-methoxy-4-methylbenzenamine" "3-methoxy-4-methylphenylamine" "methoxymethylaniline" "5-amino-2-methyl-anisol" "3-methoxy-4-methyl aniline" "4-methyl-m-anisidine" "2-methyl-5-anisidine" "3-methoxy-p-toluidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -93290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     411.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=71080.0
-    phase     gas;
 }

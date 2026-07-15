@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-chloranyl-2-methoxy-aniline" "2-amino-4-chloroanisole" "5-chloro-o-anisidine" "benzenamine, 5-chloro-2-methoxy-" "2-methoxy-5-chloroaniline" "fast red rc" "tulabase fast red r" "tulabase fast red rc" "4-chloro-2-aminoanisole" "p-chloro-o-aminoanisole" "5-chloro-2-methoxyphenylamine" "fast red rc base" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -88390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     406.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50730.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group O; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3,3-diethoxypropanoate" "ethyl3,3-diethoxypropionate" "3,3-diethoxypropionic acid ethyl ester" "3,3-diethoxy-propionic acid ethyl ester" "propanoic acid, 3,3-diethoxy-, ethyl ester" "malonaldehydic acid ethyl ester diethylacetal" "ethyl 3, 3-diethoxypropionate" "ethyl 3,3,-diethoxypropanoate" "malonaldehydic acid diethyl acetal ethyl ester" "malonaldehydic acid ethyl ester diethylacetal; 3,3-diethoxypropionic acid ethyl ester; malonaldehydic acid diethyl acetal ethyl ester" "malonaldehydicacid, ethyl ester, diethyl acetal (6ci,7ci,8ci);propionic acid, 3,3-diethoxy-,ethyl ester (8ci);3,3-diethoxypropionic acid ethyl ester;ethyl b,b-diethoxypropionate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -816090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     570.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-497910.0
-    phase     gas;
 }

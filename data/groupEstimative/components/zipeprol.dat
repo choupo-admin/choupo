@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 3; } { group CH2_ring; count 4; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } { group O; count 2; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methoxy-3-[4-(2-methoxy-2-phenyl-ethyl)piperazin-1-yl]-1-phenyl-propan-2-ol" "zipeprolum [inn-latin]" "1-methoxy-3-[4-(2-methoxy-2-phenylethyl)piperazin-1-yl]-1-phenylpropan-2-ol" "4-(2-methoxy-2-phenylethyl)-alpha-(methoxyphenylmethyl)-1-piperazineethanol" "1-piperazineethanol, 4-(2-methoxy-2-phenylethyl)-.alpha.-(methoxyphenylmethyl)-" "zipeprolum" "zipeprol (inn)" "zo-tab (tn)" "zipeprol [inn:dcf]" "34758-84-4 (di-hydrochloride)" "alpha-(alpha-methoxybenzyl)-4-(beta-methoxyphenethyl)-1-piperazineethanol" "1-(2-methoxy-2-phenyl)ethyl- 4-(2-hydroxy-3-methoxy-3-phenyl)propylpiperazine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -255460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     888.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=291380.0
-    phase     gas;
 }

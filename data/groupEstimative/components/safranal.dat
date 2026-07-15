@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6,6-trimethylcyclohexa-1,3-diene-1-carbaldehyde" "2,3-dihydro-2,2,6-trimethylbenzaldehyde" "dehydro-beta-cyclocitral" "1,3-cyclohexadiene-1-carboxaldehyde, 2,6,6-trimethyl-" "(2,6,6-trimethylcyclohexa-1,3-dienyl)methanal" "1,1,3-trimethyl-2-formylcyclohexa-2,4-diene" "2,6,6-trimethylcyclohexa-1,3-dienyl methanal" "2,6,6-trimethyl-1,3-cyclohexadienal" "sgawogxmmpszpb-uhfffaoysa-" "3,4-didehydro-7-apo-b-caroten-7-al" "2,3-dihydro-2,2,6-trimethyl-benzaldehyde" "2,6,6-trimethylcyclohexa-1,3-dienylmethanal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -173130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     516.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-6580.0
-    phase     gas;
 }

@@ -30,9 +30,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 2; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylprop-1-ene" "2-methylallyl" "2-methyl-2-propenyl" "2-methylprop-2-en-1-yl" "2-methyl-2-propen-1-yl" "ch2c(ch3)=ch2" "2-methylprop-1-en-3-yl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   56570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     301.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=109820.0
-    phase     gas;
 }

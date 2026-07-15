@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group C; count 1; } { group F; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,4,4-tris(fluoranyl)butan-1-ol" "4,4,4-trifluorobutan-1-ol" "4,4,4-trifluorobutanol" "4,4,4-trifluoro-butan-1-ol" "4,4,4-trifluorobutanol-1" "1,1,1-trifluoro-butan-2-one" "1-butanol, 4,4,4-trifluoro-" "4,4,4-trifluoro-1-butanol;4,4,4-trifluorobutanol;trifluorobutanol;4,4,4-trifluorobutanol-1;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -875200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     418.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-735610.0
-    phase     gas;
 }

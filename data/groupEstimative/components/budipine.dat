@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-tert-butyl-4,4-diphenyl-piperidine" "budipin [german]" "1-tert-butyl-4,4-diphenylpiperidine" "budipine [inn]" "budipinum [inn-latin]" "budipine hydrochloride" "piperidine, 1-(1,1-dimethylethyl)-4,4-diphenyl-" "budipine (inn)" "1-(tert-butyl)-4,4-diphenylpiperidine" "1-(1,1-dimethylethyl)-4,4-diphenylpiperidine" "budipin" "budipina" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   130790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     757.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=495440.0
-    phase     gas;
 }

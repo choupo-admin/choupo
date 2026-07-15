@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-(3,4-dimethoxyphenyl)ethanoate" "ethyl 3,4-dimethoxyphenylacetate" "homoveratric acid, ethyl ester" "ethyl dimethoxyphenylacetate" "benzeneacetic acid, 3,4-dimethoxy-, ethyl ester" "ethyl (3,4-dimethoxyphenyl)acetate" "ethyl homoveratrate" "ethyl 3,4-dimethoxyphenyl acetate" "3,4-dimethoxyphenylacetic acid ethyl ester" "benzeneacetic acid,4-dimethoxy-, ethyl ester" "acetic acid,4-dimethoxyphenyl)-, ethyl ester" "benzeneacetic acid,3,4-dimethoxy-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -659140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     578.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-377060.0
-    phase     gas;
 }

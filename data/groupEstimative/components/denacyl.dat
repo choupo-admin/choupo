@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(z)-dodec-8-enyl] ethanoate" "(z)-8-dodecen-1-ol acetate" "cis-8-dodecenyl acetate" "8-dodecen-1-ol, acetate, (z)-" "[(z)-dodec-8-enyl] acetate" "orfralure" "(z)-dodec-8-enyl acetate" "8-dodecen-1-ol, 1-acetate, (8z)-" "8z-dodecenyl acetate" "(z)-8-dodecenyl acetate" "37338-40-2 (parent)" "cis-8-dodecen-1-yl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -532350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     746.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-163150.0
-    phase     gas;
 }

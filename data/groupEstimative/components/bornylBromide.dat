@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanyl-4,7,7-trimethyl-bicyclo[2.2.1]heptane" "2-bromo-1,7,7-trimethylbicyclo[2.2.1]heptane" "2-bromobornane" "bornyl bromide, pract." "3-bromo-4,7,7-trimethylbicyclo[2.2.1]heptane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -94160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     490.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=130640.0
-    phase     gas;
 }

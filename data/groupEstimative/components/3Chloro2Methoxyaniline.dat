@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-2-methoxy-aniline" "3-chloro-o-anisidine" "benzenamine, 3-chloro-2-methoxy-" "3-chloro-2-methoxyphenylamine" "aniline, 3-chloro-2-methoxy-" "aniline, 3-chloro-2-methoxy-," "benzenamine,3-chloro-2-methoxy-" "(3-chloro-2-methoxyphenyl)amine;1-amino-3-chloro-2-methoxybenzene; 2-methoxy-3-chloroaniline;3-chloro-2-methoxyaniline; 3-chloro-o-anisidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -88390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     406.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50730.0
-    phase     gas;
 }

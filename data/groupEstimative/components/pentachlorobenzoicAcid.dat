@@ -33,9 +33,8 @@ groups
     joback ( { group dC_ring; count 6; } { group Cl; count 5; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,5,6-pentakis(chloranyl)benzoic acid" "perchlorobenzoic acid" "benzoic acid, pentachloro-" "2,3,4,5,6-pentachlorobenzoic acid" "2,3,4,5,6-pentachloro-benzoic acid" "benzoic acid,2,3,4,5,6-pentachloro-" "2,3,4,5,6-pentachlorobenzoic acid;perchlorobenzoic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -437600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     511.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-331240.0
-    phase     gas;
 }

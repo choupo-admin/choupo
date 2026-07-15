@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,3-trimethylbut-1-ene" "triptene" "1-butene, 2,3,3-trimethyl-" "2,3-trimethyl-1-butene" "agn-pc-00jdfj" "1-butene,3,3-trimethyl-" "1-butene,2,3,3-trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -80920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=90190.0
-    phase     gas;
 }

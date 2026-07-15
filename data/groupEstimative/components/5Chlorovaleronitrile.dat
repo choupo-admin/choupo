@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group Cl; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-chloranylpentanenitrile" "5-chloropentanenitrile" "5-chloro-n-valeronitrile" "pentanenitrile, 5-chloro-" "snxhfhaiuzjp@" "5-chlorovaieronitrile" "4-chlorobutyl cyanide" "valeronitrile, 5-chloro-" ".delta.-chlorovaleronitrile" "jsawfgsxrpcfsw-uhfffaoysa-" "l818" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   2610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     390.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=112470.0
-    phase     gas;
 }

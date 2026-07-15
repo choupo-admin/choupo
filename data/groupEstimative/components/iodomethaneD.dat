@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "deuterio(iodanyl)methane" "methyl-d iodide" "iodomethane-d1" "methyl-d1 iodide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   12900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     250.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=15660.0
-    phase     gas;
 }

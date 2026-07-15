@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 6; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-bromanylcycloocta-1,3,5-triene" "1,3,5-cyclooctatriene,7-bromo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   33220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     415.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120930.0
-    phase     gas;
 }

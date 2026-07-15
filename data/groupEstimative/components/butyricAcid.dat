@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butanoic acid" "n-butyric acid" "n-butanoic acid" "propylformic acid" "butanic acid" "ethylacetic acid" "1-propanecarboxylic acid" "1-butyric acid" "buttersaeure" "butanoate" "butyric acid (natural)" "propanecarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -476160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     364.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-361110.0
-    phase     gas;
 }

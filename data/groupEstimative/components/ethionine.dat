@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-4-ethylsulfanyl-butanoic acid" "l-ethionine" "s-ethyl-l-homocysteine" "l-s-ethylhomocysteine" "(l)-ethionine" "ethionine (van)" "l-2-amino-4-(ethylthio)butyric acid" "homocysteine, s-ethyl-" "butyric acid, 2-amino-4-(ethylene)-, l-" "butyric acid, 2-amino-4-(ethylthio)-, l-" "butanoic acid, 2-amino-4-(ethylthio)-, (s)-" "l-2-amino-4-[ethylthio]butyric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -447060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-247140.0
-    phase     gas;
 }

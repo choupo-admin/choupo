@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 27; } { group CH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "14-methylpentadecyl 16-methylheptadecanoate" "isooctadecanoic acid, isohexadecyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1072930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1512.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-79850.0
-    phase     gas;
 }

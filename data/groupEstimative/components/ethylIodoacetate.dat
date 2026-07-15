@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group I; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-iodanylethanoate" "acetic acid, iodo-, ethyl ester" "ethyl monoiodoacetate" "iodoacetic acid, ethyl ester" "ethyl 2-iodoacetate" "acetic acid, 2-iodo-, ethyl ester" "s 9" "ethylester kyseliny jodoctove" "acetic acid, 2-iodo-,ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -366300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     418.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-269450.0
-    phase     gas;
 }

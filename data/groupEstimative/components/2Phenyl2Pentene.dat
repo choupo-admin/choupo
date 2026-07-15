@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pent-2-en-2-ylbenzene" "benzene,(1-methyl-1-buten-1-yl)-" "2-pentene,2-phenyl- (6ci); benzene, (1-methyl-1-butenyl)- (9ci); 2-phenyl-2-pentene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   73590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=225820.0
-    phase     gas;
 }

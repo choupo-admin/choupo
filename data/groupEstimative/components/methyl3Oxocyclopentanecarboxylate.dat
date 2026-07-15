@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-oxidanylidenecyclopentane-1-carboxylate" "methyl 3-oxocyclopentane-1-carboxylate" "cyclopentanecarboxylic acid, 3-oxo-, methyl ester" "3-oxo-cyclopentanecarboxylic acid methyl ester" "3-(methoxycarbonyl)cyclopentan-1-one" "3-(methoxycarbonyl)-1-oxocyclopentane" "agn-pc-00g715" "3-oxo-1-cyclopentanecarboxylic acid methyl ester" "3-oxo-cyclopentane-1-carboxylic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -582310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     350.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-388350.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,4,7-trimethyl-2,3-dihydro-1h-naphthalene" "ionene" "1,1,6-trimethyltetralin" "naphthalene, 1,2,3,4-tetrahydro-1,1,6-trimethyl-" "1,1,6-trimethyltetraline" "1,1,6-trimethyl tetralin" "1,2,3,4-tetrahydro-1,1,6-trimethylnaphthalene" "naphthalene, 1,2,3,4-tetrahydro-1,6,6-trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -16180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     542.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=194890.0
-    phase     gas;
 }

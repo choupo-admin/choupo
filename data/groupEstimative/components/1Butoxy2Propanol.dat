@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-butoxypropan-2-ol" "2-propanol, 1-butoxy-" "n-butoxypropanol" "2-hydroxy-3-butoxypropane" "propasol solvent b" "n-butoxy-2-propanol" "1,2-propylene glycol 1-monobutyl ether" "propylene glycol n-butyl ether" "propyleneglycol butyl ether" "rwnusvwfhdhrcj-uhfffaoysa-" "propylene glycol 1-monobutyl ether" "propylene glycol butyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -477540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     481.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236200.0
-    phase     gas;
 }

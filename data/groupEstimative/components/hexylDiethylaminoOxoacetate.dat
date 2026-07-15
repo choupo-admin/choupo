@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 7; } { group CdO; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexyl 2-(diethylamino)-2-oxidanylidene-ethanoate" "hexyl n,n-diethyloxamate" "acetic acid, (diethylamino)oxo-, hexyl ester" "hexyl diethylcarbamoylformate" "hexyl 2-(diethylamino)-2-oxoacetate" "acetic acid,2-(diethylamino)-2-oxo-, hexyl ester" "aceticacid, (diethylamino)oxo-, hexyl ester (9ci); hexyl n,n-diethyloxamate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -653340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     717.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-278350.0
-    phase     gas;
 }

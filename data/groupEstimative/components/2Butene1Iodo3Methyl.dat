@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-iodanyl-3-methyl-but-2-ene" "1-iodo-3-methyl-2-butene" "1-iodo-3-methylbut-2-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   37770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     395.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=121010.0
-    phase     gas;
 }

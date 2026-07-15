@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(1-butylpiperidin-3-yl)ethanoic acid" "2-(1-butyl-3-piperidyl)acetic acid" "acetic acid, 1-butyl-3-piperidyl ester" "2-(1-butylpiperidin-3-yl)acetic acid" "2-(1-butyl-piperidin-3-yl)acetic acid" "3-piperidinol,1-butyl-, acetate (ester) (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -492630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     603.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-154840.0
-    phase     gas;
 }

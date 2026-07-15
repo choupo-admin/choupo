@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2-(2-methylbutan-2-yl)cyclohexyl] ethanoate" "2-tert-pentylcyclohexyl acetate" "2-(1,1-dimethylpropyl)cyclohexyl acetate" "cyclohexanol, 2-(1,1-dimethylpropyl)-, 1-acetate" "cyclohexanol, 2-(1,1-dimethylpropyl)-, acetate" "coniferan" "amylcyclohexyl acetate (mixed isomers)" "cyclohexanol, 2-tert-pentyl-, acetate" "2-(2-methylbutan-2-yl)cyclohexyl acetate" "[2-(2-methylbutan-2-yl)cyclohexyl] acetate" "amylcyclohexyl acetate (mixed isomers);2-tert-amylcyclohexylacetate;coniferan;cyclohexanol,2-(1,1-dimethylpropyl)-,acetate;2-tert-pentylcyclohexyl acetate;[2-(2-methylbutan-2-yl)cyclohexyl] acetate;cyclohexanol, 2-tert-pentyl-, acetate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -603700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     601.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-232210.0
-    phase     gas;
 }

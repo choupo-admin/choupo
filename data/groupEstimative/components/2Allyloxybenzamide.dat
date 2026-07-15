@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-prop-2-enoxybenzamide" "o-(allyloxy)benzamide" "benzamide, 2-allyloxy-" "2-(2-propenyloxy)benzamide" "benzamide, o-(allyloxy)- (6ci,7ci)" "benzamide, 2-(2-propenyloxy)-" "benzamide,2-(2-propen-1-yloxy)-" "benzamide, 2-(2-propenyloxy)- (9ci)" "benzamide,2-(2-propenyloxy)- (9ci); benzamide, 2-(allyloxy)- (8ci); benzamide,o-(allyloxy)- (6ci,7ci); 2-allyloxybenzamide; o-(allyloxy)benzamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -110250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     517.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=56470.0
-    phase     gas;
 }

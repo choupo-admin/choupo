@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-ethoxypropanoate" "propanoic acid, 3-ethoxy-, ethyl ester" "3-ethoxypropionic acid ethyl ester" "ethoxypropionic acid, ethyl ester" "ethyl-3-ethoxypropionate" "propionic acid, 3-ethoxy-, ethyl ester" "ethyl beta-ethoxypropionate" "ethyl .beta.-ethoxypropionate" "bhxiwujlhyhgsj-uhfffaoysa-" "ethylester kyseliny 3-ethoxypropionove" "3-ethoxypropionic acid ethyl ester(beta-)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -637310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     491.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-407310.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group COO; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[bis(2-acetyloxyethyl)amino]ethyl ethanoate" "nitrilotriethane-2,1-diyl triacetate" "ethanol, 2,2',2''-nitrilotris-, 1,1',1''-triacetate" "2,2',2''-nitrilotrisethyl triacetate" "2-[bis(2-acetyloxyethyl)amino]ethyl acetate" "ethanol,2',2''-nitrilotri-, triacetate (ester)" "ethanol,2',2''-nitrilotris-, triacetate (ester)" "ethanol, 2,2',2''-nitrilotri-, triacetate (ester)" "ethanol, 2,2',2''-nitrilotris-, triacetate (ester)" "ethanol,2,2',2''-nitrilotris-, 1,1',1''-triacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1175320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     793.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-770170.0
-    phase     gas;
 }

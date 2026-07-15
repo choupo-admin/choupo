@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 5; } { group dC_ring; count 5; } { group Cl; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5,8-bis(chloranyl)naphthalen-1-ol" "5,8-dichloronaphthalen-1-ol" "1-naphthalenol, 5,8-dichloro-" "1-naphthalenol,5,8-dichloro-" "1-naphthol,5,8-dichloro- (6ci,7ci,8ci); 5,8-dichloro-1-naphthol; 5,8-dichloro-a-naphthol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -53860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     411.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=54640.0
-    phase     gas;
 }

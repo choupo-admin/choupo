@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nonan-1-ol" "nonanol" "nonyl alcohol" "n-nonyl alcohol" "pelargonic alcohol" "nonalol" "octyl carbinol" "1-hydroxynonane" "alcohol c-9" "n-nonan-1-ol" "n-nonanol" "c9 alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -381320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     557.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-111920.0
-    phase     gas;
 }

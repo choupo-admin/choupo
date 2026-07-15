@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n,3-trimethylbutan-1-amine" "isoamyldimethylamine" "1-butanamine, n,n,3-trimethyl-" "n,n-dimethylisoamylamine" "n,n-dimethylisopentylamine" "n,n,3-trimethylbutylamine" "1-dimethylamino-3-methylbutane" "butylamine, n,n,3-trimethyl-" "n,n,3-trimethyl-1-butanamine" "1-butanamine, n,n,3-trimethyl" "1-butanamine,n,n,3-trimethyl-" "dimethyl-3-methylbutylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -125560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116400.0
-    phase     gas;
 }

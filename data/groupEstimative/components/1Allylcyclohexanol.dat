@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-prop-2-enylcyclohexan-1-ol" "1-allyl-1-cyclohexanol" "cyclohexanol, 1-allyl-" "cyclohexanol, 1-(2-propenyl)-" "1-allyl-cyclohexan-1-ol" "1-prop-2-enyl-1-cyclohexanol" "cyclohexanol,1-(2-propen-1-yl)-" "cyclohexanol,1-(2-propenyl)- (9ci);cyclohexanol, 1-allyl- (6ci,7ci,8ci);1-(1-hydroxycyclohexyl)-2-propene;1-allyl-1-cyclohexanol;1-allylcyclohexanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -186330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     591.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-5120.0
-    phase     gas;
 }

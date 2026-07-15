@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methylsulfanylbenzaldehyde" "benzaldehyde, 4-(methylthio)-" "p-(methylthio)benzaldehyde" "4-methylmercaptobenzaldehyde" "4-methylthiobenzaldehyde" "4-(methylsulfanyl)benzaldehyde" "4-methylthio benzaldehyde" "4-(methylmercapto)benzaldehyde" "4-formylthioanisole" "p-methylmercaptobenzaldehyde" "4-mercaptomethyl-benzaldehyde" "4-methyl-benzenecarbothioaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   134930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     497.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=196340.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 17; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadecan-1-ol" "stearyl alcohol" "octadecanol" "n-octadecanol" "octadecyl alcohol" "1-hydroxyoctadecane" "n-1-octadecanol" "stearol" "n-octadecyl alcohol" "stearic alcohol" "1-0ctadecanol" "atalco s" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -567080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     908.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-36140.0
-    phase     gas;
 }

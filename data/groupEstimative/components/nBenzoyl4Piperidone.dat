@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(phenylcarbonyl)piperidin-4-one" "1-benzoylpiperidin-4-one" "1-benzoyl-4-piperidone" "4-piperidinone, 1-benzoyl-" "1-benzoyl-4-oxopiperidine" "1-benzoyl-4-piperidinone" "4-piperidone, 1-benzoyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -156410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     472.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=66100.0
-    phase     gas;
 }

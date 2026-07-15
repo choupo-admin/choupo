@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 7; } { group dC_ring; count 3; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylnaphthalene" "naphthalene, 2-bromo-" "2-naphthyl bromide" "beta-bromonaphthalene" ".beta.-bromonaphthalene" "2-bromo-naphthalene" "beta-naphthyl bromide" "2-bromo naphthalene" ".beta.-naphthyl bromide" "pbn-2" "bromonaphthalene(2-)" "qtm pah site monitoring solution" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   192730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     375.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=257070.0
-    phase     gas;
 }

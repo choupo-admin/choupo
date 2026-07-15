@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7-dimethyloctyl ethanoate" "1-octanol, 3,7-dimethyl-, acetate" "tetrahydrogeranyl acetate" "3,7-dimethyl-1-octanyl acetate" "dihydrocitronellyl acetate" "3,7-dimethyloctanyl acetate" "3,7-dimethyl-1-octyl acetate" "3,7-dimethyloctanyl-1-acetate" "3,7-dimethyl-1-octanol, acetate" "1-octanol, 3,7-dimethyl-, 1-acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -618850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     655.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-265090.0
-    phase     gas;
 }

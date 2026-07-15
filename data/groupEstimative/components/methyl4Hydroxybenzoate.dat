@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-oxidanylbenzoate" "methylparaben" "methyl paraben" "methyl p-hydroxybenzoate" "nipagin" "benzoic acid, 4-hydroxy-, methyl ester" "aseptoform" "maseptol" "metaben" "methaben" "methylben" "metoxyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -466510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-336100.0
-    phase     gas;
 }

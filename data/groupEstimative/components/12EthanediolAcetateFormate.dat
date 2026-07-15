@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methanoyloxyethyl ethanoate" "1,2-ethanediol, 1-acetate 2-formate" "2-formyloxyethyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -387360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     585.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-275190.0
-    phase     gas;
 }

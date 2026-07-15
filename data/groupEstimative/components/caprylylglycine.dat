@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(octanoylamino)ethanoic acid" "capryloylglycine" "2-octanamidoacetic acid" "n-(1-oxooctyl)glycine" "capryloyl glycine" "n-octanoylglycine" "glycine, n-(1-oxooctyl)-" "2-(octanoylamino)acetic acid" "n-octanoyl-glycine" "lipacide c 8g" "glycine,n-(1-oxooctyl)-" "glycine,n-octanoyl- (6ci,7ci,8ci);capryloylglycine;lipacide c 8g;n-octanoyl-glycine;n-octanoylglycine;caprylylglycine;n-(1-oxooctyl)glycine; 2-(octanoylamino)acetic acid;2-(octanoylamino)acetic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -659110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     666.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-350120.0
-    phase     gas;
 }

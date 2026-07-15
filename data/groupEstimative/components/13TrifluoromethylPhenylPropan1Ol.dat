@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-((3-trifluoromethyl)phenyl)propanol-1" "1-[(3-trifluoromethyl)phenyl]propanol-1" "3-trifluoromethylphenylpropanol" "1-[3-(trifluoromethyl)phenyl]propanol-1" "1-[3-(trifluoromethyl)phenyl]-1-propanol" "(1s)-1-[3-(trifluoromethyl)phenyl]propan-1-ol" "benzylalcohol, a-ethyl-m-(trifluoromethyl)-(8ci); 1-(3-trifluoromethylphenyl)-1-propanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -779260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     530.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-584750.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 2; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-tert-butyl-4,4-diphenyl-butan-2-amine" "terodilinum [inn-latin]" "terodiline [inn:ban:jan]" "n-tert-butyl-4,4-diphenylbutan-2-amine" "propylamine, n-tert-butyl-1-methyl-3,3-diphenyl-" "benzenepropanamine, n-(1,1-dimethylethyl)-alpha-methyl-gamma-phenyl-" "benzenepropanamine, n-(1,1-dimethylethyl)-.alpha.-methyl-.gamma.-phenyl-" "terodilina" "terodilinum" "agn-pc-00nrtp" "n-tert-butyl-1-methyl-3,3-diphenylpropylamine" "n-tert-butyl-3,3-diphenyl-1-methylpropylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   51090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     704.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=429690.0
-    phase     gas;
 }

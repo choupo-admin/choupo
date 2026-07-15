@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 10; } { group OH; count 3; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[bis(2-hydroxyethyl)amino]ethanol;hexanedioic acid" "2-[bis(2-hydroxyethyl)amino]ethanol; hexanedioic acid" "adipic acid, compound with 2,2',2''-nitrilotriethanol" "hexanedioic acid, polymer with 2,2',2''-nitrilotris(ethanol)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1492330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1006.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1042100.0
-    phase     gas;
 }

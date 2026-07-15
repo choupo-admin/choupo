@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dC_ring; count 6; } { group Br; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4-tetrakis(bromanyl)-5,6-dimethyl-benzene" "3,4,5,6-tetrabromo-o-xylene" "xylene, tetrabromo derivative" "1,2,3,4-tetrabromo-5,6-dimethylbenzene" "benzene, dimethyl-, tetrabromo deriv." "benzene, 1,2,3,4-tetrabromo-5,6-dimethyl-" "tetrabromo-ortho-xylene" "benzene,2,3,4-tetrabromo-5,6-dimethyl-" "1,2,3,4-tetrabromo-5,6-dimethyl-benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   76050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     534.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=138020.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 4; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-fluoranyl-2-(trifluoromethyl)aniline" "2-amino-5-fluorobenzotrifluoride" "alpha,alpha,alpha,4-tetrafluoro-o-toluidine" "4-fluoro-2-trifluoromethyl-phenylamine" "benzenamine, 4-fluoro-2-(trifluoromethyl)-" "4-fluoro-2-trifluoromethylaniline" "4-fluoro-2-(trifluoromethyl)phenylamine" "393-39-5 2-amino-5-fluorobenzotrifluoride" "zr df bxfff" "5-fluoro-2-aminobenzotrifluoride" "a,a,a-4-tetrafluoro-o-toluidine" "lrcqlcwuubsuoy-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -733620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-608740.0
-    phase     gas;
 }

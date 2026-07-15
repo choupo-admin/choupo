@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-bromanylcyclopentyl) ethanoate" "cis-2-bromocyclopentanol acetate" "agn-pc-00njsc" "(2-bromocyclopentyl) acetate" "trans-2-bromocyclopentanol acetate" "cyclopentanol,2-bromo-,acetate,cis-" "cyclopentanol,2-bromo-,acetate,trans-" "[(1s,2s)-2-bromocyclopentyl] acetate" "cyclopentanol, 2-bromo-, acetate, cis-" "cyclopentanol, 2-bromo-, acetate, trans-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -438620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-259150.0
-    phase     gas;
 }

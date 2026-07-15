@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(10,13-dimethyl-3-oxidanyl-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-17-yl)ethanone" "3-hydroxypregn-5-en-20-one" "pregn-5-en-20-one, 3-hydroxy-" "1-(3-hydroxy-10,13-dimethyl-2,3,4,7,8,9,10,11,12,13,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthren-17-yl)ethanon" ".delta.5-pregnenolone" "natolone" "5-pregnen-3.beta.-ol-20-one" "3.beta.-hydroxypregn-5-en-20-one" "pregn-5-en-20-one, 3.beta.-hydroxy-" "delta5-pregnen-3beta-ol-20-one" "1-(3-hydroxy-10,13-dimethyl-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-17-yl)ethanone" "17.alpha.-pregn-5-en-20-one, 3.beta.-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -465410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     758.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=28920.0
-    phase     gas;
 }

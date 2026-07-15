@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethylbutan-1-amine" "1-butanamine, 2-ethyl-" "1-amino-2-ethylbutane" "butylamine, 2-ethyl-" "3-(aminomethyl)pentane" "2-ethyl butylamine" "mgwagiqqtulhgu-uhfffaoysa-" "butylamine,2-ethyl- (6ci,8ci); (2-ethyl-n-butyl)amine; 1-amino-2-ethylbutane;2-ethyl-1-butanamine; 2-ethylbutylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -138660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     431.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=63650.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-oxidanyl-2-phenyl-propanoic acid" "dl-tropic acid" "3-hydroxy-2-phenylpropanoic acid" "2-phenylhydracrylic acid" "tropate" "3-hydroxy-2-phenylpropionic acid" "hydracrylic acid, 2-phenyl-" "(+-)-tropic acid" "2-phenylhydroacrylic acid" "alpha-(hydroxymethyl)benzeneacetic acid" "beta-hydroxyhydratropic acid" "hydratropic acid, beta-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -500340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-345860.0
-    phase     gas;
 }

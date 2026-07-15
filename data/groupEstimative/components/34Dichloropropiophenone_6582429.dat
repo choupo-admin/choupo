@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(3,4-dichlorophenyl)propan-1-one" "1-(3,4-dichlorophenyl)-1-propanone" "3,4-dichloropropiophenone" "3,4-dichlorophenyl ethyl ketone" "1-propanone, 1-(3,4-dichlorophenyl)-" "3,4-dichloro propiophenone" "1-propanone,1-(3,4-dichlorophenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -159560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     481.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-34730.0
-    phase     gas;
 }

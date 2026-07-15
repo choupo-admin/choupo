@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group I; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-iodanylbenzoate" "4-iodobenzoic acid methyl ester" "methyl p-iodobenzoate" "benzoic acid, 4-iodo-, methyl ester" "4-iodo-benzoic acid methyl ester" "benzoic acid, p-iodo-, methyl ester" "methyl-p-iodobenzoate" "619-44-3 methyl 4-iodobenzoate" "methyl 4-iodobenzenecarboxylate" "m660" "benzoic acid, p-iodo-, methyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -223800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     461.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-132990.0
-    phase     gas;
 }

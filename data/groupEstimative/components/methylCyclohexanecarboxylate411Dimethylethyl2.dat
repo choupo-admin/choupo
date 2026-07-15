@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-tert-butylcyclohexane-1-carboxylate" "methyl cyclohexanecarboxylate, 4-(1,1-dimethylethyl), # 1" "cyclohexanecarboxylic acid, 4-tert-butyl-, methyl ester" "cyclohexanecarboxylic acid, 4-(1,1-dimethylethyl)-, methyl ester" "cyclohexanecarboxylic acid, 4-(1,1-dimethylethyl)-, methyl ester, cis-" "cyclohexanecarboxylic acid, 4-(1,1-dimethylethyl)-, methyl ester, trans-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -583060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     562.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-240630.0
-    phase     gas;
 }

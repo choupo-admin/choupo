@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxy-2-phenyl-ethanoic acid" "methoxyphenylacetic acid" "2-methoxy-2-phenylacetic acid" "o-methyl-dl-mandelic acid" "acetic acid, methoxyphenyl-" "benzeneacetic acid, .alpha.-methoxy-" "alpha-methoxyphenylacetic acid" "(methyloxy)(phenyl)acetic acid" ".alpha.-methoxyphenylacetic acid" "dl-alpha-methoxyphenylacetic acid" "(r)-(-)-.alpha.-methoxyphenylacetic acid" "benzeneacetic acid, .alpha.-methoxy-, (r)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -480330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-314040.0
-    phase     gas;
 }

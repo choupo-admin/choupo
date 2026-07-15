@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group OH; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-bis(2-hydroxyethyl)nonanamide" "pelargonic acid, diethanolamine soap" "pelargonic diethanolamide" "pelargonic acid, diethanolamine amide" "n,n-bis(2-hydroxyethyl)nonan-1-amide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -661160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     806.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-233200.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "undecane-1-thiol" "undecyl mercaptan" "1-udt" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -231890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     647.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=71130.0
-    phase     gas;
 }

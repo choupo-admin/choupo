@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group F; count 3; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethoxy-2,2,2-tris(fluoranyl)ethanol" "trifluoroacetaldehyde ethyl hemiacetal" "fluoral ethyl hemiacetal" "ethanol, 1-ethoxy-2,2,2-trifluoro-" "1-ethoxy-2,2,2-trifluoroethan-1-ol" "1-ethoxy-2,2-trifluoroethanol" "trifluoroacetaldehyde ethylhemiacetal" "trifluoroacetaldehyde hemiethylacetal" "perfluoroacetaldehyde ethyl hemiacetal" "t245" "2-ethoxy-2-hydroxy-1,1,1-trifluoroethane" "trifluoroacetaldehyde ethyl hemiacetal, tech" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1012700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     420.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-843050.0
-    phase     gas;
 }

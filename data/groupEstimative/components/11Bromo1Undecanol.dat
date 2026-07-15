@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 11; } { group Br; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "11-bromanylundecan-1-ol" "11-bromoundecan-1-ol" "1-undecanol, 11-bromo-" "undecamethylene bromohydrin" "11-bromoundecanol" "1-bromo-11-hydroxyundecane" "11-bromoundecyl alcohol" "p226" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -396270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     686.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-80760.0
-    phase     gas;
 }

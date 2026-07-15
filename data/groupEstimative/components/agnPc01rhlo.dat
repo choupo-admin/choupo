@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group dCH; count 2; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-bis(chloranyl)propane;1,3-bis(chloranyl)prop-1-ene" "1,2-dichloropropane;(e)-1,3-dichloroprop-1-ene" "1,3-dichloro-1-propene mixture with 1,2-dichloropropane" "1-propene, 1,3-dichloro-, mixture with 1,2-dichloropropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -229810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     614.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-75060.0
-    phase     gas;
 }

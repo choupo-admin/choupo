@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group OH; count 1; } { group O; count 1; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-methoxy-3-methyl-2,4,4a,7,7a,13-hexahydro-1h-4,12-methanobenzofuro[3,2-e]isoquinoline-7-ol" "3-methoxy-17-methyl-7,8-didehydro-4,5-epoxymorphinan-6-ol" "morphinan-6-ol, 7,8-didehydro-4,5-epoxy-3-methoxy-17-methyl-, (5.alpha.,6.alpha.)-" "morphinan-6.alpha.-ol, 7,8-didehydro-4,5.alpha.-epoxy-3-methoxy-17-methyl-" "morphinan-6-ol, 7,8-didehydro-4,5-epoxy-3-methoxy-17-methyl-, (5.alpha.,6.beta.)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -211610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     367.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=238900.0
-    phase     gas;
 }

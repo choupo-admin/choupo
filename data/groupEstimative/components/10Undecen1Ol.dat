@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 9; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "undec-10-en-1-ol" "undecylenic alcohol" "10-undecenol" "undecylenyl alcohol" "10-undecylen-1-ol" "11-hydroxy-1-undecene" ".omega.-undecenyl alcohol" "undecen-1-ol" "omega-undecenyl alcohol" "c-11 alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -297170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     630.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-7240.0
-    phase     gas;
 }

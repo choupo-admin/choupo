@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "heptan-1-amine" "1-aminoheptane" "1-heptanamine" "1-heptylamine" "n-heptylamine" "heptyl-amine" "heptanamine" "BRN 1731688" "heptyl amine" "ai3-24038" "NSC2074" "heptane, 1-amino-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -154020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     480.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=74510.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethylsulfanylethanamine" "2-[ethylthio]ethylamonium" "2-aminoethylethyl sulfide" "2-ethylthioethylamine" "2-(ethylthio)ethanamine" "2-(ethylsulfanyl)ethanamine" "2-aminoethyl ethyl sulphide" "ethanamine,2-(ethylthio)-" "2-(ethylsulphanyl)ethylamine" "ethanamine, 2-(ethylthio)-" "2-(ethylsulfanyl)ethan-1-amine" "2-(ethylsulfanyl)ethan-1-amine hydrochloride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -50230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=82370.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 1; } { group dCH; count 8; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-oxidanylicosa-6,8,11,14-tetraenoic acid" "6,8,11,14-eicosatetraenoic acid, 5-hydroxy-" "agn-pc-00krjq" "(?5-hete" "5(s)-hete lipid maps ms standard" "6,8,11,14-eicosatetraenoicacid, 5-hydroxy-" "6,8,11,14-eicosatetraenoicacid, 5-hydroxy-, (6e,8z,11z,14z)-" "6,8,11,14-eicosatetraenoicacid, 5-hydroxy-, (e,z,z,z)-; (?a'a a'a currency)-5-hete; (?a'a a'a currency)-5-hydroxyeicosa-6e,8z,11z,14z-tetraenomicacid; 5-hete; 5-hydroxyeicosa-6,8,11,14-tetraenoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -495030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1003.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-44770.0
-    phase     gas;
 }

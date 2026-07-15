@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-fluoranylphenoxy)ethanoic acid" "p-fluorophenoxyacetic acid" "2-(4-fluorophenoxy)acetic acid" "(4-fluorophenoxy)acetic acid" "alpha-carboxy-4-fluoroanisole" "acetic acid, (4-fluorophenoxy)-" "(4-fluorophenoxy)acetic acid 98%" "acetic acid,2-(4-fluorophenoxy)-" "acetic acid, (4-fluorophenoxy)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -661990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-524460.0
-    phase     gas;
 }

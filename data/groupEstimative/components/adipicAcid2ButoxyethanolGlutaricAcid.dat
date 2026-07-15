@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group OH; count 1; } { group O; count 1; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-butoxyethanol;hexanedioic acid;pentanedioic acid" "hexanedioic acid, mixed esters with 2-butoxyethanol and glutaric acid" "2-butoxyethanol; hexanedioic acid; pentanedioic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2302980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1308.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1734720.0
-    phase     gas;
 }

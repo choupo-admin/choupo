@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 1; } { group COOH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1s,5r)-9-methoxy-3-methyl-9-phenyl-3-azabicyclo[3.3.1]nonane;2-oxidanylpropane-1,2,3-tricarboxylic acid" "(1r,5s)-9-methoxy-3-methyl-9-phenyl-3-azabicyclo[3.3.1]nonane 2-hydroxypropane-1,2,3-tricarboxylate(1:1)" "9-beta-methoxy-9-alpha-phenyl-3-methyl-3-azabicyclo(3.3.1)nonane citrate" "3-azabicyclo(3.3.1)nonane, 9-methoxy-3-methyl-9-phenyl-, citrate (1:1), stereoisomer" "4-beta-methoxy-1-methyl-4-alpha-phenyl-3-alpha,5-alpha-propanopiperidine hydrogen citrate" "3-azabicyclo(3.3.1)nonane, 9-methoxy-3-methyl-9-phenyl-, syn-, 2-hydroxy-1,2,3-propanetricarboxylate (1:1)" "9-methoxy-3-methyl-9-phenyl-3-azabicyclo(3.3.1)nonane syn-, 2-hydroxy-1,2,3-propanetricarboxylate (1:1)" "2-hydroxypropane-1,2,3-tricarboxylic acid; (1s,5r)-9-methoxy-3-methyl-9-phenyl-3-azabicyclo[3.3.1]nonane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1520800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1099.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-933820.0
-    phase     gas;
 }

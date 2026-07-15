@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 4; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r,3s,4s,5s)-4,6,6-trimethylbicyclo[3.1.1]heptan-3-ol" "isopinocampheol" "(1s,2s,3s,5r)-3-pinanol" "cis-pinocampheol" "(1s,2s,3s,5r)-(+)-isopinocampheol" "rac-isopinocampheol" "(2exoh)-pinan-3exo-ol" "(1s,2s,3s,5r)-2,6,6-trimethylbicyclo[3.1.1]heptan-3-ol" "ambap51152-11-5" "2,6,6-trimethyl-bicyclo[3.1.1]heptan-3-ol" "(1alpha,2alpha,3beta,5alpha)-2,6,6-trimethylbicyclo(3.1.1)heptan-3-ol" "(1s-(1alpha,2beta,3alpha,5alpha))-2,6,6-trimethylbicyclo(3.1.1)heptan-3-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -308300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     378.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-22720.0
-    phase     gas;
 }

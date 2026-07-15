@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-dodecylbenzene-1,3-diol" "4-n-dodecylresorcinol" "4-n-laurylresorcinol" "1,3-benzenediol,4-dodecyl-" "ambap24305-56-4" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -532940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     803.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96150.0
-    phase     gas;
 }

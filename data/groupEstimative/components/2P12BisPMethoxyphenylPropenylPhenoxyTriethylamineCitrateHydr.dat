@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 4; } { group dC; count 2; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group O; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[4-[(z)-1,2-bis(4-methoxyphenyl)prop-1-enyl]phenoxy]-n,n-diethyl-ethanamine" "triethylamine, 2-(p-(1,2-bis(p-methoxyphenyl)propenyl)phenoxy)-, citrate, monohydrate" "2-[4-[(z)-1,2-bis(4-methoxyphenyl)prop-1-enyl]phenoxy]-n,n-diethylethanamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -198200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     982.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=360540.0
-    phase     gas;
 }

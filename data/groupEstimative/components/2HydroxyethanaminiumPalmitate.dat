@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 16; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanylethanol;hexadecanoic acid" "palmitic acid, ethanolamine salt" "(2-hydroxyethyl)ammonium palmitate" "hexadecanoic acid, compd. with 2-aminoethanol (1:1)" "2-aminoethanol; hexadecanoic acid" "hexadecanoic acid - 2-aminoethanol (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -995180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1120.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-418360.0
-    phase     gas;
 }

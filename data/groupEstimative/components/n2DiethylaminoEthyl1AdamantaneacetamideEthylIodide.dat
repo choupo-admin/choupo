@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group I; count 1; } { group CdO; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(1-adamantyl)-n-[2-(diethylamino)ethyl]ethanamide;iodanylethane" "1-adamantaneacetamide, n-(2-(diethylamino)ethyl)-, ethyl iodide" "ethanaminium, n,n,n-triethyl-2-((tricyclo(3.3.1.1(sup 3,7))dec-1-ylacetyl)amino)-, iodide" "2-(1-adamantyl)-n-(2-diethylaminoethyl)acetamide; iodoethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -275320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     958.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=299080.0
-    phase     gas;
 }

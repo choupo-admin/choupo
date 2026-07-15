@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH; count 1; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxy-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthrene-3,17-diol" "2-methoxy-.beta.-estradiol" "agn-pc-00fdad" "(17beta)-2-methoxyestra-1(10),2,4-triene-3,17-diol" "tpc-s002" "brd-a79248021-001-01-1" "estra-1,3,5(10)-triene-3,17.beta.-diol, 2-methoxy-" "estra-1,3,5(10)-triene-3,17-diol, 2-methoxy-, (17.beta.)-" "(8r,9s,13r,14s,17r)-2-methoxy-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthrene-3,17-diol" "2-methoxyestra-1(10),2,4-triene-3,17-diol; 2-methoxyestra-1,3,5(10)-triene-3,17.beta.-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -503020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     619.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-57050.0
-    phase     gas;
 }

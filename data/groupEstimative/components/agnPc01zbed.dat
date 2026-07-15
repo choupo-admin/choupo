@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 11; } { group CH_ring; count 5; } { group OH; count 3; } { group O; count 1; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[6-methoxy-3,4,5-tris(oxidanyl)oxan-2-yl]methyl dodecanoate" "d-glucopyranoside, methyl, monododecanoate" "[(2r,3s,4s,5r)-3,4,5-trihydroxy-6-methoxyoxan-2-yl]methyl dodecanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1500720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     860.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-809240.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-ditert-butyl-4-(methoxymethyl)phenol" "agidol 42" "2,6-di-tert-butyl-4-methoxymethylphenol" "phenol, 2,6-bis(1,1-dimethylethyl)-4-(methoxymethyl)-" "2,6-di-tert-butyl-4-(methoxymethyl)phenol" "methyl ether of 3,5-di-tert-butyl-4-hydroxybenzene" "p-cresol, 2,6-di-tert-butyl-alpha-methoxy-" "p-cresol, 2,6-di-tert-butyl-.alpha.-methoxy-" "phenol, 2,6-di-tert-butyl-4-methoxymethyl-" "phenol,6-di-tert-butyl-4-methoxymethyl-" "p-cresol,6-di-tert-butyl-.alpha.-methoxy-" "p-cresol, 2,6-di-tert-butyl-alpha-methoxy- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -487010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     620.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76950.0
-    phase     gas;
 }

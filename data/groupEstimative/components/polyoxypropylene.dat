@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-oxidanylpropoxy)propan-1-ol" "poly(propylene oxide)" "polyoxypropylene glycol" "emkapyl" "methyloxirane homopolymer" "lineartop e" "niax ppg" "propylene oxide homopolymer" "polymer 2" "desmophen 360c" "2-(2-hydroxypropoxy)-1-propanol" "glycols, polypropylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -614410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383880.0
-    phase     gas;
 }

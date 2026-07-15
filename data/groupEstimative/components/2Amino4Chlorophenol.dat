@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH_phenol; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-4-chloranyl-phenol" "5-chloro-2-hydroxyaniline" "fouramine py" "phenol, 2-amino-4-chloro-" "4-chloro-2-aminophenol" "p-chloro-o-aminophenol" "2-hydroxy-5-chloroaniline" "c.i. oxidation base 18" "2-amino-4-chloro-phenol" "4-chloro-2-amino phenol" "5471-76-1 (hydrochloride)" "2-amino-4-chlorophenol, pract" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -101370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     388.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=2320.0
-    phase     gas;
 }

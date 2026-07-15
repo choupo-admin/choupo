@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 3; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,3,4-pentakis(chloranyl)butane" "pcb1" "1,1,2,3,4-pentachlorobutane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -220430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     450.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-84170.0
-    phase     gas;
 }

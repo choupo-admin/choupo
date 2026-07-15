@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dideuterio 2,2-dideuteriopropanedioate" "propanedioic-d2 acid-d2" "propanedioic-d2- acid-d2-" "(2h2)malonic (2h2)acid" "de850" "malonic acid-d4 >99.5 atom % d" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -805790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     379.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-713440.0
-    phase     gas;
 }

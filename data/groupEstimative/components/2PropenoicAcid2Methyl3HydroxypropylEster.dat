@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-oxidanylpropyl 2-methylprop-2-enoate" "1,3-propylene glycol methacrylate" "3-hydroxypropyl 2-methylprop-2-enoate" "3-hydroxypropyl methacrylate" "2-propenoic acid,2-methyl-, 3-hydroxypropyl ester" "poly(oxy(methyl-1,2-ethanediyl)), alpha-(2-methyl-1-oxo-2-propen-1-yl)-omega-hydroxy-" "poly(oxy(methyl-1,2-ethanediyl)), alpha-(2-methyl-1-oxo-2-propenyl)-omega-hydroxy-" "methacrylicacid, 3-hydroxypropyl ester (7ci); 1,3-propanediol monomethacrylate;1,3-propylene glycol methacrylate; 3-hydroxypropyl methacrylate;3-methacryloyloxypropanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -541680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-359840.0
-    phase     gas;
 }

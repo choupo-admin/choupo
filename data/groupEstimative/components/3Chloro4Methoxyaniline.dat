@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-4-methoxy-aniline" "3-chloro-p-anisidine" "p-anisidine, 3-chloro-" "2-chloro-4-aminoanisole" "3-chloroanisidine" "3-chloro-4-methoxybenzenamine" "ocpa" "orthochloroparanisidine" "benzenamine, 3-chloro-4-methoxy-" "3-chloro-4-methoxy-phenylamine" "3-chloro-para-anisidine (nh2=1)" "3-chloro-4-methoxyphenylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -88390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     406.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50730.0
-    phase     gas;
 }

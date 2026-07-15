@@ -38,9 +38,8 @@ groups
     joback ( { group CH2_ring; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12-tetracosadeuteriocyclododecane" "(2h24)cyclododecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -253310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     754.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=9720.0
-    phase     gas;
 }

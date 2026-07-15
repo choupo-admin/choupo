@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 14; } { group Cl; count 10; } { group O; count 4; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2,4-bis(chloranyl)phenoxy]ethanoic acid;2-[2,4-bis(chloranyl)phenoxy]propanoic acid;2-[2,4,5-tris(chloranyl)phenoxy]ethanoic acid;2-[2,4,5-tris(chloranyl)phenoxy]propanoic acid" "2-(2,4-dichlorophenoxy)acetic acid; 2-(2,4-dichlorophenoxy)propanoic acid; 2-(2,4,5-trichlorophenoxy)acetic acid; 2-(2,4,5-trichlorophenoxy)propanoic acid" "propanoic acid, 2-(2,4-dichlorophenoxy)-, mixt. with (2,4-dichlorophenoxy)acetic acid, (2,4,5-trichlorophenoxy)acetic acid and 2-(2,4,5-trichlorophenoxy)propanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2346450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1888.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1645360.0
-    phase     gas;
 }

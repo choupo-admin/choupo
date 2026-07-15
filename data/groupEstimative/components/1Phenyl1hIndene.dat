@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1h-indene, 1-phenyl-" "indene,1-phenyl- (7ci,8ci); 1-phenylindene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   239240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     393.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=381320.0
-    phase     gas;
 }

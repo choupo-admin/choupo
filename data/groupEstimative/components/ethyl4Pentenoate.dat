@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl pent-4-enoate" "4-pentenoic acid ethyl ester" "4-pentenoic acid, ethyl ester" "ethyl allylacetate" "agn-pc-0cqdi5" "ethyl pent-4-en-1-oate" "pent-4-enoic acid ethyl ester" "ptvsrinjxwdikp-uhfffaoysa-" "4-ethoxycarbonylbut-1-ene;ethyl 4-pentenoate;ethyl pent-4-enoate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -379660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-214470.0
-    phase     gas;
 }

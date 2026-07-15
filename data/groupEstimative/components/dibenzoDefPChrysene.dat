@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 14; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dibenzo[a,l]pyrene" "1,2:3,4-dibenzopyrene" "1,2,9,10-dibenzopyrene" "4,5,6,7-dibenzpyrene" "db(a,l)p" "dibenzo(def,p)chrysene" "1,2,3,4-dibenzpyrene" "dibenzo(d,e,f,p)chrysene" "dibenzo(a,l)pyrene" "2,3:4,5-dibenzopyrene" "dibenzo(a,d)pyrene" "naphtho[1,2,3,4-pqr]tetraphene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   561850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=752580.0
-    phase     gas;
 }

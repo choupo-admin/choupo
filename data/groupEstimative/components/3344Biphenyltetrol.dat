@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[3,4-bis(oxidanyl)phenyl]benzene-1,2-diol" "3,3',4,4'-tetrahydroxydiphenyl" "4-(3,4-dihydroxyphenyl)benzene-1,2-diol" "3,4,4'-biphenyltetrol" "3,3',4,4'-tetrahydroxybiphenyl" "3,3`,4,4`-tetrahydroxybiphenyl" "(1,1'-biphenyl)-3,3',4,4'-tetrol" "3,4,3',4'-tetrahydroxy-1,1'-biphenyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -527190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     516.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-343500.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 7; } { group COOH; count 1; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[bis[4-(dimethylamino)phenyl]methyl]-5-(dimethylamino)benzoic acid" "2-(bis(4-(dimethylamino)phenyl)methyl)-5-(dimethylamino)benzoic acid" "benzoic acid, 2-(bis(4-(dimethylamino)phenyl)methyl)-5-(dimethylamino)-" "benzoic acid, 2-[bis[4-(dimethylamino)phenyl]methyl]-5-(dimethylamino)-" "benzoic acid, 2-(bis(4-dimethylamino)phenyl)methyl)-5-(dimethylamino)-" "2-(4,4'-(dimethylamino)benzhydryl)-5-(dimethylamino)benzoic acid" "2-[bis(4-dimethylaminophenyl)methyl]-5-(dimethylamino)benzoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -69220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     916.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=452740.0
-    phase     gas;
 }

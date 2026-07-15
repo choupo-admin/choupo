@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group CdO_ring; count 1; } { group N; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10-(1-methylpiperidin-4-ylidene)-5h-benzo[1,2]cyclohepta[3,4-b]thiophen-4-one" "ketotifene" "ketotifenum" "ketotiphene" "ketotifeno" "ketotiphen" "ketotifene [inn-french]" "ketotifenum [inn-latin]" "zaditen" "zaditor" "ketotifin" "ketotifene fumarate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   146900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     570.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=448270.0
-    phase     gas;
 }

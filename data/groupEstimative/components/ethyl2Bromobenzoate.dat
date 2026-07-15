@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-bromanylbenzoate" "2-bromobenzoic acid ethyl ester" "benzoic acid, 2-bromo-, ethyl ester" "ethyl-2-bromobenzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -294980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     496.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-168370.0
-    phase     gas;
 }

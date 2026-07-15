@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradeca-9,11-dienyl ethanoate" "(e,e)-tetradeca-9,11-dienyl acetate" "(z,e)-tetradeca-9,11-dienyl acetate" "9,11-tetradecadien-1-ol, acetate, (9e,11e)-" "9,11-tetradecadien-1-ol, acetate, (9e,11z)-" "9,11-tetradecadien-1-ol, acetate, (9z,11z)-" "9,11-tetradecadien-1-ol, 1-acetate, (9e,11e)-" "9,11-tetradecadien-1-ol, 1-acetate, (9e,11z)-" "9,11-tetradecadien-1-ol, 1-acetate, (9z,11e)-" "9,11-tetradecadien-1-ol, 1-acetate, (9z,11z)-" "9,11-tetradecadien-1-ol,1-acetate, (9e,11z)-" "9,11-tetradecadien-1-ol,acetate, (9e,11z)- (9ci);9,11-tetradecadien-1-ol, acetate, (z,e)- (8ci);trans-9,cis-11-tetradecadienyl acetate;(9e,11z)-tetradeca-9,11-dien-1-yl acetate;9,11-tetradecadien-1-ol, acetate, (9e,11z)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -456410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     817.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-66090.0
-    phase     gas;
 }

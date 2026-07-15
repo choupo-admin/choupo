@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group CH_ring; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4-epoxycyclohexane" "7-oxanorbornane" "1,4-oxycyclohexane" "cyclohexane,4-epoxy-" "3,6-endoxocyclohexane" "cyclohexane,6-endoxo-" "3,6-endooxycyclohexane" "7-oxabicylco[2.2.1]heptane" "ypwfnlsxqigjck-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -159730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     177.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22920.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 11; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dibenzo(def,mno)chrysene-6-methanol" "dibenzo[def,mno]chrysene-6-methanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   373330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     416.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=591950.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 9; } { group CH2; count 5; } { group dCH; count 18; } { group dC; count 8; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2e,6e,8e,10e,12e,14e,16e,18e,20e,22e,24e,26e)-2,6,10,14,19,23,27,31-octamethyldotriaconta-2,6,8,10,12,14,16,18,20,22,24,26,30-tridecaen-1-ol" "psi,psi-caroten-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   424380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1646.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1123560.0
-    phase     gas;
 }

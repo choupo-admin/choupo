@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3,5-dimethoxyphenyl)ethanenitrile" "(3,5-dimethoxyphenyl)acetonitrile" "2-(3,5-dimethoxyphenyl)acetonitrile" "3,5-dimethoxy-benzeneacetonitrile" "3,5-dimethoxybenzyl cyanide" "3,5-dimethoxybenzylcyanide" "3,5-(dimethoxyphenyl)acetonitrile" "3,4-dimethyloxy phenylacetonotrile" "benzeneacetonitrile, 3,5-dimethoxy-" "benzeneacetonitrile,3,5-dimethoxy-;2-(3,5-dimethoxyphenyl)acetonitrile;5-dimethoxyphenylacetonitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -135700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=49650.0
-    phase     gas;
 }

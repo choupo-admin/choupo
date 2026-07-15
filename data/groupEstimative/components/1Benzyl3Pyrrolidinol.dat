@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(phenylmethyl)pyrrolidin-3-ol" "n-benzyl-3-pyrrolidinol" "1-benzyl-3-hydroxypyrrolidine" "1-benzylpyrrolidin-3-ol" "1-n-benzyl-3-hydroxypyrrolidine" "1-benzyl-pyrrolidin-3-ol" "3-pyrrolidinol, 1-(phenylmethyl)-" "1-(benzyl)pyrrolidin-3-ol" "n-benzylpyrrolidin-3-ol" "(r)-1-benzyl-pyrrolidine-3-ol" "u180" "(r)-1-benzylpyrrolidin-3-ol;(r)-3-hydroxy-1-benyzl-pyrrolidine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -51900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     474.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176760.0
-    phase     gas;
 }

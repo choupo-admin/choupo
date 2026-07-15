@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-naphthalen-2-yloxyethanoic acid" "(2-naphthyloxy)acetic acid" "bnoa" "noxa" "2-naphthyloxyacetic acid" "2-noxa" "betoxon" "acetic acid, (2-naphthyloxy)-" "naphthoxyacetic acid" "acetic acid, (2-naphthalenyloxy)-" "o-(2-naphthyl)glycolic acid" "betapal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -357370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     466.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-189320.0
-    phase     gas;
 }

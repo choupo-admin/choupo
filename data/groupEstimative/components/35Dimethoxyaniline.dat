@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzenamine, 3,5-dimethoxy-" "3,5-dimethoxybenzeneamine" "5-aminoresorcinol dimethyl ether" "3,5-dimethoxyanaline" "3,5-dimethoxy-phenylamine" "3,5-dimethoxyphenylamine" "3,5-dimethoxy aniline" "3,5-dimethoxybenzenamine" "10272-07-8 3,5-dimethoxyaniline" "5-aminoresorcinol dimethyl ester" "3,5-dimethoxy-phenylamine;3,5-dimethoxybenzeneamine;benzenamine, 3,5-dimethoxy-;3a'a pounda'a not5-dimethoxy aniline;5-aminoresorcinol dimethylether;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -225510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     423.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-33920.0
-    phase     gas;
 }

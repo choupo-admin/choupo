@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH2_ring; count 6; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-azaperhydroepinylpropanoate" "ethyl hexahydro-1h-azepine-1-propionate" "1h-azepine-1-propanoicacid, hexahydro-, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -445460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     663.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-125690.0
-    phase     gas;
 }

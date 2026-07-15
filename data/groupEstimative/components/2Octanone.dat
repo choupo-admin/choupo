@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octan-2-one" "n-hexyl methyl ketone" "hexyl methyl ketone" "methyl hexyl ketone" "methyl n-hexyl ketone" "octanone" "2-octanon" "2-oxooctane" "2-octanone (natural)" "sec-octanone" "2-octanone(methyl hexyl ketone)" "i854" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -321030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-112440.0
-    phase     gas;
 }

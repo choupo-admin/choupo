@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 13; } { group dC_ring; count 5; } { group OH; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3,5-bis(phenylmethoxy)phenyl]methanol" "[3,5-bis(benzyloxy)phenyl]methanol" "3,5-benzyloxybenzyl alcohol" "[3,5-bis(phenylmethoxy)phenyl]methan-1-ol" "3,5-dibenzyloxy benzyl alcohol" "mhhxkzkhzmsinu-uhfffaoysa-" "3,5-bis(benzyloxy)benzyl alcohol" "benzyl alcohol, 3,5-dibenzyloxy-" "benzoic alcohol, 3,5-dibenzyloxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -206790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     715.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97090.0
-    phase     gas;
 }

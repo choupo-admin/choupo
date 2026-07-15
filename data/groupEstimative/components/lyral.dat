@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group C; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(4-methyl-4-oxidanyl-pentyl)cyclohex-3-ene-1-carbaldehyde" "4-(4-hydroxy-4-methylpentyl)-3-cyclohexene-1-carboxaldehyde" "4-(4-hydroxy-4-methylpentyl)cyclohex-3-enecarbaldehyde" "4-(4-hydroxy-4-methylpentyl)cyclohex-3-ene-1-carbaldehyde" "3-cyclohexene-1-carboxaldehyde, 4-(4-hydroxy-4-methylpentyl)-" "kovanol" "landolal" "mugonal" "liral" "4-(4-hydroxy-4-methylpentyl)-1-cyclohex-3-enecarboxaldehyde" "4-(4-hydroxy-4-methylpentyl)-3-cyclohexene-1-carboxaldehyde;4-(4-hydroxy-4-methylpentyl)-3-cyclohexenecarboxaldehyde;4-(4-methyl-4-hydroxyamyl)cyclohex-3-ene carboxaldehyde;" "t82" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -457580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     619.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-130140.0
-    phase     gas;
 }

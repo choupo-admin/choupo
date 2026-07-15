@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 34; } { group OH; count 1; } { group O; count 8; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-[2-[2-[2-[2-[2-(2-hydroxyethyloxy)ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethyl octadecanoate" "nonaethylene glycol monostearate" "26-hydroxy-3,6,9,12,15,18,21,24-octaoxahexacos-1-yl stearate" "stearic acid, monoester with nonaethylene glycol" "stearic acid, monoester with nonaethylene glycol (8ci)" "octadecanoic acid,6,9,12,15,18,21,24-octaoxahexacos-1-yl ester" "octadecanoic acid 26-hydroxy-3,6,9,12,15,18,21,24-octaoxahexacos-1-yl ester" "octadecanoic acid,26-hydroxy-3,6,9,12,15,18,21,24-octaoxahexacos-1-yl ester" "2-[2-[2-[2-[2-[2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]ethyl octadecanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2313640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1750.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1034950.0
-    phase     gas;
 }

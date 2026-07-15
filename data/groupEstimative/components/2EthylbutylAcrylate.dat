@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethylbutyl prop-2-enoate" "2-propenoic acid, 2-ethylbutyl ester" "acrylic acid, 2-ethylbutyl ester" "2-ethylbutylacrylate" "2-ethylbutyl 2-propenoate" "2-ethylbutylester kyseliny akrylove" "2-propenoic acid,2-ethylbutyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -426220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     543.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-200070.0
-    phase     gas;
 }

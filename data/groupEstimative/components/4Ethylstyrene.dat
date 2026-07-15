@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethenyl-4-ethylbenzene" "1-ethyl-4-vinylbenzene" "benzene, 1-ethenyl-4-ethyl-" "styrene, p-ethyl-" "p-ethylethenylbenzene" "p-ethylstyrene" "p-ethylvinylbenzene" "ethylstyrene, p-" "1-?Ethyl-?4-?vinylbenzene (>80%)" "4-ethenylstyrene" "1-ethenyl-4-ethylbenzene; 4-ethylstyrene; p-ethylethenylbenzene; p-ethylstyrene; p-ethylvinylbenzene" "1-ethyl-4-vinylbenzene #" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   100760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=223940.0
-    phase     gas;
 }

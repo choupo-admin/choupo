@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,8-dimethyl-7-prop-2-enoxy-chromen-2-one" "4,8-dimethyl-7-(prop-2-en-1-yloxy)-2h-chromen-2-one" "bim-0045278.p001" "4,8-dimethyl-7-prop-2-enoxychromen-2-one" "7-allyl-oxy-4,8-dimethyl-chromen-2-one" "4,8-dimethyl-7-prop-2-enyloxychromen-2-one" "coumarin, 7-(allyloxy)-4,8-dimethyl- (8ci)" "2h-1-benzopyran-2-one,8-dimethyl-7-(2-propenyloxy)-" "7-(allyloxy)-4,8-dimethyl-2h-chromen-2-one; 2h-1-benzopyran-2-one, 4,8-dimethyl-7-(2-propenyloxy)-; 7-allyloxy-4, 8-dimethylcoumarin; coumarin, 7-(allyloxy)-4,8-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -308630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76120.0
-    phase     gas;
 }

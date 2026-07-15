@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH; count 2; } { group O; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-chloranyl-2-methyl-phenoxy)ethanoic acid;2-(2-hydroxyethylamino)ethanol" "mcpa diethanolamine salt" "mcpa-diolamine [iso]" "diethanolamine 2-methyl-4-chlorophenoxyacetate" "bis(2-hydroxyethyl)ammonium 4-chloro-o-tolyloxyacetate" "(2-methyl-4-chlorophenoxy)acetic acid, diethanolamine salt" "acetic acid, ((4-chloro-o-tolyl)oxy)-, compd. with 2,2'-iminodiethanol (1:1)" "2-(4-chloro-2-methylphenoxy)acetic acid; 2-(2-hydroxyethylamino)ethanol" "acetic acid, (4-chloro-2-methylphenoxy)-, compd. with 2,2'-iminobis(ethanol) (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -958900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     891.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-598120.0
-    phase     gas;
 }

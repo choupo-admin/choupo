@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxyethyl 2-methylprop-2-enoate" "methacrylic acid, 2-methoxyethyl ester" "2-propenoic acid, 2-methyl-, 2-methoxyethyl ester" "pegmem" "peg-mem" "beta-methoxyethyl methacrylate" ".beta.-methoxyethyl methacrylate" "methacrylic acid 2-methoxyethyl ester" "ethylene glycol methyl ether methacrylate" "ethylene glycol monomethyl ether methacrylate" "poly(ethylene glycol)methylether methacrylate" "poly(ethylene glycol)methyl ether methacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -521670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     482.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-328020.0
-    phase     gas;
 }

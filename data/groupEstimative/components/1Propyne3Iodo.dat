@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-iodanylprop-1-yne" "propargyl iodide" "3-iodopropyne" "3-iodo-1-propyne" "propyne, 3-iodo-" "agn-pc-0cqajc" "1-propyne, 3-iodo-(9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   263520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     297.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=255570.0
-    phase     gas;
 }

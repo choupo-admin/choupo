@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 5; } { group C_ring; count 3; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3r,5r,8r,9s,10s,13s,14s,17r)-10,13-dimethyl-17-[(1s)-1-oxidanylethyl]-1,2,3,4,5,6,7,8,9,11,12,14,15,16-tetradecahydrocyclopenta[a]phenanthrene-3,17-diol" "5beta-pregnane-3alpha,17alpha,20alpha-triol" "5" "a-pregnane-3" "a,17" "a,20" "a-triol" "pregnantriol" "3" "a,17" "a,20" "a-trihydroxy-5" "a-pregnane" "5" "a-pregnane-3" "a,17,20" "a-triol" "(3" "a,5" "a,20s)-pregnane-3,17,20-triol" "3alpha,17alpha,20alpha-trihydroxy-5beta-pregnane" "5-beta-pregnane-3-alpha,17-alpha,20-alpha-triol" "(3r,5r,8r,9s,10s,13s,14s,17r)-17-[(1s)-1-hydroxyethyl]-10,13-dimethyl-1,2,3,4,5,6,7,8,9,11,12,14,15,16-tetradecahydrocyclopenta[a]phenanthrene-3,17-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -713980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     894.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-151770.0
-    phase     gas;
 }

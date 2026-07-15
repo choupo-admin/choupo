@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 7; } { group C_ring; count 1; } { group OH; count 1; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(1-oxa-4-azaspiro[4.5]decan-4-yl)ethanol" "1-oxa-4-azaspiro[4.5]decane-4-ethanol" "1-oxa-4-azaspiro(4.5)decane-4-ethanol" "1-oxo-4-azaspiro[4.5]decane-4-ethanol" "2-(1-oxa-4-azaspiro[4.5]dec-4-yl)ethanol" "2-(4-oxa-1-azaspiro[4.5]decan-1-yl)ethanol" "3'-(2-hydroxyethyl)spiro(cyclohexane-1,2'-oxazolidine)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -303730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     552.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8580.0
-    phase     gas;
 }

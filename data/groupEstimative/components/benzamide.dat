@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzoic acid amide" "benzoylamide" "phenylcarboxyamide" "phenylcarboxamide" "benzenecarboxamide" "amid kyseliny benzoove" "phenyl carboxyamide" "benzoic acid,amide" "phenyl carboxamide" "a-toluimidic acid" "phc(o)nh2" "phc(=o)nh2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -30070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58000.0
-    phase     gas;
 }

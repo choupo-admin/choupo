@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group tC; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-dec-5-ynoxyoxane" "2-(5-decynyloxy)tetrahydro-2h-pyran" "2h-pyran, 2-(5-decynyloxy)tetrahydro-" "2h-pyran, 2-(5-decyn-1-yloxy)tetrahydro-" "2h-pyran,2-(5-decyn-1-yloxy)tetrahydro-" "2h-pyran,2-(5-decynyloxy)tetrahydro- (9ci); 5-decyn-1-yl 2-tetrahydropyranyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -290530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     641.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=111550.0
-    phase     gas;
 }

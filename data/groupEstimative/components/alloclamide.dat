@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group CdO; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-chloranyl-n-[2-(diethylamino)ethyl]-2-prop-2-enoxy-benzamide" "alloclamida" "alloclamidum [inn-latin]" "alloclamide hcl" "2-(allyloxy)-4-chloro-n-(2-(diethylamino)ethyl)benzamide" "2-(allyloxy)-4-chloro-n-[2-(diethylamino)ethyl]benzamide" "benzamide, 2-(allyloxy)-4-chloro-n-(2-(diethylamino)ethyl)-" "4-chloro-n-(2-(diethylamino)ethyl)-2-(2-propenyloxy)benzamide" "alloclamidum" "aloclamida" "alloclamide [inn:dcf]" "5107-01-7 (hydrochloride)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -174090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     784.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=219150.0
-    phase     gas;
 }

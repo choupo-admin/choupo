@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 1; } { group dCH; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 4; } { group dC_ring; count 1; } { group OH; count 2; } { group O_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-[5-oxidanyl-4-(3-oxidanyloct-1-enyl)-3,3a,4,5,6,6a-hexahydrocyclopenta[b]furan-2-ylidene]pentanoic acid" "prostaglandin i2" "pg-i2" "prostacyclin sodium salt" "agn-pc-00iyp4" "5-[5-hydroxy-4-(3-hydroxyoct-1-enyl)-3,3a,4,5,6,6a-hexahydrocyclopenta[b]furan-2-ylidene]pentanoic acid" "(5z)-5-[(3ar,4r)-5-hydroxy-4-(3-hydroxyoct-1-enyl)-3,3a,4,5,6,6a-hexahydrocyclopenta[b]furan-2-ylidene]pentanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -962290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     768.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-381030.0
-    phase     gas;
 }

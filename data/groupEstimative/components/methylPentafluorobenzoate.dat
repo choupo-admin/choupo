@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dC_ring; count 6; } { group F; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2,3,4,5,6-pentakis(fluoranyl)benzoate" "methyl 2,3,4,5,6-pentafluorobenzoate" "methyl perfluorobenzoate" "perfluorobenzoic acid methyl ester" "pentafluorobenzoic acid methyl ester" "pentafluorobenzoic acid, methyl ester" "2,3,4,5,6-pentafluorobenzoic acid methyl ester" "benzoic acid, 2,3,4,5,6-pentafluoro-, methyl ester" "benzoic acid,2,3,4,5,6-pentafluoro-, methyl ester" "benzoicacid, pentafluoro-, methyl ester (9ci);methyl pentafluorobenzoate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1327100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     540.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1203680.0
-    phase     gas;
 }

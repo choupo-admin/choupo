@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(bromomethyl)-4-iodanyl-benzene" "1-(bromomethyl)-4-iodobenzene" "4-iodobenzylbromide" "p-iodobenzyl bromide" "1-bromomethyl-4-iodo-benzene" "alpha-bromo-4-iodotoluene" "4-(bromomethyl)-1-iodobenzene" "4-iodo benzyl bromide" "p-odobenzyl bromide;a-bromo-4-iodotoluene" "benzene, 1-(bromomethyl)-4-iodo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   140450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     422.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=183280.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 13; } { group dC_ring; count 8; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo(h)naphtho(1,2-f)quinoline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   522420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     426.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=713110.0
-    phase     gas;
 }

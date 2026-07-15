@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-chlorophenyl)-phenyl-methanol" "p-chlorobenzhydrol" "chlorobenzhydrol" "benzhydrol, 4-chloro-" "(4-chlorophenyl)phenylmethanol" "benzenemethanol, 4-chloro-.alpha.-phenyl-" "benzhydrol, p-chloro-" "(4-chlorophenyl)(phenyl)methanol" "4-chlorodiphenylcarbinol" "(4-chlorophenyl)-phenylmethanol" "(4-chlorophenyl)phenylmethan-1-ol" "4-chlorobenzhydryl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -23310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     518.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=122580.0
-    phase     gas;
 }

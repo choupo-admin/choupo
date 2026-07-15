@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethyl (1s,2r)-cyclopropane-1,2-dicarboxylate" "dimethyl (1r,2s)-cyclopropane-1,2-dicarboxylate" "cyclopropane-1,2-dicarboxylic acid dimethyl ester, z" "cis-dimethyl cyclopropane-1,2-dicarboxylate" "(1r,2s)-dimethyl cyclopropane-1,2-dicarboxylate" "1,2-cyclopropanedicarboxylic acid, dimethyl ester, (1r,2s)-" "1,2-cyclopropanedicarboxylicacid, 1,2-dimethyl ester, (1r,2s)-rel-" "1,2-cyclopropanedicarboxylicacid, dimethyl ester, (1r,2s)-rel- (9ci);1,2-cyclopropanedicarboxylic acid,dimethyl ester, cis- (8ci);(cis)-1,2-bis(methoxycarbonyl)cyclopropane;dimethyl cis-1,2-cyclopropanedicarboxylate;dimethylcis-1,2-cyclopropanedicarboxylate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -769910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     398.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-559640.0
-    phase     gas;
 }

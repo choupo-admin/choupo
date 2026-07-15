@@ -33,9 +33,8 @@ groups
     joback ( { group C_ring; count 9; } { group F; count 16; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2,3,3,3a,4,4,5,5,6,6,7,7,7a-hexadecakis(fluoranyl)indene" "cis-perfluorobicyclo[4.3.0]nonane" "trans-perfluorobicyclo(4,3.0)nonane" "trans-perfluorobicyclo[4,3.0]nonane" "1h-indene, 1,1,2,2,3,3,3a,4,4,5,5,6,6,7,7,7a-hexadecafluorooctahydro-" "perfluorobicyclo(4.3.0)nonane" "1,1,2,2,3,3,3a,4,4,5,5,6,6,7,7,7a-hexadecafluoroindene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3244950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1222.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3110240.0
-    phase     gas;
 }

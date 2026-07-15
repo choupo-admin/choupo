@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH_ring; count 5; } { group OH; count 5; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s,3r,4s,5s,6r)-6-(hydroxymethyl)oxane-2,3,4,5-tetrol" "alpha-dextrose" "alpha-d-glucopyranose" "glucose" "d-glucose" "dextrose" "alpha-glucose" "glucopyranose, alpha-d-" "dextrin from corn" "alpha-d-glc" "d-(+)-glucose solution" "dextrin from potato starch" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1087360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     392.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-776970.0
-    phase     gas;
 }

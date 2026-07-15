@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-4-(trichloromethyl)benzene" "1-chloro-4-(trichloromethyl)benzene" "benzene, 1-chloro-4-(trichloromethyl)-" "p-chlorobenzotrichloride" "alpha,alpha,alpha,4-tetrachlorotoluene" "p-chlorophenyltrichloromethane" "p-trichloromethylchlorobenzene" "p,alpha,alpha,alpha-tetrachlorotoluene" "toluene, alpha,alpha,alpha,p-tetrachloro-" "toluene, p,alpha,alpha,alpha-tetrachloro-" "alpha,alpha,alpha-trichloro-4-chlorotoluene" "toluene, p,.alpha.,.alpha.,.alpha.-tetrachloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -34460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     410.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=65960.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-chloranyl-4-fluoranyl-phenyl)ethanenitrile" "2-chloro-4-fluorobenzyl cyanide" "2-(2-chloro-4-fluorophenyl)acetonitrile" "2-chloro-4-fluorobenzylcyanide" "2-chloro-fluorophenylacetonitrile" "2-(2-chloro-4-fluorophenyl)ethanenitrile" "benzeneacetonitrile,2-chloro-4-fluoro-" "75279-56-0 2-chloro-4-fluorobenzyl cyanide" "2-chloro-4-fluorobenzylcyanide;2-chloro-4-fluorophenylacetonitrile;(2-chloro-4-fluorophenyl)acetonitrile;benzeneacetonitrile, 2-chloro-4-fluoro-;nc1r bg df;2-chloro-4-fluorobenzyl cyanide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -41830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     420.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=36070.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-methylphenyl)butan-1-one" "4-methylbutyrophenone" "p-methylbutyrophenone" "p-methyl butyrophenone" "4-methyl-butyrophenone" "1-p-tolyl-butan-1-one" "1-(p-tolyl)butan-1-one" "butyrophenone, 4'-methyl-" "1-butanone, 1-(4-methylphenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -157890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     498.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=15600.0
-    phase     gas;
 }

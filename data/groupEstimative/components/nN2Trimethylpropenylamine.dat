@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n,2-trimethylprop-2-en-1-amine" "trimethylamine, isopropylidene-" "allylamine, n,n,2-trimethyl-" "2-propen-1-amine, n,n,2-trimethyl-" "2-propen-1-amine, n,n,2-trimethyl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   16000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     397.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=189710.0
-    phase     gas;
 }

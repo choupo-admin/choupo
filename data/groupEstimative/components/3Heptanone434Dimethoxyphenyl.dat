@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(3,4-dimethoxyphenyl)heptan-3-one" "3-heptanone, 4-(3,4-dimethoxyphenyl)-," );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -521640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     661.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-172790.0
-    phase     gas;
 }

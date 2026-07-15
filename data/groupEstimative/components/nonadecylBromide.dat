@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanylnonadecane" "1-bromononadecane" "nonadecane, 1-bromo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -409160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     947.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=123420.0
-    phase     gas;
 }

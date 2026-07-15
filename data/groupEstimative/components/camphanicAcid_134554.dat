@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 2; } { group C_ring; count 3; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r,4s)-1,7,7-trimethyl-2-oxidanylidene-3-oxabicyclo[2.2.1]heptane-4-carboxylic acid" "(1s)-(-)-camphanic acid" "camphanic acid" "(1s,4r)-4,7,7-trimethyl-3-oxo-2-oxabicyclo[2.2.1]heptane-1-carboxylic acid" "(1s)-3-oxo-4,7,7-trimethyl-2-oxabicyclo[2.2.1]heptane-1-carboxylic acid" "ambap13429-83-9" "am726" "k793" "2-oxabicyclo[2.2.1]heptane-1-carboxylic acid, 4,7,7-trimethyl-3-oxo-, (1s,4r)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -740140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     615.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-511540.0
-    phase     gas;
 }

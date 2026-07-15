@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbutyl 2-oxidanylbenzoate" "isoamyl o-hydroxybenzoate" "isopentyl salicylate" "3-methylbutyl 2-hydroxybenzoate" "isopentyl 2-hydroxybenzoate" "3-methylbutyl salicylate" "salicylic acid, isopentyl ester" "benzoic acid, 2-hydroxy-, 3-methylbutyl ester" "isopentyl o-hydroxybenzoate" "isoamyl salicylate (natural)" "3-methylbutyl o-hydroxybenzoate" "isopentyl-2-hydroxyphenyl methanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -554350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     585.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-304860.0
-    phase     gas;
 }

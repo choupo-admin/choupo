@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranylprop-2-enoic acid" "trans-3-chloroacrylic acid 99%" "2-propenoic acid,3-chloro-, (2z)-" "2-propenoicacid, 3-chloro-, (z)-;acrylic acid, 3-chloro-, (z)- (8ci);acrylic acid,3-chloro-, cis- (5ci);(z)-3-chloroacrylic acid;(z)-b-chloroacrylic acid;cis-3-chloroacrylic acid;cis-b-chloroacrylic acid;(2z)-3-chloroprop-2-enoic acid;" "acrylicacid, 3-chloro- (6ci,7ci,8ci);3-chloroacrylic acid;3-chloropropenoic acid;b-chloroacrylic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -354040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     352.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-301240.0
-    phase     gas;
 }

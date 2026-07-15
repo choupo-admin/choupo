@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propan-2-yl 2-bromanylethanoate" "acetic acid, bromo-, 1-methylethyl ester" "acetic acid, 2-bromo-, 1-methylethyl ester" "propan-2-yl 2-bromoacetate" "brch2c(o)och(ch3)2" "isopropyl bromoacetate , 99 %" "acetic acid, 2-bromo-,1-methylethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -442760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     443.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-307270.0
-    phase     gas;
 }

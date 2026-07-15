@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-enyl butanoate" "butanoic acid, 2-propenyl ester" "allyl butanoate" "butyric acid, allyl ester" "vinyl carbinyl butyrate" "2-propenyl butanoate" "2-propen-1-yl butanoate" "butanoic acid, 2-propen-1-yl ester" "allyl n-butyrate" "allocopr" "allylester kyseliny maselne" "butanoic acid,2-propen-1-yl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -379660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-214470.0
-    phase     gas;
 }

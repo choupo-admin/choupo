@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanyldodecane" "2-bromo dodecane" "dodecane, 2-bromo-" "agn-pc-04t8qr" "2-bromododecane;dodecane, 2-bromo-;2-bromododecane, tech., 85%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -269960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     664.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62040.0
-    phase     gas;
 }

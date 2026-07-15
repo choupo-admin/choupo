@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(bromanyl)methane" "tribromomethane" "methane, tribromo-" "methyl tribromide" "methenyl tribromide" "tribrommethan" "bromoforme" "bromoformio" "tribrommethaan" "tribromometan" "bromoforme [french]" "tribrommethaan [dutch]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   9740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     338.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1940.0
-    phase     gas;
 }

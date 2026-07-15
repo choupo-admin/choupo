@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group COOH; count 1; } { group NH_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4s)-2-ethyl-1,3-thiazolidine-4-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -394230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     394.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-187860.0
-    phase     gas;
 }

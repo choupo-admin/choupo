@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-fluoranyl-3-methoxy-benzene" "m-fluoroanisole" "1-fluoro-3-methoxybenzene" "benzene, 1-fluoro-3-methoxy-" "fr co1[wln]" "2-fluoro-4-methoxybenzene" "agn-pc-04rklw" "1-fluoro-3-methoxy-benzene" "f105" "m-fluoroanisole;benzene, 1-fluoro-3-methoxy-;1-fluoro-3-methoxy-benzene;1-fluoro-3-methoxybenzene;3-fluorophenyl methyl ether;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -291080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     359.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-188970.0
-    phase     gas;
 }

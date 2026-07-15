@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-oxidanyl-2-phenyl-ethanoic acid" "d-mandelic acid" "(-)-mandelic acid" "(r)-(-)-mandelic acid" "(r)-alpha-hydroxyphenylacetic acid" "(r)-2-hydroxy-2-phenylacetic acid" "d-(-)-mandelic acid" "d(-)-mandelic acid" "r(-)-mandelic acid" "r-(-) mandelic acid" "r-(-)-mandelic acid" "d-2-phenylglycolic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -479700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-354280.0
-    phase     gas;
 }

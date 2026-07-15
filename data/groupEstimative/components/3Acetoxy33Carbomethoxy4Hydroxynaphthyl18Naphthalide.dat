@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group C_ring; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 9; } { group OH_phenol; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-(1-acetoxy-3-oxo-1h,3h-benzo[de]isochromen-1-yl)-1-hydroxy-2-naphthoate" "2-naphthalenecarboxylic acid, 4-(1-(acetyloxy)-3-oxo-1h,3h-naphtho(1,8-cd)pyran-1-yl)-1-hydroxy-, methyl ester" "2-naphthalenecarboxylic acid, 4-[1-(acetyloxy)-3-oxo-1h,3h-naphtho[1,8-cd]pyran-1-yl]-1-hydroxy-, methyl ester" "methyl 4-(1-(acetoxy)-3-oxo-1h,3h-naphtho(1,8-cd)pyran-1-yl)-1-hydroxy-2-naphthoate" "methyl 4-[1-(acetyloxy)-3-oxo-1h,3h-benzo[de]isochromen-1-yl]-1-hydroxynaphthalene-2-carboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -799440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     833.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-438630.0
-    phase     gas;
 }

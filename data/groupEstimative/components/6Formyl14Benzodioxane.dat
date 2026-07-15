@@ -38,9 +38,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-dihydro-1,4-benzodioxine-6-carbaldehyde" "1,4-benzodioxan-6-carboxaldehyde" "1,4-benzodioxane-6-carboxaldehyde" "3,4-ethylenedioxybenzaldehyde" "2,3-dihydrobenzo[b][1,4]dioxine-6-carbaldehyde" "1,4-benzodioxan-6-carbaldehyde" "1,4-benzodioxin-6-carboxaldehyde, 2,3-dihydro-" "2h,3h-benzo[e]1,4-dioxin-6-carbaldehyde" "2,3-dihydrobenzo[1,4]dioxine-6-carbaldehyde" "3,4-(ethylenedioxy)benzaldehyde" "upcmld0enat5258616:001" "2,3-dihydro-benzo[1,4]dioxine-6-carbaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -116070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     338.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46130.0
-    phase     gas;
 }

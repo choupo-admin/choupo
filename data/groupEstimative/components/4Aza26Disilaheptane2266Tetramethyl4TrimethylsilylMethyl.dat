@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 9; } { group CH2; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-trimethylsilyl-n,n-bis(trimethylsilylmethyl)methanamine" "4-aza-2,6-disilaheptane, 2,2,6,6-tetramethyl-4-((trimethylsilyl)methyl)-" "1-(trimethylsilyl)-n,n-bis[(trimethylsilyl)methyl]methanamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -558340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1018.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-153340.0
-    phase     gas;
 }

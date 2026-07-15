@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group Nd_ring; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pyridin-2-ylmethanethiol" "2-pyridinylmethanethiol" "pyridine-2-thiocarbinol" "2-pyridylmethyl mercaptan" "2-picolylthiol" "2-(mercaptomethyl)pyridine" "pyridin-2-yl-methanethiol" "2-pyridinylmethyl mercaptan" "pyridine-2-methanethiol" "u757" "2-mercaptomethyl pyridine; 2-pyridylmethylmercaptan" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   140630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     358.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=218490.0
-    phase     gas;
 }

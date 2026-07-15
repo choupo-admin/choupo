@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "silacyclohexane, 1,1-dimethyl-" "cyclopentamethylenedimethylsilane" "dimethylsilacyclohexane" "1,1-dimethyl-1-silacyclohexane" "1,1-dimethylsilacyclohexane" "silacyclohexane,1-dimethyl-" "cyclopentamethylene dimethyl silane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -218610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     547.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-52440.0
-    phase     gas;
 }

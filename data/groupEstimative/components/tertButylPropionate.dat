@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tert-butyl propanoate" "propionic acid, tert-butyl ester" "propanoic acid, 1,1-dimethylethyl ester" "1,1-dimethylethyl propionate" "tert-butyl 2-tritiopropanoate" "agn-pc-0d9l19" "propionic acid tert-butyl ester" "propanoic acid,1,1-dimethylethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -513840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     441.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-299470.0
-    phase     gas;
 }

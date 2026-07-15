@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 7; } { group CH_ring; count 2; } { group C_ring; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethanone, 1-(octahydro-2,5,5-trimethyl-2h-2,4a-ethanonaphthalen-8-yl)-" "1-(2,5,5-trimethyloctahydro-2h-2,4a-ethanonaphthalen-8-yl)ethanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -301830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     757.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77400.0
-    phase     gas;
 }

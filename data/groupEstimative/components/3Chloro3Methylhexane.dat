@@ -34,9 +34,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-3-methyl-hexane" "hexane, 3-chloro-3-methyl-" "hexane,3-chloro-3-methyl-" "(?a'a a'a currency)-3-chloro-3-methylhexane;1-ethyl-1-methylbutyl chloride; 2-chloro-2-ethylpentane;3-chloro-3(rs)-methylhexane; 3-chloro-3-methylhexane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -212300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     423.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1030.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 2; } { group dCH_ring; count 16; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-(9h-fluoren-9-yl)-9h-fluorene" "9,9'-bifluorene" "9,9'-bifluorenyl" "9-fluoren-9-ylfluorene" "difluorenyl" "qxaidaduimvtps-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   490510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     458.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=749060.0
-    phase     gas;
 }

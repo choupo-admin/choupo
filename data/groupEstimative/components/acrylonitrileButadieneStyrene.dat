@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 4; } { group dCH; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "abs resin" "buta-1,3-diene;ethenylbenzene;prop-2-enenitrile" "acrylonitrile-butadiene-styrene copolymer" "acrylonitrile-butadiene-styrene copolymers" "styrene, acrylonitrile, butadiene polymer" "2-propenenitrile, polymer with 1,3-butadiene and ethenylbenzene" "buta-1,3-diene; prop-2-enenitrile; styrene" "abs" "acrylonitrile, polymer with 1,3-butadiene and styrene" "poly(acrylonitrile-co-butadiene-co-styrene)" "acrylonitrile 1,3-butadiene styrene polymer" "67952-85-6 (ammonium salt)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   326960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     836.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=462850.0
-    phase     gas;
 }

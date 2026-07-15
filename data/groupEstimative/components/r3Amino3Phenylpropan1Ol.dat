@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3r)-3-azanyl-3-phenyl-propan-1-ol" "(r)-1-phenyl-3-propanolamine" "(3r)-3-amino-3-phenylpropan-1-ol" "(r)-beta-phenylalaninol" "(r)-3-amino-3-phenyl-1-propanol" "(r)-a-phenylalaninol" "(r)-3-phenyl-beta-alaninol" "r-3-amino-3-phenylpropan-1-ol" "(r)-3-amino-3-phenyl propan-1-ol" "(r)-3-amino-3-phenyl-propan-1-ol" "k808" "benzenepropanol,g-amino-, (r)-;(r)-3-amino-3-phenylpropanol;(3r)-3-amino-3-phenyl-1-propanol;(3r)-3-amino-3-phenylpropan-1-ol;benzenepropanol, a'a" "afae'-amino-, (gammar)-;r-3-amino-3-phenylpropan-1-ol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -116280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     493.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=64500.0
-    phase     gas;
 }

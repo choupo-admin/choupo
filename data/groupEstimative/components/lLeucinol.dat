@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-4-methyl-pentan-1-ol" "(s)-(+)-leucinol" "l(+)-leucinol" "l-(+)-leucinol" "(2s)-2-amino-4-methylpentan-1-ol" "(s)-(+)-2-amino-4-methyl-1-pentanol" "leucinol" "2-amino-4-methyl-1-pentanol" "(s)-2-amino-4-methyl-1-pentanol" "h-leucinol" "(s)-2-amino-4-methylpentan-1-ol" "(2s)-2-amino-4-methyl-1-pentanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -296170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     473.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-75610.0
-    phase     gas;
 }

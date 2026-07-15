@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 9; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,5,6,7,8,9-octahydro-1h-cyclopenta[e]-as-indacene" "tricyclotrimethylenebenzene" "2,3,4,5,6,7,8,9-octahydro-1h-trindene" "trindan" "1,3,4,5,6-tricyclotrimethylenebenzene" "2,4,5,6,7,8,9-octahydro-1h-trindene" "1h-trindene,3,4,5,6,7,8,9-octahydro-" "2,3,4,5,6,7,8,9-octahydro-1h-cyclopenta[e]-as-indacen" "tetracyclo[10.3.0.0^{2,6}.0^{7,11}]pentadeca-1,6,11-triene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   105670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=345060.0
-    phase     gas;
 }

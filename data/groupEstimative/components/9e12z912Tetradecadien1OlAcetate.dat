@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradeca-9,12-dienyl ethanoate" "9,12-tetradecadien-1-ol, 1-acetate, (9e,12z)-" "9,12-tetradecadien-1-ol, 1-acetate, (9z,12e)-" "agn-pc-00jy8a" "tetradeca-9,12-dienyl acetate" "[(9z,12z)-tetradeca-9,12-dienyl] acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -456410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     817.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-66090.0
-    phase     gas;
 }

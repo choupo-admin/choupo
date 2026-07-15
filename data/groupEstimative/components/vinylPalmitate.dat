@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethenyl hexadecanoate" "palmitic acid vinyl ester" "hexadecanoic acid, ethenyl ester" "vinyl palmitate;hexadecanoic acid, ethenyl ester;vinyl hexadecanoate;palmitic acid vinyl ester;palmitic acid vinyl ester (stabilized with mehq);" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -606700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     903.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121850.0
-    phase     gas;
 }

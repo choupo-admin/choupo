@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloromethyl naphthalene" "naphthalene, 1-(chloromethyl)-" "1-naphthylmethyl chloride" "1-menaphthyl chloride" "1-chloromethylnaphthalene" "naphthalene, 1-chloromethyl-" ".alpha.-(chloromethyl)naphthalene" "(chloromethyl)naphthalene" "alpha-naphthylmethyl chloride" "alpha-(chloromethyl)naphthalene" "naphthalene, alpha-chloromethyl-" "1-(chlormethyl)naftalen" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   130020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     396.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=239240.0
-    phase     gas;
 }

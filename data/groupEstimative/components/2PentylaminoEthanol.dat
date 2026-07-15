@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group OH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-pentylethanolamine" "2-(n-amylamino)ethanol" "ethanol, 2-(pentylamino)-" "n-pentylaminoethanol" "2-(amylamino)ethanol" "2-(pentylamino)ethan-1-ol" "pentylethanolamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -286570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     520.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-39370.0
-    phase     gas;
 }

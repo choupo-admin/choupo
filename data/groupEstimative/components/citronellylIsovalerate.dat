@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 5; } { group CH; count 2; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7-dimethyloct-6-enyl 3-methylbutanoate" "citronellyl iso-valerate" "butanoic acid, 3-methyl-, 3,7-dimethyl-6-octenyl ester" "3,7-dimethyl-6-octenyl isovalerate" "butanoic acid, 3-methyl-, 3,7-dimethyl-6-octen-1-yl ester" "agn-pc-02mp6k" "3,7-dimethyloct-6-enyl isovalerate" "(1)-3,7-dimethyloct-6-enyl isovalerate" "3,7-dimethyl-6-octen-1-yl 3-methylbutanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -573340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     761.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-168160.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(phenylmethyl) 2-chloranylethanoate" "benzyl 2-chloroacetate" "benzyl monochloracetate" "chloroacetic acid, benzyl ester" "monochloroacetate" "acetic acid, chloro-, phenylmethyl ester" "acetic acid, chloro-, benzyl ester" "benzyl-alpha-chloroacetate" "phenylmethyl 2-chloroacetate" "chloroacetic acid benzyl ester" "phenylmethyl chloroacetate" "acetic acid, 2-chloro-, phenylmethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -325580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184990.0
-    phase     gas;
 }

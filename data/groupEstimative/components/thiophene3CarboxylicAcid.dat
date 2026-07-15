@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COOH; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-thiophenecarboxylic acid" "3-thenoic acid" "3-thiophenezoic acid" "beta-thiophenic acid" "3-carboxythiophene" "3-thiophenic acid" "3-thiophenoic acid" "3-thienylcarboxylic acid" "thiophene-3-carboxylicacid" "beta-thiophenecarboxylic acid" ".beta.-thiophenecarboxylic acid" "3-thiophene carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -266630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     365.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-218280.0
-    phase     gas;
 }

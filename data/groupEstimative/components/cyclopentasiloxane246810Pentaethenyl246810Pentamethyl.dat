@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 5; } { group dCH2; count 5; } { group dCH; count 5; } { group O_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4,6,8,10-pentakis(ethenyl)-2,4,6,8,10-pentamethyl-1,3,5,7,9,2,4,6,8,10-pentaoxapentasilecane" "2,4,6,8,10-pentamethyl-2,4,6,8,10-pentavinylcyclopentasiloxane" "methylvinylsiloxane cyclic pentamer" "cyclopentasiloxane, 2,4,6,8,10-pentaethenyl-2,4,6,8,10-pentamethyl-;2,4,6,8,10-pentaethenyl-2,4,6,8,10-pentamethyl-1,3,5,7,9,2,4,6,8,10-pentaoxapentasilecane;methylvinylsiloxane cyclic pentamer;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -863060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1085.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-395520.0
-    phase     gas;
 }

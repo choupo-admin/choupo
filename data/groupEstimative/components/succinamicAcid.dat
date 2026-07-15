@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-azanyl-4-oxidanylidene-butanoic acid" "4-amino-4-oxobutanoic acid" "butanoic acid, 4-amino-4-oxo-" "succinic acid monoamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -554950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     443.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-423580.0
-    phase     gas;
 }

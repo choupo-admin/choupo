@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-propanamine, 3-(hexadecyloxy)-" "3-(hexadecyloxy)propylamine" "3-hexadecyloxy propylamine" "3-hexadecoxy-1-propanamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -533920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     958.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70550.0
-    phase     gas;
 }

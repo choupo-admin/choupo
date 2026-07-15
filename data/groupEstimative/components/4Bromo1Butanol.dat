@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group Br; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-bromanylbutan-1-ol" "4-bromobutan-1-ol" "1-butanol, 4-bromo-" "tetramethylene bromohydrin" "1-bromo-4-butanol" "4-bromo-butan-1-ol" "1-bromo-4-hydroxybutane" "1-bromo-4-butanol;1-bromo-4-hydroxybutane;4-bromobutan-1-ol;4-bromobutanol;tetramethylene bromohydrin;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -251790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-139700.0
-    phase     gas;
 }

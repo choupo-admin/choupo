@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethenoxy-3-methyl-butane" "butane, 1-(ethenyloxy)-3-methyl-" "vinylisopentyl ether" "1-ethenoxy-3-methylbutane" "1-(ethenyloxy)-3-methylbutane" "butane,1-(ethenyloxy)-3-methyl-" "ether,isopentyl vinyl (6ci,7ci); isoamyl vinyl ether; isopentyl vinyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -199880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     425.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11540.0
-    phase     gas;
 }

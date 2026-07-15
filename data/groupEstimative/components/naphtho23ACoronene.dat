@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 16; } { group dC_ring; count 16; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphtho(2,3-a)coronene" "naphtho[2,3-a]coronene(6ci,7ci,8ci,9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   844610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     374.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1099480.0
-    phase     gas;
 }

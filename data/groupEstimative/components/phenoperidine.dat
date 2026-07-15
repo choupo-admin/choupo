@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 1-(3-oxidanyl-3-phenyl-propyl)-4-phenyl-piperidine-4-carboxylate" "lealgin" "phenoperidinum [inn-latin]" "4-piperidinecarboxylic acid, 1-(3-hydroxy-3-phenylpropyl)-4-phenyl-, ethyl ester" "phenoperidine [inn:ban:dcf]" "fenoperidine" "ethyl 1-(3-hydroxy-3-phenylpropyl)-4-phenylpiperidine-4-carboxylate" "1-(3-hydroxy-3-phenylpropyl)-4-phenylpiperidine-4-carboxylic acid ethyl ester" "fenoperidina" "phenoperidin" "phenoperidinum" "phenoperidine (inn)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -376530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     966.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=59810.0
-    phase     gas;
 }

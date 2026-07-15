@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 5; } { group dCH; count 3; } { group dC; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(2e,6e)-3,7,11-trimethyldodeca-2,6,10-trienyl] ethanoate" "trans,trans-farnesyl acetate" "all-trans-farnesyl acetate" "[(2e,6e)-3,7,11-trimethyldodeca-2,6,10-trienyl] acetate" "2,6,10-dodecatrien-1-ol, 3,7,11-trimethyl-, acetate, (e,e)-" "(e,e)-3,7,11-trimethyl-2,6,10-dodecatrien-1-ol acetate" "(e,e)-3,7,11-trimethyl-2,6,10-dodecatrien-1-yl acetate" "farneoylacetate" "zgigzinmaoqwlx-nczffceisa-" "3,11-trimethyl-2,6,10-dodecatrienyl acetate" "2,10-dodecatrien-1-ol, 3,7,11-trimethyl-, acetate" "(2e,6e)-3,7,11-trimethyldodeca-2,6,10-trien-1-yl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -389200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     837.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3100.0
-    phase     gas;
 }

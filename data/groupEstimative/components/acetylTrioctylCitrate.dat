@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group CH2; count 17; } { group CH; count 3; } { group C; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(2-ethylhexyl) 2-acetyloxypropane-1,2,3-tricarboxylate" "o-acetyl tris(2-ethylhexyl)citrate" "1,2,3-propanetricarboxylic acid, 2-(acetyloxy)-, tris(2-ethylhexyl) ester" "tris(2-ethylhexyl) 2-(acetyloxy)propane-1,2,3-tricarboxylate" "tris(2-ethylhexyl) 2-acetoxypropane-1,2,3-tricarboxylate" "2-(acetyloxy)-1,2,3-propanetricarboxylic acid, tris(2-ethylhexyl) ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1997520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1540.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1027400.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-3-(2-methylidenecyclopropyl)propanoic acid" "hypoglycine a" "hypoglycin a" "cyclopropanealanine, 2-methylene-" "hypoglycin" "a-amino-b-(2-methylenecyclopropyl)propionic acid" ".alpha.-amino-2-methylenecyclopropanepropionic acid" "2-methylenecyclopropanylalanine" ".alpha.-amino-.beta.-(2-methylenecyclopropyl)propionic acid" "2-methylenecyclopropanealanine" "beta-(methylenecyclopropyl)alanine" "(s)-2-amino-3-(2-methylenecyclopropyl)propanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -352530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     407.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-158010.0
-    phase     gas;
 }

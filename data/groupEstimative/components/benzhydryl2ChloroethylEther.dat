@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2-chloroethyloxy(phenyl)methyl]benzene" "((2-chloroethoxy)methylene)dibenzene" "2-chloroethyl diphenylmethyl ether" "benzhydryl .beta.-chloroethyl ether" "[2-chloroethoxy(phenyl)methyl]benzene" "[(2-chloroethoxy)(phenyl)methyl]benzene" "1-(diphenylmethoxy)-2-chloroethane" "rac 2-chloroethyl benzhydryl ether" "(2-chloroethoxy-phenylmethyl)benzene" "benzhydryl b-chloroethyl ether" "1,1'-[(2-chloroethoxy)methylene]bis-benzene" "1,1'-[(2-chloroethoxy)methylene]bis[benzene]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -33110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     562.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=180870.0
-    phase     gas;
 }

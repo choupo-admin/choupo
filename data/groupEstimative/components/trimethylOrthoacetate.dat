@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1-trimethoxyethane" "ethane, 1,1,1-trimethoxy-" "orthoacetic acid, trimethyl ester" "orthoacetic acid trimethyl ester" "s707" "orthoacetic acid, trimethyl ester;ethane, 1,1,1-trimethoxy-;" "ethane,1,1,1-trimethoxy   orthoacetic acid,trimethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -551940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     345.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-320940.0
-    phase     gas;
 }

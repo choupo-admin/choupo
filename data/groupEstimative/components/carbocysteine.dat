@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group COOH; count 2; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-3-(2-hydroxy-2-oxoethylsulfanyl)propanoic acid" "thiodril" "s-carboxymethylcysteine" "s-(carboxymethyl)cysteine" "3-(carboxymethylthio)alanine" "cysteine, s-(carboxymethyl)-" "broncodeterge" "fluifort" "loviscol" "mucocis" "reomucil" "rinatiol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -776690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     560.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-599470.0
-    phase     gas;
 }

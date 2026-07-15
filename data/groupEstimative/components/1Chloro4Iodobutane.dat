@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group Cl; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-4-iodanyl-butane" "tetramethylene chloroiodide" "butane, 1-chloro-4-iodo-" "1-iodo-4-chlorobutane" "1-chloro-4-iodobutane;1-iodo-4-chlorobutane;4-chloro-1-iodobutane;4-chlorobutyl iodide;4-iodo-1-chlorobutane;4-iodobutyl chloride;tetramethylene chloroiodide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -64760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=28990.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromomethylnaphthalene" "1-bromomethyl naphthalene" "naphthalene, 1-(bromomethyl)-" "1-(bromomethy)naphthalene" "naphthalene, (bromomethyl)-" "k941" "naphthalene, 1-(bromomethyl)-;1-naphthylmethyl bromide;a-(bromomethyl)naphthalene;(1-naphtyl)bromomethane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   172090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     414.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=265490.0
-    phase     gas;
 }

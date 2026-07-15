@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group CH; count 1; } { group OH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3-bis(oxidanyl)propan-2-yl dodecanoate" "laurin, 2-mono-" "2-hydroxy-1-(hydroxymethyl)ethyl laurate" "dodecanoic acid, 2-hydroxy-1-(hydroxymethyl)ethyl ester" "1,3-dihydroxypropan-2-yl dodecanoate" "glyceryl 2-laurate" "glycerine monolaurate" "2-monododecanoylglycerol" "2-dodecanoyl-sn-glycerol" "mg (0:0/12:0/0:0)" "dodecanoic acid,2-hydroxy-1-(hydroxymethyl)ethyl ester" "dodecanoic acid 2-hydroxy-1-(hydroxymethyl)ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -979950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     883.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-511030.0
-    phase     gas;
 }

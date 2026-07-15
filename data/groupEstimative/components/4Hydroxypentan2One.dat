@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-oxidanylpentan-2-one" "2-pentanone, 4-hydroxy-" "ch3ch(oh)ch2c(o)ch3" "4-hydroxy-2-pentanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -416620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     418.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-276960.0
-    phase     gas;
 }

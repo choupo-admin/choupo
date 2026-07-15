@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group CH_ring; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloranylcycloheptane" "cycloheptyl chloride" "cycloheptane, chloro-" "chloro-cycloheptane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -155390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8480.0
-    phase     gas;
 }

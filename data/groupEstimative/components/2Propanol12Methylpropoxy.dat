@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-methylpropoxy)propan-2-ol" "1-isobutoxypropan-2-ol" "dowanol pib-t" "dowanol pibt" "2-propanol, 1-isobutoxy-" "propylene glycol isobutyl ether" "1-isobutoxy-2-propanol" "2-propanol,1-isobutoxy-," "1-(2-methylpropoxy)-2-propanol" "propylene glycol monoisobutyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -482820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     471.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-238640.0
-    phase     gas;
 }

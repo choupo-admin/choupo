@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl (1r,4as,10ar)-1,4a-dimethyl-7-propan-2-yl-2,3,4,9,10,10a-hexahydrophenanthrene-1-carboxylate" "methyl 8,13-abietatrien-18-oate" "methyl dehydroabietyate" "podocarpa-8,13-trien-15-oic acid, 13-isopropyl-, methyl ester" "1,3,4,4a,9,10,10a-octahydro-1,4a-dimethyl-7-(1-methylethyl)-1-phenanthrenecarboxylic acid, methyl ester" "1-phenanthrenecarboxylic acid,2,3,4,4a,9,10,10a-octahydro-1,4a-dimethyl-7-(1-methylethyl)-, methyl ester, [1r-(1.alpha.,4a.beta.,10a.alpha.)]-" "1-phenanthrenecarboxylic acid,1,2,3,4,4a,9,10,10a-octahydro-1,4a-dimethyl-7-(1-methylethyl)-, methyl ester, (1r,4as,10ar)-" "methyl 8,11,13-abietatrien-18-oate" "podocarpa-8,11,13-trien-15-oic acid, 13-isopropyl-, methyl ester (8ci)" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,9,10,10a-octahydro-1,4a-dimethyl-7-(1-methylethyl)-,methyl ester, (1r-(1alpha,4abeta,10aalpha))- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -442320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     853.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-15110.0
-    phase     gas;
 }

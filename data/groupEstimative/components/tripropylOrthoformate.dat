@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(dipropoxymethoxy)propane" "tri-n-propyl orthoformate" "orthoformic acid tripropyl ester" "tripropoxymethane" "1-(dipropoxy-methoxy)-propane" "rwnxxqfjbalkax-uhfffaoysa-" "orthoformic acid tri-n-propyl ester" "1,1',1''-(methylidynetris(oxy))trispropane" "propane, 1,1',1''-(methylidynetris(oxy))tris-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -651670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     569.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-284120.0
-    phase     gas;
 }

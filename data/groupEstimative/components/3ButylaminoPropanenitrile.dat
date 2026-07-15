@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group NH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(butylamino)propionitrile" "3-(butylamino)-propionitrile" "3-butylamino-propanenitrile" "3-(n-butylamino)propionitrile" "3-butylamino-propionitrile" "propanenitrile,3-(butylamino)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   30540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=230630.0
-    phase     gas;
 }

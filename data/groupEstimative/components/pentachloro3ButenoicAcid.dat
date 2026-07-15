@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dC; count 2; } { group Cl; count 5; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,4,4-pentakis(chloranyl)but-3-enoic acid" "2,2,3,4,4-pentachloro-3-butenoic acid" "3-butenoic acid, pentachloro-" "3-butanoic acid, 2,2,3,4,4-pentachloro-" "3-butenoic acid, 2,2,3,4,4-pentachloro-" "pentachloro-3-butenoicacid" "2,2,3,4,4-pentachlorobut-3-enoic acid" "3-butenoic acid,2,2,3,4,4-pentachloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -465970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     478.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-354800.0
-    phase     gas;
 }

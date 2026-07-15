@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-3,3-dimethyl-butan-1-ol" "l-tert-leucinol" "(s)-2-amino-3,3-dimethylbutanol" "(2s)-2-amino-3,3-dimethylbutan-1-ol" "d-tert-leucinol" "(s)-2-amino-3,3-dimethyl-1-butanol" "2s-tert-leucinol" "(l)-tert-leucinol" "(2s)-2-amino-3,3-dimethyl-butan-1-ol" "(2r)-2-amino-3,3-dimethyl-1-hydroxybutane" "1-butanol,2-amino-3,3-dimethyl-, (s)-;(2s)-2-amino-3,3-dimethyl-1-butanol;(s)-(+)-2-amino-3,3-dimethylbutanol;(s)-(+)-tert-leucinol;(s)-2-amino-3,3-dimethyl-1-butanol;(s)-2-amino-3,3-dimethylbutanol;l-tert-leucinol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -299640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     443.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-70330.0
-    phase     gas;
 }

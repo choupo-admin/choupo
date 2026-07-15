@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-cyclobutylethanone" "acetylcyclobutane" "ethanone, 1-cyclobutyl-" "ketone, cyclobutyl methyl" "1-cyclobutylethan-1-one" "ketone,cyclobutyl methyl (6ci,7ci,8ci);1-cyclobutylethan-1-one;1-cyclobutylethanone;acetylcyclobutane;cyclobutane, acetyl-;cyclobutyl methyl ketone;methylcyclobutyl ketone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -213110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     346.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-80630.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexahydrobenzoic acid" "cyclohexanoic acid" "benzoic acid, hexahydro-" "carboxycyclohexane" "cyclohexylcarboxylic acid" "cyclohexylformic acid" "cyclohexylmethanoic acid" "cyclohexancarbonsaeure" "cyclohexane-1-carboxylate" "cyclohexane-carboxylic acid" "cyclohexanecarboxylicacid" "cyclohexancarbons&#xe4;ure" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -483760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-311400.0
-    phase     gas;
 }

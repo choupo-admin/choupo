@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-oxidanylpropyl dodecanoate" "dodecanoic acid, 3-hydroxypropyl ester" "3-hydroxypropyl dodecanoate" "lauric acid, 3-hydroxypropyl ester" "lauric acid, 3-hydroxypropyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -822440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     842.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-371770.0
-    phase     gas;
 }

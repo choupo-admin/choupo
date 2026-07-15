@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 1; } { group dCH; count 6; } { group dC; count 2; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 2; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2e,4e,6e,8e)-n-ethyl-3,7-dimethyl-9-(2,6,6-trimethylcyclohexen-1-yl)nona-2,4,6,8-tetraenamide" "n-ethylretinamide" "n-ethyl retinamide" "retinamide, n-ethyl-" "retinoic acid ethyl amide" "vitamin a acid ethylamide" "all-trans-n-ethylretinamide" "retinamide, n-ethyl-, all-trans-" "(2z,4e,6e,8e)-n-ethyl-3,7-dimethyl-9-(2,6,6-trimethyl-1-cyclohexenyl)nona-2,4,6,8-tetraenamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1034.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=428270.0
-    phase     gas;
 }

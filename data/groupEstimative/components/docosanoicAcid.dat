@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 20; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "behenic acid" "1-docosanoic acid" "n-docosanoic acid" "docosoic acid" "glycon b-70" "behensaeure" "docosansaeure" "dokosansaeure" "docosanic acid" "n-docosanoate" "1-docosanoate" "glycon b 70" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -847680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1066.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-209550.0
-    phase     gas;
 }

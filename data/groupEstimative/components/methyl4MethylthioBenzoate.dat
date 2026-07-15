@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-methylsulfanylbenzoate" "4-mmtb" "4-ch3s-c6h4-cooch3" "methyl 4-(methylsulfanyl)benzoate" "benzoic acid,4-(methylthio)-, methyl ester" "benzoic acid, 4-(methylthio)-, methyl ester" "benzoicacid, p-(methylthio)-, methyl ester (7ci,8ci);methyl 4-(methylthio)benzoate;methyl p-(methoxycarbonyl)phenyl sulfide;methyl p-(methylthio)benzoate;methyl 4-(methylsulfanyl)benzoate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -279440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-149570.0
-    phase     gas;
 }

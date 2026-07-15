@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CdO; count 1; } { group NH2; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propanamide, 3-mercapto-" "3-mercaptopropionamide" "propanamide,3-mercapto-" "belta-mercaptopropionamide" "propionamide,3-mercapto- (6ci,7ci,8ci); 3-mercaptopropionamide; b-mercaptopropionamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -145560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-58700.0
-    phase     gas;
 }

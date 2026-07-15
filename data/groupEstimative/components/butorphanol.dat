@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 10; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butorfanol" "beforal" "moradol" "stadol" "butorphanol tartrate" "butorphanolum [inn-latin]" "stadol ns" "17-(cyclobutylmethyl)morphinan-3,14-diol" "butorphanolum" "(-)-17-(cyclobutylmethyl)morphinan-3,14-diol" "morphinan-3,14-diol, 17-(cyclobutylmethyl)-" "(-)-butorphanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -204360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     772.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=255880.0
-    phase     gas;
 }

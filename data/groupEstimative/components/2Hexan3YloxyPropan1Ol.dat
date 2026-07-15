@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 2; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-hexan-3-yloxypropan-1-ol" "2-ethylbutoxypropanol, mixed isomers" "propanol, 2-ethylbutoxy-, mixed isomers" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -524100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     549.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-221800.0
-    phase     gas;
 }

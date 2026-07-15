@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 14; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[2-[2-[2-(2-butoxyethoxy)ethoxy]ethoxy]ethoxy]butane" "dibutoxy tetraglycol" "5,8,11,14,17-pentaoxaheneicosane" "tetraethylene glycol dibutyl ether" "dibutylether tetraethylenglykolu" "ether,bis[2-(2-butoxyethoxy)ethyl]; pentaether; tetraethylene glycol dibutyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1034670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     835.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-441160.0
-    phase     gas;
 }

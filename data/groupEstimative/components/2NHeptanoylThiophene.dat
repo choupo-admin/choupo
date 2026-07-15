@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group CdO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-thiophen-2-ylheptan-1-one" "1-(2-thienyl)-1-heptanone" "1-heptanone, 1-(2-thienyl)-" "2-heptanoylthiophene" "1-(2-thienyl)heptan-1-one" "1-thiophen-2-yl-1-heptanone" "1-heptanone,1-(2-thienyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -152780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     572.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=47230.0
-    phase     gas;
 }

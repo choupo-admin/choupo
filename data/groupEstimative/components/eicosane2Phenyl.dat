@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 17; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "icosan-2-ylbenzene" "benzene, (1-methylnonadecyl)-" "2-phenyleicosane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -348720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1052.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=278010.0
-    phase     gas;
 }

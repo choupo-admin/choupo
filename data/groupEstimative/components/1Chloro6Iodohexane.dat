@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group Cl; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-6-iodanyl-hexane" "hexamethylene chloroiodide" "hexane, 1-chloro-6-iodo-" "1-chloro-6-iodohexane;1-iodo-6-chlorohexane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -106040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     478.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=45830.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "furan-2-carbaldehyde" "furfural" "2-furancarboxaldehyde" "furaldehyde" "fural" "2-furanaldehyde" "2-furancarbonal" "2-formylfuran" "2-furfural" "pyromucic aldehyde" "2-furyl-methanal" "artificial ant oil" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -17170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     291.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=43610.0
-    phase     gas;
 }

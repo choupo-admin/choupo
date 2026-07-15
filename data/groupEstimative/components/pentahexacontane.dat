@@ -32,9 +32,8 @@ groups
     unifac ( { group CH3; count 2; } { group CH2; count 63; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
     joback ( { group CH3; count 2; } { group CH2; count 63; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1384930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     2687.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=496420.0
-    phase     gas;
 }

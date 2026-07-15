@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group CH_ring; count 1; } { group dC_ring; count 2; } { group OH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[1,2-bis(oxidanyl)ethyl]-3,4-bis(oxidanyl)-2h-furan-5-one" "d-erythro-hex-2-enonic acid, .gamma.-lactone" "vicin" "5-(1,2-dihydroxyethyl)-3,4-dihydroxyfuran-2(5h)-one" "1-xyloascorbic acid" "xyloascorbic acid, l-" "3-keto-1-gulofuranolactone" "iron-ascorbic acid complexes" "dl-ascorbic acid" "iso-ascorbic acid" "prestwick_683" "mercate '5'" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -991010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     495.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-789000.0
-    phase     gas;
 }

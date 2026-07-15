@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH_ring; count 5; } { group OH; count 3; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r,3s,4r,5s,6s)-2-methoxy-6-methyl-oxane-3,4,5-triol" "methyl a-l-fucopyranoside" "mfu" "alpha-l-1-methyl-fucose" "methyl alpha-l-fucopyranoside" "(2r,3s,4r,5s,6s)-2-methoxy-6-methyloxane-3,4,5-triol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -935760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     341.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-599910.0
-    phase     gas;
 }

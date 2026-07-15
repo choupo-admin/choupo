@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH2; count 4; } { group dCH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-bis(ethenyl)penta-1,4-diene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   263880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=379100.0
-    phase     gas;
 }

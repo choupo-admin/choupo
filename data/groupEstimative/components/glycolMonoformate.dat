@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-hydroxyethyl methanoate" "2-hydroxyethyl formate" "1,2-ethanediol, monoformate" "ethylene glycol, monoformate" "1,2-ethanediol, 1-formate" "1, monoformate" "1,2-ethanediol monoformate" "ethylene glycol, monoformate (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -181030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     507.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-118480.0
-    phase     gas;
 }

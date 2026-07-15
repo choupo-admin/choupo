@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group dCH; count 2; } { group CH2_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(2,6,6-trimethylcyclohexa-1,3-dien-1-yl)but-3-en-2-one" "agn-pc-03d2q9" "3-buten-2-one,4-(2,6,6-trimethyl-1,3-cyclohexadien-1-yl)-" "3-buten-2-one, 4-(2,6,6-trimethyl-1,3-cyclohexadien-1-yl)-" "3-buten-2-one, 4-(2,6,6-trimethyl-1,3-cyclohexadien-1-yl)-, (e)-" "3-buten-2-one, 4-(2,6,6-trimethyl-1,3-cyclohexadien-1-yl)-, (z)-" "3,4-dehydro-b-ionone;4-(2,6,6-trimethyl-1,3-cyclohexadienyl)but-3-en-2-one; dehydro-b-ionone; b-ionone, dehydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -144830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     634.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=69500.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group C_ring; count 9; } { group dC_ring; count 6; } { group F; count 18; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9-octadecakis(fluoranyl)cyclopenta[e]-as-indacene" "trindan, octadecafluoro-" "1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9-octadecafluorocyclopenta[e]-as-indacene" "1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,-octadecafluoro-2,3,4,5,6,7,8,9-octahydro-1h-trindene" "1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9-octadecafluoro-2,3,4,5,6,7,8,9-octahydro-1h-cyclopenta[e]-as-indacene" "1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9-octadecafluoro-2,3,4,5,6,7,8,9-octahydro-1h-trindene" "1h-trindene, 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9-octadecafluoro-2,3,4,5,6,7,8,9-octahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3470210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1274.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3280320.0
-    phase     gas;
 }

@@ -35,9 +35,8 @@ groups
     joback ( { group CH3; count 8; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[[bis[(dimethyl-$l^{3}-silanyl)oxy]-phenyl-silyl]oxy-(dimethyl-$l^{3}-silanyl)oxy-phenyl-silyl]oxy-dimethyl-silicon" "tetrasiloxane, 3,5-bis((dimethylsilyl)oxy)-1,1,7,7-tetramethyl-3,5-diphenyl-" "tetrasiloxane, 3,5-bis[(dimethylsilyl)oxy]-1,1,7,7-tetramethyl-3,5-diphenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1090650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1322.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-601700.0
-    phase     gas;
 }

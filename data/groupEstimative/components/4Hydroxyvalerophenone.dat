@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-hydroxyphenyl)pentan-1-one" "p-valerylphenol" "4-valerylphenol" "1-pentanone, 1-(4-hydroxyphenyl)-" "4-pentanoylphenol" "p-hydroxyvalerophenone" "valerophenone, 4'-hydroxy-" "4'-hydroxypentanophenone" "1-(4-hydroxyphenyl)-pentan-1-one" "phosphine,[(1s)-2,2',3,3'-tetrahydro-1,1'-spirobi[1h-indene]-7,7'-diyl]bis[bis(4-methylphenyl)-(9ci); (s)-7,7'-bis[bis(4-methylphenyl)phosphino]-1,1'-spirobiindane" "phosphine,1,1'-[(1s)-2,2',3,3'-tetrahydro-1,1'-spirobi[1h-indene]-7,7'-diyl]bis[1,1-bis(4-methylphenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -323730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     531.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-129390.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group OH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-(2-ethoxyethoxy)ethoxy]ethanol" "triethylene glycol monoethyl ether" "dowanol te" "ethoxytriglycol" "triglycol monoethyl ether" "ethoxy triglycol" "poly-solv te" "ethanol, 2-[2-(2-ethoxyethoxy)ethoxy]-" "ethoxytriethylene glycol" "3,6,9-trioxaundecan-1-ol" "triethylene glycol ethyl ether" "triethylene glycol, monoethyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -757340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     552.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-435340.0
-    phase     gas;
 }

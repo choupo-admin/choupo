@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 20; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "docosanoic acid, trimethylsilyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -988230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1307.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-255510.0
-    phase     gas;
 }

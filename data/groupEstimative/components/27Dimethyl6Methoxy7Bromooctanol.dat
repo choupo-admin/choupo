@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group Br; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-bromanyl-6-methoxy-2,7-dimethyl-octan-1-ol" "7-bromo-6-methoxy-2,7-dimethyloctan-1-ol" "1-octanol, 7-bromo-6-methoxy-2,7-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -547800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     639.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-187800.0
-    phase     gas;
 }

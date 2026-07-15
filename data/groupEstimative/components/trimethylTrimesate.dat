@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl benzene-1,3,5-tricarboxylate" "trimethyl 1,3,5-benzenetricarboxylate" "trimesic acid trimethyl ester" "1,3,5-benzenetricarboxylic acid, trimethyl ester" "methyl 3,5-bis(methoxycarbonyl)benzoate" "trimethyl 1,5-benzenetricarboxylate" "1,5-benzenetricarboxylic acid trimethyl ester" "1,5-benzenetricarboxylic acid, trimethyl ester" "benzene-1,3,5-tricarboxylic acid trimethyl ester" "1,3,5-benzenetricarboxylic acid,trimethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1029260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     658.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-787800.0
-    phase     gas;
 }

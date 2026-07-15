@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group C; count 1; } { group dCH_ring; count 16; } { group dC_ring; count 4; } { group COO; count 4; } { group Nd_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3-pyridin-3-ylcarbonyloxy-2,2-bis(pyridin-3-ylcarbonyloxymethyl)propyl] pyridine-3-carboxylate" "perycit" "cardiolipol" "bufor" "pentaerythritol tetranicotinate" "sk 1 (pharmaceutical)" "niceritrolum [inn-latin]" "pentaerithritol tetranicotinate" "niceritrol [inn:ban:dcf:jan]" "3-pyridinecarboxylic acid, 2,2-bis(((3-pyridinylcarbonyl)oxy)methyl)-1,3-propanediyl ester" "nicotinic acid, neopentanetetrayl ester" "pentaerythritoltetranicotinate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -842480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1076.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287500.0
-    phase     gas;
 }

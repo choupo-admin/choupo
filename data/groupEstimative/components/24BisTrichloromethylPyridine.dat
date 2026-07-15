@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 6; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pyridine,2,4-bis(trichloromethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -41900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=121990.0
-    phase     gas;
 }

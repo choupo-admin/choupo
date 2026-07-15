@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 7; } { group dCH2; count 1; } { group dCH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dec-9-enoic acid" "caproleic acid" "caproleicacid;" "9-decylenic acid" "delta(9)-decenoic acid" "c10:1n-1" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -474570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     594.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-222750.0
-    phase     gas;
 }

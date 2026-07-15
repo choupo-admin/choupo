@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group CdO; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-[2-(dimethylamino)ethyl]prop-2-enamide" "n-(2-(dimethylamino)ethyl)acrylamide" "n-[2-(dimethylamino)ethyl]acrylamide" "2-propenamide, n-[2-(dimethylamino)ethyl]-" "acrylamide, n-(2-(dimethylamino)ethyl)-" "acrylamide, n-[2-(dimethylamino)ethyl]-" "n,n-dimethylaminoethyl acrylamide" "n-(2-dimethylaminoethyl)prop-2-enamide" "2-propenamide, n-(2-(dimethylamino)ethyl)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -53960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     507.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=167150.0
-    phase     gas;
 }

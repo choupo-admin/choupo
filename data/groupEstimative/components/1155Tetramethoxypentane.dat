@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 2; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "glutaraldehyde, bis(dimethyl acetal)" "glutardialdehyde tetramethyl acetal" "pentane, 1,1,5,5-tetramethoxy-" "1,5,5-tetramethoxypentane" "pentane,1,5,5-tetramethoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -768530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     532.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-399980.0
-    phase     gas;
 }

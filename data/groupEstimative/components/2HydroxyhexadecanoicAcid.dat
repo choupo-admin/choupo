@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylhexadecanoic acid" "2-hydroxypalmitic acid" "2-hydroxy palmitic acid" "2-hydroxy-hexadecanoic acid" "hexadecanoic acid, hydroxy-" "dl-alpha-hydroxypalmitic acid" "ambap10067-06-8" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -881350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     873.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-399330.0
-    phase     gas;
 }

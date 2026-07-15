@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group OH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-naphthalen-2-yl-2-(propan-2-ylamino)ethanol" "pronetalol" "nethalide" "naphthylisoproterenol" "alderlin" "inetol" "neathalide" "neth" "pronetalolo [dcit]" "pronetalolum [inn-latin]" "(2-naphthyl)-1-isopropylaminoethanol" "2-isopropylamino-1-(naphth-2-yl)ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -46120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     591.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=232540.0
-    phase     gas;
 }

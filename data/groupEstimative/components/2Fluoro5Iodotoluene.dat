@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-fluoranyl-4-iodanyl-2-methyl-benzene" "1-fluoro-4-iodo-2-methylbenzene" "benzene, 1-fluoro-4-iodo-2-methyl-" "2-fluoro-5-iodotoluene 99%" "buttpark 45\01-60" "i223" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -93460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     397.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-35480.0
-    phase     gas;
 }

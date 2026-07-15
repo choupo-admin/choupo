@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 8; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-ethyl-5-methoxy-benzo[a]anthracene" "3-methoxy-10-ethyl-1,2-benzanthracene" "benz(a)anthracene, 7-ethyl-5-methoxy-" "7-ethyl-5-methoxytetraphene" "7-ethyl-5-methoxybenzo[a]anthracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   154870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     527.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=414780.0
-    phase     gas;
 }

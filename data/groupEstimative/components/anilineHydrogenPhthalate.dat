@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 9; } { group dC_ring; count 3; } { group COOH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "aniline;phthalic acid" "aniline phthalate solution" "phthalic acid aniline salt" "1,2-benzenedicarboxylic acid, compd. with benzenamine (1:1)" "aniline phthalate" "aniline; phthalic acid" "phthalic acid, compound with aniline (1:1)" "phthalic acid monoaniline salt" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -649070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     747.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-443940.0
-    phase     gas;
 }

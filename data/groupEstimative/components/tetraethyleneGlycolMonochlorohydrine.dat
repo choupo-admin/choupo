@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group Cl; count 1; } { group OH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-(2-chloroethyloxy)ethoxy]ethoxy]ethanol" "2-[2-[2-(2-chloroethoxy)ethoxy]ethoxy]ethanol" "2-{2-[2-(2-chloroethoxy)ethoxy]ethoxy}ethanol" "2-{2-[2-(2-chloroethoxy)ethoxy]ethoxy}ethan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -773080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     585.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-447270.0
-    phase     gas;
 }

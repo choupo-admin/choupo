@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylbut-2-ene" "trimethylethylene" "2-butene, 2-methyl-" "amylene" "n-amylene" "beta-isoamylene" "3-methyl-2-butene" "ethylene, trimethyl-" "dimethylpropylene" "b-isoamylene" "methyl butene" "a-isoamylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -39100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     340.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62890.0
-    phase     gas;
 }

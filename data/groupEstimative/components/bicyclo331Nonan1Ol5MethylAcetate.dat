@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(1s,2r,5s,6s)-2-methyl-6-bicyclo[3.3.1]nonanyl] ethanoate" "bicyclo(3.3.1)nonan-1-ol, 5-methyl-, 1-acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -521850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     469.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-190430.0
-    phase     gas;
 }

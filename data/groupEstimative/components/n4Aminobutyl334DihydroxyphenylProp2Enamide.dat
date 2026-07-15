@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group CdO; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(4-azanylbutyl)-3-[3,4-bis(oxidanyl)phenyl]prop-2-enamide" "2-propenamide,n-(4-aminobutyl)-3-(3,4-dihydroxyphenyl)-" "cinnamamide,n-(4-aminobutyl)-3,4-dihydroxy- (8ci); caffeoylputrescine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -337840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     721.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-31110.0
-    phase     gas;
 }

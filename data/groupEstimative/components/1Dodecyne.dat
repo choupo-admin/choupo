@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodec-1-yne" "dodec-1-in" "1-c12h22" "decylacetylene;n-decylacetylene;dodec-1-yne;dodec-1-in;dodec-1-yne;decylacetylene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     592.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=273230.0
-    phase     gas;
 }

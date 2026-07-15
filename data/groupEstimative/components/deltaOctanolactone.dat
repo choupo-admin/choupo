@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-propyloxan-2-one" "5-octanolide" "delta-octalactone" "2h-pyran-2-one, tetrahydro-6-propyl-" "5-octalactone" ".delta.-octalactone" "5-hydroxyoctanoic acid lactone" "tetrahydro-6-propyl-2h-pyran-2-one" "delta-propyl-delta-valerolactone" "5-propyl-5-hydroxypentanoic acid lactone" "delta-octanolide" "6-propyl-tetrahydropyran-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -459090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     448.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-245240.0
-    phase     gas;
 }

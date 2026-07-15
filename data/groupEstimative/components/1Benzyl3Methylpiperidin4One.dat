@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-1-(phenylmethyl)piperidin-4-one" "1-benzyl-3-methyl-4-piperidone" "4-piperidinone, 3-methyl-1-(phenylmethyl)-" "4-piperidone, 1-benzyl-3-methyl-" "3-methyl-1-benzylpiperidin-4-one" "n-benzyl-3-methyl-4-piperidone" "1-benzyl-3-methyl-4-piperidinone" "wt733" "34737-89-8 1-benzyl-3-methylpiperidin-4-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -84810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=195730.0
-    phase     gas;
 }

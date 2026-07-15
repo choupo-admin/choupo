@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,6-tetradecadeuteriohexane" "tetradecadeuterohexane" "de270" "n-hexane-d14 >99.0 atom % d" "hexane-d14(8ci,9ci);perdeuterohexane;n-hexane-d14;hexane-1,1,1,2,2,3,3,4,4,5,5,6,6,6-d14;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -167170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-360.0
-    phase     gas;
 }

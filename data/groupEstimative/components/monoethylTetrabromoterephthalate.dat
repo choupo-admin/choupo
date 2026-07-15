@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dC_ring; count 6; } { group Br; count 4; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,5,6-tetrakis(bromanyl)-4-ethoxycarbonyl-benzoic acid" "2,3,5,6-tetrabromo-4-(ethoxycarbonyl)benzoic acid" "1,4-benzenedicarboxylic acid, 2,3,5,6-tetrabromo-, 1-ethyl ester" "ethyl hydrogen tetrabromoterephthalate" "terephthalic acid, tetrabromo-, monoethyl ester" "2,3,5,6-tetrabromo-4-ethoxycarbonylbenzoic acid" "1,4-benzenedicarboxylic acid, 2,3,5,6-tetrabromo-, monoethyl ester" "1,4-benzenedicarboxylicacid, 2,3,5,6-tetrabromo-, 1-ethyl ester" "1,4-benzenedicarboxylicacid, 2,3,5,6-tetrabromo-, monoethyl ester (9ci); terephthalic acid, tetrabromo-,monoethyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -632780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     716.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-499420.0
-    phase     gas;
 }

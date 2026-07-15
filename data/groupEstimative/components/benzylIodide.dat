@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "iodanylmethylbenzene" "(iodomethyl)benzene" "benzene, (iodomethyl)-" "iodomethylbenzene" "alpha-iodotoluene" "toluene, .alpha.-iodo-" "benzyl-iodide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   125590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     377.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=178590.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-bromanyl-2-oxidanyl-benzaldehyde" "5-bromo-2-hydroxybenzaldehyde" "benzaldehyde, 5-bromo-2-hydroxy-" "2-hydroxy-5-bromobenzaldehyde" "5-bromo-salicyclaldehyde" "salicylaldehyde, 5-bromo-" "agn-pc-0cri51" "salicylaldehyde, 5-bromo-;5-bromo-2-hydroxybenzaldehyde;2-hydroxy-5-bromobenzaldehyde;2-bromo-5-hydroxy-benzaldehyde;benzaldehyde, 5-bromo-2-hydroxy-;5-bromo-salicyclaldehyde;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -37280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     474.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=14500.0
-    phase     gas;
 }

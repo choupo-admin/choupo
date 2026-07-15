@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 1; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-ynylidenecyclohexane" "propargylidenecyclohexane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   213500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=325590.0
-    phase     gas;
 }

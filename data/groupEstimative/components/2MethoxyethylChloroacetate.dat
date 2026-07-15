@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group Cl; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxyethyl 2-chloranylethanoate" "chloroacetic acid 2-methoxyethyl ester" "2-methoxyethyl 2-chloroacetate" "acetic acid, 2-chloro-,2-methoxyethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -611770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     446.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-436080.0
-    phase     gas;
 }

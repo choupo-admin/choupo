@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group dCH_ring; count 1; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5-pentamethylbenzene" "benzene, pentamethyl-" "benzene, 1,2,3,4,5-pentamethyl-" "pentamethylbenzol" "agn-pc-00mbh7" "agn-pc-0d5xo8" "1,3,4,5-pentamethylbenzene" "1,2,3,4,5-pentamethyl-benzene" "1,2,3,4,5-pentamethylcyclohexa-1,3,5-triene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -79720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=115630.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-methylphenyl)pyridine" "2-p-tolylpyridine" "2-(4-tolyl)pyridine" "pyridine, 2-(4-methylphenyl)-" "pyridine,2-p-tolyl-" "agn-pc-0d1da7" "o148" "2,3,4,5-tetradeuterio-6-[2,3,5,6-tetradeuterio-4-(trideuteriomethyl)phenyl]pyridine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   203370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     417.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=342400.0
-    phase     gas;
 }

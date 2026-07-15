@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-2,3-dihydropyran-6-one" "2h-pyran-2-one, 5,6-dihydro-4-methyl-" "4-methyl-5,6-dihydro-2h-pyran-2-one" "ghl.pd_mitscher_leg0.315" "2,3-anhydromevalonic acid" "4-methyl-5,6-dihydro-pyran-2-one" "2h-pyran-2-one,5,6-dihydro-4-methyl-" "2-pentenoic acid,5-hydroxy-3-methyl-, lactone (6ci); 2,3-anhydromevalonic acid d-lactone;2-methyl-4-hydroxy-1-butenoic acid lactone; 3-methylpent-2-en-5-olide;4-methyl-5,6-dihydro-2-pyranone; 4-methyl-5,6-dihydro-a-pyrone;5,6-dihydro-4-methyl-2h-pyran-2-one; 5-hydroxy-3-methyl-2-pentenoic acidlactone; mevalonic lactone, d2-anhydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -351160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     369.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-234040.0
-    phase     gas;
 }

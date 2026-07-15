@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(3-methoxy-2-oxidanyl-phenyl)prop-2-enoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -567250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     517.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-387210.0
-    phase     gas;
 }

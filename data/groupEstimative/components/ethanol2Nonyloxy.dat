@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-nonoxyethanol" "ethylene glycol mono-n-nonyl ether" "nonyl alcohol, ethoxylated" "ethyleneglycol mono-n-nonyl ether" "poly(oxy-1,2-ethanediyl), alpha-nonyl-omega-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -554820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     646.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-200080.0
-    phase     gas;
 }

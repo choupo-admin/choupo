@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 5; } { group dC_ring; count 7; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[2,3-bis(chloranyl)phenyl]-2,3,4-tris(chloranyl)benzene" "1,1'-biphenyl, 2,2',3,3',4-pentachloro-" "2,2',3,3',4-pentachloro-1,1'-biphenyl" "chlorodiphenyl (54% cl)" "chlorodiphenyl, 54% chlorine" "polychlorobiphenyls (54% chlorine)" "diphenyle chlore, 54% de chlore [french]" "chlorierte biphenyle, chlorgehalt 54% [german]" "pcbs (54%cl)" "pcb's (54% cl)" "pcb 82" "2,3,4,2',3'-pentachlorobiphenyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   46000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=167180.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-(1,3-dimethyl-1-butenyl)dihydrofuran-2(3h)-one" "2(3h)-furanone, 5-(1,3-dimethyl-1-butenyl)dihydro-" "2(3h)-furanone, 5-(1,3-dimethyl-1-buten-1-yl)dihydro-" "5-[(e)-4-methylpent-2-en-2-yl]oxolan-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -392060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     486.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-147070.0
-    phase     gas;
 }

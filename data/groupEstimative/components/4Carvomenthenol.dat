@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-1-propan-2-yl-cyclohex-3-en-1-ol" "p-menth-1-en-4-ol" "4-terpineol" "terpinen-4-ol" "1-terpinen-4-ol" "terpinenol-4" "terpene-4-ol" "terpinene-4-ol" "3-cyclohexen-1-ol, 4-methyl-1-(1-methylethyl)-" "4-terpinenol" "1-menthene-4-ol" "1-p-menthen-4-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -291370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     582.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-66650.0
-    phase     gas;
 }

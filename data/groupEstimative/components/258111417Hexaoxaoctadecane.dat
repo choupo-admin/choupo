@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methoxy-2-[2-[2-[2-(2-methoxyethoxy)ethoxy]ethoxy]ethoxy]ethane" "Ethane, 1,2-bis[2-(2-methoxyethoxy)ethoxy]-" "pentaethylene glycol, dimethyl ether" "pentaglyme" "pentaethyleneglycol dimethyl ether" "1-(2-METHOXY-ETHOXY)-2-{2-[2-(2-METHOXY-ETHOXY]-ETHOXY}-ETHANE" "1-(2-METHOXY-ETHOXY)-2-(2-(2-(2-METHOXY-ETHOXY)-ETHOXY)-ETHANE" "1,14-dimethoxy-3,6,9,12-tetraoxa-tetradecane" "2,8,11,14,17-hexaoxaoctadecane" "NSC244990" "DB02580" "AS-76354" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1084330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     691.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-579840.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-5-propan-2-yl-phenol" "5-isopropyl-2-methylphenol" "isopropyl-o-cresol" "o-thymol" "5-isopropyl-o-cresol" "2-p-cymenol" "antioxine" "isothymol" "karvakrol" "2-hydroxy-p-cymene" "phenol, 2-methyl-5-(1-methylethyl)-" "p-cymen-2-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -207260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20960.0
-    phase     gas;
 }

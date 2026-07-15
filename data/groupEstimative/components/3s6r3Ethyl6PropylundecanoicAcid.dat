@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 10; } { group CH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s,6r)-3-ethyl-6-propyl-undecanoic acid" "carboxylic acids, c16-18 and c18-branched" "c16-c18 and c18 branched alkyl carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -734400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     813.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-264950.0
-    phase     gas;
 }

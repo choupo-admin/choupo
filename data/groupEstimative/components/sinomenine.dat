@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group OH_phenol; count 1; } { group O; count 2; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "coculine" "cucoline" "kukoline" "sabianine a" "sinomenine hcl" "(9alpha,13alpha,14alpha)-7,8-didehydro-4-hydroxy-3,7-dimethoxy-17-methylmorphinan-6-one" "7,8-didehydro-4-hydroxy-3,7-dimethoxy-17-methyl-9-alpha,13-alpha,14-alpha-morphinan-6-one" "9-alpha,13-alpha,14-alpha-morphinan-6-one, 7,8-didehydro-4-hydroxy-3,7-dimethoxy-17-methyl-" "sinomenine, cucoline, kukoline, coculine, sabianine a" "cuculine" "s2359_selleck" "upcmld-dp085" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -460030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     538.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=10810.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-n,n-dimethyl-aniline" "n,n-dimethyl-3-chloroaniline" "m-chloro-n,n-dimethylaniline" "benzenamine, 3-chloro-n,n-dimethyl-" "(3-chlorophenyl)dimethylamine" "3-chloro-nn-dimethylaniline" "n1,n1-dimethyl-3-chloroaniline" "benzenamine,3-chloro-n,n-dimethyl-" "aniline,m-chloro-n,n-dimethyl- (6ci,7ci,8ci);1-chloro-3-dimethylaminobenzene;3-chloro-n,n-dimethylaniline;3-chloro-n,n-dimethylbenzenamine;3-dimethylamino-1-chlorobenzene;n,n-dimethyl-3-chloroaniline;n,n-dimethyl-m-chloroaniline;m-chloro-n,n-dimethylaniline;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   68400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     404.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=218110.0
-    phase     gas;
 }

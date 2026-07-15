@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 1; } { group dC; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylbut-2-ene" "2-bromo-2-butene, mixture of cis and trans" "(z)-2-bromo-2-butene" "2-bromobut-2-ene" "2-bromo-2-butene;" "2-butene,2-bromo-, (e)- (8ci); 2-butene, 2-bromo-, trans- (6ci); (2e)-2-bromo-2-butene;(e)-2-bromo-2-butene; trans-2-bromobut-2-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   7870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     352.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=68790.0
-    phase     gas;
 }

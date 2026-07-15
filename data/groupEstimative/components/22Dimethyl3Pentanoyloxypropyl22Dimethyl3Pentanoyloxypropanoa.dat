@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 9; } { group C; count 2; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2,2-dimethyl-3-pentanoyloxy-propyl) 2,2-dimethyl-3-pentanoyloxy-propanoate" "pentanoic acid, 3-(2,2-dimethyl-1-oxo-3-((1-oxopentyl)oxy)propoxy)-2,2-dimethylpropyl ester" "pentanoic acid 3-[2,2-dimethyl-1-oxo-3-[(1-oxopentyl)oxy]propoxy]-2,2-dimethylpropyl ester" "pentanoic acid, 3-[2,2-dimethyl-1-oxo-3-[(1-oxopentyl)oxy]propoxy]-2,2-dimethylpropyl ester" "pentanoic acid,3-[2,2-dimethyl-1-oxo-3-[(1-oxopentyl)oxy]propoxy]-2,2-dimethylpropyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1425470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1011.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-807910.0
-    phase     gas;
 }

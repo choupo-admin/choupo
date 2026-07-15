@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-fluoranyl-2-methyl-aniline" "2-amino-4-fluorotoluene" "5-fluoro-o-toluidine" "2-methyl-5-fluoroaniline" "3-fluoro-6-methylaniline" "5-fluoro-2-methyl-phenylamine" "5-fluor-2-methylanilin" "2-amino-4-fluoro toluene" "5-fluoro-2-methyl-aniline" "5-fluoro-2-methylphenylamine" "5-fluoro-2-methylaniline 98%" "jlcdtnnlxumyfq-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -136540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     393.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-27150.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 4; } { group CH2_ring; count 6; } { group dCH_ring; count 7; } { group dC_ring; count 6; } { group COOH; count 4; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-but-2-enedioic acid;11-(1-methylpiperidin-4-ylidene)-5,6-dihydrobenzo[1,2]cyclohepta[3,4-b]pyridine" "azatadine maleate" "idulian" "zadine" "6,11-dihydro-11-(1-methyl-4-piperidylidene)5h-benzo(5,6)cyclohepta(1,2-b)pyridine dimaleate" "11h-benzo(5,6)cyclohepta(1,2-b)pyridine, 5,6-dihydro-11-(1-methyl-4-piperidylidene)-, dimaleate" "5h-benzo(5,6)cyclohepta(1,2-b)pyridine, 6,11-dihydro-11-(1-methyl-4-piperidinylidene)-, (z)-2-butenedioate (1:2)" "6,11-dihydro-11-(1-methyl-4-piperidylidene)-5h-benzo(5,6)cyclohepta(1,2-b)pyridine maleate (1:2)" "optimine (tn)" "azatadine maleate (usp)" "azatadine maleate [usan]" "azatadine maleate [usan:usp]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1251890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1359.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-723030.0
-    phase     gas;
 }

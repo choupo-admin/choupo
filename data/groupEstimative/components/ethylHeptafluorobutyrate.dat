@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 3; } { group F; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2,2,3,3,4,4,4-heptakis(fluoranyl)butanoate" "ethyl perfluorobutyrate" "heptafluorobutyric acid ethyl ester" "butanoic acid, heptafluoro-, ethyl ester" "ethyl perfluorobutanoate" "ethyl heptafluorobutanoate" "ethyl 2,2,3,3,4,4,4-heptafluorobutanoate" "butanoic acid, 2,2,3,3,4,4,4-heptafluoro-, ethyl ester" "perfluorobutyric acid ethyl ester" "2,2,3,3,4,4,4-heptafluorobutanoic acid ethyl ester" "heptafluorobutyric acid ethyl ester; perfluorobutyric acid ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1883470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1665880.0
-    phase     gas;
 }

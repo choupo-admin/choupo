@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloromethyl 2,2-dimethylpropanoate" "pivaloylmethyl chloride" "pivaloyloxymethyl chloride" "propanoic acid, 2,2-dimethyl-, chloromethyl ester" "pivalic acid chloromethyl ester" "pomc" "pom-cl" "chloromethyl trimethylacetate" "tpc-i029" "ggrhyqcxxylutl-uhfffaoysa-" "chloromethyl 2,2-dimethylpropionate" "chloromethyl-2,2-dimethylpropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -508940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-319820.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 36; } { group COO; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[bis(2-dodecanoyloxyethyl)amino]ethyl dodecanoate" "nitrilotriethane-2,1-diyl tridodecanoate" "dodecanoic acid, 1,1',1''-(nitrilotri-2,1-ethanediyl) ester" "lauric triethanolamine ester" "nitrilotriethylene trilaurate" "lauric triethanolaminetriester" "dodecanoic acid, nitrilotri-2,1-ethanediyl ester" "dodecanoic acid,1,1',1''-(nitrilotri-2,1-ethanediyl) ester" "dodecanoicacid, nitrilotri-2,1-ethanediyl ester (9ci); lauric acid, triester with2,2',2''-nitrilotriethanol (7ci,8ci); ethanol, 2,2',2''-nitrilotri-, trilaurate(8ci); lauric triethanolamine triester; nitrilotriethylene trilaurate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1794520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1961.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-517570.0
-    phase     gas;
 }

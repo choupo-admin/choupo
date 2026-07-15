@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 10; } { group O_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,4,4,6,6,8,8,10,10-decamethyl-1,3,5,7,9,2,4,6,8,10-pentaoxapentasilecane" "cyclopentasiloxane, decamethyl-" "dow corning 345 fluid" "cyclic dimethylsiloxane pentamer" "dimethylsiloxane pentamer" "union carbide 7158 silicone fluid" "cyclopentasiloxane, 2,2,4,4,6,6,8,8,10,10-decamethyl-" "cyclomethicone" "cyclopentamethicone" "pentacyclomethicone" "silicon plus " "a" "silbione v 5" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1387010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     913.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-876820.0
-    phase     gas;
 }

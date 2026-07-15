@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 25; } { group CH; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethyldodecan-1-amine;16-methylheptadecanoic acid" "n,n-dimethyldodecan-1-amine; 16-methylheptadecanoic acid" "16-methylheptadecanoic acid-n,n-dimethyldodecan-1-amine(1:1)" "dimethyl lauramine isostearate" "dimethyl laurylamine isostearate" "isooctadecanoic acid, compound with n,n-dimethyldodecylamine (1:1)" "16-methylheptadecanoic acid - n,n-dimethyldodecan-1-amine (1:1)" "isooctadecanoic acid, compound with n,n-dimethyldodecylamine (1:1);dimethyl lauramine isostearate;isooctadecanoic acid, compd. with n,n-dimethyl-1-dodecanamine (1:1);dimethyl lauramine isostearate, dimethyl laurylamine isostearate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1103450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1569.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121770.0
-    phase     gas;
 }

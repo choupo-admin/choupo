@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 2; } { group C; count 1; } { group F; count 3; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-4,4,4-tris(fluoranyl)-3-methyl-butanoic acid" "2-amino-4,4,4-trifluoro-3-methylbutanoic acid" "l-valine, 4,4,4-trifluoro-, (s)-" "valine,4,4,4-trifluoro-" "4,4,4-trifluoro-dl-valine" "dl-valine,4,4,4-trifluoro-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1070650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-872710.0
-    phase     gas;
 }

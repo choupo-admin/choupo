@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 2; } { group dCH; count 4; } { group COOH; count 2; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[3-[2,2-dimethyl-3-(4-oxidanyl-4-oxidanylidene-but-2-enoyl)oxy-propanoyl]oxy-2,2-dimethyl-propoxy]-4-oxidanylidene-but-2-enoic acid" "2-butenedioic acid (2z)-, 1-[3-[3-[[(2z)-3-carboxy-1-oxo-2-propen-1-yl]oxy]-2,2-dimethyl-1-oxopropoxy]-2,2-dimethylpropyl] ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1850290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1026.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1352130.0
-    phase     gas;
 }

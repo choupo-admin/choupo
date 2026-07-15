@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 11; } { group CH_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclododecanamine" "aminocyclododecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -239860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     764.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=68460.0
-    phase     gas;
 }

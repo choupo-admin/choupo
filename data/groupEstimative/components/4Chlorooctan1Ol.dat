@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 6; } { group CH; count 1; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-chloranyloctan-1-ol" "1-octanol, 4-chloro-" "linseed oil, soybean oil, pentaerythritol, ethylene glycol, glycerine, phthalic anhydride polymer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -381700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     542.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134710.0
-    phase     gas;
 }

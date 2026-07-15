@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-chloranyl-2-methyl-phenoxy)-n,n-dimethyl-propanamide" "2-(4-chloro-2-methylphenoxy)-n,n-dimethylpropanamide" "2-(4-chloro-2-methylphenoxy)-n,n-dimethylpropionamide" "propionamide, 2-(4-chloro-2-methylphenoxy)-n,n-dimethyl-" "2-(4-chloro-2-methylphenoxy)-n,n-dimethyl-propionamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -275710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     582.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=5800.0
-    phase     gas;
 }

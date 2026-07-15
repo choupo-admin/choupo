@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-dodecoxyethanol" "2-(dodecyloxy)ethanol" "laureth 4" "laureth 9" "aetoxisclerol" "atossisclerol" "ethoxysclerol" "aethoxysklerol" "laureth" "thesit" "cimagel" "ethanol, 2-(dodecyloxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -616740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     763.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-174820.0
-    phase     gas;
 }

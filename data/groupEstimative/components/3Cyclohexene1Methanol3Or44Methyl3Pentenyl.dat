@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(1s)-3-(4-methylpent-3-enyl)cyclohex-3-en-1-yl]methanol" "3-cyclohexene-1-methanol, 3(or 4)-(4-methyl-3-penten-1-yl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -255820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     628.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=38210.0
-    phase     gas;
 }

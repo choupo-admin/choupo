@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 13; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadecane, 4-methyl-" "4-methyl hexadecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -399490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     808.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=89820.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group Br; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylethanal" "2-bromoacetaldehyde" "acetaldehyde, bromo-" "bromo-acetaldehyde" "monobromoacetaldehyde" "2-bromo-acetaldehyde" "acetaldehyde, bromo-(6ci,7ci,8ci,9ci)" "2-bromoacetaldehyde;bromoacetaldehyde; monobromoacetaldehyde; a-bromoacetaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -143860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     303.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-119240.0
-    phase     gas;
 }

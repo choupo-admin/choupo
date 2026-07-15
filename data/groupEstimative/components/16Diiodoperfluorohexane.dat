@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 6; } { group F; count 12; } { group I; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,2,3,3,4,4,5,5,6,6-dodecakis(fluoranyl)-1,6-bis(iodanyl)hexane" "1,6-diiodododecafluorohexane" "dodecafluoro-1,6-diiodohexane" "1,6-diiododecafluorohexane" "perfluoro-1,6-diiodohexane" "1,1,2,2,3,3,4,4,5,5,6,6-dodecafluoro-1,6-diiodohexane" "hexane,1,1,2,2,3,3,4,4,5,5,6,6-dodecafluoro-1,6-diiodo-" "hexane,dodecafluoro-1,6-diiodo- (7ci,8ci);1,1,2,2,3,3,4,4,5,5,6,6-dodecafluoro-1,6-diiodohexane;1,6-diiodododecafluorohexane;1,6-diiodoperfluorohexane;dodecafluoro-1,6-diiodohexane;a,w-diiodoperfluorohexane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2419250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     648.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2204800.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(phenylmethyl)aniline" "n-phenylbenzylamine" "benzylaniline" "benzenemethanamine, n-phenyl-" "phenylbenzylamine" "benzylamine, n-phenyl-" "benzylphenylamine" "n-monobenzylaniline" "aniline, n-benzyl-" "traceless arene resin" "aniline, polymer-bound" "benzenamine, n-(phenylmethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   214880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     490.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=372790.0
-    phase     gas;
 }

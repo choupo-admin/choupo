@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 2; } { group dCH; count 2; } { group OdCH_al; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-enal;prop-2-enoic acid" "2-propenoic acid, polymer with 2-propenal" "prop-2-enal; prop-2-enoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -463780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     559.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-372870.0
-    phase     gas;
 }

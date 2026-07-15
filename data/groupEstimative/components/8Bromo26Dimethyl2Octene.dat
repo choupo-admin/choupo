@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-bromanyl-2,6-dimethyl-oct-2-ene" "8-bromo-2,6-dimethyloct-2-ene" "2-octene,8-bromo-2,6-dimethyl-, (6r)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -121250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116870.0
-    phase     gas;
 }

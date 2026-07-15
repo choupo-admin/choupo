@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 1; } { group I; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-iodanylpyridine" "2-iodo-pyridine" "pyridine, iodo-" "2- iodopyridine" "pyridine, 2-iodo-" "agn-pc-03d0w6" "n407" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   199660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     312.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=238800.0
-    phase     gas;
 }

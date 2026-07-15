@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4-tris(oxidanyl)benzaldehyde" "benzaldehyde, 2,3,4-trihydroxy-" "pyrogallol-4-carboxaldehyde" "2,4-trihydroxybenzaldehyde" "benzaldehyde,3,4-trihydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -406760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     482.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-299430.0
-    phase     gas;
 }

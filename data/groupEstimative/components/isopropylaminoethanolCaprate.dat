@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 10; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "decanoic acid;2-(propan-2-ylamino)ethanol" "decanoic acid, compound with 2-(isopropylamino)ethanol (1:1)" "decanoic acid; 2-(propan-2-ylamino)ethanol" "decanoic acid - 2-(propan-2-ylamino)ethanol (1:1)" "decanoic acid compd. with 2-[(1-methylethyl)amino]ethanol (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -918860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     983.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-423120.0
-    phase     gas;
 }

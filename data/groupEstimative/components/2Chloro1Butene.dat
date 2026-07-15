@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranylbut-1-ene" "2-chlorobutene" "1-butene, 2-chloro-" "2-chlorobut-1-ene" "2-chloro-1-butene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -25990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     336.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50160.0
-    phase     gas;
 }

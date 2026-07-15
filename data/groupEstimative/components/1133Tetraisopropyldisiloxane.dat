@@ -35,9 +35,8 @@ groups
     joback ( { group CH3; count 8; } { group CH; count 4; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[di(propan-2-yl)-$l^{3}-silanyl]oxy-di(propan-2-yl)silicon" "sym-tetra(isopropyl)disiloxane" "[di(propan-2-yl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -555970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     741.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-169360.0
-    phase     gas;
 }

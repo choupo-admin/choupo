@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 1; } { group dCH2; count 6; } { group dCH; count 5; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "buta-1,3-diene;ethenylbenzene;2-ethylhexyl prop-2-enoate;methyl 2-methylprop-2-enoate;prop-2-enenitrile" "buta-1,3-diene; 2-ethylhexyl prop-2-enoate; methyl 2-methylprop-2-enoate; prop-2-enenitrile; styrene" "2-propenoic acid, 2-methyl-, methyl ester, polymer with 1,3-butadiene, ethenylbenzene, 2-ethylhexyl 2-propenoate and 2-propenenitrile" "2-ethylhexyl acrylate, methyl methacrylate, 1,3-butadiene, styrene, acrylonitrile polymer;2-propenoic acid, 2-methyl-, methyl ester, polymer with 1,3-butadiene, ethenylbenzene, 2-ethylhexyl 2-propenoate and 2-propenenitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -625290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1755.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-68000.0
-    phase     gas;
 }

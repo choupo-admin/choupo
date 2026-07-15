@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group dCH2; count 1; } { group dCH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "non-8-enoic acid" "8-nonylenic acid" "c9:1n-1" "8-nonenoic acid;nonenoic acid (8-)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -453930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     555.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-231170.0
-    phase     gas;
 }

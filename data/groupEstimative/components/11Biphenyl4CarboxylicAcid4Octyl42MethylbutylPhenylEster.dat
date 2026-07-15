@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 9; } { group CH; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[4-(2-methylbutyl)phenyl] 4-(4-octylphenyl)benzoate" "(1,1'-biphenyl)-4-carboxylic acid, 4'-octyl-, 4-((2s)-2-methylbutyl)phenyl ester" "[1,1'-biphenyl]-4-carboxylic acid, 4'-octyl-, 4-(2-methylbutyl)phenyl ester" "[1,1'-biphenyl]-4-carboxylic acid, 4'-octyl-, 4-[(2s)-2-methylbutyl]phenyl ester" "(s)-4-(2-methylbutyl)phenyl 4'-octyl(1,1'-biphenyl)-4-carboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -351190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1106.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=214090.0
-    phase     gas;
 }

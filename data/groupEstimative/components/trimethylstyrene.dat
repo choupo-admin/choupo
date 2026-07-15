@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbut-2-en-2-ylbenzene" ".alpha.,.beta.,.beta.-trimethylstyrene" "alpha,beta,beta-trimethylstyrene" "(3-methylbut-2-en-2-yl)benzene" "(1,2-dimethyl-1-propenyl)benzene" "benzene, (1,2-dimethyl-1-propenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   63800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     463.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=217270.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group dCH_ring; count 15; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[methoxy(diphenyl)methyl]benzene" "trityl methyl ether" "ether, methyl trityl" "methoxytriphenylmethane" "methyl triphenylmethyl ether" "triphenylmethyl methyl ether" "benzene, 1,1',1''-(methoxymethylidyne)tris-" "(methoxydiphenylmethyl)benzene" "triphenylmethyl-containing compound, 14" "1,1',1''-(methoxymethylidyne)trisbenzene" "benzene,1',1''-(methoxymethylidyne)tris-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   112490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     588.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=352590.0
-    phase     gas;
 }

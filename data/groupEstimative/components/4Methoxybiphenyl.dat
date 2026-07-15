@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methoxy-4-phenyl-benzene" "4-phenylanisole" "anisole, p-phenyl-" "p-methoxybiphenyl" "1,1'-biphenyl, 4-methoxy-" "1-methoxy-4-phenylbenzene" "p-phenylanisole" "4-methoxy-1,1'-biphenyl" "4-methoxy-biphenyl" "biphenyl, 4-methoxy" "anisole,p-phenyl-" "1, 4-methoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   17720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     454.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=168770.0
-    phase     gas;
 }

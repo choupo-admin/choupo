@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 7; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3-ditert-butyl-5-methoxy-benzene" "benzene, 1,3-bis(1,1-dimethylethyl)-5-methoxy-" "benzene, 3,5-di-tert-butyl-1-methoxy-" "1,3-ditert-butyl-5-methoxybenzene" "1-methoxy-3,5-ditert-butyl-benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -289060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     555.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=69250.0
-    phase     gas;
 }

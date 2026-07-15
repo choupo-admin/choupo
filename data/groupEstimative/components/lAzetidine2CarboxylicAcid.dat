@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-azetidine-2-carboxylic acid" "(s)-azetidine-2-carboxylic acid" "(s)-(-)-2-azetidinecarboxylic acid" "azetidyl-2-carboxylic acid" "l-azetidine 2-carboxylic acid" "(s)-2-azetidinecarboxylic acid" "l-azetidine-2-carboxylicacid" "2-azetidinecarboxylic acid, l-" "azetidine-2-carboxylic acid, l-" "2-azetidinecarboxylic acid, (s)-" "azetidinecarboxylic acid" "l-trimethyleneimine-2-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -371710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     288.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-224750.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hept-1-yn-3-ol" "n-butyl ethynyl carbinol" "(3rs)-1-heptyn-3-ol;(rs)-1-heptyn-3-ol;3-hydroxy-1-heptyne;butylethynylcarbinol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -53420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     439.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91870.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-butyl-5-methyl-oxan-4-yl) ethanoate" "3-butyl-5-methyl-tetrahydro-2h-pyran-4-yl acetate" "2h-pyran-4-ol, 3-butyltetrahydro-5-methyl-, acetate" "3-butyltetrahydro-5-methyl-2h-pyran-4-yl acetate" "2h-pyran-4-ol, tetrahydro-3-butyl-5-methyl-, acetate" "tetrahydro-2h-pyran-4-ol, 3-butyl-5-methyl-, acetate" "3-o-acetyl-1,5-anhydro-2-butyl-2,4-dideoxy-4-methylpentitol" "acetic acid, 3-butyl-5-methyl-tetrahydro-2h-pyran-4-yl ester" "pentitol, 1,5-anhydro-2-butyl-2,4-dideoxy-4-methyl-, 3-acetate" "(3-butyl-5-methyloxan-4-yl) acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -726650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     508.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-337300.0
-    phase     gas;
 }

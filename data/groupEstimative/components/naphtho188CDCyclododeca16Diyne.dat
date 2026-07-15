@@ -33,9 +33,8 @@ groups
     joback ( { group tC; count 4; } { group CH2_ring; count 5; } { group dCH_ring; count 6; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphtho[1,8',8:c,d]cyclododeca-1,6-diyne" "7,8,14,15-tetradehydro-10,11,12,13-tetrahydro-9h-cyclododeca[de]naphthalene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   594590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     603.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=758760.0
-    phase     gas;
 }

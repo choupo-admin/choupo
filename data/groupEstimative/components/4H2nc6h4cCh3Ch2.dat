@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-prop-1-en-2-ylaniline" "benzenamine, 4-(1-methylethenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   145400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     436.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=273420.0
-    phase     gas;
 }

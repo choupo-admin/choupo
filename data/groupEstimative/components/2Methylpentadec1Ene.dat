@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 12; } { group dCH2; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-pentadecene, 2-methyl-" "2-methyl-1-pentadecene" "pentadecene, 2-methyl-" "2-methyl pentadecene-1" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     770.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=163130.0
-    phase     gas;
 }

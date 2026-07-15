@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2,2,2-tris(chloranyl)-1-phenyl-ethyl] ethanoate" "2,2,2-trichloro-1-phenylethyl acetate" "rosacetol" "trichloromethylphenylcarbinyl acetate" "alpha-(trichloromethyl)benzyl acetate" "trichlor phenyl methyl carbinyl acetate" ".alpha.-(trichloromethyl)benzyl acetate" "2,2,2-trichlor-1-phenylethylacetat" "benzenemethanol, .alpha.-(trichloromethyl)-, acetate" "trichloromethyl phenyl carbinyl acetate" "alpha-(trichloromethyl)benzyl alcohol acetate" "alpha-(trichloromethyl)benzenemethanol acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -391730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     542.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-200030.0
-    phase     gas;
 }

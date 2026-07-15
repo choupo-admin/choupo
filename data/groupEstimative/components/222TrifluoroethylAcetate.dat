@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(fluoranyl)ethyl ethanoate" "acetic acid, 2,2,2-trifluoroethyl ester" "2,2,2-trifluoroethyl ethanoate" "2-acetoxy-1,1,1-trifluoroethane" "acetic acid 2,2,2-trifluoroethyl ester" "1-(2,2,2-trifluoroethoxy)ethan-1-one" "ethanol,2,2,2-trifluoro-, acetate (6ci,7ci,8ci,9ci);2,2,2-trifluoroethyl acetate;trifluoroethyl acetate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1040250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     419.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-909160.0
-    phase     gas;
 }

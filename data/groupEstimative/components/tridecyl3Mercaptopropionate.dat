@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group COO; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tridecyl 3-sulfanylpropanoate" "propanoic acid, 3-mercapto-, tridecyl ester" "propanoic acid, 3-mercapto, tridecyl ester" "tridecyl3-mercaptopropionate" "propanoic acid,3-mercapto-, tridecyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -652370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     893.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-197140.0
-    phase     gas;
 }

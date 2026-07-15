@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylethyl propanoate" "phenethyl propionate" "propanoic acid, 2-phenylethyl ester" "propionic acid, phenethyl ester" "phenylethyl propionate" "2-phenethyl propionate" "benzylcarbinyl propionate" "phenethyl popanoate" "phenethyl alcohol, propionate" "ecopco acu" "japanese beetle bait" "2-phenethylpropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -351120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     529.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-156220.0
-    phase     gas;
 }

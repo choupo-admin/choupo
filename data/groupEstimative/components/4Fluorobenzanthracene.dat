@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 11; } { group dC_ring; count 7; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-fluoranylbenzo[a]anthracene" "4-fluorobenz(a)anthracene" "benz(a)anthracene, 4-fluoro-" "4'-fluoro-1,2-benzanthracene" "4-fluorobenzo[a]anthracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   164370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     437.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=309340.0
-    phase     gas;
 }

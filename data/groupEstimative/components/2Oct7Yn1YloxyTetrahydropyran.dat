@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oct-7-ynoxyoxane" "2h-pyran, tetrahydro-2-(7-octynyloxy)-" "2h-pyran, tetrahydro-2-(7-octyn-1-yloxy)-" "tetrahydro-2-(7-octynyloxy)-2h-pyran" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -229650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     561.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=114980.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphthalen-1-yl butanoate" ".alpha.-naphthyl butyrate" "butyric acid 1-naphthyl ester" "alpha-naphthyl butyrate" "butanoic acid, 1-naphthalenyl ester" "butanoic acid 1-naphthyl ester" "butyric acid, 1-naphthyl ester" "naphthyl butanoate" "alpha-naphthyl-n-butyrate" "a-naphthyl butyrate" ".alpha.-naphthyl-n-butyrate" "butanoic acid, naphthalenyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -233440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     531.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-33940.0
-    phase     gas;
 }

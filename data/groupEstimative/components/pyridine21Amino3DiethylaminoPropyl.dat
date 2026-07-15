@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group NH2; count 1; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n',n'-diethyl-1-pyridin-2-yl-propane-1,3-diamine" "1,3-propanediamine, n,n-diethyl-3-(2-pyridyl)-," "n',n'-diethyl-1-(2-pyridinyl)propane-1,3-diamine" "n',n'-diethyl-1-pyridin-2-ylpropane-1,3-diamine" "n3,n3-diethyl-1-(pyridin-2-yl)propane-1,3-diamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   74350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     587.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=414410.0
-    phase     gas;
 }

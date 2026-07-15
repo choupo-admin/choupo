@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[2-(dimethylamino)-1-oxidanyl-ethyl]benzene-1,2-diol" "n-methyladrenaline" "n-methylepinephrine" "alpha-(dimethylaminomethyl)protocatechuyl alcohol" "4-(2-(dimethylamino)-1-hydroxyethyl)pyrocatechol" ".alpha.-(dimethylaminomethyl)protocatechuyl alcohol" "alpha-(3,4-dihydroxyphenyl)-beta-dimethylaminoethanol" "protocatechuyl alcohol, alpha-((dimethylamino)methyl)-" "3,4-dihydroxy-alpha-(dimethylaminomethyl) benzyl alcohol" "3,4-dihydroxy-alpha-(dimethylaminomethyl)benzyl alcohol" "alpha-(3,4-dihydroxyphenyl)-alpha-hydroxy-beta-dimethylaminoethane" "benzyl alcohol, alpha-((dimethylamino)methyl)-3,4-dihydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -457800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     549.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-191990.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "isoquinolin-7-ol" "7-isoquinolinol" "7-hydroxy-isoquinoline" "7-hydroxy-isoquinoline;7-isoquinolinol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   53990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     330.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166390.0
-    phase     gas;
 }

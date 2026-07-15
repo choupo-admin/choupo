@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group O_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,4,4,6,6-hexamethyl-1,3,5,2,4,6-trioxatrisilinane" "cyclotrisiloxane, hexamethyl-" "dimethylsiloxane cyclic trimer" "sdk 10" "cyclotrisiloxane, 2,2,4,4,6,6-hexamethyl-" "m556" "cyclotrisiloxane,hexamethyl- (6ci,8ci,9ci);dimethylsiloxane cyclic trimer;ls 8120;sdk 10;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -804890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     567.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-504540.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group C; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 2; } { group O; count 1; } { group COOH; count 2; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butanedioic acid;n,n-dimethyl-2-(1-phenyl-1-pyridin-2-yl-ethoxy)ethanamine" "decapryn" "unisom" "evigoa d" "a-h injection" "doxylamine succinate (1:1)" "alsadorm" "gittalun" "mereprine" "sedaplus" "doxy-sleep-aid" "hoggar n" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -856520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     976.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-356150.0
-    phase     gas;
 }

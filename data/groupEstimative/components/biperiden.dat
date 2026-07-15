@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 3; } { group dCH_ring; count 7; } { group dC_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(5-bicyclo[2.2.1]hept-2-enyl)-1-phenyl-3-piperidin-1-yl-propan-1-ol" "biperidene" "akineton" "biperideno" "biperidenum" "biperidine" "biperidene [inn-french]" "biperidenum [inn-latin]" "beperiden" "akineton (tn)" "biperiden (jan/usp/inn)" "biperidene hydrochloride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -75990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     647.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=391060.0
-    phase     gas;
 }

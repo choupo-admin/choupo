@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 18; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triphenylbenzene" "m-terphenyl, 5'-phenyl-" "s-triphenylbenzene" "5'-phenyl-m-terphenyl" "1,1':3',1''-terphenyl, 5'-phenyl-" "5'-phenyl-1,1':3',1''-terphenyl" "benzene, 1,3,5-triphenyl-" "1,1'-biphenyl, 3,5-diphenyl-" "1,5-triphenylbenzene" "1, 3,5-diphenyl-" "benzene,3,5-triphenyl-" "1,3,5-trisphenylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   384490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     652.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=581580.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 9; } { group dC_ring; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylbenzoic acid" "o-phenylbenzoic acid" "biphenyl-2-carboxylic acid" "[1,1'-biphenyl]-2-carboxylic acid" "biphenylcarboxylic acid" "(1,1'-biphenyl)carboxylic acid" "2-phenyl-menzoic acid" "diphenyl-2-carboxylic acid" "2-carboxyl diphenyl" "[1,1'-biphenyl]carboxylicacid" "ilysakhoybpspc-uhfffaoysa-" "1,1'-biphenyl-2-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -200330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     496.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-70140.0
-    phase     gas;
 }

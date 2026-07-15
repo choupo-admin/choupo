@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(2-hydroxyethyl)-2-oxidanyl-propanamide" "lactamide mea" "propanamide, 2-hydroxy-n-(2-hydroxyethyl)-" "2-hydroxy-n-(2-hydroxyethyl)propanamide" "2-lactamidoethanol" "lactamide, n-(2-hydroxyethyl)-" "n-2-hydroxyethyllactamide" "lactic acid monoethanolamide" "n-beta-hydroxyethyllactamide" "n-(beta-hydroxyethyl)lactamide" "n-hydroxyaethyllactamid [german]" "monoethanolamine lactic acid amide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -515380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     510.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-324390.0
-    phase     gas;
 }

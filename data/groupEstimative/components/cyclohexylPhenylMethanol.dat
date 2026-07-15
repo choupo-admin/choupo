@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohexylphenylmethanol" "methanol, cyclohexylphenyl-" "cyclohexanemethanol, alpha-phenyl-" "cyclohexylphenylmethan-1-ol" "ar-cyclohexylbenzenemethanol" "benzyl alcohol, cyclohexyl-" "cyclohexylhydroxymethylbenzene" "benzenemethanol, ar-cyclohexyl-" "benzenemethanol, alpha-cyclohexyl-" "benzenemethanol, .alpha.-cyclohexyl-" "benzenemethanol, alpha-cyclohexyl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -178310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     566.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=56180.0
-    phase     gas;
 }

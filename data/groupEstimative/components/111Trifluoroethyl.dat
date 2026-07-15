@@ -30,9 +30,8 @@ groups
     joback ( { group C; count 1; } { group dCH2; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1-tris(fluoranyl)ethane" "2,2,2-trifluoroethyl radical" "1,1,1-trifluoroeth-2-yl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -614870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     288.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-567900.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group NH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4,7-triazonane" "octahydro-1h-1,4,7-triazonine" "triethylenetriamine" "tacn" "[9]anen3" "eyoo>>ui(c)ey degrees ." "wt666" "1h-1,4,7-triazonine, octahydro-" "4730-54-5 1,4,7-triazacyclononane" "octahydro-1h-1,4,7-triazonine; triethylenetriamine" "degrees eca-1h-1,4,7-eya(1/4)micro feminineathorn" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   2440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=258630.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1,3-dimethyl-4-phenyl-azepan-4-yl) propanoate" "(1,3-dimethyl-4-phenylazepan-4-yl) propanoate" "dimepheprimine" "proeptazina" "proheptazina" "proheptazinum" "proeptazina [dcit]" "proheptazine [inn:ban]" "proheptazinum [inn-latin]" "1,3-dimethyl-4-phenyl-4-propionyloxyazacycloheptane" "azepin-4-ol, hexahydro-1,3-dimethyl-4-phenyl-, propionate" "hexahydro-1,3-dimethyl-4-phenylazepin-4-ol propionate ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -358210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     775.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=16330.0
-    phase     gas;
 }

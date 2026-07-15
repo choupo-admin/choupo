@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 1; } { group dCH; count 1; } { group dC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dihydrolinalool" "3,7-dimethyl-6-octen-3-ol" "6-octen-3-ol, 3,7-dimethyl-" "1,2-dihydrolinalool" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -303280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-28990.0
-    phase     gas;
 }

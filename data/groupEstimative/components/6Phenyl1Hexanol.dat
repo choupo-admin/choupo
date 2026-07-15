@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-phenylhexan-1-ol" "benzenehexanol" "6-phenyl-n-hexanol" "6-phenylhexanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -206710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     567.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=25750.0
-    phase     gas;
 }

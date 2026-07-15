@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group C; count 1; } { group I; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3-bis(iodanyl)-2,2-bis(iodanylmethyl)propane" "methane, tetrakis(iodomethyl)-" "pentaerythritol tetraiodide" "pentaerythrityl iodide" "pentaerythryl tetraiodide" "1,3-diiodo-2,2-bis(iodomethyl)propane" "tetrakis(iodomethyl)methane" "propane, 1,3-diiodo-2,2-bis(iodomethyl)-" "propane, 2,2-bis(iodomethyl)-1,3-diiodo-" "propane,2-bis(iodomethyl)-1,3-diiodo-" "propane,3-diiodo-2,2-bis(iodomethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   152200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     534.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=226540.0
-    phase     gas;
 }

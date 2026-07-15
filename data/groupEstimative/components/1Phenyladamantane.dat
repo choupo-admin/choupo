@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(adamantyl-1)benzene" "adamantanylbenzene" "tricyclo[3.3.1.1(3,7)]decane, 1-phenyl-" "adamant-1-ylbenzene" "ambap780-68-7" "k378" "1-phenyltricyclo[3.3.1.1~3,7~]decane" "upcmld0enat0501-8663:001" "tricyclo[3.3.1.13,7]decane,phenyl- (9ci)" "adamantane,phenyl- (6ci,7ci);phenyladamantane;phenyltricyclo[3.3.1.13,7]decane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   70100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=353200.0
-    phase     gas;
 }

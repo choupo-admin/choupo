@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group CH; count 1; } { group Cl; count 3; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3-tris(chloromethyloxy)propane" "glycerol(tri(chloromethyl))ether" "tris-1,2,3-(chloromethoxy)propane" "1,2,3-tris[(chloromethyl)oxy]propane" "propane, 1,2,3-tris(chloromethoxy)-" "propane,1,2,3-tris(chloromethoxy)-" "1,2,3-tris(chloromethoxy)propane;glycerin tris(chloromethyl) ether; glycerol tri(chloromethyl) ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -616330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     514.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-353590.0
-    phase     gas;
 }

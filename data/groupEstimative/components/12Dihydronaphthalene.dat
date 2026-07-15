@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dialin" "1,2-dialin" "diolin" "delta1-dialin" "naphthalene, 1,2-dihydro-" "dialin (van)" "dihydronaphthalene" "1,2-dihydro-naphthalene" "naphthalene, dihydro-" "delta(1)-dialin" " currency1-dialin" "naphthalene,2-dihydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   120090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     367.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=222420.0
-    phase     gas;
 }

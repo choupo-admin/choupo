@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloropropan-1-ol" "1-chloro-3-hydroxypropane" "1-chloro-3-propanol" "1-propanol, 3-chloro-" "3-chloro-1-hydroxypropane" "3-chloropropanol" "3-chloropropyl alcohol" "trimethylene chlorohydrin" "3-chloro-propan-1-ol" "3-chloro-l-propanol" "3-chlorpropan-1-ol" "3-chloropropanol-1" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -273220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     357.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-174370.0
-    phase     gas;
 }

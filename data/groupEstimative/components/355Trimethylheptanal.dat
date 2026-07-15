@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3r)-3,5,5-trimethylheptanal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -349340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-65800.0
-    phase     gas;
 }

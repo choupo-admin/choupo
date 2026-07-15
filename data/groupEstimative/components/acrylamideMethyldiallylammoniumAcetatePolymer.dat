@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 3; } { group dCH; count 3; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethanoic acid;n-methyl-n-prop-2-enyl-prop-2-en-1-amine;prop-2-enamide" "2-propenamide, polymer with n-methyl-n-2-propenyl-2-propen-1-amine acetate" "2-propenamide, polymer with n-methyl-n-2-propen-1-yl-2-propen-1-amine acetate (1:1)" "acrylamide, methyldiallylammonium acetate copolymer" "acrylamide, methyldiallylammonium, acetate polymer" "acetic acid; n-methyl-n-prop-2-enylprop-2-en-1-amine; prop-2-enamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -499490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     972.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-191440.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 5; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-iodanyl-1,2-dihydroacenaphthylene" "5-iodoacenaphthene" "acenaphthylene, 1,2-dihydro-5-iodo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   278350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     377.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=379010.0
-    phase     gas;
 }

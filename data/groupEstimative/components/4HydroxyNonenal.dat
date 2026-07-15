@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group dCH; count 2; } { group OH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-oxidanylnon-2-enal" "2-nonenal, 4-hydroxy-, (2e,4r)-" "nonenal, 4-hydroxy-" "agn-pc-00iqpo" "(+/-)-4-hydroxynon-2-enal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -354960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     560.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-133660.0
-    phase     gas;
 }

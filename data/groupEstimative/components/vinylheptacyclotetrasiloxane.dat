@@ -35,9 +35,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group O_ring; count 28; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethenyl-1,3,5,7,2$l^{3},4$l^{2},6$l^{2},8$l^{2}-tetraoxatetrasilocane;1,3,5,7,2$l^{2},4$l^{2},6$l^{2},8$l^{2}-tetraoxatetrasilocane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -3771850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     -176.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2643980.0
-    phase     gas;
 }

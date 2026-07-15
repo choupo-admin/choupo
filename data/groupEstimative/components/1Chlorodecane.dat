@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyldecane" "decyl chloride" "decane, 1-chloro-" "n-decyl chloride" "decane, chloro-" "chlorodecane" "decyl chloride (mixed isomers)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -265470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     578.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=21390.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-bis(fluoranyl)-1-methoxy-benzene" "2,4-difluoro-1-methoxybenzene" "2,4-difluoroanilsole" "2,4-difluoromethoxy benzene" "2,4-difluoro anisole" "2,4-difluoroanisole 98%" "2,4-difluoromethoxybenzene" "2,4-difluoro-1-methoxybenzene; 2,4-difluoroanisole" "anisole,2,4-difluoro- (8ci);2,4-difluoroanisol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -498660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     384.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-393410.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(1r,5r)-2-methyl-5-prop-1-en-2-yl-cyclohex-2-en-1-yl] 2-phenylethanoate" "[(1r,5r)-2-methyl-5-prop-1-en-2-ylcyclohex-2-en-1-yl] 2-phenylacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -299670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     676.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=19080.0
-    phase     gas;
 }

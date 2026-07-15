@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group O_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(3,6-dimethylmorpholin-2-yl)benzene-1,2-diol" "pyrocatechol, 4-(3,6-dimethyl-2-morpholinyl)-" "1,2-benzenediol,4-(3,6-dimethyl-2-morpholinyl)-" "pyrocatechol,4-(3,6-dimethyl-2-morpholinyl)- (6ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -489650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     397.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-136050.0
-    phase     gas;
 }

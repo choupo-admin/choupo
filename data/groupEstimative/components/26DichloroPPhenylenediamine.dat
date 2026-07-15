@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-bis(chloranyl)benzene-1,4-diamine" "fast brown rr salt" "2,6-dichlorobenzene-1,4-diamine" "2,6-dichloro-1,4-phenylenediamine" "daito brown salt rr" "1,4-benzenediamine, 2,6-dichloro-" "2,6-dichloro-1,4-benzenediamine" "1,4-diamino-2,6-dichlorobenzene" "2,5-diamino-1,3-dichlorobenzene" "p-phenylenediamine, 2,6-dichloro-" "2,6-dichloro-para-phenylenediamine" "3,5-dichloro-1,4-phenylenediamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   71050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     434.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=192200.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 1; } { group COO; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-methylnonyl 3-sulfanylpropanoate" "propanoic acid, 3-mercapto-, isodecyl ester" "isodecyl beta-mercaptopropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -595730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     766.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-224840.0
-    phase     gas;
 }

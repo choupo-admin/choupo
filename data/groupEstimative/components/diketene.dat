@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group CH2_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methylideneoxetan-2-one" "2-oxetanone, 4-methylene-" "4-methylene-2-oxetanone" "ethenone, dimer" "ketene dimer" "4-methyleneoxetan-2-one" "ketene, dimer" "but-3-en-3-olide" "3-buteno-beta-lactone" "vinylaceto-beta-lactone" "ethenone, dimer (van)" "3-butenoic acid, 3-hydroxy-, beta-lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -259630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     269.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-193930.0
-    phase     gas;
 }

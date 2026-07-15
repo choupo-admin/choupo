@@ -30,9 +30,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dO_oth; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-$l^{1}-oxidanylbutane" "butoxy" "butyloxy" "n-butyloxy" "s-butoxy" "butyloxidanyl" "n-c4h9o" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -317690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     371.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-215650.0
-    phase     gas;
 }

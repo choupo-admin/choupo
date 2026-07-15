@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bicyclo[4.4.1]undeca-2,4,7,9-tetraene" "bicyclo(4.4.1)undeca-1,3,5,8-tetralene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   75550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     354.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=222580.0
-    phase     gas;
 }

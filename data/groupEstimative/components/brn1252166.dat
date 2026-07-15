@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group O; count 2; } { group O_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(7,8-dimethoxy-2h-chromen-3-yl)ethanone" "7,8-dimethoxy-2h-1-benzopyran-3-yl methyl ketone" "ketone, 7,8-dimethoxy-2h-1-benzopyran-3-yl methyl" "ethanone, 1-(7,8-dimethoxy-2h-1-benzopyran-3-yl)-" "ethanone, 1-(7,8-dimethoxy-2h-1-benzopyran-3-yl)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -485260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     463.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-206250.0
-    phase     gas;
 }

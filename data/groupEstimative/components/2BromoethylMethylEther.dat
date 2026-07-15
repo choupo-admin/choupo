@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-2-methoxy-ethane" "1-bromo-2-methoxyethane" "2-methoxyethyl bromide" "ethane, 1-bromo-2-methoxy-" "1-bromo-2-methoxy-ethane" "2-bromoethoxymethane" "2-bromoethylmethyl ether" "2-bromoethylmethyl-ether" "1-methoxy-2-bromoethane" "2-bromo-1-methoxyethane" "2-bromo ethyl methyl ether" "ether, 2-bromoethyl methyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -211140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     335.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-116300.0
-    phase     gas;
 }

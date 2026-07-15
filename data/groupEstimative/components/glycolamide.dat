@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group OH; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylethanamide" "2-hydroxyacetamide" "glycollamide" "2-hydroxyacetimidic acid" "glycolamide (8ci)" "alpha-hydroxyacetamide" "acetamide, 2-hydroxy-" "acetamide, 2-hydroxy-(9ci)" "acetamide, 2-hydroxy- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -315630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     363.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-233330.0
-    phase     gas;
 }

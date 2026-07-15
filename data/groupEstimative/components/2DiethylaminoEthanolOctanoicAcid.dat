@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 10; } { group OH; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octanoic acid diethylethanolamine salt" "octanoic acid, compd. with 2-(diethylamino)ethanol (1:1)" "2-(diethylamino)ethanol; octanoic acid" "octanoic acid - 2-(diethylamino)ethanol (1:1)" "octanoic acid, compound with 2-(diethylamino)ethanol (1:1)" "octanoic acid compd. with 2-(diethylamino)ethanol (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -878880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     929.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-407710.0
-    phase     gas;
 }

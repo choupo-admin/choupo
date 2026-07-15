@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-bromanylhexoxybenzene" "6-bromohexyl phenyl ether" "benzene, ((6-bromohexyl)oxy)-" "benzene, [(6-bromohexyl)oxy]-" "6-bromohexoxybenzene" "1-bromo-6-phenoxyhexane" "benzene,[(6-bromohexyl)oxy]-" "aurora ka-3137;1-bromo-6-phenoxyhexane;6-phenoxyhexyl bromide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -160370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     579.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=71890.0
-    phase     gas;
 }

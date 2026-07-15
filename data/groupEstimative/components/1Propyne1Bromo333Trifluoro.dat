@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group tC; count 2; } { group F; count 3; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-3,3,3-tris(fluoranyl)prop-1-yne" "1-bromo-3,3,3-trifluoroprop-1-yne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -403700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     351.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-390090.0
-    phase     gas;
 }

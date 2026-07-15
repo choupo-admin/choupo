@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propane, 1-methoxy-" "methyl propyl ether" "metopryl" "neothyl" "methyl n-propyl ether" "alpha-methoxy propane" "ether, methyl propyl" "methoxypropane" "neo-thyl" "propane, 1-methoxy" "propane, 1-methoxy- (9ci)" "ether,methyl propyl (6ci,7ci,8ci); 1-methoxypropane; methyl n-propyl ether; methylpropyl ether; metopryl; neothyl; propyl methyl ether; a-methoxypropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -258110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     323.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-122200.0
-    phase     gas;
 }

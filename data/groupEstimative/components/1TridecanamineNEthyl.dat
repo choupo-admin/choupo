@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 13; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-ethyltridecan-1-amine" "ethyltridecylamine" "agn-pc-02k8v5" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -299460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     780.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=164810.0
-    phase     gas;
 }

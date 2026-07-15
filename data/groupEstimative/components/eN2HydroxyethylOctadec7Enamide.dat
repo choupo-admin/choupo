@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 16; } { group dCH; count 2; } { group OH; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(c16 and c18) unsaturated alkylcarboxylic acid amide monoethanol" "amides, c16 and c18-unsatd, n-(hydroxyethyl)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -550250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1046.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=21390.0
-    phase     gas;
 }

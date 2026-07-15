@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dC_ring; count 6; } { group F; count 8; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2,3,4,5,6-pentakis(fluoranyl)phenyl] 2,2,2-tris(fluoranyl)ethanoate" "trifluoroacetic acid pentafluorophenyl ester" "perfluorophenyl 2,2,2-trifluoroacetate" "(2,3,4,5,6-pentafluorophenyl) 2,2,2-trifluoroacetate" "pentafluorophenyl 2,2,2-trifluoroacetate" "2,2,2-trifluoroacetic acid (2,3,4,5,6-pentafluorophenyl) ester" "acetic acid,2,2,2-trifluoro-, 2,3,4,5,6-pentafluorophenyl ester" "aceticacid, trifluoro-, pentafluorophenyl ester (7ci,8ci,9ci);pentafluorophenyltrifluoroacetate;trifluoroacetic acid pentafluorophenyl ester;(2,3,4,5,6-pentafluorophenyl) 2,2,2-trifluoroacetate;2-[n,n-bis(trifluoromethylsulphonyl)amino]-5-chloropyridine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1924180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     596.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1785270.0
-    phase     gas;
 }

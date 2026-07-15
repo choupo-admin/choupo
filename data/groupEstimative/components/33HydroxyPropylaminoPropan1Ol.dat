@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group OH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(3-oxidanylpropylamino)propan-1-ol" "3,3'-azanediylbis(propan-1-ol)" "3-(3-hydroxypropylamino)propan-1-ol" "dipropanolamine" "tallow di(hydroxypropyl)amine" "propanol, iminobis-" "propanol, iminobis-, n-tallow alkyl derivs." "3,3'-iminodi-1-propanol" "3-(3-hydroxypropylamino)-1-propanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -418160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     532.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184610.0
-    phase     gas;
 }

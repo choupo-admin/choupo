@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-chloranyl-6-fluoranyl-phenyl)ethanamine" "benzeneethanamine,2-chloro-6-fluoro-" "2-(2-chloro-6-fluorophenyl)ethanamine" "2-(6-chloro-2-fluorophenyl)ethylamine" "2-(2-chloro-6-fluorophenyl)ethylamine" "2-(2-chloro-6-fluoro-phenyl)-ethylamine" "2-(2-chloro-6-fluorophenyl)ethanamine;2-chloro-6-fluorophenethylamine;2-chloro-6-fluorophenethylamine 99%;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -172920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     465.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-30660.0
-    phase     gas;
 }

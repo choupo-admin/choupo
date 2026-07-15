@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group COO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-methylsulfanylethanoate" "ethyl 2-(methylthio)-acetate" "ethyl 2-(methylthio)acetate" "ethyl 2-methylsulfanylacetate" "ethyl alpha-(methylthio)acetate" "ethyl .alpha.(methylthio)acetate" "(methylthio)acetic acid ethyl ester" "acetic acid, (methylthio)-, ethyl ester" "ethyl 2-methylthioacetate" "ethyl ((methylthio)acetate" "ethyl 2-(methylsulfanyl)acetate" "mdiakihkbbnyhf-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -421940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     463.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-286030.0
-    phase     gas;
 }

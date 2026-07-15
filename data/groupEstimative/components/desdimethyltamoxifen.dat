@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dC; count 2; } { group dCH_ring; count 14; } { group dC_ring; count 4; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[4-[(z)-1,2-diphenylbut-1-enyl]phenoxy]ethanamine" "n,n-didesmethyltamoxifen" "n,n-didesmethyl-tamoxifen" "ethanamine, 2-(4-(1,2-diphenyl-1-butenyl)phenoxy)-, (z)-" "desmethyl tamoxifen" "di-n-demethyltamoxifen" "n,n-didemethyltamoxifen" "n-des(dimethyl)tamoxifen" "n,n-didesmethyl tamoxifen" "2-[4-(1,2-diphenyl-but-1-enyl)-phenoxy]-ethylamine" "2-[4-[(1z)-1,2-diphenyl-1-butenyl]phenoxy]ethanamine" "(z)-1-[4-(2-aminoethoxy)phenyl]-1,2-diphenylbut-1-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   158640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     813.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=503370.0
-    phase     gas;
 }

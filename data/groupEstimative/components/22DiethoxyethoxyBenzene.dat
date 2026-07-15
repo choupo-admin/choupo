@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-diethoxyethoxybenzene" "phenoxyacetaldehyde diethyl acetal" "benzene, (2,2-diethoxyethoxy)-" "benzene,2-diethoxyethoxy)-" "1,1-diethoxy-2-phenoxyethane" "phenoxyacetaldehyde diethylacetal" "1-(2,2-diethoxyethoxy)benzene" "benzene,(2,2-diethoxyethoxy)-" "(2,2-diethoxy-ethoxy)-benzene" "phenoxy-acetaldehyde, diethyl acetal" "acetaldehyde, phenoxy-, diethyl acetal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -456420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     541.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-154870.0
-    phase     gas;
 }

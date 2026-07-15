@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group dCH; count 2; } { group tCH; count 1; } { group tC; count 1; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-1-chloranyl-3-ethyl-pent-1-en-4-yn-3-ol" "ethchlorovynol" "placidyl" "alvinol" "ethchlorvinol" "etchlorvinolo" "ethchlorvinyl" "ethclorvynol" "ethochlorvynol" "ethychlorvynol" "normonson" "normosan" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   44590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     437.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=165440.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group tC; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "13-chloranyltridec-5-yne" "13-chlorotridec-5-yne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -55090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     667.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=249450.0
-    phase     gas;
 }

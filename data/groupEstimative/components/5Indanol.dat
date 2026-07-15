@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-dihydro-1h-inden-5-ol" "5-hydroxyindan" "5-hydroxyhydrindene" "indan-5-ol" "5-hydroxyindane" "1h-inden-5-ol, 2,3-dihydro-" "5-indano" "1h-inden-5-ol,3-dihydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -88200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     372.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=41520.0
-    phase     gas;
 }

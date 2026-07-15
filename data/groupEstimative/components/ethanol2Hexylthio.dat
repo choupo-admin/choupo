@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group OH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-hexylsulfanylethanol" "2-hydroxyethylhexyl sulfide" "2-hexylthioethan-1-ol" "2-(hexylthio)ethanol" "2-(hexylsulfanyl)ethan-1-ol" "t301" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -318810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     579.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-87220.0
-    phase     gas;
 }

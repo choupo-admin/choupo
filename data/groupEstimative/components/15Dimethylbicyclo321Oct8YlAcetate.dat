@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group C_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1,5-dimethyl-8-bicyclo[3.2.1]octanyl) ethanoate" "1,5-dimethylbicyclo[3.2.1]oct-8-yl acetate" "(1,5-dimethyl-8-bicyclo[3.2.1]octanyl) acetate" "bicyclo(3.2.1)octan-8-ol, 1,5-dimethyl-, acetate" "bicyclo[3.2.1]octan-8-ol, 1,5-dimethyl-, acetate" "bicyclo(3.2.1)octan-8-ol, 1,5-dimethyl-, 8-acetate" "bicyclo[3.2.1]octan-8-ol, 1,5-dimethyl-, 8-acetate" "bicyclo[3.2.1]octan-8-ol,1,5-dimethyl-, 8-acetate" "bicyclo[3.2.1]octan-8-ol,1,5-dimethyl-, acetate (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -464870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     630.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-181600.0
-    phase     gas;
 }

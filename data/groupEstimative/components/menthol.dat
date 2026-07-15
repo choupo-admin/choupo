@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methyl-2-propan-2-yl-cyclohexan-1-ol" "dl-menthol" "2-isopropyl-5-methylcyclohexanol" "menthyl alcohol" "cyclohexanol, 5-methyl-2-(1-methylethyl)-" "(+)-neo-menthol" "hexahydrothymol" "d-neomenthol" "d-p-menthan-3-ol" "menthol, (+)-neo-" "racementhol" "menthol, (.+/-.)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -393600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     471.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96910.0
-    phase     gas;
 }

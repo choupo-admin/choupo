@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 8; } { group Cl; count 4; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[2-[3,5-bis(chloranyl)-4-oxidanyl-phenyl]propan-2-yl]-2,6-bis(chloranyl)phenol" "tetrachlorobisphenol a" "tetrachlordian" "4,4'-propane-2,2-diylbis(2,6-dichlorophenol)" "2,2',6,6'-tetrachlorobisphenol a" "4,4'-isopropylidenebis(2,6-dichlorophenol)" "2,2-bis(3,5-dichloro-4-hydroxyphenyl)propane" "2,2-bis(4-hydroxy-3,5-dichlorophenyl)propane" "3,3',5,5'-tetrachlorobisphenol a" "4,4'-(1-methylethylidene)bis(2,6-dichlorophenol)" "3,5,3',5'-tetrachlorobisphenol a" "phenol, 4,4'-(1-methylethylidene)bis[2,6-dichloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -352080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     650.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-92400.0
-    phase     gas;
 }

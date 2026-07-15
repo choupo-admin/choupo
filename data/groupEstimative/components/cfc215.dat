@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 3; } { group F; count 5; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1-tris(chloranyl)-2,2,3,3,3-pentakis(fluoranyl)propane" "pentafluorotrichloropropane" "1,1,1-trichloro-2,2,3,3,3-pentafluoropropane" "propane, 1,1,1-trichloro-2,2,3,3,3-pentafluoro-" "2,2,3,3,3-pentafluoro-1,1,1-trichloropropane" "propane, 1,1,1-trichloropentafluoro- (7ci,8ci)" "propane, 2,2,3,3,3-pentafluoro-1,1,1-trichloro-" "trichloropentafluoropropane" "propane, trichloropentafluoro-" "propane,1,1,1-trichloro-2,2,3,3,3-pentafluoro-" "2,2,3,3,3-pentafluoro-1,1,1-trichloropropane;1,1,1-trichloro-2,2,3,3,3-pentafluoropropane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1159270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     415.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1026940.0
-    phase     gas;
 }

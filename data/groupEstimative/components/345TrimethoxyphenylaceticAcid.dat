@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group O; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3,4,5-trimethoxyphenyl)ethanoic acid" "(3,4,5-trimethoxyphenyl)acetic acid" "benzeneacetic acid, 3,4,5-trimethoxy-" "2-(3,4,5-trimethoxyphenyl)acetic acid" "benzeneacetic acid,4,5-trimethoxy-" "r353" "benzeneacetic acid, 3,4,5-trimethoxy- (9ci)" "brd-k94158209-001-01-5" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -815180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-533650.0
-    phase     gas;
 }

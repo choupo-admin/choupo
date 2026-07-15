@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group OH_phenol; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-fluoranyl-2-oxidanyl-phenyl)ethanone" "1-(4-fluoro-2-hydroxyphenyl)ethanone" "4-fluoro-2-hydroxyacetophenone" "1-(4-fluoro-2-hydroxyphenyl)ethan-1-one" "1-acetyl-4-fluoro-2-hydroxybenzene" "am758" "ethanone,1-(4-fluoro-2-hydroxyphenyl)-" "2'-hydroxy-4'-fluoro acetophenone" "ethanone, 1-(4-fluoro-2-hydroxyphenyl)-" "acetophenone,4'-fluoro-2'-hydroxy- (6ci,8ci);1-(2-hydroxy-4-fluorophenyl)ethanone;2-acetyl-5-fluorophenol;2-hydroxy-4-fluoroacetophenone;4-fluoro-2-hydroxyacetophenone;2 , 3-difluoropyridine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -469390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     439.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-359090.0
-    phase     gas;
 }

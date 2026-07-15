@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group CH_ring; count 3; } { group OH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s,4r,5r)-5-[(1s)-1,2-bis(oxidanyl)ethyl]-3,4-bis(oxidanyl)oxolan-2-one" "l-gulono-1,4-lactone" "gamma-gulonolactone" "l-gulonic acid gamma-lactone" "l-gulono-gamma-lactone" "l-(+)-gulono-1,4-lactone" "(3s,4r,5r)-5-((s)-1,2-dihydroxyethyl)-3,4-dihydroxydihydrofuran-2(3h)-one" "reduced ascorbic acid" "gulonic acid-1,4-lactone" "reduced ascorbate" "l-gulonic gamma-lactone" "l-gulono-1-4-lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1066530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     460.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-815120.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(cyclohexen-1-yl)ethanone" "ethanone, 1-(1-cyclohexen-1-yl)-" "ketone, 1-cyclohexen-1-yl methyl" "1-(cyclohex-1-en-1-yl)ethanone" "methyl 1-cyclohexenyl ketone" "1-acetylcyclohexene" "cyclohex-1-enylmethylketone" "1-(1-cyclohexenyl)ethanone" "1-(1-cyclohexenyl)-ethanone" "ethanone, 1-(cyclohexenyl)-" "1-cyclohex-1-en-1-ylethanone" "1-cyclohexen-1-yl methyl ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -200060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-59950.0
-    phase     gas;
 }

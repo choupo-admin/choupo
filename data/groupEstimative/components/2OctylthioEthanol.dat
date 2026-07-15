@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group OH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-octylsulfanylethanol" "ethanol, 2-(octylthio)-" "2-hydroxyethyl octyl sulfide" "r-874 phillips" "2-hydroxyethyl n-octyl sulfide" "2-hydroxyethyl-n-octyl sulfide" "2-octylthioethan-1-ol" "2-(oktylthio)ethanol" "2-(octylsulfanyl)ethanol" "2-hydroxyethyl octyl sulphide" "2-(hydroxyethyl)n-octyl sulfide" "t34" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -360090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     657.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-70380.0
-    phase     gas;
 }

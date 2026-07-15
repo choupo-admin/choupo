@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylprop-2-enoic acid" "2-propenoic acid, 2-methyl-" "2-methylacrylic acid" "2-methylpropenoic acid" "2-methyl-2-propenoic acid" "methylacrylic acid" "alpha-methylacrylic acid" "2-methylenepropionic acid" "acrylic acid, 2-methyl-" "propionic acid, 2-methylene-" "propenoic acid, 2-methyl" "acide methacrylique [french]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -360520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     356.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-281820.0
-    phase     gas;
 }

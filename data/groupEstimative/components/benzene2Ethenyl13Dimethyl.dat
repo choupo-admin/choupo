@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethenyl-1,3-dimethyl-benzene" "styrene, 2,6-dimethyl-" "2,6-dimethylstyrene" "1,3-dimethyl-2-vinylbenzene" "ambap2039-90-9" "2-ethenyl-1,3-dimethylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   89290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     422.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=214310.0
-    phase     gas;
 }

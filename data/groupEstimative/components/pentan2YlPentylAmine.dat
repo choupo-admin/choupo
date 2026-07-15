@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-pentan-2-ylpentan-1-amine" "n-(pentan-2-yl)pentan-1-amine" "1-pentanamine, n-(2-methylbutyl)-" "n-(2-methylbutyl)-1-pentanamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -201540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120270.0
-    phase     gas;
 }

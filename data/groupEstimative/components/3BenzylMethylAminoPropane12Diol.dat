@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[methyl-(phenylmethyl)amino]propane-1,2-diol" "3-(n-benzyl-n-methylamino)-1,2-propanediol" "3-[methylbenzylamino]propane-1,2-diol" "3-(n-benzyl-n-methylamino)propane-1,2-diol" "1,2-propanediol,3-[methyl(phenylmethyl)amino]-" "1,2-propanediol, 3-[methyl(phenylmethyl)amino]-" "3-(n-benzyl-n-methylamino)-1,2-propanediol;3-(n-benzyl-n-methylamino)propane-1,2-diol;3-(n-benzyl-n-methylamino)-1,2-propanediol 96%;3-(n-benzyl-n-methylamino)-1,2-propanediol 96+%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -276050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     586.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11150.0
-    phase     gas;
 }

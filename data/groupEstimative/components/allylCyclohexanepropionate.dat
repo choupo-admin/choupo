@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-enyl 3-cyclohexylpropanoate" "allyl cyclohexylpropionate" "cyclohexanepropanoic acid, 2-propenyl ester" "allyl 3-cyclohexylpropanoate" "2-propenyl 3-cyclohexylpropanoate" "3-allylcyclohexyl propionate" "allyl 3-cyclohexylpropionate" "allyl hexahydrophenylpropionate" "allyl beta-cyclohexylpropionate" "2-propenyl cyclohexanepropanoate" "cyclohexanol, 3-allyl-, propionate" "2-propen-1-yl cyclohexanepropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -428540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     639.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-147920.0
-    phase     gas;
 }

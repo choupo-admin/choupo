@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 11; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group C_ring; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COO; count 2; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bis(1,2,2,6,6-pentamethylpiperidin-4-yl) 2-[(4-methoxyphenyl)methylidene]propanedioate" "propanedioic acid,2-[(4-methoxyphenyl)methylene]-, 1,3-bis(1,2,2,6,6-pentamethyl-4-piperidinyl)ester" "propanedioic acid, ((4-methoxyphenyl)methylene)-, bis(1,2,2,6,6-pentamethyl-4-piperidinyl) ester" "propanedioic acid, [(4-methoxyphenyl)methylene]-, bis(1,2,2,6,6-pentamethyl-4-piperidinyl) ester" "propanedioic acid, 2-((4-methoxyphenyl)methylene)-, 1,3-bis(1,2,2,6,6-pentamethyl-4-piperidinyl) ester" "propanedioic acid, 2-[(4-methoxyphenyl)methylene]-, 1,3-bis(1,2,2,6,6-pentamethyl-4-piperidinyl) ester" "bis(1,2,2,6,6-pentamethyl-4-piperidyl)-2-(4-methoxybenzylidene)malonate" "propanedioicacid, [(4-methoxyphenyl)methylene]-, bis(1,2,2,6,6-pentamethyl-4-piperidinyl)ester (9ci);1,1-bis(1,2,2,6,6-pentamethyl-4-piperidyloxycarbonyl)-2-(4-methoxyphenyl)ethene;bis(1,2,2,6,6-pentamethylpiperidin-4-yl) p-methoxybenzylidenemalonate; hostavinpr 31; pbh 3; pr 31; sanduvor pr 31" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -881840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1394.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-99290.0
-    phase     gas;
 }

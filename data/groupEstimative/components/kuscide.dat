@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group Cl; count 1; } { group OH; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-hydroxyethyloxy)ethyl 2-chloranylethanoate" "2-(2-hydroxyethoxy)ethyl chloroacetate" "diethylene glycol monochloroacetate" "acetic acid, chloro-, 2-(2-hydroxyethoxy)ethyl ester" "2-(2-hydroxyethoxy)ethyl 2-chloroacetate" "acetic acid, 2-chloro-,2-(2-hydroxyethoxy)ethyl ester" "aceticacid, chloro-, 2-(2-hydroxyethoxy)ethyl ester (9ci); diethylene glycolmonochloroacetate; kuscide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -784640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     536.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-564480.0
-    phase     gas;
 }

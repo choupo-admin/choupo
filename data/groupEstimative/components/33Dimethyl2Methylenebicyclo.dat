@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-dimethyl-3-methylidene-bicyclo[2.2.1]heptane-4-carboxylic acid" "3,3-dimethyl-2-methylene-bicyclo[2.2.1]heptane-1-carboxylic acid" "2-methylene-3,3-dimethylbicyclo(2.2.1)heptane-1-carboxylic acid" "2-methylene-3,3-dimethylbicyclo[2.2.1]heptane-1-carboxylic acid" "3,3-dimethyl-2-methylenebicyclo[2.2.1]heptanecarboxylic acid" "3,3-dimethyl-2-methylene-bicyclo[" "3,3-dimethyl-2-methylene-bicyclo[2.2.1]heptane-1-c" "2,2-dimethyl-3-methylidenebicyclo[2.2.1]heptane-4-carboxylic acid" "3,3-dimethyl-2-methylenebicyclo[2.2.1]heptane-1-carboxylic acid" "3,3-dimethyl-2-methylidenebicyclo[2.2.1]heptane-1-carboxylic acid" "bicyclo[2.2.1]heptane-1-carboxylicacid, 3,3-dimethyl-2-methylene-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -386820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     547.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-158380.0
-    phase     gas;
 }

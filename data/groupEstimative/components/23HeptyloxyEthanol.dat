@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-heptan-3-yloxyethanol" "2-(1-ethylamyloxy)ethanol" "ethanol, 2-((1-ethylpentyl)oxy)-" "2-((1-ethylpentyl)oxy)ethanol" "2-(heptan-3-yloxy)ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -518820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     559.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-219360.0
-    phase     gas;
 }

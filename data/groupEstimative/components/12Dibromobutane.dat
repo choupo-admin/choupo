@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-bis(bromanyl)butane" "butane, 1,2-dibromo-" ".alpha.-butylene dibromide" "alpha-butylene dibromide" "butane,2-dibromo-" "1,2-dibromo-butane" "alpha-butylene bromide" "1,2-butylene bromide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -78510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     404.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=9000.0
-    phase     gas;
 }

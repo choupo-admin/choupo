@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group tC; count 2; } { group Br; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-3-methyl-pent-1-yn-3-ol" "1-bromo-3-methyl-1-pentyn-3-ol" "2-bromoethynyl-2-butanol" "bromoethynylethylmethylcarbinol" "1-bromo-3-methylpentin-3-ol" "bromoacetylenylethylmethylcarbinol" "1-bromo-3-ethyl-1-butyn-3-ol" "1-bromo-3-methylpent-1-yn-3-ol" "1-pentyn-3-ol, 1-bromo-3-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -29520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=82780.0
-    phase     gas;
 }

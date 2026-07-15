@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(trifluoromethyl)benzene-1,4-diamine" "2-(trifluoromethyl)-1,4-phenylenediamine" "2,5-diaminobenzo-trifluoride" "4-amino-3-trifluoromethylaniline" "2-(trifluoromethyl)-1,4-phenyldiamine" "1,4-benzenediamine, 2-(trifluoromethyl)-" "2-trifluoromethyl-p-phenylenediamine" "2-trifluoromethyl-benzene-1,4-diamine" "2-trifluoromethyl-1,4-phenylenediamine" "q507" "2-(trifluoromethyl)-1,4-benzenediamine" "2-(trifluoromethyl)phenylene-1,4-diamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -503720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     469.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-347480.0
-    phase     gas;
 }

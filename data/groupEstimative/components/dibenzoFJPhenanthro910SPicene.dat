@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 24; } { group dC_ring; count 18; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dibenzo(f,j)phenanthro(9,10-s)picene" "dibenzo[f,l]phenanthro[9,10-i]pentahelicene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   954190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     656.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1297980.0
-    phase     gas;
 }

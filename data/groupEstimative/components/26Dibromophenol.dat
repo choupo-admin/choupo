@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-bis(bromanyl)phenol" "phenol, 2,6-dibromo-" "2,6-dibromo-phenol" "2,6-dibromo-pheno" "l109" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -66760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     405.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23560.0
-    phase     gas;
 }

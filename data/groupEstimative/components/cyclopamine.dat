@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 9; } { group CH_ring; count 8; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 3; } { group OH; count 1; } { group O_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s,3'r,3'as,6's,6as,6bs,7'ar,9r,11as,11br)-3',6',10,11b-tetramethylspiro[2,3,4,6,6a,6b,7,8,11,11a-decahydro-1h-benzo[a]fluorene-9,2'-3a,4,5,6,7,7a-hexahydro-3h-furo[3,2-b]pyridine]-3-ol" "11-deoxojervine" "11-deoxojervine, 4449-51-8" "11-deoxojervine, cyclopamine" "11-deoxyjervine" "jervine, 11-deoxo-" "(3beta,22s,23r)-17,23-epoxyveratraman-3-ol" "[3h]-cyclopamine" "? 11-deoxojervine" "s1146_selleck" "veratraman-3-ol, 17,23-epoxy-, (3beta,23beta)-" "jervine, 11-deoxo- (7ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -423080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     675.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=310240.0
-    phase     gas;
 }

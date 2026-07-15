@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylmethoxyaniline" "3-(benzyloxy)aniline" "benzenamine, 3-(phenylmethoxy)-" "3-[(phenylmethyl)oxy]aniline" "3-(phenylmethoxy)phenylamine" "3-benzyloxy-phenylamine" "3-(benzyloxy)benzenamine" "3-amino-alpha-phenylanisole" "(3-phenylmethoxy-phenyl)-amine" "3-(benzyloxy)phenylamine;3-(phenylmethoxy)aniline;3-aminophenyl benzyl ether;m-(benzyloxy)aniline;m-aminophenyl benzyl ether;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   51510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=235220.0
-    phase     gas;
 }

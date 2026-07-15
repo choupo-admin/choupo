@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloranylethene" "vinyl chloride" "chloroethylene" "chloroethene" "monochloroethene" "monochloroethylene" "ethylene, chloro-" "ethylene monochloride" "chlorethylene" "vinylchloride" "monovinyl chloride" "polyvinyl chloride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   25080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     262.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=41870.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-pentadecylnaphthalene" "1-.alpha.-naphthylpentadecane" "1-n-pentadecylnaphthalene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -143200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     908.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=369050.0
-    phase     gas;
 }

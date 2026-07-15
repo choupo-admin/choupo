@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 7; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bis(trimethylsilyl) nonanedioate" "azelaic acid, bis(trimethylsilyl) ester" "nonanedioic acid, bis(trimethylsilyl) ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1210730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1095.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-754840.0
-    phase     gas;
 }

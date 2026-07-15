@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 20; } { group dC_ring; count 16; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dibenzo[j,xyz]heptaphene(7ci,8ci,9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   852970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1144680.0
-    phase     gas;
 }

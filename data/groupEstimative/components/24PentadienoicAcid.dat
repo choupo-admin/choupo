@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2e)-penta-2,4-dienoic acid" "penta-2,4-dienoic acid" "1,3-butadiene-1-carboxylic acid" "(e)-2,4-pentadienoic acid" "trans-2,4-pentadienoic acid" "beta-vinyl acrylic acid" "vynilacrylic acid" "trans-1-carboxybutadiene" "penta-2,4-dienoic acids" "1,3-butadiene-1-carboxylic acids" "but-1,3-diene-1-carboxylic acid" "but-1,3-diene-1-carboxylic acids" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -254150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     392.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184630.0
-    phase     gas;
 }

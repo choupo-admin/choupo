@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 12; } { group CH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,4a,4b,5,6,6a,7,8,9,10,10a,10b,11,12,12a-octadecahydrochrysene" "chrysene, octadecahydro-" "d-homo-18-norestrane" "octadecahydrochrysene" "chrysitane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -201290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     530.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=255660.0
-    phase     gas;
 }

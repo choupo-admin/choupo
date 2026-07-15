@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-thiophen-3-ylethanoate" "ethyl 3-thiopheneacetate" "ethyl thiophene-3-acetate" "ethyl 2-(thiophen-3-yl)acetate" "ethyl 2-(3-thienyl)acetate" "ethyl 2-thiophen-3-ylacetate" "3-thiopheneacetic acid, ethyl ester" "2-(3-thiophenyl)acetic acid ethyl ester" "ethyl3-thienylacetate; ethyl 3-thiopheneacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -295560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     480.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-159480.0
-    phase     gas;
 }

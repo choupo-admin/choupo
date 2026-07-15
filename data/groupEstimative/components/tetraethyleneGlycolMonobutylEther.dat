@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group OH; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-(2-butoxyethoxy)ethoxy]ethoxy]ethanol" "2-(2-(2-(2-Butoxyethoxy)ethoxy)ethoxy)ethanol" "3,6,9,12-tetraoxahexadecan-1-ol" "butycenol 40" "butysenol 40" "Ethanol, 2-[2-[2-(2-butoxyethoxy)ethoxy]ethoxy]-" "tetraethylene glycol butyl ether" "tetraoxyethylene monobutyl ether" "tetraethylene glycol, monobutyl ether" "2-(2-(2-Butoxy-ethoxy)-ethoxy)-ethoxy)ethanol" "ETHANOL, 2-(2-(2-(2-BUTOXYETHOXY)ETHOXY)ETHOXY)-" "butyltetraglycol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -972120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     719.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-506660.0
-    phase     gas;
 }

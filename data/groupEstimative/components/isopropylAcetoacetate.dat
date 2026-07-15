@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propan-2-yl 3-oxidanylidenebutanoate" "acetoacetic acid isopropyl ester" "propan-2-yl 3-oxobutanoate" "butanoic acid, 3-oxo-, 1-methylethyl ester" "methylethyl 3-oxobutanoate" "isopropyl 3-oxobutyrate" "isopropyl 3-oxobutanoate" "acetoacetic acid, isopropyl ester" "3-oxobutyric acid isopropyl ester" "3-oxo-butyric acid isopropyl ester" "3-oxobutanoic acid isopropyl ester" "3-oxobutanoic acid propan-2-yl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -622950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     497.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-433670.0
-    phase     gas;
 }

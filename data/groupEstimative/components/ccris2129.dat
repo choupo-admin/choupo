@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,5-methylenechrysene" "4h-cyclopenta(def)chrysene" "4h-cyclopenta[def]chrysene" "chrysene, 4,5-methylene-" "4,5-methanochrysene;4,5-methylenechrysene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   433830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     350.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=595600.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-hydroxyethyloxy)ethanol" "2,2'-oxydiethanol" "diglycol" "2-hydroxyethyl ether" "bis(2-hydroxyethyl) ether" "2,2'-oxybisethanol" "ethanol, 2,2'-oxybis-" "diethylenglykol" "digenos" "dicol" "digol" "brecolane ndg" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -562570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-395840.0
-    phase     gas;
 }

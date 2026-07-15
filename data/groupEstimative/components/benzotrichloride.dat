@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trichloromethylbenzene" "(trichloromethyl)benzene" "benzene, (trichloromethyl)-" "phenylchloroform" "alpha,alpha,alpha-trichlorotoluene" "toluene trichloride" "trichlorotoluene" "phenyl chloroform" "benzyl trichloride" "benzenyl trichloride" "benzylidyne chloride" "phenyltrichloromethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -7250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     383.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=87520.0
-    phase     gas;
 }

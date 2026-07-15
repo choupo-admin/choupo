@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group tC; count 4; } { group dCH_ring; count 6; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,8-bis(prop-1-ynyl)naphthalene" "naphthalene, 1,8-di-1-propynyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   575690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     495.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=689240.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-enoxybenzene" "allyloxybenzene" "(allyloxy)benzene" "ether, allyl phenyl" "benzene, (2-propenyloxy)-" "3-phenoxypropene" "allyl phenoxylate" "phenyl allyl ether" "phenylpropenyl ether" "phenyl 2-propenyl ether" "usaf do-23" "benzene, (2-propen-1-yloxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     406.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120150.0
-    phase     gas;
 }

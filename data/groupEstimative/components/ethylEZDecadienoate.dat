@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl (2e,4z)-deca-2,4-dienoate" "ethyl 2-trans-4-cis-decadienoate" "ethyl trans-2,cis-4-decadienoate" "ethyl (2e,4z)-decadienoate" "ethyl-2-trans-4-cis-decadienoate" "ethyl (2e,4z)-2,4-decadienoate" "ethyl 2,4-decadienoate, (e,z)-" "2,4-decadienoic acid, ethyl ester, (2e,4z)-" "ethyl 2e,4z-decadienoate" "ethyl trans-2-cis-4-decandienoate" "ethyl 2,4-decadienoate, (2e,4z)-" "(2e,4z)-2,4-decadienoic acid, ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -373850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     661.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-99770.0
-    phase     gas;
 }

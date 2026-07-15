@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH; count 10; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1z,3z,5z,7z,9z)-1-propoxydodeca-1,3,5,7,9-pentaene" "propyl fp-12" "1'-(1,3,5,7,9-dodecapentaenyloxy)propane" "(all e)-1-propoxy-1,3,5,7,9-dodecapentaene" "1,3,5,7,9-dodecapentaene, 1-propoxy-, (all-e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   100950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     718.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=371520.0
-    phase     gas;
 }

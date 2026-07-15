@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group F; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-1,1-bis(fluoranyl)ethane" "bromodifluoroethane" "ethane, bromodifluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -459250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     309.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-406500.0
-    phase     gas;
 }

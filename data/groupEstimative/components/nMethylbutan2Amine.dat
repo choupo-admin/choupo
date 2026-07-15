@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-butanamine, n-methyl-" "sec-butylmethylamine" "n-methyl-sec-butylamine" "n-methyl-2-butylamine" "n,1-dimethylpropylamine" "agn-pc-01yns5" "propylamine,n,1-dimethyl- (7ci,8ci);2-(methylamino)butane;methyl-sec-butylamine;n,1-dimethylpropylamine;n-methyl-2-butanamine;n-methyl-2-butylamine;n-methyl-n-sec-butylamine;n-methyl-sec-butylamine;n-sec-butyl-n-methylamine;sec-butylmethylamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -98340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=78170.0
-    phase     gas;
 }

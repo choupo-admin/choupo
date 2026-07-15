@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranylpentane" "pentane, 1-chloro-" "n-amyl chloride" "amyl chloride" "pentyl chloride" "n-pentyl chloride" "chloropentane" "pentane, chloro-" "1-chloro-pentane" "n-butylcarbonyl chloride" "7cl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -162270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     384.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20710.0
-    phase     gas;
 }

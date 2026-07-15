@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group OH; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-thiophen-3-ylethanol" "2-(3-thienyl)ethanol" "thiophene-3-ethanol" "2-(thiophen-3-yl)ethanol" "3-(2-hydroxyethyl)thiophene" "2-(thien-3-yl)ethan-1-ol" "2-(thiophen-3-yl)ethan-1-ol" "2-(3-thienyl)-1-ethanol" "2-(3-thienyl)-1-ethanol; 2-(3-thienyl)ethanol; 2-(thiophen-3-yl)ethanol; 3-(2-hydroxyethyl)thiophene" "2-(3-thienyl)-1-ethanol;2-(3-thienyl)ethanol;2-(thiophen-3-yl)ethanol;3-(2-hydroxyethyl)thiophene;3-thiopheneethanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -89230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2770.0
-    phase     gas;
 }

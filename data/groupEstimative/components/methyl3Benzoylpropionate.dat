@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-oxidanylidene-4-phenyl-butanoate" "methyl 4-oxo-4-phenylbutanoate" "3-benzoylpropionic acid methyl ester" "propionic acid, 3-benzoyl-, methyl ester" "benzenebutanoic acid, .gamma.-oxo-, methyl ester" "methyl 4-oxo-4-phenylbutyrate" "xvrcvkwykyjeig-uhfffaoysa-" "4-oxo-4-phenylbutanoic acid methyl ester" "4-oxo-4-phenylbutyric acid methyl ester" "benzenebutanoic acid, gamma-oxo-, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -463700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     556.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-285140.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 5; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(8r,9s,13s,14s,16r,17r)-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthrene-3,16,17-triol" "oestriol" "ovestin" "trihydroxyestrin" "estratriol" "ovestrion" "tridestrin" "16alpha-hydroxyestradiol" "deuslon-a" "aacifemine" "destriol" "oestratriol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -511260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     584.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-95370.0
-    phase     gas;
 }

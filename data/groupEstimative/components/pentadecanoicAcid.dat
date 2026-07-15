@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentadecylic acid" "n-pentadecanoic acid" "pentadecyclic acid" "n-pentadecylic acid" "c15:0" "f15" "pentadecyclate" "n-pentadecylate" "n-pentadecanoate" "pentadecans&#xe4;ure" "9b1c70c0-ef6e-4fcf-a3d3-daccdccf791c" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -703200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     793.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-268490.0
-    phase     gas;
 }

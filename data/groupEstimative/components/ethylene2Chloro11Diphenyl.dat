@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-chloranyl-1-phenyl-ethenyl)benzene" "benzene, 1,1'-(chloroethenylidene)bis-" "(2-chloro-1-phenylethenyl)benzene" "(2-chloro-1-phenylvinyl)benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   232460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     511.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=351560.0
-    phase     gas;
 }

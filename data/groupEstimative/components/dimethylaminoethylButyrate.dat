@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(dimethylamino)ethyl butanoate" "butyric acid, dimethylaminoethyl ester" "2-dimethylaminoethanol butyrate" "butanoic acid, 2-(dimethylamino)ethyl ester" "2-(dimethylamino)ethyl butyrate" "butyric acid, 2-(dimethylamino)ethyl ester" "2-dimethylaminoethyl butanoate" "butanoic acid,2-(dimethylamino)ethyl ester" "butanoic acid 2-(dimethylamino)ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -458200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     534.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-183110.0
-    phase     gas;
 }

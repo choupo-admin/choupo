@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 18; } { group dC_ring; count 14; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo(h)naphtho(1,2,3,4-rst)pentaphene" "benzo[a]naphtho[1,2,3,4-klm]picene" "benzo[h]naphtho[1,2,3,4-rst]pentaphene(8ci,9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   755930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1013980.0
-    phase     gas;
 }

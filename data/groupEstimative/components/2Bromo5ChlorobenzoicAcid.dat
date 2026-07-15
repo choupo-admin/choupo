@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanyl-5-chloranyl-benzoic acid" "6-bromo-3-chlorobenzoic acid" "2-bromo-5-chloro-benzoic acid" "5-chloro-2-bromobenzoic acid" "benzoic acid, 2-bromo-5-chloro-" "benzoicacid, 2-bromo-5-chloro-" "3-chloro-6-bromobenzoic acid;2-bromo-5-chlorobenz" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -313900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-240310.0
-    phase     gas;
 }

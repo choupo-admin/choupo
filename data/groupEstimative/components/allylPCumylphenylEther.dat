@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-phenylpropan-2-yl)-4-prop-2-enoxy-benzene" "1-(allyloxy)-4-(1-methyl-1-phenylethyl)benzene" "benzene, 1-(1-methyl-1-phenylethyl)-4-(2-propen-1-yloxy)-" "1-(2-phenylpropan-2-yl)-4-prop-2-enoxybenzene" "benzene, 1-(1-methyl-1-phenylethyl)-4-(2-propenyloxy)-" "benzene,1-(1-methyl-1-phenylethyl)-4-(2-propen-1-yloxy)-" "benzene,1-(1-methyl-1-phenylethyl)-4-(2-propenyloxy)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   31200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     605.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=301550.0
-    phase     gas;
 }

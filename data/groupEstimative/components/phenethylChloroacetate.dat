@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylethyl 2-chloranylethanoate" "chloro-acetic acid phenethyl ester" "acetic acid, chloro-, 2-phenylethyl ester" "phenethyl 2-chloroacetate" "2-phenylethyl chloroacetate" "acetic acid, 2-chloro-, 2-phenylethyl ester" "acetic acid, 2-chloro-,2-phenylethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -346220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     523.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-176570.0
-    phase     gas;
 }

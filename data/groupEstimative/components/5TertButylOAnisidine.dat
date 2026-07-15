@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-tert-butyl-2-methoxy-aniline" "agn-pc-03nbid" "4-tert-butyl-2-methoxyaniline" "benzenamine, 4-(1,1-dimethylethyl)-2-methoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -163960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     489.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=99180.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dC_ring; count 12; } { group F; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5,6,7,8-octakis(fluoranyl)acenaphthylene" "1,2,3,4,5,6,7,8-octafluoroacenaphthylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1389910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1275040.0
-    phase     gas;
 }

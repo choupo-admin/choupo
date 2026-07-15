@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(cyclopenten-1-yl)-2-methyl-benzene" "1-(cyclopenten-1-yl)-2-methylbenzene" "benzene,(1-cyclopenten-1-yl)-2-methyl-" "benzene, (1-cyclopenten-1-yl)-2-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   61180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     459.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=217530.0
-    phase     gas;
 }

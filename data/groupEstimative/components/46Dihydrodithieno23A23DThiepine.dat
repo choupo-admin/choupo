@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group S_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dithieno[2,3-c:3',2'-e]thiepin,4,6-dihydro-" "4,6-dihydrobisthieno[2,3-c:3',2'-e]thiepine" "dithieno(2,3-c:3',2'-e)thiepin, 4,6-dihydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   326070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=391200.0
-    phase     gas;
 }

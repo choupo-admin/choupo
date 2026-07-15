@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "p-anisamide" "p-methoxybenzamide" "benzamide, 4-methoxy-" "4-methoxy benzamide" "p-methyoxybenzamide" "4-methoxy-benzamide" "4-anisamide" "4-methoxylbenzamide" "p250" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -194400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     444.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-48210.0
-    phase     gas;
 }

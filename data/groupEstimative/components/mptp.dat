@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 6; } { group dC_ring; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methyl-4-phenyl-3,6-dihydro-2h-pyridine" "1-methyl-4-phenyl-1,2,3,6-tetrahydropyridine" "pyridine, 1,2,3,6-tetrahydro-1-methyl-4-phenyl-" "1,2,3,6-tetrahydro-1-methyl-4-phenylpyridine" "n-methyl-4-phenyl-1,2,3,6-tetrahydropyridine" "1-methyl-4-phenyl-piperidine-3-en" "1-methyl-4-phenyl-1,2,5,6-tetrahydropyridine" "1-methyl-4-phenyl-1,2,3,6-tetrahydro-pyridine" "pyridine,1,2,3,6-tetrahydro-1-methyl-4-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   140180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     481.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=337940.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 2; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,3-tris(chloranyl)butane" "butane,1,1,3-trichloro-" "butane, 1,1,3-trichloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -183670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     393.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-57870.0
-    phase     gas;
 }

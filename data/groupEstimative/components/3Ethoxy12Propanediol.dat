@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethoxypropane-1,2-diol" "1,2-propanediol, 3-ethoxy-" "glycerol 1-ethyl ether" "glycerol alpha-ethyl ether" "alpha-ethyl glycerol ether" "1-ethoxy-2,3-propanediol" "glycerol alpha-monoethyl ether" "1,2-propanediol,3-ethoxy-" "glycerol .alpha.-ethyl ether" "glycerol .alpha.-monoethyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -588490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     454.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-389860.0
-    phase     gas;
 }

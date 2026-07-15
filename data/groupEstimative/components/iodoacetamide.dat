@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group I; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-iodanylethanamide" "2-iodoacetamide" "surauto" "monoiodoacetamide" "alpha-iodoacetamide" "usaf d-1" "2-iodo-acetamide" "n-(3-methoxy-4-butoxybenzyl)thiobarbituric acid" "iodoacetoamide" "anti-mek" "sjyhcaviktp@" ".alpha.-iodoacetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -86530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     367.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-38390.0
-    phase     gas;
 }

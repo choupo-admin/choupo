@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylsulfanylpyridine-3-carbaldehyde" "2-(methylthio)nicotinaldehyde" "2-(methylsulfanyl)pyridine-3-carbaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   188360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     471.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=264970.0
-    phase     gas;
 }

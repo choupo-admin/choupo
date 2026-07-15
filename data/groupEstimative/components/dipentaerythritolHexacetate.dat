@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 8; } { group C; count 2; } { group O; count 1; } { group COO; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[3-acetyloxy-2-[[3-acetyloxy-2,2-bis(acetyloxymethyl)propoxy]methyl]-2-(acetyloxymethyl)propyl] ethanoate" "1,3-propanediol, 2,2'-(oxybis(methylene))bis(2-((acetyloxy)methyl)-, tetraacetate" "1,3-propanediol, 2,2'-[oxybis(methylene)]bis[2-[(acetyloxy)methyl]-, tetraacetate" "1,3-propanediol, 2,2'-(oxybis(methylene))bis(2-((acetyloxy)methyl)-, 1,1',3,3'-tetraacetate" "1,3-propanediol, 2,2'-[oxybis(methylene)]bis[2-[(acetyloxy)methyl]-, 1,1',3,3'-tetraacetate" "2,2'-(oxybis(methylene))bis(2-((acetyloxy)methyl)propane-1,2-diyl)tetraacetate" "[3-acetyloxy-2-[[3-acetyloxy-2,2-bis(acetyloxymethyl)propoxy]methyl]-2-(acetyloxymethyl)propyl] acetate" "3-(acetyloxy)-2-({3-(acetyloxy)-2,2-bis[(acetyloxy)methyl]propoxy}methyl)-2-[(acetyloxy)methyl]propyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2550810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1254.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1827180.0
-    phase     gas;
 }

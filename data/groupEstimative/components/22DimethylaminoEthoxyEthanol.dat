@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group OH; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethylaminoethoxyethanol" "2-(2-dimethylaminoethoxy)ethanol" "n,n-dimethyldiglycolamine" "2-(2-(dimethylamino)ethoxy)ethanol" "ethanol, 2-[2-(dimethylamino)ethoxy]-" "ethanol, 2-(2-(dimethylamino)ethoxy)-" "2-[2-(dimethylamino)ethoxy]ethan-1-ol" "ysaanlsylsuvhb-uhfffaoysa-" "2-(2-dimethylaminoethyloxy)ethanol" "ethanol,2-[2-(dimethylamino)ethoxy]-" "ethylene glycol mono[2-(dimethylamino)ethyl] ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -384090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     467.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-131400.0
-    phase     gas;
 }

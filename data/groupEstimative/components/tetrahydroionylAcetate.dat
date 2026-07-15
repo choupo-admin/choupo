@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 2; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(2,2,6-trimethylcyclohexyl)butan-2-yl ethanoate" "cyclohexanepropanol, .alpha.,2,2,6-tetramethyl-, acetate" "alpha,2,2,6-tetramethylcyclohexylpropyl acetate" "4-(2,2,6-trimethylcyclohexyl)butan-2-yl acetate" "cyclohexanepropanol, alpha,2,2,6-tetramethyl-, acetate" "cyclohexanepropanol, alpha,2,2,6-tetramethyl-, 1-acetate" "cyclohexanepropanol, .alpha.,2,2,6-tetramethyl-, 1-acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -646610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     736.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-233850.0
-    phase     gas;
 }

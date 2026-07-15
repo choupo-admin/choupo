@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanyl-4-methoxy-benzaldehyde" "3-bromo-p-anisaldehyde" "benzaldehyde, 3-bromo-4-methoxy-" "3-bromo-4-methoxy-benzaldehyde" "p831" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -24300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62910.0
-    phase     gas;
 }

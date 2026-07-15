@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH2_ring; count 2; } { group CdO; count 2; } { group NH2; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n'-[3-(aziridin-1-yl)propyl]ethanediamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -158880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97400.0
-    phase     gas;
 }

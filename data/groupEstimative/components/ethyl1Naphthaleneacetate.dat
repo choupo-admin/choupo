@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-naphthalen-1-ylethanoate" "ethyl 1-naphthylacetate" "ethyl naphthaleneacetate" "1-naphthaleneacetic acid, ethyl ester" "alpha-naphthaleneacetic acid, ethyl ester" "ethyl 2-naphthalen-1-ylacetate" "2-(1-naphthyl)acetic acid ethyl ester" "1-naphththaleneacetic acid, ethyl ester" "1-naphthylacetic acid ethyl ester" "1-naphthaleneacetic acid ethyl ester" "r485" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -233440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     531.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-33940.0
-    phase     gas;
 }

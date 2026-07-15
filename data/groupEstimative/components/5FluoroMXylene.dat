@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-fluoranyl-3,5-dimethyl-benzene" "3,5-dimethylfluorobenzene" "1-fluoro-3,5-dimethylbenzene" "1,3-dimethyl-5-fluorobenzene" "1-fluoro-3,5-dimethyl-benzene" "u443" "m-xylene,5-fluoro- (7ci,8ci);1-fluoro-3,5-dimethylbenzene;3,5-dimethylfluorobenzene;5-fluoro-1,3-dimethylbenzene;5-fluoro-m-xylene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -190970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     380.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-85180.0
-    phase     gas;
 }

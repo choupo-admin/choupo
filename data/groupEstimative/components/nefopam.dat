@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-methyl-1-phenyl-1,3,4,6-tetrahydro-2,5-benzoxazocine" "fenazoxine" "5-methyl-1-phenyl-3,4,5,6-tetrahydro-1h-benzo[f][1,4]oxazocine" "sinalgico" "nefopam [inn:ban]" "nefopamum [inn-latin]" "1h-2,5-benzoxazocine, 3,4,5,6-tetrahydro-5-methyl-1-phenyl-" "3,4,5,6-tetrahydro-5-methyl-1-phenyl-1h-2,5-benzoxazocin" "1h-2,5-benzoxazocine, 3,4,5,6-tetrahydro-5-methyl-1-phenyl- (8ci,9ci)" "nefopamum" "nefopam (inn)" "1h-2,5-benzoxazocine,3,4,5,6-tetrahydro-5-methyl-1-phenyl-, (1s)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   63390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     513.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=368660.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s,3s)-3,4-dimethyl-2-phenyl-morpholine" "mephenmetrazine" "antapentan" "sedafamen" "adphen (base)" "fendimetrazina" "phendimetrazinum" "d-2-phenyl-3,4-dimethylmorpholine" "phendimetrazine [inn:ban]" "phendimetrazinum [inn-latin]" "phendimetrazine (inn)" "(+)-3,4-dimethyl-2-phenylmorpholine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -78810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     389.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=216070.0
-    phase     gas;
 }

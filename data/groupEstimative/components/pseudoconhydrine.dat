@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group OH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s,6s)-6-propylpiperidin-3-ol" "(3s-trans)-6-propyl-3-piperidinol" "3-piperidinol, 6-propyl-, (3s-trans)-" "3-piperidinol, 6-propyl-, (3s-trans)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -288890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     439.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-15890.0
-    phase     gas;
 }

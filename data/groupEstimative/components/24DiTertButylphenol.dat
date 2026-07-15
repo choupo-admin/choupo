@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-ditert-butylphenol" "phenol, 2,4-bis(1,1-dimethylethyl)-" "phenol, 2,4-di-tert-butyl-" "2,4-di-t-butylphenol" "antioxidant no. 33" "prodox 146a-85x" "1-hydroxy-2,4-di-tert-butylbenzene" "2,4-bis(tert-butyl)phenol" "phenol, 2,4-di(1,1-dimethylethyl)-" "24-ditert-butyl-phenol" "2,4-ditert-butyl-phenol" "phenol,4-di-tert-butyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -302040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     537.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=20840.0
-    phase     gas;
 }

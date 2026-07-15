@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propan-2-yl undec-10-enoate" "10-undecenoic acid, 1-methylethyl ester" "isopropyl 10-undecenoate" "isopropyl undec-10-enoate" "10-undecenoic acid,1-methylethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -529420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     738.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-157970.0
-    phase     gas;
 }

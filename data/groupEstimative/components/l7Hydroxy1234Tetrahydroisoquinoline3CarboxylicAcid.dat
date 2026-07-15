@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s)-7-oxidanyl-1,2,3,4-tetrahydroisoquinoline-3-carboxylic acid" "(3s)-7-hydroxy-1,2,3,4-tetrahydroisoquinoline-3-carboxylic acid" "(s)-7-hydroxy-1,2,3,4-tetrahydroisoquinoline-3-carboxylic acid" "(s)-1,2,3,4-tetrahydro-7-hydroxyisoquinoline-3-carboxylic acid" "7-hydroxy-(3s)-1,2,3,4-tetrahydroisoquinoline-3-carboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -447800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-226070.0
-    phase     gas;
 }

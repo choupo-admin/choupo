@@ -33,9 +33,8 @@ groups
     joback ( { group C_ring; count 2; } { group dCH_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4.2.2)-propella-2,4,7,9-tetraene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   244450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     326.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=320040.0
-    phase     gas;
 }

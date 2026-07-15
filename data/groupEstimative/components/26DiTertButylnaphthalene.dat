@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group C; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-ditert-butylnaphthalene" "naphthalene, 2,6-di-tert-butyl-" "naphthalene, 2,6-bis(1,1-dimethylethyl)-" "naphthalene,6-di-tert-butyl-" "naphthalene,6-bis(1,1-dimethylethyl)-" "naphthalene,2,6-bis(1,1-dimethylethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -27690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     551.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=306160.0
-    phase     gas;
 }

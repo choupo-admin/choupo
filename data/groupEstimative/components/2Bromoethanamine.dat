@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group Br; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylethanamine" "ethanamine, 2-bromo-" "2-bromoethylamine" "beta-bromoethylamine" "ethylamine, 2-bromo-" "2-aminoethyl bromide" "2-bromoethan-1-amine hydrobromide" "2-bromoethyl-amine" "bromoethanamine" "agn-pc-0cvo0q" "2576-47-8 (hydrobromide)" "2-aminoethyl hydrobromide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -24490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     336.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46730.0
-    phase     gas;
 }

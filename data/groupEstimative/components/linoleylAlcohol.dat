@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group dCH; count 4; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadeca-9,12-dien-1-ol" "cis,cis-9,12-octadecadien-1-ol" "cis, cis-9,12-octadecadien-1-ol" "9,12-octadecadien-1-ol, (9z,12z)-" "9,12-octadecadien-1-ol, (e,e)-" "9,12-octadecadien-1-ol,(9z,12z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -332640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     894.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=124300.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethoxy(prop-2-enyl)silane" "allyl(trimethoxy)silane" "silane, trimethoxy-2-propenyl-" "silane, trimethoxy-2-propen-1-yl-" "silane, allyltrimethoxy-" "z 6825;silane,allyltrimethoxy- (7ci,8ci);silane, trimethoxy-2-propenyl- (9ci);" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -550020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     545.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-332280.0
-    phase     gas;
 }

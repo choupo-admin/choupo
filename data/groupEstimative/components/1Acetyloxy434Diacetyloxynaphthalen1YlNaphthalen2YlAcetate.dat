@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group dCH_ring; count 10; } { group dC_ring; count 10; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[1-acetyloxy-4-(3,4-diacetyloxynaphthalen-1-yl)naphthalen-2-yl] ethanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1103990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     984.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-676260.0
-    phase     gas;
 }

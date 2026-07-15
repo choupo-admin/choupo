@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodecyl methanoate" "formic acid, dodecyl ester" "lauryl formate" "lauryl formate;dodecyl formate" "we(12:0/1:0)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -235200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     845.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102540.0
-    phase     gas;
 }

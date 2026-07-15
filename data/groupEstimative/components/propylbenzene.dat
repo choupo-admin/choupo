@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-propylbenzene" "benzene, propyl-" "1-phenylpropane" "phenylpropane" "isocumene" "1-propylbenzene" "propyl-benzene" "n-propyl benzene" "propylbenzene, n-" "propylbenzene (all isomers)" "benzene,propyl" "agn-pc-0cjjty" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   7440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=137310.0
-    phase     gas;
 }

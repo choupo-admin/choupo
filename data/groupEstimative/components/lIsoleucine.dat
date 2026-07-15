@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s,3s)-2-azanyl-3-methyl-pentanoic acid" "isoleucine" "(s)-isoleucine" "(2s,3s)-2-amino-3-methylpentanoic acid" "(s,s)-isoleucine" "2s,3s-isoleucine" "erythro-l-isoleucine" "2-amino-3-methylvaleric acid" "l-(+)-isoleucine" "l-ile" "dl-isoleucine" "alpha-amino-beta-methylvaleric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -494210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-282700.0
-    phase     gas;
 }

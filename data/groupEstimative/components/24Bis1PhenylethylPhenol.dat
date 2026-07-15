@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 2; } { group dCH_ring; count 13; } { group dC_ring; count 5; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phenol, 2,4-bis(1-phenylethyl)-" "phenol, bis(1-phenylethyl)-" "bis(1-phenylethyl)phenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   12840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     694.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=302460.0
-    phase     gas;
 }

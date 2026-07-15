@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group dCH; count 6; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(9z,11e,13z)-octadeca-9,11,13-trienoic acid" "trichosanic acid" "cis-9,trans-11,cis-13-octadecatrienoic acid" "9-cis,11-trans,13-cis-octadecatrienoic acid" "trichosanoic acid" "c18:3n-5,7,9" "9c,11t,13c-linolenic acid" "octadeca-9c,11t,13c-triensaeure" "9z,11e,13z-octadecatrienoic acid" "octadeca-9c,11t,13c-trienoic acid" "9c,11t,13c-18:3" "9cis,11trans,13cis-octadecatrienoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -413460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     890.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2570.0
-    phase     gas;
 }

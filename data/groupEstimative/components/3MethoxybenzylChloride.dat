@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(chloromethyl)-3-methoxy-benzene" "m-methoxybenzyl chloride" "1-(chloromethyl)-3-methoxybenzene" "benzene, 1-(chloromethyl)-3-methoxy-" "3-(chloromethyl)anisole" "anisole, m-(chloromethyl)-" "3-methoxybenzylchloride" "m-(chloromethyl)anisole" "3-(chloromethyl)-1-methoxybenzene" "3-methoxy benzyl chloride" "benzyl chloride,3-methoxy" "toluene, .alpha.-chloro-m-methocy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -131350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     399.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=2330.0
-    phase     gas;
 }

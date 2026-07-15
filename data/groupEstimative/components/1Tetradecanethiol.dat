@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradecane-1-thiol" "myristyl mercaptan" "tetradecyl mercaptan" "tetradecanethiol" "n-tetradecyl mercaptan" "1-mercaptotetradecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -293810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     763.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=96390.0
-    phase     gas;
 }

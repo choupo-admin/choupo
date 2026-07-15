@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 7; } { group O; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-triethoxysilylbutan-1-amine" "4-(triethoxysilyl)butylamine" "(4-aminobutyl)triethoxysilane" "butylamine, 4-(triethoxysilyl)-" "silane, (4-aminobutyl)triethoxy-" "4-aminobutyltriethoxysilane" "1-butanamine,4-(triethoxysilyl)-" "butylamine,4-(triethoxysilyl)- (6ci,7ci,8ci); silane, (4-aminobutyl)triethoxy- (8ci);4-(triethoxysilyl)-1-aminobutane; 4-(triethoxysilyl)butylamine;4-aminobutyltriethoxysilane; d-aminobutyltriethoxysilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -724220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     757.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-319990.0
-    phase     gas;
 }

@@ -35,9 +35,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethoxy(dimethyl)silicon" "silane, ethoxydimethyl-" "ethoxydimethylsilane" "ethoxydimethyl-silane" "dimethyl ethoxysilane" "sgqhhgcihcup@" "dimethylethoxysilane, ammonia-free" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -313920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     395.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-174580.0
-    phase     gas;
 }

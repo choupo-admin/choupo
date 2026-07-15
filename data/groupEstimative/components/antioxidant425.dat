@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 8; } { group CH2; count 3; } { group C; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 8; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-tert-butyl-6-[(3-tert-butyl-5-ethyl-2-oxidanyl-phenyl)methyl]-4-ethyl-phenol" "2,2'-methylenebis(6-tert-butyl-4-ethylphenol)" "chemanox 22" "2,2'-methylenebis(4-ethyl-6-tert-butylphenol)" "plastanox 425 antioxidant" "usaf cy-6" "agidol 7" "nocrac ns 5" "2,2'-methylenebis(ethyl-6-tert-butylphenol)" "bis(2-hydroxy-3-tert-butyl-5-ethylphenyl)methane" "bis(3-tert-butyl-5-ethyl-2-hydroxyphenyl)methane" "phenol, 2,2'-methylenebis(6-tert-butyl-4-ethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -504270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     867.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=42360.0
-    phase     gas;
 }

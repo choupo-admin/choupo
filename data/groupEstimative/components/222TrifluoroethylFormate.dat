@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(fluoranyl)ethyl methanoate" "tfef" "formic acid 2,2,2-trifluoroethyl ester" "ethanol,2,2,2-trifluoro-, formate (8ci,9ci);2,2,2-trifluoroethyl formate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -625880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     512.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-563250.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexan-1-amine" "1-aminohexane" "n-hexylamine" "1-hexanamine" "mono-n-hexylamine" "hexanamine" "1-hexylamine" "hexyl-amine" "hexyl amine" "142-81-4 (hydrochloride)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -133380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     441.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=66090.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group CdO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-thiophen-2-ylpropan-1-one" "1-(2-thienyl)-1-propanone" "1-(2-thienyl)propan-1-one" "ethyl 2-thienyl ketone" "1-(thiophen-2-yl)propan-1-one" "1-propanone, 1-(2-thienyl)-" "ethyl-2-thienyl ketone" "ethyl thienyl ketone" "2-propanoylthiophene" "2-(propionyl)thiophene" "1-thien-2-ylpropan-1-one" "1-thiophen-2-yl-1-propanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -70220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     416.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13550.0
-    phase     gas;
 }

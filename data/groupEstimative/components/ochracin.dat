@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methyl-8-oxidanyl-3,4-dihydroisochromen-1-one" "mellein" "antibiotic ao-2" "antibiotic bv-1" "isocoumarin, 3,4-dihydro-8-hydroxy-3-methyl-" "3,4-dihydro-8-hydroxy-3-methylisocoumarin" "ao-2" "bv-1" "1h-2-benzopyran-1-one, 3,4-dihydro-8-hydroxy-3-methyl-" "8-hydroxy-3-methyl-3,4-dihydro-1h-isochromen-1-one" "3,4-dihydro-8-hydroxy-3-methyl-1h-2-benzopyran-1-one" "(3r)-8-hydroxy-3-methyl-isochroman-1-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -440300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-256040.0
-    phase     gas;
 }

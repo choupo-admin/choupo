@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 10; } { group CH; count 1; } { group dCH; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodecenylsuccinic acid, compound with n,n-dimethylcyclohexylamine (1:1)" "butanedioic acid, 2-dodecenyl-, compd. with n,n-dimethylcyclohexanamine (1:1)" "succinic acid, dodecenyl-, compd. with n,n-dimethylcyclohexylamine (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1117060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1274.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-428370.0
-    phase     gas;
 }

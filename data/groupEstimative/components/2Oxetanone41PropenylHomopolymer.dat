@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[(e)-prop-1-enyl]oxetan-2-one" "2-oxetanone, 4-(1-propen-1-yl)-, homopolymer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -288270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     324.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-157660.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "but-1-enylbenzene" "butenylbenzene" "benzene, 1-butenyl" "[(e)-but-1-enyl]benzene" "benzene, 2-buten-1-yl-" "1-butene,1-phenyl- (7ci,8ci); benzene, 1-butenyl- (9ci); (1-butenyl)benzene;1-buten-1-ylbenzene; 1-phenyl-1-butene; 4-phenyl-3-butene; b-ethylstyrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   104020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     432.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=225950.0
-    phase     gas;
 }

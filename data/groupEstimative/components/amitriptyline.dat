@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 5; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(5,6-dihydrodibenzo[2,1-b:2',1'-f][7]annulen-11-ylidene)-n,n-dimethyl-propan-1-amine" "elavil" "tryptanol" "damilen" "amitriptylin" "triptanol" "adepril" "flavyl" "lantron" "laroxyl" "redomex" "seroten" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   230690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     649.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=547780.0
-    phase     gas;
 }

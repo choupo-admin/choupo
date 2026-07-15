@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group C_ring; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-tert-butyl-1,1-diethoxy-cyclohexane" "4-tert-butylcyclohexanone diethyl acetal" "4-(tert-butyl)-1,1-diethoxycyclohexane" "4-tert-butyl-1,1-diethoxycyclohexane" "cyclohexane,4-(1,1-dimethylethyl)-1,1-diethoxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -556260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     681.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-128910.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group CH; count 2; } { group dCH2; count 4; } { group dCH; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[1,2,2-tris(prop-2-enoxy)ethoxy]prop-1-ene" "tetrakis(allyloxy)ethane" "glyoxal tetraallyl acetal" "1,1,2,2-tetrakis(allyloxy)ethane" "tetra(allyloxy)ethane (van)" "1,1,2,2-tetraallyloxyethane" "ethane, 1,1,2,2-tetrakis(allyloxy)-" "glyoxal, bis(diallyl acetal) (7ci,8ci)" "3-[1,2,2-tris(allyloxy)ethoxy]prop-1-ene" "3-[1,2,2-tris(prop-2-en-1-yloxy)ethoxy]prop-1-ene" "3,3',3'',3'''-(1,2-ethanediylidenetetrakis(oxy))tetrakispropene" "1-propene, 3,3',3'',3'''-(1,2-ethanediylidenetetrakis(oxy))tetrakis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -370010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     708.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-6520.0
-    phase     gas;
 }

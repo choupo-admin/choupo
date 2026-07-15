@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 9; } { group dC_ring; count 3; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-fluoranyl-4-phenyl-benzene" "4-fluoro-1,1'-biphenyl" "p-fluorodiphenyl" "biphenyl, 4-fluoro-" "4-fluoro-biphenyl" "4-fluorodiphenyl" "1,1'-biphenyl, 4-fluoro-" "1-fluoro-4-phenylbenzene" "para-fluorobiphenyl" "(4-fluorophenyl)benzene" "f-pcb-0p" "1-fluoro-4-phenyl-benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -25530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     436.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70540.0
-    phase     gas;
 }

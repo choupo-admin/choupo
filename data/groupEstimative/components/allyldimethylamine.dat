@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-dimethylprop-2-en-1-amine" "n,n-dimethylallylamine" "n-allyl-n,n-dimethylamine" "dimethylallylamine" "2-propen-1-amine, n,n-dimethyl-" "1-dimethylamino-2-propene" "ch2=chch2n(ch3)2" "n-allyl-dimethylamin" "allylamine,n-dimethyl-" "3-dimethylamino-1-propene" "allylamine, n,n-dimethyl-" "dimethyl(prop-2-en-1-yl)amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   46430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     362.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=189840.0
-    phase     gas;
 }

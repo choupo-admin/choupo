@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 7; } { group CH_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,4a,5,6,7,8,8a-decahydronaphthalen-2-ol" "2-naphthalenol, decahydro-" "2-hydroxydecalin" "2-decalinol" "2-naphthol, decahydro-" "decahydronapthol-2" "decahydro-2-naphthol" "decalin-2-ol" "decahydronaphthol-2" "naphthalen-2-ol, decahydro-" "decahydro-beta-naphthol" "trans-decahydro-2-naphthol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -301340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-38110.0
-    phase     gas;
 }

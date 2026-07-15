@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH_phenol; count 3; } { group O_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-(4-hydroxyphenyl)-5,7-bis(oxidanyl)-2,3-dihydrochromen-4-one" "naringetol" "pelargidanon" "salipurpol" "salipurol" "asahina" "naringenine" "(s)-naringenin" "yso1" "(-)-(2s)-naringenin" "(-)-naringenin" "4',5,7-trihydroxyflavanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -626330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     400.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-333310.0
-    phase     gas;
 }

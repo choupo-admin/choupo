@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethyl-3-methyl-butanal" "butanal, 2-ethyl-3-methyl-" "2-isopropylbutanal" "(ch3)2chch(c2h5)cho" "2-ethylisovaleraldehyde" "butanal,2-ethyl-3-methyl-" "2-ethyl-3-methylbutyraldehyde" "butyraldehyde,2-ethyl-3-methyl- (6ci,7ci,8ci);(?a'a a'a currency)-2-isopropylbutyraldehyde;2-ethyl-3-methylbutanal;2-ethyl-3-methylbutyraldehyde;2-isopropylbutanal;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -283950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96340.0
-    phase     gas;
 }

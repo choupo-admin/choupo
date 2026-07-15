@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(1-phenylpropan-2-yl)butan-1-amine" "n-n-butylamphetamine" "d-n-butylamphetamine" "1-phenyl-2-butylaminopropane" "phenethylamine, n-butyl-alpha-methyl-" "1-phenyl-2-n-butylamino-propan [german]" "1-phenyl-2-n-butylamino-propan" "benzeneethanamine,n-butyl-a-methyl-" "benzeneethanamine, n-butyl-alpha-methyl-" "benzeneethanamine, n-butyl-.alpha.-methyl-" "benzeneethanamine, n-butyl-alpha-methyl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -26930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     587.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=257940.0
-    phase     gas;
 }

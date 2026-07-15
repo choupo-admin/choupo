@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group Br; count 1; } { group COOH; count 2; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3s)-3-(4-bromophenyl)-n,n-dimethyl-3-pyridin-2-yl-propan-1-amine;(z)-but-2-enedioic acid" "(+)-brompheniramine maleate" "disomer" "disomer maleate" "drixoral" "disophrol" "d-brompheniramine maleate" "brompheniramine d-form maleate" "dimegan" "halin" "alahist  ir" "alahist  pe" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -568110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     993.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-179940.0
-    phase     gas;
 }

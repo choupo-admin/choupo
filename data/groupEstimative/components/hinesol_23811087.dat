@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group C; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[(3r,6s)-6,10-dimethylspiro[4.5]dec-9-en-3-yl]propan-2-ol" "2-[(2r,10s)-6,10-dimethylspiro[4.5]dec-6-en-2-yl]propan-2-ol" "spiro(4.5)dec-6-ene-2-methanol, alpha,alpha,6,10-tetramethyl-, (2r-(2alpha,5alpha(s*)))-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -351740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     635.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=21670.0
-    phase     gas;
 }

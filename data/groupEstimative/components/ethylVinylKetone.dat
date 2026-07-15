@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pent-1-en-3-one" "1-penten-3-one" "1-pentene-3-one" "ethylvinyl ketone" "ketone, ethyl vinyl" "4-penten-3-one" "u117" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -133680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     372.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-49860.0
-    phase     gas;
 }

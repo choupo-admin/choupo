@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenoxyethyl ethanoate" "2-phenoxyethanol acetate" "acetic acid 2-phenoxyethyl ester" "ethanol, 2-phenoxy-, acetate" "phenoxyethyl acetate" "beta-phenoxyethyl acetate" "ethylene glycol phenyl ether acetate" "ethylene glycol monophenyl ether acetate" "agn-pc-0d0luz" "ethanol, 2-phenoxy-,1-acetate" "2-(4-tritiophenoxy)ethyl acetate" "2-phenoxyethylester kyseliny octove" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -462700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     501.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-269640.0
-    phase     gas;
 }

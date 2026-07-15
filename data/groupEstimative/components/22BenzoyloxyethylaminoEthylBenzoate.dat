@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-(phenylcarbonyloxy)ethylamino]ethyl benzoate" "ethanol, 2,2'-iminobis-, dibenzoate (ester)" "ethanol, 2,2'-iminobis-, 1,1'-dibenzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -522880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     787.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-205850.0
-    phase     gas;
 }

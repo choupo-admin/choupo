@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-hydroxyphenyl)ethanoic acid" "4-hydroxyphenylacetate" "(4-hydroxyphenyl)acetic acid" "p-hydroxyphenylacetic acid" "4-hydroxybenzeneacetic acid" "benzeneacetic acid, 4-hydroxy-" "(p-hydroxyphenyl)acetic acid" "4-carboxymethylphenol" "acetic acid, (p-hydroxyphenyl)-" "parahydroxy phenylacetic acid" "2-(4-hydroxyphenyl)acetic acid" "4-hydroxyphenyl acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -499500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     440.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-369640.0
-    phase     gas;
 }

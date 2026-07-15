@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethenylcyclobutane" "cyclobutane, vinyl-" "cyclobutane,vinyl- (6ci,7ci,8ci); cyclobutylethylene; ethenylcyclobutane; vinylcyclobutane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   24900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     314.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=136130.0
-    phase     gas;
 }

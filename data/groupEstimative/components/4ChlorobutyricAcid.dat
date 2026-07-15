@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-chloranylbutanoic acid" "butanoic acid, 4-chloro-" "4-chlorobutanoic acid" "butyric acid, 4-chloro-" "gamma-chlorobutyric acid" "gammachlorobutyric acid" ".gamma.-chlorobutyric acid" "4-chloro-butyric acid" "4-chloro-n-butyric acid" "butyric acid, 4-chloro- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -491900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     398.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-373040.0
-    phase     gas;
 }

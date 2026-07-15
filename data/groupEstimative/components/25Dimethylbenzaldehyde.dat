@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "isoxylaldehyde" "benzaldehyde, 2,5-dimethyl-" "2,5-dimethyl-benzaldehyde" "benzaldehyde,2,5-dimethyl-" "2,5-dimethylbenzaldehyde;isoxylaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   60950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     468.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=162010.0
-    phase     gas;
 }

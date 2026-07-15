@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 26; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodecyl 3-(3-dodecoxy-3-oxidanylidene-propyl)sulfanylpropanoate" "dilauryl thiodipropionate" "dltdp" "dmptp" "carstab dltdp" "antioxidant as" "stabilizer dlt" "plastanox ltdp" "milban f" "antioxidant ltdp" "neganox dltp" "dilauryl 3,3'-thiodipropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1255220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1488.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-385900.0
-    phase     gas;
 }

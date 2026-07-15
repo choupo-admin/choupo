@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nonan-5-amine" "5-nonylamine" "5-nonanamine" "pentylamine,1-butyl- (7ci,8ci); 1-butylpentylamine; 1-pentanamine, 1-butyl-; 5-aminononane;5-nonylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -200580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     548.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=88910.0
-    phase     gas;
 }

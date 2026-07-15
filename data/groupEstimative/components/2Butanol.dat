@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butan-2-ol" "sec-butanol" "sec-butyl alcohol" "2-butyl alcohol" "2-hydroxybutane" "butylene hydrate" "1-methyl-1-propanol" "1-methylpropyl alcohol" "methyl ethyl carbinol" "s-butyl alcohol" "ethyl methyl carbinol" "s-butanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -283400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     353.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-156460.0
-    phase     gas;
 }

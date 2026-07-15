@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-dodecoxypropan-1-amine" "3-(dodecyloxy)propan-1-amine" "3-lauryloxypropylamine" "3-dodecyloxypropanamine" "1-propanamine, 3-(dodecyloxy)-" "3-(dodecyloxy)propylamine" "3-dodecyloxy-1-propanamine" "propylamine, 3-(dodecyloxy)-" "3-dodecyloxypropylamine" "laurixamina" "laurixaminum" "lauryloxypropylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -451360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     803.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=36870.0
-    phase     gas;
 }

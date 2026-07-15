@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 2; } { group dCH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,5,7-octatriene" "1,3,7-octatriene, (z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   159630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=272380.0
-    phase     gas;
 }

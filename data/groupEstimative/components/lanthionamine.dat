@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group NH2; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-azanylethylsulfanyl)ethanamine" "2,2'-thiobis(ethylamine)" "3-thiacadaverine" "bis(2-aminoethyl) sulfide" "monoethanolamine sulfide" "2,2'-thiodiethylamine" "2,2'-thiobisethylamine" "1,7-diaza-4-thiaheptane" "1,5-diamino-3-thiapentane" "ethanamine, 2,2'-thiobis-" "2-(2-aminoethylsulfanyl)ethanamine" "2,2'-thiobis[ethylamine]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -16440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     476.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=148820.0
-    phase     gas;
 }

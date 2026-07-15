@@ -34,9 +34,8 @@ groups
     joback ( { group CH_ring; count 4; } { group C_ring; count 6; } { group dCH_ring; count 4; } { group dC_ring; count 6; } { group Cl; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naphthalene-bis(hexachlorocyclopentadiene) adduct" "naphthalene, bis(hexachlorocyclopentadiene) adduct" "1,2,3,4,5,6,7,8,13,13,14,14-dodecachloro-1,4,4a,4b,5,8,8a,12b-octahydro-1,4:5,8-dimethanotriphenylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   9630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     858.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=342900.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-methyl-5-propan-2-yl-nona-6,8-dien-2-one" "agn-pc-00s7wf" "6,8-nonadien-2-one, 8-methyl-5-(1-methylethyl)-" "6,8-nonadien-2-one,8-methyl-5-(1-methylethyl)-, (6e)-" "(5s,6e)-8-methyl-5-(isopropyl)-6,8-nonadien-2-one" "6,8-nonadien-2-one,8-methyl-5-(1-methylethyl)-, (e)-; (?a'a a'a currency)-solanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -201930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     654.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=84290.0
-    phase     gas;
 }

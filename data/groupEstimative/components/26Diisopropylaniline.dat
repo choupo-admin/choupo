@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-di(propan-2-yl)aniline" "aniline, 2,6-diisopropyl-" "benzenamine, 2,6-bis(1-methylethyl)-" "2,6-diisopropyl aniline" "2,6-dilsopropylaniline" "2,6-diisopropylphenylamine" "2,6-bis(1-methylethyl)aniline" "2,6-bis(methylethyl)phenylamine" "aniline,2,6-diisopropyl- (6ci,8ci);2,6-bis(1-methylethyl)aniline;2,6-bis(1-methylethyl)benzenamine;2,6-diisopropylphenylamine;n-(2,6-diisopropylphenyl)amine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -54190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     537.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=204880.0
-    phase     gas;
 }

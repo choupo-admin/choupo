@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 2; } { group dCH_ring; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-azabicyclo[3.2.1]oct-6-ene" "2-azabicyclo(3.2.1)oct-6-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   41060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     244.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=223030.0
-    phase     gas;
 }

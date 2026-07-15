@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group dCH; count 4; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z,z)-11,13-hexadecadienal" "11,13-hexadecadienal, (11z,13z)-" "(11z,13z)-11,13-hexadecadienal" "agn-pc-00le3a" "(11z,13e)-hexadeca-11,13-dienal" "11,13-hexadecadienal,(11z,13z)-" "11,13-hexadecadienal, (11e,13z)-" "11,13-hexadecadienal,(z,z)-; (z,z)-11,13-hexadecadienal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -224710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     784.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=144760.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-methoxy-12a-methyl-1,3,4,4a,4b,5,6,10b,11,12-decahydrochrysen-2-one" "d-homoestrone methyl ether" "d-homoestra-1,3,5(10)-trien-17a-one, 3-methoxy-" "d-homoestra-1,3,5(10)-trien-17a-one,3-methoxy-" "d-homoestra-1,3,5(10)-trien-17a-one, 3-methoxy-, (8alpha)-" "d-homoestra-1,3,5(10)-trien-17a-one,3-methoxy-,(8.alpha.)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -317640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     564.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=115830.0
-    phase     gas;
 }

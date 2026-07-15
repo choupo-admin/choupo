@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(oxidanyl)propyl ethanoate" "monoacetin" "2,3-dihydroxypropyl acetate" "glycerol monoacetate" "glyceryl monoacetate" "acetin, mono-" "monacetin" "glyceryl acetate" "1-monoacetin" "monoacetyl glycerine" "1,2,3-propanetriol, monoacetate" "glycerol 1-monoacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -773550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-595230.0
-    phase     gas;
 }

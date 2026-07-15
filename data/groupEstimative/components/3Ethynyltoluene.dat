@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethynyl-3-methyl-benzene" "1-ethynyl-3-methylbenzene" "3-methylphenylacetylene" "m-tolylacetylene" "3'-methylphenylacetylene" "3'-methylphenyl acetylene" "3-methyl phenylacetylene" "agn-pc-0cqhgh" "3-ethynyl-1-methylbenzene" "benzene,1-ethynyl-3-methyl-" "benzene, 1-ethynyl-3-methyl-" "renyidzoaffnhc-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   287870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     363.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=350750.0
-    phase     gas;
 }

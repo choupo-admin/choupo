@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-dimethylpentan-3-ol" "diisopropylcarbinol" "3-pentanol, 2,4-dimethyl-" "diisopropylmethanol" "2,4-dimethyl-3-hydroxypentane" "di-iso-propylcarbinol" "g00025-watson-int" "ethyl tert-butyl carbinol" "tert-butylethylcarbinol" "2,4-dimethyl-4-pentanol" "3-hydroxy-2,2-dimethylpentane" "2,2-dimethylpentan-3-ol;2,2-dimethyl-3-pentanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -355880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     450.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-136080.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 16; } { group dCH; count 2; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-octadecenoic acid (9z)-, compd. with n-ethylethanamine (1:1)" "n-ethylethanamine; (z)-octadec-9-enoic acid" "oleic acid, compound with diethylamine (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -788610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1207.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-144700.0
-    phase     gas;
 }

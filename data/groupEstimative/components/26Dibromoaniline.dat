@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-bis(bromanyl)aniline" "benzenamine, 2,6-dibromo-" "2,6-dibromophenylamine" "aniline, 2,6-dibromo-" "2,6-dibromo-aniline" "2,6-dibromobenzenamine" "(2,6-dibromo-phenyl)-amine" "2,6-dibromo-phenylamine" "wt386" "608-30-0 2,6-dibromoaniline" "2,6-dibromo aniline;2,6-dibromo-phenylamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   132870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=187880.0
-    phase     gas;
 }

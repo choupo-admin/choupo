@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,11-dimethyl-3,4-dihydrochrysene" "chrysene, 3,4-dihydro-1,11-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   249950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     514.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=481400.0
-    phase     gas;
 }

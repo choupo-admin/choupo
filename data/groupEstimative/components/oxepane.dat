@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxacycloheptane" "hexahydrooxepin" "perhydrooxepine" "perhydrooxepin" "hexahydrooxepin;hexamethylene oxide; hexane, 1,6-epoxy-; oxacycloheptane; oxepin, hexahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -230670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     370.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-66420.0
-    phase     gas;
 }

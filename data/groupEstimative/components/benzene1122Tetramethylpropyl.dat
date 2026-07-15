@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group C; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,3-trimethylbutan-2-ylbenzene" "agn-pc-00jtfg" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -92620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     478.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176670.0
-    phase     gas;
 }

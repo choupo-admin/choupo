@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 10; } { group CH_ring; count 5; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(3s,5r,10s,13r,14s,17r)-10,13-dimethyl-14-oxidanyl-17-(5-oxidanylidene-2h-furan-3-yl)-1,2,3,4,5,6,7,8,9,11,12,15,16,17-tetradecahydrocyclopenta[a]phenanthren-3-yl] methanoate" "3-formyl-digitoxigenin" "3-beta,14-dihydroxy-5-beta-card-20(22)-enolide 3-formate" "5-beta-card-20(22)-enolide, 3-beta,14-dihydroxy-, 3-formate" "card-20(22)-enolide, 3-(formyloxy)-14-hydroxy-, (3-beta,5-beta)-" "[(3s,5r,10s,13r,14s,17r)-14-hydroxy-10,13-dimethyl-17-(5-oxo-2h-furan-3-yl)-1,2,3,4,5,6,7,8,9,11,12,15,16,17-tetradecahydrocyclopenta[a]phenanthren-3-yl] formate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -567540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1062.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-28050.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tridecan-7-ylbenzene" "7-phenyltridecane" "benzene, (1-hexylheptyl)-" "tridecane, 7-phenyl- (8ci)" "benzene, (1-hexylheptyl)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -204240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     780.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=219070.0
-    phase     gas;
 }

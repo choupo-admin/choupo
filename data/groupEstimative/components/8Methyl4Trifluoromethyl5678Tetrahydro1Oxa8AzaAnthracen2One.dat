@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group F; count 3; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-methyl-4-(trifluoromethyl)-7,8-dihydro-6h-pyrano[3,2-g]quinolin-2-one" "6,7,8,9-tetrahydro-9-methyl-4-(trifluoromethyl)-2h-pyrano(3,2-q)quinolin-2-one" "2h-pyrano(3,2-g)quinolin-2-one, 6,7,8,9-tetrahydro-9-methyl-4-(trifluoromethyl)-" "2h-pyrano[3,2-g]quinolin-2-one, 6,7,8,9-tetrahydro-9-methyl-4-(trifluoromethyl)-" "6,7,8,9-tetrahydro-9-methyl-4-(trifluoromethyl)-2h-pyrano(3,2-g)quinolin-2-one" "9-methyl-4-(trifluoromethyl)-6,7,8,9-tetrahydro-2h-pyrano[3,2-g]quinolin-2-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -738250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     540.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-461310.0
-    phase     gas;
 }

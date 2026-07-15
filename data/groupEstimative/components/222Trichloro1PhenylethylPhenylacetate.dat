@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group Cl; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2,2,2-tris(chloranyl)-1-phenyl-ethyl] 2-phenylethanoate" "2,2,2-trichloro-1-phenylethylphenylacetate" "benzeneacetic acid, 2,2,2-trichloro-1-phenylethyl ester" "trichlormethylphenylcarbinol, phenyl acetate" "(2,2,2-trichloro-1-phenylethyl) 2-phenylacetate" "benzeneacetic acid,2,2,2-trichloro-1-phenylethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -279040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     669.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37100.0
-    phase     gas;
 }

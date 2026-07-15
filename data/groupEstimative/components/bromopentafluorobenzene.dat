@@ -33,9 +33,8 @@ groups
     joback ( { group dC_ring; count 6; } { group F; count 5; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-2,3,4,5,6-pentakis(fluoranyl)benzene" "pentafluorobromobenzene" "bromoperfluorobenzene" "benzene, bromopentafluoro-" "1-bromo-2,3,4,5,6-pentafluorobenzene" "pentafluorophenyl bromide" "2,3,4,5,6-pentafluorobromobenzene" "benzene, 1-bromo-2,3,4,5,6-pentafluoro-" "2,3,4,5,6-bromopentafluorobenzene" "1-bromo-pentafluorobenzene" "b118" "i141" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -942210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     461.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-895830.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylbenzo[c]phenanthrene" "3-methyl-3,4-benzophenanthrene" "3-methylbenzo(c)phenanthrene" "7-methyl-3,4-benzphenanthrene" "benzo[c]phenanthrene, 3-methyl-" "benzo(c)phenanthrene, 3-methyl-" "methylbenzo(c)phenanthrene" "10-methylbenzo[c]phenanthrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   339840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     444.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=512570.0
-    phase     gas;
 }

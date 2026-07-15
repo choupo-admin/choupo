@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3,6-bis(chloranyl)-2-methoxy-benzoate" "dicamba methyl ester" "racuza" "dicamba-methyl" "methyl 3,6-dichloro-2-methoxybenzoate" "benzoic acid, 3,6-dichloro-2-methoxy-, methyl ester" "disugran [ansi]" "dicamba-methyl [iso]" "methyl 3,6-dichloro-o-anisate" "o-anisic acid, 3,6-dichloro-, methyl ester (7ci)(8ci)" "benzoic acid, 3,6-dichloro-2-methoxy-, methyl ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -507950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     511.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-330810.0
-    phase     gas;
 }

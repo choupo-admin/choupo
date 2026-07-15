@@ -33,9 +33,8 @@ groups
     joback ( { group tCH; count 1; } { group tC; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-ynal" "2-propynal" "propioaldehyde" "propargylaldehyde" "propynal" "propiolaldehye" "propyn-3-al" "2-propyn-1-al" "formylacetylene" "hc.equiv.ccho" "agn-pc-0d7cfg" "hc.$.ccho" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   101070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     261.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97930.0
-    phase     gas;
 }

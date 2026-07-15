@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 20; } { group dC_ring; count 18; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dibenzo[de,yz]naphtho[8,1,2-hij]hexaphene" "tribenzo(de,ij,q)naphtho(2,1,8-uva)pentaphene" "tribenzo[de,ij,q]naphtho[2,1,8-uva]pentaphene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   945830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     495.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1252780.0
-    phase     gas;
 }

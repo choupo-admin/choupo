@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-4-fluoranyl-2-methyl-benzene" "1-chloro-4-fluoro-2-methylbenzene" "3-fluoro-6-chlorotoluene" "1-chlor-4-fluor-2-methylbenzol" "6-chloro-3-fluorotoluene" "benzene, 1-chloro-4-fluoro-2-methyl-" "toluene,2-chloro-5-fluoro- (8ci);1-chloro-4-fluoro-2-methylbenzene;6,3-chlorofluorotoluene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -186070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     375.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-105530.0
-    phase     gas;
 }

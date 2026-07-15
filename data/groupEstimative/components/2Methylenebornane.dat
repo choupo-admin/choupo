@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,7,7-trimethyl-3-methylidene-bicyclo[2.2.1]heptane" "1,7,7-trimethyl-2-methylenebicyclo[2.2.1]heptane" "4,7,7-trimethyl-3-methylidenebicyclo[2.2.1]heptane" "bicyclo[2.2.1]heptane,1,7,7-trimethyl-2-methylene-" "(1s,4r)-1,7,7-trimethyl-2-methylidenebicyclo[2.2.1]heptane" "bornane,2-methylene- (6ci,7ci,8ci); 1,7,7-trimethyl-2-methylenebicyclo[2.2.1]heptane;1,7,7-trimethyl-2-methylenenorbornane; 2-methylenebornane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -36550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=185530.0
-    phase     gas;
 }

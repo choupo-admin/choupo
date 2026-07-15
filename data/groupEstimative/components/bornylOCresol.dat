@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-4-[(1s,3r,4r)-4,7,7-trimethyl-3-bicyclo[2.2.1]heptanyl]phenol" "phenol, 2-methyl(1,7,7-trimethylbicyclo(2.2.1)heptyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -217220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     625.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=123420.0
-    phase     gas;
 }

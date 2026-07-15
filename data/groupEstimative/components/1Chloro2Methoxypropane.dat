@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-2-methoxy-propane" "propane, 1-chloro-2-methoxy-" "1-chloro-2-methoxy-propane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -279130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     346.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-136570.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-fluoranylbenzoate" "methyl p-fluorobenzoate" "4-fluorobenzoic acid methyl ester" "methyl 4-fluorobenzoic acid" "benzoic acid, 4-fluoro-, methyl ester" "methyl-4-fluorobenzoate" "4-fluorobenzoic methyl ester" "p-fluorobenzoic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -496780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-385920.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 5; } { group CH; count 3; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methyl-n-(3-methylbutyl)heptan-2-amine" "octisamyl" "octin d" "octometine" "ludoctal" "neo-octon" "octinum d" "oktin d" "octamylaminum [inn-latin]" "2-isoamylamino-6-methylheptane" "hexylamine, 1,5-dimethyl-n-isopentyl-" "octamilamina" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -274020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     674.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=140650.0
-    phase     gas;
 }

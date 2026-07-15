@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group tC; count 2; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-iodanylethynyl(trimethyl)silane" "silane, (iodomethyl)trimethyl-" "2-iodoethynyl(trimethyl)silane" "silane,(iodoethynyl)trimethyl- (7ci,8ci,9ci);(iodoethynyl)trimethylsilane;1-iodo-2-(trimethylsilyl)acetylene;1-iodo-2-(trimethylsilyl)ethyne;iodo(trimethylsilyl)acetylene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   91020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     504.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=147380.0
-    phase     gas;
 }

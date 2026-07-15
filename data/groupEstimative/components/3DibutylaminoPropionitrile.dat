@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group N; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(dibutylamino)propanenitrile" "n,n-dibutyl-3-aminopropionitrile" "propanenitrile, 3-(dibutylamino)-" "propionitrile, 3-(dibutylamino)-" "3-bis(n-n-butyl)aminopropiononitrile" "propionitrile, 3-(dibutylamino)- (6ci,7ci,8ci)" "beta-di-n-butylaminopropionitrile" "propanenitrile, 3-(dibutylamino)- (9ci)" "propionitrile, 3-amino-n,n-dibutyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -37960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     606.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=285700.0
-    phase     gas;
 }

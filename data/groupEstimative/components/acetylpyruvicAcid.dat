@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CdO; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4-bis(oxidanylidene)pentanoic acid" "2,4-dioxovaleric acid" "2,4-dioxopentanoic acid" "2,4-dioxovalerate" "2,4-dioxo-pentanoic acid" "pentanoic acid, 2,4-dioxo-" "acetopyruvate2,4-dioxo-pentanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -721960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-610530.0
-    phase     gas;
 }

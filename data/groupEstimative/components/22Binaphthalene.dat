@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 14; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-naphthalen-2-ylnaphthalene" "2,2'-binaphthyl" "2,2'-dinaphthyl" "beta,beta'-binaphthyl" "2-naphthalen-2-ylnaphthalin" ".beta.,.beta.'-binaphthyl" "2,2'-binaphthyl (8ci)" "2-(naphthalen-2-yl)naphthalene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   376130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=536380.0
-    phase     gas;
 }

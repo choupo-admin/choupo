@@ -33,9 +33,8 @@ groups
     joback ( { group dC; count 4; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2,3,4,4-hexakis(chloranyl)buta-1,3-diene" "hexachlorobutadiene" "perchlorobutadiene" "hcbd" "hexachlorobuta-1,3-diene" "hexachlorbutadiene" "perchlorobuta-1,3-diene" "dolen-pur" "c 46" "1,1,2,3,4,4-hexachlorobuta-1,3-diene" "1,3-butadiene, 1,1,2,3,4,4-hexachloro-" "1,3-hexachlorobutadiene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -25050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     482.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37460.0
-    phase     gas;
 }

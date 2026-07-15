@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methyl-2,6-bis(oxidanyl)benzoic acid" "p-osellinic acid" "4-methyl-2,6-dihydroxybenzoic acid" "p-orcellinic acid" "gamma-resorcylic acid, 4-methyl-" "benzoic acid, 2,6-dihydroxy-4-methyl-" "p-orsellinic acid" "2,6-dihydroxy-p-toluic acid" "4-carboxy-3,5-dihydroxytoluene" "dihydroxymethylbenzenecarboxylicacid" "2-carboxy-5-methylbenzene-1,3-diol" "2,6-dihydroxy-4-methylbenzenecarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -688280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     461.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-533890.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 11; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloromethyl 11-chloranylundecanoate" "11-chloroundecanoic acid, chloromethyl ester" "undecanoic acid, 11-chloro-, chloromethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -639770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     741.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-284070.0
-    phase     gas;
 }

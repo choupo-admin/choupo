@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5,5-dimethyl-4-(3-oxidanylidenebutyl)oxolan-2-one" "5,5-dimethyl-4-(3-oxobutyl)dihydro-2(3h)-furanone" "4,5-dihydro-5,5-dimethyl-4-(3-oxobutyl)furan-2(3h)-one" "agn-pc-00n1l1" "heptanoic acid lactone derivative" "5,5-dimethyl-4-(3-oxobutyl)oxolan-2-one" "2(3h)-furanone,5-dimethyl-4-(3-oxobutyl)-" "5,5-dimethyl-4-(3-oxo-butyl)-dihydro-furan-2-one" "(r)-5,5-dimethyl-4-(3'-oxobutyl)-4,5-dihydrofuran-2(3h)-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -611890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     560.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-358420.0
-    phase     gas;
 }

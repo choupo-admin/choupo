@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 7; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methylcyclooctan-1-ol" "cyclooctanol, 1-methyl-" "1-methyl cyclooctanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -324080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     636.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-117160.0
-    phase     gas;
 }

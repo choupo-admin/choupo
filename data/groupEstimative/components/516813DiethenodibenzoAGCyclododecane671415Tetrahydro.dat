@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group dCH_ring; count 12; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "anti-(5,16:8,13)-diethenodibenzo[a,g] cyclododecene 6,7,14,15-tetrahydro-" "ghl.pd_mitscher_leg0.113" "5,16:8,13-diethenodibenzo[a,g]cyclododecene,6,7,14,15-tetrahydro-" "anti-(5,16:8,13)-dthenodibenzo(a,g)cyclododecene, 6,7,14,15-tetrahydro-" "syn-(5,16:8,13)-diethenodibenzo[a,g]cyclododecene 6,7,14,15-tetrahydro-" "6,7,14,15-tetrahydro-5,16:8,13-di(ethanediylidene)dibenzo[a,g][12]annulene" "syn-(5,16:8,13)-diethenodibenzo(a,g)cyclododecene, 6,7,14,15-tetrahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   357610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     607.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=607160.0
-    phase     gas;
 }

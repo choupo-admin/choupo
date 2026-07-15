@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-dimethyl-3-oxidanyl-propanoic acid" "3-hydroxypivalic acid" "2,2-dimethyl-3-hydroxypropionic acid" "3-hydroxy-2,2-dimethylpropanoic acid" "propanoic acid, 3-hydroxy-2,2-dimethyl-" "hydroxy pivalic acid" "3-hydroxy-2,2-dimethylpropionic acid" "p296" "3-hydroxy-2,2-dimethylpropionic acid; hydroxypivalic acid" "3-hydroxy-2,2-dimethyl-propanoicaci;propanoic acid, 3-hydroxy-2,2-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -657780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     415.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-486670.0
-    phase     gas;
 }

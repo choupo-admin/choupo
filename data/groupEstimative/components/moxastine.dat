@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(1,1-diphenylethoxy)-n,n-dimethyl-ethanamine" "mephenhydramine" "theadrylettae" "moxastin" "therdryl" "mephenhydraminum" "moxastinum [inn-latin]" "2-(1,1-diphenylethoxy)-n,n-dimethylethanamine" "substanz nr. 1934 [german]" "2-(1,1-diphenylethoxy)-n,n-dimethylethylamine" "ethylamine, n,n-dimethyl-2-(1,1-diphenylethoxy)-" "ethylamine, 2-(1,1-diphenylethoxy)-n,n-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -15230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     632.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=334120.0
-    phase     gas;
 }

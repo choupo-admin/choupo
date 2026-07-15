@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group dCH; count 6; } { group dC; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2e,4e,6e,8e)-9-(4-methoxy-2,3,6-trimethyl-phenyl)-3,7-dimethyl-nona-2,4,6,8-tetraenoic acid" "soriatane" "neotigason" "etretin" "acitretine" "acitretina" "acitretinum" "retinoid etretin" "all-trans-acitretin" "acitretine [french]" "acitretinum [latin]" "tmmp" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -319310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     872.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=54700.0
-    phase     gas;
 }

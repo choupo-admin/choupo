@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-oxidanylpropanoate" "methyl 2-hydroxypropanoate" "lactic acid, methyl ester" "dl-methyl lactate" "methyl dl-lactate" "methyl 2-hydroxypropionate" "(+-)-methyl lactate" "lactic acid methyl ester" "methyl alpha-hydroxypropionate" "propanoic acid, 2-hydroxy-, methyl ester" "(+-)-methyl 2-hydroxypropanoate" "(+-)-methyl 2-hydroxypropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -600680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     404.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-466830.0
-    phase     gas;
 }

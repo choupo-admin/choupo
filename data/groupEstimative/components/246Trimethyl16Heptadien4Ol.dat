@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group dCH2; count 2; } { group dC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,4,6-trimethylhepta-1,6-dien-4-ol" "diisobutenyl methyl carbinol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -179430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     540.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=57920.0
-    phase     gas;
 }

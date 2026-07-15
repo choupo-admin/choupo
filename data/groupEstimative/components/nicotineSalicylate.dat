@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COOH; count 1; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[(2s)-1-methylpyrrolidin-2-yl]pyridine;2-oxidanylbenzoic acid" "eudermol" "nicotine-d salicylate" "nicotine monosalicylate" "salicylic acid nicotine" "1-methyl-2-(3-pyridyl)pyrrolidine salicylate" "(s)-3-(1-methylpyrrolidin-2-yl)pyridine 2-hydroxybenzoate" "3-[(2s)-1-methyl-2-pyrrolidinyl]pyridine 2-hydroxybenzoic acid" "3-[(2s)-1-methyl-2-pyrrolidinyl]pyridine mono(2-hydroxybenzoate)" "benzoic acid, 2-hydroxy-, compd. with 3-((2s)-1-methyl-2-pyrrolidinyl)pyridine (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -393390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     751.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-49730.0
-    phase     gas;
 }

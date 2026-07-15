@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group tC; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranylbut-2-yne" "2-butyne, 1-chloro-" "1-chlorobut-2-yne" "2-butynyl chloride" "2-butyne, 1-chloro-(8ci,9ci)" "2-butyne,chloro- (6ci,7ci); 1-chloro-2-butyne; g-methylpropargyl chloride" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   130670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     316.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=173670.0
-    phase     gas;
 }

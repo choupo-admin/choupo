@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-3-(4-prop-1-en-2-ylcyclohexen-1-yl)propanal" "alpha-methyl-4-(1-methylvinyl)cyclohexene-1-propan-1-al" "1-cyclohexene-1-propanal, .alpha.-methyl-4-(1-methylethenyl)-" "1-cyclohexene-1-propanal, alpha-methyl-4-(1-methylethenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -186240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     588.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=80690.0
-    phase     gas;
 }

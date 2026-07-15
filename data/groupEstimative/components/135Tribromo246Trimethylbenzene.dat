@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dC_ring; count 6; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,5-tris(bromanyl)-2,4,6-trimethyl-benzene" "benzene,1,3,5-tribromo-2,4,6-trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   29080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     522.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=132120.0
-    phase     gas;
 }

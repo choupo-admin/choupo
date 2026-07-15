@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,2,2,3-tetramethylbicyclo[2.2.1]heptan-3-amine" "versamine" "mecamine" "mekamine" "mevasine" "revertina" "mecamilamina" "mecamylaminum" "2-methylaminoisocamphane" "3-methylaminoisocamphane" "mecamilamina [dcit]" "mecamylaminum [inn-latin]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -87660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     518.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=214130.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2,2-bis(4-chlorophenyl)ethanoate" "methyl bis(p-chlorophenyl)acetate" "p,p'-dda methyl ester" "methyl 2,2-bis(4-chlorophenyl)acetate" "acetic acid, bis(p-chlorophenyl)-, methyl ester (8ci)" "benzeneacetic acid, 4-chloro-alpha-(4-chlorophenyl)-, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -256850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     623.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-55690.0
-    phase     gas;
 }

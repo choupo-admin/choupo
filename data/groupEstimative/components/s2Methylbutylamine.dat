@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-methylbutan-1-amine" "2-methyl-butylamine" "(s)-(-)-1-amino-2-methylbutane hydrochloride" "(s)-2-methylbutylamine" "(s)-1-amino-2-methylbutane" "(2s)-2-methyl-1-butanamine" "(2s)-2-methyl-butan-1-amine" "(s)-(-)-2-methyl-1-butylamine" "1-butanamine,2-methyl-, (s)-; (2s)-2-methylbutylamine; (s)-(-)-2-methyl-1-butylamine;(s)-(-)-2-methylbutylamine; (s)-1-amino-2-methylbutane;(s)-2-methyl-1-butanamine; (s)-2-methyl-1-butylamine; (s)-2-methylbutylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -118020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     392.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55230.0
-    phase     gas;
 }

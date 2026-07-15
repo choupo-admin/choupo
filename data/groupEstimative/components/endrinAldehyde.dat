@@ -34,9 +34,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 5; } { group C_ring; count 5; } { group Cl; count 6; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,4-methenocyclopenta[cd]pentalene-5-carboxaldehyde, 2,2a,3,3,4,7-hexachlorodecahydro-, (1.alpha.,2.beta.,2a.beta.,4.beta.,4a.beta.,5.beta.,6a.beta.,6b.beta.,7r*)-" "agn-pc-03m6pc" "1,2,4-methenocyclopenta(cd)pentalene-5-carboxaldehyde, 2,2a,3,3,4,7-hexachlorodecahydro-, (1alpha,2beta,2abeta,4beta,4abeta,5beta,6abeta,6bbeta,7r*)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -107890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=165210.0
-    phase     gas;
 }

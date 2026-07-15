@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 2; } { group F; count 6; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1-tris(fluoranyl)-2-[2,2,2-tris(fluoranyl)ethoxy]ethane" "flurotyl" "indoklon" "bis(2,2,2-trifluoroethyl) ether" "2,2,2-trifluoroethyl ether" "hexafluorodiethyl ether" "bis(trifluoroethyl) ether" "bis(2,2,2-trifluoroethyl)ether" "bis(trifluoroethyl)ether" "flurotylum [inn-latin]" "1,1,1-trifluoro-2-(2,2,2-trifluoroethoxy)ethane" "ethane, 1,1'-oxybis(2,2,2-trifluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1452270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1285380.0
-    phase     gas;
 }

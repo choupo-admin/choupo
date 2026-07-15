@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 5-oxidanylidene-5-phenyl-pentanoate" "methyl 5-oxo-5-phenylpentanoate" "benzenepentanoic acid, .delta.-oxo-, methyl ester" "5-oxo-5-phenylpentanoic acid methyl ester" "5-oxo-5-phenyl-pentanoic acid methyl ester" "benzenepentanoic acid, d-oxo-, methyl ester" "butyricacid, 4-benzoyl-, methyl ester (6ci,7ci,8ci); 4-carbomethoxybutyrophenone;methyl 4-benzoylbutyrate; methyl 5-oxo-5-phenylpentanoate; g-carbomethoxybutyrophenone; d-oxobenzenepentanoic acid methylester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -484340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     594.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-276720.0
-    phase     gas;
 }

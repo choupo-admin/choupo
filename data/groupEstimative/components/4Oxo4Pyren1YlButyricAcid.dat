@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 7; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-oxidanylidene-4-pyren-1-yl-butanoic acid" "1-pyrenebutanoic acid, .gamma.-oxo-" "1-pyrenebutanoic acid, " "a-oxo-" "4-oxo-4-pyren-1-yl-butyricacid" "4-oxo-4-pyren-1-ylbutanoic acid" "4-oxo-4-(pyren-1-yl)butanoic acid" "4-oxo-4-pyrenylbutanoic acid" "a-oxo-1-pyrenebutyric acid" "gamma-oxo-1-pyrenebutyric acid" "gamma-oxopyrene-1-butyric acid" "1-pyrenebutanoic acid, g-oxo-" "aajqtwwvkreoqp-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -189110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     560.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=42400.0
-    phase     gas;
 }

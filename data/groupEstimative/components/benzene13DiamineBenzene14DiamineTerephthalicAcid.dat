@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 12; } { group dC_ring; count 6; } { group COOH; count 2; } { group NH2; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4-benzenedicarboxylic acid, polymer with 1,3-benzenediamine and 1,4-benzenediamine" "benzene-1,3-diamine; benzene-1,4-diamine; terephthalic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -569570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1125.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-205680.0
-    phase     gas;
 }

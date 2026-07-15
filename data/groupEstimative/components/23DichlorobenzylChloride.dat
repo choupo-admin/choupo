@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-bis(chloranyl)-3-(chloromethyl)benzene" "1,2-dichloro-3-(chloromethyl)benzene" "benzene, dichloro(chloromethyl)-" "dichlorobenzyl chloride" "2,3-dichlorobenzylchloride" "alpha,2,3-trichlorotoluene" "toluene, alpha, ar, ar-trichloro-" "(4-fluorophenyl)-n-methylmethanamine" "2,3-dichloro-1-(chloromethyl)benzene" "benzene,1,2-dichloro-3-(chloromethyl)-" "benzene, 1,2-dichloro-3-(chloromethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -21440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     410.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=65420.0
-    phase     gas;
 }

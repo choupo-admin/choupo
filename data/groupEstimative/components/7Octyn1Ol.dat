@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oct-7-yn-1-ol" "8-hydroxy-1-octyne;oct-7-yn-1-ol;octane-7-yne-1-ol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -68780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     488.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102730.0
-    phase     gas;
 }

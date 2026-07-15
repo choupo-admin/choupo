@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-methylcyclopropyl)benzene" "(2-methyl-cyclopropyl)-benzene" "benzene,(2-methylcyclopropyl)-" "(2-methylcyclopropyl)benzene;1-methyl-2-phenylcyclopropane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   39260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     306.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=198770.0
-    phase     gas;
 }

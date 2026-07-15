@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methoxypropan-2-ol" "2-propanol, 1-methoxy-" "pgme" "closol" "propylene glycol monomethyl ether" "methoxyisopropanol" "propylene glycol methyl ether" "methyl proxitol" "2-methoxy-1-methylethanol" "1-methoxy-2-hydroxypropane" "poly-solve mpm" "propasol solvent m" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -415620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     364.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-261460.0
-    phase     gas;
 }

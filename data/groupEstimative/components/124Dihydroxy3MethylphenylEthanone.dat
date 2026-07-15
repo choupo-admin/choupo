@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[3-methyl-2,4-bis(oxidanyl)phenyl]ethanone" "2',4'-dihydroxy-3'-methylacetophenone" "1-(2,4-dihydroxy-3-methylphenyl)ethan-1-one" "ethanone, 1-(2,4-dihydroxy-3-methylphenyl)-" "1-acetyl-2,4-dihydroxy-3-methylbenzene" "h183" "acetophenone, 2',4'-dihydroxy-3'-methyl- (6ci);1-(2,4-dihydroxy-3-methylphenyl)ethanone;3-methylresacetophenone;4-acetyl-2-methylresorcinol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -471230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     473.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-310480.0
-    phase     gas;
 }

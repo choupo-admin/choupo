@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 9; } { group C; count 1; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "o1-[2-(diethylamino)ethyl] o3-ethyl 2-butyl-2-ethyl-propanedioate" "butylaethylmalonsaeure-aethyl-diaethylaminoaethyl-di-ester [german]" "malonic acid, butylethyl-, 2-(diethylamino)ethyl ethyl ester" "2-(diethylamino)ethyl ethyl butyl(ethyl)propanedioate" "butylaethylmalonsaeure-aethyl-diaethylaminoaethyl-di-ester" "1-o-(2-diethylaminoethyl) 3-o-ethyl 2-butyl-2-ethylpropanedioate" "propanedioic acid, butylethyl-, 2-(diethylamino)ethyl ethyl ester" "propanedioic acid, butylethyl-, 2-(diethylamino)ethyl ethyl ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -969990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     897.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-414860.0
-    phase     gas;
 }

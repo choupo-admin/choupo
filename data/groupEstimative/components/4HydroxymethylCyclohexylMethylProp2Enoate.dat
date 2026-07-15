@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-propenoic acid, [4-(hydroxymethyl)cyclohexyl]methyl ester" "2-propenoic acid, (4-(hydroxymethyl)cyclohexyl)methyl ester" "2-propenoic acid,[4-(hydroxymethyl)cyclohexyl]methyl ester" "acrylicacid, [4-(hydroxymethyl)cyclohexyl]methyl ester (8ci);1,4-cyclohexanedimethanol monoacrylate; chdmma" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -580470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     609.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-300870.0
-    phase     gas;
 }

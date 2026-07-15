@@ -34,9 +34,8 @@ groups
     joback ( { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,5,6-pentakis(chloranyl)-5-phenyl-cyclohexa-1,3-diene" "1,2,3,4,5-pentachlorobibenzene" "biphenyl,pentachloro- (6ci,7ci,8ci); apirolio 1476c; dp 5; diphenyl pentachloride;kanekrol 500; pentachlorobiphenyl; pentachlorodiphenyl; pyralene 1476; pyroclor5" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     587.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=145200.0
-    phase     gas;
 }

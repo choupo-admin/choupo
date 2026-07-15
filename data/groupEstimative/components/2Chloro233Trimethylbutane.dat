@@ -34,9 +34,8 @@ groups
     joback ( { group CH3; count 5; } { group C; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-2,3,3-trimethyl-butane" "butane,3,3-trimethyl-" "2-chloro-2,3'-trimethylbutane" "1,2,2-tetramethylpropyl chloride" "2-chloro-2,3,3-trimethyl butane" "1,1,2,2-tetramethylpropyl chloride" "butane, 2-chloro-2,3,3-trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -221050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     384.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1810.0
-    phase     gas;
 }

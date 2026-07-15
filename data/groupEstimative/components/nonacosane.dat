@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 27; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "celidoniol, deoxy-" "n-nonacosane" "ai3-36284" "nonacosane -" "octacosane, methyl-" "CH3-(CH2)27-CH3" "CH3-[CH2]27-ch3" "Nonacosane; Celidoniol, deoxy- (7CI); n-Nonacosane" "nonacosane, analytical standard" "CHEMBL428955" "HY-N5127" "N-c-29" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -641890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1285.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=193300.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group O; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-ethoxyethoxy)ethyl ethanoate" "carbitol acetate" "diethylene glycol monoethyl ether acetate" "ethoxydiglycol acetate" "ethanol, 2-(2-ethoxyethoxy)-, acetate" "de acetate" "ektasolve de acetate" "ethyldiglycol acetate" "diglycol monoethyl ether acetate" "glycol ether de acetate" "diethylene glycol ethyl ether acetate" "2-(2-ethoxyethoxy)ethanol acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -790170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     541.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-503890.0
-    phase     gas;
 }

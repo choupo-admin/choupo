@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10-methoxy-10-oxidanylidene-decanoic acid" "sebacic acid monomethyl ester" "10-methoxy-10-oxodecanoic acid" "methyl hydrogen sebacate" "monomethyl sebacate" "decanoic acid, monomethyl ester" "9-(methoxycarbonyl)nonanoic acid" "decanedioic acid monomethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -937920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     688.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-612540.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group C_ring; count 1; } { group OH; count 5; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r,3s,4r,5r)-2-(hydroxymethyl)oxane-2,3,4,5-tetrol" "fructosteril" "laevoral" "laevosan" "levugen" "frutabs" "fructopyranose, beta-d-" "bdf" "ss-d-fructopyranose" "a-d-fructopyranose" "fructose, pyranose form" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1051780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     504.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-774750.0
-    phase     gas;
 }

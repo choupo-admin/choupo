@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenylprop-2-yn-1-ol" "1-phenylpropargyl alcohol" "ethynylphenylcarbinol" "phenylethynylcarbinol" "2-propyn-1-ol, 1-phenyl-" "benzyl alcohol, .alpha.-ethynyl-" "benzenemethanol, .alpha.-ethynyl-" "alpha-ethynylbenzyl alcohol" "alpha-ethynylbenzenemethanol" "alpha-phenylpropargyl alcohol" "benzyl alcohol, alpha-ethynyl-" "(r)-1-phenyl-2-propyn-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   141830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     411.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=221120.0
-    phase     gas;
 }

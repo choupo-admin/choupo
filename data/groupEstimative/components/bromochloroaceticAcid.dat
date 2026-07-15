@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group Cl; count 1; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanyl-2-chloranyl-ethanoic acid" "acetic acid, bromochloro-" "2-bromo-2-chloroacetic acid" "chlorobromoacetic acid" "bromo(chloro)acetic acid" "bromochloracetic acid" "brch(cl)cooh" "bromochloroethanoic acid" "brch(cl)co2h" "2-bromo-2-chloroethanoic acid" "water disinfection byproducts(bromochloroacetic acid)" "aceticacid, bromochloro- (7ci,8ci,9ci); bromochloroacetic acid; chlorobromoaceticacid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -429570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     361.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-378000.0
-    phase     gas;
 }

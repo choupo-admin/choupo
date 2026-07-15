@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 3; } { group CH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 6; } { group C_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6beta-methoxy-i-cholesterol" "3,5-cyclocholestane, 6-methoxy-" "i-cholesteryl methyl ether" "(3" "a,5" "a,6" "a)-6-methoxy-3,5-cyclocholestane" "6-beta-methoxy-3-alpha,5-cyclo-5-alpha-cholestane" "3-alpha,5-cyclo-5-alpha-cholestane, 6-beta-methoxy-" "3,5-cyclocholestane, 6-methoxy-, (3beta,5alpha,6beta)-" "3,5-cyclocholestane, 6-methoxy-, (3-beta,5-alpha,6-beta)-" "3-alpha,5-cyclo-5-alpha-cholestane, 6-beta-methoxy- (8ci)" "3,5-cyclocholestane, 6-methoxy-, (3-beta,5-alpha,6-beta)- (9ci)" "3,5-cyclocholestane, 6-methoxy-, (3beta,5alpha,6beta)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -447990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     866.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=307240.0
-    phase     gas;
 }

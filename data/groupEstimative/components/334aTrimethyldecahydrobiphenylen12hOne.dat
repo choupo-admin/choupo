@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,4a-trimethyl-4,4b,5,6,7,8,8a,8b-octahydro-2h-biphenylen-1-one" "1(2h)-biphenylenone, decahydro-3,3,4a-trimethyl-" "5,5,7-trimethyltricyclo(6.4.0.02,7)dodecan-3-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -300910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     504.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72380.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,3,3,3-hexadeuterio-2-methyl-propane" "2-methyl(1,1,1,3,3,3-2h6)propane" "1,1,1,3,3,3-hexadeuterio-2-methylpropane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -131170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     302.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-19640.0
-    phase     gas;
 }

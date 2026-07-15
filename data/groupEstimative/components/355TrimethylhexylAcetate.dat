@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5,5-trimethylhexyl ethanoate" "nonanyl acetate" "1-hexanol, 3,5,5-trimethyl-, acetate" "3,5,5-trimethylhexan-1-ol acetate" "1-hexanol, 3,5,5-trimethyl-, 1-acetate" "3,5,5-trimethyl-1-hexanol acetate" "3,5,5-trimethyl-1-hexanol, acetate" "acetic acid 3,5,5-trimethylhexyl ester" "1-hexanol,3,5,5-trimethyl-, 1-acetate" "1-hexanol,3,5,5-trimethyl-, acetate (9ci); 3,5,5-trimethylhexyl acetate; vanoris" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -601680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     587.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-268230.0
-    phase     gas;
 }

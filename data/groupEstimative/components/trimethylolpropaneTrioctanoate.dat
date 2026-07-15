@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 22; } { group C; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-bis(octanoyloxymethyl)butyl octanoate" "trimethylolpropane caprylate" "2-ethyl-2-(((1-oxooctyl)oxy)methyl)-1,3-propanediyl dioctanoate" "2-ethyl-2-[[(1-oxooctyl)oxy]methyl]-1,3-propanediyl dioctanoate" "octanoic acid, 1,1'-(2-ethyl-2-(((1-oxooctyl)oxy)methyl)-1,3-propanediyl) ester" "octanoic acid, 1,1'-[2-ethyl-2-[[(1-oxooctyl)oxy]methyl]-1,3-propanediyl] ester" "trimethylolpropane tricaprylate" "octanoic acid, 2-ethyl-2-(((1-oxooctyl)oxy)methyl)-1,3-propanediyl ester" "octanoic acid, triester with 2-ethyl-2-(hydroxymethyl)-1,3-propanediol" "2-ethyl-2-(((oxo-2-ethylhexyl)oxy)methyl)-1,3-propanediyl 2-ethylhexanoate" "2-ethylhexanoic acid, 2-ethyl-2-(((1-oxo-2-ethylhexyl)oxy)methyl)-1,3-propanediyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1623120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1439.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-726550.0
-    phase     gas;
 }

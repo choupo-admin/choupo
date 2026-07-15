@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(4-methylpent-3-enyl)-1-prop-2-enyl-cyclohex-3-ene-1-carbaldehyde" "1-allyl-4-(4-methyl-3-pentenyl)cyclohex-3-ene-1-carbaldehyde" "3-cyclohexene-1-carboxaldehyde, 4-(4-methyl-3-pentenyl)-1-(2-propenyl)-" "3-cyclohexene-1-carboxaldehyde, 4-(4-methyl-3-penten-1-yl)-1-(2-propen-1-yl)-" "4-(4-methylpent-3-enyl)-1-prop-2-enylcyclohex-3-ene-1-carbaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -110420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     778.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=183120.0
-    phase     gas;
 }

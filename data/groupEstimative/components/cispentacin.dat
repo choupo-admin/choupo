@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 2; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1r,2s)-2-azanylcyclopentane-1-carboxylic acid" "(1r,2s)-2-aminocyclopentanecarboxylic acid" "(-)-cispentacin" "(-)-(1r,2s)-cispentacin" "(1r-cis)-2-aminocyclopentanecarboxylic acid" "cyclopentanecarboxylic acid, 2-amino-, (1r,2s)-" "cyclopentanecarboxylic acid, 2-amino-, (1r-cis)-" "cis-(1r,2s)-2-aminocyclopentane-1-carboxylic acid" "cis-2-amino-1-cyclopentanecarboxylic acid" "cis-pentacin" "cis-2-amino-cyclopentanecarboxylic acid" "(+/-)-cispentacin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -443510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-248980.0
-    phase     gas;
 }

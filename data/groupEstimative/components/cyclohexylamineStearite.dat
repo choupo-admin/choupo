@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 16; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohexanamine;octadecanoic acid" "cyclohexylammonium stearate" "stearic acid, compd. with cyclohexylamine (1:1)" "cyclohexanamine; octadecanoic acid" "stearic acid, cyclohexylamine salt" "stearic acid, compd. with cyclohexylamine" "stearic acid, cyclohexylamine salt (6ci)" "octadecanoic acid - cyclohexanamine (1:1)" "stearic acid, compd. with cyclohexylamine (7ci)" "octadecanoic acid, compd. with cyclohexanamine (1:1)" "octadecanoic acid, compd. with cyclohexanamine (1:1) (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -912470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1272.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-206570.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 4-[cyclopropyl(oxidanyl)methylidene]-3,5-bis(oxidanylidene)cyclohexane-1-carboxylate" "cimectacarb" "moddus" "primo" "trinexapac-ethyl [iso]" "cyclohexanecarboxylic acid, 4-(cyclopropylhydroxymethylene)-3,5-dioxo-, ethyl ester" "ethyl 4-(cyclopropylhydroxymethylene)-3,5-dioxocyclohexanecarboxylate" "ethyl 4-(cyclopropyl(hydroxy)methylene)-3,5-dioxocyclohexanecarboxylate" "4-(cyclopropyl-alpha-hydroxymethylene)-3,5-dioxocyclohexanecarboxylic acid ethyl ester" "ethyl 4-[cyclopropyl(hydroxy)methylidene]-3,5-dioxocyclohexanecarboxylate" "ethyl 4-[cyclopropyl(hydroxy)methylidene]-3,5-dioxocyclohexane-1-carboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -863200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     453.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-511680.0
-    phase     gas;
 }

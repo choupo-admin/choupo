@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-prop-1-en-2-ylcyclohexen-1-yl)methanol" "perillol" "p-mentha-1,8-dien-7-ol" "isocarveol" "perillyl alcohol" "iso-carveol" "1-cyclohexene-1-methanol, 4-(1-methylethenyl)-" "hydrocumin alcohol" "4-isopropenyl-1-cyclohexene carbinol" "4-isopropenylcyclohex-1-en-1-ylmethanol" "dihydrocuminic alcohol" "4-isopropenyl-cyclohex-1-ene-1-methanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -185690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     513.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=20570.0
-    phase     gas;
 }

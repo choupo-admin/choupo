@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloroethylsulfanylmethylbenzene" "2-chloroethyl benzyl sulfide" "2-benzylthioethyl chloride" "sulfide, benzyl 2-chloroethyl" "benzyl beta-chloroethyl sulfide" "alpha-(2-chloroethylthio)toluene" "(((2-chloroethyl)thio)methyl)benzene" "benzene, (((2-chloroethyl)thio)methyl)" "benzene,[[(2-chloroethyl)thio]methyl]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   33570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=158500.0
-    phase     gas;
 }

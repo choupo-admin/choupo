@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylmethoxyethanol" "2-benzyloxyethanol" "ethanol, 2-(phenylmethoxy)-" "ethylene glycol monobenzyl ether" "ethanol, 2-(benzyloxy)-" "2-benzyloxy-1-ethanol" "benzyl cellosolve" "glycol benzyl ether" "glycol monobenzyl ether" "2-(benzyloxy) ethanol" "2-(phenylmethoxy)ethan-1-ol" "benzylcelosolv" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -277010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104510.0
-    phase     gas;
 }

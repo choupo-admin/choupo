@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-trimethylsilylpropyl ethanoate" "1-propanol, 3-(trimethylsilyl)-, acetate" "3-(trimethylsilyl)propyl acetate" "1-propanol, 3-(trimethylsilyl)-, 1-acetate" "1-propanol, 3-(trimethylsilyl)-, acetate;1-propanol,3-(trimethylsilyl)-,acetate;3-(trimethylsilyl)-1-propano acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -637350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     645.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-398650.0
-    phase     gas;
 }

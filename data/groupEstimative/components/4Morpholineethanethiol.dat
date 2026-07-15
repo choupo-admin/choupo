@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 4; } { group O_ring; count 1; } { group N; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-morpholin-4-ylethanethiol" "2-(4-morpholinyl)ethanethiol" "2-morpholinoethanethiol" "morpholin-4-ylethylthiol" "morpholine, 4-mercaptoethyl-" "n-morpholylcysteamin [german]" "4-(2-mercaptoethyl)morpholine" "ethanethiol, morpholino-" "n-morpholylcysteamin" "ethanethiol, 2-morpholino-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -112340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     408.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97950.0
-    phase     gas;
 }

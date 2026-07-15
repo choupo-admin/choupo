@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methanoyl-3-oxidanyl-benzoic acid" "benzoic acid,4-formyl-3-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -434520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-335310.0
-    phase     gas;
 }

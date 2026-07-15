@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 2; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetraethylpropan-1,1,2,3-tetracarboxylat" "1,1,2,3-propanetetracarboxylic acid tetraethyl ester" "tetraethyl 1,1,2,3-propanetetracarboxylate" "1,1,2,3-propanetetracarboxylic acid, tetraethyl ester" "propane-1,1,2,3-tetracarboxylic acid tetraethyl ester" "1,2,3-propanetetracarboxylic acid, tetraethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1632610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     926.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1170940.0
-    phase     gas;
 }

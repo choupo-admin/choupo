@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-methoxy-9-oxidanylidene-nonanoic acid" "monomethyl azelate" "azelaic acid monomethyl ester" "mono-methyl azelate" "nonanedioic acid, monomethyl ester" "9-methoxy-9-oxononanoic acid" "azelaic acid, monomethyl ester" "monomethyl nonanedioate" "mono-methyl nonanedioate" "8-carbomethoxyoctanoic acid" "monomethyl azelaate" "8-methoxycarbonyloctanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -917280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     649.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-620960.0
-    phase     gas;
 }

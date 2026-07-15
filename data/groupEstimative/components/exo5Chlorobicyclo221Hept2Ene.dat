@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-chloranylbicyclo[2.2.1]hept-2-ene" "exo-5-chlorobicyclo[2.2.1]hept-2-ene" "endo-5-chlorobicyclo(2.2.1)hept-2-ene" "endo-5-chlorobicyclo[2.2.1]hept-2-ene" "5-chlorobicyclo[2.2.1]hept-2-ene" "6-chlorobicyclo[2.2.1]hept-2-ene" "bicyclo[2.2.1]hept-2-ene, 5-chloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -26670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     221.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=127780.0
-    phase     gas;
 }

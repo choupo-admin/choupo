@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group SH; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-sulfanylethylsulfanyl)ethanethiol" "bis(2-mercaptoethyl) sulfide" "2,2'-thiodiethanethiol" "ethanethiol, 2,2'-thiobis-" "bis(mercaptoethyl) sulfide" "3-thia-1,5-pentanedithiol" "ethanethiol, 2,2'-thiodi-" "2,2'-dimercaptodiethyl sulfide" "1-mercapto-2-(mercaptoethylthio)ethane" "2-(2-sulfanylethylthio)ethane-1-thiol" "2-mercaptoethylsulfide" "ethanethiol,2'-thiodi-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -7060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     498.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=74700.0
-    phase     gas;
 }

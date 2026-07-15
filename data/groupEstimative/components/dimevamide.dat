@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group CdO; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(dimethylamino)-2,2-diphenyl-pentanamide" "aminopentamide" "dimevamida" "dimevamidum" "valeramide-om" "dl-aminopentamide" "dimevamide [inn]" "dimevamidum [inn-latin]" "35144-63-9 (unspecified sulfate)" "4-dimethylamino-2,2-diphenylvaleramide" "4-(dimethylamino)-2,2-diphenylpentanamide" "valeramide, 4-(dimethylamino)-2,2-diphenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   12280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     729.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=382630.0
-    phase     gas;
 }

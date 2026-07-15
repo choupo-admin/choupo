@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methoxy-4-methyl-benzoic acid" "4-methyl-m-anisic acid" "3-methoxy-p-toluic acid" "benzoic acid, 3-methoxy-4-methyl-" "5-carboxy-2-methylanisole" "4-carboxy-2-methoxytoluene" "3-methoxy-4-methyl benzoic acid" "3-methoxy-4-toluic acid" "benzoicacid, 3-methoxy-4-methyl-" "3-methoxy-p-toluic acid; 4-methyl-m-anisic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -497990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-330860.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 22; } { group dC_ring; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9,10-dinaphthalen-1-ylanthracene" "9,10-di-(1-naphthyl)anthracene" "9,10-dinaphthylanthracene" "anthracene,10-di-1-naphthyl-" "anthracene,10-di-1-naphthalenyl-" "anthracene, 9,10-di-1-naphthyl-" "9,10-di(naphthalen-1-yl)anthracene" "anthracene,9,10-di-1-naphthalenyl-" "r494" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   671430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     694.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=951080.0
-    phase     gas;
 }

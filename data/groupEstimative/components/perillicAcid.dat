@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-prop-1-en-2-ylcyclohexene-1-carboxylic acid" "(-)-perillic acid" "perillic acid(-)" "4-isopropenylcyclohex-1-enecarboxylic acid" "4-isopropenyl-1-cyclohexene-1-carboxylic acid" "4-(prop-1-en-2-yl)cyclohex-1-ene-1-carboxylic acid" "4-(1-methylethenyl)-1-cyclohexene-1-carboxylic acid" "4-isopropenylcyclohex-1-ene carboxylic acid" "4-(2-propenyl)-1-cyclohexane-1-carboxylic acid" "1-cyclohexene-1-carboxylicacid, 4-(1-methylethenyl)-" "(s)-(-)-4-isopropenyl-1-cyclohexene-1-carboxylic acid" "1-cyclohexene-1-carboxylic acid, 4-(1-methylethenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -383730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-186520.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-2-methyl-prop-1-ene" "3-chloro-2-methylprop-1-ene" "methallyl chloride" "1-propene, 3-chloro-2-methyl-" "3-chloro-2-methyl-1-propene" "2-methylallyl chloride" "propene, 3-chloro-2-methyl-" "isobutenyl chloride" "2-methyl-2-propenyl chloride" "beta-methallyl chloride" "3-chloroisobutene" "3-chloroisobutylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -25990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     336.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50160.0
-    phase     gas;
 }

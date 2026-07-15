@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dC_ring; count 6; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,5-tetrakis(chloranyl)-4,6-dimethyl-benzene" "2,4,5,6-tetrachloro-m-xylene" "benzene, 1,2,3,5-tetrachloro-4,6-dimethyl-" "m-xylene, 2,4,5,6-tetrachloro-" "1,2,3,5-tetrachloro-4,6-dimethylbenzene" "tetrachlorometaxylene" "2,5,6-tetrachloro-m-xylene" "m-xylene,4,5,6-tetrachloro-" "2,4,5,6-tetrachlorometaxylene" "1,2,4,6-tetrachloro-3,5-dimethylbenzene" "1,3,4,5-tetrachloro-2,6-dimethylbenzene" "benzene,2,3,5-tetrachloro-4,6-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -92230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     464.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=33020.0
-    phase     gas;
 }

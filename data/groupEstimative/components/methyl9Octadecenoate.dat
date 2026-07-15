@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 14; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl octadec-9-enoate" "methyl cis-9-octadecenoate" "elaidic acid methyl ester" "methyl trans-9-octadecenoate" "9-octadecenoic acid, methyl ester" "(z)-9-octadecenoic acid methyl ester" "9-octadecenoic acid, methyl ester, (9e)-" "9-octadecenoic acid,methyl ester" "9-octadecenoicacid (z)-, methyl ester;oleic acid, methyl ester (6ci,8ci);(z)-9-octadecenoicacid methyl ester;adj 100;agnique me 181u;agrique me 181-1;ce 1897;carolube 1885;edenor me 90/95v;edenor metio5;emerest 2801;emery 2301;esterol 112;exceparl m-ol;methyl (z)-9-octadecenoate;methylcis-9-octadecenoate;nissan unister m 182a;pastel m 181;phytorob926-67;priolube 1400;priolube 1403;radia 7060;synative es-me-v;unister m182a;witconol 2301;cis-9-octadecenoic acid, methyl ester;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -635550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     940.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121050.0
-    phase     gas;
 }

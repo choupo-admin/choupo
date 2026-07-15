@@ -38,9 +38,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group O_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-(4-chlorophenyl)-4,6,11-trioxa-1-aza-5-silabicyclo[3.3.3]undecane" "1-(p-chlorophenyl)silatrane" "silatrane, p-chlorophenyl-" "5-(4-chlorophenyl)silatrane" "2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undecane, 1-(p-chlorophenyl)-" "1-(p-chlorophenyl)-2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecane" "2,8,9-trioxa-5-aza-1-sila-1-(p-chlorophenyl)bicyclo(3.3.3)undecane" "2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecane, 1-(p-chlorophenyl)-" "1-(4-chlorophenyl)silatrane" "p-chlorfenylsilatran" "1-(p-chlorophenyl)-2,9-trioxa-5-aza-1-silabicyclo[3.3.3]undecane" "2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecane, 1-(4-chlorophenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -353980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     496.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-10710.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(dimethylamino)-3-methyl-phenol" "aminocarb phenol" "phenol, 4-(dimethylamino)-3-methyl-" "4-(dimethylamino)-m-cresol" "4-(dimethylamino)-3-cresol" "phenol,4-(dimethylamino)-3-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -113810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     436.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83840.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 2; } { group dCH; count 3; } { group dC; count 1; } { group tCH; count 1; } { group tC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-ynyl 3,7,11-trimethyldodeca-2,4-dienoate" "2-propynyl 3,7,11-trimethyl-2,4-dodecadienoate" "2,4-dodecadienoic acid, 3,7,11-trimethyl-, 2-propynyl ester" "2,4-dodecadienoic acid, 3,7,11-trimethyl-, 2-propynyl ester, (2e,4e)-" "2,4-dodecadienoicacid, 3,7,11-trimethyl-, 2-propynyl ester, (2e,4e)- (9ci); 2,4-dodecadienoicacid, 3,7,11-trimethyl-, 2-propynyl ester, (e,e)-; ent 70531; enstar;kinoprene; xr 777; zr 77" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -226140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     841.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=160390.0
-    phase     gas;
 }

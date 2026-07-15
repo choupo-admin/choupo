@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-pentoxypentane" "amyl ether" "dipentyl ether" "diamyl ether" "pentane, 1,1'-oxybis-" "pentyloxypentane" "n-pentyl ether" "n-amyl ether" "di-n-amyl ether" "di-n-pentyl ether" "ether, di-n-pentyl-" "1,1'-oxydipentane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -381950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     556.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-71680.0
-    phase     gas;
 }

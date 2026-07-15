@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,5-xylenol" "1-hydroxy-3,5-dimethylbenzene" "3,5-xylenol" "phenol, 3,5-dimethyl-" "sym-m-xylenol" "3,5-dmp" "5-hydroxy-m-xylene" "xylenol 200" "3,5-dimethyl phenol" "CCRIS 724" "benzene, 1,3-dimethyl-5-hydroxy-" "3,5-dimethyl-phenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -160700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-35360.0
-    phase     gas;
 }

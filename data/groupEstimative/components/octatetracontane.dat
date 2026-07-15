@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 46; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-octatetracontane" "octatetracontane, analytical standard" "AS-56756" "DB-361499" "Q11291863" "C48" "nc48" "n-c48" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1034050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     2025.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=353280.0
-    phase     gas;
 }

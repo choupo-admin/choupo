@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 5; } { group OH; count 6; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,5,6,7-hexakis(oxidanyl)heptanoic acid" "d-glycero-d-ido-heptonic acid" "2,3,4,5,6,7-hexahydroxyheptanoic acid" "(2xi)-d-gluco-heptonic acid" "d-gluco-heptonic acid, (2.xi.)-" "agn-pc-02lsxu" "689fed97-182b-494e-929c-dbdc1c0bca99" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1477860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     739.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1168970.0
-    phase     gas;
 }

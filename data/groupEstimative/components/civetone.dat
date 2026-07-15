@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 14; } { group dCH_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(9z)-cycloheptadec-9-en-1-one" "cis-civetone" "9-cycloheptadecen-1-one, (z)-" "civettone, alpha-trans-" "(z)-9-cycloheptadecen-1-one" "9-cycloheptadecen-1-one, cis-" "9-cycloheptadecen-1-one, (9z)-" "cycloheptadec-9-en-1-one" "cycloheptadeca-9-en-1-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -467230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     933.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-101310.0
-    phase     gas;
 }

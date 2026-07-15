@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group Cl; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bcmo" "penton" "3,3-dichloromethyloxycyclobutane" "oxetane, 3,3-bis(chloromethyl)-" "3,3-bis(chloromethyl)-oxetane" "oxetane, 3,3-bis-(chloromethyl)" "2,2-bis(chloromethyl)-1,3-epoxypropane" "cxurgfrdgroikg-uhfffaoysa-" "oxetane, 3,3-bis(chloromethyl)-, homopolymer" "oxetane,3,3-bis(chloromethyl)-" "ht155" "78-71-7 3,3-bis(chloromethyl)oxetane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -228130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     365.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-75600.0
-    phase     gas;
 }

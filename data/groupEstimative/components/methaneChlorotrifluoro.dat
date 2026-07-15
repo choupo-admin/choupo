@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group F; count 3; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloranyl-tris(fluoranyl)methane" "trifluoromethyl chloride" "monochlorotrifluoromethane" "chlorotrifluoromethane" "trifluorochloromethane" "fluorocarbon 13" "arcton 3" "genetron 13" "frigen 13" "cfc-13" "freon 13" "trifluoromonochlorocarbon" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -676790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     284.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-635980.0
-    phase     gas;
 }

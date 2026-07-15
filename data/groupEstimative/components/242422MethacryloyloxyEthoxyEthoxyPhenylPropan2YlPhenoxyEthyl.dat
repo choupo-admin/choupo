@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 6; } { group C; count 1; } { group dCH2; count 2; } { group dC; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O; count 3; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[4-[2-[4-[2-(2-methylprop-2-enoyloxy)ethoxy]phenyl]propan-2-yl]phenoxy]ethoxy]ethyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, 2-(4-(1-methyl-1-(4-(2-(2-((2-methyl-1-oxo-2-propen-1-yl)oxy)ethoxy)ethoxy)phenyl)ethyl)phenoxy)ethyl ester" "2-propenoic acid, 2-methyl-, 2-(4-(1-methyl-1-(4-(2-(2-((2-methyl-1-oxo-2-propenyl)oxy)ethoxy)ethoxy)phenyl)ethyl)phenoxy)ethyl ester" "2-propenoic acid, 2-methyl-, 2-[4-[1-methyl-1-[4-[2-[2-[(2-methyl-1-oxo-2-propen-1-yl)oxy]ethoxy]ethoxy]phenyl]ethyl]phenoxy]ethyl ester" "2-propenoic acid, 2-methyl-, 2-[4-[1-methyl-1-[4-[2-[2-[(2-methyl-1-oxo-2-propenyl)oxy]ethoxy]ethoxy]phenyl]ethyl]phenoxy]ethyl ester" "2-(4-{2-[4-(2-{2-[(2-methylacryloyl)oxy]ethoxy}ethoxy)phenyl]propan-2-yl}phenoxy)ethyl 2-methylprop-2-enoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1000460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1140.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-375460.0
-    phase     gas;
 }

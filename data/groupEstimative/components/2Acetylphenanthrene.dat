@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 5; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenanthren-2-ylethanone" "ethanone, 1-(2-phenanthrenyl)-" "1-(2-phenanthryl)ethanon" "1-(2-phenanthryl)ethanone" "methyl 2-phenanthryl ketone" "1-(phenanthren-2-yl)ethanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   109580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     469.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=261370.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(diethylamino)-2-oxidanyl-benzaldehyde" "4-(diethylamino)-2-hydroxybenzaldehyde" "4-diethylaminosalicylaldehyde" "benzaldehyde, 4-(diethylamino)-2-hydroxy-" "p-(diethylamino)salicylaldehyde" "2-hydroxy-4-diethylaminobenzaldehyde" "4-diethylamino-2-hydroxybenzaldehyde" "4-n,n-diethylaminosalicylic aldehyde" "salicylaldehyde, 4-(diethylamino)- (6ci,8ci)" "4-(n,n-diethylamino)salicylaldehyde" "salicylaldehyde,4-(diethylamino)- (6ci,8ci);4-(diethylamino)-2-hydroxybenzaldehyde;4-(n,n-diethylamino)-2-hydroxybenzaldehyde;p-(diethylamino)salicylaldehyde;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -78640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     595.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=144640.0
-    phase     gas;
 }

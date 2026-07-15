@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethenoxydodecane" "dodecyl vinyl ether" "lauryl vinyl ether" "dodecane, 1-(ethenyloxy)-" "1-(vinyloxy)dodecane" "1-(ethenyloxy)dodecane" "dodecane,1-(ethenyloxy)-" "r835" "ether,dodecyl vinyl (6ci,7ci,8ci); dodecyl vinyl ether; lauryl vinyl ether; rapi-cureddve" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -339080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     708.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=49840.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group OH; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopropyl(thiophen-2-yl)methanol" "2-thiophenemethanol, a-cyclopropyl-" "alpha-cyclopropyl-2-thiophenemethanol" "alpha-cyclopropylthiophene-2-methanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -62990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     379.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72380.0
-    phase     gas;
 }

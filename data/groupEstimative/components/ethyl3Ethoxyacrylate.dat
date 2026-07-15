@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-ethoxyprop-2-enoate" "3-ethoxyacrylic acid ethyl ester" "ethyl3-ethoxy-2-propenoate" "ethyl trans-3-ethoxyacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -520090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-327090.0
-    phase     gas;
 }

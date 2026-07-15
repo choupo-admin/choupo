@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-[[(2s)-1-ethoxy-1-oxidanylidene-4-phenyl-butan-2-yl]amino]propanoic acid" "(s)-2-(((s)-1-ethoxy-1-oxo-4-phenylbutan-2-yl)amino)propanoic acid" "n-[(s)-1-ethoxycarbonyl-3-phenylpropyl]-l-alanine" "n-[(s)-(+)-1-(ethoxycarbonyl)-3-phenylpropyl]-l-alanine" "(s,s)-n-(ethoxy carbonyl-3-phenylpropyl)alanine" "n-[1-(s)-ethoxycarbonyl-3-phenylpropyl]-l-alanine" "n-[(s)-1-carboxyethyl]-l-homophenylalanine ethyl ester" "n-(1-(s)-ethoxycarbonyl-3-phenylpropyl)-l-alanine" "(2s)-2-[[(2s)-1-ethoxy-1-oxo-4-phenylbutan-2-yl]amino]propanoic acid" "(2s)-2-{[(1s)-1-(ethoxycarbonyl)-3-phenylpropyl]amino}propanoic acid" "(2s)-2-{[(2s)-1-ethoxy-1-oxo-4-phenylbutan-2-yl]amino}propanoic acid" "(2s)-2-([(1s)-1-(ethoxycarbonyl)-3-phenylpropyl]amino)propanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -741040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     759.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-381940.0
-    phase     gas;
 }

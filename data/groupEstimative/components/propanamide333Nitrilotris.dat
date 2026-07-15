@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group CdO; count 3; } { group NH2; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[bis(3-azanyl-3-oxidanylidene-propyl)amino]propanamide" "3,3',3''-nitrilotris(propionamide)" "nitrilotripropionamide" "nitrilotris[propionamide]" "rerxjgppgmaboy-uhfffaoysa-" "3,3''-nitrilotris[propionamide]" "propanamide,3',3''-nitrilotris-" "3,3',3''-nitrilotrispropionamide" "propionamide,3',3''-nitrilotris-" "trispropionamide,3',3''-nitrilo-" ""3,3',3""-nitrilotris(propionamide)"" "propanamide,3,3',3''-nitrilotris-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -397930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     757.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-51730.0
-    phase     gas;
 }

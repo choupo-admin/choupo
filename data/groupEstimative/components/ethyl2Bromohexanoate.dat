@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-bromanylhexanoate" "ethyl 2-bromocaproate" "hexanoic acid, 2-bromo-, ethyl ester" ".alpha.-bromocaproic acid, ethyl ester" "2-bromohexanoic acid ethyl ester" "alpha-bromocaproic acid, ethyl ester" "ethyl2-bromohexanoate" "ethyl 2-bromocapronate" "ethyl alpha-bromocaproate" "ethyl .alpha.-bromocaproate" "ethyl-alpha-bromocaproate" "kouaqocymaenkn-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -504680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     560.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-282010.0
-    phase     gas;
 }

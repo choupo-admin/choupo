@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-2,3-dimethyl-benzene" "1-bromo-2,3-dimethylbenzene" "2,3-dimethylbromobenzene" "3-bromo-1,2-dimethylbenzene" "2,3-dimethyl bromobenzene" "benzene, bromodimethyl-" "benzene, 1-bromo-2,3-dimethyl-" "576-23-8 2,3-dimethylbromobenzene" "q992" "o-xylene,3-bromo- (6ci,7ci,8ci);1-bromo-2,3-dimethylbenzene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   31470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     399.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=123950.0
-    phase     gas;
 }

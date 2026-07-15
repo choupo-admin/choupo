@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[3,4-bis(fluoranyl)phenyl]ethanone" "3,4-difluoroacetophenone" "1-(3,4-difluorophenyl)ethanone" "1-(3,4-difluorophenyl)ethan-1-one" "1-acetyl-3,4-difluorobenzene" "1-(3,4-difluoro-phenyl)-ethanone" "3'4'-difluoroacetophenone" "vwjssjflxrmynv-uhfffaoysa-" "st001" "ethanone, 1-(3,4-difluorophenyl)-" "369-33-5 3',4'-difluoroacetophenone" "acetophenone,3',4'-difluoro- (8ci);1-(3,4-difluorophenyl)ethan-1-one;1-(3,4-difluorophenyl)ethanone;ethanone,1-(3,4-difluorophenyl)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -499660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-408910.0
-    phase     gas;
 }

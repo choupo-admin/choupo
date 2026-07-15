@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranylpropyl ethanoate" "1-propanol, 3-chloro-, acetate" "3-chloropropanol acetate" "gamma-chloropropyl acetate" ".gamma.-chloropropyl acetate" "3-chlorprop-1-ylacetat [german]" "acetic acid 3-chloro-propyl ester" "3-chlorprop-1-ylacetat" "1-acetoxy-3-chloropropane" "3-chloro-propyl acetate" "1-propanol, 3-chloro-,1-acetate" "u264" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -479550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-331080.0
-    phase     gas;
 }

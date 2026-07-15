@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 7; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "spiro[2.5]octane" "spiro[2,5]octane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -39590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     438.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116000.0
-    phase     gas;
 }

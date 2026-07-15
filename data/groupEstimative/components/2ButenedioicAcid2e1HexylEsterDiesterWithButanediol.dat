@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 14; } { group dCH; count 4; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "o4-[4-(4-hexoxy-4-oxidanylidene-but-2-enoyl)oxybutyl] o1-hexyl but-2-enedioate" "2-butenedioic acid (2e)-, monohexyl ester, diester with butanediol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1573370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1282.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-929840.0
-    phase     gas;
 }

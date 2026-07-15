@@ -38,9 +38,8 @@ groups
     joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-fluoranyl-2-(trifluoromethyl)benzaldehyde" "2-trifluoromethyl-4-fluorobenzaldehyde" "4-fluoro-2-trifluoromethylbenzaldehyde" "4-fluoro-2-trifluoromethyl benzaldehyde" "5-fluoro-2-formylbenzotrifluoride" "4-fluoro-2-trifluoromethyl-benzaldehyde" "alpha,alpha,alpha,4-tetrafluoro-o-tolualdehyde" "benzaldehyde, 4-fluoro-2-(trifluoromethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -711600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     517.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-622810.0
-    phase     gas;
 }

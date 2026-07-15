@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group I; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-iodanylpropanoate" "ethyl-3-iodopropionate" "ethyl beta-iodopropionate" "ethyl 3-iodopropionate" "propanoic acid,3-iodo-, ethyl ester" "propionicacid, 3-iodo-, ethyl ester (7ci,8ci);3-iodopropanoic acid ethyl ester;ethyl3-iodopropanoate;ethyl 3-iodopropionate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -386940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-261030.0
-    phase     gas;
 }

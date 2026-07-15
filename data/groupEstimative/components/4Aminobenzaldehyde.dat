@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-azanylbenzaldehyde" "benzaldehyde, 4-amino-" "p-formylaniline" "4-formylaniline" "p-aminobenzaldehyde" "benzaldehyde, p-amino-" "4-amino-benzaldehyde" "benzaldehyde, homopolymer" "4-aminobenzaldehyde polymer" "benzaldehyde, p-amino- (8ci)" "vatywcrqdjirai-uhfffaoysa-" "p-aminobenzaldehyde, polymer" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   147490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     448.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=221250.0
-    phase     gas;
 }

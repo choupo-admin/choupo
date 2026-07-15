@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 12; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl (9e,12e)-octadeca-9,12-dienoate" "methyl octadeca-9,12-dienoate" "methyl linoleate hydroperoxide" "linolelaidic acid methyl ester" "linolelaidic acid, methyl ester" "9,12-octadecadienoic acid, methyl ester, (e,e)-" "methyl trans,trans-9,12-octadecadienoate" "methyl (9e,12e)-9,12-octadecadienoate" "9,12-octadecadienoic acid (9z,12z)-, methyl ester, hydroperoxide" "9,12-octadecadienoic acid (z,z)-, methyl ester, hydroperoxide" "methyl linoleate" "9,12-octadecadienoic acid, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -518330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     934.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-40830.0
-    phase     gas;
 }

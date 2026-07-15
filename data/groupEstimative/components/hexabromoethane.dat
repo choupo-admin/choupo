@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group Br; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,2-hexakis(bromanyl)ethane" "ethane, hexabromo-" "1,1,1,2,2,2-hexabromoethane" "1,1,1,2,2,2-hexabromo-ethane" "ethane,1,1,1,2,2,2-hexabromo-" "ethane,hexabromo- (6ci,7ci,8ci,9ci); hexabromoethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   55870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=57560.0
-    phase     gas;
 }

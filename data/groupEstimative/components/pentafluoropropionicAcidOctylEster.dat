@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group C; count 2; } { group F; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octyl 2,2,3,3,3-pentakis(fluoranyl)propanoate" "octyl 2,2,3,3,3-pentafluoropropanoate" "octyl pentafluoropropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1585700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     716.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1237000.0
-    phase     gas;
 }

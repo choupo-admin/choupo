@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group C; count 1; } { group CdO; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triethyl 2-(2-oxidanylidenepropanoyloxy)propane-1,2,3-tricarboxylate" "triethyl 2-(1,2-dioxopropoxy)propane-1,2,3-tricarboxylate" "1,2,3-propanetricarboxylic acid, 2-(1,2-dioxopropoxy)-, triethyl ester" "1,2,3-propanetricarboxylic acid, 2-(1,2-dioxopropoxy)-, 1,2,3-triethyl ester" "triethyl 2-(2-oxopropanoyloxy)propane-1,2,3-tricarboxylate" "1,2,3-propanetricarboxylicacid, 2-(1,2-dioxopropoxy)-, 1,2,3-triethyl ester" "1,2,3-propanetricarboxylicacid, 2-(1,2-dioxopropoxy)-, triethyl ester (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1743380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     933.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1292140.0
-    phase     gas;
 }

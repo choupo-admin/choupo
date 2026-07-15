@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-thiophenecarboxylate" "2-thiophenecarboxylic acid methyl ester" "2-(carbomethoxy)thiophene" "2-(methoxycarbonyl)thiophene" "methylthiophene-2-carboxylate" "methyl 2-thiophene carboxylate" "methyl-2-thiophene carboxylate" "2-thiophenecarboxylic acid, methyl ester" "methyl thenoate" "thiophenate methyl" "thiophenate-methyl" "2-thiophenecarboxylicacid, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -254280.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     402.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-176320.0
-    phase     gas;
 }

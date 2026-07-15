@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-bromanyl-2-fluoranyl-benzoic acid" "2-fluoro-4-bromobenzoic acid" "4-bromo-2-fluoro-benzoic acid" "4-bromo-2-fluorobenzoicacid" "4-bromo-2-fluorobenzoic acid," "zqqsrvpoahyhel-uhfffaoysa-" "buttpark 18\02-86" "wt883" "b143" "112704-79-7 4-bromo-2-fluorobenzoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -494270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-423190.0
-    phase     gas;
 }

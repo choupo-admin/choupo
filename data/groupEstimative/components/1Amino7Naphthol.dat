@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-azanylnaphthalen-2-ol" "8-amino-2-naphthol" "8-aminonaphthalen-2-ol" "2-naphthalenol, 8-amino-" "2-naphthol, 8-amino-" "7-hydroxy-1-naphthylamine" "1-amino-7-hydroxynaphthalene" "amino-7-naphthol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   22880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     402.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=154580.0
-    phase     gas;
 }

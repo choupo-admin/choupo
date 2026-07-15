@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 19; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "henicosane" "n-heneicosane" "ai3-36479" "CH3-[CH2]19-ch3" "eicosane, methyl-" "CH3-(CH2)19-CH3" "heneicosane; n-heneicosane; henicosane;" "henicosan" "henicosane #" "heneicosane, 98%" "heneicosane, analytical standard" "HY-W089845" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -476770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     974.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=125940.0
-    phase     gas;
 }

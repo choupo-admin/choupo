@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 5; } { group C; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-(2-ethoxyethoxy)ethoxy]-2-methyl-propane" "diethylene glycol ethyl tert-butyl ether" "diethylene glycol tert-butyl ethyl ether" "2-[2-(2-ethoxyethoxy)ethoxy]-2-methylpropane" "propane, 2-(2-(2-ethoxyethoxy)ethoxy)-2-methyl-" "propane, 2-[2-(2-ethoxyethoxy)ethoxy]-2-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -655140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     540.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-278840.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group dCH; count 8; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(5z,8z,11z,14z)-icosa-5,8,11,14-tetraenoic acid" "immunocytophyte" "arachidonate" "cis-5,8,11,14-eicosatetraenoic acid" "all-cis-5,8,11,14-eicosatetraenoic acid" "(all-z)-5,8,11,14-eicosatetraenoic acid" "5,8,11,14-eicosatetraenoic acid, (all-z)-" "cis,cis,cis,cis-5,8,11,14-eicosatetraenoic acid" "5z,8z,11z,14z-eicosatetraenoic acid" "5,8,11,14-eicosatetraenoic acid" "eicosa-5z,8z,11z,14z-tetraenoic acid" "arachidonsaeure" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -337520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     961.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=94490.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-di(propanoyloxy)propyl propanoate" "propionin, tri-" "glycerol tripropionate" "glyceryl tripropionate" "tripropionine" "1,2,3-propanetriol, tripropanoate" "glycerine tripropionate" "tripropionylglycerol" "glyceryl tripropanoate" "propionic acid triglyceride" "1,2,3-propanetriol, 1,2,3-tripropanoate" "propionin, tri- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1248130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     767.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-883390.0
-    phase     gas;
 }

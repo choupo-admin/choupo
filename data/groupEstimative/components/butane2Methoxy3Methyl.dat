@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxy-3-methyl-butane" "1,2-dimethylpropyl methyl ether" "2-methoxy-3-methylbutane" "agn-pc-0cpr2i" "methyl 1,2-dimethylpropyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -309950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-110240.0
-    phase     gas;
 }

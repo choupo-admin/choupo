@@ -30,9 +30,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "heptane" "methylhexyl" "1-methylhexyl" "hept-2-yl" "2-c7h15" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -129200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     425.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=48170.0
-    phase     gas;
 }

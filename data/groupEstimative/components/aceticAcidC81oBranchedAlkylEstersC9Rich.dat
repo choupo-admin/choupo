@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-propan-2-ylhexyl ethanoate" "3-propan-2-ylhexyl acetate" "3-(propan-2-yl)hexyl acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -598210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     616.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-273510.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 7; } { group CH2; count 1; } { group CH; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethylsilyl 3-trimethylsilyloxybutanoate" "butanoic acid, 3-[(trimethylsilyl)oxy]-, trimethylsilyl ester" "agn-pc-00npt1" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -927750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     851.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-594010.0
-    phase     gas;
 }

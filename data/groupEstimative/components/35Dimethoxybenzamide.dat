@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzamide, 3,5-dimethoxy-" "am787" "p763" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -358730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     488.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-154420.0
-    phase     gas;
 }

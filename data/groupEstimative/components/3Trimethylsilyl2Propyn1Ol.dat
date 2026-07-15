@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group tC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-trimethylsilylprop-2-yn-1-ol" "3-(trimethylsilyl)propargyl alcohol" "3-(trimethylsilyl)-2-propyn-1-ol" "2-propyn-1-ol, 3-(trimethylsilyl)-" "1-trimethylsilylpropargyl alcohol" "3-(trimethylsilyl)prop-2-yn-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -158720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     538.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-39140.0
-    phase     gas;
 }

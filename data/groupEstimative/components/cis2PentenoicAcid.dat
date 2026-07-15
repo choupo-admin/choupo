@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-pent-2-enoic acid" "(2z)-pent-2-enoic acid" "pent-2c-ensaeure" "pent-2c-enoic acid" "cis-pent-2-ensaeure" "z-2-pentencarbonsaeure" "(z)-2-pentenoic acid" "2-pentenoic acid (z)" "cis-3-ethylacrylic acid" "cis-beta-aethylacrylsaeure" "2-pentenoic acid, (2z)-" "cis-alpha,beta-penteneoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -379580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     397.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-272470.0
-    phase     gas;
 }

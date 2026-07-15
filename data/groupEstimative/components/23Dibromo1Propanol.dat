@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group Br; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(bromanyl)propan-1-ol" "2,3-dibromopropanol" "dibromopropanol" "2,3-dibromopropan-1-ol" "2,3-dibromopropyl alcohol" "1-propanol, 2,3-dibromo-" "1,2-dibromopropan-3-ol" "beta-dibromohydrin" "usaf do-42" "allyl alcohol dibromide" "dbp (flame retardant)" "ethoxylated hydantoin glycol dicocoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -210100.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     416.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-136240.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "heptyl pentanoate" "pentanoic acid, heptyl ester" "valeric acid, heptyl ester" "pentanoic acid, heptylester" "valeric acid, heptyl ester (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -608290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     674.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-260210.0
-    phase     gas;
 }

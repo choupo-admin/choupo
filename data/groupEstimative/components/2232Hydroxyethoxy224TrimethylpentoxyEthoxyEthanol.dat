@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 2; } { group C; count 1; } { group OH; count 2; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[3-(2-hydroxyethyloxy)-2,2,4-trimethyl-pentoxy]ethoxy]ethanol" "2-({1-[2-(2-hydroxyethoxy)ethoxy]-2,2,4-trimethylpentan-3-yl}oxy)ethanol" "2-[3-[2-(2-hydroxyethoxy)ethoxy]-2,2-dimethyl-1-(isopropyl)propoxy]ethanol" "2-(3-(2-(2-hydroxyethoxy)ethoxy)-2,2-dimethyl-1-(1-methylethyl)propoxy)ethanol" "2-[3-[2-(2-hydroxyethoxy)ethoxy]-2,2-dimethyl-1-(1-methylethyl)propoxy]ethanol" "ethanol, 2-(3-(2-(2-hydroxyethoxy)ethoxy)-2,2-dimethyl-1-(1-methylethyl)propoxy)-" "ethanol, 2-[3-[2-(2-hydroxyethoxy)ethoxy]-2,2-dimethyl-1-(1-methylethyl)propoxy]-" "ethanol,2-[3-[2-(2-hydroxyethoxy)ethoxy]-2,2-dimethyl-1-(1-methylethyl)propoxy]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1052720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     779.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-523680.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-1,3-bis(fluoranyl)benzene" "1-chloro-2,6-difluorobenzene" "2,6-difluorochlorobenzene" "benzene, 2-chloro-1,3-difluoro-" "chloro-2,6-difluorobenzene" "benzene,2-chloro-1,3-difluoro-" "2,6-diflurochlorobenzene" "1-chloro-2,6 difluorobenzene" "2-chloro-1,3-difluoro-benzene" "38361-37-4 1-chloro-2,6-difluorobenzene" "1-chloro-2,6-difluorobenzene;2,6-difluorochlorobenzene;2-chlor-1,3-difluorbenzol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -361540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     367.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-308760.0
-    phase     gas;
 }

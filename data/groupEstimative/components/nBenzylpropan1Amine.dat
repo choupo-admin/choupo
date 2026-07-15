@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(phenylmethyl)propan-1-amine" "n-benzyl-n-propylamine" "benzyl-propyl-amine" "n-propylbenzylamine" "benzenemethanamine, n-propyl-" "n-benzylpropan-1-amin" "benzylpropylamine" "n-(n-propyl)benzylamine" "benzyl(propyl)amine" "n-benzyl-1-propanamine" "n-(phenylmethyl)propylamine" "benzenemethanamine,n-propyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   40270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     479.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=235120.0
-    phase     gas;
 }

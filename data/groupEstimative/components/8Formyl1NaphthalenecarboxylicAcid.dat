@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8-methanoylnaphthalene-1-carboxylic acid" "naphthaldehydic acid" "8-formyl-1-naphthoic acid" "1,8-naphthalaldehydic acid" "naphthalaldehydic acid" "peri-naphthalaldehydic acid" "1-naphthalenecarboxylic acid, 8-formyl-" "8-formylnaphthalene-1-carboxylic acid" "1-naphthalenecarboxylicacid, 8-formyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -160170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     529.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-49990.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromoethylbenzene" "benzene, (1-bromoethyl)-" "1-phenylethyl bromide" "1-bromo-1-phenylethane" "1-phenyl-1-bromoethane" "alpha-methylbenzyl bromide" ".alpha.-methylbenzyl bromide" "alpha-phenethyl bromide" "alpha-phenylethyl bromide" "(alpha-bromoethyl)benzene" "benzene, (1-bromoethyl)-, (r)-" "benzene-d5, (1-bromoethyl-1,2,2,2-d4)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   49130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     402.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=140770.0
-    phase     gas;
 }

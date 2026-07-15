@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 3; } { group F; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-fluoranylquinoline" "quinoline, 7-fluoro-" "7-fluoro-quinolinium" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   23720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     329.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116570.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 9; } { group dC_ring; count 7; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pyren-1-ol" "1-pyrenol" "3-hydroxypyrene" "pyrenol" "3-pyrenol" "1-pyrenol (8ci)" "agn-pc-00kc7z" "1-pyrenol (8ci)(9ci)" "pyren-1-ol;1-hydroxypyrene1-pyrenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   190460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     357.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=336560.0
-    phase     gas;
 }

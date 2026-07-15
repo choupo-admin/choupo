@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Br; count 2; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5-bis(bromanyl)-2-oxidanyl-benzoic acid" "3,5-dibromosalicylic acid" "benzoic acid, 3,5-dibromo-2-hydroxy-" "2-hydroxy-3,5-dibromobenzoic acid" "salicylic acid, 3,5-dibromo-" "salicylic acid,5-dibromo-" "benzoic acid,5-dibromo-2-hydroxy-" "salicylic acid, 3,5-dibromo- (8ci)" "benzoic acid,3,5-dibromo,2-hydroxy" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -449140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     491.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-368680.0
-    phase     gas;
 }

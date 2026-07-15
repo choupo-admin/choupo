@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopentane, 1,2,4-trimethyl-" "cyclopentane, 1,2,4-trimethyl-, (1.alpha.,2.beta.,4.alpha.)-" "cyclopentane, 1,2,4-trimethyl-, trans,cis-" "cyclopentane, 1,2,4-trimethyl-, cis-1,cis-2,trans-4-" "cyclopentane, 1,2,4-trimethyl-, (1.alpha.,2.alpha.,4.beta.)-" "(1alpha,2alpha,4beta)-1,2,4-trimethylcyclopentane" "(1alpha,2beta,4alpha)-1,2,4-trimethylcyclopentane" "(1alpha,2alpha,4alpha)-1,2,4-trimethylcyclopentane" "cyclopentane, 1,2,4-trimethyl-, (1alpha,2beta,4alpha)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -188650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     332.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37610.0
-    phase     gas;
 }

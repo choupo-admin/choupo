@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 2; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-[2-(dimethylamino)-2-oxidanylidene-ethyl]-2-phenyl-ethanamide" "benzeneacetamide,n-[2-(dimethylamino)-2-oxoethyl]-" "n-[2-(dimethylamino)-2-oxoethyl]-2-phenylacetamide" "acetamide,n,n-dimethyl-2-(2-phenylacetamido)- (8ci)" "n,n-dimethyl-2-[(2-phenylacetyl)amino]acetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -158640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     627.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=104900.0
-    phase     gas;
 }

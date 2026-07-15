@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 8; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 10; } { group OH; count 1; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "schizandra" "schisandrol a" "schizandrol a" "wuweizichun a" "wuweizi alcohol a" "schisandrin" "(+)-schizandrin" "dibenzo(a,c)cycloocten-6-ol, 5,6,7,8-tetrahydro-1,2,3,10,11,12-hexamethoxy-6,7-dimethyl-, stereoisomer" "dibenzo(a,c)cycloocten-6-ol, 5,6,7,8-tetrahydro-6,7-dimethyl-1,2 3,10,11,12-hexamethoxy-, stereoisomer" "magnolia vine" "wu-wei-zi" "schisandra chinensis" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1041400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     904.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-432390.0
-    phase     gas;
 }

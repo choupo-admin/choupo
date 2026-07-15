@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethoxypropanoic acid" "ethoxypropionic acid" "propanoic acid, 3-ethoxy-" "propionic acid, ethoxy-" "o-ethylhydracrylic acid" ".beta.-ethoxypropionic acid" "jrxxexvxtfebiy-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -629020.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     415.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-457690.0
-    phase     gas;
 }

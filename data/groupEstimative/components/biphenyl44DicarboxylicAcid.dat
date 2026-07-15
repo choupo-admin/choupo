@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 8; } { group dC_ring; count 4; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(4-carboxyphenyl)benzoic acid" "4,4'-biphenyldicarboxylic acid" "4,4'-bibenzoic acid" "4,4'-diphenic acid" "p,p'-diphenic acid" "4,4'-dicarboxybiphenyl" "[1,1'-biphenyl]-4,4'-dicarboxylic acid" "usaf do-69" "bibenzoic acid" "4,4'-dibenzoic acid" "4,4'-biphenyl dicarboxylic acid" "(1,1'-biphenyl)-4,4'-dicarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -582710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     582.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-415260.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 23; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-diethylethanamine;docosanoic acid" "docosanoic acid compd. with n,n-diethylethanamine (1:1)" "docosanoic acid, compd. with n,n-diethylethanamine (1:1)" "docosanoic acid, triethylamine salt" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1015610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1423.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-153010.0
-    phase     gas;
 }

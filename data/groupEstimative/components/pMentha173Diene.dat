@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methylidene-1-propan-2-yl-cyclohexene" "cyclohexene, 4-methylene-1-(1-methylethyl)-" "b-terpinene" "4-methylidene-1-propan-2-ylcyclohexene" "4-methylidene-1-(propan-2-yl)cyclohexene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -49800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     478.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=136450.0
-    phase     gas;
 }

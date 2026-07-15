@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(phenylsulfanylmethyl)aniline" "4-[(phenylsulfanyl)methyl]aniline" "alpha-(phenylthio)-p-toluidine" ".alpha.-(phenylthio)-p-toluidine" "p-toluidine, alpha-(phenylthio)-" "4-(phenylthiomethyl)phenylamine" "benzenamine, 4-((phenylthio)methyl)-" "benzenamine, 4-[(phenylthio)methyl]-" "4-[(phenylthio)methyl]aniline" "benzenamine,4-[(phenylthio)methyl]-" "p-toluidine, .alpha.-(phenylthio)-" "benzenamine, 4-((phenylthio)methyl)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   225600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     556.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=373340.0
-    phase     gas;
 }

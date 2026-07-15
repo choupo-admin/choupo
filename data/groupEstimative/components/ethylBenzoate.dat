@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzoic acid, ethyl ester" "ethyl benzenecarboxylate" "benzoic ether" "benzoyl ethyl ether" "benzoic acid ethyl ester" "ethyl benzoate (natural)" "benzoic acid, c9-11-alkyl esters" "benzoic acid, c12-13-alkyl esters" "benzoic acid, c14-15-alkyl esters" "ethylester kyseliny benzoove" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -309840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     451.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-173060.0
-    phase     gas;
 }

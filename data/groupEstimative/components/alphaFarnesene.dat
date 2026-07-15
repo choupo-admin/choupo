@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 4; } { group dC; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3e,6e)-3,7,11-trimethyldodeca-1,3,6,10-tetraene" "farnesene" ".alpha.-farnesene" "(e)-alpha-farnesene" "(e,e)-alpha-farnesene" "2,6,10-trimethyldodeca-2,6,9,11-tetraene" "3,7,11-trimethyl-1,3,6,10-dodecatetraene" "1,3,6,10-dodecatetraene, 3,7,11-trimethyl-" "3,7,11-trimethyldodeca-1,3,6,10-tetraene" "alpha-farnesene (natural)" "trans,trans-alpha-farnesene" "(3e,6e)-alpha-farnesene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   94790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     703.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=378270.0
-    phase     gas;
 }

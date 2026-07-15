@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 2; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "o1-(6-methylheptyl) o2-(2-sulfanylethyl) benzene-1,2-dicarboxylate" "6-methylheptyl 2-sulfanylethyl benzene-1,2-dicarboxylate" "1,2-benzenedicarboxylic acid isooctyl 2-mercaptoethyl ester" "1,2-benzenedicarboxylic acid, 1-isooctyl 2-(2-mercaptoethyl) ester" "isooctyl 2-mercaptoethyl phthalate" "1,2-benzenedicarboxylic acid, isooctyl 2-mercaptoethyl ester" "1-o-(6-methylheptyl) 2-o-(2-sulfanylethyl) benzene-1,2-dicarboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -791150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     900.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-390330.0
-    phase     gas;
 }

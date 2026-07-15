@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclohex-3-ene-1-carbaldehyde" "4-formylcyclohexene" "1,2,3,6-tetrahydrobenzaldehyde" "cyclohexene-4-carboxaldehyde" "1-formyl-3-cyclohexene" "3-cyclohexen-1-aldehyde" "1-cyclohexene-4-carboxaldehyde" "cyclohexenecarbaldehyde" "cyclohexenecarboxaldehyde" "benzaldehyde, tetrahydro-" "tetrahydrobenzaldehyde" "delta1-tetrahydrobenzaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -161290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     379.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37050.0
-    phase     gas;
 }

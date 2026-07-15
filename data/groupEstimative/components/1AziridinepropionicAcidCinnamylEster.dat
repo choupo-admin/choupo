@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH; count 2; } { group CH2_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(e)-3-phenylprop-2-enyl] 3-(aziridin-1-yl)propanoate" "3-phenylprop-2-en-1-yl 3-(aziridin-1-yl)propanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -128990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     587.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=140600.0
-    phase     gas;
 }

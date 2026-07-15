@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 13; } { group CH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(3s,8s,9s,10r,13r,14s,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl] dodecanoate" "cholesteryl dodecanoate" "cholesterol, laurate" "cholesteryl laurate" "cholest-5-en-3-beta-yl laurate" "dodecanoic acid, cholesteryl ester" "cholest-5-en-3beta-ol dodecanoate" "cholest-5-en-3beta-yl dodecanoate" "ce(12:0)" "cholest-5-en-3-ol (3.beta.)-, dodecanoate" "cholesterol dodecanoate" "cholesteryl lauric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -899960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1414.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=130970.0
-    phase     gas;
 }

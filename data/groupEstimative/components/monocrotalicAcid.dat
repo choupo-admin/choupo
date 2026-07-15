@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH_ring; count 1; } { group C_ring; count 2; } { group OH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r,3r,4s)-2,3,4-trimethyl-3-oxidanyl-5-oxidanylidene-oxolane-2-carboxylic acid" "2-furancarboxylic acid, tetrahydro-3-hydroxy-2,3,4-trimethyl-5-oxo-, (2r-(2-alpha,3-beta,4-alpha))-" "(2r,3r,4s)-3-hydroxy-2,3,4-trimethyl-5-oxooxolane-2-carboxylic acid" "l-arabinaric acid, 2-deoxy-2-methyl-3,4-di-c-methyl-, 1,4-lactone" "l-arabinaric acid, 2-deoxy-2-methyl-3,4-di-c-methyl-, 1,4-lactone (9ci)" "2-furoic acid, tetrahydro-3-hydroxy-2,3,4-trimethyl-5-oxo-, (2r,3r,4r)-" "2-furoic acid, tetrahydro-3-hydroxy-2,3,4-trimethyl-5-oxo-, (2r,3r,4r)- (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -965630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     586.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-740270.0
-    phase     gas;
 }

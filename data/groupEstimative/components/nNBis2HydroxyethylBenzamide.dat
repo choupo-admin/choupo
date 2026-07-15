@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzoic acid diethanolamide" "benzamide, n,n-bis(2-hydroxyethyl)-" "benzamide,n-bis(2-hydroxyethyl)-" "benzamide,n,n-bis(2-hydroxyethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -383350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     622.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-137630.0
-    phase     gas;
 }

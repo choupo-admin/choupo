@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group dCH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradec-9-enoic acid" "9-tetradecenoic acid, (z)-" "9-tetradecenoic acid,(9z)-" "9-tetradecenoic acid, (9e)-" "9-tetradecenoicacid, (z)- (8ci); (z)-9-tetradecenoic acid; 9(z)-tetradecenoic acid;9(z)-tetradecenoic acid; 9-cis-tetradecenoic acid; myristoleic acid;myristolenic acid; oleomyristic acid; cis-9-tetradecenoic acid; cis-d9-tetradecenoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -565340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     747.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-196690.0
-    phase     gas;
 }

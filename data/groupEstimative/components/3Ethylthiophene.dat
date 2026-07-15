@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "thiophene, 3-ethyl-" "3-ethyl-thiophene" "sldbaxyjairqmx-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   63000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     350.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=134050.0
-    phase     gas;
 }

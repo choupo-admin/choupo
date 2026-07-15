@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-dihydroacenaphthylen-1-ol" "acenaphthenol" "acenaphthenol-1" "1-hydroxyacenaphthene" "7-acenaphthenol" "acenaphthen-1-ol" "acenaphthene-1-ol" "1-acenaphthalenol" "1-acenaphthylenol,2-dihydro-" "1,2-dihydro-1-acenaphthylenol" "mxuciehyjyrtlt-uhfffaoysa-" "1-acenaphthylenol, 1,2-dihydro- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   40380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     336.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=185990.0
-    phase     gas;
 }

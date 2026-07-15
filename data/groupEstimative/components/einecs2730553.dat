@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 3; } { group dCH; count 2; } { group dC; count 2; } { group OH; count 1; } { group CdO; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butan-2-one;(2e)-3,7-dimethylocta-2,6-dienal;methanol" "2,6-octadienal, 3,7-dimethyl-, reaction products with me et ketone and methanol, by-products from, distn. residues" "butan-2-one; (2e)-3,7-dimethylocta-2,6-dienal; methanol" "2,6-octadienal, 3,7-dimethyl-, reaction products with me et ketoneand methanol, by-products from, distn. lights" "2,6-octadienal, 3,7-dimethyl-, reaction products with me et ketoneand methanol, by-products from, distn. residues" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -711700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1030.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-356020.0
-    phase     gas;
 }

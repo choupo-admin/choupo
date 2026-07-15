@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[methyl(phenylcarbonyl)amino]ethanoic acid" "n-methylhippuric acid" "n-benzoyl-n-methylglycine" "n-benzoylsarcosine" "glycine, n-benzoyl-n-methyl-" "sarcosine, n-benzoyl-" "[benzoyl(methyl)amino]acetic acid" "n-methyl hippuric acid" "glycine,n-benzoyl-n-methyl-" "hippuric acid, .beta.-methyl-" "2-(n-methylbenzamido)acetic acid" "(benzoyl-methyl-amino)-acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -408520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-216320.0
-    phase     gas;
 }

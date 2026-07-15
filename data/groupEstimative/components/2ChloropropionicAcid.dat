@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranylpropanoic acid" "2-chloropropanoic acid" "propanoic acid, 2-chloro-" "propionic acid, 2-chloro-" "alpha-chloropropionic acid" "d-2-chloropropionic acid" "alpha-monochloropropionic acid" "propionic acid, alpha-chloro-" "(r)-(+)-2-chloropropionicacid" "propanoic acid, chloro-" "(+/-)-2-chloropropionic acid" "2-chloropropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -476540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     349.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383900.0
-    phase     gas;
 }

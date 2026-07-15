@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,4',4''-trimethoxytrityl alcohol" ""4,4',4""-trimethoxytrityl alcohol"" "benzenemethanol, 4-methoxy-.alpha.,.alpha.-bis(4-methoxyphenyl)-" "tris(4-methoxyphenyl) carbinol" "tris(4-methoxyphenyl)methan-1-ol" "benzenemethanol,4-methoxy-a,a-bis(4-methoxyphenyl)-" "methanol,tris(p-methoxyphenyl)- (6ci,7ci,8ci); 1,1,1-tris(4-methoxyphenyl)methanol;4,4',4''-trimethoxytriphenylmethanol; 4,4',4''-trimethoxytrityl alcohol;tris(4-methoxyphenyl)methanol; tris(p-methoxyphenyl)methanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -379870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     721.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-6280.0
-    phase     gas;
 }

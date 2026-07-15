@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "vinylcyclopropane" "cyclopropane,ethenyl-" "cyclopropane, ethenyl-" "yiwfbnmyfyinad-uhfffaoysa-" "cyclopropane,ethenyl-;cyclopropyl-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   51700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     255.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=139810.0
-    phase     gas;
 }

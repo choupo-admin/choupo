@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group dC_ring; count 6; } { group Cl; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2,3,4,5,6-pentakis(chloranyl)phenyl] dodecanoate" "pentachlorophenyl laurate" "mystox lpl" "mystox lsd" "mystox lsl" "pentachlorophenyl dodecanoate" "dodecanoic acid, pentachlorophenyl ester" "lauryl pentachlorophenate" "pentachlorophenol laurate" "lauroyl pentachlorophenate" "dodecanoic acid, 2,3,4,5,6-pentachlorophenyl ester" "lauric acid, pentachlorophenyl ester (6ci,7ci,8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -631650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     938.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-205080.0
-    phase     gas;
 }

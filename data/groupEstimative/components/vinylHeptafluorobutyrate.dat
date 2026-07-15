@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethenyl 2,2,3,3,4,4,4-heptakis(fluoranyl)butanoate" "ethenyl 2,2,3,3,4,4,4-heptafluorobutanoate" "vinyl perfluoro butyrate" "vinyl 2,2,3,3,4,4,4-heptafluorobutanoate" "butanoic acid,2,2,3,3,4,4,4-heptafluoro-, ethenyl ester" "butanoicacid, heptafluoro-, ethenyl ester (9ci); butyric acid, heptafluoro-, vinylester (6ci,8ci); vinyl heptafluorobutanoate; vinyl heptafluorobutyrate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1758040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     541.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1578040.0
-    phase     gas;
 }

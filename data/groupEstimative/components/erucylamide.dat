@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group dCH; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-docos-13-enamide" "erucamide" "13-docosenamide, (z)-" "cis-13-docosenoamide" "erucyl amide" "erucic acid amide" "13-docosenamide, (13z)-" "13-docosenamide" "cis-13-docosenamide" "(z)-13-docosenamide" "(13z)docos-13-enamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -458980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1084.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=152110.0
-    phase     gas;
 }

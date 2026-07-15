@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxy-2-methyl-butane" "butane, 2-methoxy-2-methyl-" "methyl tert-pentyl ether" "2-methoxy-2-methylbutane" "ether, methyl tert-pentyl" "1,1-dimethylpropyl methyl ether" "t-amyl methyl ether" "tert-pentyl methyl ether" "tertiary-amyl methyl ether" "methyl tert-amyl ether" "tame (ether)" "tertiary amyl methyl ether (tame)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -308140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     362.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-102520.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-methoxy-3-oxidanyl-phenyl)-2-oxidanyl-ethanoic acid" "hydroxy(3-hydroxy-4-methoxyphenyl)acetic acid" "2-hydroxy-2-(3-hydroxy-4-methoxyphenyl)acetic acid" "3-hydroxy-4-methoxymandelicacid" "dl-3-hydroxy-4-methoxymandelic acid" "hydroxy-(3-hydroxy-4-methoxy-phenyl)-acetic acid" "(2r)-2-hydroxy-2-(3-hydroxy-4-methoxy-phenyl)acetate;2-hydroxy-2-(3-hydroxy-4-methoxyphenyl)acetic acid;2-hydroxy-2-(3-hydroxy-4-methoxy-phenyl)acetic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -821340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     526.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-615110.0
-    phase     gas;
 }

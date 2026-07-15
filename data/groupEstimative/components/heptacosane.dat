@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 25; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-heptacosane" "ai3-36283" "CH3-[CH2]25-ch3" "heptacosane; n-heptacosane" "CH3-(CH2)25-CH3" "nheptacosane" "qspl 047" "qspl 073" "heptacosane, analytical standard" "HY-W269368" "ls-15223" "CS-0314668" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -600610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1207.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176460.0
-    phase     gas;
 }

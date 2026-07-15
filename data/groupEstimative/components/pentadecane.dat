@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 13; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-pentadecane" "pentadekan" "pentadecane, n-" "BRN 1698194" "EC 211-098-1" "CH3-[CH2]13-ch3" "4-01-00-00529 (Beilstein Handbook Reference)" "pentadecane, analytical standard" "CH3-(CH2)13-CH3" "pentadecane; nsc 172781; n-pentadecane" "pentadecan" "medicinal plant" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -352930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     740.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=75420.0
-    phase     gas;
 }

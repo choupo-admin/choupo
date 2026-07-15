@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-iodanyl-3,5-dimethyl-benzene" "5-iodo-m-xylene" "1,3-dimethyl-5-iodobenzene" "benzene, 1-iodo-3,5-dimethyl-" "3,5-dimethyliodobenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   82010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     404.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=167750.0
-    phase     gas;
 }

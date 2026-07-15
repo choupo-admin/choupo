@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 9; } { group CH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(dibutoxymethoxy)butane" "orthoformic acid, tributyl ester" "tri-n-butyl orthoformate" "orthoformic acid butyl ester" "butane, 1,1',1''-[methylidynetris(oxy)]tris-" "butane, 1,1',1''-(methylidynetris(oxy))tris-" "tributoxymethane" "orthoformic acid tributyl ester" "sgjbifueflwxjy-uhfffaoysa-" "orthoformic acid, tributyl ester (8ci)" "1,1',1''-(methylidynetris(oxy))tributane" "butane,1',1''-[methylidynetris(oxy)]tris-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -713590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     686.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-258860.0
-    phase     gas;
 }

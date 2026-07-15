@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzoic acid, 4-pentyl-" "p-amylbenzoic acid" "4-amylbenzoic acid" "p-pentylbenzoic acid" "4-n-pentylbenzoic acid" "para-pentylbenzoic acid" "p-pentyl benzoic acid" "benzoic acid, p-pentyl-" "p-n-pentyl benzoic acid" "cyclohexanecarboxylic acid, 4-pentyl-;4-pentylcyclohexane-1-carboxylic acid;4-pentylcyclohexanecarboxylic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -416220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     563.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-190970.0
-    phase     gas;
 }

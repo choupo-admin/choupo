@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 18; } { group CH_ring; count 3; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,5-tricyclohexyl-1,3,5-triazinane" "1,5-tricyclohexylhexahydro-s-triazine" "s-triazine,3,5-tricyclohexylhexahydro-" "hexahydro-1,3,5-tricyclohexyl-s-triazine" "s-triazine, 1,3,5-tricyclohexylhexahydro-" "1,5-triazine, 1,3,5-tricyclohexylhexahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -18080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     882.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=600090.0
-    phase     gas;
 }

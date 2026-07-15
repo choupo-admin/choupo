@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylethyl 2-methylbutanoate" "butanoic acid, 2-methyl-, 2-phenylethyl ester" "2-phenylethyl 2-methylbutyrate" "benzyl carbinyl ethyl methyl acetate" "phenethyl 2-methylbutanoate" "2-methylbutyric acid phenethyl ester" "butyric acid, 2-methyl-, phenethyl ester (8ci)" "butyricacid, 2-methyl-, phenethyl ester (8ci); 2-phenylethyl 2-methylbutanoate;2-phenylethyl 2-methylbutyrate; phenethyl 2-methylbutyrate; phenylethyl2-methylbutyrate; b-phenylethyl 2-methylbutyrate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -397680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     597.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-141820.0
-    phase     gas;
 }

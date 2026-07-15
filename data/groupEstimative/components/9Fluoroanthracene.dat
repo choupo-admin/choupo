@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 9; } { group dC_ring; count 5; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-fluoranylanthracene" "anthracene,9-fluoro-" "anthracene, 9-fluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   67330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     396.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=178640.0
-    phase     gas;
 }

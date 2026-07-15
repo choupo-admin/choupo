@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "iodanylethane" "ethyl iodide" "ethane, iodo-" "monoiodoethane" "hydriodic ether" "ethyljodid" "jodethan" "iodo-ethane" "1-iodo-ethane" "s812" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -7740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     289.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=24080.0
-    phase     gas;
 }

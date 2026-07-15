@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-2-azanyl-4-methylsulfanyl-butanoic acid" "(r)-methionine" "h-d-met-oh" "r-methionine" "d-methionin" "d-2-amino-4-(methylthio)butanoic acid" "d-2-amino-4-(methylthio)butyric acid" "(r)-2-amino-4-(methylthio)butanoic acid" "(r)-2-amino-4-(methylmercapto)butyric acid" "(2r)-2-amino-4-(methylsulfanyl)butanoic acid" "methionine" "med" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -426420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     507.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-255560.0
-    phase     gas;
 }

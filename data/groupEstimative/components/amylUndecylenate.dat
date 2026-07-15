@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pentyl undec-10-enoate" "10-undecenoic acid, pentyl ester" "10-undecenoic acid,pentyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -565420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     825.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-138690.0
-    phase     gas;
 }

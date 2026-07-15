@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylbut-3-enoic acid" "2-hydroxybut-3-enoic acid" "vinylglycolic acid" "3-butenoic acid, 2-hydroxy-, (2s)-" "3-butenoic acid,2-hydroxy-" "agn-pc-00gt17" "3-butenoic acid, 2-hydroxy-" "(?a'a a'a currency)-vinylglycolic acid;2-hydroxy-3-butenoic acid; dl-vinylglycolic acid; vinylglycolic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -508240.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-412530.0
-    phase     gas;
 }

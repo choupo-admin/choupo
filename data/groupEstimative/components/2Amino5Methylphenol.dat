@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-5-methyl-phenol" "6-amino-m-cresol" "2-hydroxy-4-methylaniline" "4-amino-3-hydroxytoluene" "2-hydroxy-p-toluidine" "3-methyl-6-aminophenol" "phenol, 2-amino-5-methyl-" "6-amino-3-methylphenol" "6-amino-3-cresol" "4-amino-5-hydroxytoluene" "q054" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -106270.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     394.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22670.0
-    phase     gas;
 }

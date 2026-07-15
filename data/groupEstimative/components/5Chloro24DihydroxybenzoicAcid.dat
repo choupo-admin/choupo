@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 1; } { group OH_phenol; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-chloranyl-2,4-bis(oxidanyl)benzoic acid" "5-chloro-beta-resorcylic acid" "benzoic acid, 5-chloro-2,4-dihydroxy-" "beta-resorcylic acid, 5-chloro-" "5-chloro-4-hydroxysalicylic acid" "5-chloro-2,4-dihydroxybenzoicacid" "benzoic acid,5-chloro-2,4-dihydroxy-" "b-resorcylic acid, 5-chloro-(6ci,7ci);2,4-dihydroxy-5-chlorobenzoic acid;5-chloro-2,4-dihydroxybenzoicacid;5-chloro-4-hydroxysalicylic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -683380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     455.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-554240.0
-    phase     gas;
 }

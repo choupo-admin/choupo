@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenoxyethanamine" "ethanamine, 2-phenoxy-" "phenoxyethylamine" "2-phenoxy-ethylamine" "ethylamine, 2-phenoxy-" "(2-aminoethoxy)benzene" "1-amino-2-phenoxyethane" "alpha-phenoxy-beta-aminoethane" "beta-aminophenetole" "2-phenoxylethylamine" "o347" "ethylamine,2-phenoxy- (6ci,7ci,8ci);2-phenoxyethylamine;phenetole, b-amino-;phenoxyethylamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -70350.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=90340.0
-    phase     gas;
 }

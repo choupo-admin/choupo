@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-ethoxy-4-oxidanylidene-butanoic acid" "monoethyl succinate" "ethyl hydrogen succinate" "butanedioic acid, monoethyl ester" "butanedioic acid, 1-ethyl ester" "4-ethoxy-4-oxo-butyric acid" "agn-pc-04y262" "3-(ethoxycarbonyl)propanoic acid" "o532" "(2r,3r)-2,3-dideuterio-4-ethoxy-4-oxobutanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -834720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-654640.0
-    phase     gas;
 }

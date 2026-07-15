@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 6; } { group C_ring; count 2; } { group dCH_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "8a-methoxy-4a-methyl-1,2,3,4,5,6-hexahydronaphthalene" "naphthalene, 1,2,3,4,4a,5,6,8a-octahydro-8a-methoxy-4a-methyl-, cis-" "8a-methoxy-4a-methyl-1,2,3,4,4a,5,6,8a-octahydronaphthalene" "naphthalene, 1,2,3,4,4a,5,6,8a-octahydro-8a-methoxy-4a-methyl-, trans-" "naphthalene,1,2,3,4,4a,5,6,8a-octahydro-8a-methoxy-4a-methyl-cis-" "naphthalene,1,2,3,4,4a,5,6,8a-octahydro-8a-methoxy-4a-methyl-trans-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -214010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     635.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37240.0
-    phase     gas;
 }

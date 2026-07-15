@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group O_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4r)-2,2-dimethyl-1,3-dioxolane-4-carbaldehyde" "(r)-(+)-2,2-dimethyl-1,3-dioxolane-4-carboxaldehyde" "(4r)-2,2-dimethyl-1,3-dioxolan-4-carbaldehyd" "1,3-dioxolane-4-carboxaldehyde, 2,2-dimethyl-, (r)-" "d-glyceraldehyde acetonide" "(r)-(+)-glyceraldehyde acetonide" "(4r)-2,2-dimethyl-1,3-dioxolane-4-carboxaldehyde" "(r)-(+)-2,2-dimethyl-1,3-dioxolane-4-carbaldehyde" "(r)-(+)-2,2-dimethyl-1,3-dioxolan-4-carboxaldehyde" "(r)-2,2-dimethyl-1,3-dioxolane-4-carboxaldehyde 50% in dichloromethane reversibly polymerizes on standing" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -461370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     282.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-248770.0
-    phase     gas;
 }

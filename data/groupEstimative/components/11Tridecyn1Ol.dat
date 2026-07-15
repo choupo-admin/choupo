@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 10; } { group tC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tridec-11-yn-1-ol" "timtec-bb sbb009038;11-tridecyn-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -191580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     685.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=124560.0
-    phase     gas;
 }

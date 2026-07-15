@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group NH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[bis(4-aminophenyl)methyl]aniline" "leucoparafuchsin" "leucoparafuchsine" "triaminotriphenylmethane" "methane, tris(4-aminophenyl)-" "4,4',4''-methylidynetrianiline" "4,4',4''-methanetriyltrianiline" "p,p',p''-triaminotriphenylmethane" "4,4',4''-triaminotriphenylmethane" "aniline, 4,4',4''-methylidynetri-" "4,4',4''-methylidynetrisbenzeneamine" "tris-4-aminofenylmethan" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   335780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     703.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=614350.0
-    phase     gas;
 }

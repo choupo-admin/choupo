@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CdO; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-methyl-3-oxidanylidene-butanamide" "n-methyl-3-oxobutyramide" "n-methyl-3-oxobutanamide" "butanamide, n-methyl-3-oxo-" "acetoacet-monomethylamide" "n-monomethylacetoacetamide" "n-acetoacetylmethylamine" "n-methyl acetoacetylamide" "agn-pc-0cj1gg" "butanamide,n-methyl-3-oxo-" "acetoacetamide,n-methyl- (8ci);2-acetyl-n-methylacetamide;n-methyl-3-oxobutanamide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -318220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     444.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-177230.0
-    phase     gas;
 }

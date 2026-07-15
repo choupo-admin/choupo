@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH2; count 4; } { group dCH; count 4; } { group dCH_ring; count 11; } { group dC_ring; count 6; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2-bis(ethenyl)benzene;1-ethenyl-2-ethyl-benzene;5-ethenyl-2-methyl-pyridine" "pyridine, 5-ethenyl-2-methyl-, polymer with diethenylbenzene and ethenylethylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   365200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1118.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=712110.0
-    phase     gas;
 }

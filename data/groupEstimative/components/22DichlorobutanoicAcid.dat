@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group Cl; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-bis(chloranyl)butanoic acid" "butanoic acid,2,2-dichloro-" "butyric acid, 2,2-dichloro-" "butanoic acid, 2,2-dichloro-" "2,2-dichlorobutyric acid" "butyricacid, 2,2-dichloro- (6ci,7ci,8ci); 2,2-dichlorobutanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -516390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     392.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-382130.0
-    phase     gas;
 }

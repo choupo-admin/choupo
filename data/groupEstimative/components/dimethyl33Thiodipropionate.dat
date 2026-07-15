@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-(3-methoxy-3-oxidanylidene-propyl)sulfanylpropanoate" "dimethyl thiodipropionate" "propanoic acid, 3,3'-thiobis-, dimethyl ester" "dimethyl 3,3'-thiodipropanoate" "3,3'-thiodipropionic acid dimethyl ester" "bis(2-methoxycarbonylethyl)sulfide" "propanoic acid, 3,3'-thiobis-, 1,1'-dimethyl ester" "propionic acid,3'-thiodi-, dimethyl ester" "propanoic acid,3'-thiobis-, dimethyl ester" ".beta.,.beta.'-dicarbomethoxydiethyl sulfide" "dimethyl 3,3?-thiodipropionate" "dimethyl 3,3'-thiobispropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -801140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     631.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-571140.0
-    phase     gas;
 }

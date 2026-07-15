@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 2; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,2-tris(bromanyl)butane" "butane, 1,1,2-tribromo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -57460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=20880.0
-    phase     gas;
 }

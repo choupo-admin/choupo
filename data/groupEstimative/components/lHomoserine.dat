@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-4-oxidanyl-butanoic acid" "homoserine" "(s)-2-amino-4-hydroxybutyric acid" "h-hoser-oh" "(s)-homoserine" "(s)-2-amino-4-hydroxybutanoic acid" "homoserine (van)" "2-amino-4-hydroxybutyric acid" "(2s)-2-amino-4-hydroxybutanoic acid" "butanoic acid, 2-amino-4-hydroxy-, (s)-" "butyric acid, 2-amino-4-hydroxy-, l- (8ci)" "hse" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -599880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-433920.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group tCH; count 1; } { group tC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-pentynoic acid ethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -213190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-79240.0
-    phase     gas;
 }

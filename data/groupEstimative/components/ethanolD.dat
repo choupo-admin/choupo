@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "deuteriooxyethane" "ethanol-d1" "ethanol-od" "ethan(ol-d)" "ethyl alcohol-d1" "deuteroethanol" "ethyl alcohol-d" "ethyl (2)alcohol" "ethanol-d >99.5 atom % d" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -236840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     284.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-170860.0
-    phase     gas;
 }

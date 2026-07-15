@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group CH; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 18; } { group OH_phenol; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-[8-methanoyl-3-methyl-1,6,7-tris(oxidanyl)-5-propan-2-yl-naphthalen-2-yl]-6-methyl-2,3,8-tris(oxidanyl)-4-propan-2-yl-naphthalene-1-carbaldehyde" "(-)-gossypol" "(+)-gossypol" "tash 1" "pogosin" "racemic-gossypol" "(r)-gossypol" "(+-)-gossypol" "(+/-)-gossypol" "at101" "(r)-(-)-gossypol" "r-(-)-gossypol acetic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -820610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1146.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-281880.0
-    phase     gas;
 }

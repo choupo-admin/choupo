@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group Cl; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloromethylthiophene" "2-(chloromethyl)-thiophene" "2-(chlormethyl)thiophen" "thiophene, 2-(chloromethyl)-" "2-(1-chloro)-methylthiophene" "wt554" "765-50-4 2-(chloromethyl)thiophene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   67900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     345.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=113700.0
-    phase     gas;
 }

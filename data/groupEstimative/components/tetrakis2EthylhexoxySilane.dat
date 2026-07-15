@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 8; } { group CH2; count 20; } { group CH; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetrakis(2-ethylhexyl) silicate" "tetrakis(2-ethylhexyl) orthosilicate" "2-ethylhexyl orthosilicate" "2-ethylhexanol tetrasilicate" "2-ethyl-1-hexanol silicate" "tetra(2-ethylhexoxy) silane" "tetra(2-ethylhexyl) silicate" "tetra(2-ethylhexyl) orthosilicate" "1-hexanol, tetraester with silicic acid" "silicic acid (h4sio4),tetrakis(2-ethylhexyl) ester" "tetrakis(2-ethylhexyl) orthosilicate; 1-hexanol, 2-ethyl-, tetraester with silicic acid; silicic acid (h4sio4), tetrakis(2-ethylhexyl) ester; tetra(2-ethylhexyl) orthosilicate; tetrakis(2-ethylhexyl)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1365430.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1535.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-315960.0
-    phase     gas;
 }

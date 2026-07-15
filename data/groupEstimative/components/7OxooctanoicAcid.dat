@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-oxidanylideneoctanoic acid" "octanoic acid, 7-oxo-" "7-ketooctanoic acid" "7-oxo-octanoic acid" "7-keto-n-caprylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -671300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     547.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-456350.0
-    phase     gas;
 }

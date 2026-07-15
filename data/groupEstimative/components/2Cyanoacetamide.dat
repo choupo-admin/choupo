@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-cyanoethanamide" "cyanoacetamide" "cyanacetamide" "acetamide, 2-cyano-" "malonamide nitrile" "malonamonitrile" "nitrilomalonamide" "cyanoiminoacetic acid" "3-nitrilo-propionamide" "propionamide, 3-nitrilo-" "usaf kf-14" "propionamide nitrile" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -19160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     357.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=45090.0
-    phase     gas;
 }

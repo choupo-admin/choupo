@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dimethyl 6-oxidanylidenebenzo[c]chromene-4,8-dicarboxylate" "6h-dibenzo(b,d)pyran-4,8-dicarboxylic acid, 6-oxo-, dimethyl ester" "6h-dibenzo[b,d]pyran-4,8-dicarboxylic acid, 6-oxo-, dimethyl ester" "6h-dibenzo(b,d)pyran-4,8-dicarboxylic acid, 6-oxo-, 4,8-dimethyl ester" "6h-dibenzo[b,d]pyran-4,8-dicarboxylic acid, 6-oxo-, 4,8-dimethyl ester" "dimethyl 6-oxobenzo[c]chromene-4,8-dicarboxylate" "dimethyl 6-oxo-6h-dibenzo(b,d)pyran-4,8-dicarboxylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -807250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     626.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-547790.0
-    phase     gas;
 }

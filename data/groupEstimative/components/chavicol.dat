@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-prop-2-enylphenol" "4-allylphenol" "p-allylphenol" "p-hydroxyallylbenzene" "phenol, 4-(2-propenyl)-" "phenol, p-allyl-" "gamma-(p-hydroxyphenyl)-alpha-propylene" ".gamma.-(p-hydroxyphenyl)-.alpha.-propylene" "p-chavicol" "4-allyl-phenol" "4-(2-propenyl)phenol" "agn-pc-0cpshx" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -44440.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     422.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70530.0
-    phase     gas;
 }

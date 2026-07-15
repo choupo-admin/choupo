@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group OH; count 2; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[[(2r)-3,3-dimethyl-2,4-bis(oxidanyl)butanoyl]amino]propanoic acid" "vitamin b5" "d-pantothenic acid" "pantothenate" "chick antidermatitis factor" "(r)-pantothenate" "pantothenoic acid" "pantothenic acid [ban]" "beta-alanine, n-(2,4-dihydroxy-3,3-dimethyl-1-oxobutyl)-, (r)-" "(d)-(+)-pantothenic acid" "d(+)-n-(2,4-dihydroxy-3,3-dimethylbutyryl)-beta-alanine" "(d,+)-n(alpha-gamma-dihydroxy-beta,beta-dimethylbutyryl)-beta-alanine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -956960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     680.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-631780.0
-    phase     gas;
 }

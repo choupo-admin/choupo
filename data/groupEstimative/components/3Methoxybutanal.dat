@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group O; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methoxybutyraldehyde" "aldol ether" "butanal, 3-methoxy-" "3-methoxy butyraldehyde" "beta-methoxybutyraldehyde" "butyraldehyde, 3-methoxy-" ".beta.-methoxybutyraldehyde" "butanal, 3-methoxy- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -369610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     371.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-215740.0
-    phase     gas;
 }

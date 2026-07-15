@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylbut-3-en-2-ol" "3-buten-2-ol, 2-methyl-" "methylbutenol" "1,1-dimethylallyl alcohol" "dimethylvinylcarbinol" "dimethylvinylmethanol" "vinyldimethylcarbinol" "3-hydroxy-3-methyl-1-butene" "1,1-dimethylallyl alchol" "1,1-dimethyl-2-propenol" "3-hydroxy-3-methylbutene" ".alpha.,.alpha.-dimethylallyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -182080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     358.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-54920.0
-    phase     gas;
 }

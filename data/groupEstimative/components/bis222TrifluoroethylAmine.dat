@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 2; } { group F; count 6; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,2-tris(fluoranyl)-n-[2,2,2-tris(fluoranyl)ethyl]ethanamine" "2,2,2-trifluoro-n-(2,2,2-trifluoroethyl)ethanamine" "ethanamine, 2,2,2-trifluoro-n-(2,2,2-trifluoroethyl)-" "bis(trifluoroethyl)amine" "1,1,15,5,5-hexafluoro-3-azapentane" "1,1,1,5,5,5-hexafluoro-3-azapentane" "ethanamine,2,2,2-trifluoro-n-(2,2,2-trifluoroethyl)-" "diethylamine,2,2,2,2',2',2'-hexafluoro- (7ci,8ci); bis(2,2,2-trifluoroethyl)amine;n,n-bis(2,2,2-trifluoroethyl)amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1266580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     464.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1090990.0
-    phase     gas;
 }

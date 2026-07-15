@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group Cl; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-2-methylsulfanyl-ethane" "2-methylthioethyl chloride" "2-chloroethyl methylsulfide" "1-chloro-2-(methylthio)ethane" "(2-chloroethyl)(methyl)sulfane" "1-chloro-2-methylsulfanylethane" ".beta.-chloroethyl methyl sulfide" "a-chloroethylmethyl sulfide" "beta-chloroethyl methyl sulfide" "a-chloroethyl methyl sulfide" "2-(methylthio)ethyl chloride" "2-chloroethyl methyl sulphide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -79120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     367.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4430.0
-    phase     gas;
 }

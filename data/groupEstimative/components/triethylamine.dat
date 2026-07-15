@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-diethylethanamine" "ethanamine, n,n-diethyl-" "(diethylamino)ethane" "triaethylamin" "triethylamin" "triethyl amine" "diethylaminoethane" "n,n,n-triethylamine" "net3" "triaethylamin [german]" "triethyl-amine" "(c2h5)3n" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -99640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     405.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110420.0
-    phase     gas;
 }

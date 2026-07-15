@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 2; } { group C; count 1; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromoethyloxy-tert-butyl-dimethyl-silane" "2-bromoethoxy-t-butyl dimethylsilane" "(2-bromoethoxy)(tert-butyl)dimethylsilane" "2-(t-butyldimethylsiloxy)ethylbromide" "(2-bromo-ethoxy)-tert-butyl-dimethyl-silane" "agn-pc-0dahvk" "2-bromoethoxy-tert-butyldimethylsilane" "2-bromoethoxy-tert-butyl-dimethylsilane" "silane, (2-bromoethoxy)(1,1-dimethylethyl)dimethyl-" "2-bromo-1-(1,1,2,2-tetramethyl-1-silapropoxy)ethane" "2-buten-1-ol,4-[(tetrahydro-2h-pyran-2-yl)oxy]-, (z)-;(z)-4-[(tetrahydropyranyl)oxy]-2-buten-1-ol; cis-2-butene-1,4-diolmonotetrahydropyranyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -434710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     617.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-176120.0
-    phase     gas;
 }

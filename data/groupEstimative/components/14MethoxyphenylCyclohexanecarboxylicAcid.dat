@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-methoxyphenyl)cyclohexane-1-carboxylic acid" "1-(4-methoxyphenyl)-1-cyclohexanecarboxylic acid" "cyclohexanecarboxylic acid, 1-(4-methoxyphenyl)-" "cyclohexanecarboxylicacid, 1-(4-methoxyphenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -520160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     692.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-260170.0
-    phase     gas;
 }

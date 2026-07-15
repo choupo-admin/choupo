@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 6; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5-ditert-butylbenzaldehyde" "3,5-bis(tert-butyl)benzaldehyde" "3,5-di-tert-butyl-benzaldehyde" "3,5-bis(tert-butyl)-1-formylbenzene" "3,5-di-t-butylbenzaldehyde" "upcmld0enat5605088:001" "benzaldehyde,3,5-di-tert-butyl- (6ci,7ci,8ci);3,5-bis(1,1-dimethylethyl)benzaldehyde;3,5-di-tert-butylbenzaldehyde;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -80390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     624.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=218210.0
-    phase     gas;
 }

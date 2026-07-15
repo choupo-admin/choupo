@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-phenylpropyl methanoate" "hydrocinnamyl formate" "3-phenyl-1-propyl formate" "hydrocinnamyl methanoate" "gamma-phenylpropylformate" "gamma-phenylpropyl formate" "benzenepropanol, 1-formate" "1-phenyl-3-formyloxypropane" "1-propanol, 3-phenyl-, formate" "phenylpropyl formate" "benzenepropanol,1-formate" ".gamma.-phenylpropylformate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   63250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     622.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=189690.0
-    phase     gas;
 }

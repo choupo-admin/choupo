@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 2; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-iodanyl-3-methyl-butane" "butane, 2-iodo-3-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -80220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     387.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=44460.0
-    phase     gas;
 }

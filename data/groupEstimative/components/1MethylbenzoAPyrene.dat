@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 9; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methylbenzo[a]pyrene" "1-methylbenzopyrene" "1-methyl-bp" "benzo(a)pyrene, 1-methyl-" "methylbenzo[a]pyrene" "1-methylbenzo[pqr]tetraphene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   432700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     404.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=620670.0
-    phase     gas;
 }

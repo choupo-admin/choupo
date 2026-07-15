@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 1; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group CdO; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-(dimethylamino)ethyl]-5-methyl-2-naphthalen-1-yl-hex-4-enamide" "alpha-prenyl-alpha-(2-dimethylaminoethyl)-1-naphthylacetamide" "acetamide, 2-(2-dimethylaminoethyl)-2-(3-methyl-2-butenyl)-2-(1-naphthyl)-" "1-naphthaleneacetamide, alpha-(2-dimethylaminoethyl)-alpha-(3-methyl-2-butenyl)-" "1-allyl-2-(2-hydroxyethyl)thiourea" "2-(2-dimethylaminoethyl)-5-methyl-2-naphthalen-1-ylhex-4-enamide" "1-naphthaleneacetamide, .alpha.-[2-(dimethylamino)ethyl]-.alpha.-(3-methyl-2-butenyl)-" "azocane-2-carboxylic acid;azepane-2-carboxylic acid;hexahydro-1h-azepine-2-carboxylic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   26780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     797.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=458190.0
-    phase     gas;
 }

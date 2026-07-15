@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cedryl isoprenyl ether" "1h-3a,7-methanoazulene, octahydro-3,6,8,8-tetramethyl-6-((3-methyl-2-buten-1-yl)oxy)-, (3r,3as,6r,7r,8as)-" "1h-3a,7-methanoazulene, octahydro-3,6,8,8-tetramethyl-6-((3-methyl-2-butenyl)oxy)-, (3r,3ar,6r,7r,8as)-" "1h-3a,7-methanoazulene, octahydro-3,6,8,8-tetramethyl-6-[(3-methyl-2-buten-1-yl)oxy]-, (3r,3as,6r,7r,8as)-" "1h-3a,7-methanoazulene, octahydro-3,6,8,8-tetramethyl-6-[(3-methyl-2-butenyl)oxy]-, (3r,3ar,6r,7r,8as)-" "(3r-(3alpha,3abeta,6alpha,7beta,8aalpha))-octahydro-3,6,8,8-tetramethyl-6-((3-methylbut-2-enyl)oxy)-1h-3a,7-methanoazulene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -290140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     786.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=202640.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-ynylbenzene" "(2-propynyl)benzene" "benzylacetylene" "propargylbenzene" "prop-2-ynyl-benzene" "benzene, 2-propynyl-" "prop-2-yn-1-ylbenzene" "1-propyne, 3-phenyl-" "benzene, (2-propynyl)-" "agn-pc-00e9s5" "1,1-dideuterioprop-2-ynylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   299340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     369.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=360380.0
-    phase     gas;
 }

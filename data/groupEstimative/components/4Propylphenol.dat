@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-n-propylphenol" "p-propylphenol" "phenol, 4-propyl-" "phenol, p-propyl-" "dihydrochavicol" "4-propyl-phenol" "1-hydroxy-4-n-propylbenzene" "hydroxypropylbenzene, p-" "p-hydroxypropylbenzene" "phenol, p-propyl-," "4-propyl-1-cyclohexanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -169870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     426.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-17310.0
-    phase     gas;
 }

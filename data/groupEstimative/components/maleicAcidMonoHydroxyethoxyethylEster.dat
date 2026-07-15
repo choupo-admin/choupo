@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH; count 2; } { group OH; count 1; } { group O; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-4-[2-(2-hydroxyethyloxy)ethoxy]-4-oxidanylidene-but-2-enoic acid" "diethylene glycol, mono(hydrogen maleate)" "2-butenedioic acid, mono(2-(2-hydroxyethoxy)ethyl) ester" "maleic acid, mono(2-(2-hydroxyethoxy)ethyl) ester" "mono-2-(2-hydroxyethoxy)ethylester kyseliny maleinove" "(z)-4-[2-(2-hydroxyethoxy)ethoxy]-4-oxobut-2-enoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1043230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     627.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-799400.0
-    phase     gas;
 }

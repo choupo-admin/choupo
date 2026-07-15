@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 34; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "13-dodecylhexacosane" "hexacosane, 13-dodecyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -832930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1626.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=266640.0
-    phase     gas;
 }

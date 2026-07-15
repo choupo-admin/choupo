@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-methylsulfanylpropane-1,2-diol" "3-methylthiopropane-1,2-diol" "fxihxpkplpkpjh-uhfffaoysa-" "1,2-propanediol,3-(methylthio)-" "1,2-propanediol, 3-(methylthio)-" "3-(methylsulfanyl)propane-1,2-diol" "3-methylthio-1,2-propanediol" "3-(methylthio)-1,2-propanediol;3-(methylsulfanyl)propane-1,2-diol;3-(methylsulfanyl)-1,2-propanediol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -393760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     465.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-260160.0
-    phase     gas;
 }

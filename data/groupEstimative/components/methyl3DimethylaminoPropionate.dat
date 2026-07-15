@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-(dimethylamino)propanoate" "methyl beta-(dimethylamino)propionate" "n,n-dimethyl-beta-alanine methyl ester" "beta-alanine, n,n-dimethyl-, methyl ester" "methyl 3-dimethylaminopropionate" "methyl 3-dimethylaminopropanoate" "vsfjomfyabrohq-uhfffaoysa-" "b-alanine, n,n-dimethyl-, methylester" "methyl n,n-dimethyl-.beta.-aminopropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -416920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-199950.0
-    phase     gas;
 }

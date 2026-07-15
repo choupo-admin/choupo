@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH; count 1; } { group dC; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl (z)-3-oxidanylbut-2-enoate" "4-hydroxy-4-methoxybut-3-en-2-one" "(e)-4-hydroxy-4-methoxybut-3-en-2-one" "2-butenoic acid, 3-hydroxy-, methyl ester, (e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -508610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-384300.0
-    phase     gas;
 }

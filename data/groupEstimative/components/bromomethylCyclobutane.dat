@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bromomethylcyclobutane" "cyclobutylmethyl bromide" "bromomethyl cyclobutane" "sfphabikimup@" "bromocyclobutylmethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -53560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     331.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=54190.0
-    phase     gas;
 }

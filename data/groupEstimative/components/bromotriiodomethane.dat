@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group Br; count 1; } { group I; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bromanyl-tris(iodanyl)methane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   184220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     373.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=149060.0
-    phase     gas;
 }

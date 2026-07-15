@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 12; } { group O; count 6; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-methoxyethoxy)-n,n-bis[2-(2-methoxyethoxy)ethyl]ethanamine" "tris(dioxa-3,6-heptyl)amine" "tris[2-(2-methoxyethoxy)ethyl]amine" "tris(3,6-dioxaheptyl)amine" "tda-1" "ethanamine, 2-(2-methoxyethoxy)-n,n-bis(2-(2-methoxyethoxy)ethyl)-" "ethanamine, 2-(2-methoxyethoxy)-n,n-bis[2-(2-methoxyethoxy)ethyl]-" "8-[2-(2-methoxyethoxy)ethyl]-2,5,11,14-tetraoxa-8-azapentadecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1078720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     824.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-443800.0
-    phase     gas;
 }

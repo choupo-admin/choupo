@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "13h-dibenzo(a,c)fluorene" "1,2,3,4-dibenzfluorene" "13h-indeno(1,2-l)phenanthrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   438010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     430.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=618200.0
-    phase     gas;
 }

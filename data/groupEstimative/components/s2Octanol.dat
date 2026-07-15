@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-octan-2-ol" "d(+)-2-octanol" "d-octan-2-ol" "(s)-2-octanol" "(2s)-2-octanol" "(s)-octan-2-ol" "2-octanol, (2s)-" "2-octanol (s)" "(2s)octan-2-ol" "s-(+)-2-octanol" "(s)-(+)-hexylmethylcarbinol" "d-octan-2-ol;octan-2-ol;2-octanol, (s)-;2-octanol, (2s)-;(s)-(+)-2-octanol;d-2-octanol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -365960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     508.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-122780.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 24; } { group dC_ring; count 20; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetrabenzo(a,c,m,o)naphtho(1,2,3,4-rst)pentaphene" "hexabenzo[a,e,g,klm,q,s]picene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   1047050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     616.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1406080.0
-    phase     gas;
 }

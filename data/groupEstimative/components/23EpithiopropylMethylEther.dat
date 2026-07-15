@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group O; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(methoxymethyl)thiirane" "methoxymethylthiirane" "thiirane, (methoxymethyl)-" "(methoxymethyl)thiirane" "thiirane, 2-(methoxymethyl)-" "2,3-epithiopropyl methoxy ether" "ether,3-epithiopropyl methyl" "thiirane,2-(methoxymethyl)-" "thiirane, (methoxymethyl)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -140050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     282.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-21590.0
-    phase     gas;
 }

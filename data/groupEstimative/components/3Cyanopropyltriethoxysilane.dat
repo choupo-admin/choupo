@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group O; count 3; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-triethoxysilylbutanenitrile" "butanenitrile, 4-(triethoxysilyl)-" "4-(triethoxysilyl)butyronitrile" "butyronitrile, 4-(triethoxysilyl)-" "(3-cyanopropyl) triethoxysilane" "silane, triethoxy(3-cyanopropyl)-" "silane, (3-cyanopropyl)triethoxy-" "triethoxy-3-kyanpropylsilan" "butanenitrile,4-(triethoxysilyl)-" "butyronitrile,4-(triethoxysilyl)- (6ci,7ci,8ci); 3-cyanopropyltriethoxysilane;4-(triethoxysilyl)butanenitrile; 4-(triethoxysilyl)butyronitrile; gh 520; g-cyanopropyltriethoxysilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -593130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     711.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-253260.0
-    phase     gas;
 }

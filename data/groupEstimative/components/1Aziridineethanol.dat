@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH2_ring; count 2; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(aziridin-1-yl)ethanol" "1-azirdineethanol" "ethanol, 2-(1-aziridinyl)-" "2-(1-aziridinyl)ethanol" "1-(2-hydroxyethyl)ethylenimine" "2-(azidin-1-yl)ethanol" "n-(2-hydroxyethyl)aziridine" "n-(hydroxyethyl)ethyleneimine" "n-(2-hydroxyethyl)ethylenimine" "n-(2-hydroxyethyl)ethyleneimine" "hydroxyethylethyleneimine" "2-hydroxy-1-ethylaziridine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -111290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     310.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37320.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-decoxyethanol" "2-(decyloxy)ethanol" "deceth-4" "peg-4 decyl ether" "decyl alcohol, ethoxylated" "ethanol, 2-(decyloxy)-" "polyoxyethylene monodecyl ether" "ethylene glycol monodecyl ether" "polyoxyethylene (4) decyl ether" "c10e1" "polyethylene glycol 200 decyl ether" "polyoxyethylated (6) isodecyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -575460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     685.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-191660.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanylprop-1-enylbenzene" "benzene, [(1z)-3-bromo-1-propenyl]-" "3-bromoprop-1-enylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   150990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     444.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=231850.0
-    phase     gas;
 }

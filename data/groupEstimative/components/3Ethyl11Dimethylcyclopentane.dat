@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethyl-1,1-dimethyl-cyclopentane" "1,1-dimethyl-3-ethylcyclopentane" "cyclopentane, 3-ethyl-1,1-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -173710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=48250.0
-    phase     gas;
 }

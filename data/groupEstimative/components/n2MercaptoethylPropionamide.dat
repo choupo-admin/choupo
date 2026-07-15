@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CdO; count 1; } { group NH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(2-sulfanylethyl)propanamide" "propanamide, n-(2-mercaptoethyl)-" "beta-mercaptoethyl propionamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -167160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     480.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-18920.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dC_ring; count 6; } { group Cl; count 5; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-butoxy-2,3,4,5,6-pentakis(chloranyl)benzene" "benzene, butoxypentachloro-" "pentachlorophenyl butyl ether" "ether, butyl pentachlorophenyl (6ci,7ci)" "1-butoxy-2,3,4,5,6-pentachlorobenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -281470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     586.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-67070.0
-    phase     gas;
 }

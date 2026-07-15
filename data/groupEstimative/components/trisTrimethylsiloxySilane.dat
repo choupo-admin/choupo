@@ -35,9 +35,8 @@ groups
     joback ( { group CH3; count 9; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(trimethylsilyloxy)silicon" "1,1,5,5,5-hexamethyl-3-((trimethylsilyl)oxy)trisiloxane" "trisiloxane,1,1,1,5,5,5-hexamethyl-3-(trimethylsiloxy)- (6ci,7ci,8ci);" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1016420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     992.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-656760.0
-    phase     gas;
 }

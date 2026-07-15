@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group tCH; count 1; } { group tC; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanylhex-1-en-5-yne" "2-bromo-1-hexen-5-yne" "2-bromohex-1-en-5-yne" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   266700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=316320.0
-    phase     gas;
 }

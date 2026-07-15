@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 3; } { group F; count 7; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,4,4,4-heptakis(fluoranyl)butan-1-amine" "1h,1h-perfluorobutylamine" "2,2,3,3,4,4,4-heptafluorobutan-1-amine" "butylamine, 2,2,3,3,4,4,4-heptafluoro-" "1-butanamine, 2,2,3,3,4,4,4-heptafluoro-" "heptafluorobutylamine" "1h,1h-heptafluorobutylamine" "1-butanamine,2,2,3,3,4,4,4-heptafluoro-" "butylamine,2,2,3,3,4,4,4-heptafluoro- (6ci,7ci,8ci);2,2,3,3,4,4,4-heptafluorobutylamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1491120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     468.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1305900.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-tert-butylethanolamine" "tert-butylaminoethanol" "t-butylethanolamine" "n-t-butylethanolamine" "ethanol, 2-(tert-butylamino)-" "2-((1,1-dimethylethyl)amino)ethanol" "ethanol, 2-((1,1-dimethylethyl)amino)-" "ethanol, 2-[(1,1-dimethylethyl)amino]-" "agn-pc-0d5ook" ".beta.-tert-butylaminoethanol" "q2mx1&1&1" "ethanol,1-dimethylethyl)amino]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -274680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     442.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-44950.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 11; } { group CH; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-bromanyltetradecanoate" "methyl 2-bromomyristate" "tetradecanoic acid, 2-bromo-, methyl ester" "methyl " "a-bromo myristate" "methyl 2-bromo tetradecanoate" "methyl 2-bromo-1-tetradecanoate" "methyl2-bromo-1-tetradecanoate;" "2-bromo-tetradecanoic acid methyl ester" "u563" "tetradecanoic acid,2-bromo-, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -649160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     833.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-223070.0
-    phase     gas;
 }

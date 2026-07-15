@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 6; } { group C_ring; count 1; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3,5-triazatricyclo(3.3.1.13,7)decane, 7-methyl-" "1,3,5-triazatricyclo[3.3.1.13,7]decane, 7-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   280780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     359.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=565200.0
-    phase     gas;
 }

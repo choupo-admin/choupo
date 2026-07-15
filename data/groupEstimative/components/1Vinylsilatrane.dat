@@ -38,9 +38,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 6; } { group O_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-ethenyl-4,6,11-trioxa-1-aza-5-silabicyclo[3.3.3]undecane" "vinylsilatrane" "1-ethenylsilatrane" "vinylsilatran [german]" "2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undecane, 1-ethenyl-" "1-vinyl-2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecane" "1-vinyl-2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undecane" "2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecane, 1-ethenyl-" "2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecane, 1-vinyl-" "vinylsilatran" "jetuzefhwctpqd-uhfffaoysa-" "1-vinyl-2,8,9-trioxa-5-aza-1-sila-bicyclo[3.3.3]undecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -355310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     415.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-47400.0
-    phase     gas;
 }

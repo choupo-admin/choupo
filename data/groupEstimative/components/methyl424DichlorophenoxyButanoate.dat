@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-[2,4-bis(chloranyl)phenoxy]butanoate" "butanoic acid, 4-(2,4-dichlorophenoxy)-, methyl ester" "butyric acid, 4-(2,4-dichlorophenoxy)-, methyl ester" "methyldichlorophenoxybutanoate" "butanoic acid,4-(2,4-dichlorophenoxy)-, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -537760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     595.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-304340.0
-    phase     gas;
 }

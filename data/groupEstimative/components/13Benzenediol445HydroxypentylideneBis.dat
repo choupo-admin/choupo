@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group CH; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH; count 1; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[1-[2,4-bis(oxidanyl)phenyl]-5-oxidanyl-pentyl]benzene-1,3-diol" "4,4'-(5-hydroxypentylidene)bisresorcinol" "5,5-bis(2',4'-dihydroxyphenyl)-1-pentanol" "4-[1-(2,4-dihydroxyphenyl)-5-hydroxypentyl]benzene-1,3-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -787900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     752.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-440660.0
-    phase     gas;
 }

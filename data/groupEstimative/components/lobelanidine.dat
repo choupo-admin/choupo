@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[1-methyl-6-(2-oxidanyl-2-phenyl-ethyl)piperidin-2-yl]-1-phenyl-ethanol" "8,10-diphenyllobelidiol" "8,10-diphenylobelidiol" "lobelidiol, 8,10-diphenyl-" "2,6-piperidinediethanol, 1-methyl-" "a," "a'-diphenyl-" "2,6-piperidinediethanol, alpha,alpha'-diphenyl-1-methyl-" "lobelanidine (8ci)" "lobelidiol,10-diphenyl-" "2, 1-methyl-.alpha.,.alpha.'-diphenyl-" "brd-a59215453-003-03-3" "2,2'-(1-methylpiperidine-2,6-diyl)bis(1-phenylethanol)" "2,6-piperidinediethanol, 1-methyl-alpha,alpha'-diphenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -231700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     806.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=220280.0
-    phase     gas;
 }

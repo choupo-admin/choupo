@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group CH_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bicyclo[2.2.1]heptan-7-ol" "bicyclo(2.2.1)heptan-7-ol" "7-norbornanol(6ci,7ci,8ci); 7-hydroxynorbornane; 7-norborneol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -220940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     276.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-27070.0
-    phase     gas;
 }

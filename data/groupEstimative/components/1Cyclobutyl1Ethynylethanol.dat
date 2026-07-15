@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group C; count 1; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-cyclobutylbut-3-yn-2-ol" "cyclobutyl ethynyl methyl carbinol" "cyclobutanemethanol, a-ethynyl-a-methyl-" "cyclobutanemethanol, .alpha.-ethynyl-.alpha.-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -10890.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     378.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=154220.0
-    phase     gas;
 }

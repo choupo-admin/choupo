@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5-dimethyl-4-phenylmethoxy-benzoic acid" "3,5-dimethyl-4-(phenylmethoxy)benzoic acid" "4-benzyloxy-3,5-dimethyl-benzoate" "3,5-dimethyl-4-phenylmethoxybenzoic acid" "l648" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -417410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     612.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-169140.0
-    phase     gas;
 }

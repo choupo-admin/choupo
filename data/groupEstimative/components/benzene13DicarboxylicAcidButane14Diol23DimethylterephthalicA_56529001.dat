@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH; count 4; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3-benzenedicarboxylic acid, polymer with 1,4-butanediol, 1,4-dimethyl 1,4-benzenedicarboxylate and 1,6-hexanediol" "1,3-benzenedicarboxylic acid, polymer with 1,4-butanediol, dimethyl 1,4-benzenedicarboxylate and 1,6-hexanediol" "benzene-1,3-dicarboxylic acid; butane-1,4-diol; 2,3-dimethylterephthalic acid; hexane-1,6-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2538930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1748.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1866020.0
-    phase     gas;
 }

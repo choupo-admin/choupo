@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group O; count 3; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-trimethoxysilylpropane-1-thiol" "3-mercaptopropyltrimethoxysilane" "1-propanethiol, 3-(trimethoxysilyl)-" "3-(trimethoxysilyl)propanethiol" "a 189 (silicone)" "gamma-mercaptopropyltrimethoxysilane" "mps-m" "3-(trimethoxysilyl)propane-1-thiol" "m 8500 (coupling agent)" "(3-mercaptopropyl)-trimethoxysilane" "(3-thiopropyl)trimethoxysilane" "3-(sulfanylpropyl)trimethoxysilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -636970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     612.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-390730.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylpropyl 3-methylbut-2-enoate" "3-methyl-2-butenoic acid, 2-methylpropyl ester" "2-butenoic acid, 3-methyl-, 2-methylpropyl ester" "2-butenoic acid,3-methyl-, 2-methylpropyl ester" "crotonicacid, 3-methyl-, isobutyl ester (8ci); isobutyl 3-methyl-2-butenoate; isobutyl b,b-dimethylacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -444220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     537.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-216240.0
-    phase     gas;
 }

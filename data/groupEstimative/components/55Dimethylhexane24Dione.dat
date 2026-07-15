@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group CdO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pivaloylacetone, keto form" "2,4-hexanedione, 5,5-dimethyl-" "2,2-dimethyl-3,5-hexanedione" "agn-pc-0cqnw6" "5,5-dimethyl-2,4-hexanedione" "2,2-dimethylhexane-3,5-dione" "2,4-hexanedione, 5,5-dimethyl-;4-hydroxy-5,5-dimethyl-hex-3-en-2-one;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -442360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     482.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-238520.0
-    phase     gas;
 }

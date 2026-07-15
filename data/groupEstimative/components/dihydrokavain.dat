@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methoxy-2-(2-phenylethyl)-2,3-dihydropyran-6-one" "dihydrokawain" "7,8-dihydrokawain" "marindinin" "kavain, dihydro-" "kawain, dihydro-" "2h-pyran-2-one, 5,6-dihydro-4-methoxy-6-phenethyl-" "agn-pc-00q4y3" "4-methoxy-2-phenethyl-2,3-dihydropyran-6-one" "4-methoxy-6-(2-phenylethyl)-5,6-dihydro-2h-pyran-2-one" "2h-pyran-2-one, 5,6-dihydro-4-methoxy-6-(2-phenylethyl)-" "2h-pyran-2-one, 5,6-dihydro-4-methoxy-6-(2-phenylethyl)-, (s)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -432310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     543.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-166980.0
-    phase     gas;
 }

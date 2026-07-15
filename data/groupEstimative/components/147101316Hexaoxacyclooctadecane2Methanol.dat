@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 11; } { group CH_ring; count 1; } { group OH; count 1; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4,7,10,13,16-hexaoxacyclooctadec-2-ylmethanol" "18-crown-6-methanol" "2-hydroxymethyl-18-crown-6" "hfrgasadqczxhh-uhfffaoysa-" "2-(hydroxymethyl)-18-crown 6-ether" "(2,5,8,11,14,17-hexaoxacyclooctadecyl)methan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1275480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     613.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-715710.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylethyl 2-phenylethanoate" "2-phenylethyl phenylacetate" "benzeneacetic acid, 2-phenylethyl ester" "phenylethyl phenylacetate" "phenethyl 2-phenylacetate" "phenethyl alpha-toluate" "phenylacetic acid, phenethyl ester" "benzylcarbinyl phenylacetate" "benzylcarbinyl alpha-toluate" "2-phenylethyl alpha-toluate" "2-phenylethyl benzeneacetate" "phenethyl .alpha.-toluate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -217790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     617.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1710.0
-    phase     gas;
 }

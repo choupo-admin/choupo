@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetrahydropyran-2-ylmethylamine" "2-(aminomethyl)tetrahydropyran" "pyran, 2-(aminomethyl)tetrahydro-" "2-(aminomethyl)tetrahydro-2h-pyran" "2-aminomethyltetrahydropyran" "pyran, 2-aminomethyltetrahydro-" "2h-pyran-2-methanamine, tetrahydro-" "2h-pyran-2-methylamine, tetrahydro-" "c-(tetrahydro-pyran-2-yl)-methylamine" "2h-3,4,5,6-tetrahydropyran-2-ylmethylamine" "1-(tetrahydro-2h-pyran-2-yl)methanamine" "2h-pyran-2-methanamine, tetrahydro- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -211060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     359.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=4420.0
-    phase     gas;
 }

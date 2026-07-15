@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl (4s,5r)-2,2,5-trimethyl-1,3-dioxolane-4-carboxylate" "(4s,5r)-methyl 2,2,5-trimethyl-1,3-dioxolane-4-carboxylate" "methyl (4s)-trans-2,2,5-trimethyl-1,3-dioxolane-4-carboxylate" "4-deoxy-2,3-o-isopropylidene-d-threonic acid methyl ester" "methyl (2s,3r)-2,3-o-isopropylidene-2,3-dihydroxybutyrate" "1,3-dioxolane-4-carboxylicacid, 2,2,5-trimethyl-, methyl ester, (4s-trans)-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -754690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     350.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-450490.0
-    phase     gas;
 }

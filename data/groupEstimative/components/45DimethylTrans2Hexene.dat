@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 2; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4,5-dimethylhex-2-ene" "2-hexene, 4,5-dimethyl-, (2z)-" "2-hexene, 4,5-dimethyl-" "4,5-dimethyl-2-hexene" "agn-pc-0cpr1u" "4,5-dimethyl-cis-2-hexene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -101790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     441.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91820.0
-    phase     gas;
 }

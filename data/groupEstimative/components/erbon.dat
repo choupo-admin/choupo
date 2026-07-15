@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 5; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2,4,5-tris(chloranyl)phenoxy]ethyl 2,2-bis(chloranyl)propanoate" "pentanate" "novege" "baron" "novon" "erbn" "erbon [ansi]" "propanoic acid, 2,2-dichloro-, 2-(2,4,5-trichlorophenoxy)ethyl ester" "2-(2,4,5-trichlorophenoxy)ethyl 2,2-dichloropropanoate" "2-(2,4,5-trichlorophenoxy)ethyl 2,2-dichloropropionate" "2,4,5-trichlorophenoxyethyl-alpha,alpha-dichloropropionate" "ethanol, 2-(2,4,5-trichlorophenoxy)-, 2,2-dichloropropionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -605200.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     650.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-346920.0
-    phase     gas;
 }

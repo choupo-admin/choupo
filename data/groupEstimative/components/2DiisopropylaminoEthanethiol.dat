@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group N; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[di(propan-2-yl)amino]ethanethiol" "ethanethiol, 2-(diisopropylamino)-" "2-(diisopropylamino)-ethanethiol" "2-(n,n-diisopropylamino)ethanethiol" "41480-75-5 (hydrochloride)" "2-[bis(propan-2-yl)amino]ethane-1-thiol" "ethanethiol,2-[bis(1-methylethyl)amino]-" "ethanethiol, 2-(bis(1-methylethyl)amino)-" "ethanethiol, 2-(bis(1-methylethyl)amino)- (9ci)" "ethanethiol,2-(diisopropylamino)- (6ci,7ci,8ci);2-(diisopropylamino)ethanethiol;diisopropylaminoethanethiol;b-diisopropylaminoethanethiol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -113000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     527.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=151770.0
-    phase     gas;
 }

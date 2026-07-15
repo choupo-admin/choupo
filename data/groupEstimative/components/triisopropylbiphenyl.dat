@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH; count 3; } { group dCH_ring; count 7; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenyl-2,3,4-tri(propan-2-yl)benzene" "tris(1-methylethyl)-1,1'-biphenyl" "1,1'-biphenyl,tris(1-methylethyl)-" "biphenyl,triisopropyl- (7ci,8ci); triisopropylbiphenyl; triisopropyldiphenyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -53960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     714.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=314550.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group CdO; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-ethanoyl-3-oxidanylidene-butanoate" "ethyl 2-acetyl-3-oxobutanoate" "ethyldiacetoacetate" "ethyl diacetylacetate" "ethyl 2-acetylacetoacetate" "ethyl diaceto acetate" "butanoic acid, 2-acetyl-3-oxo-, ethyl ester" "3-ethoxycarbonylacetylacetone" "diacetoacetic acid ethyl ester" "ethyl 2-acetyl-3-oxobutyrate" "2-acetyl-3-oxo-butyric acid ethyl ester" "n140" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -756170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     562.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-554170.0
-    phase     gas;
 }

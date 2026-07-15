@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methoxypropan-2-one" "methoxy-2-propanone" "2-propanone, 1-methoxy-" "1-methoxyacetone" "methoxyaceton" "1-methoxy-2-propanone" "methoxymethyl methyl ketone" "u020" "2-propanone,methoxy- (7ci);1-methoxy-2-propanone;1-methoxyacetone;methoxy-2-propanone;methoxyacetone;methoxymethyl methyl ketone;methyl methoxymethyl ketone;a-methoxyacetone;a-methoxypropanone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -370690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     349.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-251120.0
-    phase     gas;
 }

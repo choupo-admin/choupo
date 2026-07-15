@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-bromanyldodecanoate" "2-bromo-dodecanoic acid methyl ester" "dodecanoic acid, 2-bromo-, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -607880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     755.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-239910.0
-    phase     gas;
 }

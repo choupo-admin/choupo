@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dodecan-1-amine" "1-dodecanamine" "laurylamine" "n-dodecylamine" "1-aminododecane" "dodecanamine" "laurinamine" "lauramine" "monododecylamine" "n-laurylamine" "lauryl amine" "1-dodecylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     675.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116610.0
-    phase     gas;
 }

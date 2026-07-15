@@ -38,9 +38,8 @@ groups
     joback ( { group CH2_ring; count 4; } { group O_ring; count 1; } { group dO_oth; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4-oxathiane 4,4-dioxide" "p-thioxane sulfone" "1,4-thioxane-1,1-dioxide" "oxathiane 4,4-dioxide" "1,4-oxathiane, 4,4-dioxide" "usaf do-38" "4,4-dioxo-1,4-oxathiane" "1, 4,4-dioxide" "1,4-thioxane 1,1-dioxide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -672290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     511.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-560720.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group tC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "non-5-yn-3-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -114300.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     519.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=88440.0
-    phase     gas;
 }

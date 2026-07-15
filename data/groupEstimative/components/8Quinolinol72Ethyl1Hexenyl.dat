@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-(2-ethylhex-1-enyl)quinolin-8-ol" "8-quinolinol, 7-(2-ethyl-1-hexen-1-yl)-" "agn-pc-00lap1" "7-(2-ethyl-1-hexenyl)-8-quinolinol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -15170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     625.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=295790.0
-    phase     gas;
 }

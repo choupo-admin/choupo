@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 2-oxidanylideneethanoate" "ethyl glyoxylate" "ethyl oxoacetate" "ethyl 2-oxoacetate" "ethyl glyoxalate solution" "acetic acid, oxo-, ethyl ester" "acetic acid, 2-oxo-, ethyl ester" "2-oxoacetic acid, ethyl ester" "ethyl 2-oxoacetate 50% in toluene" "ethyl oxoacetate, tech 50% solution in toluene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -528750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     381.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-427090.0
-    phase     gas;
 }

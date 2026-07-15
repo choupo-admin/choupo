@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-[diethoxy(methyl)silyl]butan-1-amine" "butylamine, 4-(diethoxymethylsilyl)-" "4-aminobutylmethyldiethoxysilane" "4-(diethoxymethylsilyl)butylamine" "(4-aminobutyl)diethoxymethylsilane" "silane, (4-aminobutyl)diethoxymethyl-" "delta-aminobutylmethyldiethoxysilane" "4-(diethoxy(methyl)silyl)butylamine" "4-aminobutyl(methyl)diethoxysilane" "aminobutylmethyldiethoxysilane" "(.delta.-aminobutyl)methyldiethoxysilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -571360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     707.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-223410.0
-    phase     gas;
 }

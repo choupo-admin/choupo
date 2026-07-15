@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group dCH2; count 2; } { group dCH; count 2; } { group Cl; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloranylethene;3-oxidanylpropyl prop-2-enoate" "vinyl chloride, 3-hydroxypropyl acrylate polymer" "2-propenoic acid, 3-hydroxypropyl ester, polymer with chloroethene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -554460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     701.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-371720.0
-    phase     gas;
 }

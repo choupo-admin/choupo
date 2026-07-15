@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 7; } { group C; count 1; } { group CdO; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-bis(3-oxidanylidenebutanoyloxymethyl)butyl 3-oxidanylidenebutanoate" "2,2-bis{[(3-oxobutanoyl)oxy]methyl}butyl 3-oxobutanoate" "2-ethyl-2-(hydroxymethyl)-1,3-propanediol triacetoacetate" "acetoacetic acid, 1,1,1-trihydroxy-methylpropane triester" "1,3-propanediol, 2-ethyl-2-(hydroxymethyl)-, triacetoacetate" "butanoic acid, 3-oxo-, 2-((1,3-dioxobutoxy)methyl)-2-ethyl-1,3-propanediyl ester" "butanoic acid, 3-oxo-, 1,1'-(2-((1,3-dioxobutoxy)methyl)-2-ethyl-1,3-propanediyl) ester" "butanoic acid, 3-oxo-, 1,1'-[2-[(1,3-dioxobutoxy)methyl]-2-ethyl-1,3-propanediyl] ester" "butanoic acid, 3-oxo-, 2-[(1,3-dioxobutoxy)methyl]-2-ethyl-1,3-propanediyl ester" "2,2-bis(3-oxobutanoyloxymethyl)butyl 3-oxobutanoate" "acetoacetic acid, triester with 2-ethyl-2-(hydroxymethyl)-1,3-propanediol" "acetoacetic acid, triester with 2-ethyl-2-(hydroxymethyl)-1,3-propanediol (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1713180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1052.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1214350.0
-    phase     gas;
 }

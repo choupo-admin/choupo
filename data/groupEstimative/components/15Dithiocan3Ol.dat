@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group CH_ring; count 1; } { group OH; count 1; } { group S_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,5-dithiacyclooctan-3-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -186880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     550.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-57210.0
-    phase     gas;
 }

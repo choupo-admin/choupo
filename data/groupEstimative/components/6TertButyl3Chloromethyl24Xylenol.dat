@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group Cl; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-tert-butyl-3-(chloromethyl)-2,4-dimethyl-phenol" "2,4-dimethyl-3-(chloromethyl)-6-tert-butylphenol" "phenol, 3-(chloromethyl)-6-(1,1-dimethylethyl)-2,4-dimethyl-" "6-tert-butyl-3-(chloromethyl)-2,4-dimethylphenol" "3-(chloromethyl)-6-(1,1-dimethylethyl)-2,4-dimethylphenol" "phenol, 6-tert-butyl-3-(chloromethyl)-2,4-dimethyl-" "6-tert-butyl-3-(chloromethyl)-2,4-xylenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -311330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     558.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-21610.0
-    phase     gas;
 }

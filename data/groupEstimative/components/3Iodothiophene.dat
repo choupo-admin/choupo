@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 1; } { group I; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-iodanylthiophene" "thiophene, 3-iodo-" "3-iodothiophene, stab. with copper" "3-thienyl iodide" "thien-3-yl iodide" "agn-pc-00e9xq" "3-thienyl iodide;3-iodthiophen;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   181150.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     328.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=175330.0
-    phase     gas;
 }

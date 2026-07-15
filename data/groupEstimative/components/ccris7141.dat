@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 7; } { group O; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "11-ethoxy-15,16-dihydrocyclopenta[a]phenanthren-17-one" "11-ethoxy-15,16-dihydro-17-cyclopenta(a)phenanthren-17-one" "15,16-dihydro-11-ethoxy-17h-cyclopenta(a)phenanthren-17-one" "17-cyclopenta(a)phenanthren-17-one, 15,16-dihydro-11-ethoxy-" "17h-cyclopenta(a)phenathren-17-one, 11-ethoxy-15,16-dihydro-" "11-ethoxygona-1(10),2,4,6,8(14),9(11),12-heptaen-17-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -39480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     431.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=237160.0
-    phase     gas;
 }

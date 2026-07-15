@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 2; } { group dC_ring; count 2; } { group Br; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-bromanylthiophene-2-carbaldehyde" "5-bromo-2-thiophenecarboxaldehyde" "5-bromothiophene-2-carboxaldehyde" "5-bromothenaldehyde" "5-bromo-2-formylthiophene" "2-bromo-5-thiophenecarboxaldehyde" "5-bromo-2-thiophenecarbaldehyde" "5-bromothiophene-2-aldehyde" "5-bromo-thiophene-2-carbaldehyde" "5-bromothiophene-2-carbaldehyde," "2-bromo-5-formylthiophene" "2-formyl-5-bromothiophene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   174950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     437.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=174280.0
-    phase     gas;
 }

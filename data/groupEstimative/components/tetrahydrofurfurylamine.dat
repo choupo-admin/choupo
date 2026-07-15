@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group O_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oxolan-2-ylmethanamine" "2-aminomethyltetrahydrofuran" "furfurylamine, tetrahydro-" "2-furanmethanamine, tetrahydro-" "usaf q-2" "tetrahydro-2-furanmethanamine" "2-(aminomethyl)tetrahydrofuran" "(tetrahydrofuran-2-yl)methanamine" "oxolan-2-yl-methanamine" "c-(tetrahydro-furan-2-yl)-methylamine" "1-(tetrahydrofur-2-yl)methylamine" "oxolan-2-ylmethylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -184260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     300.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8100.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "phenyl 3-chloranylpropanoate" "phenyl 3-chloropropionate" "phenyl .beta.-chloropropionate" "3-chloropropionic acid phenyl ester" "phenyl beta-chloropropionate" "3-chloropropanoic acid phenyl ester" ".beta.-chloropropionic acid phenyl ester" "propanoic acid,3-chloro-, phenyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -325580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184990.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octan-2-yl ethanoate" "2-acetoxyoctane" "1-methylheptyl acetate" "sec-octyl acetate" "acetic acid, sec-octyl ester" "2-octyl acetate" "octan-2-yl acetate" "2-octanol, 2-acetate" "sec-octylacetate" "acetic acid, sec-octylester" "agn-pc-00h11d" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -572290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     587.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-279490.0
-    phase     gas;
 }

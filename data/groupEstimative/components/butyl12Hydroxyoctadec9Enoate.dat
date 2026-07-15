@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 16; } { group CH; count 1; } { group dCH; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butyl 12-oxidanyloctadec-9-enoate" "butyl ricinoleate" "9-octadecenoic acid, 12-hydroxy-, butyl ester, [r-(z)]-" "9-octadecenoic acid, 12-hydroxy-, butyl ester, (9z,12r)-" "n-butylricinoleate, pract" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -854980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1099.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-235050.0
-    phase     gas;
 }

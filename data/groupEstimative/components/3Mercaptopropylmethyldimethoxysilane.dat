@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group O; count 2; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[dimethoxy(methyl)silyl]propane-1-thiol" "3-mercaptopropylmethyldimethoxy silane" "(3-mercaptopropyl)methyldimethoxysilane" "3-(dimethoxymethylsilyl)-1-propanethiol" "dimethoxy-(3-mercaptopropyl)methylsilane" "(3-mercaptopropyl)dimethoxymethylsilane;(g-mercaptopropyl)dimethoxymethylsilane;3-(dimethoxymethylsilyl)-1-propanethiol;ay 43-062;dimethoxy(3-mercaptopropyl)methylsilane;dimethoxymercaptopropylmethylsilane;dimethoxymethyl(3-mercaptopropyl)silane;kbe 802;kbm 802;kem 802;methyl(3-mercaptopropyl)dimethoxysilane;sisib pc2320;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -504750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     601.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-285730.0
-    phase     gas;
 }

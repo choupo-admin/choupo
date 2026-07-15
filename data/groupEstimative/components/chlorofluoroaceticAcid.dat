@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group F; count 1; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranyl-2-fluoranyl-ethanoic acid" "chloro(fluoro)acetic acid" "acetic acid, chlorofluoro-" "2-chloro-2-fluoroacetic acid" "2-chloro-2-fluoroethanoic acid" "acetic acid,2-chloro-2-fluoro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -652010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     342.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-587130.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[(dimethylamino)methyl]cyclohexan-1-one" "2-[(dimethylamino)methyl]cyclohexanone" "2-(n,n-dimethylaminomethyl)cyclohexanone" "cyclohexanone, 2-[(dimethylamino)methyl]-" "2-dimethylaminomethyl-cyclohexanone" "2-((dimethylamino)methyl)cyclohexanone" "2-((dimethylamino)methyl)cyclohexan-1-one" "2-dimethylaminomethyl-cyclohexanone hydrochloride" "2-dimethylamino methyl cyclohexanone" "2-(dimethylaminomethyl)cyclohexan-1-one" "cyclohexanone,2-[(dimethylamino)methyl]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -244940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     413.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37540.0
-    phase     gas;
 }

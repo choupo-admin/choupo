@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 3; } { group OH; count 1; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "spartioidine" "senecionan-11,16-dione, 13,19-didehydro-12-hydroxy-, (12-beta,15e)-" "senecionan-11,16-dione, 13,19-didehydro-12-hydroxy-, (12-beta,15e)- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -712370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     787.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-286770.0
-    phase     gas;
 }

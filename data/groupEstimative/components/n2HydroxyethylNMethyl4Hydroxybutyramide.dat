@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group OH; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(2-hydroxyethyl)-n-methyl-4-oxidanyl-butanamide" "butanamide, 4-hydroxy-n-(2-hydroxyethyl)-n-methyl-" "4-hydroxy-n-(2-hydroxyethyl)-n-methylbutanamide" "4-hydroxy-n-(2-hydroxyethyl)-n-methylbutyramide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -537320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     573.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-283720.0
-    phase     gas;
 }

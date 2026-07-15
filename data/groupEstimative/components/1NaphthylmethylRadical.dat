@@ -30,9 +30,8 @@ groups
     joback ( { group dCH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-methylnaphthalene" "naphthalen-1-ylmethyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   212580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     361.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=298900.0
-    phase     gas;
 }

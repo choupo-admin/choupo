@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[(3-chlorophenyl)-(2-hydroxyethyl)amino]ethanol" "n,n-bis(2-hydroxyethyl)-3-chloroaniline" "n-(3-chlorophenyl)diethanolamine" "2,2'-(3-chlorophenylimino)diethanol" "(m-chlorophenyl)diethanolamine" "n-(m-chlorophenyl)diethanolamine" "n,n-dihydroxyethyl-m-chloroaniline" "n,n-di(hydroxyethyl)-m-chloroaniline" "2-[(3-chlorophenyl)(2-hydroxyethyl)amino]ethanol" "2,2'-[(3-chlorophenyl)imino]diethanol" "m-chloro-n,n-bis(2-hydroxyethyl)aniline" "3-chloro-n,n-bis(2-hydroxyethyl)aniline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -277340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     584.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-38690.0
-    phase     gas;
 }

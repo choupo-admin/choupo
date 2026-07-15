@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group dCH_ring; count 6; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1',2',3',4'-tetrahydro-4,10-ace-1,2-benzanthracene" "benz(e)aceanthrylene, 1,2,4,5,6,7-hexahydro-" "5,6,8,9,10,11-hexahydrocyclopenta[gh]tetraphene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   291470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=532000.0
-    phase     gas;
 }

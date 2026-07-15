@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group tCH; count 1; } { group tC; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4-decadiyne, 50% soln. in hexane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   314470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     486.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=459190.0
-    phase     gas;
 }

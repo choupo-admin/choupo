@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 7; } { group CH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(3s,8s,9s,10r,13r,14s,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl] hexanoate" "cholesteryl hexanoate" "cholest-5-en-3" "a-ol hexanoate" "cholest-5-en-3beta-yl hexanoate" "hexanoic acid cholesterol ester" "cholest-5-en-3beta-ol hexanoate" "cholest-5-en-3-ol (3beta)-, hexanoate" "cholesterol,hexanoate (6ci,7ci,8ci);hexanoic acid, cholesteryl ester (8ci);3b-(caproyloxy)cholest-5-ene;5-cholesten-3b-olcaproate;cholest-5-en-3b-ol caproate;cholesterol caproate;cholesteryl caproate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -776120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1180.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=80450.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanylbutan-1-ol" "2-aminobutan-1-ol" "1-butanol, 2-amino-" "2-aminobutyl alcohol" "1-(hydroxymethyl)propylamine" "2-aminobutanol" "1-hydroxy-2-butylamine" "butanol-2-amine" "dl-2-amino-1-butanol" "2-amino-1-hydroxybutane" "(-)-2-aminobutanol" "2-amino-n-butyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -249610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     404.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-90010.0
-    phase     gas;
 }

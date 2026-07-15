@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH2_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopentene, 1-butyl-" "1-butyl-1-cyclopentene;1-butylcyclopentene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -101960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     454.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=89490.0
-    phase     gas;
 }

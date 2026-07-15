@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-butoxyethanoic acid" "butoxyacetic acid" "n-butoxyacetic acid" "acetic acid, butoxy-" "acetic acid, 2-butoxy-" "ajqoasgwdcbkcj-uhfffaoysa-" "56637-93-5 (hydrochloride salt)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -649660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     454.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-449270.0
-    phase     gas;
 }

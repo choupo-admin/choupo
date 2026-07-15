@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 11; } { group dC_ring; count 7; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-benzo[a]anthracen-7-ylethanol" "10-beta-hydroxyethyl-1:2-benzanthracene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   166970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     534.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=384170.0
-    phase     gas;
 }

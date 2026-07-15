@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n,n-bis(2-chloroethyl)-2,3-dimethoxy-aniline" "n,n-bis(2-chloroethyl)-2,3-dimethoxyaniline" "aniline, n,n-bis(2-chloroethyl)-2,3-dimethoxy-" "n,3-dimethoxyaniline" "aniline,n-bis(2-chloroethyl)-2,3-dimethoxy-" "benzenamine,n-bis(2-chloroethyl)-2,3-dimethoxy-" "benzenamine, n,n-bis(2-chloroethyl)-2,3-dimethoxy-" "benzenamine, n,n-bis(2-chloroethyl)-2,3-dimethoxy- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -305810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     610.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=20230.0
-    phase     gas;
 }

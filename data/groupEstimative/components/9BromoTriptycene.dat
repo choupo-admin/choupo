@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9,10(1',2')-benzenoanthracene, 9-bromo-9,10-dihydro-" "9,10[1',2']-benzenoanthracene, 9-bromo-9,10-dihydro-" "1-bromohexacyclo[6.6.5.1<15,19>.0<1,18>.0<2,7>.0<9,14>]icosa-2(7),3,5,9(14),10 ,12,15,17,19-nonaene" "1-bromopentacyclo[6.6.6.02,7.09,14.015,20]icosa-2,4,6,9,11,13,15,17,19-nonaene (non-preferred name)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   430860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=604590.0
-    phase     gas;
 }

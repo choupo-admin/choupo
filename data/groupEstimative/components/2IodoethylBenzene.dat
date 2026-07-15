@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-iodanylethylbenzene" "benzene, (2-iodoethyl)-" "iodoethyl benzene" "2-iodoethylbenzene" "2-phenylethyl iodide" ".beta.-phenethyl iodide" "phenethyl iodide" "beta-phenylethyl iodide" "(2-iodoethyl)benzene;1-iodo-2-phenylethane;2-phenylethyl iodide;4-(2-iodoethyl)benzene;phenethyliodide;b-phenethyl iodide;b-phenylethyl iodide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   104950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     416.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=187010.0
-    phase     gas;
 }

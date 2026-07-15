@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethenyl 4-tert-butylbenzoate" "4-tert-butylbenzoic acid vinyl ester" "vinyl 4-(tert-butyl)benzoate" "vinyl 4-(1,1-dimethylethyl)benzoate" "benzoic acid, 4-(1,1-dimethylethyl)-, vinyl ester" "benzoic acid, 4-(1,1-dimethylethyl)-, ethenyl ester" "benzoic acid,4-(1,1-dimethylethyl)-, ethenyl ester" "benzoicacid, p-tert-butyl-, vinyl ester (7ci,8ci); vinyl4-(1,1-dimethylethyl)benzoate; vinyl 4-tert-butylbenzoate; vinylp-tert-butylbenzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -287190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     557.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-58330.0
-    phase     gas;
 }

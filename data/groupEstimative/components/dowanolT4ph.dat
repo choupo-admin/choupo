@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 8; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-(2-phenoxyethoxy)ethoxy]ethoxy]ethanol" "2-(2-(2-(2-phenoxyethoxy)ethoxy)ethoxy)ethanol" "tetraethylene glycol monophenyl ether" "ethanol, 2-(2-(2-(2-phenoxyethoxy)ethoxy)ethoxy)-" "ethanol, 2-[2-[2-(2-phenoxyethoxy)ethoxy]ethoxy]-" "quadragel-oh, ca 1.5 mmol/g" "polystyrene grafted with tetraethylene glycol" "dowanol t4ph; tetraethylene glycol monophenyl ether" "ethanol,2-[2-[2-(2-phenoxyethoxy)ethoxy]ethoxy]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -776870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     690.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-377410.0
-    phase     gas;
 }

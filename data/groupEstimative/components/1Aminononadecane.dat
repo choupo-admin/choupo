@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "nonadecan-1-amine" "n-nonadecylamine" "nonadecylamine" "1-nonadecanamine" "amines, c16-22-alkyl" "(c16-c22)alkylamine" "nonadecylamine(6ci,7ci,8ci);1-nonadecylamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -401700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     947.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=175550.0
-    phase     gas;
 }

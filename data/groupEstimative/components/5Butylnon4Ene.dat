@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 8; } { group dCH; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-n-butyl-4-nonene" "4-nonene, 5-butyl-" "5-butyl-non-4-ene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -204220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     651.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=130250.0
-    phase     gas;
 }

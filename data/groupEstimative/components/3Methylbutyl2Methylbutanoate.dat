@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "isoamyl 2-methylbutyrate" "isopentyl 2-methylbutyrate" "butanoic acid, 2-methyl-, 3-methylbutyl ester" "iso-amyl 2-methyl butyrate" "isoamyl 2-methylbutanoate" "isoamyl alpha-methylbutyrate" "isopentyl 2-methylbutanoate" "3-methylbutyl methylbutyrate" "3-methylbutyl 2-methylbutyrate" "3-methylbutyl 2-methylbutanoate (natural)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -577570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     577.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-281930.0
-    phase     gas;
 }

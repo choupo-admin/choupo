@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl n-methyl-4-piperidinecarboxylate" "methyl 1-methyl piperidine-4-carboxylate" "methyl-1-methylpiperidine-4-carboxylate" "methyl n-methyl piperidine-4-carboxylate" "1-methyl-4-piperidinecarboxylic acid methyl ester" "4-piperidinecarboxylicacid, 1-methyl-, methyl ester" "4-piperidinecarboxylic acid, 1-methyl-, methyl ester" "n-methyl-4-piperidinecarboxylic acid methyl ester" "isonipecoticacid, 1-methyl-, methyl ester (6ci,7ci,8ci);methyl1-methylpiperidine-4-carboxylate;methyl n-methylisonipecotinate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -397720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     484.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-146560.0
-    phase     gas;
 }

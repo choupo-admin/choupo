@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pent-2-enyl benzoate" "2-penten-1-ol, 1-benzoate, (2z)-" "[(z)-pent-2-enyl] benzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -254540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     561.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-67580.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3,3-tris(fluoranyl)prop-1-en-2-ylbenzene" "3,3,3-trifluoro-2-phenylpropene" "3,3,3-trifluoroprop-1-en-2-ylbenzene" "a-(trifluoromethyl)styrene" "[1-(trifluoromethyl)vinyl]benzene" "(3,3,3-trifluoroprop-1-en-2-yl)benzene" "(3,3,3-trifluoroprop-1-en-2-yl)benzene, [1-(trifluoromethyl)vinyl]benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -474000.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-364990.0
-    phase     gas;
 }

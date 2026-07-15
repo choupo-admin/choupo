@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-octoxyethanol" "ethanol, 2-(octyloxy)-" "ethylene glycol mono-n-octyl ether" "2-octyloxyethan-1-ol" "octyl alcohol, ethoxylated" "octylglycol" "alcohols, c8-20, ethoxylated" "polyethylene glycol monooctyl ether" "n-octyl-polyoxyethylene" "ethylene glycol monooctyl ether" "c8e1" "poly(oxy-1,2-ethanediyl), alpha-octyl-omega-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -534180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     607.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-208500.0
-    phase     gas;
 }

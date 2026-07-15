@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group CdO; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-(3-azanylpropyl)decanamide" "decanamide, n-(3-aminopropyl)-" "decanoic acid, 1,3-propanediamine monoamide" "n-(3-aminopropyl)decanamide" "decanamide,n-(3-aminopropyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -336970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     781.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=85500.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 2; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butane, 1,1,3-triethoxy-" "1,3-triethoxybutane" "butane,1,3-triethoxy-" "butyraldehyde, 3-ethoxy-, diethyl acetal" "butyraldehyde, 3-ethoxy-, diethyl acetal (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -656950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     560.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-286560.0
-    phase     gas;
 }

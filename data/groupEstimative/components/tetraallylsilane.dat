@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 4; } { group dCH2; count 4; } { group dCH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetrakis(prop-2-enyl)silane" "silane, tetraallyl-" "tetra(2-propenyl)silane" "silane, tetra-2-propenyl-" "silane,tetra-2-propen-1-yl-" "tetrakis(prop-2-en-1-yl)silane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   99090.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     731.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=296760.0
-    phase     gas;
 }

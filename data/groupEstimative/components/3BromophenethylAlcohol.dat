@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(3-bromophenyl)ethanol" "2-(3-bromophenyl)ethan-1-ol" "3-bromophenethylalcohol" "benzeneethanol, 3-bromo-" "2-(3-bromophenyl)ethyl alcohol" "phenethyl alcohol, m-bromo-(6ci,8ci);3-(2-hydroxyethyl)bromobenzene;3-bromobenzeneethanol;3-bromophenethyl alcohol;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -109290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     456.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3240.0
-    phase     gas;
 }

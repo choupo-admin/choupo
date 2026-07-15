@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 17; } { group CH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethylnonadecan-1-oic acid" "nonadecanoic acid, 2-ethyl-" "2-ethylnonadecanoicacid" "nonadecanoic acid,2-ethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -832320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1017.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-220410.0
-    phase     gas;
 }

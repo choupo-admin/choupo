@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 3; } { group NH2; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "quinolin-7-amine" "7-quinolinamine" "quinoline, 7-amino-" "7-quinolylamine" "7-aminequinolin" "7-quinolinamine (9ci)" "7-aminoquinoline; quinolin-7-amine" "quinolin-7-ylamine;7-aminoquinoline;7-amine-quinoline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   253620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     349.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=377830.0
-    phase     gas;
 }

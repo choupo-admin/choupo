@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group CH2_ring; count 6; } { group C_ring; count 2; } { group F; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bicyclo[2.2.2]octane-1-carboxylic acid, 4-(trifluoromethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1033320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     653.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-805860.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group N; count 2; } { group CN; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[bis(cyanomethyl)amino]ethyl-(cyanomethyl)amino]ethanenitrile" "(ethylenedinitrilo)tetraacetonitrile" "ethylenediaminetetraacetonitrile" "acetonitrile, 2,2',2'',2'''-(1,2-ethanediyldinitrilo)tetrakis-" "n,n,n',n'-tetracyanomethylethylenediamine" "n,n,n',n'-tetracyanomethylaethylenediamin [german]" "2,2',2'',2'''-(ethane-1,2-diyldinitrilo)tetraacetonitrile" "n,n',n'-tetracyanomethylaethylenediamin" "n,n',n'-tetracyanomethylethylenediamine" "acetonitrile, (ethylenedi-nitrilo)tetra-" "n,n,n',n'-tetracyanomethylaethylenediamin" "acetonitrile,2',2'',2'''-(1,2-ethanediyldinitrilo)tetrakis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   544850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     602.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=787600.0
-    phase     gas;
 }

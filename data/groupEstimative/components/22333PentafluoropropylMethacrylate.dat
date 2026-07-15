@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3,3,3-pentakis(fluoranyl)propyl 2-methylprop-2-enoate" "1h,1h-pentafluoropropyl methacrylate" "2,2,3,3,3-pentafluoropropyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, 2,2,3,3,3-pentafluoropropyl ester" "1h,1h-pentafluoro-n-propyl methacrylate" "2,2,3,3,3-pentafluoro-n-propyl methacrylate" "1,1-dihydroperfluoropropylmethacrylate;1h,1h-pentafluoropropyl methacrylate;2,2,3,3,3-pentafluoropropylmethacrylate;m 1210;m 1210 (fluoro monomer);" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1387500.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     551.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1191390.0
-    phase     gas;
 }

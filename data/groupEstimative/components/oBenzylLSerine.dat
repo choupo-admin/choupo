@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-azanyl-3-phenylmethoxy-propanoic acid" "h-ser(bzl)-oh" "(s)-2-amino-3-(benzyloxy)propanoic acid" "(s)-2-amino-3-benzyloxypropionic acid" "(2s)-2-amino-3-(benzyloxy)propanoic acid" "o-(phenylmethyl)-l-serine" "benzylserine" "z-o-benzyl-l-serine" "h-ser(bzl)-oh.hcl" "(2s)-2-amino-3-phenylmethoxypropanoic acid" "(s)-2- degrees +/->>u-3-uethno>>u+/-uea" "alanine,3-(benzyloxy)-, l- (8ci);3-(benzyloxy)-l-alanine;l-o-benzylserine;o-(phenylmethyl)-l-serine;o-benzylserine;h-ser(bzl)-oh;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -467180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     545.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-239170.0
-    phase     gas;
 }

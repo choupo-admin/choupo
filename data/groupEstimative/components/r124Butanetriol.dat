@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH; count 1; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-butane-1,2,4-triol" "(r)-butane-1,2,4-triol" "(r)-1,2,4-butanetriol" "(r)-(+)-1,2,4-triydroxybutane" "r-(-)-1,2,4-butanetriol" "(r)-(+)-1,2,4-trihydroxybutane" "(2r)-(+)-1,2,4-trihydroxybutane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -587860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     454.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-430100.0
-    phase     gas;
 }

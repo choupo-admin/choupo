@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group dCH2; count 4; } { group dCH; count 3; } { group dC; count 1; } { group OH; count 1; } { group COOH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butyl prop-2-enoate; ethyl prop-2-enoate; 2-hydroxyethyl 2-methylprop-2-enoate; prop-2-enoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1774040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1532.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1257370.0
-    phase     gas;
 }

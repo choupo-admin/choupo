@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(1-methylcyclopropyl)methanol" "cyclopropanemethanol,1-methyl-" "(1-methyl cyclopropyl)methanol" "(methylcyclopropyl)methan-1-ol" "pizqwrxtmgascz-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -210720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     380.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-90340.0
-    phase     gas;
 }

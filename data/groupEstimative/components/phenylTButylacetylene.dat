@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } { group tC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-dimethylbut-1-ynylbenzene" "(3,3-dimethyl-but-1-ynyl)-benzene" "phenyl-tert-butyl-acetylene" "(3,3-dimethyl-1-butynyl)benzene" "(3,3-dimethylbut-1-yn-1-yl)benzene" "benzene, (3,3-dimethyl-1-butynyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   209070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=368210.0
-    phase     gas;
 }

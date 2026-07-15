@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethoxy(methyl)silane" "trimethoxymethylsilane" "silane, trimethoxymethyl-" "silane, methyltrimethoxy-" "methyl trimethoxysilane" "trimethoxy-methyl-silane" "1,1,1-trimethoxy-1-silaethane" "bfxiklcizhoaaz-uhfffaoysa-" "(1/4)x>>uey(1/4)xno>>u(1)eie" "(trimethoxysilyl)methane;silane,trimethoxymethyl-;dynasylan mtms;glasca b;methylsilicon trimethoxide (mesi(ome)3);nucsilicone a 163;silquest a 163;silquest a 1630;trimethoxymethylsilane;methyltrimethoxysilane, trimethoxy methyl silane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -634170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     472.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-436960.0
-    phase     gas;
 }

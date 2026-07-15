@@ -33,9 +33,8 @@ groups
     joback ( { group dCH2; count 4; } { group dCH; count 4; } { group COOH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "buta-1,3-diene;prop-2-enenitrile;prop-2-enoic acid" "pban" "acrylic acid; buta-1,3-diene; prop-2-enenitrile" "2-propenoic acid, polymer with 1,3-butadiene and 2-propenenitrile" "2-propenoic acid, polymer with 1,3-butadiene and 2-propenenitrile, 3-carboxy-1-cyano-1-methylpropyl-terminated" "acrylic acid, polymer with acrylonitrile and 1,3-butadiene (8ci)" "buta-1,3-diene; prop-2-enenitrile; prop-2-enoic acid" "acrylic acid, polymer with acrylonitrile and 1,3-butadiene" "poly(acrylonitrile-co-butadiene-co-acrylic acid), dicarboxy terminated" "poly(acrylonitrile-co-butadiene-co-acrylic acid), dicarboxy terminated, glycidyl methacrylate diester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -156640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     801.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-35570.0
-    phase     gas;
 }

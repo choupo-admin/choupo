@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group CH2_ring; count 4; } { group O; count 1; } { group O_ring; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-morpholin-4-ylethoxy)ethanamine" "2-[2-(Morpholin-4-yl)ethoxy)ethylamine" "2-[2-(morpholin-4-yl)ethoxy]ethan-1-amine" "4-[2-(2-Aminoethoxy)ethyl]morpholine" "Ethanamine, 2-[2-(4-morpholinyl)ethoxy]-" "Morpholine, 4-[2-(2-aminoethoxy)ethyl]-" "4-((2-Aminoethoxy)ethyl)morpholine" "2-(2-Morpholin-4-yl-ethoxy)-ethylamine" "2-(2-Morpholinoethoxy)ethanamine" "4-[(2-AMINOETHOXY)ETHYL]MORPHOLINE" "2-(2-Morpholin-4-yl)ethoxy)ethylamine" "Ethanamine, 2-(2-(4-morpholinyl)ethoxy)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -290530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     487.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46850.0
-    phase     gas;
 }

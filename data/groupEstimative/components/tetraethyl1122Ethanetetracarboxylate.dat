@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 2; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetraethyl ethane-1,1,2,2-tetracarboxylate" "1,1,2,2-tetracarbethoxyethane" "1,1,2,2-ethanetetracarboxylic acid, tetraethyl ester" "1,2,2-tetracarbethoxyethane" "tetrakis(ethoxycarbonyl)ethane" "tetraethyl 1,2,2-ethanetetracarboxylate" "tetraethyl-1,1,2,2-ethanetetracarboxylate" "diethyl 2,3-bis(ethoxycarbonyl)butane-1,4-dioate" "1,2,2-ethanetetracarboxylic acid, tetraethyl ester" "1,1,2,2-ethanetetracarboxylicacid, 1,1,2,2-tetraethyl ester" "1,1,2,2-ethanetetracarboxylic acid, tetraethyl ester; tetraethyl 1,1,2,2-ethanetetracarboxylate; tetrakis(ethoxycarbonyl)ethane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1611970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     887.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1179360.0
-    phase     gas;
 }

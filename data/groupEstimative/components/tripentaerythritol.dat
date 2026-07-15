@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 12; } { group C; count 3; } { group OH; count 8; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[[2-[[2,2-bis(hydroxymethyl)-3-oxidanyl-propoxy]methyl]-2-(hydroxymethyl)-3-oxidanyl-propoxy]methyl]-2-(hydroxymethyl)propane-1,3-diol" "tripentaerytritol" "tris(pentaerythritol)" "1,3-propanediol, 2,2-bis[[3-hydroxy-2,2-bis(hydroxymethyl)propoxy]methyl]-" "1,3-propanediol, 2,2-bis((3-hydroxy-2,2-bis(hydroxymethyl)propoxy)methyl)-" "2-[[3-hydroxy-2-[[3-hydroxy-2,2-bis(hydroxymethyl)propoxy]methyl]-2-(hydroxymethyl)propoxy]methyl]-2-(hydroxymethyl)propane-1,3-diol" "tripentaerythritol (8ci)" "1, 2,2-bis[[3-hydroxy-2,2-bis(hydroxymethyl)propoxy]methyl]-" "4,8-dioxa-2,2,6,6,10,10-hexahydroxymethylundecane-1,11-diol" "1,3-propanediol, 2,2-bis[[3-hydroxy-2,2-bis( hydroxymethyl)propoxy]methyl]-" "2,2-bis((3-hydroxy-2,2-bis(hydroxymethyl)propoxy)methyl)-1,3-propanediol; 1,3-propanediol, 2,2-bis[[3-hydroxy-2,2-bis(hydroxymethyl)propoxy]methyl]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1861460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1053.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1220620.0
-    phase     gas;
 }

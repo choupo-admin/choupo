@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-naphthalen-1-ylethanamide" "1-naphthylacetamide" "rootone" "frufix" "2-(1-naphthyl)acetamide" "amid-thin" "dirigol n" "alpha-naa amide" "alpha-naphthaleneacetamide" "amid-thin w" "naam" "naphthaleneacetamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   46330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     480.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=197120.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 14; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bis(2-butoxyethyl) hexanedioate" "staflex dbea" "adipol bca" "di(2-butoxyethyl) adipate" "dibutoxyethyl adipate" "hexanedioic acid, bis(2-butoxyethyl) ester" "dibutyl cellosolve adipate" "adipic acid, dibutoxyethyl ester" "di(butoxyethyl)adipate" "adipic acid, bis(2-butoxyethyl) ester" "bis(ethylene glycol monobutyl ether) adipate" "adipic acid, bis(2-butyoxyethyl) ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1313850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     982.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-730060.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-hydroxyethyloxy)phenol" "phenol, 3-(2-hydroxyethoxy)-" "o-hydroxyethylresorcinol" "3-hydroxyphenylglycol" "3-hydroxyphenyl glycol" "meta-hydroxyphenylglycol" "o-hydroxyethyl resorcinol" "2-(m-hydroxyphenoxy)ethanol" "2-(3-hydroxyphenoxy)ethanol" "ambap49650-88-6" "beta-(3-hydroxyphenoxy)ethanol" "resorcinol monohydroxyethyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -433680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     449.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-267550.0
-    phase     gas;
 }

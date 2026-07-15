@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyldecane" "decyl bromide" "n-decyl bromide" "decane, 1-bromo-" "1-decyl bromide" "decylbromide" "bromodecane" "1-bromo decane" "decane, bromo-" "i867" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -223400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     596.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=47640.0
-    phase     gas;
 }

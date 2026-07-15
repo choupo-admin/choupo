@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group Cl; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloromethyl-[chloromethyl(dimethyl)silyl]oxy-dimethyl-silane" "1,3-bis(chloromethyl)tetramethyldisiloxane" "bis(chloromethyl)tetramethyldisiloxane" "disiloxane, 1,3-bis(chloromethyl)-1,1,3,3-tetramethyl-" "tetramethylbis(chloromethyl)disiloxane" "tetramethyl-1,3-bis(chloromethyl)disiloxane" "disiloxane,3-bis(chloromethyl)-1,1,3,3-tetramethyl-" "k869" "chloromethyl-[chloromethyl(dimethyl)silyl]oxy-dimethylsilane" "(chloromethyl)({[(chloromethyl)dimethylsilyl]oxy})dimethylsilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -554110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     720.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-338740.0
-    phase     gas;
 }

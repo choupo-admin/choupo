@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-iodanylpentane" "n-amyl iodide" "amyl iodide" "pentane, 1-iodo-" "pentyl iodide" "n-pentyl iodide" "1-pentyl iodide" "iodopentane" "1-jodpentan" "pentane, iodo-" "agn-pc-00cuwz" "blxsfchwmbeskv-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -69660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     406.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=49340.0
-    phase     gas;
 }

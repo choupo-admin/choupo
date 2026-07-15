@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-bromanyl-5-methyl-aniline" "2-bromo-5-methylbenzenamine" "2-bromo-5-methylphenylamine" "2-bromo-5-methyl-phenylamine" "benzenamine, 2-bromo-5-methyl-" "6-bromo-m-toluidine" "3-amino-4-bromotoluene" "2-bromo-5-methyl aniline" "p647" "53078-85-6 2-bromo-5-methyl aniline" "m-toluidine,6-bromo- (6ci); (2-bromo-5-methylphenyl)amine; 2-bromo-5-methylaniline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   85900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     412.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=181980.0
-    phase     gas;
 }

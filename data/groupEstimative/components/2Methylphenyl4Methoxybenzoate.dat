@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-methylphenyl) 4-methoxybenzoate" "p-methoxybenzoic acid, 2-methylphenyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -352310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     577.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134390.0
-    phase     gas;
 }

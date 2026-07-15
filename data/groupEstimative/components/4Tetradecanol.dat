@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 11; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetradecan-4-ol" "tetradecanol, mixed isomers" "myristyl alcohol (mixed isomers)" "4-tetradecanol, (s)-" "4-tetradecyl alcohol" "(?a'a a'a currency)-4-tetradecanol;4-hydroxytetradecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -489800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     742.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-72260.0
-    phase     gas;
 }

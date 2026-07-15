@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 19; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "henicosanoic acid" "n-heneicosanoic acid" "henicosanoate" "c21:0" "heneicosanate" "heneicosanoate" "n-heneicosanoate" "heneicosylic acid" "heneicosanic acid" "n-heneicosylic acid" "n-henicosanoic acid" "ba927389-7f05-42e2-ada5-59c0a171abb2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -827040.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1027.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-217970.0
-    phase     gas;
 }

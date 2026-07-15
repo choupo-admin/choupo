@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "pent-1-en-3-ol" "ethyl vinyl carbinol" "1-penten-3-ol (e)" "1-penten-3-ol, (r)-" "vinyl ethyl carbinol" "1-pentene-3-ol" "1-ethylallyl alcohol" "1-propanol, ethenyl-" "alpha-ethylallyl alcohol" "vhvmxwzxfboanq-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -178610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     387.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-60200.0
-    phase     gas;
 }

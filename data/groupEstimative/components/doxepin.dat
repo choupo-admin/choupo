@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 1; } { group CH2_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 5; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3e)-3-(6h-benzo[c][1]benzoxepin-11-ylidene)-n,n-dimethyl-propan-1-amine" "doxepine" "zonalon" "doxepinum [inn-latin]" "quitaxon" "cidoxepina" "cidoxepinum" "cidoxepin" "doxepina" "doxepinum" "triadapin" "cidoxepin [inn]" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   119330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     559.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=453240.0
-    phase     gas;
 }

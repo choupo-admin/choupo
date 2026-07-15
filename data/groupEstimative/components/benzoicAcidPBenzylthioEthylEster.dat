@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group COO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 4-(phenylmethylsulfanyl)benzoate" "ethyl 4-benzylsulfanylbenzoate" "ethyl 4-(benzylsulfanyl)benzoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -187390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     672.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=21780.0
-    phase     gas;
 }

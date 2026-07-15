@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 3; } { group O; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-butoxyethyl 3-[2,4,5-tris(chloranyl)phenoxy]propanoate" "2-butoxyethyl 3-(2,4,5-trichlorophenoxy)propanoate" "2-butoxyethyl 3-(2,4,5-trichlorophenoxy)propionate" "propanoic acid, 3-(2,4,5-trichlorophenoxy)-, 2-butoxyethyl ester" "2,4,5-trichlorophenoxypropionic acid, butoxyethyl ester" "propanoic acid,3-(2,4,5-trichlorophenoxy)-, 2-butoxyethyl ester" "propionicacid, 3-(2,4,5-trichlorophenoxy)-, 2-butoxyethyl ester (8ci); ethanol,2-butoxy-, 3-(2,4,5-trichlorophenoxy)propionate (8ci); 2-butoxyethyl3-(2,4,5-trichlorophenoxy)propionate; silvex 2-butoxyethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -779750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     789.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-397220.0
-    phase     gas;
 }

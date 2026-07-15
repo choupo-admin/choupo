@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 8; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,5,8,11,14-pentaoxabicyclo[13.4.0]nonadeca-1(19),15,17-triene" "benzyl 15-crown-5" "2,3,5,6,8,9,11,12-octahydro-1,4,7,10,13-benzopentaoxacyclopentadecine" "benzo-15-crown 5-ether" "monobenzo-15-crown-5" "benzo[6]1,4,7,10,13-pentaoxacyclopentadecane" "1,4,7,10,13-benzopentaoxacyclopentadecin, 2,3,5,6,8,9,11,12-octahydro-" "2,3,5,6,8,9,11,12-octahydro-1,4,7,10,13-benzopentaoxacyclopentadecin" "benzo-15-crown" "benzo-15-crown-5-ether" "crown ether/benzo-15-crown-5" "m022" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -735690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-313360.0
-    phase     gas;
 }

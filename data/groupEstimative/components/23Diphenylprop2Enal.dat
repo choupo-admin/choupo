@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-2,3-diphenylprop-2-enal" "3,3-diphenyl acrolein" "benzeneacetaldehyde, a-(phenylmethylene)-, (ae)-" "acrolein,2,3-diphenyl-, (e)- (8ci); benzeneacetaldehyde, a-(phenylmethylene)-, (e)-;(e)-2,3-diphenyl-2-propenal; (e)-2,3-diphenylacrolein;(e)-2,3-diphenylpropenal; (e)-a,b-diphenylacrolein; (e)-a-phenylcinnamaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   141980.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=272390.0
-    phase     gas;
 }

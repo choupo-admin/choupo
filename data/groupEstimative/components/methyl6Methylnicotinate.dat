@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group COO; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 6-methylpyridine-3-carboxylate" "6-methylnicotinic acid methyl ester" "methyl 6-methyl nicotinate" "6-methylpyridine-3-carboxylic acid methyl ester" "6-methyl-nicotinic acid methyl ester" "3-pyridinecarboxylic acid, 6-methyl-, methyl ester" "agn-pc-0cupcr" "5-carbomethoxy-2-picoline" "methyl-6-methyl nicotinate" "6-methyl nicotinic acid methyl ester" "3-(methoxycarbonyl)-6-methylpyridine" "5-(methoxycarbonyl)-2-methylpyridine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -267880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     419.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-114060.0
-    phase     gas;
 }

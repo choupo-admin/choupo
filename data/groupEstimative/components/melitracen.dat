@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH; count 1; } { group C_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 5; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(10,10-dimethylanthracen-9-ylidene)-n,n-dimethyl-propan-1-amine" "melitracene" "adaptol" "dixeran" "thymeol" "trausabun" "melitracen [inn]" "melitracene [inn-french]" "melitracenum [inn-latin]" "melitracen (inn)" "1-propanamine, 3-(10,10-dimethyl-9(10h)-anthracenylidene)-n,n-dimethyl-" "n,n,10,10-tetramethyl-delta(sup 9(10),gamma)-anthracenepropylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   211110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     696.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=555100.0
-    phase     gas;
 }

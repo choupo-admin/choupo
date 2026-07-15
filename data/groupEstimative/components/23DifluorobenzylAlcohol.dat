@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2,3-bis(fluoranyl)phenyl]methanol" "(2,3-difluorophenyl)methanol" "2,3-difluorophenylalcohol" "(2,3-difluorophenyl)methan-1-ol" "2,3-difluorobenzylalcohol" "benzenemethanol, 2,3-difluoro-" "2,3-difluorobenzyl alcohol 98%" "2,3-difluoro-benzenemethanol" "i151" "(2,4-difluorophenyl)methanol;2,4-difluorobenzyl alcohol" "(2,3-difluorophenyl)methanol;(2,3-difluorophenyl)methan-1-ol;2,3-difluoro benzylalcohol;ac1q7bxl;ac1l9kj4;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -518670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-425230.0
-    phase     gas;
 }

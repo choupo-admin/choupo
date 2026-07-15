@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "veratric acid" "benzoic acid, 3,4-dimethoxy-" "dimethylprotocatechuic acid" "3,4-dimethylprotocatechuic acid" "veratrylic acid" "veratrumenoic acid" "3,4-dimethoxybenzoes" "3,4-dimethoxy-benzoic acid" "protocatechuic acid dimethyl ether" "sdccgmls-0066972.p001" "3,4-dimethoxybenzoic acid; veratric acid" "brd-k14520048-001-02-6" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -630210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     463.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-435860.0
-    phase     gas;
 }

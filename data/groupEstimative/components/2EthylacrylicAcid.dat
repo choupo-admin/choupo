@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylidenebutanoic acid" "2-ethylpropenoic acid" "2-ethyl acrylic acid" "ethacrylate" "ethacrylic acid" "2-ethylacrylate" "2-ethylpropenoate" "2-methylenebutyrate" "2-ethyl-2-propenoic acid" "2-propenoic acid, ethyl-" "ch2=c(c2h5)cooh" "2-methylenebutyric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -381160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     395.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-273400.0
-    phase     gas;
 }

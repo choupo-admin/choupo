@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group C; count 1; } { group Cl; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,3-tris(chloranyl)propanoic acid" "chloropon [iso:bsi]" "propanoic acid, 2,2,3-trichloro-" "2,2,3-trichloropropionic acid" "propionic acid, 2,2,3-trichloro-" "alpha,alpha,beta-trichloropropionic acid" "2,3-trichloropropionic acid" "2,2,3-trichloropropanoic acid" "propanoic acid,2,3-trichloro-" "propionic acid,2,3-trichloro-" "kyselina 2,2,3-trichlorpropionova" ".alpha.,.beta.-trichloropropionic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -511490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     387.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-402480.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-acetamidobutanoic acid" "4-(acetylamino)butanoic acid" "n-acetyl-4-aminobutyric acid" "n-acetyl-4-aminobutanoic acid" "n-acetyl-gamma-aminobutyrate" "n4-acetylaminobutanoate" "butyric acid, 4-acetamido-" "gamma-acetylaminobutyric acid" "4-acetamidobutyrate" "n-acetyl-.gamma.-aminobutyric acid" "n4-acetylaminobutanoic acid" "butanoic acid, 4-(acetylamino)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -576550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     510.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383800.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 3; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-prop-2-enyl-3-trimethoxysilyl-propan-1-amine" "3-(n-allylamino)propyltrimethoxysilane" "2-propen-1-amine, n-(3-(trimethoxysilyl)propyl)-" "2-propen-1-amine, n-[3-(trimethoxysilyl)propyl]-" "trimethoxysilylpropylallylamine" "n-prop-2-enyl-3-trimethoxysilylpropan-1-amine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -558470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     702.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-217630.0
-    phase     gas;
 }

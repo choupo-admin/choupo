@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(phenylmethyl) 7,7-dimethyloctanoate" "benzyl neodecanoate" "neodecanoic acid, phenylmethyl ester" "benzyl 7,7-dimethyloctanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -483710.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     724.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-102860.0
-    phase     gas;
 }

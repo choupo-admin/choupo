@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 10; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "11-[(1r)-cyclopent-2-en-1-yl]undecanoic acid" "11-(2-cyclopenten-1-yl)undecanoic acid" "5587-76-8 (hydrochloride salt)" "(r)-2-cyclopentene-1-undecanoic acid" "2-cyclopentene-1-undecanoicacid, (1r)-" "11-((r)-cyclopent-2-enyl)-undecansaeure" "(r)-11-(cyclopent-2-enyl)hendecanoic acid" "2-cyclopentene-1-undecanoicacid, (r)- (8ci); hydnocarpic acid (6ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -605580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     744.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-193560.0
-    phase     gas;
 }

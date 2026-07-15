@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chembond liquid" "2-methylidenebutanedioic acid;prop-2-enoic acid" "poly(acrylic acid-itaconic acid)" "acrylic acid-itaconic acid polymer" "butanedioic acid, methylene-, polymer with 2-propenoic acid" "methylenesuccinic acid polymer with acrylic acid" "succinic acid, methylene-, polymer with acrylic acid" "methylenebutanedioic acid polymer with 2-propenoic acid" "2-methylidenebutanedioic acid- prop-2-enoic acid(1:1)" "succinic acid, methylene-, polymer with acrylic acid (8ci)" "butanedioic acid, 2-methylene-, polymer with 2-propenoic acid" "succinic acid, polymer with acrylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1129810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     721.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-952880.0
-    phase     gas;
 }

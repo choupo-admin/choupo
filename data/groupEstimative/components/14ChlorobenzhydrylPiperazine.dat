@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group Cl; count 1; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[(4-chlorophenyl)-phenyl-methyl]piperazine" "norchlorcyclizine" "n-(p-chlorobenzhydryl)piperazine" "4-(4-chlorobenzhydryl)piperazine" "n-(4-chlorobenzhydryl)piperazine" "1-[(4-chlorophenyl)phenylmethyl]piperazine" "1-[(4-chlorophenyl)(phenyl)methyl]piperazine" "1-(" "a-phenyl-4-chlorobenzyl)piperazine" "1-((4-chlorophenyl)(phenyl)methyl)piperazine" "piperazine, 1-[(4-chlorophenyl)phenylmethyl]-" "(-)-1-[(4-chlorophenyl)phenylmethyl]piperazine" "1-(4-chlorobenzhydryl) piperazine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   232520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     624.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=535830.0
-    phase     gas;
 }

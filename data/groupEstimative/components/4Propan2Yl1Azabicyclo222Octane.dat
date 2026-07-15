@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group CH2_ring; count 6; } { group C_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-azabicyclo(2.2.2)octane, 4-(1-methylethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -12460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     503.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=253280.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH; count 1; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 3; } { group OdCH_al; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(1,3,3-trimethylindol-2-ylidene)acetaldehyde" "(1,3,3-trimethyl-1,3-dihydro-indol-2-ylidene)-acetaldehyde" "acetaldehyde, 2-(1,3-dihydro-1,3,3-trimethyl-2h-indol-2-ylidene)-" "2-methylene-1,3,3-trimethylindoline acetaldehyde" "acetaldehyde,2-(1,3-dihydro-1,3,3-trimethyl-2h-indol-2-ylidene)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   65590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     515.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=285440.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH2_ring; count 5; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-piperidin-1-ylpropan-1-ol" "3-piperidinopropanol" "piperidine-1-propanol" "3-(1-piperidinyl)propanol" "1-(3-hydroxypropyl)piperidine" "1-propanol, 3-piperidino-" "3-(piperidin-1-yl)propan-1-ol" "gamma-piperidinopropanol [german]" "3-piperidylpropan-1-ol" "gamma-piperidinopropanol" "3-piperidinopropan-1-ol" "3-piperidino-1-propanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -212330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     526.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=34700.0
-    phase     gas;
 }

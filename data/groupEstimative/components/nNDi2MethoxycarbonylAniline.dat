@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-[(3-methoxy-3-oxidanylidene-propyl)-phenyl-amino]propanoate" "methyl 3-[(3-methoxy-3-oxopropyl)phenylamino]propanoate" "n-(2-carboxyethyl)-n-phenyl-" "a-alanine, dimethyl ester" "dmca" "beta-alanine, n-(3-methoxy-3-oxopropyl)-n-phenyl-, methyl ester" "dimethyl 3,3'-(phenylazanediyl)dipropanoate" "methyl 3-(n-(3-methoxy-3-oxopropyl)anilino)propanoate" "methyl n-(3-methoxy-3-oxopropyl)-n-phenyl-beta-alaninate" "n-(2-carboxyethyl)-n-phenyl-beta-alanine, dimethyl ester" "b-alanine,n-(3-methoxy-3-oxopropyl)-n-phenyl-, methyl ester" ".beta.-alanine, n-(3-methoxy-3-oxopropyl)-n-phenyl-, methyl ester" "propionicacid, 3,3'-(phenylimino)di-, dimethyl ester (7ci);n,n-bis(2-methoxycarboxyethyl)aniline;n,n-bis[2-(methoxycarbonyl)ethyl]aniline; n,n-di(b-methoxycarbonylethyl)aniline" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -662790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     713.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-330550.0
-    phase     gas;
 }

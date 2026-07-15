@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopropene, 1-methyl-" "ethylbloc" "smartfresh" "cyclopropene, methyl-" "1-mcp" "1-methyl-cyclopropene" "1-mcp;cyclopropene, 1-methyl-;1-methylecyclopropene;afxrd 020;afxrd 038;ethylbloc;fitomag;smartfresh;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   13560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     220.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=71590.0
-    phase     gas;
 }

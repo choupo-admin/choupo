@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(4-phenylphenoxy)propanoic acid" "propionic acid, 2-(4-biphenylyloxy)-" "2-(1,1'-biphenyl-4-yloxy)propanoic acid" "2-(biphenyl-4-yloxy)propanoicacid" "2-(biphenyl-4yloxy)propionic acid" "alpha-(4-biphenylyloxy)propionic acid" "alpha-(4-phenylphenoxy)propionic acid" "2-(biphenyl-4-yloxy)propanoic acid" "2-(4-biphenylyl-oxy)propionic acid" ".alpha.-(4-biphenylyloxy)propionic acid" "propanoic acid,1'-biphenyl]-4-yloxy)-" "2-([1,1'-biphenyl]-4-yloxy)propanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -379110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     576.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-160740.0
-    phase     gas;
 }

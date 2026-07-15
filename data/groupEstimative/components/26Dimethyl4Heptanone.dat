@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-dimethylheptan-4-one" "diisobutyl ketone" "isovalerone" "isobutyl ketone" "s-diisopropylacetone" "diisobutylketone" "4-heptanone, 2,6-dimethyl-" "diisobutilchetone" "di-isobutylcetone" "dibk" "2,6-dimetil-eptan-4-one" "2,6-dimethyl-heptan-4-on" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -352230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     514.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108900.0
-    phase     gas;
 }

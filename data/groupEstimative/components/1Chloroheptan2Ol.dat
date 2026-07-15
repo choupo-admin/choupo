@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranylheptan-2-ol" "2-heptanol, 1-chloro-" "2-heptanol, 1-chloro-, (r)-" "agn-pc-00bjcv" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -361060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     503.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-143130.0
-    phase     gas;
 }

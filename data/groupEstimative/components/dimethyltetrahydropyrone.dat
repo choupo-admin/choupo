@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group O_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-dimethyloxan-4-one" "2,6-dimethyltetrahydro-4h-pyran-4-one" "2,6-dimethyl tetrahydro-1,4-pyrone" "tetrahydro-2,6-dimethyl-4h-pyran-4-one" "2,6-dimethyl tetrahydro-4h-pyran-4-one" "4h-pyran-4-one, tetrahydro-2,6-dimethyl-" "2,6-dimethyl-4-oxanone" "2,6-dimethyl-4-oxotetrahydro-2h-pyran" "2,6-dimethyldihydro-2h-pyran-4(3h)-one" "2,6-dimethyl-2h-3,5,6-trihydropyran-4-one" "2,6-dimethyl-4-tetrahydropyrone;2,6-dimethyltetrahydro-4-pyranone; 2,6-dimethyltetrahydro-4h-pyran-4-one;tetrahydro-2,6-dimethylpyran-4-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -423530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     225.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-183910.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-3-(4-hydroxyphenyl)-2-(methylamino)propanoic acid" "andirine" "surinamine" "andrine" "n-me-tyr-oh" "l-tyrosine, n-methyl-" "(s)-3-(4-hydroxyphenyl)-2-(methylamino)propanoic acid" "(s)-3-(4-hydroxyphenyl)-2-(methylamino)propionic acid" "surinamine(6ci);tyrosine, n-methyl-, l- (7ci,8ci);(+)-n-methyltyrosine;andirine;andrine;n-methyl-l-tyrosine;n-methyltyrosine;ratanhin;ratanhine;surinamin;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -492590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     549.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-265850.0
-    phase     gas;
 }

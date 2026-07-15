@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadeca-10,12-dienoic acid" "conjugated linoleic acid (10e,12z)" "10,12-octadecadienoic acid, (z,z)-" "10,12-octadecadienoicacid, (10z,12e)-" "10,12-octadecadienoic acid, (10e,12e)-" "10,12-octadecadienoicacid, (10e,12z)- (9ci)" "10,12-octadecadienoicacid, (e,z)- (8ci); 10-cis,12-trans-linoleic acid;10-cis,12-trans-octadecadienoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -530680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     897.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-82790.0
-    phase     gas;
 }

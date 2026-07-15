@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 1; } { group CH; count 3; } { group C; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-hydroxy-2,2,4-trimethylpentyl) 2-methylpropanoate" "1,3-pentanediol, 2,2,4-trimethyl-, 1-isobutyrate" "2,2,4-trimethyl-1,3-pentanediol 1-isobutyrate" "3-hydroxy-2,2,4-trimethylpentyl 2-methylpropanoate" "isobutyraldehyde trimer" "isobutyric acid, 3-hydroxy-2,2,4-trimethylpentyl ester" "ng 120" "propanoic acid, 2-methyl-, 3-hydroxy-2,2,4-trimethylpentyl ester" "texanol" "2,2,4-trimethyl-1,3-pentanediol monoisobutyrate" "2,2,4-Trimethyl-1,3-pentanediolmono(2-methylpropanoate)" "isobutyric acid 3-hydroxy-2,2,4-trimethylpentyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -785110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     658.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-401510.0
-    phase     gas;
 }

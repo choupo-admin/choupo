@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 2; } { group dCH; count 3; } { group dC; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,7,11-trimethyldodeca-2,4-dienoic acid" "2,4-dodecadienoic acid, 3,7,11-trimethyl-, (2z,4e)-" "2,4-dodecadienoic acid, 3,7,11-trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -489110.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     757.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121480.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octan-3-ol" "amyl ethyl carbinol" "ethyl-n-amylcarbinol" "amylethylcarbinol" "ethylamylcarbinol" "1-ethylhexanol" "d-n-octanol" "octanol-3" "dl-3-octanol" "ethyl amyl carbinol" "n-octan-3-ol" "3-octanol (natural)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -365960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     508.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-122780.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 16; } { group dCH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "icos-9-enoic acid" "(e)-icos-9-enoic acid" "9-eicosenoic acid,(9z)-" "9-eicosenoicacid, (z)- (8ci); gadoleic acid (6ci,7ci); (z)-9-eicosenoic acid;cis-9-eicosenoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -689180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     981.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-146170.0
-    phase     gas;
 }

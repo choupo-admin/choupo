@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 12; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-heptylsulfanylheptane" "heptane, 1,1'-thiobis-" "n-heptyl sulfide" "diheptyl sulfide" "diheptyl sulphide" "heptylthioheptane" "diheptyl sulfide;di-n-heptylthioether;di-n-heptyl sulfide;8-thiapentadecane;heptylsulfide (6ci,7ci,8ci);" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -290420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     762.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=100120.0
-    phase     gas;
 }

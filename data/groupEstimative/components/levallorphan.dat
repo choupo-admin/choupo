@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "naloxiphan" "lorfan" "levallorphane" "levallorphanum" "levalorfano" "levallofano [dcit]" "17-allylmorphinan-3-ol" "levallorphane [inn-french]" "levallorphanum [inn-latin]" "levallofano" "levallorphan [inn:ban]" "n-allyl-3-hydroxymorphinan" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   32700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     640.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=420540.0
-    phase     gas;
 }

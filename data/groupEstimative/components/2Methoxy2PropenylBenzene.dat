@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methoxyprop-2-enylbenzene" "benzene, (2-methoxy-2-propenyl)-" "3-phenyl-2-methoxypropene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -29780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     441.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120020.0
-    phase     gas;
 }

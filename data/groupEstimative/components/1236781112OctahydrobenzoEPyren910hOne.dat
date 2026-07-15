@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 9; } { group dCH_ring; count 2; } { group dC_ring; count 8; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,6,7,8,10,11,12-octahydro-1h-benzo[e]pyren-9-one" "1,2,3,6,7,8,11,12-octahydrobenzo[e]pyren-9(10h)-one" "1,3,6,7,8,10,11,12-octahydrobenzo[e]pyren-9(2h)-one" "benzo[e]pyren-9(2h)-one, 1,3,6,7,8,10,11,12-octahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   38210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     480.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=349490.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 8; } { group dC_ring; count 4; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanyl-3-(3-bromophenyl)benzene" "1-bromo-3-(3-bromophenyl)benzene" "1,1'-biphenyl,3,3'-dibromo-" "1,1'-biphenyl, 3,3'-dibromo-" "biphenyl,3,3'-dibromo- (7ci,8ci); 3,3'-dibromo-1,1'-biphenyl; 3,3'-dibromobiphenyl;3,3'-dibromodiphenyl; pbb 11; m,m'-dibromobiphenyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   211770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     500.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=284360.0
-    phase     gas;
 }

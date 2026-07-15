@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[(1r)-2,6,6-trimethylcyclohex-2-en-1-yl]methanethiol" "2-cyclohexene-1-methanethiol, 2,6,6-trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -115720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     561.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=94290.0
-    phase     gas;
 }

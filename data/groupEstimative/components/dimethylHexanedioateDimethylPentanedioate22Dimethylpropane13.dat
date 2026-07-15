@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 9; } { group C; count 1; } { group OH; count 2; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexanedioic acid, 1,6-dimethyl ester, polymer with 1,5-dimethyl pentanedioate and 2,2-dimethyl-1,3-propanediol" "hexanedioic acid, dimethyl ester, polymer with dimethyl pentanedioate and 2,2-dimethyl-1,3-propanediol" "dimethyl hexanedioate; dimethyl pentanedioate; 2,2-dimethylpropane-1,3-diol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2261700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1418.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1604280.0
-    phase     gas;
 }

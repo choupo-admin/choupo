@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3-methanoyloxy-3-phenyl-propyl) methanoate" "1,3-propanediol, 1-phenyl-, diformate" "1,3-propanediol, 1-phenyl-, 1,3-diformate" "1-phenyl-1,3-propanediol diformate" "(3-formyloxy-3-phenylpropyl) formate" "1,3-propanediol,1-phenyl-, 1,3-diformate" "1,3-propanediol,1-phenyl-, diformate (9ci); 1-phenyl-1,3-propanediol diformate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   113780.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     835.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=239630.0
-    phase     gas;
 }

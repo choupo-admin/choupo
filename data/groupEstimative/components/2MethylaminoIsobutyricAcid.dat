@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-2-(methylamino)propanoic acid" "n,2-dimethylalanine" "alpha-(methylamino)isobutyric acid" "2,n-dimethylalanine" "2-(methylamino)-2-methylpropionic acid" "n-me-aib-oh hcl" "alanine, n,2-dimethyl-" "n-methyl-a-aminoisobutyrate" "n-methylaminoisobutyric acid" "n-methyl-alpha-aminoisobutyrate" "n-methyl-a-aminoisobutyric acid" "dlamvqgyevkire-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -452080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     405.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-260460.0
-    phase     gas;
 }

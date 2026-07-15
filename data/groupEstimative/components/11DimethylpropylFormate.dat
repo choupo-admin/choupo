@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylbutan-2-yl methanoate" "tert-amyl formate" "2-methylbutan-2-yl formate" "tert-pentyl alcohol, formate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -99470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     534.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46440.0
-    phase     gas;
 }

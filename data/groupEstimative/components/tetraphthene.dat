@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,3a,4,5-hexahydroacenaphthylene" "hexahydroacenaphthylene" "acenaphthylene, 1,2,2a,3,4,5-hexahydro-" "acenaphthene, 2a,3,4,5-tetrahydro-" "1,2,3,4,5,2a-hexahydroacenaphthylene" "tetraphthen" "(1-4)-tetrahydroacenaphthene" "2a,4,5-tetrahydroacenaphthene" "acenaphthene,3,4,5-tetrahydro-" "acenaphthylene,2,2a,3,4,5-hexahydro-" "tetraphthene;3,4,5,11-tetrahydroacenaphthene;tetrahydroacenaphthene;hexahydroacenaphthylene;3,4,5,11-thtrahydroacenaphthene;3,4,5,11-tetrahydroacenaphthene 95+%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   88520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     366.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=272520.0
-    phase     gas;
 }

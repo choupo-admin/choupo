@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group Br; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-bromophenyl)-phenyl-methanol" "p-bromobenzhydrol" "benzhydrol, 4-bromo-" "(4-bromophenyl)(phenyl)methanol" "(4-bromophenyl)phenylmethan-1-ol" "p-bromobenzhydryl alcohol" "(+/-)-4-bromobenzhydrol" "(4-bromophenyl)-phenylmethanol" "benzenemethanol,4-bromo-a-phenyl-" "benzenemethanol, 4-bromo-.alpha.-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   18760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     535.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=148830.0
-    phase     gas;
 }

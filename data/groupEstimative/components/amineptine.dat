@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 6; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "7-(6,11-dihydro-5h-dibenzo[1,2-a:1',2'-e][7]annulen-11-ylamino)heptanoic acid" "amineptin" "amineptino" "amineptinum" "amineptine [inn]" "amineptinum [inn-latin]" "amineptine (inn)" "survector (tn)" "7-((10,11-dihydro-5h-dibenzo(a,d)cyclohepten-5-yl)amino)heptanoic acid" "7-(10,11-dihydro-5h-dibenzo[a,d]cyclohepten-5-ylamino)heptanoic acid" "30272-08-3 (hydrochloride)" "10,11-dihydrodibenzo(a,d)cyclohept-5-enyl-7-aminoheptanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -271290.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     791.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=146150.0
-    phase     gas;
 }

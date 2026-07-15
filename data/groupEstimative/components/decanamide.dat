@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-decanamide" "decanoic acid amide" "capramide" "decylamide" "decan-1-amide" "decanamide-" "amides, c10-16" "decanoylamide" "amides, c1o-16" "(c10-c16) alkylcarboxylic acid amide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -328520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     623.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-29150.0
-    phase     gas;
 }

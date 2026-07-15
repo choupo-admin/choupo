@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 3; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2,4-dimethylpentan-3-yloxy)ethanol" "2-[(2,4-dimethylpentan-3-yl)oxy]ethanol" "poly(oxy-1,2-ethanediyl),a-[3-methyl-1-(2-methylpropyl)butyl]-w-hydroxy-" "alpha-(3-methyl-1-(2-methylpropyl)butyl)-omega-hydroxypoly(oxy-1,2-ethanediyl)" "poly(oxy-1,2-ethanediyl), alpha-(3-methyl-1-(2-methylpropyl)butyl)-omega-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -529380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     540.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-224240.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "isovaleraldehyde" "3-methylbutyraldehyde" "isopentaldehyde" "isoamylaldehyde" "isovaleral" "isovalerylaldehyde" "butanal, 3-methyl-" "isopentanal" "beta-methylbutanal" "isovaleric aldehyde" "isoamyl aldehyde" "2-methylbutanal-4" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -237390.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     359.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-110740.0
-    phase     gas;
 }

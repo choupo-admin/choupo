@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(2-acetyloxyphenyl)prop-2-enoic acid" "2-acetylcoumaric acid" "3-(2-acetoxyphenyl)-2-propenoic acid" "2-acetoxycinnamic acid, predominantly trans" "2-propenoic acid,3-[2-(acetyloxy)phenyl]-, (2e)-" "2-propenoicacid, 3-[2-(acetyloxy)phenyl]-, (e)-; cinnamic acid, o-hydroxy-, acetate, (e)-(8ci); 2-acetoxycinnamic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -595640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     569.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-429540.0
-    phase     gas;
 }

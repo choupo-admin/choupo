@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 5; } { group dC_ring; count 5; } { group OH_phenol; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,4-bis(oxidanyl)naphthalene-2-carboxylic acid" "1,4-dihydroxy-2-naphthoate" "1,4-dihydroxy-2-naphthalenecarboxylic acid" "1,4-dihydroxynaphthalene-2-carboxylic acid" "2-naphthalenecarboxylic acid, 1,4-dihydroxy-" "1,4-dihydroxy-2-naphthalic acid" "vojuxhhacrxltd-uhfffaoysa-" "2-naphthoic acid, 1,4-dihydroxy" "2-naphthoic acid, 1,4-dihydroxy-" "1f3e7fb2-5745-4c2a-a942-d4ad78d5e1f0" "2-naphthoicacid, 1,4-dihydroxy- (8ci);1,4-dihydroxy-2-naphthoate;" "dna" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -559130.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     469.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-401980.0
-    phase     gas;
 }

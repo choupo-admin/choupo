@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "prop-2-enyl 2-chloranylethanoate" "chloroacetic acid allyl ester" "allyl 2-chloroacetate" "acetic acid, chloro-, 2-propenyl ester" "prop-2-enyl 2-chloroacetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -354120.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     430.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-243240.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 5; } { group CH; count 3; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-ethoxy-1-[2-(1-ethoxypropoxy)propoxy]propane" "4,9-diethyl-6-methyl-3,5,8,10-tetraoxadodecane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -856370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     678.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-368740.0
-    phase     gas;
 }

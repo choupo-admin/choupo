@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-benzo[a]anthracen-7-ylethanoate" "1,2-benzanthracene-10-acetic acid, methyl ester" "methyl tetraphen-7-ylacetate" "methyl benz[a]anthracene-7-acetate" "methyl 2-benzo[a]anthracen-7-ylacetate" "benz[a]anthracene-7-acetic acid methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -18720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     573.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=219040.0
-    phase     gas;
 }

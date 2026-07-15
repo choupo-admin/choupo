@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 9; } { group C; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 5; } { group OH; count 1; } { group COOH; count 1; } { group COO; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-(6-azanylhexanoyloxymethyl)-2-(hydroxymethyl)butoxy]carbonyl-5-methyl-bicyclo[2.2.1]heptane-3-carboxylic acid" "2-(2-(((6-amino-1-oxohexyl)oxy)methyl)-2-(hydroxymethyl)butyl) hydrogen 5-methylbicyclo(2.2.1)heptane-2,3-dicarboxylate" "bicyclo(2.2.1)heptane-2,3-dicarboxylic acid, 5-methyl-, 2-(2-(((6-amino-1-oxohexyl)oxy)methyl)-2-(hydroxymethyl)butyl) ester" "bicyclo[2.2.1]heptane-2,3-dicarboxylic acid, 5-methyl-, 2-[2-[[(6-amino-1-oxohexyl)oxy]methyl]-2-(hydroxymethyl)butyl] ester" "3-{[2-{[(6-aminohexanoyl)oxy]methyl}-2-(hydroxymethyl)butoxy]carbonyl}-6-methylbicyclo[2.2.1]heptane-2-carboxylic acid" "bicyclo[2.2.1]heptane-2,3-dicarboxylicacid, 5-methyl-, 2-[2-[[(6-amino-1-oxohexyl)oxy]methyl]-2-(hydroxymethyl)butyl]ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1531010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     944.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-811550.0
-    phase     gas;
 }

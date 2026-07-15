@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 16; } { group CH; count 1; } { group O; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n'-[3-(11-methyldodecoxy)propyl]propane-1,3-diamine" "c13 branched alkoxypropyleneaminepropyleneamine" "branched(c13)alkyl alkoxypropyleneamine propyleneamine" "1,3-propanediamine, n-(3-(tridecyloxy)propyl)-, branched" "n-{3-[(11-methyldodecyl)oxy]propyl}propane-1,3-diamine" "1,3-propanediamine, n1-(3-(tridecyloxy)propyl)-, branched" "1,3-propanediamine, n-[3-(c11-14-isoalkyloxy)propyl] derivs., c13-rich" "n-(3-(isotridecyloxy)propyl)propane-1,3-diamine" "n-[3-(isotridecyloxy)propyl]propane-1,3-diamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -485730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     990.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=157500.0
-    phase     gas;
 }

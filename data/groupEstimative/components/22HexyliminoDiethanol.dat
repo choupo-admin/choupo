@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[hexyl(2-hydroxyethyl)amino]ethanol" "n-hexyl-2,2'-iminodiethanol" "2,2'-(n-hexylamino)diethanol" "ethanol, 2,2'-(hexylimino)bis-" "n-hexyl-2,2'-iminodiethanol;" "ethanol,2,2'-(hexylimino)bis-" "2-[hexyl(2-hydroxyethyl)amino]ethan-1-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -486660.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     663.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-129540.0
-    phase     gas;
 }

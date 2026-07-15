@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH; count 4; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexadeca-11,13-dien-1-ol" "(z,z)-11,13-hexadecadien-1-ol" "11,13-hexadecadien-1-ol, (11z,13z)-" "11,13-hexadecadien-1-ol, (z,e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -291360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     816.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107460.0
-    phase     gas;
 }

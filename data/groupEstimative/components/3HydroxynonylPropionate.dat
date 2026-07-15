@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-oxidanylnonyl propanoate" "3-hydroxynonyl propanoate" "1,3-nonanediol, 1-propanoate" "1,3-nonanediol, 1-propionate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -765800.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     716.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-399470.0
-    phase     gas;
 }

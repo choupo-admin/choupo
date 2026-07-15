@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-methylheptan-1-ol" "isooctanol" "isooctyl alcohol" "alcohols, c7-9-iso-, c8-rich" "mhn" "titanium(4+) 6-methylheptan-1-olate" "alcohols, c7-9-branched" "c8-rich c7-9-iso-alcohols" "6-methylheptanol" "6-methyl-heptan-1-ol" "6-methyl-1-heptanol;" "alcohols, c7-9-iso, c8-rich" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -365960.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     508.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-122780.0
-    phase     gas;
 }

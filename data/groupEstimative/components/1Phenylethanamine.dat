@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenylethylamine" "alpha-methylbenzylamine" "alpha-phenylethylamine" "1-phenethylamine" "1-amino-1-phenylethane" "dl-alpha-methylbenzylamine" "alpha-aminoethylbenzene" "1-fenylethylamin" "1-phenylethanamin" "a-phenylethylamine" "benzenemethanamine, .alpha.-methyl-" "alpha-methylbenzenemethanamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   56590.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     403.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=192900.0
-    phase     gas;
 }

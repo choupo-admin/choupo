@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 33; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-pentatriacontane" "pentatriacontane (8CI)(9CI)" "pentatriacontane (8CI)" "pentatriacontane, analytical standard" "N-c-35" "NSC125400" "HY-W343304" "AS-87643" "CS-0454353" "NS00010793" "P0062" "Q151158" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -765730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1519.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=243820.0
-    phase     gas;
 }

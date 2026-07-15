@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 4-methoxy-2-oxidanyl-benzoate" "methyl 2-hydroxy-4-methoxybenzoate" "2-hydroxy-4-methoxybenzoic acid methyl ester" "benzoic acid, 2-hydroxy-4-methoxy-, methyl ester" "methyl 2-hydroxy-p-anisate" "4-methoxysalicylic acid methyl ester" "m661" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -630840.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     483.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-442310.0
-    phase     gas;
 }

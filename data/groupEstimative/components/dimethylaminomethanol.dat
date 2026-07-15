@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methanol, (dimethylamino)-" "methanol, 1-(dimethylamino)-" "methanol,1-(dimethylamino)-" "methanol,(dimethylamino)- (8ci,9ci); (dimethylamino)methanol;(hydroxymethyl)dimethylamine; n,n-dimethylcarbinolamine; n,n-dimethylmethanolamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -189950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     339.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-51660.0
-    phase     gas;
 }

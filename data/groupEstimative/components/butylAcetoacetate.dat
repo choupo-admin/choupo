@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butyl 3-oxidanylidenebutanoate" "butyl 3-oxobutanoate" "acetoacetic acid, butyl ester" "butanoic acid, 3-oxo-, butyl ester" "butyl 3-oxobutyrate" "butyl 3-ketobutyrate" "butyl 3-ketobutanoate" "butyl3-oxobutyrate" "acetoacetic acid butyl ester" "butylester kyseliny acetoctove" "3-oxo-butyric acid butyl ester" "butanoic acid, 3-oxo-,butyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -638310.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     545.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-422810.0
-    phase     gas;
 }

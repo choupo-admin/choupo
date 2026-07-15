@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group dCH_ring; count 8; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5,6,8,9,10,11-hexahydronaphtho[1,2-b]phenanthrene" "1,2,3,4,12,13-hexahydrodibenz(a,h)anthracene" "dibenz(a,h)anthracene, 1,2,3,4,12,13-hexahydro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   295650.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     564.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=554600.0
-    phase     gas;
 }

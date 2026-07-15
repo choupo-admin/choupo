@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylthiolane" "(±)-2-methylthiolane" "2-methylthiacyclopentane" "2-methylthiophane" "tetrahydro-2-methylthiophene" "thiophene, tetrahydro-2-methyl-" "tetrahydrothiophene, 2-methyl-" "(+/-)-2-METHYLTHIOLANE" "2-METHYLTETRAHYDROTHIOPHENE, (+/-)-" "thiophene, tetrahydromethyl-" "2-methylthi-olane" "2-methyl-tetrahydro-thiophene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -40790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     350.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=67630.0
-    phase     gas;
 }

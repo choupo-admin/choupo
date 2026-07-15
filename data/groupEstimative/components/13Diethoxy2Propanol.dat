@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group OH; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,3-diethoxypropan-2-ol" "diethylin" "glycerol 1,3-diethyl ether" "1,3-glycerine diethyl ether" "glycerol 1,3-bis(ethyl ether)" "glycerol alpha,gamma-diethyl ether" "2-propanol,3-diethoxy-" "2-propanol,1,3-diethoxy-" "2-propanol, 1,3-diethoxy-" "glycerol alpha,alpha'-diethyl ether" "2-propanol, 1,3-diethoxy- (8ci)" "glycerol .alpha.,.gamma.-diethyl ether" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -609760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     492.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-341200.0
-    phase     gas;
 }

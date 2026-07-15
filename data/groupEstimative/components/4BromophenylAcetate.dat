@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-bromophenyl) ethanoate" "phenol, 4-bromo-, acetate" "p-acetoxybromobenzene" "p-bromophenyl acetate" "4-bromophenol acetate" "4-bromoacetoxybenzene" "phenol, p-bromo-, acetate" "phenol, 4-bromo-, 1-acetate" "phenol, p-bromo-, acetate (6ci,7ci,8ci)" "4-bromophenyl ethanoate" "(4-bromophenyl) acetate" "phenol, 4-bromo-,1-acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -274340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-176790.0
-    phase     gas;
 }

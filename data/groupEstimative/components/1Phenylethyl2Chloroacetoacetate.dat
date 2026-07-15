@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-phenylethyl 2-chloranyl-3-oxidanylidene-butanoate" "1-phenylethyl 2-chloro-3-oxobutanoate" "butanoic acid, 2-chloro-3-oxo-, 1-phenylethyl ester" "alpha-methylbenzyl 2-chloroacetoacetate" "2-chloro-3-oxo-butanoic acid 1-phenylethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -510640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     609.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-293530.0
-    phase     gas;
 }

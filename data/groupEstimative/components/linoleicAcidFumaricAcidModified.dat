@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH; count 6; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e)-but-2-enedioic acid;(9z,12z)-octadeca-9,12-dienoic acid" "2-butenedioic acid (2e)-, reaction products with linoleic acid" "(e)-but-2-enedioic acid; (9z,12z)-octadeca-9,12-dienoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1308180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1260.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-761470.0
-    phase     gas;
 }

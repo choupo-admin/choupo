@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-azanylpropan-1-ol" "1-propanol, 3-amino-" "3-amino-1-propanol" "propanolamine" "3-aminopropan-1-ol" "3-aminopropyl alcohol" "3-propanolamine" ".beta.-alaninol" "3-hydroxypropylamine" "1-amino-3-propanol" "beta-alaninol" "n-propanolamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -223690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     375.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-95990.0
-    phase     gas;
 }

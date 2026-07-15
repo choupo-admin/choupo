@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 1; } { group dC_ring; count 5; } { group F; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,4,5-tetrakis(fluoranyl)benzoic acid" "2,3,4,5-tetrafluoro benzoic acid" "tetrafluorobenzoic acid" "sfkrxqkjtiyuag-uhfffaoysa-" "2,3,4,5-tetrafluorobezoic acid" "2,3,4,5-tetrafluoro-benzoic acid" "tetrafluoro(2,3,4,5-)benzoic acid" "benzoicacid, 2,3,4,5-tetrafluoro-" "2,3,4,5-tetrafluorobenzoic;2,3,4,5-tetrafluorobenzoicacid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1131870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     477.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1041200.0
-    phase     gas;
 }

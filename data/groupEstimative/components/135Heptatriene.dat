@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dCH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hepta-1,3,5-triene" "1,3,5-heptatriene, (z,e)-" "1,3,5-heptatriene, (z,z)-" "1,3,5-heptatriene,(3e,5e)-" "1,3,5-heptatriene,(3z,5e)-" "1,3,5-heptatriene,(e,z)- (8ci); trans,cis-1,3,5-heptatriene" "1,3,5-heptatriene,(e,e)- (8ci);all-trans-1,3,5-heptatriene;trans,trans-1,3,5-heptatriene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   172060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     410.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=256340.0
-    phase     gas;
 }

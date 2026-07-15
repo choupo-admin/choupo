@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 24; } { group C; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[2-methyl-3-nonanoyloxy-2-(nonanoyloxymethyl)propyl] nonanoate" "trimethylolethane trinonanoate" "nonanoic acid, 1,1'-(2-methyl-2-(((1-oxononyl)oxy)methyl)-1,3-propanediyl) ester" "nonanoic acid, 1,1'-[2-methyl-2-[[(1-oxononyl)oxy]methyl]-1,3-propanediyl] ester" "2-methyl-3-(nonanoyloxy)-2-[(nonanoyloxy)methyl]propyl nonanoate" "2-methyl-2-(((1-oxononyl)oxy)methyl)propane-1,3-diyl dinonan-1-oate" "nonanoic acid, 2-methyl-2-(((1-oxononyl)oxy)methyl)-1,3-propanediyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1664400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1517.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-709710.0
-    phase     gas;
 }

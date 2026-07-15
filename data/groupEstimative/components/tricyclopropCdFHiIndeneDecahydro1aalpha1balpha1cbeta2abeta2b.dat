@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tricycloprop[cd,f,hi]indene,decahydro-,(1a.alpha.,1b.alpha.,1c.beta.,2a.beta.,2b.alpha.,2c.alpha.,2d.alpha.,2e.alpha.)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   84050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     -132.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=374440.0
-    phase     gas;
 }

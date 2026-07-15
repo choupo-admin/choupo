@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyloxolane" "tetrahydro-2-methylfuran" "furan, tetrahydro-2-methyl-" "methyltetrahydrofuran" "tetrahydrosylvan" "furan, 2-methyl-tetrahydro-" "tetrahydrosilvan" "2-methyl-tetrahydrofuran" "furan, tetrahydromethyl-" "methyltetrahydrofurane" "2-methyl tetrahydrofuran" "agn-pc-0cq6lc" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -218050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     249.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-58350.0
-    phase     gas;
 }

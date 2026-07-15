@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 11; } { group dC_ring; count 6; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2(n)-pyridinoanthracene" "beta-anthraquinoline" "4'-aza-1,2-benzanthracene" "4-azabenz(a)anthracene" "naphtho(2,3-f)quinoline" "4-azabenz[a]anthracene" ".beta.-anthraquinoline" "naphtho[2,3-f]quinoline(7ci,8ci,9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   425380.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     385.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=582410.0
-    phase     gas;
 }

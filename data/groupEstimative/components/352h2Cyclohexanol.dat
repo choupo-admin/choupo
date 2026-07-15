@@ -38,9 +38,8 @@ groups
     joback ( { group CH2_ring; count 5; } { group CH_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5-dideuteriocyclohexan-1-ol" "cyclohexan-3,5-d2-ol (1alpha,3beta,5beta)-" "cyclohexan-3,5-d2-ol (1.alpha.,3.beta.,5.beta.)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -265080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     410.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-112730.0
-    phase     gas;
 }

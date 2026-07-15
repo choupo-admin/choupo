@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 6; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "ethyl 3-(3-ethoxy-3-oxidanylidene-propyl)sulfanylpropanoate" "diethyl 3,3'-thiodipropionate" "diethyl 3,3'-sulfanediyldipropanoate" "diethyl 3,3'-thiobispropanoate" "diethyl 3,3'-thiobispropionate" "propanoic acid, 3,3'-thiobis-, diethyl ester" "propionic acid, 3,3'-thiodi-, diethyl ester" "propanoic acid, 3,3'-thiobis-, 1,1'-diethyl ester" "propionic acid, 3,3'-thiodi-, diethyl ester (6ci,7ci,8ci)" "propionic acid,3'-thiodi-, diethyl ester" "propanoic acid,3'-thiobis-, diethyl ester" "ethyl 3-(3-ethoxy-3-oxopropyl)sulfanylpropanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -842420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     709.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-554300.0
-    phase     gas;
 }

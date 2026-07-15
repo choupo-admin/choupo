@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group CdO; count 1; } { group COOH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethanoylpyridine-3-carboxylic acid" "3-pyridinecarboxylicacid, 2-acetyl-" "2-actylnicotinic acid" "2-acetylnicotinic acid" "2-actyl nicotinic acid" "2-acetyl nicotinic acid" "2-acetyl-3-pyridinecarboxylic acid" "3-pyridinecarboxylic acid, 2-acetyl-" "i178" "nicotinicacid, 2-acetyl- (6ci,7ci);2-acetylnicotinic acid;2-acetylpyridine-3-carboxylic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -413450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-276520.0
-    phase     gas;
 }

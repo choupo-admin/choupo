@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 18; } { group CH2; count 2; } { group CH; count 4; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl-[1,2,4,5,6-pentakis(trimethylsilyloxy)hexan-3-yloxy]silane" "altritol, tms" "allitol, tms" "iditol, tms" "trimethylsilyl-d-(+)-mannitol" "trimethylsilyl ether of glucitol" "mannitol, hexakis-o-(trimethylsilyl)-, d-" "1,2,3,4,5,6-hexakis-o-(trimethylsilyl)hexitol" "d-glucitol, 1,2,3,4,5,6-hexakis-o-(trimethylsilyl)-" "d-mannitol, 1,2,3,4,5,6-hexakis-o-(trimethylsilyl)-" "galactitol, 1,2,3,4,5,6-hexakis-o-(trimethylsilyl)-" "trimethylsilyldulcitol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2022850.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1879.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1117120.0
-    phase     gas;
 }

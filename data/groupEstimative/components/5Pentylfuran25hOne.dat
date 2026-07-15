@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-pentyl-2h-furan-5-one" "2-nonenoic acid .gamma.-lactone" "2-nonen-4-olide" "agn-pc-00gisf" "2(5h)-furanone,5-pentyl-" "2(5h)-furanone, 5-pentyl-" "2-nonenoicacid, 4-hydroxy-, g-lactone;2-nonenoic g-lactone;4-hydroxy-2-nonenoic acid lactone;5-pentyl-2-furanone;5-n-pentyl-2(5h)-furanone;5-pentyl-2(5h)-furanone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -415790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     430.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-194760.0
-    phase     gas;
 }

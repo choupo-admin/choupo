@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-methoxypropoxy)-1-prop-2-enoxy-propane" "1-propene, 3-[2-(2-methoxypropoxy)propoxy]-" "2-(2-methoxypropoxy)-1-prop-2-enoxypropane" "3-[2-(2-methoxypropoxy)propoxy]-1-propene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -531520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     555.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-198720.0
-    phase     gas;
 }

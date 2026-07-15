@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 4; } { group O; count 1; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-aminoethoxy)ethanamine" "1,5-diamine-3-oxapentane" "1,5-diamino-3-oxapentane" "2,2′-Oxybis(ethylamine)" "2,2′-oxybis[ethanamine]" "2,2′-oxydi[ethanamine]" "2-(2-aminoethoxy)ethan-1-amine" "2-(2-Aminoethoxy)ethylamine" "3-oxa-1,5-diaminopentane" "3-oxa-1,5-pentanediamine" "Bis(2-aminoethyl) ether" "edr 104" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -190530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     426.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=10700.0
-    phase     gas;
 }

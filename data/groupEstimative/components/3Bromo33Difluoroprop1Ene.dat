@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-bromanyl-3,3-bis(fluoranyl)prop-1-ene" "3-bromo-3,3-difluoropropene" "propene, 3-bromo-3,3-difluoro-" "3,3-difluoro-3-bromopropene" "3-bromo-3,3-difluoro-1-propene" "1-bromo-1,1-difluoropropene" "1-propene, 3-bromo-3,3-difluoro-" "1-bromo-1,1-difluoroprop-2-ene" "propene,3-bromo-3,3-difluoro- (6ci,7ci,8ci);1,1-difluoroallyl bromide;3-bromo-3,3-difluoro-1-propene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -354460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     343.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-310240.0
-    phase     gas;
 }

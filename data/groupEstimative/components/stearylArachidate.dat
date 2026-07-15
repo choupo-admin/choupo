@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 35; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadecyl icosanoate" "octadecyl eicosanoate" "eicosanoic acid, octadecyl ester" "arachidic acid stearyl ester" "heptadecyl arachidate" "octadecanyl eicosanoate" "eicosanoic acid,octadecyl ester" "we(18:0/20:0)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1144930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1687.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-41290.0
-    phase     gas;
 }

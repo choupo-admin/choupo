@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylpropyl benzoate" "benzoic acid, isobutyl ester" "benzoic acid, 2-methylpropyl ester" "isobutyl benzoate (natural)" "benzoic acid, isobutyl ester (6ci,7ci,8ci)" "benzoic acid isobutyl ester" "m581" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -356400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     519.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-158660.0
-    phase     gas;
 }

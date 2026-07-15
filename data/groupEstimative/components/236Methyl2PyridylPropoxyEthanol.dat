@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group OH; count 1; } { group O; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[3-(6-methylpyridin-2-yl)propoxy]ethanol" "2-[3-(6-methyl-2-pyridyl)propoxy]ethanol" "2-(3-(6-methyl-2-pyridinyl)propoxy)ethanol" "2-(3-(6-methylpyridin-2-yl)propoxy)ethanol" "2-[3-(6-methyl-2-pyridinyl)propoxy]ethanol" "ethanol, 2-(3-(6-methyl-2-pyridinyl)propoxy)-" "ethanol, 2-[3-(6-methyl-2-pyridinyl)propoxy]-" "ethanol,2-[3-(6-methyl-2-pyridinyl)propoxy]-" "2-[3-(6-methylpyridin-2-yl)propoxy]ethan-1-ol" "2-(3-(beta-hydroxyethoxy)propyl)-6-methylpyridine" "2-[3-(6-methyl-2-pyridinyl)propoxy]ethanol;2-[3-(6-methyl-2-pyridyl)propoxy]ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -296970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20250.0
-    phase     gas;
 }

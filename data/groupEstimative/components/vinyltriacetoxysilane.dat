@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[diacetyloxy(ethenyl)silyl] ethanoate" "triacetoxy(vinyl)silane" "vinylsilanetriyl triacetate" "vinylsilanetriol triacetate" "vinyl triacetoxy silane" "silanetriol, ethenyl-, triacetate" "silanetriol, 1-ethenyl-, 1,1,1-triacetate" "(triacetoxysilyl)ethylene" "ethenylsilanetriyl triacetate" "silanetriol, vinyl-, triacetate" "nozaqbynlkndrt-uhfffaoysa-" "[diacetyloxy(ethenyl)silyl] acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1146480.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     743.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-931550.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group C; count 1; } { group tC; count 2; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trimethyl-[3,3,3-tris(fluoranyl)prop-1-ynyl]silane" "trimethyl(3,3,3-trifluoroprop-1-ynyl)silane" "trimethyl-(3,3,3-trifluoroprop-1-ynyl)silane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -603570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     544.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-483910.0
-    phase     gas;
 }

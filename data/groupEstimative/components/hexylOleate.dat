@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 19; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexyl octadec-9-enoate" "9-octadecenoic acid (9z)-, hexyl ester" "hexyl oleate;hexyl9-octadecenoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -738750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1135.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-78950.0
-    phase     gas;
 }

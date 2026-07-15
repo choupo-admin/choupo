@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-chloranyl-3,5-di(propan-2-yl)benzene" "3,5-diisopropyl-1-chlorobenzene" "1-chloro-3,5-di(propan-2-yl)benzene" "benzene,1-chloro-3,5-bis(1-methylethyl)-" "1-chloro-3,5-diisopropylbenzene;5-chloro-1,3-diisopropylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -103720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     519.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=126500.0
-    phase     gas;
 }

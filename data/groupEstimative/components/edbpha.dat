@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group CH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH_phenol; count 2; } { group COOH; count 2; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(2-hydroxyphenyl)-2-[2-[[1-(2-hydroxyphenyl)-2-oxidanyl-2-oxidanylidene-ethyl]amino]ethylamino]ethanoic acid" "eddha" "edhpa" "ethylenediamine-n,n'-bis((2-hydroxyphenyl)acetic acid)" "ethylenediamine-di(2-hydroxyphenyl)acetic acid" "ethylenediamine-di(o-hydroxyphenyl)acetic acid" "n,n'-ethylenebis(2-(o-hydroxyphenyl)glycine)" "ethylenediamine-n,n'-bis(2-hydroxyphenylacetic acid)" "glycine, n,n'-ethylenebis(2-(o-hydroxyphenyl)-" "benzeneacetic acid, alpha,alpha'-(1,2-ethanediylimino)bis(2-hydroxy-" "2,2'-(ethane-1,2-diylbis(azanediyl))bis(2-(2-hydroxyphenyl)acetic acid)" "benzeneacetic acid, alpha,alpha'-(1,2-ethanediyldiimino)bis(2-hydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -900570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     865.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-497660.0
-    phase     gas;
 }

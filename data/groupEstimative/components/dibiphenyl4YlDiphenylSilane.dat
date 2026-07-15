@@ -38,9 +38,8 @@ groups
     joback ( { group dCH_ring; count 28; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "diphenyl-bis(4-phenylphenyl)silane" "bis(p-biphenyl)diphenylsilane" "1,1'-biphenyl, 4,4''-(diphenylsilylene)bis-" "silane, bis((1,1'-biphenyl)-4-yl)diphenyl-" "silane, bis([1,1'-biphenyl]-4-yl)diphenyl-" "silane, bis(4-biphenylyl)diphenyl-" "bis((1,1'-biphenyl)-4-yl)diphenylsilane" "silane, bis(4-biphenylyl)diphenyl- (8ci)" "1,1'-biphenyl,4,4''-(diphenylsilylene)bis-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   498250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1033.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=802680.0
-    phase     gas;
 }

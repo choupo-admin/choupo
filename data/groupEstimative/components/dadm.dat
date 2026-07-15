@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 2; } { group dCH2; count 2; } { group dC; count 2; } { group OH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexa-1,5-diene-2,3,4,5-tetrol" "1,2:5,6-dianhydromannitol" "1,2:5,6-diepoxy-d-mannitol" "1,2:5,6-dianhydro-d-mannitol" "1:2:5:6-dianhydro-d-mannitol" "mannitol, 1,2:5,6-dianhydro-, d-" "1,6-dideoxyhexa-1,5-dienitol" "d-mannitol, 1,2:5,6-dianhydro- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -555370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     556.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-393940.0
-    phase     gas;
 }

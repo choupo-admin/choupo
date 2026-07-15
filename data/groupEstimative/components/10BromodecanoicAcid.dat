@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 9; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10-bromanyldecanoic acid" "10-bromo-decanoic acid" ".omega.-bromodecanoic acid" "ghl.pd_mitscher_leg0.481" "q574" "capricacid, i-bromo- (4ci);10-bromodecanoicacid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -573670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     649.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-296270.0
-    phase     gas;
 }

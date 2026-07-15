@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 9; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "10-ethoxy-10-oxidanylidene-decanoic acid" "sebacic acid, monoethyl ester" "10-ethoxy-10-oxodecanoic acid" "decanedioic acid, monoethyl ester" "ethyl hydrogen sebacate" "decanedioic acid, 1-ethyl ester" "9-(ethoxycarbonyl)nonanoic acid" "decanedioic acid,1-methyl ester" "10-ethoxy-10-keto-capric acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -958560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     727.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-604120.0
-    phase     gas;
 }

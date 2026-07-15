@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 5; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-chloranylpentylbenzene" "(5-chloropentyl)benzene" "1-chloro-5-phenylpentane" "5-chloropentylbenzene" "benzene,(5-chloropentyl)-" "5-phenylpentylchloride" "benzene, (5-chloropentyl)-" "5-phenylpentyl chloride" "(5-chloropentyl)benzene;1-chloro-5-phenylpentane;5-phenyl-1-chloropentane;5-phenylpentyl chloride;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -49580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     511.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=142220.0
-    phase     gas;
 }

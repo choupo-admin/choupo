@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 16; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tetrapentyl silicate" "tetrapentyloxysilane" "silicic acid, tetrapentyl ester" "silicic acid (h4sio4), tetrapentyl ester" "pentyl silicate" "amyl silicate" "tetraamyl silicate" "amyl silicate ((c5h11o)4si)" "tetrapentyl orthosilicate" "pentyl silicate ((c5h11o)4si)" "tetraamyl silicate ((c5h11o)4si)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1096630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1106.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-407240.0
-    phase     gas;
 }

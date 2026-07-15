@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 42; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-tetratetracontane" "ai3-36493" "tetratetracontane, analytical standard" "ntetratetracontane" "NSC102262" "HY-W540905" "AS-81740" "NS00043167" "tetratetracontane; nsc 102262; n-tetratetracontane" "Q20890372" "1208b570-4cb6-48fd-9f3f-67129c995357" "C44" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -951490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1869.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=319600.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 1; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chloromethyl 4-chloranylnonanoate" "4-chlorononanoic acid, chloromethyl ester" "nonanoic acid, 4-chloro-, chloromethyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -603770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     654.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-303350.0
-    phase     gas;
 }

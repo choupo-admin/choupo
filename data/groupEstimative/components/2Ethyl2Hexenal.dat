@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH; count 1; } { group dC; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethylhex-2-enal" "2-ethyl-2-hexen-1-al" "2-ethyl-3-propylacrolein" "2-hexenal, 2-ethyl-" "3-formylhept-3-ene" "ckb 1364" "α-ethyl-2-hexenal" "α-ethyl-β-propylacrolein" "2-ethyl-2-hex-enal" "CHEMBL3181995" "SB85342" "SY051350" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -186600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11370.0
-    phase     gas;
 }

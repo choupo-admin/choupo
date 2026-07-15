@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH2; count 2; } { group dCH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-bis(prop-2-enyl)phenol" "phenol, 2,6-diallyl-" "2,6-diallyl-phenol" "phenol, 2,6-diallyl-," "2,6-diallyl phenol" "phenol, 2,6-di-2-propenyl-" "phenol, 2,6-di-2-propenyl- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   7600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     528.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=174000.0
-    phase     gas;
 }

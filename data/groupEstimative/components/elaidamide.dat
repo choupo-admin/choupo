@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadec-9-enamide" "9-octadecenamide" "cis-9-octadecenamide" "sleepamide" "18:1 amide" "octadec-9-enamide;" "cis -9,10-octadecenoamide" "oda" "9-octadecenamide,(z)-;oleamide (6ci,8ci);(z)-9-octadecenamide;9-cis-oleamide;alflow 10e;alflow e 10;amide o;armoslip cp;armoslip cp-p;atmer sa 1758fd;oleamide (oleic acid amide);oleamide;atmer sa 1759fd;crodamide or;crodamide vrx;denon sl 1;diamid m 309;diamid o;diamid o 200;fatty amide o-n;finawax o;kemamide o;kemamide u;kemamide vo;neutron p;oleic acid amide;pp 5926;slip-eze;unislip 1757;unislip 1758;unislip 1759;unislip4407;cis-9-10-octadecenoamide;cis-stearyl amido-9-ene;oleic acidamide;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -376420.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     928.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=118430.0
-    phase     gas;
 }

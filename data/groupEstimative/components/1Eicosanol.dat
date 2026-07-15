@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 19; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "icosan-1-ol" "arachidyl alcohol" "n-eicosanol" "arachidic alcohol" "arachic alcohol" "eicosyl alcohol" "eicosan-1-ol" "n-1-eicosanol" "icosanol" "eicosanol" "1-icosanol" "pri-n-eicosyl alcohol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -608360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     985.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-19300.0
-    phase     gas;
 }

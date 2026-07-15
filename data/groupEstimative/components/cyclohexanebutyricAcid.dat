@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 3; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-cyclohexylbutanoic acid" "4-cyclohexylbutyric acid" "cyclohexanebutanoic acid" "4-cyclohexanebutyric acid" "cyclohexane-butyric acid" "cyclohexanebutyric acid (8ci)" "uvzmngnfervgrc-uhfffaoysa-" "2218-80-6 (copper salt)" "3906-55-6 (nickel salt)" "38582-17-1 (cobalt salt)" "38582-18-2 (zinc salt)" "62637-99-4 (lead salt)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -545680.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     568.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-286140.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-1-phenyl-propan-1-one" "3-chloro-1-phenylpropan-1-one" "1-propanone, 3-chloro-1-phenyl-" "3-chloropropanophenone" ".beta.-chloropropiophenone" "3-chloro-1-phenyl-propan-1-one" "2-chloroethyl phenyl ketone" "3-chloro-1-phenyl-1-propanone" "beta-chloropropiophenone" "propiophenone, 3-chloro-" ".omega.-chloropropiophenone" ".beta.-chloroethyl phenyl ketone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -120880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     460.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3540.0
-    phase     gas;
 }

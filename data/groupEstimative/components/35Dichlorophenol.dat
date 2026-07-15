@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,5-bis(chloranyl)phenol" "phenol, 3,5-dichloro-" "3,5-dichloro-phenol" "3,5 dichlorophenol" "1,3-dichloro-5-hydroxybenzene" "3,5-dichlorphenol (3,5-dcp)" "3,5-dichlorophenol;3,5-dichloro-pheno;2,4-dichlorobenzoic acid pestanal;3,5 dichlorophenol pestanal, 250 mg;3,5-dichlorophenol, 1000mg, neat;3,5-dichlorophenol,98+%;phenol, 3,5-dichloro-;3,5-dichlorophenol typically 99%" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -150900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     370.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76060.0
-    phase     gas;
 }

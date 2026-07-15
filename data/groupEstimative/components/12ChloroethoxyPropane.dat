@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 4; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(2-chloroethyloxy)propane" "2-propoxyethyl chloride" "2-chloroethyl propyl ether" "propane, 1-(2-chloroethoxy)-" "2-chloroethyl-n-propylether" "s768" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -294490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     395.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-125710.0
-    phase     gas;
 }

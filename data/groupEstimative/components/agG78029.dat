@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group dCH2; count 1; } { group dCH; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "heptadeca-1,8,11,14-tetraene" "(z,z,z)-heptadeca-1,8,11,14-tetraene" "1,8,11,14-heptadecatetraene,(8z,11z,14z)-" "(8e,11e,14e)-heptadeca-1,8,11,14-tetraene;" "1,8,11,14-heptadecatetraene,(z,z,z)-; aplotaxene (6ci,7ci); (z,z,z)-1,8,11,14-heptadecatetraene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   82880.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     793.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=420760.0
-    phase     gas;
 }

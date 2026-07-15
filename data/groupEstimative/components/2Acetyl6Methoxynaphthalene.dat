@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(6-methoxynaphthalen-2-yl)ethanone" "1-(6-methoxy-2-naphthyl)ethanone" "6'-methoxy-2'-acetonaphthone" "6-methoxy-2-acetylnaphthalene" "6-methoxy-2-acetonaphthalene" "2-acetyl-6-methoxy naphthalene" "1-(6-methoxy-2-naphthyl)ethan-1-one" "1-(6-methoxynaphth-2-yl)ethan-1-one" "1-(6-methoxy-naphthalen-2-yl)-ethanone" "q059" "ethanone, 1-(6-methoxy-2-naphthalenyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -151790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     472.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=24460.0
-    phase     gas;
 }

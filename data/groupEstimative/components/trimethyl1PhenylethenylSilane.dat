@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "silane,trimethyl(1-phenylethenyl)-" "silane, trimethyl(1-phenylethenyl)-" "benzene,[1-(trimethylsilyl)ethenyl]-" "silane,trimethyl(1-phenylethenyl)- (9ci); silane, trimethyl(1-phenylvinyl)-(6ci,7ci,8ci); 1-phenyl-1-(trimethylsilyl)ethene; 1-phenyl-1-(trimethylsilyl)ethylene;trimethyl(1-phenylethenyl)silane; trimethyl(1-phenylvinyl)silane; a-(trimethylsilyl)styrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -29820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     595.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=128680.0
-    phase     gas;
 }

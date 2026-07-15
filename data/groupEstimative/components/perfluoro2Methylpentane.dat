@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 6; } { group F; count 14; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,3,4,5,5,5-undecakis(fluoranyl)-4-(trifluoromethyl)pentane" "tetradecafluoro-2-methylpentane" "perfluoroisohexane" "perfluoro-2-methylpentane" "1,1,1,2,2,3,3,4,5,5,5-undecafluoro-4-(trifluoromethyl)pentane" "pentane, 1,1,1,2,2,3,3,4,5,5,5-undecafluoro-4-(trifluoromethyl)-" "perfluoroiso-hexane" "tetradecafluoro-2-methyl pentane" "perfluoro-2 methylpentane; perfluoroisohexane" "pentane,1,1,1,2,2,3,3,4,5,5,5-undecafluoro-4-(trifluoromethyl)-" "pentane,undecafluoro-2-(trifluoromethyl)- (6ci,7ci,8ci);1,1,1,2,2,3,3,4,5,5,5-undecafluoro-4-(trifluoromethyl)pentane;2-(trifluoromethyl)perfluoropentane; perfluoro(2-methylpentane);tetradecafluoro-2-methylpentane; undecafluoro-2-(trifluoromethyl)pentane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2965210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     600.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2710660.0
-    phase     gas;
 }

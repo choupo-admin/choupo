@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 21; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-tricosane" "tricosan" "ai3-35917" "docosane, methyl-" "CH3-[CH2]21-ch3" "tricosane, analytical standard" "CH3-(CH2)21-CH3" "NSC78487" "tricosane; nsc 78487; n-tricosane" "HY-W130307" "AS-56122" "DB-054568" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -518050.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1051.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=142780.0
-    phase     gas;
 }

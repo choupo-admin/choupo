@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3-bis(bromanyl)-3-phenyl-propanoic acid" "2,3-dibromo-3-phenylpropionic acid" "alpha,beta-dibromohydrocinnamic acid" ".alpha.,.beta.-dibromohydrocinnamic acid" "2,3-dibromohydrocinnamic acid" "alpha,beta-dibromobenzenepropanoic acid" "propionic acid, 2,3-dibromo-3-phenyl-" "hydrocinnamic acid, alpha,beta-dibromo-" "a b-dibromohydrocinnamic acid" "a,b-dibromohydrocinnamic acid" "a,a-dibromohydrocinnamic acid" "hydrocinnamic acid,.beta.-dibromo-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -300730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     536.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-182840.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3,3,5-trimethylcyclohexyl) 2-methylprop-2-enoate" "3,3,5-trimethylcyclohexyl 2-methylprop-2-enoate" "3,3,5-trimethylcyclohexyl methacrylate, mixture of isomers" "2-propenoic acid, 2-methyl-, 3,3,5-trimethylcyclohexyl ester" "2-propenoic acid,2-methyl-, 3,3,5-trimethylcyclohexyl ester" "methacrylicacid, 3,3,5-trimethylcyclohexyl ester (8ci); 3,3,5-trimethylcyclohexylmethacrylate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -484410.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     659.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-168960.0
-    phase     gas;
 }

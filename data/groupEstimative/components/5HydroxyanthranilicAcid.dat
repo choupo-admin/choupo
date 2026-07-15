@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-5-oxidanyl-benzoic acid" "2-amino-5-hydroxybenzoic acid" "5-hydroxyanthranillicacid" "2-amino-5-hydroxy benzoic acid" "benzoic acid, 2-amino-5-hydroxy-" "diabeton" "4-amino-3-carboxyphenol" "2-carboxy-4-hydroxyaniline" "anthranilicacid, 5-hydroxy- (8ci);2-amino-5-hydroxybenzoic acid;benzoic acid, 2-amino-5-hydroxy-;diabeton;glyklaside;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -456540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     447.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-321240.0
-    phase     gas;
 }

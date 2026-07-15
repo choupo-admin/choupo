@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 5; } { group F; count 11; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2,3,3,4,4,5,5-undecakis(fluoranyl)-5-iodanyl-pentane" "perfluoropentyl iodide" "undecafluoropentyl iodide" "1,1,1,2,2,3,3,4,4,5,5-undecafluoro-5-iodopentane" "pentane, 1,1,1,2,2,3,3,4,4,5,5-undecafluoro-5-iodo-" "perfluoropentyliodide" "pentane, undecafluoro-5-iodo-" "1,1,1,2,2,3,3,4,4,5,5-undecafluoro-5-iodo" "pentane,1,1,1,2,2,3,3,4,4,5,5-undecafluoro-5-iodo-" "pentane,undecafluoro-1-iodo- (6ci,7ci,8ci); 1-iodoperfluoropentane;iodoundecafluoropentane; perfluoroamyl iodide; perfluoropentyliodide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2270620.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     560.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2079370.0
-    phase     gas;
 }

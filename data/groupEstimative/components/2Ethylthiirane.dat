@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "thiirane, 2-ethyl-" "butane,1,2-epithio- (7ci,8ci); thiirane, ethyl- (9ci); 1,2-epithiobutane;2-ethylthiirane; ethylthiirane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -7830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     271.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83410.0
-    phase     gas;
 }

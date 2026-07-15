@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-ethylpentan-3-ol" "3-ethyl-3-pentanol" "3-pentanol, 3-ethyl-" "triethylmethanol" "3-aethyl-pentanol-(3) [german]" "triethylmethyl alcohol" "3-ethyl-pentan-3-ol" "3-aethyl-pentanol-(3)" "3-ethyl-3-hydroxypentane" "1,1-diethyl-1-propanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -348790.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     440.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-125920.0
-    phase     gas;
 }

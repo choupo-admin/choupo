@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "oct-1-yne" "hexylacetylene" "(hex-1-yl)acetylene" "1-octine(3ci);hexylacetylene;n-hexylacetylene;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   83450.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     437.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=239550.0
-    phase     gas;
 }

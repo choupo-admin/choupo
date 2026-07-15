@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 1; } { group O; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-azanyl-5-chloranyl-n-[2-(ethylamino)ethyl]-2-methoxy-benzamide" "4-amino-5-chloro-n-(2-(ethylamino)ethyl)-o-anisamide" "4-amino-5-chloro-n-(2-ethylaminoethyl)-2-methoxybenzamide" "benzamide, 4-amino-5-chloro-n-(2-(ethylamino)ethyl)-2-methoxy-" "o-anisamide, 4-amino-5-chloro-n-(2-(ethylamino)ethyl)-" "4-amino-5-chloro-n-[2-(ethylamino)ethyl]-o-anisamide" "deetilmetoclopramide" "monodeethylated-mcp" "mdmcp" "deetilato metoclopramide" "n-desethyl metoclopramide" "n-(ethylaminoethyl)-2-methoxy-4-amino-5-chlorobenzamide" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -208700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     702.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=133060.0
-    phase     gas;
 }

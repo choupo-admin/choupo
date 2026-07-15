@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 8; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-heptoxyethanol" "2-(heptyloxy)ethanol" "ethylene glycol monoheptyl ether" "2-heptyloxyethan-1-ol" "2-(heptyloxy)ethanol;ethylene glycol mono-n-heptyl ether; ethylene glycol monoheptyl ether; heptylcellosolve" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -513540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     568.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-216920.0
-    phase     gas;
 }

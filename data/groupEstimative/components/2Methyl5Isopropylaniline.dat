@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methyl-5-propan-2-yl-aniline" "p-cymen-2-amine" "o-toluidine, 5-isopropyl-" "5-isopropyl-2-methylaniline" "2-methyl-5-propan-2-ylaniline" "5-isopropyl-o-toluidine" "carvacrylamine" "2-cymidine" "2-amino-p-cymene" "p-cymene, 2-amino-" "aniline, 5-isopropyl-2-methyl-" "ykwalwngexparq-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -7630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     468.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=190480.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-methylcyclopent-2-en-1-one" "2-methylcyclopent-2-enone" "2-methyl-2-cyclopenten-1-one" "2-methyl-2-cyclopentenone" "cyclopentenone, methyl-" "2-cyclopenten-1-one, methyl-" "2-methyl-cyclopent-2-en-1-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -177740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     259.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-58360.0
-    phase     gas;
 }

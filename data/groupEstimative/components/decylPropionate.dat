@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "decyl propanoate" "propanoic acid, decyl ester" "n-decyl propanoate" "propionic acid, decyl ester" "propanoic acid, decylester" "propionic acid, decyl ester (8ci)" "we(10:0/3:0)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -628930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     713.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-251790.0
-    phase     gas;
 }

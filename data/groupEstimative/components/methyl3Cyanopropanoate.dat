@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group COO; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-cyanopropionate" "propanoic acid, 3-cyano-, methyl ester" "3-cyanopropanoic acid methyl ester" "3-cyanopropionic acid methyl ester" "propionic acid, 3-cyano-, methyl ester" "3-cyanopropionic acid, methyl ester" "methyl .beta.-cyanopropionate" "bpskurpokfslhj-uhfffaoysa-" "propanoic acid,3-cyano-, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -298930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     408.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-185970.0
-    phase     gas;
 }

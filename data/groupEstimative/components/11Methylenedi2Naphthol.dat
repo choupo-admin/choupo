@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 8; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[(2-oxidanylnaphthalen-1-yl)methyl]naphthalen-2-ol" "1,1'-methylenedi-2-naphthol" "squoxin" "2-naphthalenol, 1,1'-methylenebis-" "1,1'-methylenebis(2-naphthol)" "1,1'-methylenebis(naphthalen-2-ol)" "2-naphthol, 1,1'-methylenedi-" "2-naphthalenol,1'-methylenebis-" "1-[(2-hydroxynaphthyl)methyl]naphthalen-2-ol" "1,1'-methylene-di(2-naphthol)" "bis(2-hydroxy-1-naphthyl)methane" "2-naphthol, 1,1'-methylene-di-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     583.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=235560.0
-    phase     gas;
 }

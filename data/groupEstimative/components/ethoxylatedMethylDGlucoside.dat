@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 17; } { group CH_ring; count 5; } { group OH; count 4; } { group O; count 9; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[[(2r,3r,4s,5r)-3,4,5-tris[2-(2-hydroxyethyloxy)ethoxy]-6-methoxy-oxan-2-yl]methoxy]ethoxy]ethanol" "2-[2-[[(2r,3r,4s,5r)-3,4,5-tris[2-(2-hydroxyethoxy)ethoxy]-6-methoxyoxan-2-yl]methoxy]ethoxy]ethanol" "poly(oxy-1,2-ethanediyl), alpha-hydro-omega-hydroxy-, ether with methyl d-glucopyranoside (4:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2475990.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1105.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1442010.0
-    phase     gas;
 }

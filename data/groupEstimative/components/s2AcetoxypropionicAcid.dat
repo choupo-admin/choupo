@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-2-acetyloxypropanoic acid" "(s)-2-acetoxypropanoic acid" "(-)-o-acetyl-l-lactic aicd" "(-)-o-acetyl-l-lactic acid" "(s)-(-)-2-acetoxypropionicacid" "o-acetyl-l-lactic acid" "(s)-a-2-acetoxypropionic acid" "(s)-alpha-acetoxypropionic acid" "(s)-(-)-2-acetoxy propionic acid" "(s)-(-)-2-acetoxypropionic acid," "propanoic acid,2-(acetyloxy)-, (2s)-" "lacticacid, acetate, l- (8ci);propanoic acid, 2-(acetyloxy)-, (s)-;(+)-lactic acidacetate;(+)-a-acetoxypropionicacid;(2s)-2-(acetyloxy)propanoic acid;(2s)-2-acetoxypropanoic acid;(s)-(+)-2-acetoxypropanoic acid;(s)-(+)-2-acetoxypropionic acid;(s)-(-)-2-acetoxypropanoic acid;(s)-2-acetoxypropanoic acid;(s)-2-acetoxypropionic acid;(s)-o-acetyllactic acid;2(s)-acetoxypropionicacid;l-(+)-o-acetylactic acid;l-lactic acid acetate;o-acetyl-(s)-lacticacid;a-(acetyloxy)-l-propionic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -819360.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     445.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-665500.0
-    phase     gas;
 }

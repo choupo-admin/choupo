@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 13; } { group OH; count 1; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butyl 3-[(3-butoxy-3-oxidanylidene-propyl)-(3-oxidanylpropyl)amino]propanoate" "butyl 3-(2-butoxycarbonylethyl-(3-hydroxypropyl)amino)propanoate" "dibutyl 3,3'-[(3-hydroxypropyl)imino]dipropanoate(non-preferred name)" "beta-alanine, n-(3-butoxy-3-oxopropyl)-n-(3-hydroxypropyl)-, butyl ester" "butyl 3-[(3-butoxy-3-oxopropyl)-(3-hydroxypropyl)amino]propanoate" ".beta.-alanine, n-(3-butoxy-3-oxopropyl)-n-(3-hydroxypropyl)-, butyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1113470.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     987.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-554520.0
-    phase     gas;
 }

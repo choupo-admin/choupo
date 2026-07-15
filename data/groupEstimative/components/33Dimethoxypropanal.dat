@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group O; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-dimethoxypropionaldehyde" "malonal, 3,3-dimethyl acetal" "propanal,3,3-dimethoxy-" "malonaldehyde,dimethyl acetal (6ci); malonaldehyde, mono(dimethyl acetal) (8ci);propionaldehyde, 3,3-dimethoxy- (8ci); 3,3-dimethoxypropanal;3,3-dimethoxypropionaldehyde; b,b-dimethoxypropionaldehyde" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -501830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     382.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-320740.0
-    phase     gas;
 }

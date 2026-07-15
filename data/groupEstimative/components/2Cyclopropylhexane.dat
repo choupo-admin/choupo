@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexan-2-ylcyclopropane" "1-methylpentyl cyclopropane" "(1-methylpentyl)cyclopropane" "cyclopropane,(1-methylpentyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -161570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     406.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83210.0
-    phase     gas;
 }

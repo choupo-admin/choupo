@@ -38,9 +38,8 @@ groups
     joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-phenylmethoxybenzaldehyde" "4-(benzyloxy)benzaldehyde" "benzaldehyde, 4-(phenylmethoxy)-" "p-(benzyloxy)benzaldehyde" "benzaldehyde, p-(benzyloxy)-" "4-benzyloxy-benzaldehyde" "4-(phenylmethoxy)benzaldehyde" "p-benzyloxy benzaldeyhde" "4-(benzyloxy)-benzaldehyde" "4-(benzyl-oxy)benzaldehyde" "benzaldehyde, p-(benzyloxy)- (8ci)" "l649" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   73530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     574.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=221150.0
-    phase     gas;
 }

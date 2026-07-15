@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 2-[2,4-bis(chloranyl)phenoxy]propanoate" "2,4-dp methyl ester" "dichlorprop-methyl ester" "methyl 2-(2,4-dichlorophenoxy)propionate" "dichlorprop methyl ester" "dichlorprop-methyl" "dichlorprop, methyl ester" "dichlorprop-methyl [iso]" "methyl (1)-2-(2,4-dichlorophenoxy)propionate" "propanoic acid, 2-(2,4-dichlorophenoxy)-, methyl ester" "propanoic acid, 2-(2',4'-dichlorophenoxy)-, methyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -522400.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     546.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-315200.0
-    phase     gas;
 }

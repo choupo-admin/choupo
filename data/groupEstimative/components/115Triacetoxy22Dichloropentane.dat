@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group Cl; count 2; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "[5,5-diacetyloxy-4,4-bis(chloranyl)pentyl] ethanoate" "(5,5-diacetyloxy-4,4-dichloropentyl) acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1267720.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     756.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-912830.0
-    phase     gas;
 }

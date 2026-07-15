@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "propan-2-yloxybenzene" "benzene, 1-methylethoxy-" "benzene, (1-methylethoxy)-" "4-isopropoxy-benzene" "isopropoxy-benzene" "1-isopropoxybenzene" "isopropyl phenyl ether" "(propan-2-yloxy)benzene" "benzene,(1-methylethoxy)-" "ether,isopropyl phenyl (6ci,7ci,8ci);2-phenoxypropane;isopropoxybenzene;isopropyl phenyl ether;phenyl isopropyl ether;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -130060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     401.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=29870.0
-    phase     gas;
 }

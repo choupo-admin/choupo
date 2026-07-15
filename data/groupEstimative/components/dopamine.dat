@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(2-azanylethyl)benzene-1,2-diol" "hydroxytyramin" "oxytyramine" "dopamin" "intropin" "3-hydroxytyramine" "4-(2-aminoethyl)benzene-1,2-diol" "hydroxytyramine" "3,4-dihydroxyphenethylamine" "dopaminum" "dophamine" "1,2-benzenediol, 4-(2-aminoethyl)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -292750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     465.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-113900.0
-    phase     gas;
 }

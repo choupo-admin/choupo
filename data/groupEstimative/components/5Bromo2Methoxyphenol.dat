@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-bromanyl-2-methoxy-phenol" "4-bromo-2-hydroxyanisole" "5-bromo-2-methoxy-phenol" "phenol, 5-bromo-2-methoxy-," "phenol, 5-bromo-2-methoxy-" "5-bromo-2-methoxyphenol," "n947" "2-methoxy-5-bromophenol;3-hydroxy-4-methoxybromobenzene;phenol,5-bromo-2-methoxy-;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -245950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     404.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134460.0
-    phase     gas;
 }

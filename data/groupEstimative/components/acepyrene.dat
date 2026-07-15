@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 10; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "cyclopenta[cd]pyrene" "acepyrylene" "cyclopenta(c,d)pyrene" "cyclopenta(cd)pyrene" "cyclopenteno(c,d)pyrene" "acepyrene;acepyrylene; cyclopenta[c,d]pyrene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   460630.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     291.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=599280.0
-    phase     gas;
 }

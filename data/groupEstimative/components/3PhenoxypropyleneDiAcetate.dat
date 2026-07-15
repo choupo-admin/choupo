@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2-acetyloxy-3-phenoxy-propyl) ethanoate" "glycerol phenyl ether diacetate" "3-phenoxy-1,2-propanediol diacetate" "1-phenyl ether-2,3-diacetate glycerol" "phenylglyceryl ether diacetate" "3-phenoxypropane-1,2-diyl diacetate" "1,2-propanediol, 3-phenoxy-, diacetate" "1, 3-phenoxy-, diacetate" "(2-acetyloxy-3-phenoxypropyl) acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -847180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     660.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-557190.0
-    phase     gas;
 }

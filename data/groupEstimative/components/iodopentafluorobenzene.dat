@@ -33,9 +33,8 @@ groups
     joback ( { group dC_ring; count 6; } { group F; count 5; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5-pentakis(fluoranyl)-6-iodanyl-benzene" "pentafluoroiodobenzene" "benzene, pentafluoroiodo-" "1,2,3,4,5-pentafluoro-6-iodobenzene" "ibf" "pentafluorophenyl iodide" "1,3,4,5,6-pentafluoro-2-iodobenzene" "i113" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -891670.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     466.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-852030.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-chloranylethenylbenzene" "benzene, (2-chloroethenyl)-" "omega-chlorostyrene" "2-chloroethenylbenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   129560.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     388.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=197180.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,6-bis(oxidanyl)benzoic acid" "gamma-resorcylic acid" "2-carboxyresorcinol" "2,6-resorcylic acid" "6-hydroxysalicylic acid" "benzoic acid, 2,6-dihydroxy-" ".gamma.-resorcylic acid" "gamma-resorcylsaeure" "a-resorcylic acid" "2,6-dihydroxybenzoesaeure" "2,6-dihydroxylbenzoicacid" "benzoic acid,6-dihydroxy-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -656170.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     428.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-532680.0
-    phase     gas;
 }

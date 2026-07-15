@@ -33,9 +33,8 @@ groups
     joback ( { group CH_ring; count 4; } { group dCH_ring; count 2; } { group OH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "conduritol b" "conduritol d" "conduritol" "conduritol-e" "(1r,2s,3s,4r)-cyclohex-5-ene-1,2,3,4-tetrol" "5-cyclohexene-1,2,3,4-tetrol, (1r,2r,3r,4r)-" "agn-pc-00fs29" "(1r,2r,3s,4s)-rel-5-cyclohexene-1,2,3,4-tetrol" "5-(1alpha,2beta,3beta,4alpha)-1,2,3,4-cyclohexenetetrol" "5-(1.alpha.,2.beta.,3.beta.,4.alpha.,)-1,2,3,4-cyclohexenetetrol" "5-cyclohexene-1,2,3,4-tetrol,(1a,2b,3a,4b)-(?a'a a'a currency)-;5-cyclohexene-1,2,3,4-tetrol,trans-1,2,cis-1,3,trans-1,4-(?a'a a'a currency)- (8ci);5-cyclohexene-1,2,3,4-tetrol, (1a,2b,3a,4b)-;conduritol b;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -725010.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     398.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-516360.0
-    phase     gas;
 }

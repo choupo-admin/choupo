@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 5; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "5-[3,5-di(butan-2-yl)cyclopenten-1-yl]-2,3,5-tris(oxidanyl)pentanoic acid" "indoleacetic acids" "5-(3,5-dibutan-2-yl-1-cyclopentenyl)-2,3,5-trihydroxy-pentanoic acid" "5-[3,5-di(butan-2-yl)cyclopenten-1-yl]-2,3,5-trihydroxypentanoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1161760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     878.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-616720.0
-    phase     gas;
 }

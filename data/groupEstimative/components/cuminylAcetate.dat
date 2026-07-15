@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4-propan-2-ylphenyl)methyl ethanoate" "4-isopropylbenzyl acetate" "benzenemethanol, 4-(1-methylethyl)-, acetate" "p-isopropylbenzyl acetate" "4-(1-methylethyl)benzenemethanol acetate" "benzenemethanol, 4-(1-methylethyl)-, 1-acetate" "(4-propan-2-ylphenyl)methyl acetate" "benzenemethanol,4-(1-methylethyl)-, 1-acetate" "benzenemethanol,4-(1-methylethyl)-, acetate (9ci); 4-isopropylbenzyl acetate; cuminyl acetate;p-cymen-7-ol acetate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -388510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     552.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-159870.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "triethoxy(phenyl)silane" "triethoxyphenylsilane" "silane, triethoxyphenyl-" "benzeneorthosiliconic acid, triethyl ester" "silane, phenyltriethoxy-" "benzene, (triethoxysilyl)-" "triethoxyfenylsilan" "triethoxy-phenylsilane" "phenyl triethoxysilane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -562760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     677.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-257190.0
-    phase     gas;
 }

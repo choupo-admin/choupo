@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH; count 2; } { group CH2_ring; count 3; } { group C_ring; count 2; } { group OH; count 2; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r,3r)-2,3-bis(oxidanyl)butanedioic acid;1,2,2,6,6-pentamethylpiperidine" "sinapleg" "synapleg" "pempidine bitartrate" "pempidine hydrogen tartrate" "1,2,2,6,6-pentamethylpiperidine tartrate" "1,2,2,6,6-pentamethylpiperidine d-tartrate" "piperidine, 1,2,2,6,6-pentamethyl-, tartrate (1:1)" "pempidina tartrato" "c10h21n.c4h6o6" "(2r,3r)-2,3-dihydroxybutanedioic acid; 1,2,2,6,6-pentamethylpiperidine" "piperidine, 1,2,2,6,6-pentamethyl-, (r-(r*,r*))-2,3-dihydroxybutanedioate (1:1)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1321320.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1060.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-875460.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 13; } { group CH; count 2; } { group dCH; count 2; } { group OH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(e,2s,3r)-2-azanyloctadec-4-ene-1,3-diol" "4-sphingenine" "d-erythro-sphingosine" "d-sphingosine" "sphing-4-enine" "cerebroside" "sphingenine" "sphingoid" "trans-d-erythro-2-amino-4-octadecene-1,3-diol" "erythrosphingosine" "(4e)-sphingenine" "4-trans-sphingenine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -578860.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     984.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-31170.0
-    phase     gas;
 }

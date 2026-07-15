@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 8; } { group dC_ring; count 4; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzo[g][1]benzothiole" "naphtho[1,2-b]thiophene" "naphtho(1,2-b)thiophene" "1-thia-1h-benz[e]indene;6,7-benzothionaphthene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   309830.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     360.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=388240.0
-    phase     gas;
 }

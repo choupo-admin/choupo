@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 8; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(8r,9s,10r,13s,14s,17r)-17-ethanoyl-10,13-dimethyl-17-oxidanyl-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-3-one" "17alpha-hydroxyprogesterone" "17-hydroxyprogesterone" "prodix" "prodox" "gestageno gador" "setaderm" "oxiprogesteronum" "17alpha-hydroxy-4-pregnene-3,20-dione" "17-hydroxypregn-4-ene-3,20-dione" "gestageno" "17a-hydroxyprogesterone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -567530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     791.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-91450.0
-    phase     gas;
 }

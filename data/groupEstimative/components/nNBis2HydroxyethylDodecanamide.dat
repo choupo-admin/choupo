@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 14; } { group OH; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "lauric diethanolamide" "standamidd ld" "lauryl diethanolamide" "rolamid cd" "dodecanamide, n,n-bis(2-hydroxyethyl)-" "condensate pl" "lankrostat jp" "comperlan ld" "incromide lr" "mackamide ll" "standamid ld" "alkamide le" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -723080.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     923.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-207940.0
-    phase     gas;
 }

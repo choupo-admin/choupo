@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-chloranyl-4-methyl-benzoic acid" "3-chloro-p-toluic acid" "p-toluic acid, 3-chloro-" "benzoic acid, 3-chloro-4-methyl-" "3-chloro-4-methyl benzoic acid" "3-chloro-4-toluic acid" "3-chloro-4-methyl-benzoic acid" "benzoicacid, 3-chloro-4-methyl-" "p-toluicacid, 3-chloro- (6ci,7ci,8ci);3-chloro-4-methylbenzoic acid;3-chloro-p-toluicacid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -360870.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     435.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-246210.0
-    phase     gas;
 }

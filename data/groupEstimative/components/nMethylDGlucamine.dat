@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 4; } { group OH; count 5; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r,3r,4r,5s)-6-(methylamino)hexane-1,2,3,4,5-pentol" "meglumine" "n-methylglucamine" "meglumin" "1-deoxy-1-methylaminosorbitol" "megluminum" "methylglucamin" "meglumina" "n-methyl-d(-)-glucamine" "1-deoxy-1-(methylamino)-d-glucitol" "glucantime" "n-methylsorbitylamine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -916610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     685.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-596410.0
-    phase     gas;
 }

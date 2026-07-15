@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group I; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-iodanyl-5-methyl-benzoic acid" "5-methyl-2-iodobenzoic acid" "3-carboxy-4-iodotoluene" "2-iodo-5-methyl-benzoic acid" "5-methyl-2-iodobenzoic acid;" "ingwgcdyajkxkp-uhfffaoysa-" "buttpark 144\07-19" "52548-14-8 2-iodo-5-methylbenzoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -268260.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     457.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-176160.0
-    phase     gas;
 }

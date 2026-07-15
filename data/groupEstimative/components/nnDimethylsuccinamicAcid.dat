@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group CdO; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-(dimethylamino)-4-oxidanylidene-butanoic acid" "4-(dimethylamino)-4-oxobutanoic acid" "butanoic acid, 4-(dimethylamino)-4-oxo-" "n,n-dimethylsuccinic acid monoamide" "n,n-dimethylsuccinamic acid" "succinamic acid,n-dimethyl-" "succinamic acid, n,n-dimethyl-" "3-(dimethylcarbamoyl)propanoic acid" "3-(n,n-dimethylcarbamoyl)propanoic acid" "n,n-dimethylsuccinamic acid, 98%" "4-(dimethylamino)-4-oxobutanoic acid;n,n-dimethylsuccinamidic acid;nn-dimethylsuccinamic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -562490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     485.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-362410.0
-    phase     gas;
 }

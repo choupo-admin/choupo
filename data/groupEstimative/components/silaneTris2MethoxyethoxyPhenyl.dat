@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 6; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "tris(2-methoxyethoxy)-phenyl-silane" "phenyltris(methoxyethoxy)silane" "2,5,7,10-tetraoxa-6-silaundecane, 6-(2-methoxyethoxy)-6-phenyl-" "6-(2-methoxyethoxy)-6-phenyl-2,5,7,10-tetraoxa-6-silaundecane" "tris(2-methoxyethoxy)-phenylsilane" "silane, tris(2-methoxyethoxy)phenyl- (8ci)" "2,7,10-tetraoxa-6-silaundecane, 6-(2-methoxyethoxy)-6-phenyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1021340.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     827.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-546930.0
-    phase     gas;
 }

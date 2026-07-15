@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 4; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-butenoic acid, 2-methyl-, pentyl ester, (2z)-" "ent 33334;n-amyl tiglate; n-pentyl tiglate" "2-butenoic acid,2-methyl-, pentyl ester, (2z)-" "2-butenoic acid,2-methyl-, pentyl ester, (e)- (9ci)" "2-butenoicacid, 2-methyl-, pentyl ester, (z)-; crotonic acid, 2-methyl-, pentyl ester,(z)- (8ci); amyl angelate; n-amyl angelate; n-pentyl angelate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -459580.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     586.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-205380.0
-    phase     gas;
 }

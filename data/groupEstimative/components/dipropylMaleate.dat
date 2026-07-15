@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "dipropyl but-2-enedioate" "2-butenedioic acid (2e)-, dipropyl ester" "2-butenedioic acid (2z)-, dipropyl ester" "2-butenedioic acid (2e)-, 1,4-dipropyl ester" "2-butenedioic acid (2z)-, 1,4-dipropyl ester" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -767070.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     641.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-507200.0
-    phase     gas;
 }

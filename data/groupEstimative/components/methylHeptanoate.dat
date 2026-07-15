@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "heptanoic acid, methyl ester" "heptanoic acid methyl ester" "methyl heptoate" "methyl heptylate" "methyl n-heptylate" "methyl oenanthylate" "methyl heptylate (natural)" "enanthic acid methyl ester" "agn-pc-00gt7d" "u098" "6aa46ce6-9176-493d-9a85-b7b2dda47cce" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -525730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     518.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-293890.0
-    phase     gas;
 }

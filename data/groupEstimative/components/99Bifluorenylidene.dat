@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 16; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "9-fluoren-9-ylidenefluorene" ".delta.9,9'-bifluorene" "9h-fluorene, 9-(9h-fluoren-9-ylidene)-" "bifluorenylidene" "difluorenylidene" "bisfluorenylidene" "tetrabenzfulvalene" "dibiphenyleneethene" "diphenyleneethylene" "dibiphenyleneethylene" "9,9'-difluorenylidene" "1,2-bis(biphenylene)ethylene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   566030.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     493.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=775180.0
-    phase     gas;
 }

@@ -30,9 +30,8 @@ groups
     joback ( { group dCH2; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methanethiol" "sulfanylmethyl" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   41330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     256.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=34660.0
-    phase     gas;
 }

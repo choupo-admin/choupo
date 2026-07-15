@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-dimethoxyethanamine" "2,2-dimethoxyethylamine" "ethanamine, 2,2-dimethoxy-" "dimethylaminoacetal" "amino acetaldehyde dimethyl acetal" "ethanamine,2-dimethoxy-" "2,2-dimethoxyethan-1-amine" "1-amino-2,2-dimethoxyethane" "i402" "2-aminoacetaldehyde dimethyl acetal" "acetaldehyde, amino-, dimethyl acetal (8ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -361820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     376.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-163190.0
-    phase     gas;
 }

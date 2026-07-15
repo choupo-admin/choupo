@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-adamantylmethanol" "1-(hydroxymethyl)adamantane" "adamantan-1-ylmethanol" "adamantanylmethan-1-ol" "1-hydroxymethyl-adamantane" "1-adamantane methanol" "(adamant-1-yl)methanol" "1-hydroxymethyladamantane" "ambap770-71-8" "(r)-2-(4-chlorophenyl)piperazine" "adamantane-1-methyl alcohol" "k340" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -215460.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     411.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=61870.0
-    phase     gas;
 }

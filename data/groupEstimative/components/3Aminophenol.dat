@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-azanylphenol" "m-aminophenol" "m-hydroxyaniline" "phenol, 3-amino-" "3-hydroxyaniline" "1-amino-3-hydroxybenzene" "3-amino-1-hydroxybenzene" "fouramine eg" "futramine eg" "fourrine eg" "pelagol eg" "tertral eg" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -74160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     361.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=23880.0
-    phase     gas;
 }

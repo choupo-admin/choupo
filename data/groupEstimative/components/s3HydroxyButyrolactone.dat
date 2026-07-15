@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(4S)-4-hydroxyoxolan-2-one" "(3S)-Hydroxy-γ-butyrolactone" "(4S)-Dihydro-4-hydroxy-2(3H)-furanone" "(S)-(-)-β-hydroxy-γ-butyrolactone" "(S)-3-hydroxybutyrolactone" "(S)-β-hydroxy-γ-butyrolactone" "2(3H)-Furanone, dihydro-4-hydroxy-, (4S)-" "2(3H)-Furanone, dihydro-4-hydroxy-, (S)-" "3s-hydroxy butyrolactone" "butyric acid, 3,4-dihydroxy-, γ-lactone, d-glycero-" "(S)-3-hydroxy-gamma-butyrolactone" "(S)-4-hydroxydihydrofuran-2(3h)-one" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -522600.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     323.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-403640.0
-    phase     gas;
 }

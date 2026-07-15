@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 12; } { group tC; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "octadeca-10,12-diynoic acid" "10,12-octadecadiynoicacid" "octadeca-10,12-diinsaeure" "10,12octadecadiynoic" "10a12a-18:2" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -220520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     853.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=162370.0
-    phase     gas;
 }

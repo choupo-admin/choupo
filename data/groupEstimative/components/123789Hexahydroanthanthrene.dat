@@ -33,9 +33,8 @@ groups
     joback ( { group CH2_ring; count 6; } { group dCH_ring; count 6; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,7,8,9-hexahydrodibenzo(def,mno)chrysene" "dibenzo(def,mno)chrysene, 1,2,3,7,8,9-hexahydro-" "dibenzo[def,mno]chrysene, 1,2,3,7,8,9-hexahydro-" "1,2,3,7,8,9-hexahydronaphtho[7,8,1,2,3-nopqr]tetraphene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   384330.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     444.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=640100.0
-    phase     gas;
 }

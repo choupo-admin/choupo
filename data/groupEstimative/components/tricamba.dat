@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group Cl; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,3,5-tris(chloranyl)-6-methoxy-benzoic acid" "metriben" "velsicol" "velsicol c" "banvel t" "tricamba [ansi]" "velsicol compound c" "2,3,5-trichloro-6-methoxybenzoic acid" "benzoic acid, 2,3,5-trichloro-6-methoxy-" "tricamba [ansi:iso]" "velsicol 58-cs-25" "o-anisic acid, 3,5,6-trichloro-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -547510.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     501.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-394330.0
-    phase     gas;
 }

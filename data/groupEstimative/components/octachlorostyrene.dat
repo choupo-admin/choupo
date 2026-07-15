@@ -33,9 +33,8 @@ groups
     joback ( { group dC; count 2; } { group dC_ring; count 6; } { group Cl; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,2,3,4,5-pentakis(chloranyl)-6-[1,2,2-tris(chloranyl)ethenyl]benzene" "benzene, pentachloro(trichloroethenyl)-" "styrene, octachloro-" "trichlorovinylpentachlorobenzene" "1,2,3,4,5-pentachloro-6-(trichloroethenyl)benzene" "octachlorostyrene solution" "polychlorinated styrene" "1,2,3,4,5-pentachloro-6-(trichlorovinyl)benzene" "1,2,3,4,5-pentachloro-6-(1,2,2-trichloroethenyl)benzene" "benzene,1,2,3,4,5-pentachloro-6-(1,2,2-trichloroethenyl)-" "benzene,pentachloro(trichloroethenyl)- (9ci); styrene, octachloro- (7ci,8ci); ocs;octachlorostyrene; octachlorostyrol; perchlorostyrene;trichlorovinylpentachlorobenzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -57550.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     582.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=48420.0
-    phase     gas;
 }

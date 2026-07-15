@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-5-bromanyl-benzoic acid" "5-bromoanthranilic acid" "anthranilic acid, 5-bromo-" "2-amino-5-bromo-benzoic acid" "benzoic acid, 2-amino-5-bromo-" "2-amino-5-bromobenzoicacid" "2-amino-6-bromobenzoicacid" "2-amino-5-bromo benzoic acid" "5-bromo anthranilic acid" "5-bromo-2-aminobenzoic acid" "5-bromoanthranilic acid;anthranilic acid, 5-bromo-;benzoic acid, 2-amino-5-bromo-;" "sx1" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -264370.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     465.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-161930.0
-    phase     gas;
 }

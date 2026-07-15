@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 23; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "hexacos-1-ene" "alkenes, c24-28 .alpha.-" "hexacos-1-ene;1-hexacosene;hexacosene;1-hexacosene, contains c24, c28, c30 homologs" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -454540.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1164.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=255880.0
-    phase     gas;
 }

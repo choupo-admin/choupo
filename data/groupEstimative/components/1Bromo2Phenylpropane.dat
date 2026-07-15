@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-bromanylpropan-2-ylbenzene" "(1-bromopropan-2-yl)benzene" "cumene, .beta.-bromo-" "beta-bromocumene" "benzene, (2-bromo-1-methylethyl)-" "2-phenylpropyl bromide" "benzene, [(1s)-2-bromo-1-methylethyl]-" "b-bromocumene" "1-bromopropan-2-ylbenzene" ".beta.-bromoisopropylbenzene" "b-bromo-iso-propyl benzene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   28490.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     441.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=149190.0
-    phase     gas;
 }

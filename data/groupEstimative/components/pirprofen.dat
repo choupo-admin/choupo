@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 3; } { group Cl; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[3-chloranyl-4-(2,5-dihydropyrrol-1-yl)phenyl]propanoic acid" "rengasil" "pirprofene [inn-french]" "pirprofenum [inn-latin]" "hydratropic acid, 3-chloro-4-(3-pyrrolin-1-yl)-" "3-chloro-4-(3-pyrrolin-1-yl)hydratropic acid" "2-[3-chloro-4-(2,5-dihydro-1h-pyrrol-1-yl)phenyl]propanoic acid" "pirprofene" "pirprofeno" "pirprofenum" "pirprofen[usan:ban:inn]" "pirprofen (usan/inn)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -257060.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     571.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-9450.0
-    phase     gas;
 }

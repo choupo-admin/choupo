@@ -33,9 +33,8 @@ groups
     joback ( { group dCH; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-cyclohexyloxy-4-oxidanylidene-but-2-enoic acid" "2-butenedioic acid (2z)-, monocyclohexyl ester" "4-cyclohexyloxy-4-oxobut-2-enoic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -745740.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     612.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-516290.0
-    phase     gas;
 }

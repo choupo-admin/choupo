@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1-diethoxy-2-methoxy-ethane" "1,1-diethoxy-2-methoxyethane" "ethane, 1,1-diethoxy-2-methoxy-" "methoxyacetaldehyde-diethylacetal" "pcyadpmxiilftp-uhfffaoysa-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -589750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     452.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-309380.0
-    phase     gas;
 }

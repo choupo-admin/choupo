@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 18; } { group dCH; count 2; } { group OH; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(z)-n,n-bis(2-hydroxyethyl)octadec-9-enamide" "oleic diethanolamide" "(9z)-n,n-bis(2-hydroxyethyl)octadec-9-enamide" "oleic acid diethanolamine condensate" "9-octadecenamide, n,n-bis(2-hydroxyethyl)-, (9z)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -729700.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1150.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-77200.0
-    phase     gas;
 }

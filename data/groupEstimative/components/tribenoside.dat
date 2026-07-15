@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group CH_ring; count 4; } { group dCH_ring; count 15; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 4; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(3r,4r,5r)-5-[1,2-bis(phenylmethoxy)ethyl]-2-ethoxy-4-phenylmethoxy-oxolan-3-ol" "tribenzoside" "glivenol" "glyvenal" "glyvenol" "tbgf" "tribenosidum [inn-latin]" "ethyl 3,5,6-tri-o-benzyl-d-glucofuranoside" "ethyl-3,5,6-tri-o-benzyl-d-glucofuranoside" "glucofuranoside, ethyl-3,5,6-tri-o-benzyl-, d-" "d-glucofuranoside, ethyl-3,5,6-tris-o-(phenylmethyl)-" "tribenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -751230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     824.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-101430.0
-    phase     gas;
 }

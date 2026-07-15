@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2r)-6-methylheptan-2-amine" "(r)-1,5-dimethylhexylamine" "2-heptanamine,6-methyl-, (2r)-" "2-heptanamine,6-methyl-, (r)-;(-)-1,5-dimethylhexylamine;(-)-2-amino-6-methylheptane;(-)-6-methyl-2-heptanamine;(r)-(-)-6-methyl-2-heptylamine;(r)-2-amino-6-methylheptane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -185220.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     500.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=78050.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH; count 1; } { group O; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2-dimethoxyethanal" "dimethoxyacetaldehyde" "acetaldehyde, dimethoxy-" "acetaldehyde, 2,2-dimethoxy-" "glyoxal dimethylacetal" "glyoxal dimethyl acetal" "2,2-dimethoxy-acetaldehyde" "2,2-dimethoxy acetaldehyde" "acetaldehyde,2,2-dimethoxy-" "glyoxal 1-(dimethyl acetal)" "2,2-dimethoxyacetaldehyde solution" "2,2-dimethoxyacetaldehyde(60 wt. % in h2o)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -481190.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     343.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-329160.0
-    phase     gas;
 }

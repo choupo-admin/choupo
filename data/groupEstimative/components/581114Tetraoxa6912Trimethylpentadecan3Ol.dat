@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 5; } { group CH2; count 5; } { group CH; count 4; } { group OH; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "(2s)-1-[(2s)-1-[(2s)-1-[(2s)-1-methoxypropan-2-yl]oxypropan-2-yl]oxypropan-2-yl]oxybutan-2-ol" "5,8,11,14-tetraoxapentadecan-3-ol, 6,9,12-trimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1034520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     759.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-499580.0
-    phase     gas;
 }

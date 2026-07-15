@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 8; } { group CH2_ring; count 8; } { group O_ring; count 2; } { group CdO; count 2; } { group N; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "n-butyl-n-[2-[butyl(morpholin-4-ylcarbonyl)amino]ethyl]morpholine-4-carboxamide" "theraleptique" "theraptique" "atmurin" "prontodin" "amipan t" "n,n'-ethylenebis(n-butyl-4-morpholinecarboxamide)" "n,n'-ethylenebis(n-butylmorpholine-4-carboxamide)" "4-morpholinecarboxamide, n,n'-ethylenebis(n-butyl-" "n,n'-dibutyl-n,n'-dicarboxyethylene diaminemorpholide" "n,n'-dibutyl-n,n'-dicarboxymorpholide-ethylenediamine" "n,n'-1,2-ethanediylbis(n-butyl-4-morpholinecarboxamide)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -513530.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     934.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=219080.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 17; } { group CH; count 2; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[hexadecyl(2-oxidanylpropyl)amino]propan-2-ol" "2-propanol, 1,1'-(hexadecylimino)bis-" "hexadecylbis(2-hydroxypropyl) amine" "1-[hexadecyl(2-hydroxypropyl)amino]propan-2-ol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -744900.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1111.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-33380.0
-    phase     gas;
 }

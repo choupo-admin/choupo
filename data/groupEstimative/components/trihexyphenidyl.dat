@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 10; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-cyclohexyl-1-phenyl-3-piperidin-1-yl-propan-1-ol" "benzhexol" "triphenidyl" "trihexyphenidyle" "parkinane retard" "benzhexolum" "cyclodol" "artane" "trihexifenidilo" "trihexane" "sedrena (free base)" "trihexyphenidylum" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -177910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     818.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=275440.0
-    phase     gas;
 }

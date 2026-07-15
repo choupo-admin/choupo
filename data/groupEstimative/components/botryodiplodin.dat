@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group OH; count 1; } { group O_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-(4-methyl-5-oxidanyl-oxolan-3-yl)ethanone" "cytostipin" "antibiotic psx 1" "ethanone, 1-(tetrahydro-5-hydroxy-4-methyl-3-furanyl)-" "2-hydroxy-3-methyl-4-acetyltetrahydrofuran" "2-hydroxy-3-methyl-4-acetyltetrahydrofurane" "methyltetrahydro-5-hydroxy-4-methyl-3-furyl-ketone" "1-(tetrahydro-5-hydroxy-4-methyl-3-furanyl)ethanone" "ketone, methyl tetrahydro-5-hydroxy-4-methyl-3-furyl" "botrydiplodin" "botryodipolodin" "botyrodiplodin" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -564820.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     319.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-322670.0
-    phase     gas;
 }

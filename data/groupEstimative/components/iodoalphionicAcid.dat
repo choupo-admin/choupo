@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group I; count 2; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-[3,5-bis(iodanyl)-4-oxidanyl-phenyl]-2-phenyl-propanoic acid" "biliselectan" "biliselktan" "biliognost" "bilitrast" "biselectan" "coletrast" "iodobil" "jodobil" "pheniodol" "priodax" "tenamid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -281930.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     696.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-103750.0
-    phase     gas;
 }

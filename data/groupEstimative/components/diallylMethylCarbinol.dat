@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group dCH2; count 2; } { group dCH; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "4-methylhepta-1,6-dien-4-ol" "4-methyl-1,6-heptadien-4-ol" "waxjjhzqrwwqir-uhfffaoysa-" "4-methyl-hepta-1,6-dien-4-ol" "1,6-heptadien-4-ol,4-methyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -118570.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     470.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58180.0
-    phase     gas;
 }

@@ -38,9 +38,8 @@ groups
     joback ( { group CH3; count 16; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "bis[[[dimethyl(trimethylsilyloxy)silyl]oxy-dimethylsilyl]oxy]-dimethylsilane" "1,1,1,3,3,5,5,7,7,9,9,11,11,13,13,13-hexadecamethylheptasiloxane" "heptasiloxane, 1,1,1,3,3,5,5,7,7,9,9,11,11,13,13,13-hexadecamethyl-" "heptasiloxane, hexadecamethyl-" "hexadecamethyl heptasiloxane" "heptasiloxane, hexadecamethyl" "C16H48O6Si7" "hexadecamethylheptasiloxane basic information" "ds-19609" "DB-254913" "CS-0186278" "NS00043171" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1948230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1732.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1279480.0
-    phase     gas;
 }

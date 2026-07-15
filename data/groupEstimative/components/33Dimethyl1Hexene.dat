@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3,3-dimethylhex-1-ene" "1-hexene, 3,3-dimethyl-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -91770.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107160.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group COO; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-(diethylamino)ethyl 4-azanyl-2-chloranyl-benzoate" "chloroprocain" "2-chloroprocaine" "halestyn" "piocaine" "chlor-procaine" "nesacaine" "chloroprocainum" "chlorprocaine" "chlorprocainum" "cloroprocaina" "nesacaine-ce" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -329760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     696.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=6660.0
-    phase     gas;
 }

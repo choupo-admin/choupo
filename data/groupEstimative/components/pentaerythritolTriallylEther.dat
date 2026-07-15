@@ -33,9 +33,8 @@ groups
     joback ( { group CH2; count 7; } { group C; count 1; } { group dCH2; count 3; } { group dCH; count 3; } { group OH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-prop-2-enoxy-2,2-bis(prop-2-enoxymethyl)propan-1-ol" "3-(allyloxy)-2,2-bis((allyloxy)methyl)propanol" "pentaerythritol allyl ether" "1-propanol, 3-(2-propenyloxy)-2,2-bis((2-propenyloxy)methyl)-" "1-propanol, 3-(2-propen-1-yloxy)-2,2-bis[(2-propen-1-yloxy)methyl]-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -513640.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     733.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-118460.0
-    phase     gas;
 }

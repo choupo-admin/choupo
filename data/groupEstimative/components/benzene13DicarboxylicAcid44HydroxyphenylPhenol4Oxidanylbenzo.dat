@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 16; } { group dC_ring; count 8; } { group OH_phenol; count 3; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "benzene-1,3-dicarboxylic acid; 4-hydroxybenzoic acid; 4-(4-hydroxyphenyl)phenol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1471940.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1230.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1088640.0
-    phase     gas;
 }

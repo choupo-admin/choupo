@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group tC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "methyl 3-phenylprop-2-ynoate" "2-propynoic acid, 3-phenyl-, methyl ester" "propiolic acid, 3-phenyl-, methyl ester" "phenylpropynoic acid methyl ester" "methyl phenylpropargylate" "agn-pc-03eax7" "phenylpropiolic acid methyl ester" "phenylpropargylic acid methyl ester" "3-phenyl-prop-2-ynoic acid methyl ester" "2-propynoic acid,3-phenyl-, methyl ester" "propiolicacid, phenyl-, methyl ester (6ci,7ci,8ci);3-phenyl-2-propynoic acid methylester;3-phenylpropiolic acid methyl ester;methyl 3-phenyl-2-propynoate;methyl 3-phenylpropargylate;methyl 3-phenylpropiolate;methyl3-phenylpropynoate;methyl phenylacetylenecarboxylate;methylphenylethynecarboxylate;methyl phenylpropiolate;methyl phenylpropynoate;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -58180.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     462.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=38160.0
-    phase     gas;
 }

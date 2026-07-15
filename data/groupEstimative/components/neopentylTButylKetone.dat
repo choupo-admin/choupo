@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 6; } { group CH2; count 1; } { group C; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2,2,5,5-tetramethylhexan-3-one" "2,2,5,5-tetramethyl-3-hexanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -379810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     494.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-89920.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group F; count 3; } { group OH; count 1; } { group COOH; count 1; } { group COO; count 1; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-acetyloxybenzoic acid;2-[4-[3-(trifluoromethyl)phenyl]piperazin-1-yl]ethanol" "1-piperazineethanol, 4-(3-(trifluoromethyl)phenyl)-, mono(2-(acetyloxy)benzoate) (salt)" "4-(3-(trifluoromethyl)phenyl)-1-piperazineethanol mono(2-(acetyloxy)benzoate) (salt)" "benzoic acid, 2-(acetyloxy)-, compd. with 4-(3-(trifluoromethyl)phenyl)-1-piperazineethanol" "2-acetyloxybenzoic acid; 2-[4-[3-(trifluoromethyl)phenyl]piperazin-1-yl]ethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1353730.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1111.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-859610.0
-    phase     gas;
 }

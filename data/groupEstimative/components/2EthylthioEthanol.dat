@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-ethylsulfanylethanol" "ethyl 2-hydroxyethyl sulfide" "ethanol, 2-(ethylthio)-" "ethyl thioethanol" "2-hydroxyethyl ethyl sulfide" "beta-ethylthioethanol" "ethyl 2-hydroxyethyl thioether" "2-(ethylsulfanyl)ethanol" "beta-hydroxydiethyl sulfide" "ethyl beta-hydroxyethyl sulfide" "ethylthioethanol" ".beta.-ethylthioethanol" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -236250.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     424.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-120900.0
-    phase     gas;
 }

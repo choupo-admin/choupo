@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 6; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "chromen-2-one" "2h-1-benzopyran-2-one" "cumarin" "1,2-benzopyrone" "2h-chromen-2-one" "rattex" "coumarine" "tonka bean camphor" "coumarinic anhydride" "benzo-alpha-pyrone" "cis-o-coumarinic acid lactone" "o-hydroxycinnamic acid lactone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -164230.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     340.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-72170.0
-    phase     gas;
 }

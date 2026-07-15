@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-(methylamino)propane-1,2-diol" "3-methylaminopropane-1,2-diol" "womtymdhlqtchy-uhfffaoysa-" "(2,3-dihydroxypropyl)methylamine;1-(methylamino)-2,3-propanediol;1-(n-methylamino)propane-2,3-diol;2,3-dihydroxy-n-methylpropylamine;3-(methylamino)-1,2-propanediol;methyl(2,3-dihydroxypropyl)amine;n-methyl-2,3-dihydroxy-1-propanamine;n-methyl-2,3-dihydroxypropylamine;n-methyl-n-(2,3-dihydroxypropyl)amine;n-methyl-b,g-dihydroxypropylamine;n-methylglycerylamine;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -382160.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     444.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-203890.0
-    phase     gas;
 }

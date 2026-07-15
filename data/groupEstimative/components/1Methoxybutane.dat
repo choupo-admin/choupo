@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "butyl methyl ether" "butane, 1-methoxy-" "ether, butyl methyl" "alpha-methoxybutane" "methyl butyl ether" "methyl n-butyl ether" "n-butyl methyl ether" "butylmethylether" "methylbutyl ether" "buthyl methly ester" "butane, 1-methoxy- (9ci)" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -278750.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     362.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-113780.0
-    phase     gas;
 }

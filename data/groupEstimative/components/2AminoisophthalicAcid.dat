@@ -33,9 +33,8 @@ groups
     joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanylbenzene-1,3-dicarboxylic acid" "2-aminobenzene-1,3-dicarboxylic acid" "2-aminoiophthalic acid" "2-aminoisophthalicacid" "2,6-dicarboxy aniline" "o-aminoisophthalic acid" "39622-79-2 2-aminoisophthalic acid" "2,6-dicarboxyaniline" "2-amino-isophthalic acid" "wt003" "wt379" "2-amino-1,3-benzenedicarboxylic acid" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -661610.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-511740.0
-    phase     gas;
 }

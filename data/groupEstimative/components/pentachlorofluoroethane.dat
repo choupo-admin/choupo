@@ -33,9 +33,8 @@ groups
     joback ( { group C; count 2; } { group F; count 1; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1,1,2,2-pentakis(chloranyl)-2-fluoranyl-ethane" "1,1,1,2,2-pentachloro-2-fluoroethane" "ethane, 1,1,1,2,2-pentachloro-2-fluoro-" "fluoropentachloroethane" "pentachloro fluoro ethane" "pentachloromonofluoroethane" "ethane, pentachlorofluoro-" "ethane,1,1,1,2,2-pentachloro-2-fluoro-" "ethane,pentachlorofluoro- (6ci,7ci,8ci,9ci);1,1,1,2,2-pentachloro-2-fluoroethane;cfc111;fluoropentachloroethane;freon 111;freon 112a;pentachlorofluoroethane;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -376920.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     354.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-282820.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-[3,5-bis(trifluoromethyl)phenyl]propan-1-one" "3',5'-bis(trifluoromethyl)propiophenone" "3,5-bis(trifluoromethyl)propiophenone" "1-(3,5-bis(trifluoromethyl)phenyl)propan-1-one" "1-propanone, 1-[3,5-bis(trifluoromethyl)phenyl]-" "vlrwchkosbugmb-uhfffaoysa-" "3',5'-bis(trifluoromethyl)propiophenone 98%" "1-[3,5-bis(trifluoromethyl)phenyl]-1-propanone" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1363520.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     604.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1157210.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 24; } { group OH; count 1; } { group O; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-[2-[2-(2-hydroxyethyloxy)ethoxy]ethoxy]ethyl octadecanoate" "2-(2-(2-(2-hydroxyethoxy)ethoxy)ethoxy)ethyl stearate" "octadecanoic acid, 2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl ester" "peg-4 stearate" "2-(2-(2-(2-hydroxyethoxy)ethoxy)ethoxy)ethyl octadecanoate" "2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl octadecanoate" "octadecanoic acid, 2-(2-(2-(2-hydroxyethoxy)ethoxy)ethoxy)ethyl ester" "polyethylene glycol 200 monostearate" "octadecanoic acid,2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl ester" "octadecanoic acid 2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl ester" "stearicacid, 2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl ester (8ci); tetraethyleneglycol, monostearate (8ci); awiwol as 4; tetraethylene glycolmonooctadecanoate, octadecanoate" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1446140.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1304.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-594150.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 2; } { group CdO; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-oxidanylidenepentanal" "propylglyoxal" "valeraldehyde, 2-oxo-" "a-ketopentanal" "2-ketopentanal" "alpha-ketopentanal" "pentanal, 2-oxo-" "2-oxo-pentanal" ".alpha.-ketopentanal" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -344690.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     396.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-237220.0
-    phase     gas;
 }

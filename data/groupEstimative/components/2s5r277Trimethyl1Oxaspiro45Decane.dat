@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 3; } { group CH2_ring; count 6; } { group CH_ring; count 1; } { group C_ring; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "trans-6-methylene-2,10,10-trimethyl-1-oxaspiro(4.5)decane" "(3s,5r)-3,9,9-trimethyl-4-oxaspiro[4.5]decane" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -291910.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     567.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=18450.0
-    phase     gas;
 }

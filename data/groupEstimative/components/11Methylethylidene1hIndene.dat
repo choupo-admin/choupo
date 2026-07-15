@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group dC; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1-propan-2-ylideneindene" "1h-indene,1-(1-methylethylidene)-" "1h-indene, 1-(1-methylethylidene)-" "indene,1-isopropylidene- (6ci,7ci); 1-(1-methylethylidene)-2-indene;1-isopropylideneindene; 8,8-dimethylbenzofulvene" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   151210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     393.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=288270.0
-    phase     gas;
 }

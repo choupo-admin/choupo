@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "3-hexyloxolan-2-one" "2(3h)-furanone, 3-hexyldihydro-" "3-hexyldihydro-2(3h)-furanone" "alpha-decalactone" "a-hexyl-gamma-butyrolactone" "3-hexyldihydrofuran-2(3h)-one" "ibvdlvuxsdsvqf-uhfffaoysa-" "2(3h)-furanone,3-hexyldihydro-" "octanoicacid, 2-(2-hydroxyethyl)-, g-lactone (6ci,7ci);a'a" "afa-hexyl-g-butyrolactone;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -494210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     506.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-216300.0
-    phase     gas;
 }

@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-azanyl-4-methyl-pentanoic acid" "leucine" "leucine, dl-" "2-amino-4-methylpentanoic acid" "leucine,d" "(rs)-leucine" "leucine, d-" "(+-)-leucine" "dl-2-amino-4-methylpentanoic acid" "l-(1-13c)leucine" "l-(1-14c)leucine" "(r)-leucine" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -494210.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     475.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-282700.0
-    phase     gas;
 }

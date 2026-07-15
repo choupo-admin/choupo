@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "2-phenylethyl (e)-2-methylbut-2-enoate" "phenylethyl tiglate" "phenyl ethyl tiglate" "benzylcarbinyl tiglate" "2-phenylethyl tiglate" "benzyl carbinyl tiglate" "phenethyl 2-methylcrotonate" "2-butenoic acid, 2-methyl-, 2-phenylethyl ester, (e)-" "phenylethyl-alpha-methylbutenoate" "2-phenylethyl trans-2-methylbutenoate" "2-phenylethyl trans-2,3-dimethylacrylate" "2-phenylethyl 2-methyl-2-butenoate, (e)-" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -284970.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     596.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-67710.0
-    phase     gas;
 }

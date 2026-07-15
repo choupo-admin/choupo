@@ -33,9 +33,8 @@ groups
     joback ( { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group OdCH_al; count 2; } { group COOH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "6-[1,3-bis(oxidanylidene)propan-2-yl]pyridine-2-carboxylic acid" "2-(2-carboxypyridin-6-yl)malondialdehyde" "2-(2-hydroxycarbonyl-6-pyridyl)malondialdehyde" "6-(1-formyl-2-oxoethyl)pyridine-2-carboxylic acid" "2-pyridinecarboxylicacid, 6-(1-formyl-2-oxoethyl)-" "6-(1, 3-dioxopropan-2-yl)pyridine-2-carboxylic acid;" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -497950.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     487.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-340660.0
-    phase     gas;
 }

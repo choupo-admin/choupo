@@ -33,9 +33,8 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 19; } { group OH; count 2; } { group CdO; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
 }
 aliases     ( "1,1-bis(hydroxymethyl)-3-octadecyl-urea" "urea, n,n-bis(hydroxymethyl)-n'-octadecyl-" "n,n-bis(hydroxymethyl)-n'-octadecylurea" "1,1-bis(hydroxymethyl)-3-octadecylurea" );
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -772810.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     1159.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76450.0
-    phase     gas;
 }
