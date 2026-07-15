@@ -302,9 +302,9 @@ int Stripper::solve(const DictPtr& dict,
             std::cout << "    " << std::setw(10) << thermo.comp(i).name()
                       << "   K(feed) = " << std::scientific << std::setprecision(3) << Kref[i]
                       << "   S = " << std::fixed << std::setprecision(3) << Si;
-            // pass-6 (student): the SOLVENT row printed a bare 0.0 % beside a
-            // Kremser S that would predict ~17 % -- because the 0 comes from
-            // the held-in-liquid assumption, not the formula.  Say so.
+            // The SOLVENT row's 0.0 % sits beside a Kremser S that would predict
+            // ~17 % -- the 0 comes from the held-in-liquid assumption, not the
+            // formula.  Say so.
             if (frac[i] <= 0.0 && Si > 0.0)
                 std::cout << "   stripped = 0.0 %  (solvent -- held in the"
                              " liquid by assumption, NOT by Kremser)\n";

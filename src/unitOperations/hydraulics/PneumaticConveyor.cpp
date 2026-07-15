@@ -379,8 +379,8 @@ int PneumaticConveyor::solve(const DictPtr& dict,
                           << "% of dP; re-accel MOMENTUM only -- the extra"
                              " friction in the re-accel zone is not separately"
                              " counted, so this is a mechanistic lower bound)\n";
-            // pass-10: this tail was CHAINED inside the bends conditional, so a
-            // bend-free line lost its TOTAL, P_out and accel-length caveat.
+            // The summary tail (TOTAL, P_out, accel-length caveat) prints for
+            // every line, bends or not.
             std::cout << "    --------------------------------\n"
                   << "    accel length (est) = " << std::setw(10) << std::setprecision(1) << kpis_["accelerationLength"] << "  m   (developed-flow split is indicative where this rivals L)\n"
                   << "    TOTAL dP           = " << std::setw(10) << dP << " Pa"

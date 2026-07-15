@@ -193,10 +193,10 @@ public:
     const std::string& dHcrystOrigin() const { return dHcrystOrigin_; }
 
     // ---- Electrolyte: salt dissociation map (electrolyte activity) -----------
-    // Optional `electrolyte { cation Na; anion Cl; solubility 6.144; }` block on a
-    // salt component.  cation/anion are ion NAMES into electrolyte/{ions,pairs}.dat;
-    // solubility is the measured m_sat [mol/kg].  Intrinsic salt chemistry, declared
-    // once -- the electrolyte ActivityModel (pitzer) reads it; cases re-type nothing.
+    // The salt's cation/anion are DERIVED from its `dissociatesTo` block (the old
+    // `electrolyte { cation; anion; }` input is gone); the ion names resolve in
+    // species/aqueous/ + parameters/electrolyte/pitzer/.  Intrinsic salt chemistry,
+    // declared once -- the electrolyte ActivityModel (pitzer) reads it.
     bool   hasElectrolyteSpec()  const { return hasElec_; }
     const std::string& electrolyteCation() const { return elecCation_; }
     const std::string& electrolyteAnion()  const { return elecAnion_; }

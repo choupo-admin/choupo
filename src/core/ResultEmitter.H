@@ -60,7 +60,7 @@ Output layout
 Why a hand-rolled emitter
     Keeps the C++ dependency footprint at zero (consistent with the
     rest of Choupo) and lets every byte be visible to a student
-    reading the source.  ~40 LOC.
+    reading the source.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

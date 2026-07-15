@@ -31,8 +31,7 @@ Namespace
 Description
     Generic scalar (1-D) Newton-Raphson root-finder with bracketed
     bisection fall-back.  Reused by every unit operation that has a
-    single algebraic equation to solve.  A vector Newton (for n-D)
-    will be added.
+    single algebraic equation to solve (the n-D case is NewtonND).
 \*---------------------------------------------------------------------------*/
 
 #pragma once

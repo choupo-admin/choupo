@@ -2518,9 +2518,9 @@ int Flowsheet::solve(const DictPtr& dict,
     unitProfiles_.clear();
 
     // ---- Seed the stream registry --------------------------------------
-    //  A leaf node (one unit) carries its default boundary feeds in
-    //  `streams`; a node cabled by a parent may have none (the parent
-    //  overrides them) --- so `streams` is optional.
+    //  Inlet stream state comes from the case's 0/ directory (one file per
+    //  stream); a node cabled by a parent inherits its inlets from the
+    //  parent's persisted state instead.
     std::map<std::string,StreamBounds> streamBounds;   // optional author cages
 
     // ---- Stream-state precedence (R2 dual reader, 2026-07-06) -----------
@@ -2954,7 +2954,7 @@ int Flowsheet::solve(const DictPtr& dict,
     }
 
     std::cout << "\n================  Flowsheet topology  ================\n";
-    std::cout << "Source streams declared in `streams`:\n";
+    std::cout << "Source streams (case inlets, from 0/):\n";
     for (const auto& [name, s] : streams_) printStream(s, thermo);
     if (!tears.empty())
     {
