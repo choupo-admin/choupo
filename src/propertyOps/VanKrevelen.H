@@ -40,9 +40,9 @@ License
   The per-group van der Waals volumes Vw_i are Bondi (J. Phys. Chem. 68 (1964)
   441) -- the PRIMARY source per value.  They are NOT taken from the Van
   Krevelen book table (copyright); they are derived from the UNIFAC R_k volume
-  parameters Choupo already ships (data/standards/unifac/, ChemSep Artistic-2.0,
+  parameters Choupo already ships (data/standards/parameters/UNIFAC/, ChemSep Artistic-2.0,
   Hansen 1991 -> Bondi) via the standard Abrams-Prausnitz normalisation
-  Vw = R_k * 15.17 cm^3/mol.  See data/standards/vanKrevelen/groups.dat.
+  Vw = R_k * 15.17 cm^3/mol.  See data/standards/parameters/vanKrevelen.dat.
 
   Tg, solubility parameter delta, Tm, Cp are DEFERRED (Slice 2/3): their open
   parameters are a different, correctly-attributed thing (Tg needs the Yang 2020

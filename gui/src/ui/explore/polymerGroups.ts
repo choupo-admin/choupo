@@ -11,9 +11,9 @@
   Provenance (cite the PRIMARY per value — CLAUDE.md §10):
     • VanKrevelen Vw — Bondi, J. Phys. Chem. 68 (1964) 441, derived from the
       UNIFAC R_k Choupo already ships (Vw = R_k·15.17).  See
-      data/standards/vanKrevelen/groups.dat.
+      data/standards/parameters/vanKrevelen.dat.
     • Yang2020 Yg — Yang et al., ACS Omega 5 (2020) 19655 (CC-BY 4.0), Table S3.
-      See data/standards/yang2020/groups.dat.
+      See data/standards/parameters/Yang2020.dat.
 
   Keep these in lock-step with the two .dat files (a new group is added there
   AND here together — same rule as JOBACK_GROUPS in EstimateForm.tsx).
@@ -28,7 +28,7 @@ export interface PolymerGroup {
   label?: string;   // optional human hint
 }
 
-// --- Van Krevelen DENSITY groups (data/standards/vanKrevelen/groups.dat) -----
+// --- Van Krevelen DENSITY groups (data/standards/parameters/vanKrevelen.dat) -----
 export const VAN_KREVELEN_GROUPS: PolymerGroup[] = [
   { name: "CH3",   mw: 15.035, contrib: 13.670, label: "CH3 (methyl)" },
   { name: "CH2",   mw: 14.027, contrib: 10.231, label: "CH2 (methylene)" },
@@ -40,7 +40,7 @@ export const VAN_KREVELEN_GROUPS: PolymerGroup[] = [
   { name: "CH2Cl", mw: 49.480, contrib: 22.230, label: "CH2Cl (–CH2Cl)" },
 ];
 
-// --- Yang 2020 GLASS-TRANSITION groups (data/standards/yang2020/groups.dat) --
+// --- Yang 2020 GLASS-TRANSITION groups (data/standards/parameters/Yang2020.dat) --
 // 58 groups; Yg in 10³ g·K/mol.  Negative Yg (O, S, SiCH3CH3) are legitimate
 // linker contributions, kept faithfully.
 export const YANG2020_GROUPS: PolymerGroup[] = [

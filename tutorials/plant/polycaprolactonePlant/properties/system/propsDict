@@ -27,7 +27,7 @@
        repeat unit -[O-(CH2)5-CO]- cannot be decomposed.  Running it would HARD-
        ERROR with "unknown polymer group 'O'" — the estimator refuses to invent a
        value (no silent zero).  The honest path: density needs the ester groups
-       curated into data/standards/vanKrevelen/groups.dat first.  The worked
+       curated into data/standards/parameters/vanKrevelen.dat first.  The worked
        Van Krevelen DENSITY example lives in
        tutorials/props/estimate/vanKrevelen01_polystyrene_density (a pure-
        hydrocarbon repeat unit the Slice-1 set CAN do).

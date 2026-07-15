@@ -45,7 +45,7 @@ namespace {
 // never a silent zero.
 struct VKGroup { double MW; double Vw; bool hasVw; };
 
-// Loaded ONCE from data/standards/vanKrevelen/groups.dat (resolved via
+// Loaded ONCE from data/standards/parameters/vanKrevelen.dat (resolved via
 // Database::currentRoot()).  The loader is TOLERANT of an absent `Vw` key: such
 // a group still carries its MW (so M0 is exact) but contributes no volume.
 const std::map<std::string, VKGroup>& table()
@@ -53,7 +53,7 @@ const std::map<std::string, VKGroup>& table()
     static const std::map<std::string, VKGroup> t = [] {
         namespace fs = std::filesystem;
         const fs::path p = fs::path(Database::currentRoot())
-                         / "standards" / "vanKrevelen" / "groups.dat";
+                         / "standards" / "parameters" / "vanKrevelen.dat";
         const auto d = Dictionary::fromFile(p.string());
         std::map<std::string, VKGroup> m;
         for (const auto& g : d->lookupDictList("groups"))

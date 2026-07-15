@@ -1088,7 +1088,7 @@ M0 = sum n\_i MW\_i repeat-unit molar mass Vw = sum n\_i Vw\_i van der Waals vol
 
 GLASS-BOX: the console prints every group's contribution -- you can redo the whole estimate by hand. M0 is an exact mass-balance fact (104.15 g/mol); rho carries the packing-factor uncertainty (the teaching point below).
 
-LICENCE (the honest part): the Vw group values are Bondi, J. Phys. Chem. 68 (1964) 441 -- the PRIMARY per value -- derived from the UNIFAC R\_k volume parameters Choupo already ships (Vw = R\_k x 15.17), NOT copied from the Van Krevelen book table (copyright). See data/standards/vanKrevelen/groups.dat. Slice 1 ships DENSITY only; Tg / solubility-parameter / Tm are DEFERRED (their open parameters are a separate, correctly-attributed thing).
+LICENCE (the honest part): the Vw group values are Bondi, J. Phys. Chem. 68 (1964) 441 -- the PRIMARY per value -- derived from the UNIFAC R\_k volume parameters Choupo already ships (Vw = R\_k x 15.17), NOT copied from the Van Krevelen book table (copyright). See data/standards/parameters/vanKrevelen.dat. Slice 1 ships DENSITY only; Tg / solubility-parameter / Tm are DEFERRED (their open parameters are a separate, correctly-attributed thing).
 
 THE TEACHING POINT -- the packing factor k: rho depends on k = V/Vw, the fraction of space the chains do NOT pack into. Default k = 1.60 (amorphous/glassy); crystalline packs denser (\textasciitilde{}1.43). k is YOURS: change `polymer \{ packing k; \}` and watch rho move. Atactic PS is amorphous (rho \textasciitilde{} 1.05) -- the estimate lands there; a crystalline polymer would need the smaller k. That k is visible (never hidden) is the lesson.
 

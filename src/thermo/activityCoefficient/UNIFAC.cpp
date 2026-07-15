@@ -49,7 +49,7 @@ UNIFAC::UNIFAC(const DictPtr& dict, const std::vector<std::string>& names)
     const std::size_t N = names.size();
 
     // ---- load the published R_k/Q_k + a_mn tables (same channel NRTL uses) --
-    const fs::path base = fs::path(Database::currentRoot()) / "standards" / "unifac";
+    const fs::path base = fs::path(Database::currentRoot()) / "standards" / "parameters" / "UNIFAC";
     auto gdict = Dictionary::fromFile((base / "groups.dat").string());
     auto idict = Dictionary::fromFile((base / "interactions.dat").string());
 

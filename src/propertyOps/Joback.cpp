@@ -71,7 +71,7 @@ const std::string& tableId()
 {
     static const std::string id = [] {
         namespace fs = std::filesystem;
-        const fs::path p = fs::path(Database::currentRoot()) / "standards" / "joback" / "groups.dat";
+        const fs::path p = fs::path(Database::currentRoot()) / "standards" / "parameters" / "Joback.dat";
         return Dictionary::fromFile(p.string())->lookupWordOrDefault("tableId", "");
     }();
     return id;
@@ -81,7 +81,7 @@ const std::map<std::string, Group>& table()
 {
     static const std::map<std::string, Group> t = [] {
         namespace fs = std::filesystem;
-        const fs::path p = fs::path(Database::currentRoot()) / "standards" / "joback" / "groups.dat";
+        const fs::path p = fs::path(Database::currentRoot()) / "standards" / "parameters" / "Joback.dat";
         const auto d = Dictionary::fromFile(p.string());
         std::map<std::string, Group> m;
         for (const auto& g : d->lookupDictList("groups"))

@@ -52,7 +52,7 @@ const std::map<std::string, YGroup>& table()
     static const std::map<std::string, YGroup> t = [] {
         namespace fs = std::filesystem;
         const fs::path p = fs::path(Database::currentRoot())
-                         / "standards" / "yang2020" / "groups.dat";
+                         / "standards" / "parameters" / "Yang2020.dat";
         const auto d = Dictionary::fromFile(p.string());
         std::map<std::string, YGroup> m;
         for (const auto& g : d->lookupDictList("groups"))

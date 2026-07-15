@@ -54,7 +54,7 @@ std::map<std::string, SolutionPair>& registry()
 
 void SolutionRegistry::loadFrom(const std::string& dataRoot)
 {
-    fs::path dir = fs::path(dataRoot) / "standards" / "solution";
+    fs::path dir = fs::path(dataRoot) / "standards" / "parameters" / "solution";
     if (!fs::exists(dir)) return;
 
     for (auto& e : fs::directory_iterator(dir))

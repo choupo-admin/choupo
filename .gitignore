@@ -82,10 +82,11 @@ tutorials/**/postProcessing/
 **/residuals.png
 # legacy: the prior Slice-0 layout wrote a solution/ wrapper -- keep ignoring it
 **/solution/
-# ...but data/standards/solution/ is the aqueous-solution THERMO tier (a tracked
-# data catalogue, sibling of electrolyte/), NOT an instant wrapper -- keep it.
-!data/standards/solution/
-!data/standards/solution/**
+# ...but data/standards/parameters/solution/ is the aqueous-solution THERMO tier
+# (a tracked data catalogue, sibling of the other method parameters), NOT an
+# instant-solver wrapper -- keep it.
+!data/standards/parameters/solution/
+!data/standards/parameters/solution/**
 # Solver-generated CSVs (sweep / optim / trajectory / propertyScan /
 # fit_history / parity / per-component property output) -- the filename
 # is user-defined in the dict so we match by location.  Recursive **
