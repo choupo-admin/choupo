@@ -499,13 +499,6 @@ double SpeciationSolver::daviesA(double T)
     return 0.51 * SolventProperties::debyeHuckelFactor(T);
 }
 
-double SpeciationSolver::daviesGamma(double z, double I, double A)
-{
-    if (z == 0.0 || I <= 0.0) return 1.0;   // neutral: gamma = 1 (no b*I in v1)
-    const double s = std::sqrt(I);
-    return std::pow(10.0, -A * z * z * (s / (1.0 + s) - 0.3 * I));
-}
-
 double SpeciationSolver::logK_T(double logK25, bool hasDH, double dH_Jmol, double T)
 {
     if (!hasDH || T == 298.15) return logK25;
@@ -559,7 +552,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
     // Debye-Huckel slope at T (Davies: 0.51*debyeHuckelFactor(T) -- byte-identical
     // to the old daviesA(T)).  `gammaZ(z)` (defined below, once the live ionic
     // strength I exists) returns gamma_i at the CURRENT I so every call site sees
-    // the same value the inline daviesGamma(z, I, A) gave.
+    // the same value the inline Davies formula gave.
     const double A   = activity_->evaluate(IonState{}, T).A;
     out.A = A;
 

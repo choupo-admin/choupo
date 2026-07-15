@@ -297,7 +297,6 @@ private:
         const std::set<std::string>&     tearSet,
         const std::map<std::string, ProcessStream>& streams) const;
 
-    static const char* bcWord(Bc bc);
 
     // The SECTOR a dotted unit name belongs to: the FIRST segment of a
     // multi-segment name (`CONCENTRATION.Cryst` -> `CONCENTRATION`).  A

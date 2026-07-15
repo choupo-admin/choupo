@@ -219,18 +219,6 @@ std::set<std::string> SolutionWriter::sectorsTouching(
     return sectors;
 }
 
-const char* SolutionWriter::bcWord(Bc bc)
-{
-    switch (bc)
-    {
-        case Bc::Feed:     return "fixedValue";   // Dirichlet: the DOF you OWN
-        case Bc::Product:  return "computed";     // read off the producing unit
-        case Bc::Tear:     return "tear";         // internal torn (tear true;)
-        case Bc::Interior: return "";             // no tag
-    }
-    return "";
-}
-
 // ---------------------------------------------------------------------------
 //  Render one stream as a parser-valid Choupo dict sub-block.
 //

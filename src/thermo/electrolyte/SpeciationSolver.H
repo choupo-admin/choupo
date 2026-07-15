@@ -113,14 +113,14 @@ Description
     (an entry's `masters` may reference a master ion OR a computed species,
     e.g. calcite against CO3 --- both resolve in the final activity table).
 
-    DATA: `speciation.dat` + `minerals.dat` + `ions.dat` (charges).  The
-    case-overlay resolution differs DELIBERATELY from the per-entry pairs.dat
-    merge: a mass-action network is ONE coherent model, so the nearest file
-    wins WHOLE (a case-local speciation.dat / minerals.dat ECLIPSES the
-    standard catalogue entirely, announced loudly) -- half-merged chemistry
-    through the back door is not a model.  If neither file exists the
-    loader's error says how to obtain one (the USGS PHREEQC databases are
-    public domain).
+    DATA: the curated tree (chemistry/aqueousSpeciation/, components/ solidPhases,
+    species/aqueous/ charges).  A case-local speciation.dat carries the case DELTA;
+    its `speciationMode` decides how it meets the tree: `extend` (DEFAULT) MERGES the
+    case reactions over the tree (override same-species, add new -- e.g. an organic
+    acid on top of the inorganic catalogue), `replace` ECLIPSES the tree entirely
+    (a self-contained coherent network, e.g. an HMW verification's restricted set),
+    announced loudly either way.  The USGS PHREEQC databases behind the tree are
+    public domain.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -365,7 +365,6 @@ public:
     double mineralLogK_T(const std::string& mineral, double T, bool& hasEntry) const;
 
     // Davies activity coefficient for charge z at ionic strength I and T.
-    static double daviesGamma(double z, double I, double A);
 
     // Davies A(T): 0.51 at 25 C, scaled by the water-property factor shared
     // with the Pitzer/eNRTL kernels (byte-identical at 298.15 K).
