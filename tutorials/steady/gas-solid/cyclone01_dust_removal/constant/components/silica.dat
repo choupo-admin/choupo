@@ -43,7 +43,7 @@ solid
 }
 
 // --- enriched 2026-06-07: silica IS a real solid with formation + Cp (Vitor's point) ---
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -910700;        // J/mol  alpha-quartz [CODATA Key Values, Cox-Wagman-Medvedev 1989]
     s_298     41.46;          // J/(mol*K) [CODATA Key Values]

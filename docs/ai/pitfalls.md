@@ -226,10 +226,10 @@ reports { massBalance {} }
 Then check `reports/balances/massBalance.csv`: if `closure_pct` ≠ 100%
 for a species, the reaction is at fault.
 
-### Reversible reaction without `gibbsFormation` on every species
+### Reversible reaction without `standardThermochemistry` on every species
 For `reversible true;`, the reverse rate is `k_fwd / K_eq(T)` with
 `K_eq = exp(-Σνᵢ gᵢ°(T)/RT)`.  This needs each species to carry a
-`gibbsFormation { dHf_298; s_298; phase; }` block in its.dat.  Without it,
+`standardThermochemistry { dHf_298; s_298; phase; }` block in its.dat.  Without it,
 K_eq defaults to 1 and the reverse rate is wrong (without warning).
 
 ## Membrane
@@ -268,10 +268,10 @@ The component must carry both:
 
 Sucrose and similar crystalliser-targeted components ship both.
 
-### A crystallising SALT's formation is ION-DERIVED — never add a component `gibbsFormation`
+### A crystallising SALT's formation is ION-DERIVED — never add a component `standardThermochemistry`
 If a salt crystalliser reports `Q = 0` / `dH_cryst = 0` and the log warns
-`Component 'NaCl': h_pure_ig(T) needs gibbsFormation`, the fix is **NOT** to add a
-`gibbsFormation` block to the salt's `.dat` (Claude did, in circles, on 2026-06-29
+`Component 'NaCl': h_pure_ig(T) needs standardThermochemistry`, the fix is **NOT** to add a
+`standardThermochemistry` block to the salt's `.dat` (Claude did, in circles, on 2026-06-29
 — don't repeat it).  A salt's solid formation is a DERIVATIVE:
 `Hf_solid = Σνᵢ·hfAq_i − dH_soln`, from the aqueous ions
 (`data/standards/species/aqueous/` `hfAq`) **plus** the salt's
@@ -461,13 +461,13 @@ The heat of reaction is computed on the **elements / formation datum**
 (`dH_rxn = Σ νᵢ·hᵢ(T)`, the `H_ig − dHvap` base) in **every** reactor — steady
 AND batch/dynamic.  If a reactor report shows `n/a` or a tiny ΔH for an obviously
 hot reaction, some reacting species is **missing**
-`gibbsFormation { dHf_298; s_298; phase; }` — without it the elements-datum can't
+`standardThermochemistry { dHf_298; s_298; phase; }` — without it the elements-datum can't
 be computed.  In the steady reactors the duty is then dropped (announced); in
 `batchReactor` / `dynamicCSTR` the engine falls back to an explicit `dH_rxn` key
 in the reactions dict, announced as a **dict OVERRIDE** — that key is for
 formation-data-absent toy / lumped components ONLY, and it is **ignored** by the
-steady reactors (which compute the duty from `gibbsFormation`).  Add
-`gibbsFormation` to every reacting species and the same heat of reaction flows
+steady reactors (which compute the duty from `standardThermochemistry`).  Add
+`standardThermochemistry` to every reacting species and the same heat of reaction flows
 everywhere.
 
 ## Energy wires / heat-links

@@ -86,7 +86,7 @@ python3 bin/curate/audit_chemsep_pairs.py
 
 ### Volatile (curated for VLE)
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | gibbsFormation | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `aceticAcid` | 60.052 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `Ar` | 39.948 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
@@ -123,7 +123,7 @@ python3 bin/curate/audit_chemsep_pairs.py
 
 ### Permanent gas / combustion species
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | gibbsFormation | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `C` | 12.011 | (volatile) | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CH3` | 15.0345 | (volatile) | — | ✓ | — | ✓ | — | — | — | — |   |
@@ -137,7 +137,7 @@ python3 bin/curate/audit_chemsep_pairs.py
 
 ### Soluble gas (Henry)
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | gibbsFormation | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `CH4` | 16.043 | solute | ✓ | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
 | `Cl2` | 70.906 | solute | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
@@ -149,7 +149,7 @@ python3 bin/curate/audit_chemsep_pairs.py
 
 ### Non-volatile solute
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | gibbsFormation | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `dowthermA` | 165.8 | nonvolatile | — | — | ✓ | — | — | — | — | ✓ |   |
 | `hitecSalt` | 87.4 | nonvolatile | — | — | ✓ | — | — | — | — | ✓ |   |
@@ -157,19 +157,19 @@ python3 bin/curate/audit_chemsep_pairs.py
 
 ### Crystallising solute
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | gibbsFormation | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `sucrose` | 342.297 | nonvolatile | — | — | ✓ | ✓ | ✓ | ✓ | — | ✓ |   |
 
 ### Solids-only / pseudo-component
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | gibbsFormation | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `silica` | 60.08 | nonvolatile | — | — | — | — | ✓ | — | — | — |   |
 
 ### Other
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | gibbsFormation | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `glucose` | 180.16 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `MgSO4` | 120.37 | nonvolatile | — | — | — | — | — | — | — | — | ν=2 |
@@ -217,7 +217,7 @@ Each carries ρ, F_M (Guthrie), σ_y, max T, max P.
   - `AmbroseWalton` — corresponding-states PREDICTION from `Tc`, `Pc`, `omega` ALONE (taken from the component automatically — declare them once; no extra keys). Closes the Psat gap of a Joback estimate so an estimated component is **flashable without measured data**. It is an ESTIMATE: ~3 % near Tb, degrading at low reduced T and for polar/associating species — overlay vs data before design use (see `tutorials/props/compare/compare_psat_ambrose_walton`).
 - `idealGasHeatCapacity { coefficients (a1 a2... ); }` — for H_ig, S_ig.
 - `liquidHeatCapacity { coefficients (... ); }` — for sensible H_liq.
-- `gibbsFormation { dHf_298; s_298; phase; }` — for K_eq, adiabatic flames, **the isothermal reactor duty / heat of reaction**, and elements-reference stream enthalpy. **Every reacting species in a reactor needs this block** — it is the single enthalpy base for the heat of reaction (`dH_rxn = Σ νᵢ·hᵢ(T)`); without it the heat of reaction is dropped (steady reactors, announced) or falls back to the dict `dH_rxn` override (batch/dynamic). The optional `phase` keyword (`gas` / `liquid` / `solid`) tells the solver in which phase `dHf_298` is tabulated; if omitted it defaults to `gas` (the NIST / JANAF convention). Set it explicitly for any new component, and use `solid` for crystalline non-volatiles like sucrose whose Hf cannot honestly be referenced to gas. Throws clearly at `h_formation` time if the matching Cp model is absent (gas needs `idealGasHeatCapacity`; liquid + solid need `liquidHeatCapacity`).
+- `standardThermochemistry { dHf_298; s_298; phase; }` — for K_eq, adiabatic flames, **the isothermal reactor duty / heat of reaction**, and elements-reference stream enthalpy. **Every reacting species in a reactor needs this block** — it is the single enthalpy base for the heat of reaction (`dH_rxn = Σ νᵢ·hᵢ(T)`); without it the heat of reaction is dropped (steady reactors, announced) or falls back to the dict `dH_rxn` override (batch/dynamic). The optional `phase` keyword (`gas` / `liquid` / `solid`) tells the solver in which phase `dHf_298` is tabulated; if omitted it defaults to `gas` (the NIST / JANAF convention). Set it explicitly for any new component, and use `solid` for crystalline non-volatiles like sucrose whose Hf cannot honestly be referenced to gas. Throws clearly at `h_formation` time if the matching Cp model is absent (gas needs `idealGasHeatCapacity`; liquid + solid need `liquidHeatCapacity`).
 - `diffusionVolume <Sigma_v>;` — for Fuller diffusivity.
 - `liquidViscosity { andrade {... } vogel {... } }` — model-specific.
 - `associationFactor <phi>;` — for Wilke-Chang liquid diffusivity.
@@ -287,7 +287,7 @@ liquidPure { Tb  Vliq  Cp{...}  Psat{ model AmbroseWalton; } }
 It deliberately **OMITS**:
 
 - **`formula` / `CAS`** — there is no single molecule to name;
-- **`gibbsFormation`** — a formation datum needs a stoichiometric reaction, and
+- **`standardThermochemistry`** — a formation datum needs a stoichiometric reaction, and
   a lump has none.  (So a pseudo-component **cannot** appear in a Gibbs reactor
   or carry a heat of reaction — it does **sensible** energy balances only.)
 
@@ -392,7 +392,7 @@ A common convenience lump is **air** (≈ 79 % N2 / 21 % O2 by mole).  Until a
 predefined-mixture shorthand lands, author it explicitly — list `N2` and `O2`
 in the property package's `components` and set the feed `molarComposition { N2
 0.79; O2 0.21; }`.  Both are fully curated permanent gases (criticals, Cp_ig,
-gibbsFormation), so an air feed flashes and balances energy with the standard
+standardThermochemistry), so an air feed flashes and balances energy with the standard
 catalogue alone.
 
 
@@ -426,11 +426,11 @@ cyclone, or any solid-handling case:
   drying-RATE curve are **kinetics** — `constant/dryingKinetics`, not the
   component.)
 - **Crystalline formation datum**: a solid-tabulated `solid { Hf_298; S_298; }`
-  (or legacy `gibbsFormation { ...; phase solid; }`) lets a non-volatile
+  (or legacy `standardThermochemistry { ...; phase solid; }`) lets a non-volatile
   crystalline species (sucrose, NaOH) carry its heat of formation **without** a
   gas-phase Cp it never has — the dissolved-solute enthalpy path uses
   `liquidHeatCapacity` as the sensible heat from 298 K.
 
-See `sucrose` (solubility + sorption + solid + crystalline gibbsFormation) and
+See `sucrose` (solubility + sorption + solid + crystalline standardThermochemistry) and
 `NaOH` (solid formation datum + electrolyte block) for fully-worked solid
 `.dat`s in the catalogue.

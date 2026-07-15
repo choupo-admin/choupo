@@ -24,11 +24,10 @@ HvapTb      33180;
 Vliq        1.069e-4;
 
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   50170.0;        // J/mol  -- ideal-gas reference
     s_298     320.740;         // J/(mol·K)  -- third-law absolute
-    phase     gas;            // ideal-gas Hf reference (NIST/JANAF convention)
 }
 vaporPressure
 {

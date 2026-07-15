@@ -23,11 +23,10 @@ Tb          184.67;             // K
 HvapTb      16550;              // J/mol
 Vliq        3.62e-5;            // m^3/mol
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298    82050.0;         // J/mol  -- ideal-gas reference
     s_298      219.96;          // J/(mol·K)
-    phase     gas;            // ideal-gas Hf reference (JANAF convention)
 }
 
 vaporPressure

@@ -79,11 +79,11 @@ derivatives.**  The canonical case is a salt's *solid* formation enthalpy —
 `Hf_solid = Σνᵢ·hfAq_i − dH_soln`, pinned by the aqueous ions
 (`species/aqueous/` `hfAq`) and the heat of solution (the component's
 `electrolyte { dissolutionEnthalpy }`).  Writing it a *third*, component-level
-`gibbsFormation` literal is the **arity-1 sin in its purest form**: a second
+`standardThermochemistry` literal is the **arity-1 sin in its purest form**: a second
 source of truth that drifts silently from the two primaries that determine it
 (it drifted 7 J/mol on day one).  Derive it once, at load, announced — never
 store it.  `bin/curate/check_ion_pins.py` **exits 1** if any component carrying
-`dissolutionEnthalpy` also carries a `gibbsFormation` block.  *(Contrast the
+`dissolutionEnthalpy` also carries a `standardThermochemistry` block.  *(Contrast the
 property-architecture's curation-time resolution: that is for a datum the engine
 CANNOT otherwise reach — a Joback `Tc` — never a value the engine already
 derives live.  Property-architecture answers HOW a MISSING datum is filled;
@@ -310,7 +310,7 @@ suppress.
 | Property | Value / source | Arity / Kind | Home |
 |---|---|---|---|
 | MW, role, Vliq, `solid{rho_p,k_v}` | 342.297; nonvolatile; 1590 kg/m³; k_v 0.524 | arity-1 intrinsic | `components/sucrose.dat` (kept) |
-| crystalline ΔH_f, S° | −2226.1 kJ/mol, 392.4 J/mol·K, **phase solid** | arity-1 intrinsic | `components/sucrose.dat` `gibbsFormation{}` (kept) |
+| crystalline ΔH_f, S° | −2226.1 kJ/mol, 392.4 J/mol·K, **phase solid** | arity-1 intrinsic | `components/sucrose.dat` `standardThermochemistry{}` (kept) |
 | ΔH_soln (crystal → aqueous) | +5.40 kJ/mol [Putnam & Kilday 1986] | arity-2 (solute+water) | `solution/sucrose-water.dat`; `sucrose.dat` references by name |
 | c_sat(T) solubility (kg/kg water) | existing block | strictly arity-2 SLE | **tolerated legacy** in `sucrose.dat`; comment upgraded "solvent = water, declared" |
 | sorption isotherm (this powder) | measured per sample | sample-specific arity-1 | **case** `constant/components/sucrose.dat` overlay (whole `sorption{}` block) |

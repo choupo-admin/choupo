@@ -35,11 +35,10 @@ HvapTb      23330;              // J/mol
 Vliq        2.50e-5;            // m^3/mol
 role        solute;        // soluble gas: Henry K = H(T)/P (solvent water)
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298    -45940.0;        // J/mol  -- ideal-gas reference
     s_298      192.77;          // J/(mol·K)
-    phase     gas;            // ideal-gas Hf reference (NIST/JANAF convention)
 }
 
 vaporPressure

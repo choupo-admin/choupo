@@ -55,7 +55,7 @@ standardThermochemistry
 {
     dHf_298   -635550;      // J/mol ideal-gas -- provenance: see the structured dHf_298 block below
     dGf_298   -121050;      // J/mol  ideal-gas [Joback]
-    s_298     940.809;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S; ~25 J/mol/K; biased ~R*ln(sigma) for symmetric species]
+    s_298     940.809;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S]
 }
 
 groups { unifac ( { group CH3; count 2; } { group CH2; count 13; } { group CH=CH; count 1; } { group CH2COO; count 1; } ); joback ( { group CH3; count 2; } { group CH2; count 14; } { group eCH; count 2; } { group ester; count 1; } ); }

@@ -299,10 +299,10 @@ streams.feed.F                       # a feed flow
 ```
 
 A reaction sub-dict carries its `kinetics { … }` (Arrhenius); the **heat of
-reaction is computed from the species' `gibbsFormation`** (the one enthalpy base),
+reaction is computed from the species' `standardThermochemistry`** (the one enthalpy base),
 not from the dict.  An optional `dH_rxn <J/mol>;` (negative = exothermic) is an
 **announced override**, honoured only when a reacting species lacks
-`gibbsFormation` (toy / lumped components); the steady reactors ignore it and
+`standardThermochemistry` (toy / lumped components); the steady reactors ignore it and
 cross-check it against the formation value when both are present (see
 `energy.md`).
 

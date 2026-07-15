@@ -265,9 +265,9 @@ Full dict/units/thermo-override detail + examples →
 
 The heat of reaction is **always** the elements/formation datum:
 `dH_rxn(T) = Σ νᵢ·hᵢ(T)`, where each `hᵢ` carries `ΔHf°(elements, 25 °C)` from the
-species' `gibbsFormation{}` block — in **every** reactor, steady
+species' `standardThermochemistry{}` block — in **every** reactor, steady
 (`conversionReactor` / `cstr` / `pfr` / `gibbsReactor`) AND time-dependent
-(`batchReactor` / `dynamicCSTR`).  Every reacting species needs `gibbsFormation`.
+(`batchReactor` / `dynamicCSTR`).  Every reacting species needs `standardThermochemistry`.
 The reactions-dict **`dH_rxn` key is NOT a primary input** — it is an explicit,
 announced, cross-checked **override**, honoured only when a species deliberately
 lacks formation data (toy / lumped pedagogy); when both exist the engine warns on
@@ -282,13 +282,13 @@ A dissolving / crystallising **salt's SOLID formation enthalpy is a DERIVATIVE**
 not a stored input: `Hf_solid = Σνᵢ·hfAq_i − dH_soln`, from the aqueous ions
 (`data/standards/components/true/aqueous/` `hfAq`) **plus** the heat of solution (the
 component's `electrolyte { dissolutionEnthalpy }` block, primary-cited).  It is
-**NEVER** written as a component-level `gibbsFormation` block — that is a SECOND
+**NEVER** written as a component-level `standardThermochemistry` block — that is a SECOND
 source of truth that silently drifts (the arity-1 sin; *trees never store
 derivatives*).  The crystalliser's **heat of crystallisation reads
 `dissolutionEnthalpy` directly** (single-sourced; the `dHcryst 0.0` placeholder
 is gone — a real, ion-derived duty even unfitted/mixed-solvent), and
 `bin/curate/check_ion_pins.py` **EXITS 1** if any component carrying
-`dissolutionEnthalpy` also carries `gibbsFormation`.  A **nonvolatile salt must
+`dissolutionEnthalpy` also carries `standardThermochemistry`.  A **nonvolatile salt must
 NEVER route its enthalpy through the ideal-gas reference** (`h_pure_ig` /
 `idealGasHeatCapacity`) — it takes the solid/aqueous rung.  Property-architecture
 (curation-time resolution) is for a MISSING datum; this one is present-via-
@@ -545,7 +545,7 @@ third-party databank values.  Never mix those ownership boundaries.
 * **`components/` stays PHYSICALLY FLAT — do NOT relitigate (settled 2026-06-07).**
   The loader resolves `components/<name>.dat` by EXACT NAME (`Database.cpp`,
   O(1) path concat, replicated across the tools); category (solid/fluid/family)
-  already lives INSIDE each `.dat` (`role`, `gibbsFormation.phase`), and a
+  already lives INSIDE each `.dat` (`role`, `standardThermochemistry.phase`), and a
   species can be e.g. solid AND fluid — so no single folder is its true home.
   Browsability is a VIEW problem (a generated `INDEX.md` + an optional,
   absence-tolerant `tags ( … );` field), not a storage problem, until well past

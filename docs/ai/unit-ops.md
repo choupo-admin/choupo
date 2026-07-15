@@ -143,7 +143,7 @@ lands on the one root — leaving a single function of temperature,
 `φ(T) = H_out(T) − H_in − Q_ext(T)`.  That is the textbook *heat generated vs heat
 removed* balance, and it can have **three** roots.  Choupo does not hide that: it
 **scans** the bracket, prints every steady state it finds, and reports the one nearest
-`T_guess`.  Requires `gibbsFormation` on every reacting species.  Example:
+`T_guess`.  Requires `standardThermochemistry` on every reacting species.  Example:
 `cstr04_adiabatic` (esterification, +82 K; the PFR on the same reaction reaches +83 K,
 the difference being the back-mixing the CSTR pays for) · `cstr05_multiplicity` (three
 steady states: 300.4 / 348.4 / 391.3 K — `T_guess` picks the branch; KPI `steadyStates`
@@ -170,7 +170,7 @@ The reactor marches the **total enthalpy** `H` (elements datum) beside the speci
 **recovers `T` by inverting it** — so there is **no `ΔH_rxn` source term**: on the formation
 datum the heat of reaction is already inside `H`, and an adiabatic reactor conserves it
 (`Q_kW = 0` exactly).  `T(V)` lands in the axial profile — a hot spot is something you
-*see*.  Requires `gibbsFormation` on every reacting species (a fictitious toy has no
+*see*.  Requires `standardThermochemistry` on every reacting species (a fictitious toy has no
 elements datum → refused, loudly).  Example: `pfr04_adiabatic` (esterification, +83 K).
 NOTE: `cstr`/`pfr` compute concentration on the **liquid** molar volume
 (Vliq) — a liquid-basis model.  For a GAS-phase reactor prefer
@@ -185,7 +185,7 @@ catalyst / residence time, not by equilibrium.  It keeps a **finite**
 per-pass conversion, so it is the right reactor when a **recycle** is the
 point of the flowsheet (unlike `gibbsReactor`, which runs to ~complete
 conversion for an irreversible reaction).  Isothermal; the heat of reaction is
-**computed from each species' `gibbsFormation`** (elements datum) — it reports the
+**computed from each species' `standardThermochemistry`** (elements datum) — it reports the
 resulting `dHrxn_kJ_per_mol` KPI and the duty `Q`.  A `dH_rxn` key in the reactions
 dict is **ignored** by the steady reactors; it is an announced override only for
 batch/dynamic toy components that lack formation data (see the heat-of-reaction
@@ -214,7 +214,7 @@ when you have neither rate data nor an equilibrium.  Example:
 ### `equilibriumReactor`  (alias `REquil`)
 Stoichiometric **equilibrium** reactor (the "REquil" of process simulators): you give a
 **set of reactions**, each driven to **simultaneous** chemical equilibrium via its
-`Kp(T)` (from the species' `gibbsFormation`, `K = exp(-ΔG°/RT)`) — **no kinetics, no
+`Kp(T)` (from the species' `standardThermochemistry`, `K = exp(-ΔG°/RT)`) — **no kinetics, no
 residence time**.  The R extents are a **result**: the coupled gas-phase ideal system
 `Kp_j = ∏_i (p_i/P°)^ν_ij`, `n_i = n_i0 + Σ_j ν_ij ξ_j`, is solved in log form by the
 multivariate Newton.  The reforming / shift / synthesis workhorse.  Distinct from
@@ -224,7 +224,7 @@ reached only **kinetically**, needing rate data + residence).
 ```
 operation   { T <K>; }        // isothermal (default = feed T)
 reactions   ( r1 r2 ... );    // names from constant/reactions (stoichiometry only;
-                              // NO kinetics needed -- Kp(T) comes from gibbsFormation)
+                              // NO kinetics needed -- Kp(T) comes from standardThermochemistry)
 ```
 The `reactions ( ... )` list is the **one multi-reaction grammar** across the engine
 (the `batchReactor` / `dynamicCSTR` take the same); stoichiometry lives in the reactions

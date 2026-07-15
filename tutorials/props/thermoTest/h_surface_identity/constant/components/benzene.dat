@@ -22,11 +22,10 @@ HvapTb      30720;         // J/mol latent heat at Tb
 Vliq        8.943e-5;      // m³/mol liquid molar volume at 25 °C  (= 89.43 cm³/mol)
 
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   82930.0;        // J/mol  -- ideal-gas reference
     s_298     269.310;         // J/(mol·K)  -- third-law absolute
-    phase     gas;            // ideal-gas Hf reference (JANAF convention)
 }
 vaporPressure
 {

@@ -34,7 +34,7 @@ the duty included — is forced.
 | `heater` | **Q** (the power delivered) | `T_out` |
 | `isothermalFlash` | **T, P** | **Q** (the duty to hold T) |
 | `adiabaticFlash` | **Q = 0, P** | `T` |
-| `conversionReactor` / `cstr` / `pfr` / `gibbsReactor` | conversion / kinetics / equilibrium | **Q** (heat of reaction from `gibbsFormation`, the elements datum) |
+| `conversionReactor` / `cstr` / `pfr` / `gibbsReactor` | conversion / kinetics / equilibrium | **Q** (heat of reaction from `standardThermochemistry`, the elements datum) |
 
 **A flash GIVES a Q; a heater TAKES a Q.**  A flash is fixed by exactly two
 numbers (Duhem's theorem — an equilibrium state of known composition needs two
@@ -217,11 +217,11 @@ emerge as `H_out − H_in` across a reactor).  Because of that shared zero,
 "model X and model Y disagree on `H(T,P,z)`" is a real, quantifiable number.
 
 **One enthalpy base for the heat of reaction.**  Because that datum carries each
-species' ΔHf°(elements, 25 °C) via its `gibbsFormation` block, the heat of
+species' ΔHf°(elements, 25 °C) via its `standardThermochemistry` block, the heat of
 reaction is `dH_rxn(T) = Σ νᵢ·hᵢ(T)` in **every** reactor — steady
 (`conversionReactor` / `cstr` / `pfr` / `gibbsReactor`) **and** time-dependent
 (`batchReactor` / `dynamicCSTR`).  Every reacting species therefore needs a
-`gibbsFormation` block.  The reactions-dict **`dH_rxn` key is not the primary
+`standardThermochemistry` block.  The reactions-dict **`dH_rxn` key is not the primary
 input**: it is an explicit, **announced** override, used only when a species
 deliberately lacks formation data (toy / lumped pedagogy).  When both are
 present the engine cross-checks them and warns on a mismatch; it never silently
@@ -234,7 +234,7 @@ thermally-neutral.
 `Hf_solid = Σνᵢ·hfAq_i − dH_soln`, where each `hfAq` lives in
 `data/standards/species/aqueous/` and `dH_soln` is the component's
 `electrolyte { dissolutionEnthalpy }` (primary-cited).  Writing the salt a
-component-level `gibbsFormation` block is **forbidden** — it is a second source
+component-level `standardThermochemistry` block is **forbidden** — it is a second source
 of truth that silently drifts from the ions (*trees never store derivatives*),
 and `bin/curate/check_ion_pins.py` exits 1 if it ever returns.  The crystalliser
 reads the **`dissolutionEnthalpy` straight** for the heat of crystallisation

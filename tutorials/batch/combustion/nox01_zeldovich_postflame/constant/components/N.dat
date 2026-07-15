@@ -15,11 +15,10 @@ MW             14.007;       // kg/kmol
 nonvolatile    true;
 tags           ( radical gasPhase combustion );
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298    472677.3079;            // J/mol  -- ideal-gas reference
     s_298      153.3012;           // J/(mol·K)  -- third-law absolute
-    phase     gas;            // ideal-gas Hf reference (JANAF convention)
 }
 
 idealGasHeatCapacity

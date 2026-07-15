@@ -91,7 +91,7 @@ curves on the MEASURED data (red points) so the model is chosen from evidence;
 `output { proposal auto; }` writes a glass-box `constant/components/<name>.estimate-<date>.dat`
 (active keys ready for EoS + energy **+ VLE/flash: Psat via `vaporPressure { model
 AmbroseWalton; }` and `Vliq` are now WRITTEN ACTIVE, so a Joback estimate promotes
-to a FLASHABLE component** — only `gibbsFormation.s_298` remains a commented-TODO gap,
+to a FLASHABLE component** — only `standardThermochemistry.s_298` remains a commented-TODO gap,
 since group contribution cannot give third-law absolute entropy; + the `mv` promote
 in the header).  The corresponding-states Psat/Vliq are honest ESTIMATES (degrade for
 polar/associating species) — overlay vs data before design use (tutorial
@@ -190,7 +190,7 @@ added for the Gibbs reactor), plus three synthetic-VLLE audit components
 work: **NaCl, glucose, MgSO4**.  Volatile components carry MW, Tc, Pc, ω, Tb,
 Hvap_Tb, Vliq, Antoine, idealGasHeatCapacity (polynomial), liquidHeatCapacity
 (polynomial when applicable), and **optionally** a
-`gibbsFormation { dHf_298; s_298; phase; }` block (the `phase` keyword ---
+`standardThermochemistry { dHf_298; s_298; phase; }` block (the `phase` keyword ---
 `gas` / `liquid` / `solid` --- declares in which phase `dHf_298` is tabulated
 and is mandatory for any new component; see theoryGuide §"Which rung does the
 data file pin?" and ai/thermo.md).  Non-volatile solutes carry MW +

@@ -25,11 +25,10 @@ Tb          550.0;            // illustrative [K]
 HvapTb      55000;            // illustrative [J/mol]
 Vliq        1.235e-4;         // 123.5 cm³/mol  (MW / rho, rho ~ 1.07 g/cm³)
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -660000.0;       // illustrative [J/mol], ideal-gas reference
     s_298     330.0;          // illustrative [J/(mol·K)]
-    phase     gas;
 }
 vaporPressure
 {

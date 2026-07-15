@@ -360,12 +360,12 @@ at startup, which:
 After that, the package is passed to every unit op's `solve(dict,
 thermo, verbosity)`.  Units consume only the slice they need.
 
-## Enthalpy reference state (the `phase` field in `gibbsFormation`)
+## Enthalpy reference state (the `phase` field in `standardThermochemistry`)
 
 Choupo uses the **elements-at-298.15 K / 1 bar** datum for any
 energy balance that crosses a reactor (this is the same convention as
 NIST and JANAF).  Each component's
-`gibbsFormation { dHf_298; s_298; phase; }` block carries the
+`standardThermochemistry { dHf_298; s_298; phase; }` block carries the
 formation enthalpy plus a one-word **`phase`** field declaring in
 which phase `dHf_298` is tabulated:
 

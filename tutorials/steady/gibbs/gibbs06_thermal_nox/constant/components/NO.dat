@@ -28,11 +28,10 @@ Tb          121.40;       // K
 HvapTb      13830;        // J/mol
 Vliq        2.30e-5;      // m^3/mol  (23 cm^3/mol at Tb)
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   +90250.0;           // J/mol  -- positive: endothermic formation
     s_298     210.760;            // J/(mol·K)
-    phase     gas;            // ideal-gas Hf reference (NIST/JANAF convention)
 }
 
 vaporPressure
