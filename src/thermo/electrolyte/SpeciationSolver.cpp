@@ -131,37 +131,58 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                 "a bug; fix the index/sum, do not loosen the tolerance");
     }
 
-    // The NEAREST file wins WHOLE -- deliberately NOT the per-entry pairs.dat
-    // merge: a mass-action network is one coherent model, so a case-local
-    // catalogue ECLIPSES the standard one entirely (and we say so).
+    // Speciation network -- per-file under standards/chemistry/aqueousSpeciation/.
+    // A case-local constant/electrolyte/speciation.dat carries the case DELTA and
+    // its `speciationMode` decides how it meets the tree:
+    //   extend (DEFAULT) -- case reactions MERGE over the tree (override same-species,
+    //           ADD new); the case ships only what it introduces (e.g. an organic acid
+    //           on top of the inorganic catalogue).
+    //   replace          -- the case network ECLIPSES the tree entirely (a self-
+    //           contained coherent model, e.g. the HMW verification's restricted set).
+    // The `gases` sidecar rides on the case file either way.
     {
-        // The speciation kind is now per-file under standards/chemistry/aqueousSpeciation/
-        // (the monolith electrolyte/speciation.dat is gone).  Dual leg: case-local
-        // constant/electrolyte/speciation.dat read WHOLE (overlay XOR -- a mass-action
-        // network is one coherent model, AND it carries the optional `gases` sidecar)
-        // ELSE a sorted *.dat directory listing of the per-reaction records.  The
-        // case-local leg MUST stay a whole-file read so the open-system gas pins survive.
         std::vector<DictPtr> records;
         DictPtr caseDict;   // the case-local file (holds the gases sidecar, if any)
         const fs::path cl = caseElectrolytePath("speciation.dat");
+        bool caseReplaces = false;
+        std::vector<DictPtr> caseReactions;
         if (!cl.empty())
         {
             caseDict = Dictionary::fromFile(cl.string());
-            for (const auto& e : caseDict->lookupDictList("reactions")) records.push_back(e);
+            caseReplaces =
+                (caseDict->lookupWordOrDefault("speciationMode", "extend") == "replace");
+            for (const auto& e : caseDict->lookupDictList("reactions"))
+                caseReactions.push_back(e);
         }
-        else
+        // Base = the standards tree, UNLESS the case replaces it.
+        if (cl.empty() || !caseReplaces)
         {
             const fs::path dir = fs::path(Database::currentRoot())
                                / "standards" / "chemistry" / "aqueousSpeciation";
             if (!fs::exists(dir))
-                throw std::runtime_error(
-                    "speciation: no case-local speciation.dat and no standards "
-                    "chemistry/aqueousSpeciation/" + std::string(howToObtain));
-            std::vector<fs::path> files;
-            for (const auto& f : fs::directory_iterator(dir))
-                if (f.path().extension() == ".dat") files.push_back(f.path());
-            std::sort(files.begin(), files.end());
-            for (const auto& f : files) records.push_back(Dictionary::fromFile(f.string()));
+            {
+                if (cl.empty())
+                    throw std::runtime_error(
+                        "speciation: no case-local speciation.dat and no standards "
+                        "chemistry/aqueousSpeciation/" + std::string(howToObtain));
+            }
+            else
+            {
+                std::vector<fs::path> files;
+                for (const auto& f : fs::directory_iterator(dir))
+                    if (f.path().extension() == ".dat") files.push_back(f.path());
+                std::sort(files.begin(), files.end());
+                for (const auto& f : files) records.push_back(Dictionary::fromFile(f.string()));
+            }
+        }
+        // Case reactions: replace -> they ARE the network; extend -> overlay by species
+        // name (override a tree record of the same species, else append).
+        for (const auto& e : caseReactions)
+        {
+            const std::string sp = e->lookupWord("species");
+            auto it = std::find_if(records.begin(), records.end(),
+                [&](const DictPtr& r){ return r->lookupWord("species") == sp; });
+            if (it != records.end()) *it = e; else records.push_back(e);
         }
         for (const auto& e : records)
         {
@@ -193,7 +214,7 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                 g.source  = e->lookupWordOrDefault("source", "undeclared");
                 gases_.push_back(std::move(g));
             }
-        else if (cl.empty())
+        else if (cl.empty() || !caseReplaces)
         {
             // Standards tier: gas dissolution (Henry) constants live per-file under
             // chemistry/gasLiquid/ (the monolith speciation.dat `gases` sidecar is
@@ -227,9 +248,11 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                 }
             }
         }
-        if (!cl.empty() && thermoAnnounce())   // case-local eclipses the standards tier: loud
+        if (!cl.empty() && thermoAnnounce())   // case-local meets the standards tier: loud
             std::cerr << "[overlay] speciation: case-local " << cl.string()
-                      << " ECLIPSES the standard catalogue (network taken whole, "
+                      << (caseReplaces ? " REPLACES the standard catalogue ("
+                                       : " EXTENDS the standard catalogue (+"
+                                         + std::to_string(caseReactions.size()) + " case, ")
                       << reactions_.size() << " reactions)\n";
     }
 

@@ -24,6 +24,10 @@
   file is the case's sole DELTA -- the deliberate restricted network -- not a copy.
 \*---------------------------------------------------------------------------*/
 
+// REPLACE, not extend: this restricted network ECLIPSES the standard tree so the
+// tree's sulfate/carbonate ion-pair complexes never re-enter (that is the whole point).
+speciationMode replace;
+
 reactions
 (
     { species OH; ion "OH-"; z -1; masters ( { ion H; nu -1; } ); nuWater 1;
