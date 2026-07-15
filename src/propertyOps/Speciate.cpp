@@ -276,9 +276,13 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     // `activityModel`.  Default Davies (the only S1 builtin).  Resolved + the
     // input basis VALIDATED before the analysis is read (so a bad key fails with a
     // basis error, not an obscure downstream one).
-    std::string model = dict->lookupWordOrDefault("activityModel", "davies");
+    // The op's own `activityModel` WINS -- it is an explicit override, the
+    // mechanism for a model-CONTRAST case (davies vs pitzerHMW on ONE feed).
+    // Only when the op is silent does the package's aqueousActivity govern.
+    std::string model = dict->lookupWordOrDefault("activityModel", "");
     if (pkg)
     {
+        if (model.empty())
         {
             std::string m = pkg->subDict("propertyMethods")->lookupWord("aqueousActivity");
             const auto dot = m.rfind('.');            // "electrolyte.pitzerHMW" -> "pitzerHMW"
@@ -304,6 +308,8 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
             subsetCheck("analyticalTotals", "analyticalMasters");
         }
     }
+
+    if (model.empty()) model = "davies";   // no package, no op override -> S1 default
 
     auto in = propertyOps::readAnalysis(dict);
     propertyOps::readEquilibrate(dict, in);

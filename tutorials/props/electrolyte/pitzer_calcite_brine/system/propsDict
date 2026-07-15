@@ -61,7 +61,7 @@ operations
         name        seawater_pitzer;
         type        speciate;
         activityModel pitzerHMW;
-        totals      { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
+        analyticalTotals      { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
                       K 0.01058 mol/kg; Cl 0.5658 mol/kg; SO4 0.02926 mol/kg;
                       HCO3 0.00230 mol/kg; }
         pH          8.2;                // canonical surface-ocean pH (given)
@@ -75,7 +75,7 @@ operations
         name        seawater_davies;
         type        speciate;
         activityModel davies;
-        totals      { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
+        analyticalTotals      { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
                       K 0.01058 mol/kg; Cl 0.5658 mol/kg; SO4 0.02926 mol/kg;
                       HCO3 0.00230 mol/kg; }
         pH          8.2;

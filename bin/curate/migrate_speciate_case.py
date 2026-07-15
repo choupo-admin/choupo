@@ -21,10 +21,13 @@ pd = os.path.join(case, "constant", "propertyDict")
 ps = os.path.join(case, "system", "propsDict")
 txt = open(ps).read()
 
-models = sorted(set(re.findall(r'activityModel\s+([A-Za-z]+)', txt)))
-if len(models) > 1:
-    sys.exit(f"REFUSE {case}: {len(models)} activity models {models} -- model contrast, needs op->package.")
-model = models[0] if models else "davies"
+# A comment mentioning activityModel is NOT a directive: only match `activityModel <m>;`
+models = sorted(set(re.findall(r'activityModel\s+([A-Za-z]+)\s*;', txt)))
+# CONTRAST case (>1 model): keep the per-op activityModel as explicit overrides,
+# declare the reference model in the package (pitzerHMW is the headline; davies
+# is the cautionary curve read against it).
+contrast = len(models) > 1
+model = ("pitzerHMW" if "pitzerHMW" in models else models[0]) if models else "davies"
 
 # union of ion keys across every totals{...} block
 ions = []
@@ -34,11 +37,19 @@ for blk in re.findall(r'totals\s*\{([^}]*)\}', txt):
             ions.append(m.group(1))
 
 name = os.path.basename(case).replace("-", "_") + "_pkg"
+method_note = (
+    f"the {model} activity method.  The speciate ops carry only the\n"
+    "  ANALYSIS (analyticalTotals); no per-op model."
+    if not contrast else
+    f"the reference activity method {model}.  This is a model-CONTRAST case:\n"
+    f"  the ops keep an explicit per-op `activityModel` ({' vs '.join(models)}) as a\n"
+    "  deliberate override -- the whole point is to read the rival models against\n"
+    "  each other on ONE feed."
+)
 manifest = f"""/*--------------------------------*- Choupo -*-----------------------*\\
   propertyPackage (INLINE, self-contained) -- the case's OFFICIAL dictionary.
   Multi-ion speciation SYSTEM: solvent water, the analytical basis measured in
-  ions, and the {model} activity method.  The speciate ops carry only the
-  ANALYSIS (analyticalTotals); no per-op model.  Replaces the degenerate water+ideal.
+  ions, and {method_note}  Replaces the degenerate water+ideal.
 \\*---------------------------------------------------------------------------*/
 recordType propertyPackage;
 schemaVersion 1;
@@ -60,8 +71,11 @@ propertyMethods
 """
 open(pd, "w").write(manifest)
 
-# propsDict: drop per-op activityModel; totals -> analyticalTotals
-txt = re.sub(r'\s*activityModel\s+[A-Za-z]+;', '', txt)
-txt = txt.replace("totals ", "analyticalTotals ").replace("totals{", "analyticalTotals{")
+# propsDict: SINGLE model -> drop the per-op activityModel (package governs);
+# CONTRAST -> keep it (explicit override).  Always: totals -> analyticalTotals.
+if not contrast:
+    txt = re.sub(r'[ \t]*activityModel\s+[A-Za-z]+;[ \t]*\n?', '', txt)
+txt = re.sub(r'\btotals(\s*\{)', r'analyticalTotals\1', txt)
 open(ps, "w").write(txt)
-print(f"migrated {case}: model={model}, masters=({' '.join(ions)})")
+tag = f"CONTRAST ref={model} ({'/'.join(models)})" if contrast else f"model={model}"
+print(f"migrated {case}: {tag}, masters=({' '.join(ions)})")

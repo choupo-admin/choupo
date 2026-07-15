@@ -18,21 +18,21 @@
 operations
 (
     { name acidulation_pitzer; type speciate; activityModel pitzerHMW;
-      totals { H2Tart 0.10 mol/kg; Ca 0.50 mol/kg; SO4 0.50 mol/kg; K 0.10 mol/kg; Cl 0.10 mol/kg; }
+      analyticalTotals { H2Tart 0.10 mol/kg; Ca 0.50 mol/kg; SO4 0.50 mol/kg; K 0.10 mol/kg; Cl 0.10 mol/kg; }
       pH solve; diagSpecies ( Ca SO4 H2Tart HTart Tart ); output { file acidulation_pitzer.csv; } }
 
     { name acidulation_davies; type speciate; activityModel davies;
-      totals { H2Tart 0.10 mol/kg; Ca 0.50 mol/kg; SO4 0.50 mol/kg; K 0.10 mol/kg; Cl 0.10 mol/kg; }
+      analyticalTotals { H2Tart 0.10 mol/kg; Ca 0.50 mol/kg; SO4 0.50 mol/kg; K 0.10 mol/kg; Cl 0.10 mol/kg; }
       pH solve; diagSpecies ( Ca SO4 H2Tart HTart Tart ); output { file acidulation_davies.csv; } }
 
     { name gypsum_ceiling; type speciate; activityModel pitzerHMW;
-      totals { H2Tart 0.10 mol/kg; Ca 0.50 mol/kg; SO4 0.50 mol/kg; K 0.10 mol/kg; Cl 0.10 mol/kg; }
+      analyticalTotals { H2Tart 0.10 mol/kg; Ca 0.50 mol/kg; SO4 0.50 mol/kg; K 0.10 mol/kg; Cl 0.10 mol/kg; }
       pH solve; equilibrate { minerals ( gypsum ); } diagSpecies ( Ca SO4 ); output { file gypsum_ceiling.csv; } }
 
     { name pKa2_davies; type speciate; activityModel davies;
-      totals { H2Tart 0.10 mol/kg; K 1.5 mol/kg; Cl 1.5 mol/kg; } pH 4.34;
+      analyticalTotals { H2Tart 0.10 mol/kg; K 1.5 mol/kg; Cl 1.5 mol/kg; } pH 4.34;
       diagSpecies ( H2Tart HTart Tart ); output { file pKa2_davies.csv; } }
     { name pKa2_pitzer; type speciate; activityModel pitzerHMW;
-      totals { H2Tart 0.10 mol/kg; K 1.5 mol/kg; Cl 1.5 mol/kg; } pH 4.34;
+      analyticalTotals { H2Tart 0.10 mol/kg; K 1.5 mol/kg; Cl 1.5 mol/kg; } pH 4.34;
       diagSpecies ( H2Tart HTart Tart ); output { file pKa2_pitzer.csv; } }
 );
