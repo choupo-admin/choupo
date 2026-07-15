@@ -40,8 +40,18 @@ License
   needs the per-component molar masses to make the switch.
 \*---------------------------------------------------------------------------*/
 
-import { ActionIcon, Box, Button, Group, Menu, NumberInput, Text, Tooltip } from "@mantine/core";
-import { IconAdjustments, IconCheck } from "@tabler/icons-react";
+import {
+  ActionIcon,
+  Box,
+  Chip,
+  Group,
+  Menu,
+  SegmentedControl,
+  Stack,
+  Text,
+  Tooltip,
+} from "@mantine/core";
+import { IconAdjustments } from "@tabler/icons-react";
 
 import {
   PRESETS,
@@ -51,30 +61,34 @@ import {
   type PressureUnit,
   type TemperatureUnit,
   type TimeUnit,
-  flowBasis,
 } from "../state/displayUnits.js";
 import { useStore } from "../state/store.js";
+import type { ReactNode } from "react";
+
+// One labelled row of the display sheet: dimmed label left, control fills the rest.
+function Row({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <Group gap="sm" wrap="nowrap" align="center">
+      <Text size="xs" c="dimmed" style={{ width: 44, flexShrink: 0 }}>
+        {label}
+      </Text>
+      <Box style={{ flex: 1, minWidth: 0 }}>{children}</Box>
+    </Group>
+  );
+}
 
 const PRESSURE_OPTS: PressureUnit[] = ["bar", "Pa", "kPa", "MPa", "atm", "psi"];
-const TEMP_OPTS: TemperatureUnit[] = ["K", "degC"];
-const TIME_OPTS: TimeUnit[] = ["s", "min", "h"];
-const FLOW_OPTS: FlowUnit[] = [
-  "kmol/h",
-  "kmol/s",
-  "mol/h",
-  "mol/s",
-  "kg/h",
-  "kg/s",
-  "g/h",
-  "g/s",
-];
+// Flow is split by BASIS into two short rows -- a single row of 8 units is the
+// widget that overflows.  Both rows bind the same `flow` pref.
+const MOLAR_FLOW: FlowUnit[] = ["kmol/h", "kmol/s", "mol/h", "mol/s"];
+const MASS_FLOW: FlowUnit[] = ["kg/h", "kg/s", "g/h", "g/s"];
 // Concentration (molality): mol/kg <-> mmol/kg is exact.  mg/L needs a molar
-// mass for EVERY plotted species; the plot layer has none for arbitrary
-// speciation tables, so the option stays disabled with an honest tooltip
-// (no fake numbers) until a molar-mass map reaches the plots.
-const CONC_OPTS: ConcentrationUnit[] = ["mol/kg", "mmol/kg", "mg/L"];
-const MG_L_AVAILABLE = false;
+// mass for EVERY plotted species (none for arbitrary speciation tables) -- so
+// it is omitted from the UI, not shown greyed-out, until a molar-mass map lands.
+const CONC_OPTS: ConcentrationUnit[] = ["mol/kg", "mmol/kg"];
 const SIG_OPTS = [2, 3, 4, 5, 6];
+
+const tempLabel = (u: TemperatureUnit) => (u === "degC" ? "°C" : "K");
 
 export function UnitsMenu() {
   const prefs = useStore((s) => s.displayPrefs);
@@ -91,8 +105,12 @@ export function UnitsMenu() {
     p.temperature === prefs.temperature &&
     p.flow === prefs.flow;
 
+  const activePreset =
+    Object.entries(PRESETS).find(([, p]) => presetMatches(p))?.[0] ?? "";
+  const flowIn = (g: FlowUnit[]) => (g.includes(prefs.flow) ? prefs.flow : "");
+
   return (
-    <Menu shadow="md" width={260} position="bottom-end" withinPortal>
+    <Menu shadow="md" width={380} position="bottom-end" withinPortal>
       <Menu.Target>
         <ActionIcon
           variant="subtle"
@@ -105,147 +123,104 @@ export function UnitsMenu() {
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Label>Presets</Menu.Label>
-        {Object.entries(PRESETS).map(([name, p]) => (
-          <Menu.Item
-            key={name}
-            onClick={() => applyPreset(p)}
-            rightSection={presetMatches(p) ? <IconCheck size={14} /> : null}
-          >
-            <Text size="sm" fw={500}>
-              {name}
+        <Stack gap="sm" p="xs">
+          <Row label="Preset">
+            <Chip.Group
+              value={activePreset}
+              onChange={(v) => {
+                const p = PRESETS[v as keyof typeof PRESETS];
+                if (p) applyPreset(p);
+              }}
+            >
+              <Group gap={6} wrap="wrap">
+                {Object.entries(PRESETS).map(([name, p]) => (
+                  <Tooltip
+                    key={name}
+                    label={`${p.pressure} · ${tempLabel(p.temperature)} · ${p.flow}`}
+                    withArrow
+                  >
+                    <Box>
+                      <Chip value={name} size="xs" variant="outline">
+                        {name}
+                      </Chip>
+                    </Box>
+                  </Tooltip>
+                ))}
+              </Group>
+            </Chip.Group>
+          </Row>
+
+          <Row label="Pressure">
+            <SegmentedControl
+              fullWidth
+              size="xs"
+              data={PRESSURE_OPTS}
+              value={prefs.pressure}
+              onChange={(v) => setPrefs({ pressure: v as PressureUnit })}
+            />
+          </Row>
+
+          <Group gap="sm" wrap="nowrap" align="center">
+            <Text size="xs" c="dimmed" style={{ width: 44, flexShrink: 0 }}>
+              Temp
             </Text>
+            <SegmentedControl
+              size="xs"
+              data={[
+                { label: "K", value: "K" },
+                { label: "°C", value: "degC" },
+              ]}
+              value={prefs.temperature}
+              onChange={(v) => setPrefs({ temperature: v as TemperatureUnit })}
+            />
             <Text size="xs" c="dimmed">
-              {p.pressure} · {p.temperature === "degC" ? "°C" : "K"} · {p.flow}
+              Time
             </Text>
-          </Menu.Item>
-        ))}
+            <SegmentedControl
+              size="xs"
+              data={["s", "min", "h"]}
+              value={prefs.time}
+              onChange={(v) => setPrefs({ time: v as TimeUnit })}
+            />
+          </Group>
 
-        <Menu.Divider />
-        <Menu.Label>Pressure</Menu.Label>
-        {PRESSURE_OPTS.map((u) => (
-          <Menu.Item
-            key={u}
-            onClick={() => setPrefs({ pressure: u })}
-            rightSection={u === prefs.pressure ? <IconCheck size={14} /> : null}
-          >
-            {u}
-          </Menu.Item>
-        ))}
+          <Row label="Flow">
+            <SegmentedControl
+              fullWidth
+              size="xs"
+              data={MOLAR_FLOW}
+              value={flowIn(MOLAR_FLOW)}
+              onChange={(v) => setPrefs({ flow: v as FlowUnit })}
+            />
+          </Row>
+          <Row label="">
+            <SegmentedControl
+              fullWidth
+              size="xs"
+              data={MASS_FLOW}
+              value={flowIn(MASS_FLOW)}
+              onChange={(v) => setPrefs({ flow: v as FlowUnit })}
+            />
+          </Row>
 
-        <Menu.Divider />
-        <Menu.Label>Temperature</Menu.Label>
-        {TEMP_OPTS.map((u) => (
-          <Menu.Item
-            key={u}
-            onClick={() => setPrefs({ temperature: u })}
-            rightSection={u === prefs.temperature ? <IconCheck size={14} /> : null}
-          >
-            {u === "degC" ? "°C" : "K"}
-          </Menu.Item>
-        ))}
+          <Row label="Molality">
+            <SegmentedControl
+              size="xs"
+              data={CONC_OPTS}
+              value={CONC_OPTS.includes(prefs.concentration) ? prefs.concentration : ""}
+              onChange={(v) => setPrefs({ concentration: v as ConcentrationUnit })}
+            />
+          </Row>
 
-        <Menu.Divider />
-        <Menu.Label>Time</Menu.Label>
-        {TIME_OPTS.map((u) => (
-          <Menu.Item
-            key={u}
-            onClick={() => setPrefs({ time: u })}
-            rightSection={u === prefs.time ? <IconCheck size={14} /> : null}
-          >
-            {u}
-          </Menu.Item>
-        ))}
-
-        <Menu.Divider />
-        <Menu.Label>
-          Flow ({flowBasis(prefs.flow) === "mass" ? "mass" : "molar"} basis)
-        </Menu.Label>
-        {FLOW_OPTS.map((u) => (
-          <Menu.Item
-            key={u}
-            onClick={() => setPrefs({ flow: u })}
-            rightSection={u === prefs.flow ? <IconCheck size={14} /> : null}
-          >
-            {u}
-            <Text size="xs" c="dimmed" component="span" ml={6}>
-              {flowBasis(u)}
-            </Text>
-          </Menu.Item>
-        ))}
-
-        <Menu.Divider />
-        <Menu.Label>Concentration (molality)</Menu.Label>
-        {CONC_OPTS.map((u) => {
-          if (u === "mg/L" && !MG_L_AVAILABLE) {
-            // pointer-events is off on a disabled Menu.Item, so the Tooltip
-            // hangs off a wrapping Box to keep the hover alive.
-            return (
-              <Tooltip
-                key={u}
-                label="mg/L needs a molar mass for every plotted species — not available for arbitrary speciation tables, so the converted value would be invented"
-                multiline
-                w={250}
-                withArrow
-                position="left"
-              >
-                <Box>
-                  <Menu.Item disabled>{u}</Menu.Item>
-                </Box>
-              </Tooltip>
-            );
-          }
-          return (
-            <Menu.Item
-              key={u}
-              onClick={() => setPrefs({ concentration: u })}
-              rightSection={u === prefs.concentration ? <IconCheck size={14} /> : null}
-            >
-              {u}
-            </Menu.Item>
-          );
-        })}
-
-        <Menu.Divider />
-        <Menu.Label>Significant figures</Menu.Label>
-        <Group gap={4} px="sm" py={4} wrap="nowrap">
-          {SIG_OPTS.map((n) => (
-            <Button
-              key={n}
-              size="compact-xs"
-              variant={n === prefs.sigFigs ? "filled" : "default"}
-              onClick={() => setPrefs({ sigFigs: n })}
-            >
-              {n}
-            </Button>
-          ))}
-        </Group>
-
-        <Menu.Divider />
-        <Menu.Label>Pinch grid — minor-stream cutoff</Menu.Label>
-        <Group gap={8} px="sm" py={4} align="flex-start" wrap="nowrap">
-          <NumberInput
-            value={prefs.pinchParetoPct}
-            onChange={(v) =>
-              setPrefs({
-                pinchParetoPct:
-                  typeof v === "number" ? Math.max(0, Math.min(50, v)) : 5,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
-            w={90}
-            size="xs"
-            suffix=" %"
-            aria-label="Pinch grid minor-stream cutoff (% of process duty)"
-          />
-          <Text size="xs" c="dimmed" style={{ flex: 1 }}>
-            of the total process duty — smaller streams are omitted from the
-            grid DRAWING (announced in its footer); the targets and matches
-            always count every stream.  0 % draws all.
-          </Text>
-        </Group>
+          <Row label="Sig figs">
+            <SegmentedControl
+              size="xs"
+              data={SIG_OPTS.map(String)}
+              value={String(prefs.sigFigs)}
+              onChange={(v) => setPrefs({ sigFigs: Number(v) })}
+            />
+          </Row>
+        </Stack>
       </Menu.Dropdown>
     </Menu>
   );

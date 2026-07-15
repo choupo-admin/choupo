@@ -104,17 +104,23 @@ export function synthesizeUnitClone(
   const inNames = asList(u["in"] ?? u["inputs"]);
   const outNames = asList(u["outputs"]);
 
-  // Feed conditions FROZEN from the last run; fall back to the authored
-  // stream block (a pre-run pop-out of a unit fed directly by case feeds).
+  // Feed conditions FROZEN from the last run, written as per-stream 0/ files
+  // (the legacy `streams {}` block is RETIRED -- the engine reads 0/ only).
+  // Each inlet's 0/ file OVERRIDES the parent's authored one with the run value
+  // (canonical SI: F in kmol/s, T in K, P in Pa); when there is no run stream
+  // (pre-run pop-out) we keep the parent's authored 0/<nm> untouched.
   const runStreams = (runResult?.streams ?? []) as StreamResult[];
   const findS = (nm: string) => runStreams.find((s) => s.name === nm);
-  const authored = (fs?.streams ?? {}) as Record<string, unknown>;
-  const streams: Record<string, unknown> = {};
+  const zeroFiles: Record<string, string> = {};
   for (const nm of inNames) {
     const s = findS(nm);
-    streams[nm] = s
-      ? { F: s.F, T: s.T, P: s.P, molarComposition: s.composition ?? {} }
-      : (authored[nm] ?? {});
+    if (!s) continue;
+    const comp = (s.composition ?? {}) as Record<string, number>;
+    const flows = Object.entries(comp)
+      .map(([c, x]) => `    ${c}    ${(s.F ?? 0) * x};`)
+      .join("\n");
+    zeroFiles[`0/${nm}`] =
+      `componentMolarFlows\n{\n${flows}\n}\nT    ${s.T} K;\nP    ${s.P} Pa;\n`;
   }
 
   // Resolve `$variable` operation values to their CONVERGED values from the
@@ -138,12 +144,12 @@ export function synthesizeUnitClone(
     thermoPackage: caseFiles.thermoPackage,
     flowsheet: {
       ...(caseVars ? { variables: caseVars } : {}),
-      streams,
       units: [unit],
     } as unknown as CaseFiles["flowsheet"],
   };
   if (caseFiles.reactions) files.reactions = caseFiles.reactions;
-  if (caseFiles.extraFiles) files.extraFiles = { ...caseFiles.extraFiles };
+  // Parent 0/ tree rides along; the frozen inlets override their own 0/ files.
+  files.extraFiles = { ...(caseFiles.extraFiles ?? {}), ...zeroFiles };
 
   const profile = (runResult?.profiles ?? []).find((p) => p.unit === name) ?? null;
   const inStreams = inNames.map(findS).filter(Boolean) as StreamResult[];

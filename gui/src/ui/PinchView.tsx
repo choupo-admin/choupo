@@ -38,7 +38,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState, type ComponentProps } from "react";
-import { Box, Group, NumberInput, SegmentedControl, Stack, Text, Badge } from "@mantine/core";
+import { Box, Group, NumberInput, SegmentedControl, Stack, Text, Badge, Tooltip } from "@mantine/core";
 
 import { useStore } from "../state/store.js";
 import { computePinch } from "../case/pinch.js";
@@ -49,6 +49,7 @@ export function PinchView() {
   const runResult = useStore((s) => s.runResult);
   const flowsheet = useStore((s) => s.caseFiles.flowsheet);
   const paretoPct = useStore((s) => s.displayPrefs.pinchParetoPct);
+  const setPrefs = useStore((s) => s.setDisplayPrefs);
   const [dTmin, setDTmin] = useState(10);
   const [view, setView] = useState<"composite" | "gcc" | "grid">("composite");
 
@@ -153,6 +154,16 @@ export function PinchView() {
             <NumberInput value={dTmin} onChange={(v) => setDTmin(typeof v === "number" ? v : 10)}
               min={1} max={60} step={1} w={90} size="xs" suffix=" K" />
           </Group>
+          {view === "grid" && (
+            <Group gap={6} align="center">
+              <Tooltip label="minor streams below this % of process duty are omitted from the grid drawing only — targets always count every stream" multiline w={230} withArrow>
+                <Text size="xs" c="dimmed" style={{ cursor: "help" }}>cutoff</Text>
+              </Tooltip>
+              <NumberInput value={paretoPct}
+                onChange={(v) => setPrefs({ pinchParetoPct: typeof v === "number" ? Math.max(0, Math.min(50, v)) : 5 })}
+                min={0} max={50} step={1} w={80} size="xs" suffix=" %" />
+            </Group>
+          )}
         </Group>
       </Group>
 

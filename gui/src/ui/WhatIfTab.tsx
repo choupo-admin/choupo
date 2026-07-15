@@ -95,6 +95,7 @@ import {
 import type { CaseFiles } from "../case/types.js";
 import { collectVariableKnobs } from "../case/variableKnobs.js";
 import type { JsonDict, JsonValue } from "../dict/index.js";
+import { scalarToSI } from "../dict/scalarSI.js";
 import { GridContourPlot } from "./plotting/GridContourPlot.js";
 import {
   formatFlow,
@@ -216,7 +217,10 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
         key: k,
         label: fieldTitle(k) ? `${fieldTitle(k)} (${k})` : k,
         siUnit: fieldUnit(k),
-        current: pristineOp[k] as number,
+        // Operation scalars cross to JSON as unit-carrying STRINGS ("1.01325 bar");
+        // scalarToSI turns them into the canonical SI number the knob expects, so
+        // knobDisplay / the default range don't collapse to NaN (empty From/To).
+        current: scalarToSI(pristineOp[k] as JsonValue),
       })),
     ],
     // fieldTitle/fieldUnit read the stable schema; deps are the real inputs.
@@ -245,13 +249,13 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
   const [grid, setGrid] = useState<GridData | null>(null);
 
   // A physically-sensible default sweep window, by DIMENSION (the student can
-  // still edit it): pressure ×[0.5, 2] (a factor of two), temperature ±50°,
+  // still edit it): pressure ×[0.5, 2] (a factor of two), temperature ±20°,
   // anything else ±20%.  Ranges are in DISPLAY units (what the inputs show), so
   // the factor/offset apply in the unit the student reads.
   const defaultRangeFor = (k: Knob): { from: number; to: number } => {
     const cur = knobDisplay(k);
     if (k.siUnit === "Pa") return { from: Number(formatSig(0.5 * cur)), to: Number(formatSig(2 * cur)) };
-    if (k.siUnit === "K")  return { from: Number(formatSig(cur - 50)),  to: Number(formatSig(cur + 50)) };
+    if (k.siUnit === "K")  return { from: Number(formatSig(cur - 20)),  to: Number(formatSig(cur + 20)) };
     return { from: Number(formatSig(0.8 * cur)), to: Number(formatSig(1.2 * cur)) };
   };
 
@@ -290,12 +294,21 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
   // --- KPI hero ------------------------------------------------------------
   const [lastKpis, setLastKpis] = useState<{ [k: string]: number } | null>(null);
   const kpiMap = useMemo(() => lastKpis ?? stash.kpis ?? {}, [lastKpis, stash.kpis]);
+  // Watchable OBJECTIVES only: drop what cannot respond to a knob -- the
+  // operation INPUTS themselves (numericKeys, incl. the turned knob), the solver
+  // RESIDUAL (~0 by construction), and FEED/inlet constants (inlets are frozen in
+  // the What-if, so a feed KPI never moves).  Leaves the real responses (V/F,
+  // F_liquid, F_vapor, T_drop, ...).
   const kpiOptions = useMemo(
     () =>
       Object.entries(kpiMap)
-        .filter(([k, v]) => typeof v === "number" && Number.isFinite(v) && k !== knob?.key)
+        .filter(([k, v]) =>
+          typeof v === "number" && Number.isFinite(v)
+          && !numericKeys.includes(k)
+          && !/residual/i.test(k)
+          && !/feed/i.test(k))
         .map(([k]) => ({ value: k, label: k })),
-    [kpiMap, knob],
+    [kpiMap, numericKeys],
   );
   const [kpiKey, setKpiKey] = useState<string | null>(null);
   // Drop the watched KPI if the knob choice makes it invalid (e.g. KPI == knob).
@@ -355,9 +368,16 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
       const result = await resolved.adapter.run(
         withDisplayPrefs(files, prefs), () => {}, ctl.signal);
       if (result.status !== "done") {
-        const tail = (result.log ?? "").trim().split("\n").slice(-8).join("\n");
-        setRunError(tail || "The solver reported an error (empty log).");
-        return null;
+        // A SWEEP that still produced a CSV just had SOME points fail to
+        // converge -- those are HONEST GAPS in the curve, not a hard failure.
+        // Surface the partial curve (countHoles annotates the misses); only a
+        // single-point run, or a sweep with no CSV at all, is a real error.
+        const hasCsv = !!result.csvFiles && Object.keys(result.csvFiles).length > 0;
+        if (!(kind === "sweep" && hasCsv)) {
+          const tail = (result.log ?? "").trim().split("\n").slice(-8).join("\n");
+          setRunError(tail || "The solver reported an error (empty log).");
+          return null;
+        }
       }
       return result;
     } catch (e) {
@@ -418,6 +438,19 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
   const holes = sweep ? countHoles(sweep.csv) : { holes: 0, total: 0 };
 
   const knob2 = useMemo(() => knobs.find((k) => k.id === knobId2) ?? null, [knobs, knobId2]);
+
+  // Land the default reference window AUTOMATICALLY whenever a knob becomes
+  // active (incl. an auto-selected one that never went through pickKnob) or the
+  // display units change -- otherwise the From/To boxes sit empty.  Manual edits
+  // persist until the knob or units change again.
+  useEffect(() => {
+    setRange(knob ? defaultRangeFor(knob) : { from: "", to: "" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [knobId, prefs.pressure, prefs.temperature, prefs.flow]);
+  useEffect(() => {
+    setRange2(knob2 ? defaultRangeFor(knob2) : { from: "", to: "" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [knobId2, prefs.pressure, prefs.temperature, prefs.flow]);
 
   // The two-knob grid spec: both knobs continuous (op) scalars, valid ranges;
   // ranges convert to SI (the gridSweep driver reads raw SI).

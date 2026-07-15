@@ -40,6 +40,7 @@ import { useEffect, useRef } from "react";
 import type { HandlePos, HandleSide } from "../state/layout.js";
 import type { UnitSpec } from "../case/types.js";
 import type { JsonValue } from "../dict/index.js";
+import { scalarToSI } from "../dict/scalarSI.js";
 import { UNIT_LABEL, unitIconFor } from "./unitIcons.js";
 import { operationSchemaFor, type OperationSchema } from "../case/operationSchemas.js";
 import { COLUMN_TYPES, HEAT_DUTY_TYPES, COOLING_DUTY_TYPES, PHASE_SPLIT_TYPES } from "../case/dutyTypes.js";
@@ -394,7 +395,17 @@ function summarise(op: { [k: string]: JsonValue },
       // this unit's kpis.  Before any run it stays the `$ref` placeholder.
       const resolved = v.startsWith("$") && kpis && typeof kpis[k] === "number"
         ? kpis[k] : undefined;
-      out.push({ k, v: resolved !== undefined ? fmtScalar(resolved, unitOf(k), prefs) : v });
+      if (resolved !== undefined) {
+        out.push({ k, v: fmtScalar(resolved, unitOf(k), prefs) });
+      } else {
+        // A unit-carrying authored scalar ("1.01325 bar", "380 K", "100 kmol/h")
+        // is stored as a STRING (dict/scalarSI.ts).  Turn it back into canonical
+        // SI with the blessed helper, then format it through the SAME path as
+        // numeric params so node params FOLLOW the units menu + sig figs, instead
+        // of being dumped raw at full authored precision.
+        const si = scalarToSI(v);
+        out.push({ k, v: Number.isFinite(si) ? fmtScalar(si, unitOf(k), prefs) : v });
+      }
     }
     if (out.length >= 3) break;
   }

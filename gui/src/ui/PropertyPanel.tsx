@@ -70,7 +70,7 @@ import { classifyPhase, PHASE_LABEL } from "./plotting/palette.js";
 import { findRunStream, popOutSingleStream } from "./streamPopOut.js";
 import { HeatExchangerDatasheet } from "./HeatExchangerDatasheet.js";
 import { theoryLink } from "../case/modelDocs.js";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { boundaryForStream } from "../case/modelBoundary.js";
 import { compositeMembers, unitFolderNames, streamStateSpec, zeroStateText } from "../case/toGraph.js";
@@ -881,6 +881,8 @@ function kpiLabel(k: string, kpis: { [k: string]: number }): string | undefined 
 }
 
 function KpisSection({ kpis }: { kpis: { [k: string]: number } }) {
+  // Subscribe to the sig-figs pref so results re-render live when it changes.
+  const sig = useStore((s) => s.displayPrefs.sigFigs);
   const entries = Object.entries(kpis)
     // Drop the raw "Q" in W: "Q_kW" carries the same number, friendlier.
     .filter(([k]) => !(k === "Q" && "Q_kW" in kpis))
@@ -909,8 +911,8 @@ function KpisSection({ kpis }: { kpis: { [k: string]: number } }) {
               <Table.Td>
                 <Text size="xs" ff="monospace">
                   {k === "phaseSet"
-                    ? (PHASE_SET_NAMES[v] ?? formatNumber(v))
-                  : formatNumber(v)}
+                    ? (PHASE_SET_NAMES[v] ?? formatSig(v, sig))
+                  : formatSig(v, sig)}
                 </Text>
               </Table.Td>
             </Table.Tr>
@@ -942,6 +944,8 @@ function ScratchField({
   const scratch = useStore((s) => s.scratchEdits[path]);
   const setScratch = useStore((s) => s.setScratch);
   const clearScratch = useStore((s) => s.clearScratch);
+  const sig = useStore((s) => s.displayPrefs.sigFigs);
+  const [focused, setFocused] = useState(false);
 
   // The on-disk value + its authored unit.  A "$ref" or a non-scalar is not
   // tinkerable -- the caller should not have rendered a field, but guard.
@@ -956,12 +960,18 @@ function ScratchField({
   const from = parsed.value;
   const current = scratch ? scratch.value : from;
   const edited = scratch !== undefined;
+  // Display the value rounded to the sig-figs pref while idle, but the FULL
+  // stored precision the moment the field is focused for editing -- so the panel
+  // reads clean (1.01, not 1.01325) yet editing never silently truncates the spec.
+  const shown = focused ? current : Number(current.toPrecision(Math.max(1, sig)));
 
   return (
     <Group gap={6} wrap="nowrap" align="center">
       <NumberInput
         size="xs"
-        value={current}
+        value={shown}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         // Let the student type freely; commit to the overlay on change.  A
         // blank field is ignored (no silent 0); the value is whatever they
         // type, never clamped.
@@ -1110,13 +1120,11 @@ function stringifyObject(obj: JsonDict): string {
   return entries.map(([k, v]) => `${k}: ${stringifyValue(v)}`).join(", ");
 }
 
+// Read-only numeric display -- follows the units-menu significant-figures pref
+// (formatSig reads the synced global sig-figs), so results honour the same
+// precision the student chose for everything else instead of a hardcoded 5.
 function formatNumber(v: number): string {
-  if (!Number.isFinite(v)) return String(v);
-  if (v === 0) return "0";
-  const abs = Math.abs(v);
-  if (abs >= 1e4 || abs < 1e-3) return v.toExponential(4);
-  // 4-5 sig figs is more than enough for read-only display.
-  return Number(v.toPrecision(5)).toString();
+  return formatSig(v);
 }
 
 // ---------------------------------------------------------------------------
