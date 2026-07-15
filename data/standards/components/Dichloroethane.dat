@@ -65,7 +65,8 @@ cosmo
     VT2005
     {
         variant     cosmoSAC2002;
-        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0788-PROF.txt bundled in usnistgov/COSMOSAC (US-gov public domain); CAS 107-06-2";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0788-PROF.txt bundled in usnistgov/COSMOSAC; CAS 107-06-2";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
         area        117.48010;
         volume      104.32631;
         sigmaProfile
