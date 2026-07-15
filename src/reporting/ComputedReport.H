@@ -36,7 +36,7 @@ Description
         {
             A          100;                                  // plain $var (input)
             Q_total    { compute "evap1.Q + evap2.Q + evap3.Q"; unit kW; }
-            economy    { compute "vapour_total.F_mass / steam.F_mass"; }
+            economy    { compute "vapour_total.F / steam.F"; }
         }
 
     and evaluates each `compute` expression (via Choupo::evalExpr) AFTER the

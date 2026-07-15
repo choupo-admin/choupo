@@ -103,9 +103,9 @@ Hindrance deenFactors(scalar lambda)
     // separately, so the diffusive HINDRANCE coefficient is simply Kt here.
     const scalar Kd = std::max(Kt, 1e-6);
 
-    // K_c (convective lag), Bowen & Welfoot 2002 Eq. 15:
-    //   K_c = (1 + 0.054 lam - 0.988 lam^2 + 0.441 lam^3) / ... -- the standard
-    //   centreline form below (Geraldes-Brites form), bounded in [0, ~1]:
+    // K_c (convective lag), Bowen & Welfoot 2002 Eq. 15 -- the centreline
+    // (Geraldes-Brites) form with the (2 - Phi) partitioning prefactor:
+    //   K_c = (2 - Phi)(1 + 0.054 lam - 0.988 lam^2 + 0.441 lam^3)
     const scalar Kc = (2.0 - Phi) * (1.0 + 0.054 * l - 0.988 * l2 + 0.441 * l3);
     return { Kd, std::max(Kc, 1e-6), Phi };
 }

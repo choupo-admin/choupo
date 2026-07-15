@@ -61,8 +61,7 @@ public:
 private:
     inline static const std::string type_ = "step";
     scalar mean_  = 0.0;
-    scalar step_  = 0.0;   // value AFTER the jump = mean_ ... but stored as the
-                           // post-step ABSOLUTE value (see initialise()).
+    scalar step_  = 0.0;   // the DEVIATION added after tStep_ (value = mean_ + step_)
     scalar tStep_ = 0.0;
 };
 
