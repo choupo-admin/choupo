@@ -1,9 +1,23 @@
-/*  MINIMAL on purpose -- and this file is NOT where this case's physics lives.
-    This is a MULTI-ION SPECIATION case: the activity engine is Pitzer-HMW,
-    selected PER OPERATION in system/propsDict (`activityModel pitzerHMW;`),
-    working on the ions via constant/electrolyte/.  The thermoPackage below is
-    only the VLE skeleton the props driver mounts (water, ideal).             */
+/*--------------------------------*- Choupo -*-----------------------*\
+  propertyPackage (INLINE, self-contained) -- the case's OFFICIAL dictionary.
+  Multi-ion speciation SYSTEM: solvent water, the analytical basis measured in
+  ions, and the pitzerHMW activity method.  The speciate ops carry only the
+  ANALYSIS (analyticalTotals); no per-op model.  Replaces the degenerate water+ideal.
+\*---------------------------------------------------------------------------*/
+recordType propertyPackage;
+schemaVersion 1;
+
+name farelo_nacl_nh4cl_pkg;
+
 components ( water );
-phase { type vle; }
-activityModel { model ideal; }
-equationOfState { model idealGas; }
+
+inputBasis
+{
+    solvent           water;
+    analyticalMasters ( Na Cl NH4 );
+}
+
+propertyMethods
+{
+    aqueousActivity electrolyte.pitzerHMW;
+}

@@ -1,7 +1,7 @@
 operations (
-  { name farelo_NaCl_pure;    type speciate; activityModel pitzerHMW; totals { Na 6.15 mol/kg; Cl 6.15 mol/kg; } pH solve; diagSpecies ( Na Cl ); output { file f_nacl.csv; } }
-  { name farelo_NaCl_nh4_093; type speciate; activityModel pitzerHMW; totals { Na 5.50 mol/kg; NH4 0.93 mol/kg; Cl 6.43 mol/kg; } pH solve; diagSpecies ( Na NH4 ); output { file f_093.csv; } }
-  { name farelo_NaCl_nh4_187; type speciate; activityModel pitzerHMW; totals { Na 5.00 mol/kg; NH4 1.87 mol/kg; Cl 6.87 mol/kg; } pH solve; diagSpecies ( Na NH4 ); output { file f_187.csv; } }
-  { name farelo_NaCl_nh4_280; type speciate; activityModel pitzerHMW; totals { Na 4.95 mol/kg; NH4 2.80 mol/kg; Cl 7.75 mol/kg; } pH solve; diagSpecies ( Na NH4 ); output { file f_280.csv; } }
-  { name farelo_NH4Cl_pure;   type speciate; activityModel pitzerHMW; totals { NH4 7.35 mol/kg; Cl 7.35 mol/kg; } pH solve; diagSpecies ( NH4 Cl ); output { file f_nh4.csv; } }
+  { name farelo_NaCl_pure;    type speciate;analyticalTotals { Na 6.15 mol/kg; Cl 6.15 mol/kg; } pH solve; diagSpecies ( Na Cl ); output { file f_nacl.csv; } }
+  { name farelo_NaCl_nh4_093; type speciate;analyticalTotals { Na 5.50 mol/kg; NH4 0.93 mol/kg; Cl 6.43 mol/kg; } pH solve; diagSpecies ( Na NH4 ); output { file f_093.csv; } }
+  { name farelo_NaCl_nh4_187; type speciate;analyticalTotals { Na 5.00 mol/kg; NH4 1.87 mol/kg; Cl 6.87 mol/kg; } pH solve; diagSpecies ( Na NH4 ); output { file f_187.csv; } }
+  { name farelo_NaCl_nh4_280; type speciate;analyticalTotals { Na 4.95 mol/kg; NH4 2.80 mol/kg; Cl 7.75 mol/kg; } pH solve; diagSpecies ( Na NH4 ); output { file f_280.csv; } }
+  { name farelo_NH4Cl_pure;   type speciate;analyticalTotals { NH4 7.35 mol/kg; Cl 7.35 mol/kg; } pH solve; diagSpecies ( NH4 Cl ); output { file f_nh4.csv; } }
 );
