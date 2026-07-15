@@ -45,17 +45,18 @@ visibly, and with a documented reason.
 
 ```
 data/standards/
-├── README.md                       (this file)
-├── components/                     pure-component property files
-│   └── <name>.dat                  Antoine, Cp, Tc, ω, …
-└── binaryPairs/                    interaction parameters per activity model
-    ├── README.md                   naming + format conventions
-    ├── NRTL/
-    │   └── <c1>-<c2>.dat
-    ├── Wilson/
-    │   └── <c1>-<c2>.dat
-    └── UNIQUAC/
-        └── <c1>-<c2>.dat
+├── README.md  CATALOGUE.dat            (this file + the frozen release id)
+├── components/     <name>.dat          pure-component property files (Antoine, Cp, Tc, ω, …)
+├── species/aqueous/                    aqueous ion model-species (charge, hfAq, transport)
+├── chemistry/                          aqueousSpeciation/ · gasLiquid/ · ionExchange/
+├── parameters/                         electrolyte (pitzer/ eNRTL/) · eos/kij/ · adsorption/ · binary/
+├── propertyMethods/                    method declarations (electrolyte/ solution/ eos/ activity/ transport/)
+├── binaryPairs/                        NRTL/ · Wilson/ · UNIQUAC/  <c1>-<c2>.dat
+├── henrysLaw/                          gas–solvent Henry pairs
+├── unifac/ · joback/ · vanKrevelen/ · yang2020/   group-contribution definitions
+├── materials/ · membranes/ · utilities/ · adsorbents/ · assets/   equipment-side catalogues
+├── mixtures/  · solution/              predefined mixtures · solution props
+└── (data live PER FILE; a case selects them via its inline propertyDict manifest)
 ```
 
 ## How cases override standards

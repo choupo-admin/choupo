@@ -323,8 +323,9 @@ struct SpeciationResult
 class SpeciationSolver
 {
 public:
-    // Loads speciation.dat + minerals.dat (case overlay first, then
-    // data/standards/electrolyte/) and the master charges from ions.dat.
+    // Loads the speciation network + minerals (case overlay first, then the
+    // curated tree: chemistry/aqueousSpeciation/, components/ solidPhases) and the
+    // master ion charges from species/aqueous/.
     // Throws with a how-to-obtain message when no catalogue exists.
     //
     // `activityModel` selects the aqueous per-ion gamma model (AqueousActivity);

@@ -151,8 +151,8 @@ inline scalar ionRadius(const std::string& species)
     auto row = electrolyte::findIon(species);
     if (!row)
         throw std::runtime_error("electrochem: ion '" + species + "' has no row "
-            "in ions.dat (case-local constant/electrolyte/ or "
-            "data/standards/electrolyte/) -- an electrochemical run needs an "
+            "(case-local constant/electrolyte/ions.dat or "
+            "data/standards/species/aqueous/) -- an electrochemical run needs an "
             "IONIC species (master ions Na, Cl, K, Ca, Mg, SO4, OH, H).");
     if (!row->found("radius"))
         throw std::runtime_error("electrochem: ion '" + species + "' has no "
@@ -170,8 +170,8 @@ inline scalar ionD0(const std::string& species)
     auto row = electrolyte::findIon(species);
     if (!row)
         throw std::runtime_error("electrochem: ion '" + species + "' has no row "
-            "in ions.dat (case-local constant/electrolyte/ or "
-            "data/standards/electrolyte/) -- an electrochemical run needs an "
+            "(case-local constant/electrolyte/ions.dat or "
+            "data/standards/species/aqueous/) -- an electrochemical run needs an "
             "IONIC species (master ions Na, Cl, K, Ca, Mg, SO4, OH, H).");
     if (!row->found("D0"))
         throw std::runtime_error("electrochem: ion '" + species + "' has no "

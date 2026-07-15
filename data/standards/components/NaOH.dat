@@ -42,7 +42,7 @@ solid       // anhydrous NaOH(s) -- the solid-tabulated formation datum
 
 // aqueousInfDil                    // SLOT (electrolyte-enthalpy slice 2): the
 // {                                //   asymmetric infinite-dilution ion tier
-//     Hf_298   ?;                  //   lives per-ION in electrolyte/ions.dat
+//     Hf_298   ?;                  //   lives per-ION in species/aqueous/
 //     Gf_298   ?;                  //   (Na+ ~ -240.12 kJ/mol, OH- ~ -229.99
 //     Cp_298   ?;                  //   kJ/mol, Wagman 1982, H+(aq)=0 conv.) --
 // }                                //   filled by the gated build, cited per value.

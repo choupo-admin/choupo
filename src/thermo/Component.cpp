@@ -453,7 +453,7 @@ void Component::readFromDict(const DictPtr& d)
     relPermittivity_ = d->lookupScalarOrDefault("relativePermittivity", 0.0);
 
     // Salt dissociation map for the electrolyte activity model.  cation/anion are
-    // ion NAMES into data/standards/electrolyte/{ions,pairs}.dat; solubility is the
+    // ion NAMES into species/aqueous/ + parameters/electrolyte/pitzer/; solubility is the
     // salt's measured saturation molality.  INTRINSIC salt chemistry, declared ONCE
     // here -- called by name, never re-typed per case.
     // Ion decomposition for electrolyte-aware unit ops (DSPM-DE membrane): derive

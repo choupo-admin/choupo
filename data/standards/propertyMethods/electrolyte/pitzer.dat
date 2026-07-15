@@ -62,7 +62,7 @@ requires
 
     optionalSaltEquilibria
     {
-        path "data/standards/chemistry/salts/";
+        path "data/standards/components/";   // salt anchors live as measuredSolubilityAnchor in the component file
     }
 }
 

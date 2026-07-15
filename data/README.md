@@ -1,13 +1,19 @@
 # `data/`
 
-All reference data lives under [`data/standards/`](standards/) — that
-directory holds the curated, version-controlled, write-protected
-canonical files the simulator loads when a case does not provide local
-overrides.
+Curated reference data lives under [`data/standards/`](standards/) — that
+directory holds the version-controlled, write-protected canonical files the
+simulator loads when a case does not provide local overrides.
+
+A sibling [`data/local/`](local/) is the **private, gitignored** working tier:
+the runtime reads it when present (announced `[local] UNVERIFIED`), it fills
+gaps but never shadows a curated `standards` entry, and the public repo ships it
+empty. The old public `proposed/` tier was retired 2026-07-13.
 
 See [`data/standards/README.md`](standards/README.md) for:
 
-- the directory layout (`components/`, `materials/`, `binaryPairs/`),
+- the full directory layout (components/, species/, chemistry/, parameters/,
+  propertyMethods/, henrysLaw/, materials/, membranes/, utilities/, … — one file
+  per datum),
 - the read-only ceremony (how to edit a standards file deliberately),
 - how cases override standards via local `<case>/constant/...` files.
 

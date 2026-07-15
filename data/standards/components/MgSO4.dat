@@ -25,11 +25,11 @@ dissociation   2;              // fully dissociated 1-1 (one Mg²⁺ + one SO₄
 
 // FORMATION DATUM -- NOT in this file by design (arity-2 electrolyte).
 // MgSO4 is a strong electrolyte: its thermodynamics live PER ION in the
-// aqueous infinite-dilution tier, electrolyte/ions.dat (H+(aq)=0 convention),
+// aqueous infinite-dilution tier, species/aqueous/ (H+(aq)=0 convention),
 // referenced BY NAME -- the salt is never given a component-level
 // gibbsFormation block (see docs/ai/data-doctrine.md sec.2).
-//   cation Mg   -> electrolyte/ions.dat (z = +2)
-//   anion  SO4  -> electrolyte/ions.dat (z = -2)
+//   cation Mg   -> species/aqueous/ (z = +2)
+//   anion  SO4  -> species/aqueous/ (z = -2)
 // FLAGGED follow-up (do NOT fabricate): in ions.dat both Mg+2 and SO4-2
 // currently carry the ION-TRANSPORT tier (radius, D0) but NOT the aqueous
 // infinite-dilution ENTHALPY tier (hfAq/sAq/cpAq).  Source those from

@@ -5,7 +5,7 @@
   (~4.76 mol/kg at 25 C) and only mildly temperature-sensitive, so KCl is
   recovered by EVAPORATION or by ANTISOLVENT (drowning-out with ethanol),
   not by cooling.  Pairs with the eNRTL/Pitzer activity models exactly as
-  NaCl does; the ions K+/Cl- live in electrolyte/ions.dat.
+  NaCl does; the ions K+/Cl- live in species/aqueous/.
   Sources: formation data live PER ION (K+, Cl-; H+(aq) = 0 convention) --
            Wagman et al., NBS Tables (1982) -- cross-checked by
            bin/curate/check_ion_pins.  Solid rho_p 1988 kg/m^3 = sylvite
@@ -25,7 +25,7 @@ dissociatesTo  { K 1; Cl 1; }   // ion stoichiometry (formula-like identity; the
 
 
 
-// FORMATION DATUM lives PER ION in electrolyte/ions.dat (K+, Cl-; H+(aq)=0
+// FORMATION DATUM lives PER ION in species/aqueous/ (K+, Cl-; H+(aq)=0
 // convention, Wagman 1982), referenced BY NAME via the electrolyte{} block --
 // KCl carries no component-level gibbsFormation block (arity-2; see
 // docs/ai/data-doctrine.md).  Both K+ and Cl- carry the full hfAq/sAq/cpAq

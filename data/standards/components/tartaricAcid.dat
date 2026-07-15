@@ -70,7 +70,7 @@ liquidHeatCapacity
 //   (2) DISSOLVED NEUTRAL  -- the aqueous rung via solution/tartaricAcid-water.dat
 //       (dHsoln +15.3 kJ/mol, Kochergina) => h_aq = Hf_crystal + dHsoln = -1295.9
 //       kJ/mol, with NO ideal-gas/Watson vapour leg (a decomposing solid has none);
-//   (3) DISSOCIATED        -- the HTart-/Tart2- ions in electrolyte/ions.dat.
+//   (3) DISSOCIATED        -- the HTart-/Tart2- ions in species/aqueous/.
 // The crystallisation heat emerges as h_solid - h_aq ~ -dHsoln from one number.
 
 groups

@@ -38,8 +38,9 @@ License
   (and the full given-vs-solved / closed-vs-open contract) is
   thermo/electrolyte/SpeciationSolver.
 
-  Reactions/minerals are CURATED data (constant/electrolyte/speciation.dat +
-  minerals.dat overlay data/standards/electrolyte/), charges from ions.dat.
+  Reactions/minerals are CURATED data (case constant/electrolyte/speciation.dat
+  overlay, else chemistry/aqueousSpeciation/ + components/ solidPhases), charges
+  from species/aqueous/.
 
   Dictionary form:
 

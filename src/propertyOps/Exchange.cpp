@@ -52,7 +52,7 @@ namespace propertyOps {
 namespace {
 
 // Resolve a resin .dat BY EXACT NAME (case-local constant/electrolyte/resins/
-// first, then data/standards/electrolyte/resins/) -- the same noun pattern as
+// first, then data/standards/assets/resins/) -- the same noun pattern as
 // materials/ and membranes/.  Returns an empty path if not found.
 fs::path resinPath(const std::string& name)
 {
@@ -112,7 +112,7 @@ void readExchange(const DictPtr& dict, electrolyte::SpeciationInput& in,
     if (!ex->found("resin"))
         throw std::runtime_error("exchange{}: needs `resin <name>;` (the resin "
             "is resolved by exact name in constant/electrolyte/resins/ or "
-            "data/standards/electrolyte/resins/)");
+            "data/standards/assets/resins/)");
 
     const std::string resin = ex->lookupWord("resin");
     fs::path rp = resinPath(resin);
@@ -127,7 +127,7 @@ void readExchange(const DictPtr& dict, electrolyte::SpeciationInput& in,
                 if (e.path().extension() == ".dat")
                     avail += " " + e.path().stem().string();
         throw std::runtime_error("exchange: resin '" + resin + "' not found in "
-            "constant/electrolyte/resins/ (case) or data/standards/electrolyte/"
+            "constant/electrolyte/resins/ (case) or data/standards/assets/"
             "resins/.  Available:" + (avail.empty() ? " (none)" : avail));
     }
     auto rd = Dictionary::fromFile(rp.string());
