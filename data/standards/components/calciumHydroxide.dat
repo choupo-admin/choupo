@@ -34,7 +34,7 @@ standardThermochemistry
 {
     dHf_298   -986090;         // J/mol  [Wagman et al. NBS Tables 1982]
     s_298     83.39;           // J/(mol*K) third-law absolute [Wagman 1982]
-    phase     solid;
+    referenceState     pureSolid;
 }
 
 // Solid heat capacity, NBS 298 K value carried as a CONSTANT (single

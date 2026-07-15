@@ -39,7 +39,7 @@ standardThermochemistry
 {
     dHf_298   -1207600;        // J/mol  calcite [CODATA Key Values 1989; xcheck Robie-Hemingway 1995]
     s_298     91.7;            // J/(mol*K) third-law absolute [CODATA Key Values 1989]
-    phase     solid;
+    referenceState     pureSolid;
 }
 
 // REAL solid heat capacity of calcite.  Cp(298.15) ~ 83.5 J/(mol*K), rising

@@ -50,7 +50,7 @@ standardThermochemistry
                              //   [Ponomarev & Migarskaya 1960, combustion]
     s_298      209.2;        // J/(mol K), third-law absolute
                              //   [Boerio-Goates 1991, adiabatic calorimetry]
-    phase      solid;        // crystalline -- Hf is for the SOLID, never a gas leg
+    referenceState      pureSolid;
 }
 
 // solidHeatCapacity -- the SOLID crystal Cp.  PRIMARY would be Boerio-Goates

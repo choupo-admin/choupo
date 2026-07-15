@@ -333,20 +333,23 @@ void Component::readFromDict(const DictPtr& d)
     //                               // whose Hf cannot be referenced to gas
     //                               // because the compound never vaporises.
     // }
-    // The NBS/CODATA triad: dHf_298 (formation), dGf_298 (formation), s_298
-    // (ABSOLUTE third-law entropy).  Reference state is the GLOBAL convention
-    // (298.15 K, 1 bar, ideal gas) -- so `phase` defaults to gas and a condensed
-    // reference is declared explicitly (phase solid/liquid, or a gasIdeal/solid block).
+    // dHf_298 (formation), s_298 (ABSOLUTE third-law entropy), dGf_298 (optional --
+    // formation Gibbs, used for validation; the engine derives G from dHf + s + the
+    // elemental standard entropies).  The `referenceState` names the thermodynamic
+    // STANDARD STATE the values are on (not merely the physical phase): idealGas
+    // (298.15 K, 1 bar -- the default, at 1 bar), pureLiquid, pureSolid.
     if (d->found("standardThermochemistry"))
     {
         auto g = d->subDict("standardThermochemistry");
         Hf298_         = g->lookupScalar("dHf_298");
         S298_          = g->lookupScalar("s_298");
-        naturalPhase_  = g->lookupWordOrDefault("phase", "gas");
-        if (naturalPhase_ != "gas" && naturalPhase_ != "liquid" && naturalPhase_ != "solid")
-            throw std::runtime_error("Component '" + name_ +
-                "': standardThermochemistry.phase must be gas / liquid / solid, got '"
-                + naturalPhase_ + "'");
+        const std::string ref = g->lookupWordOrDefault("referenceState", "idealGas");
+        if      (ref == "idealGas")   naturalPhase_ = "gas";
+        else if (ref == "pureLiquid") naturalPhase_ = "liquid";
+        else if (ref == "pureSolid")  naturalPhase_ = "solid";
+        else throw std::runtime_error("Component '" + name_ +
+                "': standardThermochemistry.referenceState must be idealGas / "
+                "pureLiquid / pureSolid, got '" + ref + "'");
         hasGibbsData_  = true;
     }
 

@@ -40,7 +40,7 @@ standardThermochemistry
     dHf_298   -1311200;        // J/mol  crystalline [Kochergina et al. 2006, Tab.5: -1311.2 +/- 1.1 kJ/mol]
     s_298     204.3;           // J/(mol*K) third-law -- LITERATURE estimate (Domalski-Hearing class), VERIFY;
                                //   the HEAT OF REACTION uses only dHf + Cp, so s_298 enters only K_eq / Gibbs.
-    phase     solid;
+    referenceState     pureSolid;
 }
 
 // REAL solid heat capacity.  PRIMARY: Satoh & Sogabe, Sci. Pap. Inst. Phys.

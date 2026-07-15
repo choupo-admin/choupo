@@ -35,7 +35,7 @@ standardThermochemistry
 {
     dHf_298   -910700;        // J/mol  alpha-quartz [CODATA Key Values, Cox-Wagman-Medvedev 1989]
     s_298     41.46;          // J/(mol*K) [CODATA Key Values]
-    phase     solid;
+    referenceState     pureSolid;
 }
 // Solid heat capacity of alpha-quartz, restored from an OPEN primary source
 // (the earlier no-grant compilation fit was EXCLUDED by the licence policy and was

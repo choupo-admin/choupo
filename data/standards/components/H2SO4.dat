@@ -31,7 +31,7 @@ standardThermochemistry
 {
     dHf_298   -813989;         // J/mol  liquid H2SO4 [Wagman et al. NBS Tables 1982]
     s_298     156.90;          // J/(mol*K) [Wagman 1982]
-    phase     liquid;
+    referenceState     pureLiquid;
 }
 
 liquidHeatCapacity

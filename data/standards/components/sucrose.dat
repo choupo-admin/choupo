@@ -64,7 +64,7 @@ standardThermochemistry
 {
     dHf_298    -2226100.0;    // J/mol  (-2226.1 kJ/mol, crystalline)
     s_298      392.4;          // J/(mol·K)
-    phase      solid;          // Hf is for CRYSTALLINE sucrose
+    referenceState      pureSolid;
 }
 
 liquidHeatCapacity

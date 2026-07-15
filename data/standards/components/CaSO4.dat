@@ -32,7 +32,7 @@ standardThermochemistry
 {
     dHf_298   -1434110;        // J/mol  anhydrite [Wagman et al. NBS Tables 1982]
     s_298     106.7;           // J/(mol*K) [Wagman 1982]
-    phase     solid;
+    referenceState     pureSolid;
 }
 
 solidHeatCapacity

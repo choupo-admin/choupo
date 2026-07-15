@@ -31,7 +31,7 @@ standardThermochemistry
 {
     dHf_298   -314430;         // J/mol  [Wagman et al. NBS Tables 1982]
     s_298     94.56;           // J/(mol*K) [Wagman 1982]
-    phase     solid;
+    referenceState     pureSolid;
 }
 
 solidHeatCapacity
