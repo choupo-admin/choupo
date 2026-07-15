@@ -268,7 +268,6 @@ inline DictPtr bridgePitzerPair(const DictPtr& r)
     return Dictionary::fromString(os.str());
 }
 
-// Pitzer pair by (cation,anion).  Two legs (the pairs kind is now stored ONLY as
 // The pair record's temperature-correlation form, DECLARED + cross-checked
 // (forum #101/#103: `tCorrelationForm` is a typed contract, never a silent
 // field probe).  Legal words: `constant298` | `linearSlopes` |
@@ -332,6 +331,7 @@ inline std::string resolveTCorrelationForm(const DictPtr& p,
     return declared;
 }
 
+// Pitzer pair by (cation,anion).  Two legs (the pairs kind is now stored ONLY as
 // per-pair records under parameters/electrolyte/pitzer/pairs/; the monolithic
 // electrolyte/pairs.dat is gone) -- sibling of findIon, NOT a change to the
 // generic findPair (which enrtl.dat/mixing.dat still use as a list):

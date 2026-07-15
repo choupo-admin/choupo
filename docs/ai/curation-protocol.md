@@ -67,7 +67,7 @@ doesn't reproduce — so a hand-typed number cannot even wear a trustworthy badg
 
 5. **Re-run `--gap-report`** to SHOW the gap closed, and tell the student to
    **review and promote** the file. You never auto-promote; you never write under
-   `data/standards/`; you gain no power to suppress the `[proposed]`, `[estimate]`,
+   `data/standards/`; you gain no power to suppress the `[local]`, `[estimate]`,
    or `[package]` warnings.
 
 The compound thus **enters the case carrying its warning** — that is the point.
@@ -102,7 +102,7 @@ student sees the estimate, and its error, first.
 - **Emitting an unsourced number** (see §1).
 - **Auto-promoting** to `data/standards/`, or editing it at all (it is write-
   refused, verified-only).
-- **Suppressing or talking around** a `[proposed]` / `[estimate]` / `[package]`
+- **Suppressing or talking around** a `[local]` / `[estimate]` / `[package]`
   warning. They are the engine's honesty; your job is to help close the gap, not
   to hide it.
 
@@ -125,7 +125,7 @@ the exact databank copy carries the Artistic License 2.0 and its own copyright
 notice, so its machine-imported records may live in `data/local/` with that
 licence, source hash and warning preserved. This does **not** authorise manual
 copying from DECHEMA/DDBST publications, nor does it turn an imported pair into
-a verified fit. Use the proposed record as screening input, then validate it
+a verified fit. Use the local record as screening input, then validate it
 against the student's or a primary source's VLE data.
 
 NEVER (no-grant or NonCommercial — do not enter their numbers, even cited):

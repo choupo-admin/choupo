@@ -121,12 +121,10 @@ public:
         const std::size_t N = off.back();
 
         sVector y(N);
-        // nPositive: the union of leading species rows is per-UNIT, not global
-        // (a unit's species rows sit anywhere in Y).  We enforce positivity
-        // with a per-row atol mask instead: build a global atol and a global
-        // positivity mask the integrator can honour as a contiguous prefix is
-        // not possible here, so we apply positivity inside the derivative-free
-        // accept test via a tiny wrapper below.
+        // A unit's species rows sit anywhere in Y (the layout is per-unit, not a
+        // global contiguous species prefix), so the absolute tolerance is broadcast
+        // UNIFORMLY across all rows; each unit's packed state is scattered into Y by
+        // its offset.
         sVector atol(N, settings_.atol);
         for (std::size_t u = 0; u < units.size(); ++u)
         {
