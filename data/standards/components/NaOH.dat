@@ -52,3 +52,17 @@ transport
     // Dissolved-only solute: liquid-phase transport is solvent-dominated;
     // no gas-phase correlations apply.  (Empty by design, not by neglect.)
 }
+
+// Solid phase of NaOH (roadmap Phase D fold-in from salts/ + phases/solid/):
+solidPhases
+{
+    sodiumHydroxide
+    {
+        calorimetric
+        {
+            solubility          { value 28.5;   unit mol/kgWater; T 298.15; }
+            dissolutionEnthalpy { value -44510; unit J/mol; basis "NaOH(s) -> Na+(aq) + OH-(aq) (exothermic)"; }
+        }
+        crystal { rho_p 2130.0; k_v 0.5235987756; habit sphere; }
+    }
+}

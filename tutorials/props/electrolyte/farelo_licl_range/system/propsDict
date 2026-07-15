@@ -1,10 +1,9 @@
 operations (
-  // gamma_pm across the FULL range (refitted; vs Hamer-Wu 1972). Analysis given
-  // directly in ions (Li, Cl) -- the analyticalMasters basis. No per-op model:
-  // the manifest's aqueousActivity pitzerHMW governs.
-  { name licl_1.0;  type speciate; analyticalTotals { Li 1.0 mol/kg;  Cl 1.0 mol/kg; }  pH solve; diagSpecies ( Li Cl ); output { file g1.0.csv; } }
-  { name licl_6.0;  type speciate; analyticalTotals { Li 6.0 mol/kg;  Cl 6.0 mol/kg; }  pH solve; diagSpecies ( Li Cl ); output { file g6.0.csv; } }
-  { name licl_13.0; type speciate; analyticalTotals { Li 13.0 mol/kg; Cl 13.0 mol/kg; } pH solve; diagSpecies ( Li Cl ); output { file g13.0.csv; } }
-  { name licl_19.7; type speciate; analyticalTotals { Li 19.7 mol/kg; Cl 19.7 mol/kg; } pH solve; diagSpecies ( Li Cl ); output { file g19.7.csv; } }
-  { name farelo_LiCl_sat; type speciate; analyticalTotals { Li 19.7 mol/kg; Cl 19.7 mol/kg; } pH solve; diagSpecies ( Li Cl ); output { file sat.csv; } }
+  // gamma_pm across the FULL range (refitted; vs Hamer-Wu 1972). Input as the
+  // apparent salt LiCl; speciesMap expands to Li + Cl with electroneutrality.
+  { name licl_1.0;  type speciate; composition { LiCl 1.0 mol/kg; }  pH solve; diagSpecies ( Li Cl ); output { file g1.0.csv; } }
+  { name licl_6.0;  type speciate; composition { LiCl 6.0 mol/kg; }  pH solve; diagSpecies ( Li Cl ); output { file g6.0.csv; } }
+  { name licl_13.0; type speciate; composition { LiCl 13.0 mol/kg; } pH solve; diagSpecies ( Li Cl ); output { file g13.0.csv; } }
+  { name licl_19.7; type speciate; composition { LiCl 19.7 mol/kg; } pH solve; diagSpecies ( Li Cl ); output { file g19.7.csv; } }
+  { name farelo_LiCl_sat; type speciate; composition { LiCl 19.7 mol/kg; } pH solve; diagSpecies ( Li Cl ); output { file sat.csv; } }
 );

@@ -57,5 +57,11 @@ solidPhases
     {
         dissolutionReaction { masters ( { ion K; nu 1; } { ion Cl; nu 1; } ); }
         equilibrium { logK25 0.9; dH 8500; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+        calorimetric
+        {
+            solubility          { value 4.76;  unit mol/kgWater; T 298.15; source "Pinho & Macedo, J. Chem. Eng. Data 50 (2005) 29 (aqueous, 25 C; primary)"; }
+            dissolutionEnthalpy { value 17200; unit J/mol; basis "KCl(s) -> K+(aq) + Cl-(aq), infinite dilution (endothermic)"; }
+        }
+        crystal { rho_p 1988.0; k_v 1.0; habit cube; }
     }
 }

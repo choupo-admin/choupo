@@ -12,12 +12,13 @@ schemaVersion 1;
 
 name liCl_farelo_hmw;
 
-components ( water );
+components ( water LiCl );
 
 inputBasis
 {
     solvent           water;
-    analyticalMasters ( Li Cl );
+    apparentComponents ( LiCl );
+    analyticalMasters  ( Li Cl );
 }
 
 propertyMethods
