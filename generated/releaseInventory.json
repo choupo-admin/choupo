@@ -1,0 +1,24 @@
+{
+  "release": "Choupo-2607",
+  "catalogue": {
+    "components": 247,
+    "aqueousSpecies": 41,
+    "nrtlPairs": 2,
+    "wilsonPairs": 0,
+    "uniquacPairs": 3,
+    "henryPairs": 205,
+    "propertyMethods": 7,
+    "materials": 4,
+    "membranes": 4,
+    "adsorbents": 3,
+    "utilities": 9
+  },
+  "engine": {
+    "unitOperations": 49,
+    "engines": 4
+  },
+  "tutorials": {
+    "runnableCases": 284,
+    "regressionChecks": 249
+  }
+}
