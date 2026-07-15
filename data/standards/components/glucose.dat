@@ -44,7 +44,7 @@ dissociation   1;              // non-electrolyte
 //   thermodynamic functions of crystalline alpha-D-glucose at temperatures
 //   from 10 K to 340 K", J. Chem. Thermodyn. 23 (1991) 403-409 -- adiabatic
 //   calorimetry; S(298.15 K) = (209.2 +/- 0.4) J/(mol K).
-gibbsFormation
+standardThermochemistry
 {
     dHf_298    -1274600.0;   // J/mol  (-1274.6 kJ/mol, crystalline alpha-D-glucose)
                              //   [Ponomarev & Migarskaya 1960, combustion]

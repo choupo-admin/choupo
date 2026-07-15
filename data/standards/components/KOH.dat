@@ -23,7 +23,7 @@ solid
     rho_p   2044.0;            // crystal density [kg/m^3]
 }
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -424764;         // J/mol  [Wagman et al. NBS Tables 1982]
     s_298     78.9;            // J/(mol*K) [Wagman 1982]

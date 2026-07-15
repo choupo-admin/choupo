@@ -15,7 +15,7 @@ MW             35.45;       // kg/kmol
 nonvolatile    true;
 tags           ( radical gasPhase combustion chlorine );
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298    121301.3083;            // J/mol  -- ideal-gas reference
     s_298      165.1906;           // J/(mol·K)  -- third-law absolute

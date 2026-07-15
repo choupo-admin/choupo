@@ -25,7 +25,7 @@ role        nonvolatile;       // dissolved-acid treatment (K = 0); see header
 
 Vliq        4.165e-5;          // m^3/mol  (= MW / 1513 kg/m^3)
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -174100;         // J/mol  liquid HNO3 [Wagman et al. NBS Tables 1982]
     s_298     155.6;           // J/(mol*K) [Wagman 1982]
@@ -50,7 +50,8 @@ cosmo
 {
     VT2005
     {
-        variant     cosmoSAC2002;
+        model       COSMOSAC;
+        variant     "2002";
         source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-1063-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7697-37-2";
         license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
         area        78.99960;

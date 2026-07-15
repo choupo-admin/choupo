@@ -30,7 +30,7 @@ solid
     rho_p   3340.0;            // lime particle density [kg/m^3]
 }
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -635090;         // J/mol  [Wagman et al. NBS Tables 1982]
     s_298     39.75;           // J/(mol*K) [Wagman 1982; CODATA ~38.1, see header]

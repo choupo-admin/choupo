@@ -23,11 +23,10 @@ Tb          169.42;             // K
 HvapTb      13530;              // J/mol
 Vliq        4.91e-5;            // m^3/mol
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298    52280.0;         // J/mol  -- ideal-gas reference
     s_298      219.32;          // J/(mol·K)
-    phase     gas;            // ideal-gas Hf reference (JANAF convention)
 }
 
 vaporPressure
@@ -56,7 +55,8 @@ cosmo
 {
     VT2005
     {
-        variant     cosmoSAC2002;
+        model       COSMOSAC;
+        variant     "2002";
         source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0124-PROF.txt bundled in usnistgov/COSMOSAC; CAS 74-85-1";
         license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
         area        72.38225;

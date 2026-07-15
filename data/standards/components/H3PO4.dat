@@ -29,7 +29,7 @@ solid
     rho_p   1834.0;            // crystalline H3PO4 density [kg/m^3]
 }
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1284400;        // J/mol  crystalline [CRC; NBS printings -1279.0, see header]
     s_298     110.5;           // J/(mol*K) [Wagman et al. NBS Tables 1982]
@@ -54,7 +54,8 @@ cosmo
 {
     VT2005
     {
-        variant     cosmoSAC2002;
+        model       COSMOSAC;
+        variant     "2002";
         source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-1062-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7664-38-2";
         license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
         area        104.14135;

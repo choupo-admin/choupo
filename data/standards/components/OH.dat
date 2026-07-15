@@ -26,11 +26,10 @@ CAS            3352-57-6;
 MW             17.008;       // kg/kmol
 nonvolatile    true;         // never a liquid in any process context
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298    39000.0;      // J/mol  -- ideal-gas reference
     s_298      183.74;       // J/(mol·K)
-    phase     gas;            // ideal-gas Hf reference (JANAF convention)
 }
 
 idealGasHeatCapacity

@@ -15,7 +15,7 @@ MW             42.017;       // kg/kmol
 nonvolatile    true;
 tags           ( radical gasPhase combustion );
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298    131796.3212;            // J/mol  -- ideal-gas reference
     s_298      232.3848;           // J/(mol·K)  -- third-law absolute

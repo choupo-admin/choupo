@@ -24,7 +24,7 @@ solid
     rho_p   2200.0;            // particle density [kg/m^3]
 }
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -950810;         // J/mol  [Wagman et al. NBS Tables 1982]
     s_298     101.7;           // J/(mol*K) [Wagman 1982]

@@ -35,7 +35,7 @@ solid
 // Tartaric Acids and Their Dissociation Products in Aqueous Solutions",
 // Russ. J. Phys. Chem. 80 (2006) 899-903, Table 5 (combustion + solution
 // calorimetry, mean of two methods).  Supersedes Swietoslawski 1928 (-1272.2).
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1311200;        // J/mol  crystalline [Kochergina et al. 2006, Tab.5: -1311.2 +/- 1.1 kJ/mol]
     s_298     204.3;           // J/(mol*K) third-law -- LITERATURE estimate (Domalski-Hearing class), VERIFY;

@@ -51,12 +51,11 @@ sublimation
     // sublimation curve stays undrawn until measured Hsub lands.
 }
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -291010;      // J/mol ideal-gas -- provenance: see the structured dHf_298 block below
     dGf_298   50160;      // J/mol  ideal-gas [Joback]
     s_298     623.43;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S; ~25 J/mol/K; biased ~R*ln(sigma) for symmetric species]
-    phase     gas;
 }
 
 groups { unifac ( { group CH3; count 2; } { group CH2; count 10; } ); joback ( { group CH3; count 2; } { group CH2; count 10; } ); }
@@ -85,7 +84,8 @@ cosmo
 {
     VT2005
     {
-        variant     cosmoSAC2002;
+        model       COSMOSAC;
+        variant     "2002";
         source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0055-PROF.txt bundled in usnistgov/COSMOSAC; CAS 112-40-3";
         license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
         area        276.65834;

@@ -27,7 +27,7 @@ role        nonvolatile;       // dissolved strong acid (K = 0)
 
 Vliq        5.360e-5;          // m^3/mol  (= MW / 1830 kg/m^3)
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -813989;         // J/mol  liquid H2SO4 [Wagman et al. NBS Tables 1982]
     s_298     156.90;          // J/(mol*K) [Wagman 1982]

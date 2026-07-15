@@ -51,12 +51,11 @@ sublimation
     // sublimation curve stays undrawn until measured Hsub lands.
 }
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -2.67682e+06;      // J/mol ideal-gas -- provenance: see the structured dHf_298 block below
     dGf_298   -2.4528e+06;      // J/mol  ideal-gas [Joback]
     s_298     602.448;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S; ~25 J/mol/K; biased ~R*ln(sigma) for symmetric species]
-    phase     gas;
 }
 
 groups { joback ( { group C; count 5; } { group F; count 12; } { group ketone; count 1; } ); }

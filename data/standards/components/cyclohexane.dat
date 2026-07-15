@@ -51,11 +51,10 @@ sublimation
     // sublimation curve stays undrawn until measured Hsub lands.
 }
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -123299.3;        // J/mol  ideal-gas [origin=measured method=NASA-TM4513]
     s_298     297.39;        // J/(mol.K) third-law absolute [NASA-TM4513]
-    phase     gas;
 }
 
 groups { joback ( { group rCH2; count 6; } ); }
@@ -80,7 +79,8 @@ cosmo
 {
     VT2005
     {
-        variant     cosmoSAC2002;
+        model       COSMOSAC;
+        variant     "2002";
         source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0099-PROF.txt bundled in usnistgov/COSMOSAC; CAS 110-82-7";
         license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
         area        134.55154;

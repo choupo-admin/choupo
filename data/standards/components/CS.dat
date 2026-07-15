@@ -15,7 +15,7 @@ MW             44.071;       // kg/kmol
 nonvolatile    true;
 tags           ( radical gasPhase combustion sulfur );
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298    278548.4900;            // J/mol  -- ideal-gas reference
     s_298      210.5575;           // J/(mol·K)  -- third-law absolute

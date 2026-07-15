@@ -60,7 +60,7 @@ solubility
 // want to model sugar decomposition (Maillard, caramelisation).
 // Individual literature values for crystalline sucrose -- primary
 // re-citation pending (IST review).
-gibbsFormation
+standardThermochemistry
 {
     dHf_298    -2226100.0;    // J/mol  (-2226.1 kJ/mol, crystalline)
     s_298      392.4;          // J/(mol·K)

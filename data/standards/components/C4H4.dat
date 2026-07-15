@@ -15,7 +15,7 @@ MW             52.076;       // kg/kmol
 nonvolatile    true;
 tags           ( gasPhase combustion soot );
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298    431719.5396;            // J/mol  -- ideal-gas reference
     s_298      251.0727;           // J/(mol·K)  -- third-law absolute
@@ -32,7 +32,8 @@ cosmo
 {
     VT2005
     {
-        variant     cosmoSAC2002;
+        model       COSMOSAC;
+        variant     "2002";
         source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0235-PROF.txt bundled in usnistgov/COSMOSAC; CAS 689-97-4";
         license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
         area        105.07587;

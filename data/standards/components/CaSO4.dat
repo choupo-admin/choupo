@@ -28,7 +28,7 @@ solid
     rho_p   2960.0;            // anhydrite particle density [kg/m^3]
 }
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298   -1434110;        // J/mol  anhydrite [Wagman et al. NBS Tables 1982]
     s_298     106.7;           // J/(mol*K) [Wagman 1982]

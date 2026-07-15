@@ -15,7 +15,7 @@ MW             42.037;       // kg/kmol
 nonvolatile    true;
 tags           ( gasPhase combustion );
 
-gibbsFormation
+standardThermochemistry
 {
     dHf_298    -47699.7282;            // J/mol  -- ideal-gas reference
     s_298      241.8873;           // J/(mol·K)  -- third-law absolute
@@ -32,7 +32,8 @@ cosmo
 {
     VT2005
     {
-        variant     cosmoSAC2002;
+        model       COSMOSAC;
+        variant     "2002";
         source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0476-PROF.txt bundled in usnistgov/COSMOSAC; CAS 463-51-4";
         license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
         area        77.61892;
