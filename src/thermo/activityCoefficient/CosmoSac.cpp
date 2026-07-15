@@ -27,9 +27,14 @@ constexpr scalar SIGMA_MIN = -0.025;    // grid [e/A^2]
 constexpr scalar DSIGMA    = 0.001;
 } // namespace
 
-CosmoSac::CosmoSac(const DictPtr& /*dict*/, const std::vector<Component>& comps)
+CosmoSac::CosmoSac(const DictPtr& dict, const std::vector<Component>& comps)
     : n_(comps.size())
 {
+    // The parameter SET to use, `activityModel { model cosmoSAC; source <set>; }`.
+    // Empty -> each component's lone set (the natural default); a component with
+    // several sets then REQUIRES an explicit source (no silent pick).
+    const std::string want = dict->lookupWordOrDefault("source", "");
+
     area_.resize(n_);
     vol_.resize(n_);
     pArea_.resize(n_);
@@ -37,20 +42,40 @@ CosmoSac::CosmoSac(const DictPtr& /*dict*/, const std::vector<Component>& comps)
     for (std::size_t i = 0; i < n_; ++i)
     {
         const Component& c = comps[i];
-        if (!c.hasCosmo())
+        const auto names = c.cosmoSetNames();
+        if (names.empty())
             throw std::runtime_error("cosmoSAC: component '" + c.name()
-                + "' has no `cosmo { area; volume; sigmaProfile ( ... ); }` block "
-                  "in its .dat -- COSMO-SAC needs the COSMO surface data per component "
-                  "(no silent crutch; add the block or select another activityModel).");
-        const auto& prof = c.cosmoSigmaProfile();
-        if (static_cast<int>(prof.size()) != NGRID)
+                + "' has no `cosmo { <set> { area; volume; sigmaProfile ( ... ); } }` "
+                  "block in its .dat -- COSMO-SAC needs the COSMO surface data per "
+                  "component (no silent crutch; add it or select another activityModel).");
+
+        std::string set = want;
+        if (set.empty()) set = c.defaultCosmoSet();
+        if (set.empty())
+        {
+            std::string avail;
+            for (const auto& s : names) avail += " " + s;
             throw std::runtime_error("cosmoSAC: component '" + c.name()
-                + "' sigmaProfile has " + std::to_string(prof.size())
+                + "' carries several COSMO sets (" + avail + " ) -- name one with "
+                  "`activityModel { model cosmoSAC; source <set>; }`.");
+        }
+        if (!c.hasCosmoSet(set))
+            throw std::runtime_error("cosmoSAC: component '" + c.name()
+                + "' has no COSMO set '" + set + "' (add it, or pick a set it carries).");
+
+        const Component::CosmoSet& cs = c.cosmoSet(set);
+        if (cs.variant != "cosmoSAC2002")
+            throw std::runtime_error("cosmoSAC: component '" + c.name() + "' set '" + set
+                + "' declares variant '" + cs.variant + "', but only cosmoSAC2002 is "
+                  "implemented (do not mix a profile with the wrong variant's constants).");
+        if (static_cast<int>(cs.sigmaProfile.size()) != NGRID)
+            throw std::runtime_error("cosmoSAC: component '" + c.name() + "' set '" + set
+                + "' sigmaProfile has " + std::to_string(cs.sigmaProfile.size())
                 + " points, expected " + std::to_string(NGRID)
                 + " (the -0.025..0.025 e/A^2 grid, step 0.001).");
-        area_[i]  = c.cosmoArea();
-        vol_[i]   = c.cosmoVolume();
-        pArea_[i] = prof;
+        area_[i]  = cs.area;
+        vol_[i]   = cs.volume;
+        pArea_[i] = cs.sigmaProfile;
     }
 
     // The sigma grid + the (temperature-independent) exchange-energy matrix.

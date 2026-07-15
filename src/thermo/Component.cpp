@@ -50,6 +50,23 @@ void Component::setLiquidCp(const DictPtr& d)
     cpLiq_ = HeatCapacityModel::New(d);
 }
 
+std::vector<std::string> Component::cosmoSetNames() const
+{
+    std::vector<std::string> names;
+    names.reserve(cosmoSets_.size());
+    for (const auto& kv : cosmoSets_) names.push_back(kv.first);
+    return names;
+}
+
+const Component::CosmoSet& Component::cosmoSet(const std::string& name) const
+{
+    auto it = cosmoSets_.find(name);
+    if (it == cosmoSets_.end())
+        throw std::runtime_error("Component '" + name_ + "': no COSMO parameter set '"
+            + name + "'.");
+    return it->second;
+}
+
 void Component::readFromDict(const DictPtr& d)
 {
     // ---- Reference-state block layout: the DUAL-READER (forum 2026-06-11) --
@@ -448,16 +465,25 @@ void Component::readFromDict(const DictPtr& d)
         qUq_ = u->lookupScalarOrDefault("q", 0.0);
     }
 
-    // COSMO-SAC surface data (intrinsic): `cosmo { area; volume; sigmaProfile ( ... ); }`.
-    // Cavity area/volume + the p(sigma) profile on CosmoSac's global grid, all living
-    // ONCE in the component (like uniquac r/q).  Consumed by the CosmoSac activity model.
+    // COSMO-SAC surface data (intrinsic): `cosmo { <setName> { variant; source;
+    // area; volume; sigmaProfile ( ... ); } }`.  ONE or MORE named parameter sets
+    // (VT2005, LVPP, ...) living ONCE in the component; the CosmoSac model picks a
+    // set by name.  Consumed by the CosmoSac activity model.
     if (d->found("cosmo"))
     {
         auto c = d->subDict("cosmo");
-        cosmoArea_   = c->lookupScalarOrDefault("area", 0.0);
-        cosmoVolume_ = c->lookupScalarOrDefault("volume", 0.0);
-        if (c->found("sigmaProfile"))
-            cosmoSigma_ = c->lookupList("sigmaProfile");
+        for (const auto& setName : c->keys())
+        {
+            auto s = c->subDict(setName);
+            CosmoSet cs;
+            cs.variant = s->lookupWordOrDefault("variant", "cosmoSAC2002");
+            cs.source  = s->lookupWordOrDefault("source", "undeclared");
+            cs.area    = s->lookupScalarOrDefault("area", 0.0);
+            cs.volume  = s->lookupScalarOrDefault("volume", 0.0);
+            if (s->found("sigmaProfile"))
+                cs.sigmaProfile = s->lookupList("sigmaProfile");
+            cosmoSets_[setName] = std::move(cs);
+        }
     }
 
     // Relative permittivity (dielectric constant) -- used by the mixed-solvent

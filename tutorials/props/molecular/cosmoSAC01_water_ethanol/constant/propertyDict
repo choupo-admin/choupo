@@ -5,5 +5,5 @@
   non-ideality comes entirely from the sigma profiles.
 \*---------------------------------------------------------------------------*/
 components       ( water ethanol acetone nHexane toluene );
-activityModel    { model cosmoSAC; }
+activityModel    { model cosmoSAC; source VT2005; }
 equationOfState  { model idealGas; }

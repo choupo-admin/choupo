@@ -300,13 +300,24 @@ public:
     scalar qUniquac()  const { return qUq_; }
     bool   hasUniquac() const { return rUq_ > 0.0 && qUq_ > 0.0; }
 
-    // COSMO-SAC surface data (intrinsic; `cosmo { area; volume; sigmaProfile ( ... ); }`).
-    // area [A^2], volume [A^3], and the sigma-profile p(sigma) [A^2 per bin] on the
-    // model's GLOBAL grid.  Absent (empty profile) -> CosmoSac throws for that comp.
-    scalar cosmoArea()   const { return cosmoArea_; }
-    scalar cosmoVolume() const { return cosmoVolume_; }
-    const std::vector<scalar>& cosmoSigmaProfile() const { return cosmoSigma_; }
-    bool   hasCosmo()    const { return cosmoArea_ > 0.0 && !cosmoSigma_.empty(); }
+    // COSMO-SAC surface data (intrinsic).  A component may carry SEVERAL named
+    // parameter SETS (unlike Joback's single set) -- one per source/variant --
+    // in its `cosmo { <setName> { variant; source; area; volume; sigmaProfile (…); } }`
+    // block; the case's `activityModel { model cosmoSAC; source <setName>; }` picks one.
+    struct CosmoSet
+    {
+        std::string variant;              // e.g. cosmoSAC2002 -> which constants
+        std::string source;               // provenance (databank + primary)
+        scalar area   = 0.0;              // cavity surface area [A^2]
+        scalar volume = 0.0;              // cavity volume [A^3]
+        std::vector<scalar> sigmaProfile; // p(sigma) [A^2 per bin] on the model grid
+    };
+    std::vector<std::string> cosmoSetNames() const;
+    bool hasCosmoSet(const std::string& name) const { return cosmoSets_.count(name) > 0; }
+    const CosmoSet& cosmoSet(const std::string& name) const;   // throws if absent
+    // The lone set's name when exactly one is declared (the natural default); "" otherwise.
+    std::string defaultCosmoSet() const
+    { return cosmoSets_.size() == 1 ? cosmoSets_.begin()->first : std::string(); }
 
     bool hasGroups(const std::string& method) const { return groups_.count(method) > 0; }
     const std::vector<std::pair<std::string, int>>& groupsFor(const std::string& method) const
@@ -402,10 +413,8 @@ private:
     scalar rUq_ = 0.0;
     scalar qUq_ = 0.0;
 
-    // COSMO-SAC surface data (intrinsic; `cosmo { area; volume; sigmaProfile ( ... ); }`).
-    scalar cosmoArea_ = 0.0;
-    scalar cosmoVolume_ = 0.0;
-    std::vector<scalar> cosmoSigma_;
+    // COSMO-SAC surface data (intrinsic): named parameter sets by set name.
+    std::map<std::string, CosmoSet> cosmoSets_;
 };
 
 } // namespace Choupo

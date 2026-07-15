@@ -455,13 +455,20 @@ adds NONE of that IS in: the 2002 (Lin & Sandler) variant, exactly the NIST benc
 (Bell et al., AIChE J. 2019; reference code usnistgov/COSMOSAC, public domain), as a plain
 `ActivityModel` subclass (`src/thermo/activityCoefficient/CosmoSac.{H,cpp}`, model key
 `cosmoSAC`) — no new interface, no new deps, ~150 lines of self-contained C++.  Each
-compound carries its OWN COSMO surface data in its `component.dat` `cosmo { area; volume;
-sigmaProfile ( … ); }` block (51-point grid −0.025..0.025 e/Å², step 0.001); the grid +
-constants are hardcoded in the model.  Profiles are VT-2005 (Mullins IECR 45 (2006) 4389,
-DFT-COSMO, US-gov public domain via the NIST bundle) — ONE source, never mixed with LVPP/
-CHAOS; those (MIT / CC-BY, thousands of compounds) are licence-compatible future swaps but
-must replace VT-2005 wholesale with their matching variant constants, never be mixed in.
-A component lacking `cosmo` is a LOUD error.  Validated: pure→lnγ=0 exact, water/hexane
+compound carries its OWN COSMO surface data in its `component.dat` `cosmo { <setName> {
+variant; source; area; volume; sigmaProfile ( … ); } }` block — one or MORE named
+parameter SETS (unlike Joback's single set), 51-point grid −0.025..0.025 e/Å², step 0.001.
+The case PICKS a set: `activityModel { model cosmoSAC; source <setName>; }` (omit `source`
+when a component carries a single set — its lone set is the default; a multi-set component
+then REQUIRES an explicit `source`).  Each set declares its `variant` → the matching
+constants (only `cosmoSAC2002` implemented today; a set with another variant is a LOUD
+error — never mix a profile with the wrong variant's constants).  MULTIPLE SOURCES ARE
+ALLOWED as long as each set names its own (Vítor 2026-07-15): 77 standard components carry
+a `VT2005` set (Mullins IECR 45 (2006) 4389, DFT-COSMO, US-gov public domain via the NIST
+bundle); LVPP (MIT, ~2500) and CHAOS (CC-BY, ~53000) are licence-compatible additional
+sets a component may ALSO carry, each labelled.  A component lacking a `cosmo` block, or
+the requested set, is a LOUD error.  NOT for the `data/groupEstimative/` lake (a name
+catalogue, not COSMO targets).  Validated: pure→lnγ=0 exact, water/hexane
 strongly non-ideal, and a bit-for-bit cross-check vs an independent implementation of the
 same equations+profiles.  Still rejected: profile GENERATION (quantum chemistry), bulk
 import of thousands, multiple variants, any new architecture.  Reference case:
