@@ -104,23 +104,30 @@ export function synthesizeUnitClone(
   const inNames = asList(u["in"] ?? u["inputs"]);
   const outNames = asList(u["outputs"]);
 
-  // Feed conditions FROZEN from the last run, written as per-stream 0/ files
-  // (the legacy `streams {}` block is RETIRED -- the engine reads 0/ only).
-  // Each inlet's 0/ file OVERRIDES the parent's authored one with the run value
-  // (canonical SI: F in kmol/s, T in K, P in Pa); when there is no run stream
-  // (pre-run pop-out) we keep the parent's authored 0/<nm> untouched.
+  // 0/ stream state for the clone (the legacy `streams {}` block is RETIRED --
+  // the engine reads 0/ only).  Flowsheet COMPLETENESS requires the graph stream
+  // IDs (this unit's ins + outs) to match the 0/ files EXACTLY.  A drilled
+  // sub-unit's parent carries the WHOLE plant's 0/ tree; carrying it verbatim
+  // would ORPHAN every foreign stream and fail the check.  So rebuild 0/ to
+  // hold EXACTLY this clone's streams: the run's FROZEN value (canonical SI:
+  // F kmol/s, T K, P Pa) when available, else the parent's own 0/<name>.
   const runStreams = (runResult?.streams ?? []) as StreamResult[];
   const findS = (nm: string) => runStreams.find((s) => s.name === nm);
-  const zeroFiles: Record<string, string> = {};
-  for (const nm of inNames) {
-    const s = findS(nm);
-    if (!s) continue;
+  const parentExtra = caseFiles.extraFiles ?? {};
+  const stream0 = (s: StreamResult): string => {
     const comp = (s.composition ?? {}) as Record<string, number>;
     const flows = Object.entries(comp)
       .map(([c, x]) => `    ${c}    ${(s.F ?? 0) * x};`)
       .join("\n");
-    zeroFiles[`0/${nm}`] =
-      `componentMolarFlows\n{\n${flows}\n}\nT    ${s.T} K;\nP    ${s.P} Pa;\n`;
+    return `componentMolarFlows\n{\n${flows}\n}\nT    ${s.T} K;\nP    ${s.P} Pa;\n`;
+  };
+  const cloneStreams = Array.from(new Set([...inNames, ...outNames]));
+  const zeroFiles: Record<string, string> = {};
+  for (const nm of cloneStreams) {
+    const s = findS(nm);
+    if (s) { zeroFiles[`0/${nm}`] = stream0(s); continue; }
+    const parent0 = parentExtra[`0/${nm}`];
+    if (parent0 !== undefined) zeroFiles[`0/${nm}`] = parent0;
   }
 
   // Resolve `$variable` operation values to their CONVERGED values from the
@@ -148,8 +155,13 @@ export function synthesizeUnitClone(
     } as unknown as CaseFiles["flowsheet"],
   };
   if (caseFiles.reactions) files.reactions = caseFiles.reactions;
-  // Parent 0/ tree rides along; the frozen inlets override their own 0/ files.
-  files.extraFiles = { ...(caseFiles.extraFiles ?? {}), ...zeroFiles };
+  // Carry the parent's NON-0/ files (constant/, sealed propertyData); the 0/ tree
+  // is rebuilt above to contain EXACTLY this clone's streams, so foreign parent
+  // 0/ files are dropped (they would orphan and fail the completeness check).
+  const non0: Record<string, string> = {};
+  for (const [k, v] of Object.entries(parentExtra))
+    if (!k.startsWith("0/")) non0[k] = v;
+  files.extraFiles = { ...non0, ...zeroFiles };
 
   const profile = (runResult?.profiles ?? []).find((p) => p.unit === name) ?? null;
   const inStreams = inNames.map(findS).filter(Boolean) as StreamResult[];
