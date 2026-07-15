@@ -344,17 +344,13 @@ try
             thermoDict = sel;
             thermo.readFromDict(sel, db);                    // FLAT form
         }
-        else
+        else if (sel->found("package"))
         {
-            const std::string pkgName = sel->lookupWord("package");
-            const fs::path rec = fs::path(Database::currentRoot())
-                                     / "standards" / "propertyPackages" / (pkgName + ".dat");
-            auto pkgDict = Dictionary::fromFile(rec.string());
-            if (verbosity >= 2)
-                std::cout << "Property package:  " << pkgName
-                          << "   (record: data/standards/propertyPackages/"
-                          << pkgName << ".dat)\n";
-            thermo = ThermoPackageBuilder::build(pkgDict, db);   // SELECTOR
+            throw std::runtime_error(
+                "constant/propertyDict is a `package " + sel->lookupWord("package")
+                + ";` SELECTOR -- the shared propertyPackages catalogue is retired."
+                  " Write the propertyPackage manifest INLINE in constant/propertyDict"
+                  " (self-contained, the official form).");
         }
     }
 

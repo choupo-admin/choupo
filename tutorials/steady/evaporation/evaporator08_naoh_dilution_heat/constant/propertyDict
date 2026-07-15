@@ -1,14 +1,43 @@
 /*---------------------------------------------------------------------------*\
-  constant/propertyPackage -- THE SELECTOR: this case USES the shared
-  catalogue manifest 'aqueousNaOH_pitzer' (several cases share identical thermo,
-  so the record lives once in the catalogue; a case-specific thermo would be
-  written INLINE here instead).
-
-  The manifest lives at:  data/standards/propertyPackages/aqueousNaOH_pitzer.dat
-  and declares:  components ( water NaOH )
-                 liquid method  electrolyte.pitzer     vapour method  builtin.idealGas
-                 (+ the parameter files it cites, verified at assembly)
-  Run the case and READ THE LOG: the assembly announces the selected package,
-  each method's reference rungs and every parameter with its source.
+  constant/propertyDict -- the case's OFFICIAL property package, INLINE and
+  self-contained (no selector, no shared catalogue).  The ThermoPackageBuilder
+  assembles + verifies every declared parameter file and announces the assembly
+  in the run log.  Edit this file to change THIS case's thermo.
 \*---------------------------------------------------------------------------*/
-package aqueousNaOH_pitzer;
+recordType propertyPackage;
+schemaVersion 1;
+
+name aqueousNaOH_pitzer;
+
+components ( water NaOH );
+
+chemistry
+{
+    salts ( sodiumHydroxide );
+
+    activeSaltEquilibriumData
+    {
+        sodiumHydroxide measuredSolubilityAnchor;
+    }
+}
+
+propertyMethods
+{
+    liquid electrolyte.pitzer;
+    vapour builtin.idealGas;
+    solid  builtin.saltEquilibrium;
+}
+
+parameters
+{
+    pitzerPairs
+    {
+        Na-OH "data/standards/parameters/electrolyte/pitzer/pairs/Na-OH.dat";
+    }
+}
+
+
+notes
+{
+    purpose "Aspen-like NaOH Pitzer package (calorimetrically fitted Na-OH pair -> heat-of-dilution L_phi).";
+}

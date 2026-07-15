@@ -1,14 +1,44 @@
 /*---------------------------------------------------------------------------*\
-  constant/propertyPackage -- THE SELECTOR: this case USES the shared
-  catalogue manifest 'aqueousNaCl_pitzer' (several cases share identical thermo,
-  so the record lives once in the catalogue; a case-specific thermo would be
-  written INLINE here instead).
-
-  The manifest lives at:  data/standards/propertyPackages/aqueousNaCl_pitzer.dat
-  and declares:  components ( water NaCl )
-                 liquid method  electrolyte.pitzer     vapour method  builtin.idealGas
-                 (+ the parameter files it cites, verified at assembly)
-  Run the case and READ THE LOG: the assembly announces the selected package,
-  each method's reference rungs and every parameter with its source.
+  constant/propertyDict -- the case's OFFICIAL property package, INLINE and
+  self-contained (no selector, no shared catalogue).  The ThermoPackageBuilder
+  assembles + verifies every declared parameter file and announces the assembly
+  in the run log.  Edit this file to change THIS case's thermo.
 \*---------------------------------------------------------------------------*/
-package aqueousNaCl_pitzer;
+recordType propertyPackage;
+schemaVersion 1;
+
+name aqueousNaCl_pitzer;
+
+components ( water NaCl );
+
+chemistry
+{
+    salts ( halite );
+
+    activeSaltEquilibriumData
+    {
+        halite measuredSolubilityAnchor;
+    }
+}
+
+propertyMethods
+{
+    liquid electrolyte.pitzer;
+    vapour builtin.idealGas;
+    solid  builtin.saltEquilibrium;
+}
+
+parameters
+{
+    pitzerPairs
+    {
+        Na-Cl "data/standards/parameters/electrolyte/pitzer/pairs/Na-Cl.dat";
+    }
+}
+
+
+notes
+{
+    purpose "Property package: the central object a case selects. Declares components, chemistry, methods, parameters and reported sets.";
+    builtinMethods "builtin.idealGas and builtin.saltEquilibrium are runtime built-ins; only electrolyte.pitzer is represented as an explicit propertyMethod record here.";
+}
