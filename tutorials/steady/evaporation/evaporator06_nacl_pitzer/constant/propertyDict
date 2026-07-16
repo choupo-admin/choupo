@@ -19,6 +19,6 @@ propertyMethods
     vapour builtin.idealGas;
 }
 
-// Pitzer pair(s) resolved by cation-anion name: data/standards/parameters/electrolyte/pitzer/pairs/Na-Cl.dat
+// Pitzer pair(s) resolved by cation-anion name: data/standards/parameters/Pitzer/pairs/Na-Cl.dat
 
 // Property package: the central object a case selects. Declares components, chemistry, methods, parameters and reported sets.

@@ -56,7 +56,7 @@ cited per value:
   water r = 0.9200, q = 1.400.
 
 The same numbers live, fully provenanced, in
-`data/standards/binaryPairs/UNIQUAC/nButanol-water.dat`. The engine evaluates
+`data/standards/parameters/UNIQUAC/nButanol-water.dat`. The engine evaluates
 the full `a + b·T + c·T²` temperature dependence (the quadratic `c·T²` term is
 essential — at 320 K it is ~−450 K, comparable to `a`).
 

@@ -174,7 +174,7 @@ componentApproach apparent;
 apparentToTrue    { NaCl { Na 1; Cl 1; } }
 chemistry         { salts { halite; } }
 propertyMethods   { liquid electrolyte.pitzer; vapour idealGas; solid saltEquilibrium; }
-parameters        { pitzerPairs { Na-Cl ".../parameters/electrolyte/pitzer/pairs/Na-Cl.dat"; } }
+parameters        { pitzerPairs { Na-Cl ".../parameters/Pitzer/pairs/Na-Cl.dat"; } }
 propertySets      { osmoticPressure; waterActivity; ionicStrength;
                     saturationIndex; apparentComposition; trueComposition; }
 ```

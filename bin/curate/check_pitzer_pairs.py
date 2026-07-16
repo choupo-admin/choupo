@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Faithfulness guard: every parameters/electrolyte/pitzer/pairs/<c>-<a>.dat must
+"""Faithfulness guard: every parameters/Pitzer/pairs/<c>-<a>.dat must
 equal its pairs.dat row, bit-exact, 1:1 bijection.  Runs while pairs.dat exists;
 flips to assert ABSENT after deletion."""
 import re, sys
 from pathlib import Path
 repo = Path(__file__).resolve().parents[2]
 pf = repo / "data/standards/electrolyte/pairs.dat"
-pdir = repo / "data/standards/parameters/electrolyte/pitzer/pairs"
+pdir = repo / "data/standards/parameters/Pitzer/pairs"
 if not pf.exists():
     print("electrolyte/pairs.dat ABSENT -- pairs kind consolidated. OK."); sys.exit(0)
 body = re.search(r'pairs\s*\((.*)\)', pf.read_text(), re.S).group(1)

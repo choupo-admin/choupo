@@ -1,7 +1,7 @@
 import re, os
 src = open("data/standards/electrolyte/pairs.dat").read()
 body = re.search(r'pairs\s*\((.*)\)', src, re.S).group(1)
-outdir = "data/standards/parameters/electrolyte/pitzer/pairs"
+outdir = "data/standards/parameters/Pitzer/pairs"
 os.makedirs(outdir, exist_ok=True)
 NUM = ["beta0","beta1","beta2","Cphi","alpha1","alpha2","dbeta0_dT","dbeta1_dT","dCphi_dT","lphiValidityMax"]
 def tok(b,k):

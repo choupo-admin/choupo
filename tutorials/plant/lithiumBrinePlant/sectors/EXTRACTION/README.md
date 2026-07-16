@@ -34,7 +34,7 @@ counter-current SX returns when the extractor's seeding hardens.
 ## The two-liquid surface
 The settler carries a per-unit `thermo{}` override declaring two liquid phases
 (the LL structure the decanter needs); both phases share the SAME NRTL pairs
-from `constant/binaryPairs/NRTL/` — one source of numbers, the split coming from
+from `constant/parameters/NRTL/` — one source of numbers, the split coming from
 the surface's curvature.
 
 ## Declared simplification: NaCl background dropped

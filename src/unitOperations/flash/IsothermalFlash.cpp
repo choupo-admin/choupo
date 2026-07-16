@@ -764,7 +764,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                           << thermo.comp(i).name();
                 if (thermo.isHenrySolute(i))
                 {
-                    std::cout << "  K from Henry pair henrysLaw/"
+                    std::cout << "  K from Henry pair parameters/Henry/"
                               << thermo.comp(i).name() << "-"
                               << thermo.solventName() << ".dat";
                 }

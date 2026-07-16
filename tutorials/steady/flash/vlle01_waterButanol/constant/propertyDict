@@ -10,7 +10,7 @@
   matching Winkelman's Figs 1-2 at 320 K.
 
   An LLE-specific regression is what it takes -- a VLE-fitted set (e.g. the
-  DECHEMA NRTL in data/standards/binaryPairs/NRTL/nButanol-water.dat) has no gap
+  DECHEMA NRTL in data/standards/parameters/NRTL/nButanol-water.dat) has no gap
   and predicts complete miscibility.  Liquid-liquid equilibria are constrained
   by a different region of g^E(x,T) than the vapour-liquid data.
 
@@ -41,7 +41,7 @@
 
   These numbers are repeated inline here so the case is self-contained (Choupo
   credo); they also live, fully provenanced, in
-  data/standards/binaryPairs/UNIQUAC/nButanol-water.dat.
+  data/standards/parameters/UNIQUAC/nButanol-water.dat.
 \*---------------------------------------------------------------------------*/
 
 components       ( water  nButanol );

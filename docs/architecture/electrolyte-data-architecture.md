@@ -56,7 +56,7 @@ method (`reference = fused`, `solvent = none`), species unchanged.
 | `species/<name>.dat` | model species: charge + `…Thermo{}` blocks **tagged by medium** (`aqueousThermo`, later `fusedThermo`); header "never fed to a flowsheet" | `species/aqueous/Na.dat`, `Cl.dat` |
 | `phases/solid/<phase>.dat` | crystalline phase (ρ_p, k_v, polymorphs) | `phases/solid/halite.dat` |
 | `chemistry/` | REAL equilibria (stoichiometry + K + ΔH): `dissolution` (solid⇌ions+nH₂O), `association`/`speciation` (has a K) | `chemistry/salts/halite.dat` |
-| `parameters/` | model interaction params (Pitzer pairs + mixing θ/ψ, NRTL, fused, transfer terms) — keyed by method | `parameters/electrolyte/pitzer/pairs/Na-Cl.dat` |
+| `parameters/` | model interaction params (Pitzer pairs + mixing θ/ψ, NRTL, fused, transfer terms) — keyed by method | `parameters/Pitzer/pairs/Na-Cl.dat` |
 | `propertyMethods/<medium>/<model>.dat` | DECLARES the model + its reference rung (never stores the datum value) | `propertyMethods/electrolyte/pitzer.dat` |
 | `propertyPackages/<case>.dat` | **SELECTS** all of the above; activates the representation; one per scenario; a pure manifest (references, never values) | `propertyPackages/aqueousNaCl_pitzer.dat` |
 

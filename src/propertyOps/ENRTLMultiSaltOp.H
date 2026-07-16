@@ -36,7 +36,7 @@ License
   experiment: e.g. NaCl-KCl-H2O at 4 mol/kg total) and reports gamma_pm of
   every salt across the sweep.  Pair parameters come from the curated eNRTL
   catalogue by (cation, anion) name -- case-local overlay first, then
-  data/standards/parameters/electrolyte/eNRTL/.
+  data/standards/parameters/eNRTL/.
 
   Dictionary form:
 

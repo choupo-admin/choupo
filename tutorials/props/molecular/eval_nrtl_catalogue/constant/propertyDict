@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   NO inline pairs -- that is the point.  The NRTL ethanol-water pair resolves
   through the search path from this case's OWN vendored copy
-  (constant/binaryPairs/NRTL/ethanol-water.dat), carrying its full primary
+  (constant/parameters/NRTL/ethanol-water.dat), carrying its full primary
   citation -- so what this case scores is a REAL, provenance-bearing catalogue
   entry, not numbers typed inline into the dict.  (The pair is vendored
   case-local rather than pulled from data/standards/ so the case stays

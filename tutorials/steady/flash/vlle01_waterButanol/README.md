@@ -57,7 +57,7 @@ water/1-butanol, cited per value:
   1-butanol r = 3.9243, q = 3.668; water r = 0.9200, q = 1.400.
 
 The same numbers, fully provenanced, live in
-`data/standards/binaryPairs/UNIQUAC/nButanol-water.dat`; they are repeated
+`data/standards/parameters/UNIQUAC/nButanol-water.dat`; they are repeated
 inline so the case is self-contained (Choupo credo).
 
 ### The full temperature dependence is preserved
@@ -97,7 +97,7 @@ Being a *vapour-liquid* fit, it has **no** miscibility gap, so the flash found a
 single liquid — and the case was kept as an honest "VLE-fit-misses-LLE" lesson,
 explicitly *pending* a cited LLE parameter set. Winkelman et al. (2009) **is**
 that cited LLE set, so the case now shows the real split. The VLE-blind NRTL
-lesson lives on in `data/standards/binaryPairs/NRTL/nButanol-water.dat`'s
+lesson lives on in `data/standards/parameters/NRTL/nButanol-water.dat`'s
 provenance, and the companion scan below still teaches the predictive-UNIFAC
 failure mode.
 

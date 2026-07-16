@@ -63,10 +63,10 @@ fs::path locatePairFile(const std::string& pairName, const std::string& nodeBase
 {
     if (!nodeBase.empty())
     {
-        fs::path f = fs::path(nodeBase) / "constant" / "binaryPairs" / "UNIQUAC" / pairName;
+        fs::path f = fs::path(nodeBase) / "constant" / "parameters" / "UNIQUAC" / pairName;
         if (fs::exists(f)) return f;
     }
-    fs::path caseFile = fs::current_path() / "constant" / "binaryPairs" / "UNIQUAC" / pairName;
+    fs::path caseFile = fs::current_path() / "constant" / "parameters" / "UNIQUAC" / pairName;
     if (fs::exists(caseFile)) return caseFile;
 
     // Case snapshot: propertyData/parameters/ is the CANONICAL param home (sealed
@@ -74,20 +74,20 @@ fs::path locatePairFile(const std::string& pairName, const std::string& nodeBase
     if (!nodeBase.empty())
     {
         fs::path nodeSnap = fs::path(nodeBase) / "constant" / "propertyData"
-                          / "parameters" / "activity" / "UNIQUAC" / pairName;
+                          / "parameters" / "UNIQUAC" / pairName;
         if (fs::exists(nodeSnap)) return nodeSnap;
     }
     fs::path caseSnap = fs::current_path() / "constant" / "propertyData"
-                      / "parameters" / "activity" / "UNIQUAC" / pairName;
+                      / "parameters" / "UNIQUAC" / pairName;
     if (fs::exists(caseSnap)) return caseSnap;
 
     const auto& root = Database::currentRoot();
     if (!root.empty())
     {
-        fs::path stdFile = fs::path(root) / "standards" / "binaryPairs" / "UNIQUAC" / pairName;
+        fs::path stdFile = fs::path(root) / "standards" / "parameters" / "UNIQUAC" / pairName;
         if (fs::exists(stdFile)) return stdFile;
-        fs::path proposedFile = fs::path(root) / "local" / "binaryPairs" / "UNIQUAC" / pairName;
-        if (fs::exists(proposedFile)) return proposedFile;
+        fs::path localFile = fs::path(root) / "local" / "parameters" / "UNIQUAC" / pairName;
+        if (fs::exists(localFile)) return localFile;
     }
     return {};
 }
@@ -180,12 +180,12 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
 
             auto fd = Dictionary::fromFile(file.string());
             const bool isProposed =
-                file.string().find("/proposed/binaryPairs/") != std::string::npos;
+                file.string().find("/local/parameters/") != std::string::npos;
             if (isProposed)
             {
                 const bool isNew = AdvisoryLog::instance().add(
                     "provenance", "warning", "UNIQUAC " + names[i] + "-" + names[j],
-                    "loaded from data/local/binaryPairs -- UNVERIFIED");
+                    "loaded from data/local/parameters -- UNVERIFIED");
                 if (isNew)
                     std::cout << "  [local] UNIQUAC binary pair " << names[i]
                               << "-" << names[j]

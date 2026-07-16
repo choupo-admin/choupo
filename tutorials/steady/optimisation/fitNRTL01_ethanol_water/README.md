@@ -105,7 +105,7 @@ Then a per-point breakdown:
 And finally the proposal-file location:
 
 ```
-  proposal written to: constant/binaryPairs/NRTL/ethanol-water.fit-2026-05-16.dat
+  proposal written to: constant/parameters/NRTL/ethanol-water.fit-2026-05-16.dat
 ```
 
 The fitted pair (a_ij = 9.33, b_ij = -3609 K) lands well away from the DECHEMA
@@ -122,13 +122,13 @@ The simulator **never** silently overwrites the active parameter set.
 Promote a proposal explicitly:
 
 ```bash
-cd tutorials/steady/optimisation/fitNRTL01_ethanol_water/constant/binaryPairs/NRTL
-diff ethanol-water.fit-2026-05-16.dat "$CHOUPO_HOME/data/standards/binaryPairs/NRTL/ethanol-water.dat"
+cd tutorials/steady/optimisation/fitNRTL01_ethanol_water/constant/parameters/NRTL
+diff ethanol-water.fit-2026-05-16.dat "$CHOUPO_HOME/data/standards/parameters/NRTL/ethanol-water.dat"
 mv ethanol-water.fit-2026-05-16.dat ethanol-water.dat
 ```
 
 Once an unsuffixed `ethanol-water.dat` exists in the case-local
-`constant/binaryPairs/NRTL/`, the next run uses it — the case-local
+`constant/parameters/NRTL/`, the next run uses it — the case-local
 file wins over the standards file (see
 `tutorials/steady/flowsheets/process04_research_workflow/README.md` for the lookup-order
 pattern).

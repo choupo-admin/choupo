@@ -780,7 +780,7 @@ a value.
 A gas solute (CO$_2$, NH$_3$, O$_2$, H$_2$S, SO$_2$,~\dots\ in water)
 takes the infinite-dilution Henry reference: declare
 \code{solvent water;} and the engine consults the Henry-pair catalogue
-(\file{data/standards/henrysLaw/<solute>-<solvent>.dat}, van~'t~Hoff
+(\file{data/standards/parameters/Henry/<solute>-<solvent>.dat}, van~'t~Hoff
 temperature dependence).  The absorber/stripper and the dilute-solution
 flash world run on this.  Each engaged pair is announced with its
 constants and source (\code{[henry]} log lines).
@@ -820,7 +820,7 @@ propertyMethods
 solution   { solvent water;  solutes ( CO2 ); }
 parameters
 {
-    henryPairs { CO2-water "data/standards/henrysLaw/CO2-water.dat"; }
+    henryPairs { CO2-water "data/standards/parameters/Henry/CO2-water.dat"; }
 }
 \end{lstlisting}
 

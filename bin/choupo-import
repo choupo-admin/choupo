@@ -125,7 +125,7 @@ def main():
                 want(m.group(2))
             pp_blk = block(par, "pitzerPairs")
             for pair in (words(pp_blk) if pp_blk else []):
-                want("parameters/electrolyte/pitzer/pairs/" + pair + ".dat")
+                want("parameters/Pitzer/pairs/" + pair + ".dat")
 
     # closure of ONE package (set of standards-relative record paths) -----
     def closure_of(pp):
@@ -161,7 +161,7 @@ def main():
         ans  = [i for i in allions if i in ("Cl","SO4","OH","CO3","HCO3","Br","NO3")]
         for ca in cats:
             for an in ans:
-                want("parameters/electrolyte/pitzer/pairs/" + ca + "-" + an + ".dat")
+                want("parameters/Pitzer/pairs/" + ca + "-" + an + ".dat")
         return recs
 
     # PLANT package (constant/propertyDict|propertyPackage directly under the case)

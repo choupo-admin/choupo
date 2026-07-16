@@ -9,7 +9,7 @@
             |
         [ SEPARATION ] --- isothermal flash; the ethylAcetate-water NRTL pair
             |  \            is PARTICULAR to this sector
-         liquid vapor      (sectors/SEPARATION/constant/binaryPairs/NRTL/...);
+         liquid vapor      (sectors/SEPARATION/constant/parameters/NRTL/...);
                             ethanol-water is INHERITED from the standard library.
 
   The point of the case is the FRACTAL `constant/`: components shared across the

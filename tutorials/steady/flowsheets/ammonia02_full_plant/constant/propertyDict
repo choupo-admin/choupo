@@ -19,7 +19,7 @@ activityModel    { model ideal; }
 equationOfState  { model SRK; }
 // Henry solvent: components flagged role solute dissolve by the FULL
 // unsymmetric convention  K = gamma* H(T) Poynting/(phi_V P), constants from
-// data/standards/henrysLaw/<solute>-NH3.dat (announced [henry] in the log):
+// data/standards/parameters/Henry/<solute>-NH3.dat (announced [henry] in the log):
 //   H2-NH3:  H_ref 1.18e9 Pa, dH +13.6 kJ/mol, v_inf 24 cm3/mol  (Wiebe 1934)
 //   N2-NH3:  H_ref 8.5e8  Pa, dH +11.0 kJ/mol, v_inf 23 cm3/mol  (Larson 1925 / SDS 5-6)
 // NH3 itself has no NH3-NH3 pair -> falls back to Raoult (it IS the solvent).

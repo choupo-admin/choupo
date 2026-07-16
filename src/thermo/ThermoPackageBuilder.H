@@ -33,7 +33,7 @@ License
   Records are loaded + verified from the case's sealed constant/propertyData/
   snapshot or the standards catalogue: components/ (the unified substance
   records), species/aqueous.dat, chemistry/, and
-  parameters/electrolyte/pitzer/pairs/.  (Water, a plain molecular component,
+  parameters/Pitzer/pairs/.  (Water, a plain molecular component,
   is loaded by name as usual.)
 \*---------------------------------------------------------------------------*/
 

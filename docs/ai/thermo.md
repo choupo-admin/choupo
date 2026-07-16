@@ -193,8 +193,8 @@ number require you to name the model?*).  See
    fit them or pick SRK/PR which run off Tc,Pc,ω") — never a silent
    corresponding-states fallback.
 3. **PAIR parameters (`k_ij` and friends) → the declarative parameter
-   catalogue**, `data/standards/parameters/eos/kij/<i>-<j>.dat` (the shipped
-   home; siblings `parameters/binary/` for activity pairs and
+   catalogue**, `data/standards/parameters/SRK/<i>-<j>.dat` (the shipped
+   home; siblings `parameters/<MODEL>/` for activity pairs and
    `parameters/electrolyte/` for Pitzer/eNRTL), declared in a
    `propertyPackage` via `parameters { kijPairs { N2-CH4 "…"; } }` and
    loaded by the Builder with a LOUD `[builder] kij(N2,CH4) = 0.0289 ---
@@ -243,7 +243,7 @@ error.
 ## solvent  (for Henry's law)
 
 When a component is flagged `role solute;` (in its.dat) and a Henry
-pair exists in `data/standards/henrysLaw/<solute>-<solvent>.dat`, you
+pair exists in `data/standards/parameters/Henry/<solute>-<solvent>.dat`, you
 must declare which component is the solvent:
 
 ```
@@ -424,7 +424,7 @@ parameters
     henryPairs
     {
         // Sander (2015) compilation, CC-BY
-        CO2-water "data/standards/henrysLaw/CO2-water.dat";
+        CO2-water "data/standards/parameters/Henry/CO2-water.dat";
     }
 }
 ```
@@ -466,7 +466,7 @@ parameters
     kijPairs
     {
         // Knapp et al., DECHEMA Chemistry Data Series VI (1982)
-        N2-CH4 "data/standards/parameters/eos/kij/N2-CH4.dat";
+        N2-CH4 "data/standards/parameters/SRK/N2-CH4.dat";
     }
 }
 ```
@@ -475,7 +475,7 @@ Each declared record is loaded at assembly — a missing/bad file REFUSES,
 naming the entry — and announced LOUD:
 
 ```
-[builder] kij(N2,CH4) = 0.0289  --- data/standards/parameters/eos/kij/N2-CH4.dat
+[builder] kij(N2,CH4) = 0.0289  --- data/standards/parameters/SRK/N2-CH4.dat
 ```
 
 No `kijPairs` block → `kij = 0`, announced (the EoS runs

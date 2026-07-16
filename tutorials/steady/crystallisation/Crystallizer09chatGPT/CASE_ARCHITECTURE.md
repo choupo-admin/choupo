@@ -20,7 +20,7 @@ Code / Codex what the repository should support.
 > activity.NRTL`) -- NO inline `thermo{}` -- and its NRTL ethanol-water parameter is
 > inherited from the plant context's `propertyData/parameters/activity/NRTL/` (its
 > natural home: a molecular pair the plant also owns).  The `constant/electrolyte/`
-> and `constant/binaryPairs/` overlays are GONE; the case runs with `data/standards`
+> and `constant/parameters/` overlays are GONE; the case runs with `data/standards`
 > hidden, from `propertyDict` + `propertyData/` + the `inherits` chain alone.
 
 ## 1. Domain hierarchy
@@ -143,7 +143,7 @@ The engine resolves the chain, and because the selected liquid method is molecul
 the inherited salt chemistry is available-but-inactive for `recovery` (announced at
 run time).  The NRTL ethanol-water parameter is inherited from the plant context's
 `propertyData/parameters/activity/NRTL/` — its natural home, a molecular pair the
-plant also owns.  No inline `thermo{}`, no `constant/binaryPairs/` overlay.
+plant also owns.  No inline `thermo{}`, no `constant/parameters/` overlay.
 
 ## 6. No symlink expansion problem
 

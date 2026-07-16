@@ -2,8 +2,8 @@
 
 > **DATA MIGRATED 2026-06-30 — Aspen-like layout.** The electrolyte catalogue this
 > document covers was consolidated kind-by-kind into the ratified layout: Pitzer
-> pairs -> `parameters/electrolyte/pitzer/pairs/`, mixing -> `.../pitzer/mixing/`,
-> eNRTL -> `parameters/electrolyte/eNRTL/` (this folder); aqueous ions -> `species/aqueous/`;
+> pairs -> `parameters/Pitzer/pairs/`, mixing -> `.../pitzer/mixing/`,
+> eNRTL -> `parameters/eNRTL/` (this folder); aqueous ions -> `species/aqueous/`;
 > aqueous complexes + gas dissolution -> `chemistry/{aqueousSpeciation,gasLiquid}/`; minerals -> the
 > `solidPhases` block of each `components/<mineral>.dat`; resins -> `assets/resins/`. The apparent/true
 > split was retired 2026-07-01 (one component = one file). The monolith names (`pairs.dat`, `ions.dat`,

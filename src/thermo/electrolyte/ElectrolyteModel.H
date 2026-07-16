@@ -40,7 +40,7 @@ License
   -- where the selected model (ElectrolyteActivity) IS-A ActivityModel AND exposes
   this interface (see ElectrolyteActivity.H).  The salt's ions, solubility, and
   Pitzer/eNRTL pairs are INTRINSIC data read from the salt component's
-  `electrolyte{}` block + species/aqueous.dat + parameters/electrolyte/pitzer/pairs/ -- declared once,
+  `electrolyte{}` block + species/aqueous.dat + parameters/Pitzer/pairs/ -- declared once,
   called by name, never re-typed per case.  ThermoPackage builds an
   ElectrolyteModel ONLY when an electrolyte activity model is selected, so the
   molecular cases are byte-identical and stay green.  Saturation (Ksp) and the

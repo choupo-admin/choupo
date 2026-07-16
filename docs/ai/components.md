@@ -61,7 +61,7 @@ reaction calculation. Run the gap report and inspect the Property Explorer
 provenance before choosing one.
 
 ChemSep also stages 748 NRTL/UNIQUAC/Wilson records under
-`data/local/binaryPairs/`. Pair resolution is lower-precedence than the
+`data/local/parameters/`. Pair resolution is lower-precedence than the
 standard library and is announced as `[local]`; missing pairs still
 ideal-default loudly. The records passed the deterministic identity, source
 hash and unit-conversion audit in `data/local/CHEMSEP-PAIR-AUDIT.md`, but

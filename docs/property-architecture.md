@@ -176,7 +176,7 @@ speciation, electrolyte EoS.
   (Pitzer + a DebyeHuckel limiting-law baseline). Given ion molalities + T →
   `I = ½ Σ mᵢzᵢ²`, osmotic coefficient φ, mean activity γ±, individual ion γᵢ
   (for Donnan).
-- **Data (§4.2):** `data/standards/parameters/electrolyte/pitzer/` — per
+- **Data (§4.2):** `data/standards/parameters/Pitzer/` — per
   cation-anion pair β⁰,β¹,(β²),Cφ (`pairs/`); like-charge θ; triplet ψ
   (`mixing/`). THIS is the mixed-salt enabler. Cited (USGS PHREEQC pitzer.dat,
   public domain; Pitzer 1991 / Robinson & Stokes lineage); shipped and running.

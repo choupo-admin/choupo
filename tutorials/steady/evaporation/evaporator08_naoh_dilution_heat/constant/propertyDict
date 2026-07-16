@@ -19,6 +19,6 @@ propertyMethods
     vapour builtin.idealGas;
 }
 
-// Pitzer pair(s) resolved by cation-anion name: data/standards/parameters/electrolyte/pitzer/pairs/Na-OH.dat
+// Pitzer pair(s) resolved by cation-anion name: data/standards/parameters/Pitzer/pairs/Na-OH.dat
 
 // Rigorous NaOH Pitzer package (calorimetrically fitted Na-OH pair -> heat-of-dilution L_phi).

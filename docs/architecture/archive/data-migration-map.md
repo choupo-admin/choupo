@@ -37,7 +37,7 @@
 | `data/standards/binaryPairs/NRTL/` | `data/standards/models/activity/NRTL/` | NRTL activity-model binary parameters. |
 | `data/standards/binaryPairs/UNIQUAC/` | `data/standards/models/activity/UNIQUAC/` | UNIQUAC activity-model binary parameters. |
 | `data/standards/binaryPairs/Wilson/` | `data/standards/models/activity/Wilson/` | Wilson activity-model binary parameters. |
-| `data/standards/henrysLaw/` | `data/standards/equilibria/gasLiquid/henry/` | Henry-law gas–liquid equilibrium data. |
+| `data/standards/parameters/Henry/` | `data/standards/equilibria/gasLiquid/henry/` | Henry-law gas–liquid equilibrium data. |
 | `data/standards/membranes/` | `data/standards/assets/membranes/` | Membrane engineering assets. **Intrinsic membrane spec stays in the asset;** only a separate, swappable transport-model parameterisation (if any) goes to `models/transport/membraneTransport/`. |
 | `data/standards/materials/` | `data/standards/assets/materials/` | Materials of construction / engineering materials. |
 | `data/standards/adsorbents/` | `data/standards/assets/adsorbents/` | Adsorbent engineering assets. |

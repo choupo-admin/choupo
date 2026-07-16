@@ -1,7 +1,7 @@
 import re, os
 src = open("data/standards/electrolyte/mixing.dat").read()
 body = re.search(r'mixing\s*\((.*)\)', src, re.S).group(1)
-base = "data/standards/parameters/electrolyte/pitzer/mixing"
+base = "data/standards/parameters/Pitzer/mixing"
 def tok(b,k):
     m = re.search(rf'\b{k}\b\s+(-?[\w.+()-]+)\s*;', b); return m.group(1) if m else None
 n=0

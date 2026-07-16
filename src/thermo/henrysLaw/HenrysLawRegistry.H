@@ -31,7 +31,7 @@ Class
 Description
     Singleton lookup for HenrysLaw records, keyed by the ordered pair
     (solute, solvent).  Files matching
-    `data/standards/henrysLaw/<solute>-<solvent>.dat` are loaded once
+    `data/standards/parameters/Henry/<solute>-<solvent>.dat` are loaded once
     at start-up by the application's main().
 
     Same shape as MembraneRegistry / MaterialRegistry.

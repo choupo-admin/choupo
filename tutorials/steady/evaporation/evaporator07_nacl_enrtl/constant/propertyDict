@@ -23,7 +23,7 @@ parameters
 {
     eNRTLPairs
     {
-        Na-Cl "data/standards/parameters/electrolyte/eNRTL/Na-Cl.dat";
+        Na-Cl "data/standards/parameters/eNRTL/Na-Cl.dat";
     }
 }
 

@@ -29,7 +29,7 @@ are the source of truth.
 │   ├── dryingKinetics       OPTIONAL  drying-curve library
 │   ├── components/          OPTIONAL  case-local component overlays
 │   │   └── <name>.dat       partial overlay over standards (axiom 4)
-│   └── binaryPairs/         OPTIONAL  case-local NRTL/Wilson pair files
+│   └── parameters/          OPTIONAL  case-local NRTL/Wilson pair files
 │       └── <model>/<pair>.dat
 ├── 0/                      REQUIRED for solve/batch/ctrl; one COMPLETE
 │   └── <stream>          state file for every graph stream

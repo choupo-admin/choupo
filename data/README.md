@@ -23,4 +23,4 @@ is a self-documenting dict (CAS, MW, Tc, Pc, ω, Tb, Hvap_Tb, Antoine,
 Cp polynomials, Vliq).
 
 For binary interaction parameters, see
-[`data/standards/binaryPairs/README.md`](standards/binaryPairs/README.md).
+[`data/standards/parameters/README.md`](standards/parameters/README.md).

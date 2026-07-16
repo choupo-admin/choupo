@@ -1,4 +1,4 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "parameters/electrolyte/pitzer/pairs/Li-Cl.dat"; }
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "parameters/Pitzer/pairs/Li-Cl.dat"; }
 /*--------------------------------*- Choupo -*--------------------------------*\
   Pitzer binary ion-interaction parameters --- Li(+) / Cl(-) in aqueous
   solution.

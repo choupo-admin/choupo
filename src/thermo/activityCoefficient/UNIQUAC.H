@@ -58,7 +58,7 @@ Description
                 water   { r 0.9200; q 1.4000; }
             }
             // Binary tau parameters: inline pairs OR a UNIQUAC pair catalogue
-            // (data/standards/binaryPairs/UNIQUAC/<a>-<b>.dat), mirroring NRTL.
+            // (data/standards/parameters/UNIQUAC/<a>-<b>.dat), mirroring NRTL.
             pairs
             (
                 { i ethanol; j water; a_ij -2.4936; a_ji 756.9477; }

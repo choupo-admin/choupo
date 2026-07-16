@@ -17,7 +17,7 @@
   with the full temperature dependence A_ij(T) = a_ij + b_ij*T + c_ij*T^2
   (their Eq. 10), tau_ij = exp(-A_ij/T) (their Eq. 7), valid 273-363 K.  The
   same numbers, fully provenanced, also live in
-  data/standards/binaryPairs/UNIQUAC/nButanol-water.dat.
+  data/standards/parameters/UNIQUAC/nButanol-water.dat.
 
   WHAT THIS DEMONSTRATES:
 

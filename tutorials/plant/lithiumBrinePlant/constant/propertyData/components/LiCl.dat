@@ -12,7 +12,7 @@
   salar route works: Li stays in the mother liquor while NaCl and KCl
   crystallise out).  The Li+ ion lives in the standard species tree
   (data/standards/.../Li.dat) with its aqueous formation tier; the Li-Cl
-  Pitzer pair is already curated (parameters/electrolyte/pitzer/pairs/).
+  Pitzer pair is already curated (parameters/Pitzer/pairs/).
 
   Sources: MW from atomic weights (IUPAC); solid rho_p 2068 kg/m^3
   (crystallographic, public domain); solubility 19.9 mol/kg (25 C) --

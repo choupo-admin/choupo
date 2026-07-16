@@ -177,7 +177,7 @@ the culprit pairs; the engine NEVER certifies a fit as good — the engineer
 judges from the evidence.
 
 **Promote (opt-in).**  `output { proposal auto; }` writes
-`constant/binaryPairs/<model>/<pair>.fit-<date>.dat` with the fitted values, a
+`constant/parameters/<model>/<pair>.fit-<date>.dat` with the fitted values, a
 `provenance { source fitted; ... }` block, and — if the fit is not
 individually identifiable — a loud header warning.  Promotion is then a
 deliberate `mv` (or, in the GUI, a reviewed download-to-disk); the GUI never

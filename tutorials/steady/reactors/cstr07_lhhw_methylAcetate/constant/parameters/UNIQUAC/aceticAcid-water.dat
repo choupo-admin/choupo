@@ -31,6 +31,6 @@ provenance
     chi2          "<not reported>";
     nDataPoints   0;
     validity { note "1 atm DECHEMA VLE; explicit T-range not captured on import"; }
-    author        "Imported from ChemSep via chemsep_to_choupo; promoted 2026-06-24 (binaryPairs audit, v0.9)";
+    author        "Imported from ChemSep via chemsep_to_choupo; promoted 2026-06-24 (parameters audit, v0.9)";
     notes         "Standard published DECHEMA values, NOT independently re-fit or per-value verified here. Loads and gives a sane T-x-y self-check (no NaN, physical activity coefficients). Glass-box caveat (CLAUDE.md): cross-check against your own VLE data before quantitative use. The raw cal/mol energies are kept in the source{} block above for audit. Strongly non-ideal / near-partially-miscible system: this is a VLE-region DECHEMA fit -- not valid in any liquid-liquid two-phase region.";
 }

@@ -23,7 +23,7 @@ parameters
 {
     eNRTLPairs
     {
-        Na-OH "data/standards/parameters/electrolyte/eNRTL/Na-OH.dat";
+        Na-OH "data/standards/parameters/eNRTL/Na-OH.dat";
     }
 }
 

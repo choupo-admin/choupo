@@ -1,4 +1,4 @@
-# `data/standards/henrysLaw/` — Henry's-law constants (gas in water)
+# `data/standards/parameters/Henry/` — Henry's-law constants (gas in water)
 
 Each `*-water.dat` file gives the Henry's-law constant for one solute in
 liquid water, in the **pressure / mole-fraction form**

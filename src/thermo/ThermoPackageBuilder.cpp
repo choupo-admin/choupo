@@ -27,7 +27,7 @@ namespace Choupo {
 
 // Resolve a DECLARED pair path so a RELOCATED case reads ITS OWN copy: walk UP
 // from the cwd (the case) trying <dir>/<declared>; only then fall back to the
-// installation repoRoot.  A sector-relative path ("constant/binaryPairs/...")
+// installation repoRoot.  A sector-relative path ("constant/parameters/...")
 // thus resolves inside the moved case, never the original tree.
 static std::filesystem::path resolveDeclared(const std::filesystem::path& repoRoot,
                                              const std::string& declared)
@@ -39,10 +39,10 @@ static std::filesystem::path resolveDeclared(const std::filesystem::path& repoRo
         fs::path cand = q / declared;
         if (fs::exists(cand)) return cand;
         // F2 canonical home: a declared parameter path is propertyData-relative
-        // (`parameters/activity/NRTL/<pair>.dat`), so also try it under
+        // (`parameters/NRTL/<pair>.dat`), so also try it under
         // `<dir>/constant/propertyData/` -- how a SEALED case (incl. a drilled
         // standalone sub-case) stores its pairs.  The bare form above stays for
-        // the retiring F1 `constant/binaryPairs/` overlay.
+        // the case-local `constant/parameters/` overlay.
         fs::path candPd = q / "constant" / "propertyData" / declared;
         if (fs::exists(candPd)) return candPd;
         fs::path par = q.parent_path();
@@ -459,7 +459,7 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
 //      the binary pair from the NEW location, inline it into an in-memory
 //      thermoPackage, and reuse readFromDict -- which for a molecular activity
 //      model reads the pair from the dict (Phase-1 inline), touching NO old
-//      binaryPairs catalogue.  Same builder entry, no special architecture (U4).
+//      pair catalogue (parameters/<MODEL>/).  Same builder entry, no special architecture (U4).
 // Translate the package's per-phase method slots (forum A2: vapour/transport
 // are first-class methods, never flat folklore keys) into the runtime models.
 static std::string vapourModelOf(const DictPtr& pkg)
@@ -623,7 +623,7 @@ static ThermoPackage buildMolecularActivity(const DictPtr& pkg, const Database& 
         return out;
     }
     // No INLINE parameters.binaryPairs -> resolve the pairs from the case's
-    // binaryPairs CATALOGUE, the SAME path thermoFor uses for a per-unit molecular
+    // pair CATALOGUE (parameters/<MODEL>/), the SAME path thermoFor uses for a per-unit molecular
     // override.  This is the standalone/plant alignment (ChatGPT s32): the ACTIVE
     // liquid method defines the world -- a unit that INHERITS an electrolyte context
     // but selects `activity.<model>` gets a molecular gamma with its pairs loaded

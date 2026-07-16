@@ -47,7 +47,7 @@ Description
     as T rises, so their ΔH_diss is negative and H rises).
 
     The constant is keyed by the ordered pair (solute, solvent).
-    File location: `data/standards/henrysLaw/<solute>-<solvent>.dat`.
+    File location: `data/standards/parameters/Henry/<solute>-<solvent>.dat`.
 
     File format:
 

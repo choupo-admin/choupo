@@ -54,7 +54,7 @@ std::map<std::string, HenrysLaw>& registry()
 
 void HenrysLawRegistry::loadFrom(const std::string& dataRoot)
 {
-    fs::path dir = fs::path(dataRoot) / "standards" / "henrysLaw";
+    fs::path dir = fs::path(dataRoot) / "standards" / "parameters" / "Henry";
     if (!fs::exists(dir)) return;
 
     for (auto& e : fs::directory_iterator(dir))

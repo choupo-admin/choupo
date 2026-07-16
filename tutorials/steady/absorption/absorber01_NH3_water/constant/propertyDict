@@ -10,7 +10,7 @@
   SELF-CONTAINMENT: the three components are vendored under
   constant/components/, but the load-bearing NH3-water Henry pair is NOT
   vendorable --- HenrysLawRegistry loads pairs from the standard catalogue
-  only (data/standards/henrysLaw/NH3-water.dat; there is no case-local
+  only (data/standards/parameters/Henry/NH3-water.dat; there is no case-local
   henrysLaw/ search path).  This case is therefore self-contained EXCEPT
   for that one catalogue entry.
 \*---------------------------------------------------------------------------*/

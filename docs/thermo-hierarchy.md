@@ -38,7 +38,7 @@ Inside each flat `components/<name>.dat` (per-value provenance attached):
 - measured anchors — solubility(T), dissolutionEnthalpy
 - transport data — μ(T), k(T) (kinetic branch)
 
-Pair parameter catalogues sit WITH their model: `binaryPairs/<MODEL>/`,
+Pair parameter catalogues sit WITH their model: `parameters/<MODEL>/`,
 `unifac/`, `henry/`, `electrolyte/`.  The calorimetric T-dependence of a pair
 (`tau { a b }`, `dβ/dT`) lives **with the pair**, never in an "excess/" folder
 — excess enthalpy is the ∂T of the SAME parameters.

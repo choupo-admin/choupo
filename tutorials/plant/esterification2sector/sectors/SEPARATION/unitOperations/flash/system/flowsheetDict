@@ -1,5 +1,5 @@
 /*--- the isothermal flash.  The NRTL pair resolves from the sector's own
-  constant/binaryPairs by walk-up; ethanol-water comes from the standard library. */
+  constant/parameters by walk-up; ethanol-water comes from the standard library. */
 
 name        flash;
 type        isothermalFlash;

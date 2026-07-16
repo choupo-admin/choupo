@@ -34,7 +34,7 @@ working nucleus:
   a declared T-correlation + **loading basis** + pressure/concentration/
   fugacity basis + validity domain.  MIGRATION DECISION FOR THE FORUM:
   keep packaged per-adsorbent (arity is honoured — the block is already
-  pair-scoped) vs split into a pair catalogue like `binaryPairs/`
+  pair-scoped) vs split into a per-model pair catalogue like `parameters/<MODEL>/`
   (`adsorption/<adsorbate>__<adsorbent>.dat`).  The survey leans to the
   PAIR CATALOGUE for symmetry with every other pair-scoped datum and for
   CurationBundle routing, with the adsorbent file keeping only material

@@ -67,5 +67,5 @@ provides ( meanActivityCoefficient osmoticCoefficient waterActivity ionicStrengt
 
 notes
 {
-    purpose "Defines the method contract. Numerical parameters live in parameters/electrolyte/pitzer/.";
+    purpose "Defines the method contract. Numerical parameters live in parameters/Pitzer/.";
 }

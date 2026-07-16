@@ -3,7 +3,7 @@
   355 K, 1 atm
 
   Identical to flash02_ethanol_water, but this case demonstrates the
-  RESEARCH WORKFLOW: parameters loaded from case-local binaryPairs file
+  RESEARCH WORKFLOW: parameters loaded from case-local parameters file
   rather than declared inline.  See README.md for the full discussion.
 \*---------------------------------------------------------------------------*/
 

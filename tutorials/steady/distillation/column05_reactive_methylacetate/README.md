@@ -51,14 +51,14 @@ wrong constant to fake agreement would be dishonest.
 ## What this added to the standard catalogue (the curation)
 
 The Pöpken (2000) parameters were promoted to the standard, by the data doctrine
-(intrinsic → component; pair-dependent → `binaryPairs/`):
+(intrinsic → component; pair-dependent → `parameters/<MODEL>/`):
 
 - **`methylAcetate`** component (Antoine, NIST/DDB), with its UNIQUAC **r/q**;
 - **UNIQUAC r/q** added to methanol / acetic acid / water (`uniquac { r; q; }`),
   now read intrinsically by the engine (`injectUniquacRQ`, mirroring the UNIFAC
   groups) — they live once in the component, never re-declared per case;
 - the three **new** UNIQUAC binary pairs (MeOH–MeOAc, HOAc–MeOAc, MeOAc–water)
-  in `data/standards/binaryPairs/UNIQUAC/`.
+  in `data/standards/parameters/UNIQUAC/`.
 
 (The three pairs that already existed from DECHEMA stay standard; the Pöpken
 values for them differ and are recorded in `Literature/popken2000_params.md`.)

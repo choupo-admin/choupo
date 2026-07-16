@@ -18,12 +18,12 @@ solution
 }
 parameters
 {
-    // Parameter HOMES: Henry pairs live in data/standards/henrysLaw/ (a
-    // top-level catalogue); EoS kij under data/standards/parameters/eos/kij/
+    // Parameter HOMES: Henry pairs live in data/standards/parameters/Henry/ (a
+    // top-level catalogue); EoS kij under data/standards/parameters/SRK/
     // -- different KINDS, different homes, both declared+verified here.
     henryPairs
     {
         // Sander (2015) compilation, CC-BY
-        CO2-water "data/standards/henrysLaw/CO2-water.dat";
+        CO2-water "data/standards/parameters/Henry/CO2-water.dat";
     }
 }

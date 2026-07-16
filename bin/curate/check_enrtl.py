@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Faithfulness guard: every parameters/electrolyte/eNRTL/<c>-<a>.dat == its
+"""Faithfulness guard: every parameters/eNRTL/<c>-<a>.dat == its
 enrtl.dat row.  Runs while enrtl.dat exists; flips to assert ABSENT after."""
 import re, sys
 from pathlib import Path
 repo = Path(__file__).resolve().parents[2]
 ef = repo / "data/standards/electrolyte/enrtl.dat"
-edir = repo / "data/standards/parameters/electrolyte/eNRTL"
+edir = repo / "data/standards/parameters/eNRTL"
 if not ef.exists():
     print("electrolyte/enrtl.dat ABSENT -- eNRTL kind consolidated. OK."); sys.exit(0)
 body = re.search(r'enrtl\s*\((.*)\)', ef.read_text(), re.S).group(1)

@@ -23,7 +23,7 @@ parameters
 {
     eNRTLPairs
     {
-        K-Cl "data/standards/parameters/electrolyte/eNRTL/K-Cl.dat";
+        K-Cl "data/standards/parameters/eNRTL/K-Cl.dat";
     }
 }
 

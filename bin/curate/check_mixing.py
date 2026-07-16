@@ -8,7 +8,7 @@ import re, sys
 from pathlib import Path
 repo = Path(__file__).resolve().parents[2]
 mf = repo / "data/standards/electrolyte/mixing.dat"
-base = repo / "data/standards/parameters/electrolyte/pitzer/mixing"
+base = repo / "data/standards/parameters/Pitzer/mixing"
 if not mf.exists():
     print("electrolyte/mixing.dat ABSENT -- mixing kind consolidated. OK."); sys.exit(0)
 body = re.search(r'mixing\s*\((.*)\)', mf.read_text(), re.S).group(1)

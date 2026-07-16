@@ -38,7 +38,7 @@ phases
 
 parameters
 {
-    binaryPairs
+    parameters
     {
         kerosene-water "parameters/activity/NRTL/kerosene_C12cut-water.dat";
         LiX-water      "parameters/activity/NRTL/LiX_extractant-water.dat";

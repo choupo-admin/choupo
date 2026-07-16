@@ -28,7 +28,7 @@ Read the quantity's definition, not its frequency of use.
   it is PAIR/SET data and lives in a **catalogue**
   (`binaryPairs/`, `henrysLaw/`, `electrolyte/`, the `solution/` tier, the
   declarative `parameters/{binary,electrolyte,eos}/` tree — e.g.
-  `parameters/eos/kij/<i>-<j>.dat`, …), keyed by the pair, **cited per
+  `parameters/SRK/<i>-<j>.dat`, …), keyed by the pair, **cited per
   value**, referenced **by name** from the component.  The number is **never
   copied into the `.dat`**.
 
@@ -160,7 +160,7 @@ GEOMETRY; that is never component data.*
 | Level | MAY add | MAY NOT add | Overlay merges… |
 |---|---|---|---|
 | **standard** `data/standards/components/<name>.dat` | the canonical molecule: identity, critical, gasIdeal, liquidPure, solid, transport, `eosParameters{}`; the FROZEN truth | sample-specific data; equipment rates/PSD; **engine REFUSES to write here** | — (base) |
-| **catalogue** `data/standards/<feature>/<pair>.dat` (binaryPairs, henrysLaw, electrolyte, **solution**, unifac, `parameters/{binary,electrolyte,eos}/` — e.g. `parameters/eos/kij/<i>-<j>.dat`) | PAIR/SET/ion-tier data with no single owning molecule (NRTL τ, Henry, Pitzer β, k_ij, ΔH_soln-in-water) | anything ownable by one molecule alone | — (base, per pair) |
+| **catalogue** `data/standards/<feature>/<pair>.dat` (binaryPairs, henrysLaw, electrolyte, **solution**, unifac, `parameters/{binary,electrolyte,eos}/` — e.g. `parameters/SRK/<i>-<j>.dat`) | PAIR/SET/ion-tier data with no single owning molecule (NRTL τ, Henry, Pitzer β, k_ij, ΔH_soln-in-water) | anything ownable by one molecule alone | — (base, per pair) |
 | **case** `<case>/constant/components/<name>.dat`, `constant/<feature>/<pair>.dat` | sample-refined molecular **blocks**; case-local pairs/ions the case uses (self-containment) | a NEW molecule's identity (MW/Tc/Pc are born only at standard); equipment rates/PSD | **top-level BLOCK** |
 | **sector** `<case>/<sector>/constant/…` | the SAME, scoped to the sector (a sector = a thermo region) | re-hosting the whole molecule; equipment physics | top-level BLOCK |
 | **unit** `<case>/<sector>/<unit>/constant/…` | the SAME molecular-refinement overlay; **AND** the unit's EQUIPMENT files (`constant/crystallisation`, `constant/dryingKinetics`, `constant/reactions`) | re-hosting the molecule; a `thermoPackage` placeholder (shadows the case default, breaks the run) | top-level BLOCK |
@@ -252,8 +252,8 @@ name the model?*
    molecule carries SRK + PR + PC-SAFT + the next EOS simultaneously, never
    colliding, each with its own `provenance{}`.
 3. **PAIR parameters (k_ij and friends) → the declarative parameter
-   catalogue**, `data/standards/parameters/eos/kij/<i>-<j>.dat` (siblings:
-   `parameters/binary/` for activity pairs, `parameters/electrolyte/` for
+   catalogue**, `data/standards/parameters/SRK/<i>-<j>.dat` (siblings:
+   `parameters/<MODEL>/` for activity pairs, `parameters/electrolyte/` for
    Pitzer/eNRTL), mirroring `binaryPairs/NRTL/<i>-<j>.dat`, declared in the
    propertyPackage (`parameters { kijPairs { N2-CH4 "…"; } }`) and announced
    at assembly (`[builder] kij(N2,CH4) = 0.0289 --- <file>`), with the
@@ -326,7 +326,7 @@ Gas = methane (already carries `{Tc,Pc,ω}`).  New EOS = `pcSaft`, needing
    *only* that block; promotion path: the same block in the standard `.dat`,
    primary-cited).
 3. k_ij → the `data/standards/parameters/eos/` catalogue (the shipped
-   cubic home is `parameters/eos/kij/<i>-<j>.dat`; a new EOS family adds
+   cubic home is `parameters/SRK/<i>-<j>.dat`; a new EOS family adds
    its own keyed folder there) or inline.
 4. The run prints `[thermo] EOS = PCSAFT — methane: m,sigma,epsilon/k from
    eosParameters.PCSAFT [Gross&Sadowski 2001] origin: regressed`; a missing

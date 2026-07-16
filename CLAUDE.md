@@ -527,7 +527,7 @@ parameters/PAIR, packages/UNIT — one Gibbs surface per phase, never two.  Reje
 `membranes/` (4: SW30HR seawater-RO, NF270 loose-NF, NF270_dspmde, CMX_AMX
 ion-exchange), `utilities/` (9: steam
 LP/MP/HP, coolingWater, chilledWater, dowthermA, hitecSalt, refrigerationPG,
-electricity), plus pair catalogues (`binaryPairs/`, `henry/`, `unifac/`).  The
+electricity), plus the per-model pair catalogues under `parameters/` (`NRTL/ UNIQUAC/ Wilson/ Henry/ Pitzer/ eNRTL/ SRK/`, Migration 2 done 2026-07-16).  The
 engine REFUSES to write under `data/standards/` — new data is a curation act.
 
 **Two data tiers only — `standards` (public) and `local` (private); the

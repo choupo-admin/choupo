@@ -54,7 +54,7 @@ solidPhase     halite;   // ion stoichiometry (formula-like identity; the packag
 // Both Na+ and Cl- DO carry the full hfAq/sAq/cpAq enthalpy tier in ions.dat.
 
 // Salt dissociation map for the electrolyte activity model (pitzer).  cation/anion
-// are ion NAMES into data/standards/species/aqueous/ + parameters/electrolyte/pitzer/pairs/; solubility is the
+// are ion NAMES into data/standards/species/aqueous/ + parameters/Pitzer/pairs/; solubility is the
 // measured saturation molality.  Intrinsic salt chemistry, declared ONCE -- a case
 // selects `activityModel { model pitzer; }` and re-types nothing.
 

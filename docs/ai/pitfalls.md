@@ -162,7 +162,7 @@ non-physical answer).  For azeotropes: `model simultaneous;` (MESH
 Newton, quadratic).
 
 ### NRTL without `pairs` block
-If you select NRTL but `data/standards/binaryPairs/NRTL/<i>-<j>.dat`
+If you select NRTL but `data/standards/parameters/NRTL/<i>-<j>.dat`
 doesn't exist AND you didn't write inline `pairs (...)`, the model
 defaults to ideal (γ=1) for that pair — **announced loudly**, never
 silently: a `[thermo] NRTL: N binary pair(s) have no parameters ->
@@ -202,7 +202,7 @@ solute with no matching `henryPairs` entry.
 No `kijPairs` block is legal — the cubic runs predictive with
 `kij = 0`, announced.  Near-critical phase splits will be off (the
 N2-CH4 split needs its DECHEMA kij 0.0289).  Declare the pair file
-(`data/standards/parameters/eos/kij/<i>-<j>.dat`) and watch for the
+(`data/standards/parameters/SRK/<i>-<j>.dat`) and watch for the
 `[builder] kij(...)` line confirming it loaded.
 
 ### The `package <name>;` selector is retired → write the manifest inline

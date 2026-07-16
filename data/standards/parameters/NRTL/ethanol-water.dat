@@ -2,8 +2,13 @@
   NRTL binary interaction parameters --- ethanol(1) + water(2)
 \*---------------------------------------------------------------------------*/
 
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
 components  ( ethanol  water );
 model       NRTL;
+
+pair { i ethanol; j water; }
 
 parameters
 {

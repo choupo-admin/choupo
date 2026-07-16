@@ -196,7 +196,7 @@ public:
     // ---- Electrolyte: salt dissociation map (electrolyte activity) -----------
     // The salt's cation/anion are DERIVED from its `dissociatesTo` block (the old
     // `electrolyte { cation; anion; }` input is gone); the ion names resolve in
-    // species/aqueous.dat + parameters/electrolyte/pitzer/.  Intrinsic salt chemistry,
+    // species/aqueous.dat + parameters/Pitzer/.  Intrinsic salt chemistry,
     // declared once -- the electrolyte ActivityModel (pitzer) reads it.
     bool   hasElectrolyteSpec()  const { return hasElec_; }
     const std::string& electrolyteCation() const { return elecCation_; }

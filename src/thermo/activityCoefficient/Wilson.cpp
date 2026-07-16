@@ -62,18 +62,18 @@ std::string alphaPairFilename(const std::string& a, const std::string& b)
 fs::path locatePairFile(const std::string& pairName)
 {
     fs::path caseFile = fs::current_path()
-                        / "constant" / "binaryPairs" / "Wilson" / pairName;
+                        / "constant" / "parameters" / "Wilson" / pairName;
     if (fs::exists(caseFile)) return caseFile;
 
     const auto& root = Database::currentRoot();
     if (!root.empty())
     {
         fs::path stdFile = fs::path(root)
-                           / "standards" / "binaryPairs" / "Wilson" / pairName;
+                           / "standards" / "parameters" / "Wilson" / pairName;
         if (fs::exists(stdFile)) return stdFile;
-        fs::path proposedFile = fs::path(root)
-                           / "local" / "binaryPairs" / "Wilson" / pairName;
-        if (fs::exists(proposedFile)) return proposedFile;
+        fs::path localFile = fs::path(root)
+                           / "local" / "parameters" / "Wilson" / pairName;
+        if (fs::exists(localFile)) return localFile;
     }
     return {};
 }
@@ -164,12 +164,12 @@ Wilson::Wilson(const DictPtr& dict, const std::vector<Component>& comps)
 
             auto fileDict = Dictionary::fromFile(file.string());
             const bool isProposed =
-                file.string().find("/proposed/binaryPairs/") != std::string::npos;
+                file.string().find("/local/parameters/") != std::string::npos;
             if (isProposed)
             {
                 const bool isNew = AdvisoryLog::instance().add(
                     "provenance", "warning", "Wilson " + names[i] + "-" + names[j],
-                    "loaded from data/local/binaryPairs -- UNVERIFIED");
+                    "loaded from data/local/parameters -- UNVERIFIED");
                 if (isNew)
                     std::cout << "  [local] Wilson binary pair " << names[i]
                               << "-" << names[j]

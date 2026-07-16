@@ -60,11 +60,13 @@ std::string alphaPairFilename(const std::string& a, const std::string& b)
     return (a < b ? a + "-" + b : b + "-" + a) + ".dat";
 }
 
-// Try to locate the pair file using the precedence:
-//     0. <nodeBase>/constant/binaryPairs/NRTL/<pair>.dat   (per-node, Item 0b)
-//     1. <cwd>/constant/binaryPairs/NRTL/<pair>.dat        (case-local / plant root)
-//     2. <Database::currentRoot()>/standards/binaryPairs/NRTL/<pair>.dat
-//     3. <Database::currentRoot()>/proposed/binaryPairs/NRTL/<pair>.dat
+// Try to locate the pair file.  ONE spelling across every tier (Migration 2):
+// parameters/NRTL/<pair>.dat, resolved in precedence order
+//     0. <nodeBase>/constant/parameters/NRTL/<pair>.dat    (per-node, Item 0b)
+//     1. <cwd>/constant/parameters/NRTL/<pair>.dat         (case-local / plant root)
+//     2. per-node / case sealed snapshot  constant/propertyData/parameters/NRTL/
+//     3. <Database::currentRoot()>/standards/parameters/NRTL/<pair>.dat
+//     4. <Database::currentRoot()>/local/parameters/NRTL/<pair>.dat  (private tier)
 // Returns empty path if nothing found.  `nodeBase` is the owning node's folder
 // (e.g. "SEPARATION") so a sector/unit's PARTICULAR pair resolves before the
 // plant root + the standard library -- the per-node walk-up.
@@ -74,37 +76,36 @@ fs::path locatePairFile(const std::string& pairName, const std::string& nodeBase
     if (!nodeBase.empty())
     {
         fs::path nodeFile = fs::path(nodeBase)
-                            / "constant" / "binaryPairs" / "NRTL" / pairName;
+                            / "constant" / "parameters" / "NRTL" / pairName;
         if (fs::exists(nodeFile)) { tierOut = "perNode"; return nodeFile; }
     }
 
     fs::path caseFile = fs::current_path()
-                        / "constant" / "binaryPairs" / "NRTL" / pairName;
+                        / "constant" / "parameters" / "NRTL" / pairName;
     if (fs::exists(caseFile)) { tierOut = "caseRoot"; return caseFile; }
 
     // Case snapshot: propertyData/parameters/ is the CANONICAL home for a model
     // parameter (sealed self-containment, F2).  Per-node context first, then the
-    // case root -- consulted BEFORE the installation catalogue.  The `constant/
-    // binaryPairs/` tiers above are the retiring F1 overlay.
+    // case root -- consulted BEFORE the installation catalogue.
     if (!nodeBase.empty())
     {
         fs::path nodeSnap = fs::path(nodeBase) / "constant" / "propertyData"
-                          / "parameters" / "activity" / "NRTL" / pairName;
+                          / "parameters" / "NRTL" / pairName;
         if (fs::exists(nodeSnap)) { tierOut = "perNodeSnapshot"; return nodeSnap; }
     }
     fs::path caseSnap = fs::current_path() / "constant" / "propertyData"
-                      / "parameters" / "activity" / "NRTL" / pairName;
+                      / "parameters" / "NRTL" / pairName;
     if (fs::exists(caseSnap)) { tierOut = "caseSnapshot"; return caseSnap; }
 
     const auto& root = Database::currentRoot();
     if (!root.empty())
     {
         fs::path stdFile = fs::path(root)
-                           / "standards" / "binaryPairs" / "NRTL" / pairName;
+                           / "standards" / "parameters" / "NRTL" / pairName;
         if (fs::exists(stdFile)) { tierOut = "standard"; return stdFile; }
-        fs::path proposedFile = fs::path(root)
-                           / "local" / "binaryPairs" / "NRTL" / pairName;
-        if (fs::exists(proposedFile)) { tierOut = "local"; return proposedFile; }
+        fs::path localFile = fs::path(root)
+                           / "local" / "parameters" / "NRTL" / pairName;
+        if (fs::exists(localFile)) { tierOut = "local"; return localFile; }
     }
     tierOut = "idealDefault";
     return {};
@@ -215,7 +216,7 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
             {
                 const bool isNew = AdvisoryLog::instance().add(
                     "provenance", "warning", "NRTL " + names[i] + "-" + names[j],
-                    "loaded from data/local/binaryPairs -- UNVERIFIED");
+                    "loaded from data/local/parameters -- UNVERIFIED");
                 if (isNew)
                     std::cout << "  [local] NRTL binary pair " << names[i]
                               << "-" << names[j]

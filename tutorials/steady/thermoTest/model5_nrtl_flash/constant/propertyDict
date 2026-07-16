@@ -15,9 +15,9 @@ propertyMethods
 
 parameters
 {
-    binaryPairs
+    parameters
     {
-        ethanol-water "data/standards/parameters/binary/NRTL/ethanol-water.dat";
+        ethanol-water "data/standards/parameters/NRTL/ethanol-water.dat";
     }
 }
 

@@ -29,7 +29,7 @@ License
 /*---------------------------------------------------------------------------*\
   loadSalt(cation, anion) -- the ONE place that turns a pair of ion NAMES into a
   configured single-salt Pitzer kernel, reading the curated catalogue
-  (species/aqueous.dat + parameters/electrolyte/pitzer/pairs/).  Charges come from
+  (species/aqueous.dat + parameters/Pitzer/pairs/).  Charges come from
   the species record;
   the salt stoichiometry is DERIVED from electroneutrality (Ca + Cl -> CaCl2).
 
@@ -340,7 +340,7 @@ inline std::string resolveTCorrelationForm(const DictPtr& p,
 }
 
 // Pitzer pair by (cation,anion).  Two legs (the pairs kind is now stored ONLY as
-// per-pair records under parameters/electrolyte/pitzer/pairs/; the monolithic
+// per-pair records under parameters/Pitzer/pairs/; the monolithic
 // electrolyte/pairs.dat is gone) -- sibling of findIon, NOT a change to the
 // generic findPair (which enrtl.dat/mixing.dat still use as a list):
 //   (1) case-local constant/electrolyte/pairs.dat -- OLD FLAT list, whole-row
@@ -373,7 +373,7 @@ inline DictPtr findPitzerPair(const std::string& cation, const std::string& anio
                 return memo(p);
             }
     }
-    const fs::path snap = caseSnapshotPath("parameters/electrolyte/pitzer/pairs/"
+    const fs::path snap = caseSnapshotPath("parameters/Pitzer/pairs/"
                                            + cation + "-" + anion + ".dat");
     if (!snap.empty())
         return memo(bridgePitzerPair(parsedOnce(snap)));
@@ -382,7 +382,7 @@ inline DictPtr findPitzerPair(const std::string& cation, const std::string& anio
             + anion + ") is NOT in constant/propertyData/ -- re-run `choupo-import`"
               " (the installation catalogue is forbidden).");
     const fs::path tp = fs::path(Database::currentRoot())
-                      / "standards" / "parameters" / "electrolyte" / "pitzer" / "pairs"
+                      / "standards" / "parameters" / "Pitzer" / "pairs"
                       / (cation + "-" + anion + ".dat");
     if (fs::exists(tp))
         return memo(bridgePitzerPair(parsedOnce(tp)));
@@ -426,7 +426,7 @@ inline PitzerSingleSalt loadSalt(const std::string& cation, const std::string& a
     if (!p)
         throw std::runtime_error("electrolyte: no Pitzer pair (" + cation + ", " + anion
             + ") in constant/electrolyte/pairs.dat (case) or "
-              "standards/parameters/electrolyte/pitzer/pairs/" + cation + "-" + anion + ".dat");
+              "standards/parameters/Pitzer/pairs/" + cation + "-" + anion + ".dat");
     s.beta0  = p->lookupScalar("beta0");
     s.beta1  = p->lookupScalar("beta1");
     s.beta2  = p->lookupScalarOrDefault("beta2", 0.0);
@@ -531,7 +531,7 @@ inline DictPtr bridgeENRTLPair(const DictPtr& r)
 }
 
 // eNRTL params by (cation,anion).  Dual leg (the eNRTL kind is now stored ONLY as
-// per-salt records under parameters/electrolyte/eNRTL/; the monolithic
+// per-salt records under parameters/eNRTL/; the monolithic
 // electrolyte/enrtl.dat is gone) -- sibling of findPitzerPair, NOT a change to the
 // generic findPair (which mixing.dat still uses as a list).
 inline DictPtr findENRTLPair(const std::string& cation, const std::string& anion)
@@ -552,7 +552,7 @@ inline DictPtr findENRTLPair(const std::string& cation, const std::string& anion
     // Case snapshot (sealed self-containment): propertyData/parameters/ is the
     // canonical home for a model parameter -- consulted BEFORE the installation
     // catalogue, and (when sealed) the catalogue is forbidden.  Mirrors findPitzerPair.
-    const fs::path snap = caseSnapshotPath("parameters/electrolyte/eNRTL/"
+    const fs::path snap = caseSnapshotPath("parameters/eNRTL/"
                                            + cation + "-" + anion + ".dat");
     if (!snap.empty())
         return bridgeENRTLPair(parsedOnce(snap));
@@ -561,7 +561,7 @@ inline DictPtr findENRTLPair(const std::string& cation, const std::string& anion
             + anion + ") is NOT in constant/propertyData/ -- re-run `choupo-import`"
               " (the installation catalogue is forbidden).");
     const fs::path tp = fs::path(Database::currentRoot())
-                      / "standards" / "parameters" / "electrolyte" / "eNRTL"
+                      / "standards" / "parameters" / "eNRTL"
                       / (cation + "-" + anion + ".dat");
     if (fs::exists(tp))
         return bridgeENRTLPair(parsedOnce(tp));
@@ -583,7 +583,7 @@ inline ENRTLSingleSalt loadENRTL(const std::string& cation, const std::string& a
     if (!p)
         throw std::runtime_error("eNRTL: no parameters for (" + cation + ", " + anion
             + ") in constant/electrolyte/enrtl.dat (case) or "
-              "standards/parameters/electrolyte/eNRTL/" + cation + "-" + anion + ".dat");
+              "standards/parameters/eNRTL/" + cation + "-" + anion + ".dat");
     s.tau_m_ca = p->lookupScalar("tau_m_ca");
     s.tau_ca_m = p->lookupScalar("tau_ca_m");
     s.alpha    = p->lookupScalarOrDefault("alpha", 0.2);

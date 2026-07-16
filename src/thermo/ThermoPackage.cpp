@@ -144,7 +144,7 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
             (void)indexOf(sol);   // throws if not a package component
             if (!HenrysLawRegistry::has(sol, solventName_))
                 throw std::runtime_error("thermoPackage: solute '" + sol
-                    + "' declared but no Henry pair henrysLaw/" + sol + "-"
+                    + "' declared but no Henry pair parameters/Henry/" + sol + "-"
                     + solventName_ + ".dat exists -- add the pair (or remove '"
                     + sol + "' from `solutes`).");
         }
@@ -177,7 +177,7 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
             if (hl.margulesA() != 0.0)
                 std::cout << ",  Margules A = " << hl.margulesA()
                           << " J/mol (Krichevsky-Ilinskaya gamma*)";
-            std::cout << "  --- pair file henrysLaw/" << c.name() << "-"
+            std::cout << "  --- pair file parameters/Henry/" << c.name() << "-"
                       << solventName_ << ".dat\n";
         }
     }

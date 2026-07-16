@@ -27,7 +27,7 @@
 | `data/standards/binaryPairs/NRTL/` | `data/standards/parameters/binary/NRTL/` | NRTL binary parameters. |
 | `data/standards/binaryPairs/UNIQUAC/` | `data/standards/parameters/binary/UNIQUAC/` | UNIQUAC binary parameters. |
 | `data/standards/binaryPairs/Wilson/` | `data/standards/parameters/binary/Wilson/` | Wilson binary parameters. |
-| `data/standards/henrysLaw/` | `data/standards/parameters/henry/`<br>*or* `data/standards/chemistry/gasLiquid/henry/` | Henry data. Goes to `parameters/henry/` if the files are **model parameters**, to `chemistry/gasLiquid/henry/` if they are **equilibrium definitions** — decide per file by what it holds. |
+| `data/standards/parameters/Henry/` | `data/standards/parameters/henry/`<br>*or* `data/standards/chemistry/gasLiquid/henry/` | Henry data. Goes to `parameters/henry/` if the files are **model parameters**, to `chemistry/gasLiquid/henry/` if they are **equilibrium definitions** — decide per file by what it holds. |
 | `data/standards/membranes/` | `data/standards/assets/membranes/` | Membrane assets. Intrinsic spec stays in the asset; only a separate swappable transport-model parameterisation goes to `parameters/`/`propertyMethods/transport`. |
 | `data/standards/materials/` | `data/standards/assets/materials/` | Materials of construction. |
 | `data/standards/adsorbents/` | `data/standards/assets/adsorbents/` | Adsorbent assets. |

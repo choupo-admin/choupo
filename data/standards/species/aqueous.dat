@@ -25,7 +25,7 @@ aqueousSpecies
         Model species: triborate ring anion B3O3(OH)4-  (charge -1)
         Identity + charge record only (no thermo block yet) -- summoned by
         the pitzerHMW borate system; its Pitzer interaction parameters live
-        in parameters/electrolyte/pitzer/pairs/ (Na-B3O3OH4, K-B3O3OH4).
+        in parameters/Pitzer/pairs/ (Na-B3O3OH4, K-B3O3OH4).
         Species lineage: the borate speciation set of Felmy & Weare (1986),
         "The prediction of borate mineral equilibria in natural waters:
         application to Searles Lake, California", Geochim. Cosmochim. Acta
@@ -42,7 +42,7 @@ aqueousSpecies
         Model species: tetraborate anion B4O5(OH)4-2  (charge -2)
         Identity + charge record only (no thermo block yet) -- summoned by
         the pitzerHMW borate system; its Pitzer interaction parameters live
-        in parameters/electrolyte/pitzer/pairs/ (Na-B4O5OH4, K-B4O5OH4).
+        in parameters/Pitzer/pairs/ (Na-B4O5OH4, K-B4O5OH4).
         Species lineage: the borate speciation set of Felmy & Weare (1986),
         "The prediction of borate mineral equilibria in natural waters:
         application to Searles Lake, California", Geochim. Cosmochim. Acta
@@ -130,7 +130,7 @@ aqueousSpecies
         Model species: calcium-borate ion pair CaB(OH)4+  (charge +1)
         Identity + charge record only (no thermo block yet) -- summoned by
         the pitzerHMW borate system; its Pitzer interaction parameters live
-        in parameters/electrolyte/pitzer/pairs/ (CaBOH4-Cl).
+        in parameters/Pitzer/pairs/ (CaBOH4-Cl).
         Species lineage: the borate speciation set of Felmy & Weare (1986),
         "The prediction of borate mineral equilibria in natural waters:
         application to Searles Lake, California", Geochim. Cosmochim. Acta
@@ -368,7 +368,7 @@ aqueousSpecies
         Model species: magnesium-borate ion pair MgB(OH)4+  (charge +1)
         Identity + charge record only (no thermo block yet) -- summoned by
         the pitzerHMW borate system; its Pitzer interaction parameters live
-        in parameters/electrolyte/pitzer/pairs/ (MgBOH4-Cl).
+        in parameters/Pitzer/pairs/ (MgBOH4-Cl).
         Species lineage: the borate speciation set of Felmy & Weare (1986),
         "The prediction of borate mineral equilibria in natural waters:
         application to Searles Lake, California", Geochim. Cosmochim. Acta
@@ -386,7 +386,7 @@ aqueousSpecies
         Identity + charge + MW record.  Species lineage: USGS PHREEQC
         phreeqc.dat (public domain); the matching association equilibrium
         (logK25 -11.44) lives in chemistry/aqueousSpeciation/MgOH.dat, and a
-        Pitzer pair in parameters/electrolyte/pitzer/pairs/MgOH-Cl.dat.
+        Pitzer pair in parameters/Pitzer/pairs/MgOH-Cl.dat.
         MW 41.31 g/mol is summed from the IUPAC standard atomic weights
         (Mg 24.305 + O 15.999 + H 1.008) -- derived, no independent primary
         needed.

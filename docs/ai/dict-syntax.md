@@ -567,8 +567,8 @@ propertyMethods
 solution   { solvent water;  solutes ( CO2 ); }   // henryDilute world only
 parameters                                        // DECLARED files, verified
 {                                                 //   at assembly (refuse if
-    henryPairs { CO2-water "data/standards/henrysLaw/CO2-water.dat"; }
-    kijPairs   { N2-CH4    "data/standards/parameters/eos/kij/N2-CH4.dat"; }
+    henryPairs { CO2-water "data/standards/parameters/Henry/CO2-water.dat"; }
+    kijPairs   { N2-CH4    "data/standards/parameters/SRK/N2-CH4.dat"; }
 }
 ```
 

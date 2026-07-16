@@ -11,7 +11,7 @@ Feed (AcOH + EtOH)
   reactorOut
       |
   [ SEPARATION ]  isothermal flash, NRTL
-      |  \           ethylAcetate-water pair: sectors/SEPARATION/constant/binaryPairs/
+      |  \           ethylAcetate-water pair: sectors/SEPARATION/constant/parameters/
    liquid vapor      ethanol-water:           inherited from the standard library
 ```
 
@@ -25,9 +25,9 @@ Run it and read the property-provenance block in the log:
 
 ```
 "i": "ethylAcetate", "j": "water",  "status": "perNode",
-"source": "sectors/SEPARATION/constant/binaryPairs/NRTL/ethylAcetate-water.dat"
+"source": "sectors/SEPARATION/constant/parameters/NRTL/ethylAcetate-water.dat"
 "i": "ethanol",      "j": "water",  "status": "standard",
-"source": ".../data/standards/binaryPairs/NRTL/ethanol-water.dat"
+"source": ".../data/standards/parameters/NRTL/ethanol-water.dat"
 ```
 
 That `perNode` is the whole case.  The sector's pair beat the standard library,
@@ -57,7 +57,7 @@ Fixing it surfaced two real engine bugs, both of the same shape — data owned b
 
 * `reactions ( r1 r2 );` resolved only against the ROOT `constant/reactions`
   (the single `reaction <name>;` form already walked up).
-* `binaryPairs` looked only in the leaf UNIT's folder, never at the sector above
+* `parameters` looked only in the leaf UNIT's folder, never at the sector above
   it — so the standard library won silently, which is exactly the outcome this
   case exists to prevent.
 

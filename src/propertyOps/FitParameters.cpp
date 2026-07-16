@@ -373,7 +373,7 @@ int FitParameters::run(const DictPtr& dict,
                 "is meaningful here");
         // Opt-in promote: write a binary-pair proposal .dat for the fitted
         // pair (the author's explicit act; the GUI never writes -- credo).
-        // `auto` => the canonical constant/binaryPairs/<model>/<pair>.fit-<date>.dat.
+        // `auto` => the canonical constant/parameters/<model>/<pair>.fit-<date>.dat.
         if (o->found("proposal")) proposalPath = o->lookupWord("proposal");
     }
 
@@ -935,7 +935,7 @@ int FitParameters::run(const DictPtr& dict,
                     std::string outPath = proposalPath;
                     if (proposalPath == "auto")
                     {
-                        fs::path outDir = fs::path("constant") / "binaryPairs" / model;
+                        fs::path outDir = fs::path("constant") / "parameters" / model;
                         std::error_code ec; fs::create_directories(outDir, ec);
                         outPath = (outDir / (pairName + ".fit-" + isoDateUtc() + ".dat")).string();
                     }
@@ -956,7 +956,7 @@ int FitParameters::run(const DictPtr& dict,
                               << "  !! values are not uniquely determined -- promote with care, or\n"
                               << "  !! add data at another pressure to separate a from b/T.\n";
                         f << "  Promote by:\n"
-                          << "      mv " << outPath << "  constant/binaryPairs/" << model << "/" << pairName << ".dat\n"
+                          << "      mv " << outPath << "  constant/parameters/" << model << "/" << pairName << ".dat\n"
                           << "\\*---------------------------------------------------------------------------*/\n\n"
                           << "components  ( " << ci << "  " << cj << " );\n"
                           << "model       " << model << ";\n\n"

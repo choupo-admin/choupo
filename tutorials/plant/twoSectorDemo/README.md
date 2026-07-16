@@ -13,7 +13,7 @@ collaborator, they unzip + build + run.
 
 ## What's inside (all case-local)
 - **10 components** — `constant/components/compA..compJ.dat` (synthetic).
-- **10 NRTL binary pairs** — `constant/binaryPairs/NRTL/*.dat`.
+- **10 NRTL binary pairs** — `constant/parameters/NRTL/*.dat`.
 - **5 reactions** — `constant/reactions`.
 - **2 custom unit operations, compiled from source in the case:**
   - `SECTOR_R/code/StoichReactor` — a specified-conversion reactor.

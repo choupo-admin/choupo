@@ -63,6 +63,6 @@ provides ( meanActivityCoefficient osmoticCoefficient waterActivity ionicStrengt
 
 notes
 {
-    purpose "Defines the eNRTL method contract. Numerical tau parameters live in parameters/electrolyte/eNRTL/.";
+    purpose "Defines the eNRTL method contract. Numerical tau parameters live in parameters/eNRTL/.";
     caveat  "calorimetricFit is per-kernel and FALSE for eNRTL: the tau(T) is uncalibrated, so the L_phi heat-of-dilution stays off the energy balance (the builder forces it).";
 }

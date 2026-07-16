@@ -1,5 +1,5 @@
 /*--- SEPARATION sector: the flash subdomain.  The ethylAcetate-water NRTL pair
-  is PARTICULAR to this sector (constant/binaryPairs/NRTL/), which is the whole
+  is PARTICULAR to this sector (constant/parameters/NRTL/), which is the whole
   point of the fractal constant/: the pair lives with the sector that needs it. */
 
 units

@@ -26,8 +26,8 @@ propertyDataManifest
         "components/O2.dat" { kind standard; standardSet Choupo-2607; sha256 "31f936931536a9b793b78c6d4582d78a1eb74ddfd945df89d701c7dd7228d1dc"; }
         "components/kerosene_C12cut.dat" { kind local; sha256 "a093f53e7cb68d46dd50501e452710eb570406727bd28260dfd320c63cefa904"; }
         "components/water.dat" { kind standard; standardSet Choupo-2607; sha256 "bd02dbd0f03a6f9133c9ed036d6bce897211102e9ca25806cb2b688782972aab"; }
-        "parameters/electrolyte/pitzer/pairs/Li-Cl.dat" { kind standard; standardSet Choupo-2607; sha256 "b217bb2ff870214128e8f867faf4d24cacb370a86686d8b1bc7bdde7ef92491a"; }
-        "parameters/electrolyte/pitzer/pairs/Na-Cl.dat" { kind standard; standardSet Choupo-2607; sha256 "1b6165a38785d8c5cc260ccfaa416f18895f89e829948d87d0f22c07350c2965"; }
+        "parameters/Pitzer/pairs/Li-Cl.dat" { kind standard; standardSet Choupo-2607; sha256 "b217bb2ff870214128e8f867faf4d24cacb370a86686d8b1bc7bdde7ef92491a"; }
+        "parameters/Pitzer/pairs/Na-Cl.dat" { kind standard; standardSet Choupo-2607; sha256 "1b6165a38785d8c5cc260ccfaa416f18895f89e829948d87d0f22c07350c2965"; }
         "phases/solid/halite.dat" { kind local; derivedFrom { standardSet Choupo-2607; record "phases/solid/halite.dat"; } sha256 "0094e15aa19e8f6fb712025e4a5a2056b32b69d159415930498339230e5ce5e0"; }
         "phases/solid/zabuyelite.dat" { kind local; sha256 "8ba2b5a7e96616a257b035656d5c5033c56b651e4d03a97e38e8b5665dc941da"; }
         "propertyMethods/electrolyte/pitzer.dat" { kind local; derivedFrom { standardSet Choupo-2607; record "propertyMethods/electrolyte/pitzer.dat"; } sha256 "2e8431c9746d6eb337a9c350ed3de76435baba467581ca68873072c366878554"; }

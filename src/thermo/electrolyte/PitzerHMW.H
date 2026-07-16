@@ -55,11 +55,11 @@ Description
       Z = sum_i |z_i| m_i,   b = 1.2,   A_phi(T) = 0.3915 * debyeHuckelFactor(T)
     with B_ca, B'_ca, B^phi_ca, C_ca = C^phi_ca / (2 sqrt|z_c z_a|) from
     PitzerForm.H and beta0/beta1/beta2/Cphi/alpha1/alpha2 read per (cation,anion)
-    from the SHARED catalogue data/standards/parameters/electrolyte/pitzer/pairs/ (case-local
+    from the SHARED catalogue data/standards/parameters/Pitzer/pairs/ (case-local
     overlay honoured, exactly like the single-salt loader).
 
     SCOPE -- BINARIES + TERNARY MIXING + E_theta.  theta_ij + psi_ijk are read
-    per like-sign pair / triplet from data/standards/parameters/electrolyte/pitzer/mixing/
+    per like-sign pair / triplet from data/standards/parameters/Pitzer/
     (per-entry case-local overlay, same rule as pairs.dat).  The mixing parameter
     is the FULL Pitzer form
         Phi_ij  = theta_ij + E_theta_ij(I)     Phi'_ij = E_theta'_ij(I)

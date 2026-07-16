@@ -159,7 +159,7 @@ mineral file would re-create duplication, not remove it:
 - `components/<salt>.dat` — apparent-salt identity + `dissociatesTo` (the
   *dissolved* salt, a different object from the crystal).
 - `species/aqueous/<ion>.dat` — ion thermo (Na⁺ is shared by NaCl, Na₂SO₄, NaOH…).
-- `parameters/electrolyte/pitzer/…` — **pair** params (Na-Cl is a *pair*, shared).
+- `parameters/Pitzer/…` — **pair** params (Na-Cl is a *pair*, shared).
 - `chemistry/aqueousSpeciation/…` — complex-formation reactions (relational).
 
 This is exactly the CLAUDE.md three-axiom split: intrinsic-to-one-solid → its

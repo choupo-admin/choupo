@@ -22,6 +22,6 @@ propertyDataManifest
         "propertyMethods/electrolyte/eNRTL.dat" { kind local; derivedFrom "Choupo-2607:propertyMethods/electrolyte/eNRTL.dat"; sha256 "7f7e4ddaaee3bb12e2bb4fa86a104a381a273a4b7932a9be879fea7440cc0bcc"; }
         "species/aqueous/Cl.dat" { kind standard; standardSet Choupo-2607; sha256 "d3c1a03dc2230a8aae9cb61332ed9f85a44d27a16f46821e8c5d02cee4d6a607"; }
         "species/aqueous/K.dat" { kind standard; standardSet Choupo-2607; sha256 "a04de438064110b059ce2e1ca4a43b27a9186ae7dc454c98b45587f96ac7d0b9"; }
-        "parameters/electrolyte/eNRTL/K-Cl.dat" { kind local; sha256 "194f2382bd2d946cb28e81dae7c484bb3cfd5a241a032db2a618e40c07cf28ae"; }
+        "parameters/eNRTL/K-Cl.dat" { kind local; sha256 "194f2382bd2d946cb28e81dae7c484bb3cfd5a241a032db2a618e40c07cf28ae"; }
     }
 }

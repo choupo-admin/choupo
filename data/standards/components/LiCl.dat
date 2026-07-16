@@ -5,7 +5,7 @@
   (Li+ + Cl-), the most soluble common chloride (~19.9 mol/kg at 25 C) --
   which is WHY the salar/brine route works (Li stays in the mother liquor while
   NaCl/KCl crystallise out).  The Li+/Cl- ions live in species/aqueous/; the
-  Li-Cl Pitzer pair is curated in parameters/electrolyte/pitzer/pairs/.
+  Li-Cl Pitzer pair is curated in parameters/Pitzer/pairs/.
   Promoted to the standard catalogue (was case-local in lithiumBrinePlant).
 
   Sources: MW from atomic weights (IUPAC); solid rho_p 2068 kg/m^3

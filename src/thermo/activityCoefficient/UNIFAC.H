@@ -53,7 +53,7 @@ Description
         }
 
     R_k/Q_k and the main-group a_mn matrix load from data/standards/unifac/
-    (via Database::currentRoot(), the same channel NRTL uses for binaryPairs).
+    (via Database::currentRoot(), the same channel NRTL uses for its pair catalogue).
     A component missing from `groups` -> the model falls back to gamma=1 for it
     and logs the gap (no silent crutch).
 \*---------------------------------------------------------------------------*/

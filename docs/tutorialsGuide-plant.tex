@@ -55,7 +55,7 @@ Pedagogically the splitter is the single inter-sector cable that ties the two do
 
 [ REACTION ] --- esterification CSTR, its OWN kinetics in | sectors/REACTION/constant/reactions reactorOut
 
-[ SEPARATION ] --- isothermal flash; the ethylAcetate-water NRTL pair | \textbackslash\{\} is PARTICULAR to this sector liquid vapor (sectors/SEPARATION/constant/binaryPairs/NRTL/...); ethanol-water is INHERITED from the standard library.
+[ SEPARATION ] --- isothermal flash; the ethylAcetate-water NRTL pair | \textbackslash\{\} is PARTICULAR to this sector liquid vapor (sectors/SEPARATION/constant/parameters/NRTL/...); ethanol-water is INHERITED from the standard library.
 
 The point of the case is the FRACTAL `constant/`: components shared across the plant, particular data (kinetics here, a fitted pair there) living with the sector that owns it, and the rest walked up to the standard catalogue.
 

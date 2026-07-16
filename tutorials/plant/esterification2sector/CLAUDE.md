@@ -34,7 +34,7 @@ engine; HERE your job is this case.
 - **WIRED (2026-07-09).**  `sectors/` + `unitOperations/` layout, state in `0/`,
   named-edge `connections`.  Runs end to end; mass closes exactly.  Fixing it
   surfaced two engine bugs (per-node resolution of the `reactions ( ... )` list
-  and of `binaryPairs`, both of which ignored the SECTOR and only looked at the
+  and of `parameters`, both of which ignored the SECTOR and only looked at the
   leaf unit) plus a parser hardening (a bare sub-100-Pa pressure now warns).
 - **Pending / the user's call:**
   - **Disconnect to resolve:** `sectors/REACTION/constant/reactions` still carries

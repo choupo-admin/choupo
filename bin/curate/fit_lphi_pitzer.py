@@ -114,7 +114,7 @@ def fit(name, beta0, beta1, Cphi, lo=0.1, hi=6.0):
 if len(sys.argv) >= 4:
     series, cat, an = sys.argv[1], sys.argv[2], sys.argv[3]
     pair = Path(__file__).resolve().parents[2] / (
-        "data/standards/parameters/electrolyte/pitzer/pairs/%s-%s.dat" % (cat, an))
+        "data/standards/parameters/Pitzer/pairs/%s-%s.dat" % (cat, an))
     txt = pair.read_text()
     def anchor(k):
         return float(re.search(r"\b%s\s+(-?[\d.eE+-]+);" % k, txt).group(1))

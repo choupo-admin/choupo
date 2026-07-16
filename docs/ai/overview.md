@@ -109,7 +109,7 @@ them in answers to users.
       `data/standards/components/<name>.dat`.  Frozen, partilhado
       between cases.
    2. **Pair-dependent** props live in `data/standards/<feature>/<pair>.dat`
-      (binaryPairs/NRTL, binaryPairs/Wilson, henrysLaw,...).  Frozen.
+      (parameters/NRTL, parameters/Wilson, parameters/Henry,...).  Frozen.
    3. **Equipment-dependent** kinetics (crystallisation `k_n`/`k_g`,
       drying `Xc`) live in the **case** under `constant/`.  User-editable.
    4. **Sample-specific measured data** (sorption isotherm, critical
@@ -122,7 +122,7 @@ them in answers to users.
    5. **Package-declared parameter files** — a `propertyPackage`
       DECLARES the pair files it consumes (`parameters { henryPairs
       {…} kijPairs {…} }`, homes under `data/standards/parameters/`
-      + `henrysLaw/`) and the builder VERIFIES them at assembly: a
+      + `parameters/Henry/`) and the builder VERIFIES them at assembly: a
       declared-but-missing file REFUSES loudly, naming the entry to
       add (never an ideal-default).  Method records live in
       `data/standards/propertyMethods/`; the package manifest is inline in

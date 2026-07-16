@@ -85,7 +85,7 @@ catalogue); local ship raw bodies.
   PLOT_TYPES set-size gating, replacing the comma-sep TextInput. Kills the typo-fail class.
 - **A1**: wire the EXISTING-engine templates — 1-comp curves, binary VLE quartet
   (T-x-y/x-y/T-x/T-y/γ) via `propertyScan1D`-over-x with NRTL/Wilson pairs resolved
-  **by-name from `data/standards/binaryPairs/`** (the engine already does this — vetting
+  **by-name from `data/standards/parameters/<MODEL>/`** (the engine already does this — vetting
   corrected the spec; UNIFAC DESCOPED from A1 until per-component group data is curated),
   + N-comp 2-D contour via `propertyScan2D`. ~80% of the vision on TODAY's engine.
 - **A2** (small keywords, no refactor): `T_dew`, `Cp_liquid`/`Vliq`/`rho_liquid`,
@@ -117,14 +117,14 @@ check (assert CSV columns CsvAutoPlot expects) before the browser.
   data; never a free input) — keeps it a scratchpad, not a wizard. (HIGH)
 - **Role taxonomy** simplified to VLE-able vs not-VLE-able (the data supports that, not a
   fragment/pseudo zoo). (MEDIUM)
-- **NRTL/Wilson pairs resolve by-name from `data/standards/binaryPairs/`** (engine already
+- **NRTL/Wilson pairs resolve by-name from `data/standards/parameters/<MODEL>/`** (engine already
   does this — the spec undersold it). (MEDIUM)
 - **(x,T)/(x,P) contour is binary-only**; (T,P) any set. (MEDIUM)
 - **UNIFAC descoped from A1** (needs per-component group data; would edge toward
   structure-first identity, which the architecture rejects). (MEDIUM)
 
 ## Open forks (Vítor's calls)
-1. NRTL pair catalogue: which pairs ship (cited, license-clean) in `data/standards/binaryPairs/`?
+1. NRTL pair catalogue: which pairs ship (cited, license-clean) in `data/standards/parameters/<MODEL>/`?
 2. UNIFAC group data: curate per-component groups, or defer UNIFAC?
 3. Ternary reference data: which measured LLE/VLLE system + citation (or flash-agreement-only for v1)?
 4. Ternary scope for first ship: regions+tie-lines only, or +residue curves +on-triangle contours?

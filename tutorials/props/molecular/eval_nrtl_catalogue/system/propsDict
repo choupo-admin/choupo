@@ -5,7 +5,7 @@
   against this 1-atm bubble-T dataset?  Nothing is adjusted, nothing is
   written.  The propertyDict declares NO inline pairs, so what gets scored is
   a REAL provenance-bearing pair resolved through the search path (from this
-  case's own vendored constant/binaryPairs/ copy, identical parameters and
+  case's own vendored constant/parameters/ copy, identical parameters and
   full primary citation) -- not numbers typed inline into the dict.
 
   Read the verdict (rms/aad in kelvin) and THEN decide whether a refit is

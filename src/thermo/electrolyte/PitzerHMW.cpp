@@ -158,7 +158,7 @@ Pair readPair(const std::string& cation, const std::string& anion)
 // electrolytePaths and take the FIRST matching entry (case-local wins).
 
 // The mixing kind is now stored ONLY as per-(kind) per-key records under
-// parameters/electrolyte/pitzer/mixing/<kind>/<name>.dat (the monolithic
+// parameters/Pitzer/<kind>/<name>.dat (the monolithic
 // electrolyte/mixing.dat is gone).  Read one record's `value`, or NaN if absent.
 // EVERY reader below is called from inside evaluate()'s triple loops over the
 // ions, i.e. on every single gamma evaluation, and each one used to open, read
@@ -184,7 +184,7 @@ static double mixingFileValue(const std::string& kind, const std::string& name)
     if (it != cache.end()) return it->second;
 
     const fs::path tp = fs::path(Database::currentRoot())
-        / "standards" / "parameters" / "electrolyte" / "pitzer" / "mixing"
+        / "standards" / "parameters" / "Pitzer"
         / kind / (name + ".dat");
     const double v = fs::exists(tp)
         ? parsedOnceHMW(tp)->lookupScalar("value")
@@ -807,7 +807,7 @@ static std::vector<std::pair<std::string, std::string>> enumeratePitzerPairs()
         return out;                       // overlay XOR: case wins WHOLE
     }
     const fs::path dir = fs::path(Database::currentRoot())
-                       / "standards" / "parameters" / "electrolyte" / "pitzer" / "pairs";
+                       / "standards" / "parameters" / "Pitzer" / "pairs";
     if (fs::exists(dir))
     {
         std::vector<fs::path> files;

@@ -1,0 +1,44 @@
+{
+  "choupoLayout": 1,
+  "nodes": {
+    "stream:feed": {
+      "x": -5.4545454545454675,
+      "y": 283.6363636363636
+    },
+    "unit:reactor": {
+      "x": 320,
+      "y": 300
+    },
+    "unit:heater": {
+      "x": 560,
+      "y": 300
+    },
+    "unit:separator": {
+      "x": 800,
+      "y": 300
+    },
+    "stream:liqProd": {
+      "x": 1040,
+      "y": 365
+    },
+    "stream:vapProd": {
+      "x": 1040,
+      "y": 235
+    },
+    "duty:heater:Q": {
+      "x": 595,
+      "y": 450
+    },
+    "duty:separator:Q": {
+      "x": 835,
+      "y": 450
+    }
+  },
+  "viewport": {
+    "x": -42.5,
+    "y": -122.05000000000001,
+    "zoom": 1.1
+  },
+  "edges": {},
+  "handles": {}
+}

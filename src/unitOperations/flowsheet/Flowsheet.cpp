@@ -1298,7 +1298,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                     std::filesystem::path(memberBase.substr(0, memberBase.size() - 1));
                 for (int up = 0; up < 6; ++up)
                 {
-                    if (std::filesystem::exists(node / "constant" / "binaryPairs"))
+                    if (std::filesystem::exists(node / "constant" / "parameters"))
                     {
                         DictPtr th = u->found("thermo")
                             ? u->subDict("thermo")

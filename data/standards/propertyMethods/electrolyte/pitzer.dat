@@ -52,12 +52,12 @@ requires
     pairParameters
     {
         type electrolytePairParameters;
-        path "data/standards/parameters/electrolyte/pitzer/pairs/";
+        path "data/standards/parameters/Pitzer/pairs/";
     }
 
     optionalMixingParameters
     {
-        path "data/standards/parameters/electrolyte/pitzer/mixing/";
+        path "data/standards/parameters/Pitzer/";
     }
 
     optionalSaltEquilibria
@@ -70,5 +70,5 @@ provides ( meanActivityCoefficient osmoticCoefficient waterActivity ionicStrengt
 
 notes
 {
-    purpose "Defines the method contract. Numerical parameters live in parameters/electrolyte/pitzer/.";
+    purpose "Defines the method contract. Numerical parameters live in parameters/Pitzer/.";
 }

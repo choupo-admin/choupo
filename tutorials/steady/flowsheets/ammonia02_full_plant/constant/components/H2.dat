@@ -1,7 +1,7 @@
 /* Case-local OVERLAY -- the ROLE SWITCH only.  In THIS loop H2 is a
    supercritical SOLUTE in liquid NH3; flipping role makes the K-value take the
    Henry path.  THE PHYSICS ("o sumo") lives in the PAIR catalogue:
-       data/standards/henrysLaw/H2-NH3.dat
+       data/standards/parameters/Henry/H2-NH3.dat
        H_ref 1.18e9 Pa (298 K) . dH_diss +13.6 kJ/mol . v_inf 24 cm3/mol (KK)
        fitted to Wiebe & Tremearne 1934 (50-1000 atm, ~2%); the run log
        announces it as [henry].  Everything else (MW, Tc, Pc, omega, Cp...)

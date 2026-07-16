@@ -208,7 +208,7 @@ fitParameters keeping its golden.  There is no runnable grammar to document
 
 Known limitation (CLAUDE.md §14): it requires the `pairs` INLINE in
 `constant/propertyDict` (it mutates them in-memory) — a case using
-external pair files (`constant/binaryPairs/...`) will not fit.  It is
+external pair files (`constant/parameters/...`) will not fit.  It is
 slated for retirement; prefer `fitParameters` for anything new.
 
 ## The sweep CSV becomes a one-click plot in the GUI

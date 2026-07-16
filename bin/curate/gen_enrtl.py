@@ -1,7 +1,7 @@
 import re, os
 src = open("data/standards/electrolyte/enrtl.dat").read()
 body = re.search(r'enrtl\s*\((.*)\)', src, re.S).group(1)
-outdir = "data/standards/parameters/electrolyte/eNRTL"
+outdir = "data/standards/parameters/eNRTL"
 os.makedirs(outdir, exist_ok=True)
 def tok(b,k):
     m = re.search(rf'\b{k}\b\s+(-?[\w.+-]+)\s*;', b); return m.group(1) if m else None

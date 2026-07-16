@@ -21,7 +21,7 @@ process04_research_workflow/
 │   └── flowsheetDict                    (ethanol/water flash at 355 K)
 └── constant/
     ├── thermoPackage                    ("model NRTL;" only --- no inline pairs)
-    └── binaryPairs/
+    └── parameters/
         └── NRTL/
             └── ethanol-water.dat        case-local NRTL parameters
 ```
@@ -31,8 +31,8 @@ process04_research_workflow/
 When the simulator builds the NRTL model and discovers there are no
 inline pairs in `thermoPackage`, it falls back to file lookup:
 
-1. **Case-local** -- `<case>/constant/binaryPairs/NRTL/ethanol-water.dat` ← used here
-2. **Standards**  -- `$CHOUPO_HOME/data/standards/binaryPairs/NRTL/ethanol-water.dat`
+1. **Case-local** -- `<case>/constant/parameters/NRTL/ethanol-water.dat` ← used here
+2. **Standards**  -- `$CHOUPO_HOME/data/standards/parameters/NRTL/ethanol-water.dat`
 
 In this case the local file exists, so it wins. If you delete the local
 file, the run still succeeds because the standards file is the same
@@ -62,12 +62,12 @@ Levenberg-Marquardt against experimental VLE data, with the inner
 simulator pass providing T_bubble per data row.  A proposal is written
 to
 
-    constant/binaryPairs/<model>/<c1>-<c2>.fit-<date>.dat
+    constant/parameters/<model>/<c1>-<c2>.fit-<date>.dat
 
 The proposal is dormant until you do
 
-    mv constant/binaryPairs/NRTL/ethanol-water.fit-<date>.dat \
-       constant/binaryPairs/NRTL/ethanol-water.dat
+    mv constant/parameters/NRTL/ethanol-water.fit-<date>.dat \
+       constant/parameters/NRTL/ethanol-water.dat
 
 That's the "promote" step. Human decides, never the simulator silently.
 
