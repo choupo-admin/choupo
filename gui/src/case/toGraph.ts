@@ -377,11 +377,15 @@ export function flowsheetToGraph(
     const p = positions.get(u.name);
     if (!p) continue;
     const tJacket = scalarToSI(op?.["T_jacket"]);
-    // Holdup initial T (from the `initial{}` block) sets the pre-run tier sign.
+    // Holdup initial T sets the pre-run jacket tier sign.  It lives in
+    // 0/internalState now (the retired inline initial{} block was the legacy
+    // home); fall back to that legacy block for an un-migrated case.
     const rawUnits = (flowsheet["units"] ?? []) as JsonDict[];
     const rawUnit = Array.isArray(rawUnits)
       ? rawUnits.find((ru) => String(ru["name"]) === u.name) : undefined;
-    const tInit = scalarToSI((rawUnit?.["initial"] as JsonDict | undefined)?.["T"]);
+    const tInitInline = scalarToSI((rawUnit?.["initial"] as JsonDict | undefined)?.["T"]);
+    const tInit = Number.isFinite(tInitInline)
+      ? tInitInline : (zeroInternalT(rawFiles, u.name) ?? NaN);
     const heating = !(Number.isFinite(tJacket) && Number.isFinite(tInit) && tJacket < tInit);
     nodes.push({
       id: `duty:${u.name}:jacket`,
@@ -956,6 +960,67 @@ function feedSpecFromInlet(inlet: JsonValue | undefined): StreamSpec {
   return spec;
 }
 
+// A dynamicCSTR's feed now lives in 0/streams (the authored inlet face), not the
+// retired inline inlet{} block.  The face carries T, P and per-species
+// molarFlows{} (F is their sum, composition their normalisation) -- mirror
+// feedSpecFromInlet for that shape so the synthesised feed terminal still shows.
+function feedSpecFromFace(face: JsonValue | undefined): StreamSpec {
+  const spec: StreamSpec = { F: 0, T: AMBIENT_T, P: AMBIENT_P, composition: {} };
+  if (!face || typeof face !== "object" || Array.isArray(face)) return spec;
+  const blk = face as JsonDict;
+  const t = scalarToSI(blk["T"]);
+  if (Number.isFinite(t) && t > 0) spec.T = t;
+  const p = scalarToSI(blk["P"]);
+  if (Number.isFinite(p) && p > 0) spec.P = p;
+  const mf = blk["molarFlows"];
+  if (mf && typeof mf === "object" && !Array.isArray(mf)) {
+    let F = 0;
+    for (const [k, v] of Object.entries(mf as JsonDict)) {
+      const n = scalarToSI(v);
+      if (Number.isFinite(n)) { spec.composition[k] = n; F += n; }
+    }
+    spec.F = F;
+    if (F > 0) for (const k of Object.keys(spec.composition)) spec.composition[k]! /= F;
+  }
+  return spec;
+}
+
+// The 0/streams file (a dynamic case's authored inlet faces) parsed to a faces
+// map { "<unit>.feed": {bc, T, P, molarFlows}, ... }; {} when absent/unparseable.
+function zeroStreamsFaces(
+  rawFiles: { [relPath: string]: string } | undefined,
+): JsonDict {
+  const text = rawFiles?.["0/streams"];
+  if (!text) return {};
+  try {
+    const j = toJson(parse(text)) as JsonDict;
+    const blk = j["streams"];
+    if (blk && typeof blk === "object" && !Array.isArray(blk)) return blk as JsonDict;
+  } catch { /* unparseable -> no faces */ }
+  return {};
+}
+
+// A dynamic unit's initial holdup T [K] from 0/internalState (the authored
+// state, now that initial{} no longer lives inline in the flowsheet).  Sets the
+// jacket tier sign pre-run; undefined when absent/unparseable.
+function zeroInternalT(
+  rawFiles: { [relPath: string]: string } | undefined, uname: string,
+): number | undefined {
+  const text = rawFiles?.["0/internalState"];
+  if (!text) return undefined;
+  try {
+    const units = (toJson(parse(text)) as JsonDict)["units"];
+    if (units && typeof units === "object" && !Array.isArray(units)) {
+      const ud = (units as JsonDict)[uname];
+      if (ud && typeof ud === "object" && !Array.isArray(ud)) {
+        const t = scalarToSI((ud as JsonDict)["T"]);
+        if (Number.isFinite(t) && t > 0) return t;
+      }
+    }
+  } catch { /* unparseable -> undefined */ }
+  return undefined;
+}
+
 // Does a parsed unit declare its OWN material wiring (in/inputs/outputs)?  When
 // it does, the author is in control and the dynamic-holdup synthesis below
 // stays out of the way (purely additive).
@@ -1017,22 +1082,27 @@ function readFlowsheet(
   // Synthesised feed terminals for dynamic-holdup units (collected here,
   // merged into `streams` after the unit pass).
   const synthFeeds: { [name: string]: StreamSpec } = {};
+  const faces = zeroStreamsFaces(rawFiles);
 
   const units: UnitSpec[] = (unitsJson as JsonDict[]).map((u) => {
-    // A DYNAMIC continuous holdup unit (dynamicCSTR) carries an `inlet{}`
-    // block + an `operation{}` jacket instead of in/outputs -- so without
-    // this it renders as a lone box.  SYNTHESISE its feed + product streams
-    // from the sub-dicts already on disk: a `<name>.feed` terminal (read from
-    // inlet{}) and a `<name>.out` product (the name the engine writes in
-    // <t>/streams, so the live scrub overlay keys cleanly).  Additive: only
-    // when the unit declares no streams of its own.
+    // A DYNAMIC continuous holdup unit (dynamicCSTR) declares its feed in
+    // 0/streams (the authored inlet face) -- or, on legacy cases, the retired
+    // inline inlet{} block -- plus an `operation{}` jacket, instead of
+    // in/outputs.  Without a synthesis it renders as a lone box.  SYNTHESISE
+    // its feed + product streams: a `<name>.feed` terminal (read from the
+    // 0/streams face, or inlet{}) and a `<name>.out` product (the name the
+    // engine writes in <t>/streams, so the live scrub overlay keys cleanly).
+    // Additive: only when the unit declares no streams of its own.
     const uname = String(u["name"]);
     const utype = String(u["type"]);
+    const feedFace = faces[`${uname}.feed`];
     if (DYNAMIC_HOLDUP_TYPES.has(utype)
-        && u["inlet"] !== undefined
+        && (u["inlet"] !== undefined || feedFace !== undefined)
         && !hasExplicitStreams(u)) {
       const feedName = `${uname}.feed`;
-      synthFeeds[feedName] = feedSpecFromInlet(u["inlet"]);
+      synthFeeds[feedName] = u["inlet"] !== undefined
+        ? feedSpecFromInlet(u["inlet"])
+        : feedSpecFromFace(feedFace);
       return {
         name: uname,
         type: utype,
