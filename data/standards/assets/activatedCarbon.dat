@@ -12,6 +12,7 @@
   record in that catalogue adsorbs nothing -> reports fully to the raffinate.
 \*-----------------------------------------------------------------------------*/
 
+kind adsorbent;
 adsorbent
 {
     name        activatedCarbon;

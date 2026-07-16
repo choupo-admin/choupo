@@ -52,17 +52,17 @@ namespace propertyOps {
 namespace {
 
 // Resolve a resin .dat BY EXACT NAME (case-local constant/electrolyte/resins/
-// first, then data/standards/assets/resins/) -- the same noun pattern as
+// first, then the flat data/standards/assets/ home) -- the same noun pattern as
 // materials/ and membranes/.  Returns an empty path if not found.
 fs::path resinPath(const std::string& name)
 {
     // case-local (constant/electrolyte/resins/) reuse the electrolytePaths walk,
-    // then the standards resin ASSET at standards/assets/resins/ (resins are an
+    // then the standards resin ASSET at standards/assets/ (kind ionExchangeResin; resins are an
     // engineering asset; the electrolyte/resins/ folder is gone).
     for (const auto& base : electrolyte::electrolytePaths(std::string("resins/") + name + ".dat"))
         if (fs::exists(base)) return base;
     const fs::path st = fs::path(Database::currentRoot())
-                      / "standards" / "assets" / "resins" / (name + ".dat");
+                      / "standards" / "assets" / (name + ".dat");
     if (fs::exists(st)) return st;
     return {};
 }
@@ -112,7 +112,7 @@ void readExchange(const DictPtr& dict, electrolyte::SpeciationInput& in,
     if (!ex->found("resin"))
         throw std::runtime_error("exchange{}: needs `resin <name>;` (the resin "
             "is resolved by exact name in constant/electrolyte/resins/ or "
-            "data/standards/assets/resins/)");
+            "data/standards/assets/)");
 
     const std::string resin = ex->lookupWord("resin");
     fs::path rp = resinPath(resin);
@@ -121,7 +121,7 @@ void readExchange(const DictPtr& dict, electrolyte::SpeciationInput& in,
         // list what IS available (standards + case-local) for the refusal
         std::string avail;
         fs::path stdResins = fs::path(Database::currentRoot())
-                           / "standards" / "assets" / "resins";
+                           / "standards" / "assets";
         if (fs::exists(stdResins))
             for (const auto& e : fs::directory_iterator(stdResins))
                 if (e.path().extension() == ".dat")

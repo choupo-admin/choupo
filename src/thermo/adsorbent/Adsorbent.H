@@ -30,7 +30,7 @@ Class
 
 Description
     An adsorbent MATERIAL: intrinsic identity only (name, material class,
-    packed bulk density), loaded from `data/standards/adsorbents/<name>.dat`
+    packed bulk density), loaded from `data/standards/assets/<name>.dat`
     --- plus the per-species equilibrium isotherms ATTACHED to it by the
     AdsorbentRegistry from the pair catalogue
     `data/standards/parameters/adsorption/equilibria/<name>/<species>.dat`

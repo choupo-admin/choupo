@@ -48,7 +48,7 @@ units
 
         operation
         {
-            adsorbent     zeolite5A;          // data/standards/adsorbents/zeolite5A.dat
+            adsorbent     zeolite5A;          // data/standards/assets/zeolite5A.dat
             P_high        20.0 bar;            // adsorption pressure
             P_low         1.2 bar;             // regeneration / blowdown pressure
             T             313.0 K;             // isothermal bed (the stated assumption)

@@ -30,7 +30,7 @@ Class
 
 Description
     Singleton lookup for Membrane records.  Files matching
-    data/standards/membranes/<name>.dat are loaded after
+    data/standards/assets/<name>.dat are loaded after
     `loadFrom(root)` is invoked from the main application at start-up.
 
     Same shape as MaterialRegistry (one registry per kind-of-thing).

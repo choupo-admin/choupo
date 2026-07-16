@@ -1,7 +1,7 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Membrane: SW30HR -- CASE-LOCAL copy with PER-ION permeabilities
 
-  Base values verbatim from data/standards/membranes/SW30HR.dat
+  Base values verbatim from data/standards/assets/SW30HR.dat
   (A_w, ratings: DuPont FilmTec SW30HR-380 archetype).  This case feeds
   an IONIC water analysis (Ca, Mg, Na, K, Cl, SO4, HCO3), so the
   per-solute B_s table is extended with per-ion entries.

@@ -1,25 +1,26 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  Adsorbent: Zeolite 5A
+  Adsorbent: Zeolite 13X
 
   What this IS: the INTRINSIC identity of one adsorbent material -- name,
   material class and packed bulk density.  Nothing pair-dependent lives here:
   the per-species adsorption equilibria are (adsorbent x adsorbate) PAIR data
   and live one record per pair under
-      data/standards/parameters/adsorption/equilibria/zeolite5A/
+      data/standards/parameters/adsorption/equilibria/zeolite13X/
   (migrated there 1:1 on 2026-07-12, numbers unchanged; the engine REFUSES a
   file that still embeds an isotherms block, and
   bin/curate/check_adsorption_tree.py gates the layout).  A species with no
   record in that catalogue adsorbs nothing -> reports fully to the raffinate.
 \*-----------------------------------------------------------------------------*/
 
+kind adsorbent;
 adsorbent
 {
-    name        zeolite5A;
-    type        "zeolite (Ca-exchanged LTA)";
-    rho_bulk    700;            // kg/m3 packed bulk density
+    name        zeolite13X;
+    type        "zeolite (Na-exchanged FAU)";
+    rho_bulk    640;            // kg/m3 packed bulk density
 }
 
 provenance
 {
-    identity { origin literature; method "material class + packed bulk density: Ruthven, Principles of Adsorption and Adsorption Processes (Wiley, 1984) -- representative 5A value"; }
+    identity { origin literature; method "material class + packed bulk density: Yang, Gas Separation by Adsorption Processes (1987/1997) -- representative 13X value"; }
 }

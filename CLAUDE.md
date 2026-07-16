@@ -523,9 +523,9 @@ parameters/PAIR, packages/UNIT — one Gibbs surface per phase, never two.  Reje
 ## 7. Database catalogue (summary)
 
 `data/standards/` holds the FROZEN, committee-managed reference tree:
-`components/` (194), `materials/` (4: carbonSteel/SS304/SS316/aluminium),
-`membranes/` (4: SW30HR seawater-RO, NF270 loose-NF, NF270_dspmde, CMX_AMX
-ion-exchange), `utilities/` (9: steam
+`components/` (194), `assets/` (12, FLAT with a `kind` field — Migration 4,
+2026-07-16: 4 construction materials, 4 membranes incl. the CMX_AMX
+ion-exchange pair, 3 adsorbents, the SAC_Na resin), `utilities/` (9: steam
 LP/MP/HP, coolingWater, chilledWater, dowthermA, hitecSalt, refrigerationPG,
 electricity), plus the per-model pair catalogues under `parameters/` (`NRTL/ UNIQUAC/ Wilson/ Henry/ Pitzer/ eNRTL/ SRK/`, Migration 2 done 2026-07-16).  The
 engine REFUSES to write under `data/standards/` — new data is a curation act.

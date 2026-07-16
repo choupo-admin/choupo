@@ -31,7 +31,7 @@ Class
 Description
     A pure-membrane property bundle: identification, transport-model
     coefficients, and rating limits.  Loaded from a single dictionary
-    file under `data/standards/membranes/<name>.dat`.
+    file under `data/standards/assets/<name>.dat`.
 
     Choupo's transport model is the classical solution-diffusion
     pair:

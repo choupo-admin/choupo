@@ -15895,7 +15895,7 @@ of pressure:
 with $B_s$ the solute permeability, $c_m$ the concentration at the
 membrane wall and $c_p$ in the permeate.  These two coefficients
 $(A_w, B_s)$ --- carried per membrane in
-\file{data/standards/membranes/} --- are the whole material model; a
+\file{data/standards/assets/} --- are the whole material model; a
 tight RO membrane has a tiny $B_s$, a loose NF membrane a larger one
 (hence NF's partial rejection).
 
@@ -15931,7 +15931,7 @@ process conditions) is \eqref{eq:sd-water} with
 diffusivity $\times$ solubility $\times$ molar volume over $RT$ and film
 thickness $\ell$: the ``permeability'' is not a fudge factor but a
 composite of measurable membrane properties --- which is why $A_w$ is a
-\emph{material} constant in \file{data/standards/membranes/} and not a
+\emph{material} constant in \file{data/standards/assets/} and not a
 per-case knob.  The same integration for the solute (whose $\bar V_s
 \Delta P/RT$ term is negligible) yields \eqref{eq:sd-solute}: solute flux
 blind to pressure, the signature the classic RO experiments confirm.
@@ -19288,7 +19288,7 @@ $F_S = 4$), $E$ is the joint efficiency
 the corrosion allowance (\texttt{corrosionAllow}, default
 $3\,\mathrm{mm}$). All material properties ($\sigma_y$, $\rho$,
 $F_M$, $T_{\max}$, $P_{\max}$) come from
-\file{data/standards/materials/<name>.dat} --- carbon steel, SS304,
+\file{data/standards/assets/<name>.dat} --- carbon steel, SS304,
 SS316, aluminium are shipped.
 
 \subsection{Weight}
@@ -19413,7 +19413,7 @@ folded into the bare-module factor:
 \end{equation}
 with $B_1, B_2$ from Turton (e.g.\ $1.49$ and $1.52$ for a vertical
 vessel), $F_M$ the material factor read from
-\file{data/standards/materials/<name>.dat}, and $F_P$ the pressure
+\file{data/standards/assets/<name>.dat}, and $F_P$ the pressure
 factor from a Turton polynomial in $\log_{10} P_{\mathrm{design}}$.
 
 \subsection{Total-module cost}

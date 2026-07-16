@@ -83,15 +83,19 @@ void AdsorbentRegistry::loadFrom(const std::string& dataRoot)
                            / "equilibria";
     standardsEquilibriaDir() = eqRoot.string();
 
-    fs::path dir = fs::path(dataRoot) / "standards" / "adsorbents";
+    // Adsorbent identities live in the flat data/standards/assets/ home
+    // (Migration 4), filtered by `kind adsorbent`.
+    fs::path dir = fs::path(dataRoot) / "standards" / "assets";
     if (!fs::exists(dir)) return;
 
     for (auto& e : fs::directory_iterator(dir))
     {
         if (!e.is_regular_file()) continue;
         if (e.path().extension() != ".dat") continue;
+        auto rec = Dictionary::fromFile(e.path().string());
+        if (rec->lookupWordOrDefault("kind", "") != "adsorbent") continue;
         Adsorbent a;
-        a.readIdentity(Dictionary::fromFile(e.path().string()),
+        a.readIdentity(rec,
                        e.path().string());
         attachEquilibria(a, eqRoot / a.name());
         registry()[a.name()] = std::move(a);

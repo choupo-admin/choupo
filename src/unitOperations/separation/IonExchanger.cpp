@@ -152,7 +152,7 @@ int IonExchanger::solve(const DictPtr& dict,
     if (!opDict->found("resin"))
         throw std::runtime_error("ionExchanger operation{}: needs `resin "
             "<name>;` (resolved by exact name in constant/electrolyte/resins/ "
-            "or data/standards/assets/resins/)");
+            "or data/standards/assets/)");
     exDict->insert("resin", opDict->entryValue("resin"));
     if (opDict->found("CEC"))
     {

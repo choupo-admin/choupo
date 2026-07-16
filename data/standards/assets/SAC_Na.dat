@@ -30,6 +30,7 @@
 \*---------------------------------------------------------------------------*/
 
 name        SAC_Na;
+kind        ionExchangeResin;
 exchanger   X;
 convention  GainesThomas;
 

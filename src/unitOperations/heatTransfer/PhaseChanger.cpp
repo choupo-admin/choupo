@@ -606,7 +606,7 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
         if (k_wall <= 0.0)
             throw std::runtime_error("phaseChanger(geometry): material '" + mat
                 + "' carries no thermalConductivity -- add it to"
-                  " data/standards/materials/" + mat + ".dat or give `wallK`.");
+                  " data/standards/assets/" + mat + ".dat or give `wallK`.");
     }
     else throw std::runtime_error("phaseChanger(geometry): give `wallK` or"
         " `wall <material>;` in the geometry block.");
@@ -1041,7 +1041,7 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
         if (k_wall <= 0.0)
             throw std::runtime_error("phaseChanger(geometry,boiling): material '"
                 + mat + "' carries no thermalConductivity -- add it to "
-                "data/standards/materials/" + mat + ".dat or give `wallK`.");
+                "data/standards/assets/" + mat + ".dat or give `wallK`.");
     }
     else throw std::runtime_error("phaseChanger(geometry,boiling): give `wallK` "
         "or `wall <material>;` in the geometry block.");

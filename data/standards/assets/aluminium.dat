@@ -23,6 +23,7 @@
 \*---------------------------------------------------------------------------*/
 
 name      aluminium;
+kind           constructionMaterial;
 density   2700;
 F_M       1.50;
 sigma_y   80;

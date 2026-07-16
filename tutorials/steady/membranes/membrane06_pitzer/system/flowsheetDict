@@ -48,7 +48,7 @@ units
 
         operation
         {
-            membrane         SW30HR;            // from data/standards/membranes/
+            membrane         SW30HR;            // from data/standards/assets/
             area             35.0;              // m²
             length           1.0;               // m
             P_permeate       1.0 bar;               // bar

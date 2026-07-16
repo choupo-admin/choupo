@@ -33,7 +33,7 @@ Description
     the main application at start-up (explicit, beside the MembraneRegistry /
     MaterialRegistry calls --- no auto-registration); it (1) registers the
     IsothermModel builtins explicitly, (2) reads each identity file
-    data/standards/adsorbents/<name>.dat, and (3) attaches the per-species
+    data/standards/assets/<name>.dat, and (3) attaches the per-species
     equilibrium records from the pair catalogue
     data/standards/parameters/adsorption/equilibria/<name>/<species>.dat
     (forum #106: equilibrium is pair data, never embedded in the material).

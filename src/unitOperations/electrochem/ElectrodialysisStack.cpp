@@ -72,7 +72,7 @@ struct IEMSpec
 };
 
 // Read a `kind IEM` membrane-pair file (case-local constant/membranes first,
-// then data/standards/membranes) -- the stack's OWN reader, so the standard
+// then data/standards/assets) -- the stack's OWN reader, so the standard
 // solution-diffusion Membrane reader is never bent to fit IEMs.
 void readIEMPair(const std::string& name, IEMSpec& cem, IEMSpec& aem)
 {
@@ -91,13 +91,13 @@ void readIEMPair(const std::string& name, IEMSpec& cem, IEMSpec& aem)
     if (file.empty())
     {
         const fs::path cand = fs::path(Database::currentRoot())
-                            / "standards" / "membranes" / (name + ".dat");
+                            / "standards" / "assets" / (name + ".dat");
         if (fs::exists(cand)) file = cand;
     }
     if (file.empty())
         throw std::runtime_error("electrodialysisStack: IEM membrane '" + name
             + "' not found in constant/membranes/ (case) or "
-              "data/standards/membranes/");
+              "data/standards/assets/");
 
     auto d = Dictionary::fromFile(file.string());
     if (d->lookupWordOrDefault("kind", "") != "IEM")

@@ -3,6 +3,7 @@
 \*---------------------------------------------------------------------------*/
 
 name      carbonSteel;
+kind           constructionMaterial;
 density   7850;      // kg/m³
 F_M       1.00;      // Guthrie/Turton material factor (reference)
 sigma_y   140;       // MPa  allowable stress @ 250 °C

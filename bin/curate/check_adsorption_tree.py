@@ -3,7 +3,7 @@
 #  check_adsorption_tree.py -- layout gate for the adsorption data tree
 #
 #  Forum #106/#116 A1 contract (migrated 2026-07-12):
-#    * data/standards/adsorbents/<name>.dat  = INTRINSIC identity ONLY.
+#    * data/standards/assets/<name>.dat  = INTRINSIC identity ONLY.
 #      An embedded isotherms{} block is the pre-migration layout -- a second
 #      home for pair data that silently drifts.  HARD FAIL, no dual reader.
 #    * data/standards/parameters/adsorption/equilibria/<adsorbent>/<species>.dat
@@ -30,7 +30,7 @@ def code_text(path):
 fails = []
 
 # (a) adsorbent identity files: no embedded isotherms{}
-ads_dir = repo / "data/standards/adsorbents"
+ads_dir = repo / "data/standards/assets"
 n_ads = 0
 for p in sorted(ads_dir.glob("*.dat")):
     n_ads += 1

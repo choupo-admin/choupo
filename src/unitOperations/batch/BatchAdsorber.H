@@ -54,7 +54,7 @@ Description
 
     Data homes (the data doctrine):
       * adsorbent identity + per-species isotherms: curated catalogue
-        (data/standards/adsorbents/ + parameters/adsorption/equilibria/,
+        (data/standards/assets/ + parameters/adsorption/equilibria/,
         case-local overlay honoured by AdsorbentRegistry::byName);
       * k_LDF: EQUIPMENT/SAMPLE data -- lives in the CASE dict, inside
         operation.kLDF with MANDATORY basis/scope/source, never in a

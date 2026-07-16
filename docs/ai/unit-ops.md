@@ -594,7 +594,7 @@ operation { stages  6; }
 ```
 operation
 {
-    membrane         SW30HR;        # -> data/standards/membranes/<name>.dat
+    membrane         SW30HR;        # -> data/standards/assets/<name>.dat
     area             35 m2;          # per element
     length           1 m;
     elements         1;              # for a train
@@ -1233,7 +1233,7 @@ Example: `membrane08_softened_scaling` (the softening pre-treatment).
 
 ### `psa`
 Pressure-swing adsorption on a declared adsorbent
-(`data/standards/adsorbents/`): equilibrium loading split between P_high
+(`data/standards/assets/`): equilibrium loading split between P_high
 and P_low, derated by a declared utilisation factor; the light key defines
 the raffinate product.
 ```

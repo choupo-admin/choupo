@@ -14,9 +14,9 @@ working nucleus:
 | exists | where | what |
 |---|---|---|
 | `Adsorbent` entity + registry | `src/thermo/adsorbent/Adsorbent.{H,cpp}` | identity, `rho_bulk`, per-species Langmuir params, van't Hoff `b(T)` anchored at 298 K |
-| adsorbent catalogue | `data/standards/adsorbents/{zeolite5A,zeolite13X,activatedCarbon}.dat` | `adsorbent{name;type;rho_bulk}` + `isotherms{ <comp>{q_max;b_298;dH_ads} }` + provenance; teaching-grade 298 K fits, flagged as such |
+| adsorbent catalogue | `data/standards/assets/{zeolite5A,zeolite13X,activatedCarbon}.dat` | `adsorbent{name;type;rho_bulk}` + `isotherms{ <comp>{q_max;b_298;dH_ads} }` + provenance; teaching-grade 298 K fits, flagged as such |
 | `psa` unit | `src/unitOperations/separation/PSA.{H,cpp}`; tutorial `psa01_h2_psa` | equilibrium-theory cyclic-steady split (Knaebel/LeVan), competitive Langmuir, isothermal; explicitly NOT: LDF, breakthrough, cycle time, thermal swing, hydraulics |
-| `ionExchanger` | `src/unitOperations/separation/IonExchanger.{H,cpp}` | Gaines-Thomas total equilibrium over the speciation solver; resin records in `data/standards/assets/resins/` |
+| `ionExchanger` | `src/unitOperations/separation/IonExchanger.{H,cpp}` | Gaines-Thomas total equilibrium over the speciation solver; resin records in `data/standards/assets/` |
 | GAB moisture sorption | `Component.cpp:248` (`sorption{Xm;C;K}`) read by SolidDryer/SprayDryer | the UNARY exception: moisture equilibrium as a material property of the solid |
 | ODE integrators | `src/solver/ODE/` (RK4, EulerSI, Rosenbrock23 + adaptive control, Jacobian) | ready for a method-of-lines bed |
 | LM fit machinery | `src/propertyOps/FitParameters` | bounds, standard errors, 95% CI, correlation matrix, reduced chi² — but ONLY `kind=T_bubble` today |

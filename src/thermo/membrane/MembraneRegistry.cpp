@@ -50,7 +50,12 @@ std::map<std::string, Membrane>& registry()
 
 void MembraneRegistry::loadFrom(const std::string& dataRoot)
 {
-    fs::path dir = fs::path(dataRoot) / "standards" / "membranes";
+    // Migration 4: assets/ is the ONE flat home for physical kit; each record's
+    // `kind` names its consumer.  This registry owns the solution-diffusion
+    // membranes (kind RO | NF); every other kind (IEM, constructionMaterial,
+    // adsorbent, ionExchangeResin) belongs to another reader -- skip, never
+    // reject.  A record with NO kind in the shared folder is refused loudly.
+    fs::path dir = fs::path(dataRoot) / "standards" / "assets";
     if (!fs::exists(dir)) return;
 
     for (auto& e : fs::directory_iterator(dir))
@@ -58,12 +63,13 @@ void MembraneRegistry::loadFrom(const std::string& dataRoot)
         if (!e.is_regular_file()) continue;
         if (e.path().extension() != ".dat") continue;
         auto d = Dictionary::fromFile(e.path().string());
-        // Ion-exchange membranes (`kind IEM`, e.g. Neosepta CMX/AMX) are NOT
-        // solution-diffusion membranes: they carry no A_w / per-solute B_s, so
-        // the solution-diffusion reader below would reject them.  They are read
-        // by the electrodialysisStack unit's own reader instead.  Skip them
-        // here so the standard membrane catalogue (RO/NF) loads unchanged.
-        if (d->lookupWordOrDefault("kind", "") == "IEM") continue;
+        const std::string kind = d->lookupWordOrDefault("kind", "");
+        if (kind.empty())
+            throw std::runtime_error("MembraneRegistry: asset '"
+                + e.path().string() + "' has no `kind` -- every record in the"
+                " shared assets/ home must declare its consumer (RO | NF | IEM"
+                " | constructionMaterial | adsorbent | ionExchangeResin)");
+        if (kind != "RO" && kind != "NF") continue;
         Membrane m;
         m.readFromDict(d);
         if (m.name().empty())

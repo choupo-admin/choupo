@@ -198,12 +198,12 @@ data file pin?" and ai/thermo.md).  Non-volatile solutes carry MW +
 pressure); Antoine and Cp blocks are not required on solutes and the VLE
 machinery treats them as K_i = 0.
 
-### `data/standards/materials/` (4)
+### `data/standards/assets/` (4)
 
 carbonSteel, SS304, SS316, aluminium.  Each carries: ρ, F_M (Guthrie),
 σ_y, maxT, maxP.
 
-### `data/standards/membranes/` (2)
+### `data/standards/assets/` (2)
 
 SW30HR (canonical seawater-RO archetype), NF270 (loose-NF archetype).  Each
 carries: A_w (water permeability, m/(s·bar)) + a

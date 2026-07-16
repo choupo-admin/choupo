@@ -24,6 +24,19 @@ def count_dat(rel: str) -> int:
     return len(list(d.glob("*.dat"))) if d.is_dir() else 0
 
 
+
+def count_assets_kind(kinds) -> int:
+    """Records in the flat assets/ home whose `kind` is one of `kinds`."""
+    import re as _re
+    d = STD / "assets"
+    n = 0
+    if d.is_dir():
+        for f in sorted(d.glob("*.dat")):
+            m = _re.search(r"^kind\s+(\w+);", f.read_text(), _re.M)
+            if m and m.group(1) in kinds:
+                n += 1
+    return n
+
 def count_dat_recursive(rel: str) -> int:
     d = STD / rel
     return len(list(d.rglob("*.dat"))) if d.is_dir() else 0
@@ -91,9 +104,9 @@ def build() -> dict:
             "pitzerPairs":       count_dat("parameters/Pitzer/pairs"),
             "enrtlPairs":        count_dat("parameters/eNRTL"),
             "propertyMethods":   count_dat_recursive("methods"),
-            "materials":         count_dat("materials"),
-            "membranes":         count_dat("membranes"),
-            "adsorbents":        count_dat("adsorbents"),
+            "materials":         count_assets_kind({"constructionMaterial"}),
+            "membranes":         count_assets_kind({"RO", "NF", "IEM"}),
+            "adsorbents":        count_assets_kind({"adsorbent"}),
             "utilities":         count_dat("utilities"),
         },
         "engine": {

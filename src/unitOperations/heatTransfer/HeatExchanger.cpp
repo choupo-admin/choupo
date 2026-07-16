@@ -217,7 +217,7 @@ int HeatExchanger::solve(const DictPtr& dict,
             if (wallK <= 0.0)
                 throw std::runtime_error("HeatExchanger(geometry): material '"
                     + mat + "' carries no thermalConductivity (k) -- add it to"
-                    " data/standards/materials/" + mat + ".dat or give `wallK`.");
+                    " data/standards/assets/" + mat + ".dat or give `wallK`.");
         }
         else throw std::runtime_error("HeatExchanger(geometry): give `wallK`"
             " or `wallMaterial <name>;` in the geometry block");

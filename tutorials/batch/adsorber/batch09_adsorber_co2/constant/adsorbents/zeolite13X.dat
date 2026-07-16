@@ -1,6 +1,6 @@
 // --- vendored for self-containment (2026-07-13) ---------------------
 // origin   standard
-// source   data/standards/adsorbents/zeolite13X.dat
+// source   data/standards/assets/zeolite13X.dat
 // sha256   828d30a7ad04c98a2688a94728b7ad70befd45d91677590ac58bf0fcacde0935
 // note     byte-copy of the FROZEN reference at vendoring time. This case
 //          is now self-contained + reproducible even if the standard evolves.

@@ -70,7 +70,7 @@ const Adsorbent& resolveAdsorbent(const std::string& name, int verbosity)
             fs::path p = fs::current_path();
             for (int up = 0; up < 8; ++up)
             {
-                if (fs::exists(p / "data" / "standards" / "adsorbents"))
+                if (fs::exists(p / "data" / "standards" / "assets"))
                 {
                     dataRoot = p / "data";
                     break;
@@ -82,7 +82,7 @@ const Adsorbent& resolveAdsorbent(const std::string& name, int verbosity)
         if (dataRoot.empty()) throw;
         if (verbosity >= 2)
             std::cout << "  [batchAdsorber] adsorbent catalogue loaded from "
-                      << (dataRoot / "standards" / "adsorbents").string()
+                      << (dataRoot / "standards" / "assets").string()
                       << "\n";
         AdsorbentRegistry::loadFrom(dataRoot.string());
         return AdsorbentRegistry::byName(name);

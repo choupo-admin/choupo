@@ -64,15 +64,19 @@ Material readMaterialFile(const fs::path& file)
 
 void MaterialRegistry::loadFrom(const std::string& dataRoot)
 {
-    // Materials live under data/standards/materials/ (read-only curated).
-    // Case-local overrides could be added later at <case>/constant/materials/.
-    fs::path dir = fs::path(dataRoot) / "standards" / "materials";
+    // Construction materials live in the flat data/standards/assets/ home
+    // (Migration 4), filtered by `kind constructionMaterial`.  Case-local
+    // overrides could be added later at <case>/constant/materials/.
+    fs::path dir = fs::path(dataRoot) / "standards" / "assets";
     if (!fs::exists(dir)) return;
 
     for (auto& e : fs::directory_iterator(dir))
     {
         if (!e.is_regular_file()) continue;
         if (e.path().extension() != ".dat") continue;
+        auto d = Dictionary::fromFile(e.path().string());
+        if (d->lookupWordOrDefault("kind", "") != "constructionMaterial")
+            continue;
         Material m = readMaterialFile(e.path());
         registry()[m.name] = m;
     }

@@ -3,7 +3,7 @@
 
   What this IS: the pure-component adsorption isotherm of ONE
   (adsorbent x adsorbate) pair --- one record per pair, the pair catalogue of
-  the adsorption tree (the file under data/standards/adsorbents/ keeps the
+  the adsorption tree (the file under data/standards/assets/ keeps the
   material's intrinsic identity only).  Single-site Langmuir,
 
       q = q_max * b(T) * p / (1 + b(T) * p)        [mol/kg, p in bar]
@@ -16,7 +16,7 @@
   species records of the same adsorbent; a species with no record here
   adsorbs nothing and reports fully to the raffinate.
 
-  CURATION: migrated 1:1 from data/standards/adsorbents/activatedCarbon.dat
+  CURATION: migrated 1:1 from data/standards/assets/activatedCarbon.dat
   isotherms{} 2026-07-12; numbers unchanged (order-of-magnitude 298 K
   TEACHING fits); re-fit from the primary source below is PENDING --- do not
   trust a design number before that re-fit.  Log: choupoSolve prints the
@@ -47,5 +47,5 @@ provenance
 {
     origin    assumed;
     method    "Reich, Ziegler & Rogers, Ind. Eng. Chem. Proc. Des. Dev. 19 (1980) 336 (BPL CO2/CH4/CO/N2/H2); Yang (1987/1997) -- representative 298 K teaching fits; re-fit from the primary before design use";
-    curation  "migrated 1:1 from data/standards/adsorbents/activatedCarbon.dat isotherms{} 2026-07-12; numbers unchanged; re-fit from the primary source pending";
+    curation  "migrated 1:1 from data/standards/assets/activatedCarbon.dat isotherms{} 2026-07-12; numbers unchanged; re-fit from the primary source pending";
 }

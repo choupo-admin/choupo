@@ -1756,7 +1756,7 @@ pressure (\code{vanHoff} or \code{Pitzer}):
 \begin{lstlisting}[language=dict]
 operation
 {
-    membrane         SW30HR;        // -> data/standards/membranes/<name>.dat
+    membrane         SW30HR;        // -> data/standards/assets/<name>.dat
     area             35 m2;         // per element
     length           1 m;
     elements         1;             // >1 for a train in one vessel
@@ -2449,7 +2449,7 @@ costing
 \code{type} selects an \code{EquipmentSize} model
 (\code{stirredTank}, \code{shellTubeHX}, and the \code{design \{\}}
 inversions such as the spray dryer's, \S\ref{sec:spray-design});
-materials come from \file{data/standards/materials/} (carbon steel,
+materials come from \file{data/standards/assets/} (carbon steel,
 SS304, SS316, aluminium --- each with density, Guthrie material factor,
 yield stress, ratings).  The \code{Guthrie} costing model uses
 Turton-style purchased-cost correlations, the ASME wall-thickness

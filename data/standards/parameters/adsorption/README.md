@@ -2,7 +2,7 @@
 
 `equilibria/<adsorbent>/<species>.dat` — ONE record per (adsorbent ×
 adsorbate) pair: the pure-component adsorption isotherm (forum #106 contract;
-the adsorbent's intrinsic identity lives in `data/standards/adsorbents/`,
+the adsorbent's intrinsic identity lives in `data/standards/assets/`,
 never the equilibrium).
 
 Each record declares, mandatorily:
