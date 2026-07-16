@@ -478,32 +478,37 @@ same equations+profiles.  Still rejected: profile GENERATION (quantum chemistry)
 import of thousands, multiple variants, any new architecture.  Reference case:
 `tutorials/props/molecular/cosmoSAC01_water_ethanol`.
 
-**Property architecture — FINAL / CLOSED, RATIFIED 2026-06-30 (design SETTLED, do
-NOT relitigate; implementation pending).**  Canonical umbrella:
-**[`docs/architecture/final-property-architecture.md`](docs/architecture/final-property-architecture.md)**
-(unifies the three layers); Layer-1 data detail in
-**[`docs/architecture/electrolyte-data-architecture.md`](docs/architecture/electrolyte-data-architecture.md) (data layer; earlier iterations in `docs/architecture/archive/`)**
-+ its migration map.  **THE FLOW: `propertyPackage` declares → `ThermoPackageBuilder`
+**Property architecture — consolidated; the authority is
+[`docs/architecture/property-architecture.md`](docs/architecture/property-architecture.md)**
+(level 2 under the Constitution — authority map:
+[`docs/architecture/README.md`](docs/architecture/README.md); it superseded
+`final-property-architecture.md` on 2026-07-14, kept as historical record).
+Layer-1 data detail in
+**[`docs/architecture/electrolyte-data-architecture.md`](docs/architecture/electrolyte-data-architecture.md)**
+(design record + implementation addendum; earlier iterations in
+`docs/architecture/archive/`).  **THE FLOW: the case's INLINE
+`constant/propertyDict` manifest declares → `ThermoPackageBuilder`
 assembles → `ThermoPackage` computes → unit ops.**  The runtime
 assembly step is the BUILDER (loads + assembles, NEVER estimates); "resolver" is
 reserved for CURATION-time estimation.  The reference basis (the `ReferenceRung`)
 lives INSIDE the `propertyMethod`, declared per phase — the engine reads it, never
-hardcodes "aqueous".  Choupo copies Aspen's CONCEPTUAL separation, glass-box —
-eight kinds: apparent components / true species / solid phases / chemistry sets /
-property methods / parameter databanks / **PROPERTY PACKAGES (the CENTRE — a case
-SELECTS a package, it does not merely list components)** / property sets.  The
-package fixes componentApproach (apparent|true), active chemistry, per-phase
-property methods, required parameter databanks, and reported property sets;
-`thermoPackage` stays loadable as a degenerate `propertyPackage` (its lean
-projection).  This is the DATA-layout half; `docs/property-architecture.md` is the
-resolution/MODEL half; the **arity doctrine** (`docs/ai/data-doctrine.md`) and the
+hardcodes "aqueous".  Conceptual separation, glass-box — the kinds: components /
+model species / solid phases (a component's `solidPhases{}`) / chemistry sets /
+property methods / parameter databanks / **the INLINE manifest (the CENTRE — a
+case DECLARES its package, it does not merely list components; the shared
+catalogue + `package <name>;` selector were retired 2026-07-15)**.
+Basis vocabulary: **flowsheet/component basis** vs **aqueous-species basis**
+(the older "apparent/true" wording is banned — see §data tree).  This is the
+DATA-layout half; root `docs/property-architecture.md` is the
+resolution/MODEL half (a deliberate name twin — root = level-3 deep reference);
+the **arity doctrine** (`docs/ai/data-doctrine.md`) and the
 **`ReferenceRung`** phase-rung resolver are SLICES under it (reference selection
 folds into the propertyMethod layer).  The flat-components O(1) lookup (§7 below,
-2026-06-07) is preserved by `generated/indexes/`+`flatCaches/` — the apparent/true
-split is SOURCE-layout, never a runtime directory-walk, so the two decisions do not
-conflict.  **Phase 5 (the engine reasons apparent-vs-true) is COMMITTED** and is
-what justifies any file move; build via a vertical spike (`aqueousNaCl_pitzer`,
-end-to-end through all layers) BEFORE any mass migration.  **Grammar
+2026-06-07) is preserved by `generated/indexes/`+`flatCaches/` — any basis
+split is SOURCE-layout, never a runtime directory-walk, so the two decisions do
+not conflict.  **General basis reconciliation (the engine carrying the
+aqueous-species basis through every stream) stays `[ROADMAP]`** — build via a
+vertical spike end-to-end through all layers BEFORE any mass migration.  **Grammar
 consolidated 2026-07-04** (professors+students fora, `docs/design/thermo-grammar-*`):
 per-GROUP reference rungs within a phase (A1), vapour/transport as method slots
 (A2), declared+verified parameters (A3); families implemented: electrolyte.*,

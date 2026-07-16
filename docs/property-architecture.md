@@ -6,6 +6,12 @@
   Audience: an LLM or human EDITING the engine (same audience as CLAUDE.md),
   NOT a case author (that is docs/ai/). Gates every property-model PR.
   Consolidated 2026-06-05 from a max-effort review of the property abstraction.
+
+  NAME TWIN (deliberate, 2026-07-16): docs/architecture/property-architecture.md
+  is the CONSOLIDATED PROPERTY AUTHORITY (level 2 under the Constitution); THIS
+  root file is the level-3 model/curation-doctrine deep reference it folds in.
+  Where they disagree, the architecture/ file wins. Authority map:
+  docs/architecture/README.md.
 -->
 
 # Property-model architecture
@@ -170,10 +176,10 @@ speciation, electrolyte EoS.
   (Pitzer + a DebyeHuckel limiting-law baseline). Given ion molalities + T →
   `I = ½ Σ mᵢzᵢ²`, osmotic coefficient φ, mean activity γ±, individual ion γᵢ
   (for Donnan).
-- **Data (§4.2):** `data/standards/pitzer/` — per cation-anion pair β⁰,β¹,(β²),Cφ;
-  like-charge θ; triplet ψ. THIS is the mixed-salt enabler. Cited (Pitzer 1991 /
-  Robinson & Stokes — license-clean); provenance Vítor's to confirm, like the
-  UNIFAC a_mn table.
+- **Data (§4.2):** `data/standards/parameters/electrolyte/pitzer/` — per
+  cation-anion pair β⁰,β¹,(β²),Cφ (`pairs/`); like-charge θ; triplet ψ
+  (`mixing/`). THIS is the mixed-salt enabler. Cited (USGS PHREEQC pitzer.dat,
+  public domain; Pitzer 1991 / Robinson & Stokes lineage); shipped and running.
 - **Membrane delegates** to the thermo `ElectrolyteModel` (single source of
   truth) → real Δπ for mixed brines.
 - **Validation (§4.4):** scan γ±(m) 0→6 m, overlay Pitzer vs Debye-Hückel-limit

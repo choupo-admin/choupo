@@ -147,10 +147,14 @@ two-phase stream carries it as the phase seed) — never a decorative `0`, never
 
 ## 4. Property architecture — `propertyDict` + SELF-CONTAINMENT
 
-**A case declares its OWN thermodynamics in `constant/propertyDict` and depends on
-NOTHING outside the case at runtime.**  The installation catalogue
-(`data/standards/`, versioned `Choupo-2607`) is a CREATION/IMPORT-time resource, not
-a runtime dependency.
+**A case declares its OWN thermodynamics in `constant/propertyDict` — every case is
+declaratively self-DESCRIBING (inline manifest, no shared selector).  A case is
+runtime self-CONTAINED only once SEALED**: `bin/choupo-import` materialises the
+closed dependency snapshot into `constant/propertyData/` (289 inline manifests vs
+5 sealed snapshots in the corpus, 2026-07-16).  For an unsealed case the runtime
+legitimately resolves components / methods / chemistry / parameters from
+`data/standards/` (versioned `Choupo-2607`); for a sealed case the catalogue is a
+CREATION/IMPORT-time resource only, not a runtime dependency.
 
 ```
 constant/propertyDict          declares components / chemistry / propertyMethods (INLINE,

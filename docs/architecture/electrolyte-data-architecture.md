@@ -8,6 +8,25 @@
 > iterations (now in [`archive/`](archive/)) and the basis-map sketch in
 > `final-property-architecture.md` on the points where they differ.
 
+> **Implementation addendum (2026-07-16) — how the ratified homes materialised.**
+> This document is the DESIGN record; the shipped tree concretised four of its
+> homes differently (the normative statement of the current tree is
+> [`property-architecture.md`](property-architecture.md) §2):
+> * `species/` landed as **ONE catalogue file** `species/aqueous.dat` (45
+>   masters), not per-species files — the per-file layout survives only inside
+>   sealed case snapshots (`constant/propertyData/`);
+> * `phases/solid/` and `chemistry/{salts,mineralSolubility}/` were **retired**
+>   — a mineral's dissolution equilibrium, solid thermochemistry and crystal
+>   data folded into its own `components/<mineral>.dat` `solidPhases{}` block
+>   (one substance = one file; 64 minerals today);
+> * `propertyPackages/` as a shared catalogue was **retired 2026-07-15** — the
+>   manifest is INLINE in each case's `constant/propertyDict`, and the runtime
+>   refuses a `package <name>;` selector ("the package selects the role" holds;
+>   the package just lives in the case, not in a catalogue);
+> * basis vocabulary: **flowsheet/component basis** vs **aqueous-species
+>   basis** — the older "apparent/true" wording below is retained only as
+>   historical record of the ratification debate.
+
 ## The one idea
 
 A substance never "is" molecular or electrolyte. **The same NaCl plays different

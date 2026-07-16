@@ -6,9 +6,10 @@
 
 # Choupo — Final Property Architecture
 
-> **Status: CLOSED / CANONICAL (design settled 2026-06-30, do NOT relitigate).
-> Implementation pending.** This is the umbrella document that unifies the three
-> previously-separate threads into one architecture:
+> **Status: HISTORICAL — superseded, see the banner above.** (At ratification
+> this read "CLOSED / CANONICAL, design settled 2026-06-30"; authority now lives
+> in `property-architecture.md`.) This was the umbrella document that unified the
+> three previously-separate threads into one architecture:
 > - **Layer 1 (data)** detailed in [`aspen-like-data-architecture.md`](aspen-like-data-architecture.md);
 > - **Layer 2 (curation/resolution)** is the 2026-06-05 contract in [`../property-architecture.md`](../property-architecture.md);
 > - **Layer 3 (runtime compute)** is the existing engine (`ThermoPackage` +

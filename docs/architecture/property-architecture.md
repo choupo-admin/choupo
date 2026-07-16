@@ -24,7 +24,10 @@ does not keep.
 ## 1. The flow
 
 ```
-a case SELECTS a propertyPackage        (the manifest — the CENTRE)
+a case DECLARES its manifest INLINE     (constant/propertyDict — the CENTRE;
+        │                                the shared-catalogue `package <name>;`
+        │                                selector is RETIRED — the runtime
+        │                                actively refuses it)
         │  declares: components · chemistry · per-phase methods · parameters
         ▼
 ThermoPackageBuilder   ASSEMBLES it — loads + verifies + announces, NEVER estimates
@@ -41,19 +44,25 @@ it declares, verifies, and refuses (no silent crutch).
 
 | home | carries | status |
 |---|---|---|
-| `components/` | identity (name, MW, formula) **+ `dissociatesTo`** (ion stoichiometry = identity, not behaviour). FLAT, O(1) by exact name | `[WORKS]` |
-| `species/aqueous/` | model species (ions Na⁺, Cl⁻…) + medium-tagged `…Thermo{}` (hfAq/sAq/cpAq, Wagman 1982). "never fed to a flowsheet" | `[WORKS]` |
-| `phases/solid/` | crystal ρ_p, k_v (for the population-balance crystalliser) | `[WORKS]` |
-| `chemistry/` | REAL equilibria (K + ΔH): `mineralSolubility/` (Ksp=logK25+ΔH+analytic(T), imported from USGS PHREEQC), `salts/`, `aqueousSpeciation/`, `gasLiquid/` (Henry), `ionExchange/` | `[WORKS]` |
-| `parameters/` | interaction parameters by PAIR (Pitzer, eNRTL, NRTL/UNIQUAC/Wilson kij) | `[WORKS]` |
-| `propertyMethods/` | a model + its reference rung, per phase/group (`activity/ electrolyte/ eos/`) | `[WORKS]` |
-| `propertyPackages/` | **SELECTS** everything; one per scenario; a pure manifest (references, never values) | `[WORKS]` |
-| `unifac/ joback/ binaryPairs/ henrysLaw/ solution/` | group tables, pair catalogues, Henry pairs | `[WORKS]` |
+| `components/` | UNIFIED substance records (247, of which 64 carry solid phases): identity (name, MW, formula) **+ `dissociatesTo`/`speciesMap`** (ion stoichiometry = identity, not behaviour) **+ `solidPhases{}`** (dissolution reaction, Ksp = logK25 + ΔH + analytic(T), solid thermochemistry) **+ crystal/shape** (ρ_p, k_v). FLAT, O(1) by exact name | `[WORKS]` |
+| `species/aqueous.dat` | ONE catalogue file (45 master species): ion identity + charge + MW + `aqueousThermo{}` (hfAq/sAq/cpAq, Wagman 1982). "never fed to a flowsheet". *(The per-file `species/aqueous/<sp>.dat` layout survives only inside sealed case snapshots.)* | `[WORKS]` |
+| `chemistry/` | REAL equilibria (K + ΔH): `aqueousSpeciation/` (56), `gasLiquid/` (8, Henry), `ionExchange/` (6). *(`mineralSolubility/`, `salts/` and `phases/solid/` were RETIRED — minerals folded into `components/` `solidPhases{}`, one substance = one file.)* | `[WORKS]` |
+| `parameters/` | interaction parameters by PAIR (`electrolyte/pitzer/` 55+θ/ψ/λ/ζ, `electrolyte/eNRTL/`, `binary/`) + group tables (`Joback.dat`, `UNIFAC/`, `vanKrevelen.dat`, `Yang2020.dat`) + `adsorption/` + `eos/kij` + `solution/` | `[WORKS]` |
+| `propertyMethods/` | a model + its reference rung, per phase/group (`activity/ electrolyte/ eos/ solution/ transport/`) | `[WORKS]` |
+| `binaryPairs/ henrysLaw/` | legacy-location pair catalogues still read by the activity/Henry resolvers (5 public binary pairs post-scrub; 205 Henry pairs). Consolidation into `parameters/<MODEL>/` is the pending Migration 2 | `[WORKS]` |
+
+*(`propertyPackages/` — the shared manifest catalogue — was RETIRED 2026-07-15:
+the directory is deleted, no code reads it, and the runtime actively REFUSES a
+`package <name>;` selector. The manifest lives INLINE in each case.)*
 
 Data tiers: **`standards`** (public, curated) **> `local`** (private, gitignored,
-your imports/estimates) — plus **`references/`** manifests (identity+citation,
-zero values). Precedence: `case > standards > local > ideal default`. The public
-`proposed` tier was retired (2026-07-13); any doc still naming it is stale.
+your imports/estimates). The public `proposed` tier was retired (2026-07-13); any
+doc still naming it is stale. Precedence is defined **per mechanism**, not as one
+global chain — components: nearest case overlay > sealed snapshot > standards >
+local; activity pairs add a per-node rung: per-node > case-root > per-node
+snapshot > case snapshot > standards > local > announced ideal default. `local`
+never shadows a verified `standards` record and every use is announced
+`[local] UNVERIFIED`.
 
 ## 3. The models that run
 
@@ -77,18 +86,21 @@ the rung; it is never stored on the substance.
 | multi-ion **carried in every stream** through a general flowsheet | aqueous | `[ROADMAP]` |
 | molten / fused-salt | fused | `[ROADMAP]` |
 
-Packages that ship & run: `aqueousNaCl_{pitzer,eNRTL}`,
-`aqueousKCl_ethanol_eNRTL`, `aqueousNaOH_pitzer`, `co2Water_henry`,
-`ethanolWater_NRTL`, `n2ch4_srk`. Tutorials: `props/electrolyte/scaling_ro_*`,
-`steady/crystallisation/*`, `steady/membranes/membrane0{7,8}_scaling`.
+Reference manifests (INLINE in their cases — there is no shared package
+catalogue): NaCl/NaOH Pitzer, KCl-ethanol eNRTL, CO₂-water Henry,
+ethanol-water NRTL, N₂-CH₄ SRK. Tutorials: `props/electrolyte/scaling_ro_*`,
+`props/electrolyte/pitzer02_nacl_package`, `steady/crystallisation/*`,
+`steady/membranes/membrane0{7,8}_scaling`.
 
 ## 4. Solids & salts — how precipitation enters
 
-A solid (Halite, gypsum, calcite…) is a first-class **phase** with a **stored**
-dissolution equilibrium in `chemistry/mineralSolubility/<mineral>.dat`
-(logK25 + ΔH + analytic(T), reaction = its ions). Exactly the PHREEQC pattern
-(Choupo imported the USGS `phreeqc.dat`). Precipitation is driven by
-`SI = log₁₀(IAP/Ksp)`, IAP = Π a(ion)^ν. `[WORKS]`.
+A solid (halite, gypsum, calcite…) is a first-class **phase** with a **stored**
+dissolution equilibrium in its OWN component record —
+`components/<mineral>.dat` `solidPhases{}` (dissolution reaction, logK25 + ΔH +
+analytic(T), solid thermochemistry; 64 minerals today). Exactly the PHREEQC
+pattern (Choupo imported the USGS `phreeqc.dat`/`pitzer.dat`, public domain).
+Precipitation is driven by `SI = log₁₀(IAP/Ksp)`, IAP = Π a(ion)^ν; multi-mineral
+equilibration by active-set complementarity. `[WORKS]`.
 
 The salt COMPONENT (`NaCl.dat`) carries identity + `dissociatesTo` +
 `nonvolatile` + a `solid{}` crystal block — and **no** `standardThermochemistry` block:
@@ -119,7 +131,8 @@ selective + human.
 
 - Multi-ion carried in every stream + report-in-salt aggregation across a general
   flowsheet (the "composition-basis round-trip"). *(Designed as `[ROADMAP]`, not
-  built; the naming "apparent/true" is rejected — there is no "true" composition.)*
+  built. Vocabulary: **flowsheet/component basis** vs **aqueous-species basis** —
+  the "apparent/true" naming is rejected; neither basis is more "true".)*
 - Runtime estimation / high-T K extrapolation (Helgeson-style): Choupo curates K
   offline (van't Hoff logK25+ΔH); accepts a narrower T-window for glass-box clarity.
 - Inert / non-conventional solids not in phase equilibrium (CISOLID / NC): only
