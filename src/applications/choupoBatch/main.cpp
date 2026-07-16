@@ -92,6 +92,38 @@ Description
 using namespace Choupo;
 namespace fs = std::filesystem;
 
+// Seed each batch vessel's initial holdup from the case's 0/internalState -- the
+// SINGLE source of truth.  A closed batch vessel has no continuous inlet, so the
+// holdup is ALL of its authored state and there is no 0/streams.  The inline
+// initial{} block in flowsheetDict is RETIRED (no legacy): 0/internalState
+// carries each holdup unit's block VERBATIM (T, P, V, totalMoles,
+// molarComposition, ...), re-inserted here as the initial{} dict the unit's
+// initialise() already reads.  Units whose initial state is NOT a unit-level
+// holdup (fixedBedAdsorber's operation.initial + 0/bed.profile) carry no
+// 0/internalState entry and are left untouched.
+static void seedBatchUnitsFrom0(const std::vector<DictPtr>& unitList)
+{
+    DictPtr istate = fs::exists("0/internalState")
+                   ? Dictionary::fromFile("0/internalState") : nullptr;
+    DictPtr uroot  = (istate && istate->found("units"))
+                   ? istate->subDict("units") : nullptr;
+
+    for (const auto& uDict : unitList)
+    {
+        const std::string uname = uDict->lookupWord("name");
+        const bool inState = uroot && uroot->found(uname);
+
+        if (uDict->found("initial"))
+            throw std::runtime_error("choupoBatch: unit '" + uname + "' carries an "
+                "inline initial{} block -- RETIRED (no legacy).  The initial holdup "
+                "lives in 0/internalState (the single source of truth); move the "
+                "block there and delete it from flowsheetDict.");
+
+        if (inState)
+            uDict->insert("initial", uroot->subDict(uname));
+    }
+}
+
 int main(int argc, char** argv)
 try
 {
@@ -249,6 +281,10 @@ try
     std::vector<std::string>                          dischargeToName;  // "" = none
     units.reserve(unitList.size());
     unitNames.reserve(unitList.size());
+
+    // Seed initial holdup from 0/ (single source of truth; inline initial{} is
+    // retired) BEFORE each vessel initialises itself.
+    seedBatchUnitsFrom0(unitList);
 
     for (const auto& uDict : unitList)
     {
@@ -432,7 +468,11 @@ try
 
         // OpenFOAM-style real-time instant: each vessel's HOLDUP state at t.
         // A batch vessel is a closed 0-D cell -> internalState only (no outlet).
-        if (solWriter)
+        //
+        // The `0/` directory is the AUTHORED initial state (the single source of
+        // truth the seed reads back) -- the writer NEVER overwrites it.  Physical
+        // transient snapshots are t > 0 only (50/ 100/ ...).
+        if (solWriter && std::abs(t) > 1.0e-9)
         {
             std::vector<DynamicUnitSnapshot> snaps;
             snaps.reserve(units.size());

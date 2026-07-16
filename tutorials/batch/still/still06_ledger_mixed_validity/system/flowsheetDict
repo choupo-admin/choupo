@@ -44,15 +44,6 @@ units
         type        batchStill;
         dischargeTo  recA;
 
-        initial
-        {
-            T            366.0 K;
-            P            1.013 bar;
-            V            1.0e-4;           // m^3
-            totalMoles   1.0e-3;           // kmol
-            molarComposition  { benzene 0.45;  toluene 0.45;  compA 0.10; }
-        }
-
         operation
         {
             P            1.013 bar;
@@ -63,56 +54,22 @@ units
     {
         name        recA;
         type        batchAccumulator;
-
-        initial
-        {
-            T            350.0 K;
-            P            1.013 bar;
-            V            1.0e-4;
-            totalMoles   0.0;
-        }
     }
 
     {
         name        dump;                  // takes potA's poisoned heel at t=200
         type        batchAccumulator;
-
-        initial
-        {
-            T            350.0 K;
-            P            1.013 bar;
-            V            1.0e-4;
-            totalMoles   0.0;
-        }
     }
 
     {
         name        fresh;                 // the clean recharge for potA
         type        batchAccumulator;
-
-        initial
-        {
-            T            360.0 K;
-            P            1.013 bar;
-            V            1.0e-4;
-            totalMoles   1.0e-3;           // kmol
-            molarComposition  { benzene 0.50;  toluene 0.50; }
-        }
     }
 
     {
         name        potB;
         type        batchStill;
         dischargeTo  recB;
-
-        initial
-        {
-            T            365.0 K;
-            P            1.013 bar;
-            V            1.0e-4;
-            totalMoles   1.0e-3;           // kmol
-            molarComposition  { benzene 0.50;  toluene 0.50; }
-        }
 
         operation
         {
@@ -124,28 +81,11 @@ units
     {
         name        recB;
         type        batchAccumulator;
-
-        initial
-        {
-            T            350.0 K;
-            P            1.013 bar;
-            V            1.0e-4;
-            totalMoles   0.0;
-        }
     }
 
     {
         name        spike;                 // the poison charge for potB
         type        batchAccumulator;
-
-        initial
-        {
-            T            360.0 K;
-            P            1.013 bar;
-            V            1.0e-4;
-            totalMoles   2.0e-4;           // kmol
-            molarComposition  { compA 1.0; }
-        }
     }
 );
 

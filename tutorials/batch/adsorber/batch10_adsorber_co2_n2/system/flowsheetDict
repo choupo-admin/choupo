@@ -29,14 +29,6 @@ units
         name        adsorber;
         type        batchAdsorber;
 
-        initial
-        {
-            T            298.15 K;
-            V            0.01;             // m3 -- the GAS headspace volume
-            totalMoles   0.002;            // kmol = 2 mol gas
-            molarComposition { CO2 0.25;  N2 0.75; }   // 0.5 + 1.5 mol
-        }
-
         operation
         {
             adsorbent    zeolite13X;       // vendored under constant/ (self-contained)

@@ -1,0 +1,67 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalState -- the batch vessels' initial HOLDUP (the SINGLE source of
+  truth; the inline initial{} block is retired, no legacy).  Each unit's
+  block is its authored initial state VERBATIM (T, P, V, totalMoles,
+  molarComposition, ...); a closed vessel has no inlet, so there is no
+  0/streams.  Reads back via the engine's own dict tokenizer.
+\*-----------------------------------------------------------------------------*/
+
+time            0;
+application     batch;
+
+units
+{
+    "potA"
+    {
+        T            366.0 K;
+        P            1.013 bar;
+        V            1.0e-4;           // m^3
+        totalMoles   1.0e-3;           // kmol
+        molarComposition  { benzene 0.45;  toluene 0.45;  compA 0.10; }
+    }
+    "recA"
+    {
+        T            350.0 K;
+        P            1.013 bar;
+        V            1.0e-4;
+        totalMoles   0.0;
+    }
+    "dump"
+    {
+        T            350.0 K;
+        P            1.013 bar;
+        V            1.0e-4;
+        totalMoles   0.0;
+    }
+    "fresh"
+    {
+        T            360.0 K;
+        P            1.013 bar;
+        V            1.0e-4;
+        totalMoles   1.0e-3;           // kmol
+        molarComposition  { benzene 0.50;  toluene 0.50; }
+    }
+    "potB"
+    {
+        T            365.0 K;
+        P            1.013 bar;
+        V            1.0e-4;
+        totalMoles   1.0e-3;           // kmol
+        molarComposition  { benzene 0.50;  toluene 0.50; }
+    }
+    "recB"
+    {
+        T            350.0 K;
+        P            1.013 bar;
+        V            1.0e-4;
+        totalMoles   0.0;
+    }
+    "spike"
+    {
+        T            360.0 K;
+        P            1.013 bar;
+        V            1.0e-4;
+        totalMoles   2.0e-4;           // kmol
+        molarComposition  { compA 1.0; }
+    }
+}

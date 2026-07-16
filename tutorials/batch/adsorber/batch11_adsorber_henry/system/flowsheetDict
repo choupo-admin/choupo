@@ -29,14 +29,6 @@ units
         name        adsorber;
         type        batchAdsorber;
 
-        initial
-        {
-            T            298.15 K;
-            V            0.01;             // m3 -- the GAS headspace volume
-            totalMoles   0.001;            // kmol = 1 mol CO2
-            molarComposition { CO2 1.0; }
-        }
-
         operation
         {
             adsorbent    henrySorbent;     // case-local synthetic record

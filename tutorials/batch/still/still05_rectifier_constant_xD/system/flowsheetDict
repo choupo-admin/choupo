@@ -38,15 +38,6 @@ units
         model       rectifier;
         dischargeTo  receiver;
 
-        initial
-        {
-            T            365.0 K;
-            P            1.013 bar;
-            V            1.0e-4;
-            totalMoles   1.0e-3;
-            molarComposition  { benzene 0.5;  toluene 0.5; }
-        }
-
         operation
         {
             P             1.013 bar;
@@ -63,13 +54,5 @@ units
     {
         name        receiver;
         type        batchAccumulator;
-
-        initial
-        {
-            T            350.0 K;
-            P            1.013 bar;
-            V            1.0e-4;
-            totalMoles   0.0;
-        }
     }
 );

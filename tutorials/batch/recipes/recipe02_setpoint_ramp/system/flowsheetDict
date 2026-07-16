@@ -28,15 +28,6 @@ units
         name        reactor;
         type        batchReactor;
 
-        initial
-        {
-            T            320.0 K;
-            P            1.013 bar;
-            V            0.001;
-            totalMoles   0.0185;
-            molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
-        }
-
         operation
         {
             mode         isothermal;

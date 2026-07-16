@@ -38,15 +38,6 @@ units
         name        still;
         type        batchStill;
 
-        initial
-        {
-            T            354.0 K;            // K  (T_bub at x=0.4, 1 atm)
-            P            1.013 bar;
-            V            1.0e-4;           // m³ (decorative)
-            totalMoles   1.0e-3;           // kmol (1 mol charge)
-            molarComposition  { ethanol 0.40;  water 0.60; }
-        }
-
         operation
         {
             P            1.013 bar;

@@ -38,15 +38,6 @@ units
         name        reactor;
         type        batchReactor;
 
-        initial
-        {
-            T            350.0 K;
-            P            1.013 bar;
-            V            0.001;            // m^3
-            totalMoles   0.0100;           // kmol  (10 mol --- simple number)
-            molarComposition  { compA 1.0;  compB 0.0;  compC 0.0; }
-        }
-
         operation
         {
             mode         isothermal;

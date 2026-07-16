@@ -36,15 +36,6 @@ units
         name        reactor;
         type        batchReactor;
 
-        initial
-        {
-            T            350.0 K;
-            P            1.013 bar;
-            V            0.001;            // m³
-            totalMoles   0.0185;           // kmol  (1 L of liquid ethanol)
-            molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
-        }
-
         operation
         {
             mode         isothermal;
@@ -57,14 +48,6 @@ units
     {
         name        still;
         type        batchStill;
-
-        initial
-        {
-            T            350.0 K;            // K   --- placeholder; overwritten on charge
-            P            1.013 bar;
-            V            0.001;
-            totalMoles   0.0;               // empty until the recipe charges it
-        }
 
         operation
         {

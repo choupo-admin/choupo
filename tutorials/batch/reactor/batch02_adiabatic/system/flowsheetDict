@@ -39,15 +39,6 @@ units
         name        reactor;
         type        batchReactor;
 
-        initial
-        {
-            T            320.0 K;            // K  --- cold start, slow kinetics
-            P            1.013 bar;
-            V            0.001;            // m^3 (1 litre)
-            totalMoles   0.0185;           // kmol (1 litre of liquid ethanol)
-            molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
-        }
-
         operation
         {
             mode         adiabatic;        // no T_setpoint --- T evolves with E-balance

@@ -20,15 +20,6 @@ units
         name        reactor;
         type        batchReactor;
 
-        initial
-        {
-            T            600.0 K;
-            P              10.0 bar;
-            V            0.001;              // m³ (1 litre)
-            totalMoles   0.001;             // kmol  (0.5 CO + 0.5 H2O)
-            molarComposition  { CO 0.5;  water 0.5;  CO2 0.0;  H2 0.0; }
-        }
-
         operation
         {
             mode         isothermal;

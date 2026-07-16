@@ -11,23 +11,6 @@ units
     {
         name        bomb;
         type        batchReactor;
-
-        initial
-        {
-            T            1100.0 K;
-            P            2.0 atm;              // Slack reflected-shock pressure
-            V            0.001;                // m3
-            totalMoles   2.5e-5;               // ~ n = PV/RT at 1100 K, 2 atm
-            molarComposition
-            {
-                H2     0.295596;
-                O2     0.147798;
-                N2     0.556606;
-                H      0.0;                    // NO seed: the real mechanism
-                                               // self-initiates (R5, H2+M=2H)
-                O      0.0;  OH 0.0;  HO2 0.0;  H2O2 0.0;  water 0.0;
-            }
-        }
         operation
         {
             mode        adiabatic;

@@ -25,15 +25,6 @@ units
         name        reactor;
         type        batchReactor;
 
-        initial
-        {
-            T            350.0 K;
-            P            1.013 bar;
-            V            0.001;              // m³ (1 litre)
-            totalMoles   0.0185;             // kmol  (≈ 1 litre of liquid ethanol at ρ = 789 kg/m³, MW = 46)
-            molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
-        }
-
         operation
         {
             mode         isothermal;

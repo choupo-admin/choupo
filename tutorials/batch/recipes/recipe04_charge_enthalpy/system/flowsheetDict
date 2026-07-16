@@ -23,29 +23,11 @@ units
     {
         name        hot;
         type        batchAccumulator;
-
-        initial
-        {
-            T            340.0 K;
-            P            1.013 bar;
-            V            1.0e-4;           // m^3
-            totalMoles   5.0e-4;           // kmol (0.5 mol ethanol)
-            molarComposition  { ethanol 1.0;  water 0.0; }
-        }
     }
 
     {
         name        cold;
         type        batchAccumulator;
-
-        initial
-        {
-            T            300.0 K;
-            P            1.013 bar;
-            V            1.0e-4;
-            totalMoles   1.0e-3;           // kmol (1.0 mol water)
-            molarComposition  { ethanol 0.0;  water 1.0; }
-        }
     }
 );
 
