@@ -35,9 +35,10 @@ License
   ions, no precipitation credit).  pH is HELD at the feed value (`pH 7.8;`)
   or SOLVED per point (`pH solve;` -- electroneutrality closes each
   concentrate state; the feed charge imbalance is announced at the first
-  point).  Optional `atmosphere { pCO2 ... }` = OPEN system: a(CO2aq) is
-  pinned by Henry at every point, the HCO3 mole balance is REPLACED by the
-  pin, and DIC is a solved outcome.  THE LESSON: closed + solve = DIC is
+  point).  Optional `atmosphere { pCO2 ...; O2 ...; }` = OPEN system: each
+  listed gas pins its dissolved species by Henry at every point, the pinned
+  master's mole balance is REPLACED by the pin, and that family's total is a
+  solved outcome (`pCO2` = legacy spelling of `CO2`).  THE LESSON: closed + solve = DIC is
   conserved and concentrates with the water; open + solve = the concentrate
   exchanges CO2 with the atmosphere per point (a CO2-rich groundwater
   DEGASES -- the pH and the calcite SI jump ABOVE the closed curve) -- the
@@ -52,8 +53,9 @@ License
             type      scalingScan;
             totals    { Ca 84 mg/L; SO4 2.6 mmol/kg; HCO3 0.0030 mol/kg; ... }
             pH        solve;                // or a number (held across the scan)
-            atmosphere { pCO2 4.2e-4 atm; } // optional: OPEN system; the
-                                            //   pressure unit is MANDATORY
+            atmosphere { pCO2 4.2e-4 atm; } // optional: OPEN system; one gas
+                                            //   per key (pCO2 = legacy CO2);
+                                            //   the pressure unit is MANDATORY
             temperature 298.15;             // [K] optional, default 25 C
             recovery  { from 0; to 0.85; n 18; }
             output    { file scaling_scan.csv; }

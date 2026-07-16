@@ -110,8 +110,9 @@ scalar totalAsMolality(const DictPtr& t, const std::string& ion)
 // each entry MUST carry a unit and is converted to molality [mol/kg water]
 // by totalAsMolality above.  pH is REQUIRED: a number (given) or the word
 // `solve` (H+ joins the unknowns, electroneutrality closes the system).
-// Optional `atmosphere { pCO2 <value> <pressure unit>; }` = OPEN system:
-// a(CO2aq) is pinned by Henry and DIC becomes a solved outcome.
+// Optional `atmosphere { pCO2 <value> <unit>; O2 <value> <unit>; ... }` =
+// OPEN system: each listed gas pins its dissolved species by Henry and the
+// pinned family's total becomes a solved outcome (`pCO2` = legacy `CO2`).
 electrolyte::SpeciationInput readAnalysis(const DictPtr& dict)
 {
     electrolyte::SpeciationInput in;
@@ -188,24 +189,33 @@ electrolyte::SpeciationInput readAnalysis(const DictPtr& dict)
     else
         in.pH = dict->lookupScalar("pH");
 
-    // atmosphere: OPEN system.  The unit is MANDATORY (atm / bar / Pa --
-    // any declared pressure unit); K_H speaks per-atm, so convert.
+    // atmosphere: OPEN system.  EVERY key is a gas the solution equilibrates
+    // with -- `CO2 4.2e-4 atm; O2 0.2095 atm; ...` (any gas the gasLiquid
+    // catalogue carries); `pCO2` stays as the legacy spelling of `CO2`.  The
+    // unit is MANDATORY (atm / bar / Pa -- any declared pressure unit); K_H
+    // speaks per-atm, so convert.
     if (dict->found("atmosphere"))
     {
         auto atm = dict->subDict("atmosphere");
-        if (!atm->found("pCO2"))
-            throw std::runtime_error("atmosphere{}: needs pCO2 (the CO2 "
-                "partial pressure the solution equilibrates with)");
-        if (!atm->hasDimensions("pCO2"))
-            throw std::runtime_error("atmosphere.pCO2 needs a pressure unit: "
-                "pCO2 4.2e-4 atm | 4.26e-4 bar | 42.6 Pa ...  Bare numbers "
-                "are refused -- a partial pressure must declare its basis.");
-        const Dimensions dims = atm->dimensionsOf("pCO2");
-        if (!(dims == Dims::pressure))
-            throw std::runtime_error("atmosphere.pCO2: declared unit is "
-                + dims.toPretty() + ", expected a PRESSURE (atm | bar | Pa)");
-        in.openCO2 = true;
-        in.pCO2    = atm->lookupScalar("pCO2") / units::atm_to_Pa;  // Pa -> atm
+        for (const auto& key : atm->keys())
+        {
+            const std::string gas = (key == "pCO2") ? "CO2" : key;
+            if (!atm->hasDimensions(key))
+                throw std::runtime_error("atmosphere." + key + " needs a "
+                    "pressure unit: " + key + " 4.2e-4 atm | 4.26e-4 bar | "
+                    "42.6 Pa ...  Bare numbers are refused -- a partial "
+                    "pressure must declare its basis.");
+            const Dimensions dims = atm->dimensionsOf(key);
+            if (!(dims == Dims::pressure))
+                throw std::runtime_error("atmosphere." + key + ": declared "
+                    "unit is " + dims.toPretty()
+                    + ", expected a PRESSURE (atm | bar | Pa)");
+            in.atmosphere.emplace_back(
+                gas, atm->lookupScalar(key) / units::atm_to_Pa);  // Pa -> atm
+        }
+        if (in.atmosphere.empty())
+            throw std::runtime_error("atmosphere{}: empty -- list at least "
+                "one gas partial pressure (e.g. pCO2 4.2e-4 atm;)");
     }
 
     in.T  = dict->lookupScalarOrDefault("temperature", 298.15);

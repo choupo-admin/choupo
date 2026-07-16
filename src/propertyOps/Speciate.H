@@ -33,9 +33,11 @@ License
   the catalogue whose ions are present.  pH is GIVEN (`pH 7.8;`) or SOLVED
   (`pH solve;` -- H+ joins the unknowns, ELECTRONEUTRALITY closes the system,
   and the feed charge imbalance is ANNOUNCED before solving); optionally OPEN
-  to the atmosphere (`atmosphere { pCO2 ... }` -- a(CO2aq) pinned by Henry,
-  the HCO3 mole balance REPLACED by the pin, DIC a solved outcome).  The math
-  (and the full given-vs-solved / closed-vs-open contract) is
+  to the atmosphere (`atmosphere { pCO2 4.2e-4 atm; O2 0.2095 atm; ... }` --
+  EACH listed gas pins its dissolved species by Henry, the pinned family's
+  master mole balance is REPLACED by the pin and its total becomes a solved
+  outcome; `pCO2` = legacy spelling of `CO2`).  The math (and the full
+  given-vs-solved / closed-vs-open contract) is
   thermo/electrolyte/SpeciationSolver.
 
   Reactions/minerals are CURATED data (case constant/electrolyte/speciation.dat
@@ -49,8 +51,11 @@ License
             type      speciate;
             totals    { Ca 84 mg/L; SO4 2.6 mmol/kg; HCO3 0.0030 mol/kg; ... }
             pH        solve;                // or a number (given): pH 7.8;
-            atmosphere { pCO2 4.2e-4 atm; } // optional: OPEN system; the
-                                            //   pressure unit is MANDATORY
+            atmosphere                      // optional: OPEN system; one gas
+            {                               //   per key, pressure unit
+                pCO2 4.2e-4 atm;            //   MANDATORY (pCO2 = legacy CO2)
+                O2   0.2095 atm;
+            }
             temperature 298.15;             // [K] optional, default 25 C
             diagSpecies ( OH CaSO4aq );     // optional: emit m_<name> diagnostics
             output    { file speciation.csv; }
@@ -75,8 +80,9 @@ namespace propertyOps {
 // Read the water analysis off an op dict (shared by speciate / scalingScan):
 // optional `totals {}` (absent/empty = pure water; units mandatory per entry),
 // REQUIRED `pH` (a number = given, or the word `solve` = electroneutrality
-// closure), optional `atmosphere { pCO2 ... }` (OPEN system, pressure unit
-// mandatory), optional `temperature` [K] (default 25 C).
+// closure), optional `atmosphere { <gas> <p> <unit>; ... }` (OPEN system, one
+// gas per key, `pCO2` = legacy `CO2`, pressure unit mandatory), optional
+// `temperature` [K] (default 25 C).
 electrolyte::SpeciationInput readAnalysis(const DictPtr& dict);
 
 // Read the optional `equilibrate { minerals ( calcite gypsum ); }` block off an

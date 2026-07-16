@@ -644,12 +644,45 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
     //    The input analysis is rarely perfectly balanced; the solved pH ABSORBS
     //    whatever imbalance the lab sheet carries.  PHREEQC percent-error
     //    convention: 200 |S+ - S-| / (S+ + S-)  over the master totals
-    //    (equivalents; H/OH are not part of a water analysis).
+    //    (equivalents; H/OH are not part of a water analysis).  A master whose
+    //    total is PINNED by the atmosphere is NOT analysis -- it is an initial
+    //    guess (its mole balance is replaced by the Henry pin), so it stays
+    //    OUT of the imbalance sums (announced).
+    std::vector<bool> pinnedGuess(n, false);
+    for (const auto& [gasName, pAtm] : in.atmosphere)
+    {
+        (void)pAtm;
+        const GasEntry* gas = nullptr;
+        for (const auto& g : gases_) if (g.gas == gasName) { gas = &g; break; }
+        if (!gas) continue;                    // unknown gas: refused below
+        int j = masterIndex(gas->species);
+        if (j < 0)
+            for (const auto& r : reactions_)
+                if (r.species == gas->species)
+                {
+                    for (const auto& [ion, nu] : r.masters)
+                    {
+                        (void)nu;
+                        if (ion != "H" && masterIndex(ion) >= 0)
+                            j = masterIndex(ion);
+                    }
+                    break;
+                }
+        if (j >= 0) pinnedGuess[std::size_t(j)] = true;
+    }
     if (solveH)
     {
         double sumPos = 0.0, sumNeg = 0.0;            // [eq/kg water]
+        std::string pinnedNote;
         for (std::size_t j = 0; j < n; ++j)
+        {
+            if (pinnedGuess[j])
+            {
+                if (mz[j] != 0.0) pinnedNote += " " + mast[j];
+                continue;
+            }
             (mz[j] > 0.0 ? sumPos : sumNeg) += std::fabs(mz[j]) * mtot[j];
+        }
         if (sumPos + sumNeg > 0.0)
         {
             out.imbalancePct =
@@ -660,8 +693,11 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                           << out.imbalancePct << "% (S+ = " << std::scientific
                           << std::setprecision(4) << sumPos << ", S- = " << sumNeg
                           << " eq/kg; PHREEQC convention 200|S+ - S-|/(S+ + S-))"
-                             " -- the SOLVED pH absorbs this analysis error\n"
-                          << std::defaultfloat;
+                             " -- the SOLVED pH absorbs this analysis error"
+                          << (pinnedNote.empty() ? "" :
+                              "\n  (pinned-by-atmosphere guesses excluded:"
+                              + pinnedNote + ")")
+                          << "\n" << std::defaultfloat;
             if (out.imbalancePct > 5.0)
             {
                 std::ostringstream msg;
@@ -762,38 +798,83 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         }
     }
 
-    // -- OPEN-CO2 pin: resolve the gas, the pinned species, and the master row
-    //    whose mole balance the pin REPLACES (the unique non-H master of the
-    //    dissolved species' formation -- HCO3 for CO2aq).
-    int    pinAct = -1, pinRow = -1;
-    double logKgasT = 0.0;
-    if (in.openCO2)
+    // -- OPEN-system gas pins: per listed gas, resolve the GasEntry, the pinned
+    //    dissolved species, and the master row whose mole balance the pin
+    //    REPLACES.  Two shapes: (a) computed species with exactly one non-H
+    //    master (CO2aq -> the HCO3 row); (b) the dissolved species IS a master
+    //    itself (inert neutrals O2aq / N2aq: its own row).  pinOfRow[j] >= 0
+    //    marks row j as pinned everywhere downstream (residual, Jacobian,
+    //    mineral-sink columns, exhaustion guard).
+    struct GasPin
     {
-        if (in.pCO2 <= 0.0)
-            throw std::runtime_error("speciation: atmosphere pCO2 must be > 0");
         const GasEntry* gas = nullptr;
-        for (const auto& g : gases_) if (g.gas == "CO2") { gas = &g; break; }
-        if (!gas)
-            throw std::runtime_error("speciation: `atmosphere { pCO2 ... }` "
-                "given but the speciation.dat catalogue has no `gases` entry "
-                "for CO2 -- append\n    gases ( { gas CO2; species CO2aq; "
-                "logK25 -1.468; dH -19982.8; } );\n(USGS PHREEQC phreeqc.dat "
-                "PHASES CO2(g), public domain) to the catalogue in use");
+        double p     = 0.0;                 // partial pressure [atm]
+        int    row   = -1;                  // master row the pin replaces
+        int    actIdx = -1;                 // act index when species is computed
+        double logKT = 0.0;                 // Henry logK at the run T
+    };
+    std::vector<GasPin> pins;
+    std::vector<int> pinOfRow(n, -1);       // master row -> pins index (or -1)
+    for (const auto& [gasName, p] : in.atmosphere)
+    {
+        if (p <= 0.0)
+            throw std::runtime_error("speciation: atmosphere partial pressure "
+                "of " + gasName + " must be > 0");
+        GasPin pin; pin.p = p;
+        for (const auto& g : gases_) if (g.gas == gasName) { pin.gas = &g; break; }
+        if (!pin.gas)
+        {
+            std::ostringstream avail;
+            for (const auto& g : gases_) avail << " " << g.gas;
+            throw std::runtime_error("speciation: `atmosphere { " + gasName
+                + " ... }` given but the gas catalogue in use has no entry for "
+                + gasName + ".  Available:" + avail.str()
+                + "\n(standards tier: data/standards/chemistry/gasLiquid/, "
+                "USGS PHREEQC PHASES, public domain)");
+        }
+        // A dissolution spanning several aqueous legs at once (H2S(g) =
+        // H+ + HS-: no neutral H2Saq species curated yet) cannot pin ONE
+        // species -- refuse as a NAMED GAP, never pin approximately.
+        if (pin.gas->species.find(' ') != std::string::npos)
+            throw std::runtime_error("speciation: " + gasName + "(g) dissolves "
+                "into several aqueous legs at once (" + pin.gas->species
+                + ") -- the Henry pin needs ONE dissolved species.  Curate the "
+                "single neutral dissolved species first (a named gap).");
+        // (a) computed species: pin the unique non-H master of its formation
         for (std::size_t s = 0; s < act.size(); ++s)
-            if (act[s].species() == gas->species) { pinAct = int(s); break; }
-        if (pinAct < 0)
-            throw std::runtime_error("speciation: open-CO2 needs the pinned "
-                "species '" + gas->species + "' active -- give an HCO3 entry "
-                "in `totals` (in an OPEN system it is only the initial DIC "
-                "guess; DIC itself is a solved outcome)");
-        int nonH = 0;
-        for (const auto& [j, nu] : act[std::size_t(pinAct)].idx)
-            if (j < int(n)) { pinRow = j; ++nonH; (void)nu; }
-        if (nonH != 1)
-            throw std::runtime_error("speciation: the gas pin needs exactly "
-                "one non-H master in the formation of '" + gas->species
-                + "' (found " + std::to_string(nonH) + ")");
-        logKgasT = kT("CO2(g)", gas->logK25, gas->hasDH, gas->dH, gas->kt);
+            if (act[s].species() == pin.gas->species) { pin.actIdx = int(s); break; }
+        if (pin.actIdx >= 0)
+        {
+            int nonH = 0;
+            for (const auto& [j, nu] : act[std::size_t(pin.actIdx)].idx)
+                if (j < int(n)) { pin.row = j; ++nonH; (void)nu; }
+            if (nonH != 1)
+                throw std::runtime_error("speciation: the gas pin needs exactly "
+                    "one non-H master in the formation of '" + pin.gas->species
+                    + "' (found " + std::to_string(nonH) + ") -- " + gasName
+                    + "(g) dissolution spans several aqueous legs; curate the "
+                    "single neutral dissolved species first (a named gap)");
+        }
+        else
+        {
+            // (b) the dissolved species is a master itself (inert neutral)
+            pin.row = masterIndex(pin.gas->species);
+            if (pin.row < 0)
+                throw std::runtime_error("speciation: open-" + gasName
+                    + " needs the pinned species '" + pin.gas->species
+                    + "' active -- give a " + pin.gas->species + " entry in "
+                    "`totals` (in an OPEN system it is only the initial "
+                    "guess; the dissolved amount is a solved outcome)");
+        }
+        if (pinOfRow[std::size_t(pin.row)] >= 0)
+            throw std::runtime_error("speciation: atmosphere gases " + gasName
+                + " and " + pins[std::size_t(pinOfRow[std::size_t(pin.row)])]
+                  .gas->gas + " both pin the master '" + mast[std::size_t(pin.row)]
+                + "' -- one master mole balance cannot serve two gas pins");
+        pin.logKT = kT(gasName + "(g)", pin.gas->logK25, pin.gas->hasDH,
+                       pin.gas->dH, pin.gas->kt);
+        pinOfRow[std::size_t(pin.row)] = int(pins.size());
+        pins.push_back(pin);
     }
 
     // -- ALLOWED minerals (the equilibrate set) --------------------------------
@@ -893,15 +974,17 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         else
             std::cout << std::fixed << std::setprecision(2) << in.pH
                       << " (given), T = " << T << " K\n";
-        if (in.openCO2)
-            std::cout << "  OPEN to CO2(g): a(CO2aq) PINNED by Henry, "
-                         "log10 a = log10 K_H(T) + log10 pCO2 = "
-                      << std::setprecision(3) << logKgasT << " + ("
-                      << std::log10(in.pCO2) << ")  [pCO2 = " << std::scientific
-                      << std::setprecision(3) << in.pCO2 << " atm]\n"
-                      << "  -- the HCO3 mole balance is REPLACED by the pin: "
-                         "DIC is a solved OUTCOME (its total = initial guess "
-                         "only)\n" << std::fixed;
+        for (const auto& pin : pins)
+            std::cout << "  OPEN to " << pin.gas->gas << "(g): a("
+                      << pin.gas->species << ") PINNED by Henry, "
+                         "log10 a = log10 K_H(T) + log10 p = "
+                      << std::setprecision(3) << pin.logKT << " + ("
+                      << std::log10(pin.p) << ")  [p = " << std::scientific
+                      << std::setprecision(3) << pin.p << " atm]\n"
+                      << "  -- the " << mast[std::size_t(pin.row)]
+                      << " mole balance is REPLACED by the pin: its total is "
+                         "a solved OUTCOME (the `totals` entry = initial "
+                         "guess only)\n" << std::fixed;
         // Display the active model with an initial capital (davies -> Davies).
         std::string actDisp = activityName_;
         if (!actDisp.empty()) actDisp[0] = char(std::toupper((unsigned char)actDisp[0]));
@@ -1097,11 +1180,17 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                 double worst = 0.0;
                 for (std::size_t j = 0; j < n; ++j)
                 {
-                    if (int(j) == pinRow)
+                    if (pinOfRow[j] >= 0)
                     {
-                        const Active& p = act[std::size_t(pinAct)];
-                        R[j] = std::log(p.m) + std::log(p.gamma)
-                             - ln10 * (logKgasT + std::log10(in.pCO2));
+                        // Henry pin: ln a(dissolved) = ln( K_H(T) * p ).
+                        // Computed species (CO2aq): a = m*gamma chains through
+                        // mass action; master itself (O2aq): a = gamma_j * m_j.
+                        const GasPin& pin = pins[std::size_t(pinOfRow[j])];
+                        const double lnA = (pin.actIdx >= 0)
+                            ? std::log(act[std::size_t(pin.actIdx)].m)
+                              + std::log(act[std::size_t(pin.actIdx)].gamma)
+                            : std::log(gM[j]) + xa[j];
+                        R[j] = lnA - ln10 * (pin.logKT + std::log10(pin.p));
                         worst = std::max(worst, std::fabs(R[j]));
                         continue;
                     }
@@ -1169,7 +1258,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                     return 0.0;
                 };
                 // SI = 0 rows (one per active mineral); linear in x within a
-                // gamma pass (the pinRow generalised).  R_p = sum nu*(ln gamma
+                // gamma pass (the gas pin generalised).  R_p = sum nu*(ln gamma
                 // + x) + nuWater*ln a_w - ln10*logK(T) over the formation legs.
                 for (std::size_t p = 0; p < nAct; ++p)
                 {
@@ -1214,17 +1303,26 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                 //                       dR_p/dn_q = 0  (bordered saddle)
                 std::vector<sVector> J(nA, sVector(nA, 0.0));
                 for (std::size_t j = 0; j < n; ++j)
-                    if (int(j) != pinRow) J[j][j] = -std::exp(xa[j]);
+                    if (pinOfRow[j] < 0) J[j][j] = -std::exp(xa[j]);
                 for (const auto& a : act)
                     for (const auto& [j, nuj] : a.idx)
                     {
-                        if (std::size_t(j) >= n || j == pinRow) continue;
+                        if (std::size_t(j) >= n || pinOfRow[std::size_t(j)] >= 0)
+                            continue;
                         for (const auto& [k, nuk] : a.idx)
                             J[std::size_t(j)][std::size_t(k)] -= nuj * nuk * a.m;
                     }
-                if (pinRow >= 0)
-                    for (const auto& [k, nu] : act[std::size_t(pinAct)].idx)
-                        J[std::size_t(pinRow)][std::size_t(k)] = nu;
+                // pin rows: d(ln a)/dx_k = nu over the computed species' legs
+                // (gammas frozen per pass), or 1 on its own column when the
+                // pinned species is the master itself.
+                for (const auto& pin : pins)
+                {
+                    if (pin.actIdx >= 0)
+                        for (const auto& [k, nu] : act[std::size_t(pin.actIdx)].idx)
+                            J[std::size_t(pin.row)][std::size_t(k)] = nu;
+                    else
+                        J[std::size_t(pin.row)][std::size_t(pin.row)] = 1.0;
+                }
                 if (solveH)
                 {
                     J[iH][iH] += std::exp(xa[iH]);                  // z_H = +1
@@ -1252,7 +1350,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                 {
                     const Allowed& al = allowed[std::size_t(activeMin[p])];
                     for (std::size_t j = 0; j < n; ++j)
-                        if (int(j) != pinRow)
+                        if (pinOfRow[j] < 0)
                             J[j][nUnk + p] = -al.nuPj[j];
                     if (solveH) J[iH][nUnk + p] = al.nuH;
                 }
@@ -1285,7 +1383,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                 std::string guardHit;
                 for (std::size_t j = 0; nAct > 0 && j < n; ++j)
                 {
-                    if (int(j) == pinRow) continue;
+                    if (pinOfRow[j] >= 0) continue;
                     const double floor = std::max(1.0e-12, 1.0e-6 * mtot[j]);
                     const double mNew  = std::exp(xa[j] + damp * dx[j]);
                     if (mNew < floor && dx[j] < 0.0)

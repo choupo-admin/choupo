@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  propertyPackage (INLINE, self-contained) -- the case's dictionary.
+  Multi-ion speciation SYSTEM: solvent water, the analytical basis measured in
+  masters (HCO3 for the carbonate family; the inert neutrals O2 and N2 as
+  dissolved-gas masters), davies activity.  The speciate ops carry only the
+  ANALYSIS; the gas pins come from the ops' atmosphere{} blocks and the
+  standards gasLiquid catalogue (USGS PHREEQC PHASES, public domain).
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+
+inputBasis
+{
+    solvent           water;
+    analyticalMasters ( HCO3 O2 N2 );
+}
+
+propertyMethods
+{
+    aqueousActivity electrolyte.davies;
+}

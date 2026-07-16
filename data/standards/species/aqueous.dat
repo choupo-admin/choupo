@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   data/standards/species/aqueous.dat -- aqueous model species (true ions).
 
-  ONE catalogue, not 41 tiny files.  Model species are summoned by a property
+  ONE catalogue, not one tiny file per species.  Model species are summoned by a property
   method (Pitzer/eNRTL/speciation), never placed in a flowsheet.  Each record
   carries its unambiguous charged identity in `ion` (e.g. "Cu+2") + `charge`;
   `name` is the lookup key used by dissociatesTo and the pair files.
@@ -87,6 +87,16 @@ aqueousSpecies
         sAq  { value 82.4;  unit J/mol/K;}
         cpAq { value -141.8; unit J/mol/K;}
         }
+    }
+    {
+        /* Dissolved methane CH4(aq) -- inert neutral, identity + MW only (no
+           charge, no complexes, no thermo block yet).  Summoned as the pinned
+           master of an OPEN-system CH4(g) Henry pin (chemistry/gasLiquid/
+           CH4.dat); in a CLOSED system it is a conserved inert total. */
+        name    CH4;
+        ion     "CH4";
+        charge  0;
+        MW { value 16.043; unit g/mol;}
     }
     {
         name    CO3;
@@ -232,6 +242,16 @@ aqueousSpecies
         radius { value 2.82e-10; unit m;}
         D0     { value 9.31e-09;     unit m2/s;}
         }
+    }
+    {
+        /* Dissolved hydrogen H2(aq) -- inert neutral, identity + MW only
+           (fixed-oxidation-state catalogue: NOT a redox couple).  Summoned as
+           the pinned master of an OPEN-system H2(g) Henry pin
+           (chemistry/gasLiquid/H2.dat). */
+        name    H2;
+        ion     "H2";
+        charge  0;
+        MW { value 2.016; unit g/mol;}
     }
     {
         name    H3BO3;
@@ -404,6 +424,16 @@ aqueousSpecies
         MW { value 54.938; unit g/mol;}
     }
     {
+        /* Dissolved nitrogen N2(aq) -- inert neutral, identity + MW only
+           (fixed-oxidation-state catalogue: no N2/NO3/NH4 redox coupling).
+           Summoned as the pinned master of an OPEN-system N2(g) Henry pin
+           (chemistry/gasLiquid/N2.dat). */
+        name    N2;
+        ion     "N2";
+        charge  0;
+        MW { value 28.013; unit g/mol;}
+    }
+    {
         name    NH4;
         ion     "NH4+";
         charge  +1;
@@ -453,6 +483,16 @@ aqueousSpecies
         radius { value 3.58e-10; unit m;}
         D0     { value 1.33e-09;     unit m2/s;}
         }
+    }
+    {
+        /* Dissolved oxygen O2(aq) -- inert neutral, identity + MW only
+           (fixed-oxidation-state catalogue: NOT a redox couple).  Summoned as
+           the pinned master of an OPEN-system O2(g) Henry pin
+           (chemistry/gasLiquid/O2.dat) -- the DO-saturation master. */
+        name    O2;
+        ion     "O2";
+        charge  0;
+        MW { value 31.999; unit g/mol;}
     }
     {
         name    OH;

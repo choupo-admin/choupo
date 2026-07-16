@@ -58,22 +58,34 @@ Description
                      BEFORE solving -- above ~5 % the solver warns loudly
                      that the solved pH absorbs the analysis error (no
                      silent crutch).
-      * CO2      two systems, the case picks one:
+      * GASES    two systems, the case picks one:
                    - CLOSED (default, no `atmosphere {}`): every master total
                      is conserved -- DIC concentrates with the water (the
                      original behaviour, byte-identical);
-                   - OPEN   (`atmosphere { pCO2 4.2e-4 atm; }`): CO2(aq) is
-                     pinned by Henry's law, a(CO2aq) = K_H(T) * pCO2.  THE
-                     SWAP: the carbonate family can exchange carbon with the
-                     gas phase, so the HCO3 master's MOLE BALANCE is DROPPED
-                     and REPLACED by the pin equation
-                         ln a(CO2aq) = ln( K_H(T) * pCO2 )
+                   - OPEN   (`atmosphere { pCO2 4.2e-4 atm; O2 0.2095 atm;
+                     ... }`): EACH listed gas pins its dissolved species by
+                     Henry's law, a(dissolved) = K_H(T) * p_gas.  THE SWAP,
+                     per gas: the pinned species' unique non-H master has its
+                     MOLE BALANCE DROPPED and REPLACED by the pin equation
+                         ln a(dissolved) = ln( K_H(T) * p_gas )
                      (linear in the log unknowns -- Newton solves it
-                     exactly).  DIC becomes a solved OUTCOME of equilibration
-                     with the atmosphere, not a conserved total; the HCO3
-                     entry in `totals` is only the initial guess (announced).
-                     K_H from the `gases` section of speciation.dat
-                     (PHREEQC PHASES CO2(g), public domain).
+                     exactly).  Two shapes resolve:
+                       (a) the dissolved species is a COMPUTED species with
+                           exactly one non-H master (CO2 -> CO2aq pins the
+                           HCO3 row): the family exchanges matter with the
+                           gas, its total becomes a solved OUTCOME and the
+                           `totals` entry is only the initial guess
+                           (announced);
+                       (b) the dissolved species IS a master itself (inert
+                           neutrals O2 / N2 / CH4 / H2): its own row is
+                           replaced -- the dissolved concentration is set by
+                           the gas phase directly.
+                     Each pinned master must appear in `totals` (the guess);
+                     two gases may not pin the same master (refused).  A gas
+                     whose dissolution has several aqueous legs (H2S(g) =
+                     H+ + HS-) is REFUSED as a named gap -- it needs the
+                     neutral H2Saq species curated first.  K_H per gas from
+                     chemistry/gasLiquid/ (PHREEQC PHASES, public domain).
       * SPECIES  from `speciation.dat` mass-action entries (each lists its
                  masters + stoichiometry nu, optional nuWater on the formation
                  -- a_w enters the mass action -- logK25, optional dH).
@@ -235,9 +247,11 @@ struct SpeciationInput
     double pH = 7.0;                        // used when !solvePH (the given-pH closure)
     bool   solvePH = false;                 // `pH solve;` -- H+ joins the unknowns,
                                             //   electroneutrality joins the equations
-    bool   openCO2 = false;                 // `atmosphere {}` -- OPEN system: a(CO2aq)
-                                            //   pinned by Henry, DIC a solved outcome
-    double pCO2 = 0.0;                      // [atm] CO2 partial pressure when openCO2
+    // `atmosphere { pCO2 4.2e-4 atm; O2 0.2095 atm; ... }` -- OPEN system:
+    // (gas name, partial pressure [atm]) per listed gas; each pins its
+    // dissolved species by Henry and replaces that species' master mole
+    // balance (see the class doc).  Empty = CLOSED (all totals conserved).
+    std::vector<std::pair<std::string, double>> atmosphere;
     double T  = 298.15;                     // [K]
 
     // `equilibrate { minerals ( calcite gypsum ); }` -- the ALLOWED solid set

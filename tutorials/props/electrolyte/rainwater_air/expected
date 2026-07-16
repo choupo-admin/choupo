@@ -1,0 +1,17 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    air25                  I                2.52807e-06      1e-4
+diag    air25                  aw               0.999986         1e-4
+diag    air25                  gamma_CO2aq      1                1e-4
+diag    air25                  gamma_OH         0.998138         1e-4
+diag    air25                  m_CO2aq          1.42971e-05      1e-4
+diag    air25                  m_OH             3.97038e-09      1e-4
+diag    air25                  pH               5.59803          1e-4
+diag    air10                  I                2.79349e-06      1e-4
+diag    air10                  aw               0.999981         1e-4
+diag    air10                  gamma_CO2aq      1                1e-4
+diag    air10                  gamma_OH         0.998089         1e-4
+diag    air10                  m_CO2aq          2.2591e-05       1e-4
+diag    air10                  m_OH             1.04436e-09      1e-4
+diag    air10                  pH               5.55469          1e-4

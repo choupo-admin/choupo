@@ -106,15 +106,20 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
         std::cout << "scalingScan: concentrate totals = feed/(1-r), r = "
                   << rFrom << "-" << rTo << " (" << nPts << " pts) -- PURE water "
                      "removal;\n";
+        const bool open = !feed.atmosphere.empty();
         if (feed.solvePH)
         {
             std::cout << "  pH SOLVED from electroneutrality at every point -- ";
-            if (feed.openCO2)
-                std::cout << "OPEN to CO2(g) at pCO2 = " << std::scientific
-                          << std::setprecision(3) << feed.pCO2
-                          << " atm\n  (DIC set by gas-liquid equilibrium per "
-                             "point -- degassing / invasion allowed)\n"
+            if (open)
+            {
+                std::cout << "OPEN to";
+                for (const auto& [g, p] : feed.atmosphere)
+                    std::cout << " " << g << "(g) at " << std::scientific
+                              << std::setprecision(3) << p << " atm";
+                std::cout << "\n  (pinned totals set by gas-liquid equilibrium "
+                             "per point -- degassing / invasion allowed)\n"
                           << std::defaultfloat;
+            }
             else
                 std::cout << "CLOSED system\n  (DIC concentrates with the "
                              "water; the pH column shows the drift)\n";
@@ -122,8 +127,9 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
         else
             std::cout << "  pH HELD at " << std::fixed << std::setprecision(2)
                       << feed.pH << " across the scan ("
-                      << (feed.openCO2 ? "OPEN to CO2(g) -- DIC a solved outcome"
-                                       : "no CO2 degassing / alkalinity shift")
+                      << (open ? "OPEN to the listed gas(es) -- pinned totals "
+                                 "solved outcomes"
+                               : "no CO2 degassing / alkalinity shift")
                       << ")\n" << std::defaultfloat;
         if (doEquil)
         {

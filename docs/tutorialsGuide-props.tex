@@ -825,6 +825,43 @@ GOLDEN PINS (locked by the golden master): pin\_gypsum\_amount Ca = SO4 = 0.0305
 \end{tutgolden}
 
 \clearpage
+\tutentry{rainwater\_air}{tutorials/props/electrolyte/rainwater\_air}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{air25}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{air10}\\[-1pt]{\tiny speciate}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{WATER OPEN TO AIR: the generic multi-gas Henry pin. Pure water equilibrated with the atmosphere (pCO2 4.2e-4, pO2 0.2095, pN2 0.7808 atm) at 25 C and 10 C -- three gases pinned at once. Two classic numbers with no fitting anywhere: unpolluted rainwater pH \textasciitilde{} 5.6 (carbonic acid from 420 ppm CO2 alone) and dissolved-oxygen saturation \textasciitilde{} 8.5 mg/L at 25 C rising to \textasciitilde{} 11 mg/L at 10 C (gas solubility is RETROGRADE with temperature).}
+\begin{tutnarrative}
+water open to AIR: the generic multi-gas Henry pin.
+
+Each gas listed in atmosphere\{\} pins its dissolved species by Henry's law, a = K\_H(T) p, and the pinned master's mole balance is REPLACED by the pin -- the OPEN system of the speciation solver, generalised beyond CO2. Two pin shapes appear side by side, which is the point of the case:
+
+CO2 dissolves into a COMPUTED species (CO2aq, formed from the HCO3 master): the pin swaps the HCO3 row and the whole carbonate family (CO2aq / HCO3- / CO3--) equilibrates with the gas -- DIC is a solved OUTCOME. O2, N2 dissolve into INERT NEUTRAL MASTERS (species/aqueous O2, N2 -- identity records, charge 0): the pin replaces each master's own row directly -- the dissolved concentration is set by the gas phase alone.
+
+THE TWO CLASSIC NUMBERS (textbook checks): pH \textasciitilde{} 5.6 -- unpolluted rainwater, carbonic acid from 420 ppm CO2 only (pH solve; H+ from electroneutrality against HCO3-); DO 8.5 $\to$ 11 mg/L -- dissolved-oxygen saturation from 25 C to 10 C: the analytic K\_H(T) (USGS PHREEQC PHASES, public domain) makes gas solubility RETROGRADE, so cold water holds more oxygen. N2 saturates near 14 mg/L (25 C) for the same reason.
+
+The totals entries are INITIAL GUESSES only (the run announces it): in an OPEN system every pinned total is a solved outcome, and pinned guesses stay OUT of the feed charge-imbalance check (a guess is not an analysis).
+
+A gas whose dissolution spans several aqueous legs at once (H2S(g) = H+ + HS-) is refused loudly as a named gap -- the neutral H2S(aq) species is not yet curated.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{air25}{pH}{5.59803}
+\goldrow{diag}{air25}{m\_O2}{0.000264779}
+\goldrow{diag}{air25}{m\_N2}{0.000508323}
+\goldrow{diag}{air25}{m\_CO2aq}{1.42971e-05}
+\goldrow{diag}{air25}{I}{2.52807e-06}
+\goldrow{diag}{air10}{pH}{5.55469}
+\goldrow{diag}{air10}{m\_O2}{0.000354352}
+\goldrow{diag}{air10}{m\_N2}{0.000648911}
+\goldrow{diag}{air10}{m\_CO2aq}{2.2591e-05}
+\goldrow{diag}{air10}{I}{2.79349e-06}
+\goldmore{8}
+\end{tutgolden}
+
+\clearpage
 \tutentry{scaling\_ro\_brackish}{tutorials/props/electrolyte/scaling\_ro\_brackish}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
