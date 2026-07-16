@@ -9,19 +9,14 @@ components ( water NaCl );
 
 chemistry
 {
+    // solid SLE activates via chemistry.salts -- Ksp from the component's solidPhases{}
     salts ( halite );
-
-    activeSaltEquilibriumData
-    {
-        halite measuredSolubilityAnchor;
-    }
 }
 
 propertyMethods
 {
     liquid electrolyte.eNRTL;
     vapour builtin.idealGas;
-    solid  builtin.saltEquilibrium;
 }
 
 parameters

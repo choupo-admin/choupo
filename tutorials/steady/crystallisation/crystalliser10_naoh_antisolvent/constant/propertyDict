@@ -9,19 +9,14 @@ components ( water NaOH ethanol );
 
 chemistry
 {
+    // solid SLE activates via chemistry.salts -- Ksp from the component's solidPhases{}
     salts ( sodiumHydroxide );
-
-    activeSaltEquilibriumData
-    {
-        sodiumHydroxide measuredSolubilityAnchor;
-    }
 }
 
 propertyMethods
 {
     liquid electrolyte.eNRTL;
     vapour builtin.idealGas;
-    solid  builtin.saltEquilibrium;
 }
 
 parameters

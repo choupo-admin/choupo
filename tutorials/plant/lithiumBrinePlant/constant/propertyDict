@@ -30,5 +30,5 @@ propertyMethods
 {
     liquid activity.ideal;
     vapour builtin.idealGas;
-    solid  builtin.saltEquilibrium;
+    // solid SLE activates via chemistry.salts -- Ksp from the component's solidPhases{}
 }

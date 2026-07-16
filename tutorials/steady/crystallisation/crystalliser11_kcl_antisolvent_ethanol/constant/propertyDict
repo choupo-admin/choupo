@@ -9,19 +9,14 @@ components ( water ethanol KCl );
 
 chemistry
 {
+    // solid SLE activates via chemistry.salts -- Ksp from the component's solidPhases{}
     salts ( sylvite );
-
-    activeSaltEquilibriumData
-    {
-        sylvite measuredSolubilityAnchor;
-    }
 }
 
 propertyMethods
 {
     liquid electrolyte.eNRTL;
     vapour builtin.idealGas;
-    solid  builtin.saltEquilibrium;
 }
 
 parameters

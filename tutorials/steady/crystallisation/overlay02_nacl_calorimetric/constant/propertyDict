@@ -9,27 +9,16 @@ components ( water NaCl );
 
 chemistry
 {
+    // solid SLE activates via chemistry.salts -- Ksp from the component's solidPhases{}
     salts ( halite );
-
-    activeSaltEquilibriumData
-    {
-        halite measuredSolubilityAnchor;
-    }
 }
 
 propertyMethods
 {
     liquid electrolyte.pitzer;
     vapour builtin.idealGas;
-    solid  builtin.saltEquilibrium;
 }
 
-parameters
-{
-    pitzerPairs
-    {
-        Na-Cl "data/standards/parameters/electrolyte/pitzer/pairs/Na-Cl.dat";
-    }
-}
+// Pitzer pair(s) resolved by cation-anion name: data/standards/parameters/electrolyte/pitzer/pairs/Na-Cl.dat
 
 // Property package: the central object a case selects. Declares components, chemistry, methods, parameters and reported sets.

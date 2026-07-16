@@ -9,27 +9,16 @@ components ( water NaOH );
 
 chemistry
 {
+    // solid SLE activates via chemistry.salts -- Ksp from the component's solidPhases{}
     salts ( sodiumHydroxide );
-
-    activeSaltEquilibriumData
-    {
-        sodiumHydroxide measuredSolubilityAnchor;
-    }
 }
 
 propertyMethods
 {
     liquid electrolyte.pitzer;
     vapour builtin.idealGas;
-    solid  builtin.saltEquilibrium;
 }
 
-parameters
-{
-    pitzerPairs
-    {
-        Na-OH "data/standards/parameters/electrolyte/pitzer/pairs/Na-OH.dat";
-    }
-}
+// Pitzer pair(s) resolved by cation-anion name: data/standards/parameters/electrolyte/pitzer/pairs/Na-OH.dat
 
 // Rigorous NaOH Pitzer package (calorimetrically fitted Na-OH pair -> heat-of-dilution L_phi).

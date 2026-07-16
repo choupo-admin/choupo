@@ -11,22 +11,14 @@ components ( water NaCl LiCl );
 
 chemistry
 {
+    // solid SLE activates via chemistry.salts -- Ksp from the component's solidPhases{}
     salts ( halite );
-
-    activeSaltEquilibriumData
-    {
-        halite measuredSolubilityAnchor;
-    }
 }
 
 propertyMethods
 {
     liquid electrolyte.pitzer;
     vapour builtin.idealGas;
-    solid  builtin.saltEquilibrium;
 }
 
-parameters
-{
-    pitzerPairs ( Na-Cl Li-Cl );
-}
+// Pitzer pairs resolved by cation-anion name: Na-Cl, Li-Cl
