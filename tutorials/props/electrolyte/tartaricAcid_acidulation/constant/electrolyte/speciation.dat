@@ -2,7 +2,7 @@
   tartaricAcid_acidulation --- the case DELTA: tartaric-acid dissociation only.
 
   speciationMode extend (the default): these organic reactions MERGE OVER the
-  curated inorganic network in data/standards/chemistry/aqueousSpeciation/ (the
+  curated inorganic network in data/standards/chemistry/ (recordType aqueousSpeciation)  (the
   Ca/SO4/K/Cl complexes come from there).  Declared here is ONLY the tartaric-acid
   system -- a REAL weak diprotic acid, neutral H2Tart the speciation master:
       H2Tart <=> HTart- + H+   (pKa1 2.98)

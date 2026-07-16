@@ -91,7 +91,7 @@ aqueousSpecies
     {
         /* Dissolved methane CH4(aq) -- inert neutral, identity + MW only (no
            charge, no complexes, no thermo block yet).  Summoned as the pinned
-           master of an OPEN-system CH4(g) Henry pin (chemistry/gasLiquid/
+           master of an OPEN-system CH4(g) Henry pin (chemistry/ (recordType gasLiquidEquilibrium) 
            CH4.dat); in a CLOSED system it is a conserved inert total. */
         name    CH4;
         ion     "CH4";
@@ -247,7 +247,7 @@ aqueousSpecies
         /* Dissolved hydrogen H2(aq) -- inert neutral, identity + MW only
            (fixed-oxidation-state catalogue: NOT a redox couple).  Summoned as
            the pinned master of an OPEN-system H2(g) Henry pin
-           (chemistry/gasLiquid/H2.dat). */
+           (chemistry/ (recordType gasLiquidEquilibrium) H2.dat). */
         name    H2;
         ion     "H2";
         charge  0;
@@ -385,7 +385,7 @@ aqueousSpecies
         Model species: hydroxo complex MgOH+  (charge +1)
         Identity + charge + MW record.  Species lineage: USGS PHREEQC
         phreeqc.dat (public domain); the matching association equilibrium
-        (logK25 -11.44) lives in chemistry/aqueousSpeciation/MgOH.dat, and a
+        (logK25 -11.44) lives in chemistry/ (recordType aqueousSpeciation) MgOH.dat, and a
         Pitzer pair in parameters/Pitzer/pairs/MgOH-Cl.dat.
         MW 41.31 g/mol is summed from the IUPAC standard atomic weights
         (Mg 24.305 + O 15.999 + H 1.008) -- derived, no independent primary
@@ -427,7 +427,7 @@ aqueousSpecies
         /* Dissolved nitrogen N2(aq) -- inert neutral, identity + MW only
            (fixed-oxidation-state catalogue: no N2/NO3/NH4 redox coupling).
            Summoned as the pinned master of an OPEN-system N2(g) Henry pin
-           (chemistry/gasLiquid/N2.dat). */
+           (chemistry/ (recordType gasLiquidEquilibrium) N2.dat). */
         name    N2;
         ion     "N2";
         charge  0;
@@ -488,7 +488,7 @@ aqueousSpecies
         /* Dissolved oxygen O2(aq) -- inert neutral, identity + MW only
            (fixed-oxidation-state catalogue: NOT a redox couple).  Summoned as
            the pinned master of an OPEN-system O2(g) Henry pin
-           (chemistry/gasLiquid/O2.dat) -- the DO-saturation master. */
+           (chemistry/ (recordType gasLiquidEquilibrium) O2.dat) -- the DO-saturation master. */
         name    O2;
         ion     "O2";
         charge  0;

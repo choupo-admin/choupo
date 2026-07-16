@@ -6,7 +6,7 @@ import re, sys
 from pathlib import Path
 repo = Path(__file__).resolve().parents[2]
 gf = repo / "data/standards/electrolyte/gases.dat"
-gdir = repo / "data/standards/chemistry/gasLiquid"
+gdir = repo / "data/standards/chemistry"
 if not gf.exists():
     print("electrolyte/gases.dat ABSENT -- gasLiquid kind consolidated. OK."); sys.exit(0)
 body = re.search(r'gases\s*\((.*)\)', gf.read_text(), re.S).group(1)
@@ -25,7 +25,7 @@ for row in re.finditer(r'\{([^{}]*)\}', body):
         fv=tok(txt,k)
         if fv is None or abs(float(fv)-float(sv))>1e-12+1e-12*abs(float(sv)):
             fails.append(f"{gas}.{k}: file={fv} src={sv}")
-orph={p.stem for p in gdir.glob('*.dat')}-seen
+orph={p.stem for p in gdir.glob('*.dat') if 'recordType gasLiquidEquilibrium;' in p.read_text()}-seen
 if orph: fails.append(f"ORPHAN {sorted(orph)}")
 print(f"checked {len(seen)} gases vs gases.dat")
 if fails:

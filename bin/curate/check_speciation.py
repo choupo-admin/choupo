@@ -5,7 +5,7 @@ import re, sys
 from pathlib import Path
 repo = Path(__file__).resolve().parents[2]
 sf = repo / "data/standards/electrolyte/speciation.dat"
-sdir = repo / "data/standards/chemistry/aqueousSpeciation"
+sdir = repo / "data/standards/chemistry"
 if not sf.exists():
     print("electrolyte/speciation.dat ABSENT -- aqueousSpeciation consolidated. OK."); sys.exit(0)
 body = re.search(r'reactions\s*\((.*)\)', sf.read_text(), re.S).group(1)
@@ -38,7 +38,7 @@ for rec in recs(body):
         if fv is None or abs(float(fv)-float(sv))>1e-12+1e-12*abs(float(sv)):
             fails.append(f"{sp}.{k}: file={fv} src={sv}")
     if "masters" in rec and "masters" not in txt: fails.append(f"{sp}: masters dropped")
-orph={p.stem for p in sdir.glob('*.dat')}-seen
+orph={p.stem for p in sdir.glob('*.dat') if 'recordType aqueousSpeciation;' in p.read_text()}-seen
 if orph: fails.append(f"ORPHAN {sorted(orph)}")
 print(f"checked {len(seen)} speciation reactions vs speciation.dat")
 if fails:

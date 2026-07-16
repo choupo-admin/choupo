@@ -1,7 +1,7 @@
 import re, os
 src = open("data/standards/electrolyte/gases.dat").read()
 body = re.search(r'gases\s*\((.*)\)', src, re.S).group(1)
-outdir = "data/standards/chemistry/gasLiquid"
+outdir = "data/standards/chemistry"
 os.makedirs(outdir, exist_ok=True)
 n=0
 for row in re.finditer(r'\{([^{}]*)\}', body):

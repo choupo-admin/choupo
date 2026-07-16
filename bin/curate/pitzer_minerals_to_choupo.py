@@ -21,7 +21,7 @@ Primary citations are carried per-record in the emitted source string.
 import re, sys, os, math
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SPEC_DIR = os.path.join(REPO, "data/standards/chemistry/aqueousSpeciation")
+SPEC_DIR = os.path.join(REPO, "data/standards/chemistry")
 MIN_DIR  = os.path.join(REPO, "data/standards/chemistry/mineralSolubility")
 
 # --- Choupo master ions (the ions written directly in masters(); water is separate) ---

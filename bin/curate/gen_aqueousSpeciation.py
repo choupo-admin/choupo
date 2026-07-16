@@ -1,7 +1,7 @@
 import re, os
 src = open("data/standards/electrolyte/speciation.dat").read()
 body = re.search(r'reactions\s*\((.*)\)', src, re.S).group(1)
-outdir = "data/standards/chemistry/aqueousSpeciation"; os.makedirs(outdir, exist_ok=True)
+outdir = "data/standards/chemistry"; os.makedirs(outdir, exist_ok=True)
 def recs(s):
     out=[];i=0
     while True:

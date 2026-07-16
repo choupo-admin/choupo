@@ -131,7 +131,7 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                 "a bug; fix the index/sum, do not loosen the tolerance");
     }
 
-    // Speciation network -- per-file under standards/chemistry/aqueousSpeciation/.
+    // Speciation network -- per-file under standards/chemistry/ (recordType aqueousSpeciation) .
     // A case-local constant/electrolyte/speciation.dat carries the case DELTA and
     // its `speciationMode` decides how it meets the tree:
     //   extend (DEFAULT) -- case reactions MERGE over the tree (override same-species,
@@ -157,14 +157,18 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
         // Base = the standards tree, UNLESS the case replaces it.
         if (cl.empty() || !caseReplaces)
         {
+            // Migration 5: chemistry/ is ONE flat home; each record's
+            // recordType names its family (aqueousSpeciation /
+            // gasLiquidEquilibrium / ionExchangeEquilibrium) -- filter, never
+            // guess from a subdirectory.
             const fs::path dir = fs::path(Database::currentRoot())
-                               / "standards" / "chemistry" / "aqueousSpeciation";
+                               / "standards" / "chemistry";
             if (!fs::exists(dir))
             {
                 if (cl.empty())
                     throw std::runtime_error(
                         "speciation: no case-local speciation.dat and no standards "
-                        "chemistry/aqueousSpeciation/" + std::string(howToObtain));
+                        "chemistry/ (recordType aqueousSpeciation)" + std::string(howToObtain));
             }
             else
             {
@@ -172,7 +176,13 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                 for (const auto& f : fs::directory_iterator(dir))
                     if (f.path().extension() == ".dat") files.push_back(f.path());
                 std::sort(files.begin(), files.end());
-                for (const auto& f : files) records.push_back(Dictionary::fromFile(f.string()));
+                for (const auto& f : files)
+                {
+                    auto rec = Dictionary::fromFile(f.string());
+                    if (rec->lookupWordOrDefault("recordType", "")
+                        != "aqueousSpeciation") continue;
+                    records.push_back(std::move(rec));
+                }
             }
         }
         // Case reactions: replace -> they ARE the network; extend -> overlay by species
@@ -217,12 +227,12 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
         else if (cl.empty() || !caseReplaces)
         {
             // Standards tier: gas dissolution (Henry) constants live per-file under
-            // chemistry/gasLiquid/ (the monolith speciation.dat `gases` sidecar is
+            // chemistry/ (recordType gasLiquidEquilibrium)  (the monolith speciation.dat `gases` sidecar is
             // gone).  Each record's `dissolved` is an ION label (e.g. "CO2"); link it
             // to the network species whose `ion` matches (CO2 -> CO2aq), fallback the
             // label itself.  The analytic K(T) carried here is the re-baselined value.
             const fs::path gdir = fs::path(Database::currentRoot())
-                                / "standards" / "chemistry" / "gasLiquid";
+                                / "standards" / "chemistry";
             if (fs::exists(gdir))
             {
                 std::vector<fs::path> gfiles;
@@ -232,6 +242,8 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                 for (const auto& f : gfiles)
                 {
                     auto e = Dictionary::fromFile(f.string());
+                    if (e->lookupWordOrDefault("recordType", "")
+                        != "gasLiquidEquilibrium") continue;
                     GasEntry g;
                     g.gas     = e->lookupWord("gas");
                     const std::string dissolved = e->lookupWord("dissolved");
@@ -373,11 +385,11 @@ std::vector<ExchangeReaction> SpeciationSolver::loadExchangeNetwork() const
     // Same nearest-wins-WHOLE rule as speciation.dat: a case-local exchange.dat
     // ECLIPSES the standard one entirely (a half-reaction network is one
     // coherent model -- half-merged selectivities are not a model).
-    // The exchange kind is now per-file under standards/chemistry/ionExchange/
+    // The exchange kind is now per-file under standards/chemistry/ (recordType ionExchangeEquilibrium) 
     // (the monolith electrolyte/exchange.dat is gone).  Dual leg, mirroring the
     // mineral migration: case-local constant/electrolyte/exchange.dat list read
     // WHOLE (overlay XOR -- a half-reaction network is one coherent model) else a
-    // sorted *.dat directory listing of chemistry/ionExchange/.
+    // sorted *.dat directory listing of chemistry/ (recordType ionExchangeEquilibrium) .
     std::vector<DictPtr> records;
     const fs::path cl = caseElectrolytePath("exchange.dat");
     if (!cl.empty())
@@ -388,17 +400,24 @@ std::vector<ExchangeReaction> SpeciationSolver::loadExchangeNetwork() const
     else
     {
         const fs::path dir = fs::path(Database::currentRoot())
-                           / "standards" / "chemistry" / "ionExchange";
+                           / "standards" / "chemistry";
         if (!fs::exists(dir))
             throw std::runtime_error(
                 "exchange: no case-local exchange.dat and no standards "
-                "chemistry/ionExchange/ -- generate it (USGS PHREEQC EXCHANGE_SPECIES, "
+                "chemistry/ (recordType ionExchangeEquilibrium) -- generate it "
+                "(USGS PHREEQC EXCHANGE_SPECIES, "
                 "public domain) or copy a softener tutorial's snapshot into this case.");
         std::vector<fs::path> files;
         for (const auto& f : fs::directory_iterator(dir))
             if (f.path().extension() == ".dat") files.push_back(f.path());
         std::sort(files.begin(), files.end());
-        for (const auto& f : files) records.push_back(Dictionary::fromFile(f.string()));
+        for (const auto& f : files)
+        {
+            auto rec = Dictionary::fromFile(f.string());
+            if (rec->lookupWordOrDefault("recordType", "")
+                != "ionExchangeEquilibrium") continue;
+            records.push_back(std::move(rec));
+        }
     }
     std::vector<ExchangeReaction> net;
     for (const auto& e : records)
@@ -829,7 +848,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
             throw std::runtime_error("speciation: `atmosphere { " + gasName
                 + " ... }` given but the gas catalogue in use has no entry for "
                 + gasName + ".  Available:" + avail.str()
-                + "\n(standards tier: data/standards/chemistry/gasLiquid/, "
+                + "\n(standards tier: data/standards/chemistry/ (recordType gasLiquidEquilibrium) , "
                 "USGS PHREEQC PHASES, public domain)");
         }
         // A dissolution spanning several aqueous legs at once (H2S(g) =

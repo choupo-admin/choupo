@@ -41,7 +41,7 @@ License
   thermo/electrolyte/SpeciationSolver.
 
   Reactions/minerals are CURATED data (case constant/electrolyte/speciation.dat
-  overlay, else chemistry/aqueousSpeciation/ + components/ solidPhases), charges
+  overlay, else chemistry/ (recordType aqueousSpeciation)  + components/ solidPhases), charges
   from species/aqueous.dat.
 
   Dictionary form:

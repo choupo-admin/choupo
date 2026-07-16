@@ -5,7 +5,7 @@ import re, sys
 from pathlib import Path
 repo = Path(__file__).resolve().parents[2]
 ef = repo / "data/standards/electrolyte/exchange.dat"
-edir = repo / "data/standards/chemistry/ionExchange"
+edir = repo / "data/standards/chemistry"
 if not ef.exists():
     print("electrolyte/exchange.dat ABSENT -- ionExchange consolidated. OK."); sys.exit(0)
 body = re.search(r'exchange\s*\((.*)\)', ef.read_text(), re.S).group(1)
@@ -36,7 +36,7 @@ for rec in recs(body):
         fails.append(f"{sp}.logK25: file={fv} src={sv}")
     if ("reference true" in rec) != ("reference true" in txt): fails.append(f"{sp}: reference flag mismatch")
     if "masters" in rec and "masters" not in txt: fails.append(f"{sp}: masters dropped")
-orph={p.stem for p in edir.glob('*.dat')}-seen
+orph={p.stem for p in edir.glob('*.dat') if 'recordType ionExchangeEquilibrium;' in p.read_text()}-seen
 if orph: fails.append(f"ORPHAN {sorted(orph)}")
 print(f"checked {len(seen)} ionExchange species vs exchange.dat")
 if fails:

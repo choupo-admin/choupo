@@ -160,7 +160,7 @@ mineral file would re-create duplication, not remove it:
   *dissolved* salt, a different object from the crystal).
 - `species/aqueous/<ion>.dat` — ion thermo (Na⁺ is shared by NaCl, Na₂SO₄, NaOH…).
 - `parameters/Pitzer/…` — **pair** params (Na-Cl is a *pair*, shared).
-- `chemistry/aqueousSpeciation/…` — complex-formation reactions (relational).
+- `chemistry/ (recordType aqueousSpeciation) …` — complex-formation reactions (relational).
 
 This is exactly the CLAUDE.md three-axiom split: intrinsic-to-one-solid → its
 own file; pair/ion → relational home.
@@ -246,7 +246,7 @@ partially exists.** The work is bounded reader alignment, not new plumbing.
 3. The "1 cation + 1 anion" limit is a property of the single-salt ADAPTER, not the
    data — `dissociatesTo` takes general stoichiometry; a true double salt (carnallite)
    simply routes through the multi-ion PitzerHMW path, which ignores `dissociatesTo`.
-4. The multi-ion speciation world stays `species/aqueous/` + `chemistry/aqueousSpeciation/`
+4. The multi-ion speciation world stays `species/aqueous/` + `chemistry/ (recordType aqueousSpeciation) `
    network-driven; the unified salt file reaches it ONLY via the existing
    `recordType mineral` component scan.
 

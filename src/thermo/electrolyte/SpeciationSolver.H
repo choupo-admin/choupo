@@ -85,7 +85,7 @@ Description
                      whose dissolution has several aqueous legs (H2S(g) =
                      H+ + HS-) is REFUSED as a named gap -- it needs the
                      neutral H2Saq species curated first.  K_H per gas from
-                     chemistry/gasLiquid/ (PHREEQC PHASES, public domain).
+                     chemistry/ (recordType gasLiquidEquilibrium)  (PHREEQC PHASES, public domain).
       * SPECIES  from `speciation.dat` mass-action entries (each lists its
                  masters + stoichiometry nu, optional nuWater on the formation
                  -- a_w enters the mass action -- logK25, optional dH).
@@ -125,7 +125,7 @@ Description
     (an entry's `masters` may reference a master ion OR a computed species,
     e.g. calcite against CO3 --- both resolve in the final activity table).
 
-    DATA: the curated tree (chemistry/aqueousSpeciation/, components/ solidPhases,
+    DATA: the curated tree (chemistry/ (recordType aqueousSpeciation) , components/ solidPhases,
     species/aqueous.dat charges).  A case-local speciation.dat carries the case DELTA;
     its `speciationMode` decides how it meets the tree: `extend` (DEFAULT) MERGES the
     case reactions over the tree (override same-species, add new -- e.g. an organic
@@ -338,7 +338,7 @@ class SpeciationSolver
 {
 public:
     // Loads the speciation network + minerals (case overlay first, then the
-    // curated tree: chemistry/aqueousSpeciation/, components/ solidPhases) and the
+    // curated tree: chemistry/ (recordType aqueousSpeciation) , components/ solidPhases) and the
     // master ion charges from species/aqueous.dat.
     // Throws with a how-to-obtain message when no catalogue exists.
     //
