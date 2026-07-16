@@ -11,8 +11,9 @@
   constant/components/, but the load-bearing NH3-water Henry pair is NOT
   vendorable --- HenrysLawRegistry loads pairs from the standard catalogue
   only (data/standards/parameters/Henry/NH3-water.dat; there is no case-local
-  henrysLaw/ search path).  This case is therefore self-contained EXCEPT
-  for that one catalogue entry.
+  henrysLaw/ search path).  The case therefore resolves that one pair from
+  data/standards/ at runtime (everything else is case-local); self-DESCRIBING
+  (inline manifest).
 \*---------------------------------------------------------------------------*/
 
 components       ( NH3  N2  water );

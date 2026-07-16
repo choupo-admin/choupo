@@ -22,8 +22,9 @@
   the electroneutrality row (pH solve) -- so precipitating calcite ACIDIFIES.
 
   CROSS-CHECK TOOL: PHREEQC EQUILIBRIUM_PHASES (same ceiling framing).
-  Data: case-local constant/electrolyte/ (self-contained USGS PHREEQC snapshot,
-  public domain).
+  Data: curated USGS PHREEQC records (public domain) resolved from
+  data/standards/ at runtime; self-DESCRIBING (inline manifest) -- seal with
+  bin/choupo-import for a runtime-self-contained copy.
 
   GOLDEN PINS (locked by the golden master):
     pin_gypsum_amount  Ca = SO4 = 0.030542 mol/kg (DOUBLE the gypsum-saturation

@@ -37,7 +37,7 @@ units
         {
             adsorbent    zeolite13X;       // by NAME -- curated pair catalogue
                                            // (vendored under constant/ here:
-                                           // this case is self-contained)
+                                           // a case-local copy)
             m_ads        1.0 kg;           // adsorbent charge (equipment)
             T_setpoint   298.15 K;         // isothermal -- the only A2 mode
 

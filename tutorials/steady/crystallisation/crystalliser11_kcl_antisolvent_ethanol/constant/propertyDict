@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------*\
   constant/propertyDict -- the case's property package, INLINE and
-  self-contained (no selector, no shared catalogue).  The ThermoPackageBuilder
+  self-DESCRIBING (inline manifest; no selector, no shared catalogue -- runtime self-contained only when SEALED).  The ThermoPackageBuilder
   assembles + verifies every declared parameter file and announces the assembly
   in the run log.  Edit this file to change THIS case's thermo.
 \*---------------------------------------------------------------------------*/

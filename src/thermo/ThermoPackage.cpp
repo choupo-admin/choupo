@@ -226,12 +226,13 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
     // BOTH the Phase's activity model (used by the flash) AND the legacy
     // activity_ pointer search that node FIRST.  NRTL reads it; other models
     // ignore it.
-    if (dict->found("binaryPairsBase") && dict->found("activityModel"))
-    {
-        auto am = dict->subDict("activityModel");
-        if (!am->found("binaryPairsBase"))
-            am->insert("binaryPairsBase", dict->entryValue("binaryPairsBase"));
-    }
+    for (const char* pdKey : {"binaryPairsBase", "activeComponents"})
+        if (dict->found(pdKey) && dict->found("activityModel"))
+        {
+            auto am = dict->subDict("activityModel");
+            if (!am->found(pdKey))
+                am->insert(pdKey, dict->entryValue(pdKey));
+        }
 
     phases_.clear();
 
@@ -248,13 +249,13 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
         // LLE world declared as `phases ( {activity NRTL} {activity NRTL} )` needs
         // every phase's NRTL to search the node's propertyData first, or the
         // settler collapses to one phase (ideal, no pairs).
-        const bool hasPairBase = dict->found("binaryPairsBase");
         for (const auto& pd : pList)
         {
-            if (hasPairBase && pd->found("activity")
-                && !pd->subDict("activity")->found("binaryPairsBase"))
-                pd->subDict("activity")->insert("binaryPairsBase",
-                                                dict->entryValue("binaryPairsBase"));
+            for (const char* pdKey : {"binaryPairsBase", "activeComponents"})
+                if (dict->found(pdKey) && pd->found("activity")
+                    && !pd->subDict("activity")->found(pdKey))
+                    pd->subDict("activity")->insert(pdKey,
+                                                    dict->entryValue(pdKey));
             phases_.push_back(Phase::New(pd, names, components_));
         }
     }

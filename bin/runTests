@@ -366,6 +366,32 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/doctrine.$$
 
+    # Tree gate (Migration 6): retired data/standards homes must never come
+    # back -- neither as src path-builders nor as resurrected directories.
+    if "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "tree-gate" "$(head -1 /tmp/treegate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (retired home referenced -- run bin/curate/check_tree_gate.py)\n" "tree-gate"
+        cat /tmp/treegate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/treegate.$$
+
+    # Lithium route gate (Codex audit, M6): the golden pins the RESULT; this
+    # pins the ROUTE -- the EXTRACTION sector's 5 tuned pairs must resolve
+    # from the sealed snapshot (never idealDefault) and the organic phase
+    # must stay loaded (x_LiCl) and dry (x_water).
+    if "$ROOT/bin/curate/check_lithium_routes.py" > /tmp/ligate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "lithium-route-gate" "$(head -1 /tmp/ligate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (route degraded -- run bin/curate/check_lithium_routes.py)\n" "lithium-route-gate"
+        cat /tmp/ligate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ligate.$$
+
     # Release-inventory gate (ChatGPT landing-plan §5): the generated single-
     # source-of-truth counts (generated/releaseInventory.json, consumed by the
     # homepage hero + "What is inside" + /models) must match the current tree --

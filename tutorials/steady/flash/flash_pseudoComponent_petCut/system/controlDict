@@ -8,7 +8,7 @@
   liquid and the energy balance CLOSES on the implied duty.
 
   The pseudo-component .dat lives in constant/components/petCut_C7plus.dat
-  (SELF-CONTAINED -- the case carries its own lump).  It omits formula/CAS
+  (CASE-LOCAL -- the case carries its own lump).  It omits formula/CAS
   and standardThermochemistry (a lump has no molecule and no reaction), yet it FLASHES
   (critical{} + Ambrose-Walton Psat) and closes an enthalpy balance (gasIdeal
   + liquidPure Cp).  Sensible-heat balance only -- no reaction -> no Hf datum

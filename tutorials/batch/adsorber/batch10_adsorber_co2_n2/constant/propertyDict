@@ -5,7 +5,7 @@
   headspace (the announced A2 assumption), no liquid phase -- ideal
   activity + ideal-gas EOS carries the whole lesson.  The competitive
   adsorption equilibrium is PAIR data, vendored under
-  constant/parameters/adsorption/equilibria/zeolite13X/ (self-contained).
+  constant/parameters/adsorption/equilibria/zeolite13X/ (case-local copy).
 \*---------------------------------------------------------------------------*/
 
 components       ( CO2  N2 );

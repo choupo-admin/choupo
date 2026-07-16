@@ -19,5 +19,15 @@ propertyDataManifest
         "parameters/NRTL/LiCl-water.dat" { kind local; sha256 "af19533dc0dd70b506d49d22687e2a858e6fb6643433f22ad930442b77fbc1e8"; }
         "parameters/NRTL/LiX_extractant-water.dat" { kind local; sha256 "f0603f357eff8232e24df99178c9687d434a41163ae010eddd4bdef96a20f476"; }
         "parameters/NRTL/kerosene_C12cut-water.dat" { kind local; sha256 "9bd83b9ab434a4e8a8de6f1174af0b895304bf718a2d2d066eaa0b2e73325d66"; }
+        "parameters/NRTL/LiX_extractant-kerosene_C12cut.dat" { kind local; sha256 "05d4eb1e88ea62a3bcfc3779b8e58d5f59fc1b61d8f7652b6d2bf47cbcab51ce"; }
+        "parameters/NRTL/Li2CO3-water.dat" { kind local; sha256 "0565978914be4a369b498ac65ae252f3be14e909450d1ccdb76db803ff4ec5c6"; }
+        "parameters/NRTL/Li2CO3-NaCl.dat" { kind local; sha256 "62af7a323dc8d4e72a8a5db73b41c1b7483dc3727e2dd38f44fcabd204ff0981"; }
+        "parameters/NRTL/Li2CO3-LiCl.dat" { kind local; sha256 "6914f634d1e0322d34bd664fef9f6bd1376a35785cc5f4c21e68bfe86ebd3ca6"; }
+        "parameters/NRTL/Li2CO3-kerosene_C12cut.dat" { kind local; sha256 "5021166fcda2bfdf36c8ef39bb12b10892d6dcb50e4c61fa61d9fe05bb8f44b4"; }
+        "parameters/NRTL/Li2CO3-LiX_extractant.dat" { kind local; sha256 "0669a7fd72187fb3320b46071f7c357ee78373b4dbe96fdf9d03e4f5b48cd95c"; }
+        "parameters/NRTL/NaCl-water.dat" { kind local; sha256 "f446d68a3d4281648a8ce99b852769e815372af56b7c87576dec6496557a1f84"; }
+        "parameters/NRTL/LiCl-NaCl.dat" { kind local; sha256 "d23035302f981552c9ce98f809008e43ac69eb5a3ae96bf091b5476445b40992"; }
+        "parameters/NRTL/NaCl-kerosene_C12cut.dat" { kind local; sha256 "4a4f01a9d086d75e138df0f95c960510a41a3522eae95ad4e2302828d1291312"; }
+        "parameters/NRTL/LiX_extractant-NaCl.dat" { kind local; sha256 "1c412a395226cfce76a146d66b4aa2dade50631fdb0571eb01a9b85d8476a562"; }
     }
 }

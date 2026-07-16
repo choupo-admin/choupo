@@ -89,6 +89,8 @@ public:
 
 private:
     std::size_t n_;
+    // active-set mask (empty/all-true = no domain declared)
+    std::vector<bool> activeMask_;
     inline static const std::string name_ = "NRTL";
 
     // Pair parameter matrices (n × n), row-major.

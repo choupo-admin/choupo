@@ -25,7 +25,8 @@
 
   Basis: 100 kmol/h saturated brine (x_water 0.900, x_NaCl 0.100; ~6.14 mol/kg)
   + 60.0 kmol/h ethanol  ->  salt-free x_ethanol ~ 0.40.
-  Self-contained: components live in constant/components/.
+  Components live case-local in constant/components/; the eNRTL ion/tau
+  records resolve from data/standards/ at runtime.
 
   (Want imperfect separation -- a wet cake with clinging liquor, fines loss,
   washing?  Feed the single-output `magma` form to a downstream `filter`.)

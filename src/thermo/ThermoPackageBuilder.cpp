@@ -603,6 +603,18 @@ static ThermoPackage buildMolecularActivity(const DictPtr& pkg, const Database& 
     const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
     const std::vector<std::string> compNames = pkg->lookupWordList("components");
 
+    // Active-set projection: forward the context's declared domain into every
+    // synthesized activity block (the NRTL ctor consumes it -- pair matrix +
+    // announcement restrict to the domain; components stay GLOBAL).
+    std::string activeTxt;
+    if (pkg->found("activeComponents"))
+    {
+        activeTxt = " activeComponents ( ";
+        for (const auto& a : pkg->lookupWordList("activeComponents"))
+            activeTxt += a + " ";
+        activeTxt += ");";
+    }
+
     // activity.ideal has NO pair parameters (gamma = 1 identically): synthesize
     // directly -- an EoS-centred package (vapour eos.SRK + kijPairs) is the use.
     if (model == "ideal")
@@ -650,7 +662,8 @@ static ThermoPackage buildMolecularActivity(const DictPtr& pkg, const Database& 
             else if (pd->found("activity") && pd->subDict("activity")->found("model"))
                 pmodel = pd->subDict("activity")->lookupWord("model");
             phasesTxt += "    { name " + pn + "; type " + ptype
-                       + "; activity { model " + pmodel + "; } }\n";
+                       + "; activity { model " + pmodel + ";" + activeTxt
+                       + " } }\n";
         }
         phasesTxt += "    { name vapour; type vapor; eos { model idealGas; } }\n";
     }
@@ -662,7 +675,8 @@ static ThermoPackage buildMolecularActivity(const DictPtr& pkg, const Database& 
         for (const auto& c : compNames) txt << c << " ";
         txt << ");\n";
         if (!phasesTxt.empty()) txt << "phases (\n" << phasesTxt << ");\n";
-        else                    txt << "activityModel { model " << model << "; }\n";
+        else                    txt << "activityModel { model " << model << ";"
+                                    << activeTxt << " }\n";
         txt << eosLineOf(pkg);
         const std::string tr = transportModelOf(pkg);
         if (!tr.empty()) txt << "transport { viscosity { model " << tr << "; } }\n";

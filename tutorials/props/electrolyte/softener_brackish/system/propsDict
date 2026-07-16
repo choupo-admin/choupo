@@ -36,8 +36,10 @@
   Brackish water (I ~ 0.03-0.06): Davies-valid, no Pitzer needed; the honesty
   banner + the I>0.5 Davies advisory cover the boundary.
 
-  Data: case-local constant/electrolyte/ (self-contained USGS PHREEQC snapshot,
-  public domain, + the SAC_Na resin nameplate).
+  Data: curated USGS PHREEQC records (public domain) resolved from
+  data/standards/ at runtime, + the SAC_Na resin nameplate; self-DESCRIBING
+  (inline manifest) -- seal with bin/choupo-import for a
+  runtime-self-contained copy.
 \*---------------------------------------------------------------------------*/
 
 operations

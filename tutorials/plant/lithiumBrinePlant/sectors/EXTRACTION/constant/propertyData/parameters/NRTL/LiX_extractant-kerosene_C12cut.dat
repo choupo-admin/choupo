@@ -1,0 +1,35 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary -- kerosene_C12cut(i) + LiX_extractant(j).  PARTICULAR to the
+  EXTRACTION sector.  ASSUMED IDEAL -- an explicit modelling assumption, not
+  a fitted datum: the carrier kerosene and the chelating extractant form a
+  miscible ORGANIC blend; tau_ij = tau_ji = 0 states that assumption as a
+  model FACT in the same house and route as every other pair (no special
+  idealPair grammar, no silent default -- Codex/Claude active-set design,
+  2026-07-16).
+\*---------------------------------------------------------------------------*/
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+components  ( kerosene_C12cut  LiX_extractant );
+model       NRTL;
+
+pair { i kerosene_C12cut; j LiX_extractant; }
+
+parameters
+{
+    i           kerosene_C12cut;
+    j           LiX_extractant;
+    a_ij        0.0;
+    b_ij        0.0;             // K -- tau = 0: ideal mutual behaviour
+    a_ji        0.0;
+    b_ji        0.0;             // K
+    alpha       0.30;            // conventional; irrelevant at tau = 0
+}
+
+provenance
+{
+    source        assumedIdeal;
+    citation      "explicit modelling assumption -- miscible organic carrier blend (kerosene cut + chelating extractant); no VLE/LLE data fitted";
+    author        "EXTRACTION sector closure, Choupo lithium reference plant";
+    notes         "Declared so the active-set gate has a RECORD to point at: the ideal hypothesis is owned, never inherited from a silent default.";
+}

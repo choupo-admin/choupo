@@ -1,0 +1,32 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary -- Li2CO3 + LiCl.  PARTICULAR to the EXTRACTION sector.
+  ASSUMED IDEAL -- explicit modelling assumption: Li2CO3 rides through the
+  molecular LLE world as a dilute mother-liquor carry-over (x ~ 1e-3 from the
+  CARBONATION recycle); tau = 0 owns what was a silent default before the
+  active-set gate.
+\*---------------------------------------------------------------------------*/
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+components  ( Li2CO3  LiCl );
+model       NRTL;
+
+pair { i Li2CO3; j LiCl; }
+
+parameters
+{
+    i           Li2CO3;
+    j           LiCl;
+    a_ij        0.0;
+    b_ij        0.0;
+    a_ji        0.0;
+    b_ji        0.0;
+    alpha       0.30;
+}
+
+provenance
+{
+    source        assumedIdeal;
+    citation      "explicit modelling assumption -- dilute Li2CO3 mother-liquor carry-over in the EXTRACTION molecular LLE world; no data fitted";
+    author        "EXTRACTION sector closure, Choupo lithium reference plant";
+}

@@ -6,7 +6,7 @@
   liquid phase ever forms -- ideal activity + ideal-gas EOS is ALL the
   thermodynamics this uptake lesson needs.  The adsorption equilibrium
   itself is NOT here: it is (adsorbent x adsorbate) PAIR data, vendored in
-  constant/parameters/adsorption/equilibria/zeolite13X/ (self-contained).
+  constant/parameters/adsorption/equilibria/zeolite13X/ (case-local copy).
 \*---------------------------------------------------------------------------*/
 
 components       ( CO2 );

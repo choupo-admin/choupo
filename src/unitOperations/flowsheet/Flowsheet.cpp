@@ -1304,6 +1304,24 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                             ? u->subDict("thermo")
                             : std::make_shared<Dictionary>("thermo");
                         th->insert("binaryPairsBase", node.string());
+                        // Active-set projection rides the SAME walk-up: the
+                        // node that owns the pair base may also declare the
+                        // context's active domain -- forward it so the pair
+                        // matrix + announcement restrict to it (components
+                        // stay GLOBAL; ThermoPackage pushes it into every
+                        // activity block).
+                        {
+                            const std::filesystem::path cpd =
+                                node / "constant" / "propertyDict";
+                            if (std::filesystem::exists(cpd))
+                            {
+                                auto cd = Dictionary::fromFile(cpd.string());
+                                if (cd->found("activeComponents")
+                                    && !th->found("activeComponents"))
+                                    th->insert("activeComponents",
+                                               cd->entryValue("activeComponents"));
+                            }
+                        }
                         if (!u->found("thermo")) u->insert("thermo", EntryValue(th));
                         break;
                     }
@@ -2442,6 +2460,12 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
                 if (s != std::string::npos && s + 9 == pcb.size())
                     over->insert("binaryPairsBase", pcb.substr(0, s));
             }
+            // Active-set projection: forward the context's declared domain --
+            // ThermoPackage pushes it down into every activity block, the
+            // NRTL restricts its pair matrix + announcement to it (components
+            // stay GLOBAL; the doctrine is untouched).
+            if (ctx->found("activeComponents"))
+                over->insert("activeComponents", ctx->entryValue("activeComponents"));
             if (ctx->found("chemistry"))
                 std::cout << "  [context] " << uname << ": liquid method " << liq
                           << " -> molecular world; inherited chemistry INACTIVE"

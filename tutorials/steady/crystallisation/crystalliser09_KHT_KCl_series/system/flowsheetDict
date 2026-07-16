@@ -27,7 +27,8 @@
     falls, collapsing m_sat.  KCl's saturation is the ion-activity Ksp.
 
   The SAME package carries both routes; `useElec` is decided per solute, so KHT
-  uses its curve while KCl uses the eNRTL.  Self-contained.
+  uses its curve while KCl uses the eNRTL.  Self-DESCRIBING (inline
+  manifest); curated records resolve from data/standards/ at runtime.
 
   Basis (per kg water): 55.5 water, 3.0 KCl (below the 5 C saturation ~3.9), and
   0.078 KHT (saturated at 50 C).

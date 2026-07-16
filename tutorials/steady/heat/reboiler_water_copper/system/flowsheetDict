@@ -43,7 +43,7 @@
     * the CHF margin SAFE/BURNOUT + the cube sensitivity are printed.
 
   All film/saturation properties are IAPWS-IF97 water (incl. sigma via R1-76).
-  The case is SELF-CONTAINED (its own constant/components/water.dat).
+  The case carries its own constant/components/water.dat (case-local copy).
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

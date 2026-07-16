@@ -17,9 +17,11 @@
   monovalent Cl- -- least.  This is the classic NF fingerprint that plain
   solution-diffusion (one B_s per salt) cannot predict mechanistically.
 
-  All data is case-local (self-contained): the salts carry an electrolyte{}
-  ion decomposition, the ions carry the radius/D0 transport tier, and the
-  membrane carries the poreModel{} block.
+  Data: the salts (case-local constant/components/) carry an electrolyte{}
+  ion decomposition and the membrane (constant/membranes/) carries the
+  poreModel{} block; the ions' radius/D0 transport tier resolves from
+  data/standards/ at runtime -- self-DESCRIBING (inline manifest), seal with
+  bin/choupo-import for a runtime-self-contained copy.
 
   `transport DSPM-DE;` selects the charged-pore law; drop it (or set
   `transport solutionDiffusion;`) to compare against the baseline.

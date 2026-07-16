@@ -188,11 +188,47 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
     // the Flowsheet into the unit's `thermo {}` so a sector/unit's PARTICULAR
     // pair resolves before the plant root + the standard library.
     const std::string pairBase = dict->lookupWordOrDefault("binaryPairsBase", "");
+
+    // ACTIVE-SET projection (Codex/Claude design, 2026-07-16; doctrine intact:
+    // components stay GLOBAL in streams and package -- only the PAIR MATRIX
+    // and its announcement restrict to the declared domain).  When the context
+    // declares `activeComponents ( ... )`:
+    //   * pairs among ACTIVE components must resolve or the ctor REFUSES --
+    //     an ideal assumption between active components is a model FACT and
+    //     must live as a record (provenance `source assumedIdeal`), never a
+    //     silent default;
+    //   * pairs touching an out-of-domain component skip the lookup entirely
+    //     and are announced as ONE aggregated outOfContext line;
+    //   * gamma() refuses if an out-of-domain component carries real
+    //     composition (the declared domain stopped representing the stream).
+    activeMask_.assign(n_, true);
+    bool hasActiveSet = false;
+    if (dict->found("activeComponents"))
+    {
+        hasActiveSet = true;
+        activeMask_.assign(n_, false);
+        for (const auto& an : dict->lookupWordList("activeComponents"))
+            activeMask_[findIndex(names, an)] = true;   // findIndex refuses unknowns
+    }
+
     std::vector<std::string> idealDefaulted;
+    std::size_t outOfContext = 0;
     for (std::size_t i = 0; i < n_; ++i)
         for (std::size_t j = i + 1; j < n_; ++j)
         {
             if (covered[i*n_ + j]) continue;
+
+            if (hasActiveSet && !(activeMask_[i] && activeMask_[j]))
+            {
+                // outside the declared domain: tau stays 0, alpha harmless,
+                // no per-pair lookup, no per-pair noise.
+                alphaMat_[i*n_ + j] = alphaMat_[j*n_ + i] = 0.3;
+                covered[i*n_ + j] = covered[j*n_ + i] = true;
+                ++outOfContext;
+                recordResolution(names[i], names[j], "outOfContext",
+                                 "out-of-context", "");
+                continue;
+            }
 
             const std::string fname = alphaPairFilename(names[i], names[j]);
             std::string tier;
@@ -200,6 +236,15 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
 
             if (file.empty())
             {
+                if (hasActiveSet)
+                    throw std::runtime_error("NRTL: pair " + names[i] + "-"
+                        + names[j] + " is between ACTIVE components of the"
+                        " declared domain but has no parameter record.  An"
+                        " ideal assumption between active components is a"
+                        " model FACT: add a record (a_ij/b_ij = 0, provenance"
+                        " `source assumedIdeal;`) under constant/parameters/"
+                        "NRTL/ (or the sealed snapshot) and declare it -- no"
+                        " silent crutch.");
                 // default to ideal: tau=0 (aMat/bMat already 0), alpha harmless
                 alphaMat_[i*n_ + j] = alphaMat_[j*n_ + i] = 0.3;
                 covered[i*n_ + j] = covered[j*n_ + i] = true;
@@ -254,6 +299,17 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
         }
     // Diagonals stay at 0 (τ_ii = 0, G_ii = 1, α_ii = 0).
 
+    if (outOfContext > 0)
+    {
+        std::size_t nAct = 0;
+        for (std::size_t k = 0; k < n_; ++k) if (activeMask_[k]) ++nAct;
+        std::cout << "  [thermo] NRTL active-set domain (" << nAct << "/" << n_
+                  << " components active): " << outOfContext
+                  << " pair(s) outOfContext (no lookup, tau = 0; out-of-domain"
+                     " composition is advisory-checked at evaluation, hard-"
+                     "checked at convergence by the route gate)\n";
+    }
+
     // Announce the ideal-defaulted pairs (no silent crutch): the student sees
     // which interactions are unconstrained and can fit/add them.
     if (!idealDefaulted.empty())
@@ -280,6 +336,34 @@ sVector NRTL::gamma(scalar T, const sVector& x) const
 {
     if (x.size() != n_)
         throw std::runtime_error("NRTL::gamma: x.size() != n_components");
+
+    // Active-set guard: the mask hides PAIRS, never material.  If an
+    // out-of-domain component carries composition, the tau = 0 physics being
+    // applied to it is UNCONSTRAINED -- but a hard refusal here would kill
+    // honest solver TRANSIENTS (the auto-init tear seed is the flow-averaged
+    // aggregate of ALL plant feeds, announced as such, and washes out at
+    // convergence).  So: LOUD advisory during evaluation; the HARD assertion
+    // lives at the converged state (the lithium route gate checks the
+    // converged streams carry no out-of-domain material).
+    if (!activeMask_.empty())
+        for (std::size_t k = 0; k < n_; ++k)
+            if (!activeMask_[k] && x[k] > 1.0e-10)
+            {
+                const bool isNew = AdvisoryLog::instance().add(
+                    "thermo", "warning", "NRTL activeComponents",
+                    "out-of-domain component index " + std::to_string(k)
+                    + " carries x = " + std::to_string(x[k])
+                    + " during evaluation -- tau = 0 (unconstrained) physics"
+                    " applied; if this persists at CONVERGENCE the declared"
+                    " domain no longer represents the stream (extend"
+                    " activeComponents and curate its pairs).");
+                if (isNew)
+                    std::cout << "  [thermo] NRTL active-set: out-of-domain"
+                                 " composition during evaluation (x = "
+                              << x[k] << " at index " << k
+                              << ") -- transient tolerated, convergence must"
+                                 " clear it\n";
+            }
 
     // τ and G at this T
     std::vector<scalar> tau(n_*n_, 0.0);

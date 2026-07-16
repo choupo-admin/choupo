@@ -7,12 +7,21 @@ recordType    propertyDict;
 
 inherits "../../../constant";
 
-components
+// The ACTIVE domain of this context (Codex/Claude design 2026-07-16): the
+// stream vector stays GLOBAL (doctrine intact); this mask restricts the PAIR
+// MATRIX + its announcement to the components that can be nonzero here.
+// Every ACTIVE-ACTIVE pair must have a record -- an ideal assumption is a
+// model FACT (see kerosene_C12cut-LiX_extractant.dat, source assumedIdeal).
+activeComponents
 (
+    // NaCl: dilute carry-over from the BRINE liquor (owned ideal pairs);
+    // Li2CO3: dilute mother-liquor carry-over from CARBONATION.
     water
+    NaCl
     LiCl
     kerosene_C12cut
     LiX_extractant
+    Li2CO3
 );
 
 propertyMethods
@@ -45,5 +54,15 @@ parameters
         LiCl-water     "parameters/NRTL/LiCl-water.dat";
         LiCl-kerosene  "parameters/NRTL/LiCl-kerosene_C12cut.dat";
         LiCl-LiX       "parameters/NRTL/LiCl-LiX_extractant.dat";
+        kerosene-LiX   "parameters/NRTL/LiX_extractant-kerosene_C12cut.dat";  // assumedIdeal (owned assumption)
+        NaCl-water     "parameters/NRTL/NaCl-water.dat";                        // assumedIdeal (dilute carry-over)
+        LiCl-NaCl      "parameters/NRTL/LiCl-NaCl.dat";                         // assumedIdeal
+        NaCl-kerosene  "parameters/NRTL/NaCl-kerosene_C12cut.dat";              // assumedIdeal
+        LiX-NaCl       "parameters/NRTL/LiX_extractant-NaCl.dat";               // assumedIdeal
+        Li2CO3-water   "parameters/NRTL/Li2CO3-water.dat";                      // assumedIdeal (carry-over)
+        Li2CO3-NaCl    "parameters/NRTL/Li2CO3-NaCl.dat";                       // assumedIdeal
+        Li2CO3-LiCl    "parameters/NRTL/Li2CO3-LiCl.dat";                       // assumedIdeal
+        Li2CO3-kero    "parameters/NRTL/Li2CO3-kerosene_C12cut.dat";            // assumedIdeal
+        Li2CO3-LiX     "parameters/NRTL/Li2CO3-LiX_extractant.dat";             // assumedIdeal
     }
 }

@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*-----------------------*\
-  propertyPackage (INLINE, self-contained) -- the case's dictionary.
+  propertyPackage (INLINE and self-DESCRIBING: the inline manifest) -- the case's dictionary.
   For the multi-ion speciation path the manifest declares the SYSTEM: all
   components, the input basis (roles), and the aqueous activity method. The
   speciate op then carries only the ANALYSIS (composition). No selector, no

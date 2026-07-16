@@ -7,8 +7,9 @@
     * liquid VISCOSITY -> the `transport { liquidViscosity }` model below,
       required for the Reynolds number.
 
-  Self-contained: water.dat is vendored under constant/components/, so the
-  case runs without the standard catalogue.
+  Water.dat is vendored under constant/components/ (case-local copy); the
+  case is self-DESCRIBING (inline manifest) -- seal with bin/choupo-import
+  for a certified runtime-self-contained copy.
 \*---------------------------------------------------------------------------*/
 
 components       ( water );

@@ -4,8 +4,8 @@
   (constant/parameters/NRTL/ethanol-water.dat), carrying its full primary
   citation -- so what this case scores is a REAL, provenance-bearing catalogue
   entry, not numbers typed inline into the dict.  (The pair is vendored
-  case-local rather than pulled from data/standards/ so the case stays
-  self-contained in the public release; the parameters are identical.)
+  case-local rather than pulled from data/standards/ so the pair record
+  travels with the case in the public release; the parameters are identical.)
 \*---------------------------------------------------------------------------*/
 
 components       ( ethanol  water );

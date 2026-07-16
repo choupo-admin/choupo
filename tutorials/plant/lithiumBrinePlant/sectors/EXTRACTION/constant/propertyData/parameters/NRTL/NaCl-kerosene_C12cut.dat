@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary -- NaCl(i) + kerosene_C12cut(j).  PARTICULAR to the EXTRACTION sector.
+  ASSUMED IDEAL -- an explicit modelling assumption: NaCl rides through the
+  molecular LLE world as a dilute carried-over salt (x ~ 1e-3 from the BRINE
+  liquor); its interactions were an UNCONSTRAINED silent default before the
+  active-set gate -- this record OWNS that assumption (tau = 0) in the same
+  house and route as every fitted pair.
+\*---------------------------------------------------------------------------*/
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+components  ( NaCl  kerosene_C12cut );
+model       NRTL;
+
+pair { i NaCl; j kerosene_C12cut; }
+
+parameters
+{
+    i           NaCl;
+    j           kerosene_C12cut;
+    a_ij        0.0;
+    b_ij        0.0;
+    a_ji        0.0;
+    b_ji        0.0;
+    alpha       0.30;
+}
+
+provenance
+{
+    source        assumedIdeal;
+    citation      "explicit modelling assumption -- dilute carried-over NaCl in the EXTRACTION molecular LLE world; no data fitted";
+    author        "EXTRACTION sector closure, Choupo lithium reference plant";
+}

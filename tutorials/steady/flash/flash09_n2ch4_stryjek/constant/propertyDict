@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   constant/propertyPackage -- THE CASE'S OWN THERMO MANIFEST (inline form).
   Components, methods, and parameter sources all HERE, in the case, readable:
-  the self-contained form.  (The alternative `package <name>;` selects a
+  the self-DESCRIBING form (inline manifest).  (The alternative `package <name>;` selects a
   shared catalogue record -- for fleets of cases using identical thermo.)
   Run the case and the log announces the assembly: the VLE world and every
   kij with its source.

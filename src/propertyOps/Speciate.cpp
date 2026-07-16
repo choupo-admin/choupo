@@ -317,6 +317,22 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
             subsetCheck("composition",      "apparentComponents");
             subsetCheck("totals",           "analyticalMasters");
             subsetCheck("analyticalTotals", "analyticalMasters");
+            // inputBasis.solvent is CONSUMED, not decorative (Codex audit,
+            // M6): the speciation stack computes on the WATER surface
+            // (molality basis, SolventProperties, Debye-Hueckel A(T)) -- a
+            // package declaring any other solvent would run silently wrong.
+            // Refuse loudly; mixed-/non-aqueous speciation is a NAMED GAP.
+            if (ib->found("solvent"))
+            {
+                const std::string sol = ib->lookupWord("solvent");
+                if (sol != "water")
+                    throw std::runtime_error("inputBasis.solvent '" + sol
+                        + "': the speciation stack is aqueous-only (molality"
+                        " basis + water Debye-Hueckel surface) -- a "
+                        + sol + "-solvent speciation is a named gap, not a"
+                        " silent substitution.  Declare `solvent water;` or"
+                        " remove the key.");
+            }
         }
     }
 

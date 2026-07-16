@@ -16,7 +16,7 @@
             water      r = 0.9200  q = 1.400
     These also live, fully provenanced, in
     data/standards/parameters/UNIQUAC/nButanol-water.dat.  Repeated inline so
-    this case is self-contained (Choupo credo). */
+    this case is self-DESCRIBING (inline manifest; Choupo credo). */
 components ( water nButanol );
 phases
 (

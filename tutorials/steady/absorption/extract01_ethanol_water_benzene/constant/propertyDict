@@ -10,8 +10,10 @@
   composition.
 
   UNIFAC is PREDICTIVE (group-contribution): no fitted binary pairs are
-  needed, so this case is fully self-contained.  Same model as the LLE
-  ternary scan tutorial (props/scan/ternary03_lle_water_ethanol_benzene).
+  needed; the case is self-DESCRIBING (inline manifest) -- components and
+  UNIFAC group records resolve from data/standards/ at runtime.  Same model
+  as the LLE ternary scan tutorial
+  (props/scan/ternary03_lle_water_ethanol_benzene).
 \*---------------------------------------------------------------------------*/
 
 components ( water ethanol benzene );

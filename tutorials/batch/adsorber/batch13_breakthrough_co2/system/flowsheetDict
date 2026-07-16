@@ -49,8 +49,8 @@ units
         operation
         {
             adsorbent   zeolite13X;    // by NAME -- vendored under constant/
-                                       // (self-contained case; tRef = 298 K
-                                       // anchor copy, see the record header)
+                                       // (case-local copy; tRef = 298 K
+                                       // anchor, see the record header)
             L           0.5   m;       // bed length
             area        0.01  m2;      // cross-section
             eps         0.4;           // interparticle void fraction

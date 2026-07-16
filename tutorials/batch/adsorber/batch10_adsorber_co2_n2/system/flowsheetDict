@@ -31,7 +31,7 @@ units
 
         operation
         {
-            adsorbent    zeolite13X;       // vendored under constant/ (self-contained)
+            adsorbent    zeolite13X;       // vendored under constant/ (case-local)
             m_ads        1.0 kg;
             T_setpoint   298.15 K;
 

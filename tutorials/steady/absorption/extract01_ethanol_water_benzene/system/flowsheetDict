@@ -22,7 +22,8 @@
 
   Thermo: predictive UNIFAC for both liquid phases (water / ethanol /
   benzene groups inline), the same model used by the ternary LLE scan
-  tutorial --- fully self-contained, no fitted pairs needed.
+  tutorial --- no fitted pairs needed; self-DESCRIBING (inline manifest),
+  UNIFAC records resolve from data/standards/ at runtime.
 
   KPIs to watch:  recovery_ethanol (fraction of ethanol leaving in the
   extract), distribution_ethanol (z_E / z_R), F_extract / F_raffinate,

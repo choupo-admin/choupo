@@ -35,8 +35,8 @@
     * the three resistances + which CONTROLS are printed; the duty is
       cross-checked against U*A*dT.
 
-  All film/saturation properties are IAPWS-IF97 water.  The case is
-  SELF-CONTAINED (its own constant/components/water.dat).
+  All film/saturation properties are IAPWS-IF97 water.  The case carries
+  its own constant/components/water.dat (case-local copy).
   ASSUMPTION stated plainly: the coolant is treated as ISOTHERMAL at its inlet
   T (its ~10 K heat-up is neglected, so dT = Tsat - T_in slightly OVERSTATES
   the true LMTD -- the computed area errs a few % small).  The utility

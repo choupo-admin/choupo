@@ -92,6 +92,23 @@ ethanol-water NRTL, N₂-CH₄ SRK. Tutorials: `props/electrolyte/scaling_ro_*`,
 `props/electrolyte/pitzer02_nacl_package`, `steady/crystallisation/*`,
 `steady/membranes/membrane0{7,8}_scaling`.
 
+### Active-set projection (per-unit pair domain) — 2026-07-16
+
+A per-unit property context may declare `activeComponents ( ... )`: the
+component VECTOR stays GLOBAL (streams, package, flatten — the 2026-06-08
+doctrine is untouched); only the PAIR MATRIX and its announcement restrict to
+the declared domain. Every ACTIVE-ACTIVE pair must resolve to a RECORD — an
+ideal assumption between active components is a model FACT and lives as a
+normal pair record with `provenance { source assumedIdeal; }`, same house,
+same route (never a special grammar, never a silent default). Pairs touching
+an out-of-domain component are `outOfContext` (one aggregated line, no
+lookup). Out-of-domain COMPOSITION during evaluation is advisory-tolerated
+(the auto-init tear seed is the announced flow-averaged feed aggregate and
+washes out); at CONVERGENCE it is hard-checked (the lithium route gate).
+Reference: `lithiumBrinePlant` EXTRACTION (6-component domain, 15 owned
+pairs: 5 tuned + 10 assumedIdeal). NRTL-first; UNIQUAC/Wilson follow-up.
+`[WORKS]`
+
 ## 4. Solids & salts — how precipitation enters
 
 A solid (halite, gypsum, calcite…) is a first-class **phase** with a **stored**

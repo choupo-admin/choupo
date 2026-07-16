@@ -19,7 +19,8 @@
   carries most of the effect.  A salt with a large dHsol, e.g. KNO3, would gain
   far more from cooling.)
 
-  Self-contained: components live in constant/components/.
+  Components live case-local in constant/components/; the eNRTL ion/tau
+  records resolve from data/standards/ at runtime.
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

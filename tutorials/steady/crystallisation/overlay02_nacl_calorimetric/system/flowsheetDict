@@ -6,7 +6,8 @@
   no solubility{} curve, so the electrolyte model is what makes this possible.
   The feed is a SUPERSATURATED brine (~7.6 mol/kg, as it would leave an
   evaporator); the unit drops it to saturation (6.144 mol/kg) and crystallises
-  the excess.  Self-contained: components live in constant/components/.
+  the excess.  Components live case-local in constant/components/; other
+  curated records resolve from data/standards/ at runtime.
 \*---------------------------------------------------------------------------*/
 
 name        cryst;

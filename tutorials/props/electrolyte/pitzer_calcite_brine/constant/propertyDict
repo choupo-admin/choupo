@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*-----------------------*\
-  propertyPackage (INLINE, self-contained) -- the case's dictionary.
+  propertyPackage (INLINE and self-DESCRIBING: the inline manifest) -- the case's dictionary.
   Multi-ion speciation SYSTEM: solvent water, the analytical basis measured in
   ions, and the reference activity method pitzerHMW.  This is a model-CONTRAST case:
   the ops keep an explicit per-op `activityModel` (davies vs pitzerHMW) as a

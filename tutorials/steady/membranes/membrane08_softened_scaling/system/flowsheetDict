@@ -28,10 +28,12 @@
   does per pass, NOT a bed in service (breakthrough / regeneration are TRANSIENT
   and not modelled).  See the banner on every run.
 
-  Data: self-contained case-local constant/electrolyte/ snapshot (USGS PHREEQC,
-  public domain: speciation.dat + minerals.dat + ions.dat + exchange.dat) + the
-  SAC_Na resin nameplate + the SW30HR membrane -- the same snapshots as
-  membrane07 / softener_brackish.
+  Data: curated USGS PHREEQC records (speciation, minerals, ions, exchange;
+  public domain) resolved from data/standards/ at runtime + case-local ion
+  .dats (constant/components/), the SAC_Na resin nameplate and the SW30HR
+  membrane (constant/membranes/) -- the same records as membrane07 /
+  softener_brackish; self-DESCRIBING (inline manifest), seal with
+  bin/choupo-import for a runtime-self-contained copy.
 
   Expected story (golden master): softener removes ~99.99% hardness (Ca/Mg
   leakage ~ 1e-2 mg/L, Na added ~ 6.7 meq/L at the given pH 7.0 closure -- the

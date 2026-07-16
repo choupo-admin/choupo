@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   constant/propertyPackage -- THE CASE'S OWN THERMO MANIFEST (inline form).
   Components, methods, solution structure and parameter sources all HERE, in
-  the case, readable: the self-contained form.  (`package <name>;` instead
+  the case, readable: the self-DESCRIBING form (inline manifest).  (`package <name>;` instead
   selects a shared catalogue record.)  The log announces the assembly:
   [builder] the per-group rungs, [henry] the pair constants + source.
 \*---------------------------------------------------------------------------*/

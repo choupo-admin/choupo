@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*-----------------------*\
-  propertyPackage (INLINE, self-contained) -- the case's dictionary.
+  propertyPackage (INLINE and self-DESCRIBING: the inline manifest) -- the case's dictionary.
   Multi-ion speciation SYSTEM: solvent water, the analytical basis measured in
   masters (HCO3 for the carbonate family; the inert neutrals O2 and N2 as
   dissolved-gas masters), davies activity.  The speciate ops carry only the

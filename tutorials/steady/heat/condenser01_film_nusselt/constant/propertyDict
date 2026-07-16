@@ -5,8 +5,8 @@
   saturation temperature Tsat(P), the dome-aware h (latent heat via the
   H_stream eps-step) AND the saturated-liquid transport (rho_l, mu_l,
   lambda_l via IAPWS R15-11 / the IF97 surface) that the Nusselt film
-  coefficient needs.  This case is SELF-CONTAINED: its own water.dat lives in
-  constant/components/.
+  coefficient needs.  The case carries its own water.dat in
+  constant/components/ (case-local copy).
 \*---------------------------------------------------------------------------*/
 
 components       ( water );

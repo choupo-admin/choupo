@@ -9,7 +9,7 @@
   a solvent-devolatilisation step, the canonical place a single fixed-average-MW
   polymer lump is an acceptable approximation.
 
-  The polymer .dat lives in constant/components/polystyrene.dat (SELF-CONTAINED)
+  The polymer .dat lives in constant/components/polystyrene.dat (CASE-LOCAL)
   and carries a LOUD note: Choupo models ONE fixed average MW, NOT the
   molecular-weight distribution -- Polymers-Plus-class methods are out of scope.
 \*---------------------------------------------------------------------------*/

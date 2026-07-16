@@ -5,8 +5,8 @@
   saturation temperature Tsat(P), the dome-aware h (latent heat via the
   H_stream eps-step), the saturated-liquid transport (rho_l, mu_l, lambda_l,
   cp_l) AND the surface tension sigma (IAPWS R1-76) that the Rohsenow nucleate
-  flux and the Zuber CHF both need.  This case is SELF-CONTAINED: its own
-  water.dat lives in constant/components/.
+  flux and the Zuber CHF both need.  The case carries its own water.dat in
+  constant/components/ (case-local copy).
 \*---------------------------------------------------------------------------*/
 
 components       ( water );

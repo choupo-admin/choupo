@@ -39,8 +39,8 @@
         1-butanol  r = 3.9243   q = 3.668
         water      r = 0.9200   q = 1.400
 
-  These numbers are repeated inline here so the case is self-contained (Choupo
-  credo); they also live, fully provenanced, in
+  These numbers are repeated inline here so the case is self-DESCRIBING
+  (inline manifest; Choupo credo); they also live, fully provenanced, in
   data/standards/parameters/UNIQUAC/nButanol-water.dat.
 \*---------------------------------------------------------------------------*/
 

@@ -56,8 +56,11 @@
   E_theta vanishes identically for one cation + one anion (the oracle stays
   1.5658e-14 over all 54 binaries).
 
-  SELF-CONTAINED: constant/electrolyte/ carries the FULL snapshot (ions, pairs,
-  mixing, speciation, minerals) -- the case runs with data/standards/ hidden.
+  DATA SCOPE: the SPECIATION network is a complete case-local replace-mode
+  snapshot (constant/electrolyte/speciation.dat) -- that claim covers the
+  speciation data only.  Ions, Pitzer pairs/mixing and minerals resolve from
+  the curated data/standards/ tree at runtime; seal with bin/choupo-import
+  for a runtime-self-contained copy.
 \*---------------------------------------------------------------------------*/
 
 operations

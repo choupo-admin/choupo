@@ -62,9 +62,10 @@
     The engineering verdict (gypsum the limiting scale) is UNCHANGED in direction;
     E_theta refines the SI magnitude in the high-I tail.
 
-  SELF-CONTAINED: constant/electrolyte/ carries the FULL snapshot (ions, pairs,
-  mixing with the carbonate theta/psi/lambda, speciation, minerals) -- the case
-  runs with data/standards/ hidden.
+  DATA SCOPE: self-DESCRIBING (inline manifest); the ions, pairs, mixing with
+  the carbonate theta/psi/lambda, speciation and minerals resolve from the
+  curated data/standards/ tree at runtime -- seal with bin/choupo-import for
+  a runtime-self-contained copy.
 \*---------------------------------------------------------------------------*/
 
 operations

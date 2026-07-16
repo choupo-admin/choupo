@@ -18,7 +18,8 @@
   The supersaturation here comes from the eNRTL ion-activity Ksp (the antisolvent
   lowers m_sat), NOT a solubility curve -- the MSMPR now reads the electrolyte
   saturation, the same helper the equilibrium model uses.
-  Self-contained: components + ion/tau catalogue + kinetics all under constant/.
+  Components + kinetics live under constant/; the eNRTL ion/tau pair resolves
+  from data/standards/ at runtime (self-DESCRIBING inline manifest).
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

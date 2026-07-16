@@ -4,7 +4,7 @@
      * gas viscosity   -> transport { viscosity           { model Chung; } }   (N2, from Tc/Pc/omega)
      * liquid viscosity-> transport { liquidViscosity { model Vogel; } }  (water)
      * phase densities -> idealGas (vapour) + Rackett (liquid) branch of density()
-   Self-contained: N2.dat + water.dat vendored under constant/components/. */
+   N2.dat + water.dat vendored under constant/components/ (case-local copies). */
 components       ( N2 water );
 activityModel    { model ideal; }
 equationOfState  { model idealGas; }
