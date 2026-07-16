@@ -19,12 +19,6 @@ propertyMethods
     vapour builtin.idealGas;
 }
 
-parameters
-{
-    eNRTLPairs
-    {
-        Na-Cl "data/standards/parameters/eNRTL/Na-Cl.dat";
-    }
-}
+    // eNRTL pair resolved by cation-anion name: data/standards/parameters/eNRTL/Na-Cl.dat
 
 // Rigorous NaCl eNRTL package. tau(T) anchored/uncalibrated -> no L_phi (calorimetricFit forced false by the builder).

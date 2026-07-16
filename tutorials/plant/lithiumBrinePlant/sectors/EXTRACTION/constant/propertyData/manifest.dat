@@ -14,5 +14,10 @@ propertyDataManifest
     records
     {
         "methods/NRTL.dat" { kind standard; standardSet Choupo-2607; sha256 "34e7fd0c9a2fefb220bce16542fd2a571ef8937e6df1cdefd73b2b841d44c32c"; }
+        "parameters/NRTL/LiCl-LiX_extractant.dat" { kind local; sha256 "94e77f29bebd99e8fb78d861283cd11d357012372a6de8a452e18ad560acc259"; }
+        "parameters/NRTL/LiCl-kerosene_C12cut.dat" { kind local; sha256 "e59e5d657f5f76b16877ec374947518f8ffdd39d95a0d91bb0b1b01a37a7cbc6"; }
+        "parameters/NRTL/LiCl-water.dat" { kind local; sha256 "af19533dc0dd70b506d49d22687e2a858e6fb6643433f22ad930442b77fbc1e8"; }
+        "parameters/NRTL/LiX_extractant-water.dat" { kind local; sha256 "f0603f357eff8232e24df99178c9687d434a41163ae010eddd4bdef96a20f476"; }
+        "parameters/NRTL/kerosene_C12cut-water.dat" { kind local; sha256 "9bd83b9ab434a4e8a8de6f1174af0b895304bf718a2d2d066eaa0b2e73325d66"; }
     }
 }

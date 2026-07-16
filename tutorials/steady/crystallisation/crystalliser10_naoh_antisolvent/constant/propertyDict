@@ -19,11 +19,5 @@ propertyMethods
     vapour builtin.idealGas;
 }
 
-parameters
-{
-    eNRTLPairs
-    {
-        Na-OH "data/standards/parameters/eNRTL/Na-OH.dat";
-    }
-}
+    // eNRTL pair resolved by cation-anion name: data/standards/parameters/eNRTL/Na-OH.dat
 

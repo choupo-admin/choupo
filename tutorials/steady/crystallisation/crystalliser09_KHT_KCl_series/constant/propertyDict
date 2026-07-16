@@ -19,12 +19,6 @@ propertyMethods
     vapour builtin.idealGas;
 }
 
-parameters
-{
-    eNRTLPairs
-    {
-        K-Cl "data/standards/parameters/eNRTL/K-Cl.dat";
-    }
-}
+    // eNRTL pair resolved by cation-anion name: data/standards/parameters/eNRTL/K-Cl.dat
 
 // Rigorous flagship: KCl (eNRTL ion-activity Ksp) + KHT (molecular curve-solute) + ethanol antisolvent. Only KCl is the apparent electrolyte; KHT crystallises off its solubility curve.

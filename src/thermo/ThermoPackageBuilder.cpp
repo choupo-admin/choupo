@@ -749,6 +749,19 @@ static ThermoPackage buildMolecularActivity(const DictPtr& pkg, const Database& 
 
 ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db)
 {
+    // GATE: parameters{} only carries the known parameter FAMILIES.  An unknown
+    // key here is a silent no-op (a declaration nothing reads) -- the exact bug
+    // class of a mis-spelled or mechanically-renamed block (`parameters.parameters`,
+    // Codex audit 2026-07-16).  Refuse loudly instead of ignoring.
+    if (pkg->found("parameters"))
+        for (const auto& key : pkg->subDict("parameters")->keys())
+            if (key != "binaryPairs" && key != "henryPairs" && key != "kijPairs")
+                throw std::runtime_error("propertyPackage: unknown parameters."
+                    + key + " -- nothing reads it (a silent declaration).  Known"
+                    " families: binaryPairs, henryPairs, kijPairs.  Pitzer/eNRTL"
+                    " pairs resolve by cation-anion NAME from parameters/"
+                    "{Pitzer,eNRTL}/ (cite them in a comment, not a block).");
+
     // Dispatch on the selected liquid property method (U4: ONE builder for
     // electrolyte AND molecular).  electrolyte.* -> direct assembly from the new
     // records; activity.* -> inline-pair readFromDict.  No special branch downstream.
