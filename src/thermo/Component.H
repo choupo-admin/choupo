@@ -59,11 +59,12 @@ public:
     // Load from a dictionary representing a single component file.
     void readFromDict(const DictPtr& dict);
 
-    // Mint a bare IDENTITY component (name + MW + role), for the Aspen
-    // ThermoPackageBuilder: it assembles a package from the NEW-format records,
-    // and readFromDict above parses only the OLD inline form (`MW 58.44;`).  The
-    // role carries volatility (a nonvolatile salt has K_i = 0 and is not counted
-    // as a volatile by the evaporator/flash) -- the apparent record declares it.
+    // Mint a bare IDENTITY component (name + MW + role), for the
+    // ThermoPackageBuilder: it assembles a package from the unified substance
+    // records, and readFromDict above parses only the OLD inline form
+    // (`MW 58.44;`).  The role carries volatility (a nonvolatile salt has
+    // K_i = 0 and is not counted as a volatile by the evaporator/flash) --
+    // the substance record declares it.
     static Component identity(const std::string& name, scalar MW,
                               const std::string& role = "volatile");
 
@@ -139,12 +140,12 @@ public:
     bool   hasSolid() const { return hasSolid_; }
     scalar rho_p()    const { return rho_p_; }   // particle density [kg/m^3]
     scalar k_v()      const { return k_v_; }     // volume shape factor [-]
-    // The ThermoPackageBuilder loads these from the apparent record's linked
+    // The ThermoPackageBuilder loads these from the substance record's linked
     // phases/solid record into the identity salt (the MSMPR/PSD crystalliser reads
     // them); for a readFromDict component they come from the `solid {}` block.
     void   setSolid(scalar rho_p, scalar k_v) { rho_p_ = rho_p; k_v_ = k_v; }
     // Set the liquid heat capacity from a `liquidHeatCapacity {}` dict (the
-    // builder loads it from the apparent record into the identity salt -- needed
+    // builder loads it from the substance record into the identity salt -- needed
     // by the liquid sensible-enthalpy path in mixed-solvent / recycle cases).
     void   setLiquidCp(const DictPtr& d);
 
@@ -195,7 +196,7 @@ public:
     // ---- Electrolyte: salt dissociation map (electrolyte activity) -----------
     // The salt's cation/anion are DERIVED from its `dissociatesTo` block (the old
     // `electrolyte { cation; anion; }` input is gone); the ion names resolve in
-    // species/aqueous/ + parameters/electrolyte/pitzer/.  Intrinsic salt chemistry,
+    // species/aqueous.dat + parameters/electrolyte/pitzer/.  Intrinsic salt chemistry,
     // declared once -- the electrolyte ActivityModel (pitzer) reads it.
     bool   hasElectrolyteSpec()  const { return hasElec_; }
     const std::string& electrolyteCation() const { return elecCation_; }

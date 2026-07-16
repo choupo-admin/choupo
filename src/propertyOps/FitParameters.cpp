@@ -1924,7 +1924,7 @@ int FitParameters::runIsothermFit(const DictPtr& dict, int verbosity)
               "declared bounds disagree");
     }
 
-    // ---- proposal (opt-in): schema-exact record under data/proposed/ ------
+    // ---- proposal (opt-in): schema-exact record under data/local/ ---------
     //  Only an HONEST record is proposed: full van't Hoff fit, individually
     //  identifiable.  Human promotion (Vitor) moves it to standards; the
     //  engine NEVER writes the standards catalogue.

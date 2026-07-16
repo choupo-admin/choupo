@@ -122,8 +122,8 @@ void Component::readFromDict(const DictPtr& d)
         lift("transport",  "diffusionVolume",   "diffusionVolume");
         lift("transport",  "associationFactor", "associationFactor");
         lift("transport",  "liquidViscosity",   "liquidViscosity");
-        // UNIFIED substance file: the apparent-component ion map is authored as
-        // component.speciesMap; lift it onto the legacy `dissociatesTo` key so
+        // UNIFIED substance file: the component-basis ion map (speciesMap) is authored
+        // as component.speciesMap; lift it onto the legacy `dissociatesTo` key so
         // every reader below is unchanged (speciesMap renames dissociatesTo).
         lift("component",  "speciesMap",        "dissociatesTo");
         // (gasIdeal/solid Hf_298+S_298 -> the formation datum, and
@@ -507,7 +507,7 @@ void Component::readFromDict(const DictPtr& d)
     relPermittivity_ = d->lookupScalarOrDefault("relativePermittivity", 0.0);
 
     // Salt dissociation map for the electrolyte activity model.  cation/anion are
-    // ion NAMES into species/aqueous/ + parameters/electrolyte/pitzer/; solubility is the
+    // ion NAMES into species/aqueous.dat + parameters/electrolyte/pitzer/; solubility is the
     // salt's measured saturation molality.  INTRINSIC salt chemistry, declared ONCE
     // here -- called by name, never re-typed per case.
     // Ion decomposition for electrolyte-aware unit ops (DSPM-DE membrane): derive

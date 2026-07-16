@@ -100,7 +100,7 @@ public:
     // The ONLY ctor (the legacy (comps, model) ctor + configure() were retired
     // 2026-06-30): the ThermoPackageBuilder hands a FULLY-RESOLVED
     // ElectrolyteAssembly (kernel + Ksp + enthalpy state, resolved from the
-    // NEW-format records via the SaltFromCatalogue helpers).  Sets EVERY member
+    // unified substance records via the SaltFromCatalogue helpers).  Sets EVERY member
     // explicitly -- no silent default, no post-construction dance.
     ElectrolyteActivity(std::vector<std::string> names, ElectrolyteAssembly a);
 

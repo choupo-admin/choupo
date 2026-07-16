@@ -114,7 +114,7 @@ Description
                        delta-method-transformed to natural space; correlation
                        matrix printed.  Opt-in `output { proposal auto; }`
                        writes a schema-exact record proposal under
-                       data/proposed/adsorption/equilibria/ --- for HUMAN
+                       data/local/adsorption/equilibria/ --- for HUMAN
                        promotion, never the standards catalogue.
 \*---------------------------------------------------------------------------*/
 

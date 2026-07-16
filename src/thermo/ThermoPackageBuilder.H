@@ -20,20 +20,21 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  ThermoPackageBuilder -- the runtime ASSEMBLY step of the Aspen-like property
-  architecture (a.k.a. PropertyPackageAssembler).  A case SELECTS a
-  `propertyPackage` record; this builder READS it and the NEW-format records it
-  declares (apparent component, true species, Pitzer pair, property method) and
-  ASSEMBLES a runtime ThermoPackage.
+  ThermoPackageBuilder -- the runtime ASSEMBLY step of the property
+  architecture (a.k.a. PropertyPackageAssembler).  The case's INLINE
+  constant/propertyDict manifest declares components, chemistry, property
+  methods and parameters; this builder READS that declaration and ASSEMBLES
+  a runtime ThermoPackage.
 
   It is NOT a "resolver" -- "resolver" is reserved for curation-time estimation.
   The builder ONLY LOADS declared records; any missing field is a hard, named
   failure (it NEVER estimates -- U3 of docs/architecture/final-property-architecture.md).
 
-  No-retrocompat by design: for the salt it reads ONLY the new records
-  (components/apparent, species/aqueous, parameters/electrolyte/pitzer/pairs), and
-  NEVER the old flat components/NaCl.dat or electrolyte/{ions,pairs}.dat.  (Water,
-  a plain molecular component, is loaded by name as usual.)
+  Records are loaded + verified from the case's sealed constant/propertyData/
+  snapshot or the standards catalogue: components/ (the unified substance
+  records), species/aqueous.dat, chemistry/, and
+  parameters/electrolyte/pitzer/pairs/.  (Water, a plain molecular component,
+  is loaded by name as usual.)
 \*---------------------------------------------------------------------------*/
 
 #pragma once

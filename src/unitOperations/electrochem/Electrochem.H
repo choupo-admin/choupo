@@ -48,7 +48,7 @@ Description
         "Electrochemical Systems", 3rd ed. (2004).
 
     The ion-transport DATA (limiting diffusivity D0, hydrated radius) the
-    electrodialysis unit needs lives in data/standards/species/aqueous/
+    electrodialysis unit needs lives in data/standards/species/aqueous.dat
     (per-value provenance: Nightingale 1959 -- PROVENANCE.md).  This header
     adds the refuse-LOUDLY accessors ionRadius() / ionD0() for that tier:
     a run needing an ion without the transport tier errors clearly, never a

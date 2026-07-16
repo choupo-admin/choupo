@@ -68,7 +68,7 @@ DictPtr loadRec(const fs::path& f, const std::string& what)
     return Dictionary::fromFile(f.string());
 }
 
-// The apparent-component ion map of a raw substance record: the UNIFIED
+// The component-basis ion map (speciesMap) of a raw substance record: the UNIFIED
 // component.speciesMap if present, else the legacy top-level dissociatesTo.
 DictPtr speciesMapOf(const DictPtr& rec)
 {
@@ -81,8 +81,8 @@ bool hasSpeciesMap(const DictPtr& rec) { return speciesMapOf(rec) != nullptr; }
 
 } // namespace
 
-// ---- ELECTROLYTE path: assemble a PitzerSingleSalt directly from the new
-//      records (no readFromDict, no loadSalt, no old catalogue) -------------
+// ---- ELECTROLYTE path: assemble a PitzerSingleSalt directly from the unified
+//      substance records (no readFromDict, no loadSalt, no old catalogue) ----
 static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
                                       bool isENRTL)
 {
@@ -162,8 +162,9 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
     // (b) identify the salt: the ONE component whose STANDARDS record carries a
     //     `dissociatesTo` block (formula-like ion stoichiometry).  Its identity
     //     (MW, role) comes from components/<salt>.dat, read from STANDARDS (raw, no
-    //     case-local overlay) so it is byte-identical to the retired apparent
-    //     record.  EVERY OTHER component -- the water solvent, an ethanol
+    //     case-local overlay) so it is byte-identical to the retired
+    //     components/apparent overlay (deleted layout).  EVERY OTHER component
+    //     -- the water solvent, an ethanol
     //     antisolvent, a curve-solute -- is a full molecular component loaded by
     //     name (overlay honoured), so the crystalliser reads its eps/Mw/v.
     auto stdCompPath = [&](const std::string& cn)
@@ -237,7 +238,8 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
         absent("a water solvent", "propertyPackage.components");
 
     // (c) cation/anion from the salt's `dissociatesTo`: classify by CHARGE SIGN
-    //     (charge from species/aqueous/<ion>.dat).  loadSalt recomputes charge +
+    //     (charge via findIon: case ions.dat / snapshot species/aqueous/<ion>.dat /
+    //     standards species/aqueous.dat).  loadSalt recomputes charge +
     //     stoichiometry from the catalogue, so this only needs the ion NAMES.
     std::string catName, anName;
     {
@@ -452,7 +454,8 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
     return out;
 }
 
-// ---- MOLECULAR path: degenerate (apparent==true, no chemistry, no ions).  Read
+// ---- MOLECULAR path: degenerate (component basis == species basis, i.e. no
+//      dissociation; no chemistry, no ions).  Read
 //      the binary pair from the NEW location, inline it into an in-memory
 //      thermoPackage, and reuse readFromDict -- which for a molecular activity
 //      model reads the pair from the dict (Phase-1 inline), touching NO old

@@ -29,7 +29,7 @@ License
 /*---------------------------------------------------------------------------*\
   loadSalt(cation, anion) -- the ONE place that turns a pair of ion NAMES into a
   configured single-salt Pitzer kernel, reading the curated catalogue
-  (species/aqueous/ + parameters/electrolyte/pitzer/pairs/).  Charges come from
+  (species/aqueous.dat + parameters/electrolyte/pitzer/pairs/).  Charges come from
   the species record;
   the salt stoichiometry is DERIVED from electroneutrality (Ca + Cl -> CaCl2).
 

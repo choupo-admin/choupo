@@ -38,7 +38,7 @@ License
 namespace Choupo {
 
 // BUILDER ctor: the ThermoPackageBuilder hands us a FULLY-RESOLVED assembly
-// (kernel + Ksp + enthalpy state, all resolved from the new-format records via the
+// (kernel + Ksp + enthalpy state, all resolved from the unified substance records via the
 // SaltFromCatalogue helpers).  Set EVERY member explicitly -- no silent header
 // default -- so the package path is byte-identical to the legacy configure() tail.
 ElectrolyteActivity::ElectrolyteActivity(std::vector<std::string> names,

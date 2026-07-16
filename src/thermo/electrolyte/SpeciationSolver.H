@@ -126,7 +126,7 @@ Description
     e.g. calcite against CO3 --- both resolve in the final activity table).
 
     DATA: the curated tree (chemistry/aqueousSpeciation/, components/ solidPhases,
-    species/aqueous/ charges).  A case-local speciation.dat carries the case DELTA;
+    species/aqueous.dat charges).  A case-local speciation.dat carries the case DELTA;
     its `speciationMode` decides how it meets the tree: `extend` (DEFAULT) MERGES the
     case reactions over the tree (override same-species, add new -- e.g. an organic
     acid on top of the inorganic catalogue), `replace` ECLIPSES the tree entirely
@@ -339,7 +339,7 @@ class SpeciationSolver
 public:
     // Loads the speciation network + minerals (case overlay first, then the
     // curated tree: chemistry/aqueousSpeciation/, components/ solidPhases) and the
-    // master ion charges from species/aqueous/.
+    // master ion charges from species/aqueous.dat.
     // Throws with a how-to-obtain message when no catalogue exists.
     //
     // `activityModel` selects the aqueous per-ion gamma model (AqueousActivity);

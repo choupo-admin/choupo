@@ -126,7 +126,8 @@ electrolyte::SpeciationInput readAnalysis(const DictPtr& dict)
                 in.totals[k] = totalAsMolality(t, k);
         }
 
-    // COMPOSITION (roadmap Phase B): the analysis given as APPARENT SALTS, each
+    // COMPOSITION (roadmap Phase B): the analysis given as FORMULA-UNIT SALTS
+    // (component basis), each
     // expanded to ion totals through its component.speciesMap (loaded with the
     // Phase-A case overlay).  Electroneutrality is VALIDATED (Sum nu*charge = 0),
     // so a formulated-salts input can never silently unbalance charge.  Coexists

@@ -40,7 +40,7 @@ License
   -- where the selected model (ElectrolyteActivity) IS-A ActivityModel AND exposes
   this interface (see ElectrolyteActivity.H).  The salt's ions, solubility, and
   Pitzer/eNRTL pairs are INTRINSIC data read from the salt component's
-  `electrolyte{}` block + species/aqueous/ + parameters/electrolyte/pitzer/pairs/ -- declared once,
+  `electrolyte{}` block + species/aqueous.dat + parameters/electrolyte/pitzer/pairs/ -- declared once,
   called by name, never re-typed per case.  ThermoPackage builds an
   ElectrolyteModel ONLY when an electrolyte activity model is selected, so the
   molecular cases are byte-identical and stay green.  Saturation (Ksp) and the
@@ -76,7 +76,7 @@ public:
     virtual scalar solubility() const = 0;             // measured m_sat [mol/kg], 25 C datum; 0 if absent
     // Infinite-dilution heat of solution [J/mol]; 0 if absent.  Single-sources the
     // heat of crystallisation for the Crystalliser (the model owns the salt thermo,
-    // not the component -- so an apparent-component package works identically).
+    // not the component -- so a component-basis package works identically).
     virtual scalar dissolutionEnthalpy() const { return 0.0; }
     // Saturation ion-activity product (gamma_pm*m_sat)^nu.  Anchored at the 25 C
     // solubility datum, then shifted to T by van't Hoff with the salt's enthalpy
