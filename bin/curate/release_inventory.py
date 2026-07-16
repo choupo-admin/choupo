@@ -90,7 +90,7 @@ def build() -> dict:
             "henryPairs":        count_dat("parameters/Henry"),
             "pitzerPairs":       count_dat("parameters/Pitzer/pairs"),
             "enrtlPairs":        count_dat("parameters/eNRTL"),
-            "propertyMethods":   count_dat_recursive("propertyMethods"),
+            "propertyMethods":   count_dat_recursive("methods"),
             "materials":         count_dat("materials"),
             "membranes":         count_dat("membranes"),
             "adsorbents":        count_dat("adsorbents"),

@@ -13,6 +13,6 @@ propertyDataManifest
     importedBy { engineVersion "Choupo-2607"; }
     records
     {
-        "propertyMethods/activity/NRTL.dat" { kind standard; standardSet Choupo-2607; sha256 "34e7fd0c9a2fefb220bce16542fd2a571ef8937e6df1cdefd73b2b841d44c32c"; }
+        "methods/NRTL.dat" { kind standard; standardSet Choupo-2607; sha256 "34e7fd0c9a2fefb220bce16542fd2a571ef8937e6df1cdefd73b2b841d44c32c"; }
     }
 }

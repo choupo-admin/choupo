@@ -325,7 +325,7 @@ another method, no special case.  **7 homes:** `components/` (identity **+
 `dissociatesTo`** = formula-like ion stoichiometry, NOT the "saco") · `species/`
 (model species + charge, medium-tagged `…Thermo{}`) · `phases/solid/` (ρ_p,k_v) ·
 `chemistry/` (REAL equilibria w/ K+ΔH: dissolution, association) · `parameters/` ·
-`propertyMethods/` (declares model + reference rung) · the property PACKAGE
+`methods/` (declares model + reference rung) · the property PACKAGE
 (the manifest that SELECTS all — components, methods, chemistry — lives INLINE in
 each case's `constant/propertyDict`; the shared `data/standards/propertyPackages/`
 catalogue + `package <name>;` selector were retired 2026-07-15, every case is

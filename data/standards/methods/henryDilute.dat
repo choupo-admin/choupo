@@ -12,6 +12,7 @@ recordType propertyMethod;
 schemaVersion 1;
 name henryDilute;
 family solution;
+kind solutionModel;
 referenceBasis
 {
     liquid

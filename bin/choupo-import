@@ -112,7 +112,7 @@ def main():
                 fam = m.group(2)
                 if '.' in fam and not fam.startswith("builtin"):
                     a, b = fam.split('.', 1)
-                    want("propertyMethods/" + a + "/" + b + ".dat")
+                    want("methods/" + b + ".dat")
         ch = block(text, "chemistry")
         if ch:
             sb = block(ch, "salts")

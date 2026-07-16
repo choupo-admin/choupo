@@ -48,7 +48,7 @@ it declares, verifies, and refuses (no silent crutch).
 | `species/aqueous.dat` | ONE catalogue file (45 master species): ion identity + charge + MW + `aqueousThermo{}` (hfAq/sAq/cpAq, Wagman 1982). "never fed to a flowsheet". *(The per-file `species/aqueous/<sp>.dat` layout survives only inside sealed case snapshots.)* | `[WORKS]` |
 | `chemistry/` | REAL equilibria (K + ΔH): `aqueousSpeciation/` (56), `gasLiquid/` (8, Henry), `ionExchange/` (6). *(`mineralSolubility/`, `salts/` and `phases/solid/` were RETIRED — minerals folded into `components/` `solidPhases{}`, one substance = one file.)* | `[WORKS]` |
 | `parameters/` | interaction parameters by PAIR (`Pitzer/` 55 pares +θ/ψ/λ/ζ, `eNRTL/`, `NRTL/ UNIQUAC/ Wilson/`, `Henry/` 205, `SRK/`) + group tables (`Joback.dat`, `UNIFAC/`, `vanKrevelen.dat`, `Yang2020.dat`) + `adsorption/` + `eos/kij` + `solution/` | `[WORKS]` |
-| `propertyMethods/` | a model + its reference rung, per phase/group (`activity/ electrolyte/ eos/ solution/ transport/`) | `[WORKS]` |
+| `methods/` | a model + its reference rung, per phase/group (`activity/ electrolyte/ eos/ solution/ transport/`) | `[WORKS]` |
 | *(pair homes consolidated)* | Migration 2 (2026-07-16): `binaryPairs/{NRTL,UNIQUAC,Wilson}` → `parameters/{NRTL,UNIQUAC,Wilson}` (5 public pairs post-scrub), `henrysLaw/` → `parameters/Henry/` (205), `parameters/electrolyte/{pitzer,eNRTL}` → `parameters/{Pitzer,eNRTL}`, `parameters/eos/kij` → `parameters/SRK/`. ONE spelling across every tier (per-node · case · snapshot · standards · local) | `[WORKS]` |
 
 *(`propertyPackages/` — the shared manifest catalogue — was RETIRED 2026-07-15:

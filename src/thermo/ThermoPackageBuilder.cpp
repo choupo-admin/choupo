@@ -319,7 +319,7 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
     {
         const std::string methodName = isENRTL ? "eNRTL" : "pitzer";
         const std::string methodPath =
-            "data/standards/propertyMethods/electrolyte/" + methodName + ".dat";
+            "data/standards/methods/" + methodName + ".dat";
         auto mRec = loadRec(resolve(methodPath), "propertyMethod " + methodName);
         if (!(mRec->found("requires")
               && mRec->subDict("requires")->found("ionSpecies")))
@@ -566,7 +566,7 @@ static ThermoPackage buildSolutionHenry(const DictPtr& pkg, const Database& db)
     // Echo the method's per-group referenceBasis (glass-box).
     {
         auto mRec = loadRec(repoRoot /
-            "data/standards/propertyMethods/solution/henryDilute.dat",
+            "data/standards/methods/henryDilute.dat",
             "propertyMethod henryDilute");
         if (thermoAnnounce())
             std::cout << "[builder] propertyMethod solution.henryDilute: referenceBasis "

@@ -50,7 +50,7 @@ data/standards/
 ├── species/aqueous/                    aqueous ion model-species (charge, hfAq, transport)
 ├── chemistry/                          aqueousSpeciation/ · gasLiquid/ · ionExchange/
 ├── parameters/                         electrolyte (pitzer/ eNRTL/) · eos/kij/ · adsorption/ · binary/
-├── propertyMethods/                    method declarations (electrolyte/ solution/ eos/ activity/ transport/)
+├── methods/                            method declarations, FLAT (kind field: activity/eos/electrolyte/solution/transport)
 ├── binaryPairs/                        NRTL/ · Wilson/ · UNIQUAC/  <c1>-<c2>.dat
 ├── henrysLaw/                          gas–solvent Henry pairs
 ├── unifac/ · joback/ · vanKrevelen/ · yang2020/   group-contribution definitions

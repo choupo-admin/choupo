@@ -1,4 +1,4 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "propertyMethods/electrolyte/pitzer.dat"; }
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "methods/pitzer.dat"; }
 /*---------------------------------------------------------------------------*\
   propertyMethod electrolyte.pitzer -- the Pitzer ion-interaction model for
   aqueous electrolytes: mean activity + osmotic coefficients from the virial
@@ -16,6 +16,7 @@ family electrolyte;
 
 description "Pitzer electrolyte activity model.";
 
+componentApproach apparentOrTrue;
 
 // U2 (final-property-architecture.md): the reference basis lives INSIDE the
 // propertyMethod, declared per phase.  The engine reads it from the selected
@@ -60,6 +61,7 @@ requires
 
     optionalSaltEquilibria
     {
+        path "data/standards/components/";   // salt anchors live as measuredSolubilityAnchor in the component file
     }
 }
 

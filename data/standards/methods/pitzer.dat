@@ -12,6 +12,7 @@ schemaVersion 1;
 
 name pitzer;
 family electrolyte;
+kind electrolyteModel;
 
 description "Pitzer electrolyte activity model.";
 

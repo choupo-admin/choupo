@@ -487,7 +487,7 @@ predictive-degraded; near-critical phase splits will be off).  The inline
 Reference conventions are per COMPONENT-GROUP within a phase, and every
 implemented method family (`electrolyte.*`, `activity.*`, `solution.*`,
 `eos.*`, `transport.*`) records them uniformly in a `referenceBasis` block.
-From `data/standards/propertyMethods/solution/henryDilute.dat`:
+From `data/standards/methods/henryDilute.dat`:
 
 ```
 referenceBasis
@@ -504,7 +504,7 @@ referenceBasis
 
 The electrolyte methods speak the same grammar on their groups:
 `water { rung pureLiquidRaoult; }` / `ions { rung ionAqueousInfiniteDilution; }`
-(the H⁺(aq)=0 convention) in `propertyMethods/electrolyte/{pitzer,eNRTL}.dat`.
+(the H⁺(aq)=0 convention) in `methods/ (kind electrolyteModel) {pitzer,eNRTL}.dat`.
 The run log echoes each selected method's rungs via `[builder]` lines.
 
 ### The rules in one paragraph (the 2026-07-04 grammar forum)

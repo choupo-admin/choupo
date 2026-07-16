@@ -12,7 +12,7 @@ empty. The old public `proposed/` tier was retired 2026-07-13.
 See [`data/standards/README.md`](standards/README.md) for:
 
 - the full directory layout (components/, species/, chemistry/, parameters/,
-  propertyMethods/, henrysLaw/, materials/, membranes/, utilities/, … — one file
+  methods/, parameters/, materials/, membranes/, utilities/, … — one file
   per datum),
 - the read-only ceremony (how to edit a standards file deliberately),
 - how cases override standards via local `<case>/constant/...` files.

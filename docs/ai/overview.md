@@ -125,7 +125,7 @@ them in answers to users.
       + `parameters/Henry/`) and the builder VERIFIES them at assembly: a
       declared-but-missing file REFUSES loudly, naming the entry to
       add (never an ideal-default).  Method records live in
-      `data/standards/propertyMethods/`; the package manifest is inline in
+      `data/standards/methods/`; the package manifest is inline in
       the case's `constant/propertyDict` (see `thermo.md`).
 
    When you write a case, intrinsic data come from existing
@@ -180,7 +180,7 @@ Big changes, recent first:
   the four VLE worlds selected by the liquid method slot (γ-φ /
   `solution.henryDilute` / φ-φ `eos.<Model>` both phases /
   `electrolyte.*`), per-group reference rungs in each
-  `propertyMethods/` record, and declared→verified→refused parameter
+  `methods/` record, and declared→verified→refused parameter
   files (`henryPairs`, `kijPairs`).  See `thermo.md`.
 - Forward heat-links + `utilityAllocation` report — a column's
   condenser/reboiler heat can drive another unit (heat integration),

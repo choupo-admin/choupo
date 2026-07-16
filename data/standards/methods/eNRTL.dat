@@ -14,6 +14,7 @@ schemaVersion 1;
 
 name eNRTL;
 family electrolyte;
+kind electrolyteModel;
 
 description "Electrolyte-NRTL (single-salt) activity model -- the molality-scale salt adapter; tau(T) is the anchored, calorimetrically UNCALIBRATED form (no heat-of-dilution L_phi).";
 

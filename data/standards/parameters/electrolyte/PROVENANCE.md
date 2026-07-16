@@ -370,7 +370,7 @@ separate `source` field per value.
 
 - **Multi-ion → package-selectable (long-term).** Today `pitzerHMW` / `davies` are
   the tested front-end via the `propsDict` speciate op. The clean future form is
-  `propertyMethods/electrolyte/{pitzerHMW,davies}.dat` + a package
+  `methods/ (kind electrolyteModel) {pitzerHMW,davies}.dat` + a package
   `propertyMethods { aqueousSpeciation electrolyte.pitzerHMW; }` key — so "a
   package selects everything" becomes true for multi-ion too. NOT forced now
   (the propsDict engine is functional + tested; routing it through the builder

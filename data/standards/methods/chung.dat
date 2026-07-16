@@ -9,5 +9,6 @@ recordType propertyMethod;
 schemaVersion 1;
 name chung;
 family transport;
+kind transportModel;
 requires { criticalConstants true; }   // Tc, Pc, omega, MW -> Chung 1988 corresponding states
 provides { gasViscosity true; }

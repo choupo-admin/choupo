@@ -1,4 +1,4 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "propertyMethods/activity/NRTL.dat"; }
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "methods/NRTL.dat"; }
 /*---------------------------------------------------------------------------*\
   propertyMethod activity.NRTL -- the Renon-Prausnitz non-random two-liquid
   G^E model: liquid-phase gamma for polar/azeotropic mixtures on the SYMMETRIC

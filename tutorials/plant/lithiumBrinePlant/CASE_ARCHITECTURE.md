@@ -95,7 +95,7 @@ EXTRACTION demonstrates a true local data overlay:
 
 ```text
 sectors/EXTRACTION/constant/propertyData/
-├── propertyMethods/activity/NRTL.dat
+├── methods/NRTL.dat
 └── parameters/activity/NRTL/*.dat
 ```
 

@@ -1014,7 +1014,7 @@ data/standards/
     electrolyte/pitzer/mixing/<kind>/...      Pitzer ternary theta/psi/...
     electrolyte/eNRTL/<c>-<a>.dat             eNRTL tau pairs
     binary/NRTL/<i>-<j>.dat                   molecular binary parameters
-  propertyMethods/electrolyte/{pitzer,eNRTL}.dat   .../activity/NRTL.dat
+  methods/ (kind electrolyteModel) {pitzer,eNRTL}.dat   .../activity/NRTL.dat
   (the package is the manifest INLINE in constant/propertyDict -- THE CENTRE;
    no shared propertyPackages/ catalogue)
 \end{lstlisting}
@@ -1063,7 +1063,7 @@ binary pair from \code{parameters/NRTL/} and mounts the classical NRTL
 package --- one stack, electrolyte and molecular alike.
 
 \emph{Declared vs.\ load-bearing --- stated honestly.}  The
-\code{propertyMethods/*.dat} records are today \emph{declarations}: the
+\code{methods/*.dat} records are today \emph{declarations}: the
 builder loads them, asserts their \code{requires} block, and echoes the
 declared per-phase \code{referenceBasis}; the dispatch itself keys on the
 package's method \emph{name}, and the reference rung is not yet mechanically

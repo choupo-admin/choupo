@@ -1,4 +1,4 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "propertyMethods/electrolyte/eNRTL.dat"; }
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "methods/eNRTL.dat"; }
 /*---------------------------------------------------------------------------*\
   propertyMethod electrolyte.eNRTL -- the electrolyte-NRTL model (local
   composition at segment scale + Pitzer-Debye-Huckel at component scale) for

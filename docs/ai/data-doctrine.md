@@ -169,12 +169,12 @@ GEOMETRY; that is never component data.*
 sector < unit` (the `Database` walk-up already gives unit→sector→case; pairs
 resolve `standard < caseRoot < perNode`).
 
-### The declarative layer — `propertyMethods/` + the inline package manifest (2026-07-04 grammar)
+### The declarative layer — `methods/` + the inline package manifest (2026-07-04 grammar)
 
 One further standards home, plus the case-inline package manifest, carries
 the DECLARATIVE layer the 2026-07-04 grammar reads from:
 
-* **`data/standards/propertyMethods/<family>/<name>.dat`** — one record per
+* **`data/standards/methods/<name>.dat`** — one record per
   method (`activity/NRTL`, `solution/henryDilute`, `eos/{SRK,PengRobinson}`,
   `electrolyte/{pitzer,eNRTL}`, `transport/chung`), each carrying its
   per-GROUP `referenceBasis` rungs (amendment A1) and its `requires{}` /
