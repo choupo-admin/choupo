@@ -42,3 +42,8 @@ writeInterval   2;        // s   (75 frames — a smooth transient + scrubber)
 //       composition    4;
 //   }
 // ---------------------------------------------------------------------
+solutionControl
+{
+    write           true;
+    flushEach       true;
+}
