@@ -1001,7 +1001,8 @@ stored on the substance.  Two orthogonal choices define the role:
 data/standards/
   components/<name>.dat        identity (name, MW, nonvolatile)
                                + dissociatesTo { Na 1; Cl 1; }  [salts]
-  species/aqueous/<sp>.dat     model species: charge + medium-tagged thermo
+  species/aqueous.dat          single catalogue of model species records:
+                               charge + medium-tagged thermo
                                (never fed to a flowsheet)
   phases/solid/<phase>.dat     crystalline phase (rho_p, k_v)
   chemistry/                   REAL equilibria (stoichiometry + K + dH):
@@ -1029,12 +1030,13 @@ removed rather than kept as ceremony).  A minimal package:
 \begin{lstlisting}
 recordType propertyPackage;   name aqueousNaCl_pitzer;
 components        ( water NaCl );
-chemistry         { salts ( halite );
-                    activeSaltEquilibriumData { halite measuredSolubilityAnchor; } }
-propertyMethods   { liquid electrolyte.pitzer; vapour builtin.idealGas;
-                    solid  builtin.saltEquilibrium; }
-parameters        { pitzerPairs { Na-Cl ".../pitzer/pairs/Na-Cl.dat"; } }
+chemistry         { salts ( halite ); }
+propertyMethods   { liquid electrolyte.pitzer; vapour builtin.idealGas; }
 \end{lstlisting}
+
+The solid equilibrium activates through \code{chemistry.salts} (the
+\(K_{sp}\) anchor comes from the component's \code{solidPhases}); the Pitzer
+pair is resolved by cation--anion name from the parameter catalogue.
 
 \subsection{The builder contract}
 
@@ -1043,7 +1045,7 @@ parameters        { pitzerPairs { Na-Cl ".../pitzer/pairs/Na-Cl.dat"; } }
 component list; (2)~identifies the ONE salt as the component whose standards
 record carries \code{dissociatesTo}, and takes its identity (MW, role) from
 \code{components/<salt>.dat}; (3)~classifies the ions by charge sign from
-\code{species/aqueous/}; (4)~loads the crystal (\(\rho_p, k_v\)) from
+\code{species/aqueous.dat}; (4)~loads the crystal (\(\rho_p, k_v\)) from
 \code{phases/solid/} and the saturation anchor from \code{chemistry/salts/},
 both by the phase name the package's \code{chemistry.salts} declares;
 (5)~assembles the Pitzer/eNRTL kernel through the same
@@ -1096,7 +1098,9 @@ Read that before adding or moving a value.
 \subsection{Components}
 
 Choupo's component data cascades through tiers, lowest precedence to highest:
-\code{proposed < standard < case < sector < unit}.
+\code{local < standard < case < sector < unit} (\code{local} is the private,
+gitignored \file{data/local/} tier; every use is announced
+\code{[local] UNVERIFIED}).
 
 \begin{itemize}[leftmargin=*]
   \item \file{data/standards/components/<name>.dat} --- the
@@ -1781,7 +1785,8 @@ order.}  Read the quantity's \emph{definition}, not its frequency of use.
 the \emph{highest level where it is true} (the canonical value is a curation act
 in \file{data/standards/}).  A lower node overlays only when it makes the value
 \emph{more} true --- a sample-measured refinement.  Precedence, low to high:
-\code{proposed < standard < case < sector < unit}.
+\code{local < standard < case < sector < unit} (\code{local} = the private,
+announced \file{data/local/} tier).
 
 \paragraph{(3) Kind --- the molecule, or the molecule-in-a-machine?}  A
 \emph{rate} (kinetics) or a \emph{geometry / distribution} (PSD) is NOT

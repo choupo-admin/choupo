@@ -551,11 +551,12 @@ electrolyte & \texttt{electrolyte.pitzer} / \texttt{.eNRTL} & ion activities, os
 \begin{enumerate}
 \item \textbf{Standard, by name} --- \texttt{data/standards/components/}
       (exact-name $O(1)$, every value cited, the engine refuses to write there).
-\item \textbf{Proposed, by name} --- \texttt{data/proposed/components/} is the
-      larger review queue.  Records are runtime-usable, but every use is
-      announced as \texttt{[proposed]}; a proposed record never shadows a
-      standard one.  Integrity and provenance gates make a proposal
-      inspectable, not automatically authoritative.
+\item \textbf{Local, by name} --- \texttt{data/local/components/} is the
+      \emph{private} working tier (gitignored; shipped empty).  Records are
+      runtime-usable, but every use is announced as
+      \texttt{[local] UNVERIFIED}; a local record never shadows a standard
+      one.  Integrity and provenance gates make a local record inspectable,
+      not automatically authoritative.
 \item \textbf{New, defined in the case} --- \texttt{myCase/constant/components/}:
       a new molecule (estimated and labelled), a new ion, a pseudo-component
       lump.  The case runs self-contained from day one; promotion into the
@@ -571,32 +572,33 @@ electrolyte & \texttt{electrolyte.pitzer} / \texttt{.eNRTL} & ion activities, os
 \end{enumerate}
 
 Thus component resolution is \textbf{case-local overlay $>$ standard $>$
-proposed}.  This is an evidence ladder, not merely a search path: moving a file
-up the ladder requires review and validation, not a rename.
+local (private, announced)}.  This is an evidence ladder, not merely a search
+path: moving a file up the ladder requires review and validation, not a
+rename.
 
-\subsection{The present ChemSep review queue}
+\subsection{The ChemSep import route}
 
-The ChemSep 8.3 importer is deliberately reproducible and reviewable.  After
-CAS-based de-duplication it contributes 279 new component records to a proposed
-catalogue of 625 records in total.  All 625 pass the structural/provenance
-audit.  Of the 279 new ChemSep records, 236 pass the internal
-$P^{\mathrm{sat}}(T_b)$ check within 5\%; 43 are flagged for review.  This is a
-closure check on the imported constants and predictive correlation, not an
-independent comparison with laboratory data.
+The ChemSep 8.3 importer (\texttt{bin/curate/chemsep\_to\_choupo.py}) is
+deliberately reproducible and reviewable.  It runs CAS-based de-duplication
+against the standard catalogue, then a structural/provenance audit and an
+internal $P^{\mathrm{sat}}(T_b)$ closure check on every imported component
+record --- a closure check on the imported constants and predictive
+correlation, not an independent comparison with laboratory data.
 
-The same import stages 748 NRTL, UNIQUAC and Wilson binary-pair records.  All
-748 pass identity, direction, licence, source-digest and exact unit-conversion
+The same import stages NRTL, UNIQUAC and Wilson binary-pair records, each
+passing identity, direction, licence, source-digest and exact unit-conversion
 checks.  Their source does not provide a captured temperature-validity range,
 so they remain screening data and the runtime prints
-\texttt{[proposed] UNVERIFIED} when one is selected.  Pair resolution is
-\textbf{case-local/inline $>$ standard $>$ proposed $>$ announced ideal
-default}; proposed data can therefore extend a case without silently changing
+\texttt{[local] UNVERIFIED} when one is selected.  Pair resolution is
+\textbf{case-local/inline $>$ standard $>$ local $>$ announced ideal
+default}; local data can therefore extend a case without silently changing
 an approved standard.
 
 The source boundary is intentional.  The unmodified third-party database and
-its Artistic-2.0 licence are kept under \texttt{thirdParty/chemsep/}; only
-normalised, attributed review records are generated under
-\texttt{data/proposed/}.  Literature values retain literature provenance;
+its Artistic-2.0 licence are kept under \texttt{thirdParty/chemsep/}
+(gitignored); the normalised, attributed records are written to the
+\emph{private} \texttt{data/local/} tier --- they are never redistributed
+with the public repository.  Literature values retain literature provenance;
 Ambrose--Walton and other closures retain predictive provenance.  Missing
 $C_p$, formation, electrolyte, adsorption, kinetic or transport data are not
 inferred merely to make a record look complete.
@@ -795,8 +797,9 @@ parameter of a pair, the equilibrium of a reaction:
 data/standards/
   components/<name>.dat            intrinsic, one substance (Tc, Antoine, Cp)
                                    + dissociatesTo { Na 1; Cl 1; }  [salts]
-  species/aqueous/<sp>.dat         model species (Na, Cl, CO2aq): charge +
-                                   medium-tagged thermo; never fed to a flowsheet
+  species/aqueous.dat              one catalogue; each record a model species
+                                   (Na, Cl, CO2aq): charge + medium-tagged
+                                   thermo; never fed to a flowsheet
   phases/solid/<phase>.dat         crystal phase (rho_p, k_v): halite, sylvite
   chemistry/.../<name>.dat         an equilibrium: dissolution, speciation
   parameters/.../<i>-<j>.dat       a pair: NRTL, Pitzer, eNRTL
@@ -840,11 +843,11 @@ write \emph{is} that degenerate package.
 The boundary you must respect: \emph{curation estimates, runtime does not}.  You
 may estimate, fit, and derive at the props bench --- and you \emph{see} it
 (\S\ref{ch:joback}, \S\ref{ch:pairs}).  Once a case runs, the builder only
-\emph{loads} existing case, standard or proposed records; it never invents a
+\emph{loads} existing case, standard or local records; it never invents a
 missing property.  For activity models, an unresolved binary pair may use the
 documented ideal default, but that fallback is announced and appears in the
 provenance.  A required record with no defined fallback stops the run with a
-clear message.  So: estimate, look, promote --- and inspect every proposed or
+clear message.  So: estimate, look, promote --- and inspect every local or
 defaulted rung used by the package.
 \end{intuition}
 

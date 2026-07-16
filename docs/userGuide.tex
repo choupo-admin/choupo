@@ -691,10 +691,11 @@ activityModel
 }
 \end{lstlisting}
 
-A proposed pair never shadows a standard pair.  The 748 staged ChemSep pairs
+A local pair never shadows a standard pair.  Staged ChemSep pairs live in
+the private \file{data/local/binaryPairs/} tier (not redistributed); they
 have passed identity, unit-conversion and provenance audits, but have not all
 been independently validated against experimental data; the log therefore
-marks their use \code{[proposed] UNVERIFIED}.  A pair with no parameters
+marks their use \code{[local] UNVERIFIED}.  A pair with no parameters
 anywhere does not abort the run --- it defaults to ideal ($\tau = 0$) so you
 can build the foundation pair-by-pair --- but it is never silent: each
 ideal-defaulted pair is announced with a \code{[thermo]} log line, and the GUI

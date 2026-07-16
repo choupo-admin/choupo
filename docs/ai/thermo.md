@@ -268,7 +268,7 @@ A solute property whose **definition names a solvent** — an "in-water"
 
 | Solute kind | Tier | Carries |
 |---|---|---|
-| **ions** (∞-dilution) | `data/standards/species/aqueous/` | `hfAq / sAq / cpAq` on the H⁺(aq)=0 convention (Wagman/NBS 1982) |
+| **ions** (∞-dilution) | `data/standards/species/aqueous.dat` | `hfAq / sAq / cpAq` on the H⁺(aq)=0 convention (Wagman/NBS 1982) |
 | **molecular solutes** | `data/standards/solution/<solute>-<solvent>.dat` | ΔH_soln and other solution thermo, primary-cited |
 
 Water earns **one canonical, named, by-name aqueous reference tier** — never
