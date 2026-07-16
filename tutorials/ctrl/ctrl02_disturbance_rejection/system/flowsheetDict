@@ -39,21 +39,7 @@ units
         name        reactor;
         type        dynamicCSTR;
 
-        initial
-        {
-            T            320.0 K;
-            P            1.013 bar;
-            V            0.001;
-            totalMoles   0.012;
-            molarComposition  { compA 1.0;  compB 0.0; }
-        }
 
-        inlet
-        {
-            F            5.0e-5 kmol/s;
-            T            320.0 K;             // initial; the Schedule controller overrides
-            molarComposition  { compA 1.0;  compB 0.0; }
-        }
 
         operation
         {

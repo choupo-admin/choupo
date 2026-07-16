@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalState -- DYNAMIC initial holdup (the SINGLE source of truth; the
+  inline initial{} block is retired).  Per unit: T [K], P [Pa], V [m^3] and the
+  per-species inventory holdupMolar [kmol].  Materialised by bin/choupo-init0.
+\*-----------------------------------------------------------------------------*/
+time            0;
+application     ctrl;
+
+units
+{
+    "reactor"
+    {
+        type        dynamicCSTR;
+        T           330.0;
+        P           101299.99999999999;
+        V           0.001;
+        holdupMolar
+        {
+            compA   0.0084;
+            compB   0.0036;
+        }
+    }
+}

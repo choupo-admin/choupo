@@ -99,6 +99,75 @@ Description
 using namespace Choupo;
 namespace fs = std::filesystem;
 
+// Seed each dynamic unit's initial holdup + inlet from the case's 0/ state --
+// the SINGLE source of truth.  The inline initial{}/inlet{} blocks in
+// flowsheetDict are RETIRED (no legacy): 0/internalState carries the holdup and
+// 0/streams the inlet face, exactly as the engine writes them.  This translates
+// them into the initial{}/inlet{} dicts each unit's initialise() already reads
+// and injects them into the unit dict, so no unit code changes.  Must run with
+// the CWD already at the case root (choupoCtrl chdir's before calling this).
+static void seedDynamicUnitsFrom0(const std::vector<DictPtr>& unitList)
+{
+    DictPtr istate  = fs::exists("0/internalState")
+                    ? Dictionary::fromFile("0/internalState") : nullptr;
+    DictPtr sstreams = fs::exists("0/streams")
+                    ? Dictionary::fromFile("0/streams") : nullptr;
+
+    for (const auto& uDict : unitList)
+    {
+        const std::string uname = uDict->lookupWord("name");
+
+        if (uDict->found("initial") || uDict->found("inlet"))
+            throw std::runtime_error("choupoCtrl: unit '" + uname + "' carries an "
+                "inline initial{}/inlet{} block -- RETIRED.  The initial holdup and"
+                " inlet live in 0/internalState + 0/streams (bin/choupo-init0"
+                " materialises them).  Delete the inline block from flowsheetDict.");
+
+        if (!istate)
+            throw std::runtime_error("choupoCtrl: no 0/internalState -- the dynamic"
+                " initial state lives in 0/ (run bin/choupo-init0).");
+
+        // --- holdup  ->  initial{ T P V totalMoles molarComposition } ---
+        auto uHold = istate->subDict("units")->subDict(uname);
+        const scalar T = uHold->lookupScalar("T");
+        const scalar P = uHold->lookupScalarOrDefault("P", 1.0);
+        const scalar V = uHold->lookupScalar("V");
+        auto hold = uHold->subDict("holdupMolar");
+        scalar nTot = 0.0;
+        for (const auto& c : hold->keys()) nTot += hold->lookupScalar(c);
+        std::ostringstream is;  is << std::setprecision(17);
+        is << "T " << T << "; P " << P << "; V " << V << "; totalMoles " << nTot
+           << "; molarComposition {";
+        for (const auto& c : hold->keys())
+            is << " " << c << " " << (nTot > 0.0 ? hold->lookupScalar(c) / nTot : 0.0) << ";";
+        is << " }";
+        uDict->insert("initial", Dictionary::fromString(is.str(), "initial"));
+
+        // --- inlet face  ->  inlet{ F T molarComposition } ---
+        if (sstreams && sstreams->found("streams"))
+        {
+            auto strm = sstreams->subDict("streams");
+            for (const auto& sn : strm->keys())
+            {
+                auto face = strm->subDict(sn);
+                if (face->lookupWordOrDefault("bc", "") != "inlet") continue;
+                if (sn.rfind(uname + ".", 0) != 0) continue;   // this unit's face
+                auto mf = face->subDict("molarFlows");
+                scalar F = 0.0;
+                for (const auto& c : mf->keys()) F += mf->lookupScalar(c);
+                std::ostringstream in;  in << std::setprecision(17);
+                in << "F " << F << "; T " << face->lookupScalar("T")
+                   << "; molarComposition {";
+                for (const auto& c : mf->keys())
+                    in << " " << c << " " << (F > 0.0 ? mf->lookupScalar(c) / F : 0.0) << ";";
+                in << " }";
+                uDict->insert("inlet", Dictionary::fromString(in.str(), "inlet"));
+                break;
+            }
+        }
+    }
+}
+
 int main(int argc, char** argv)
 try
 {
@@ -253,6 +322,10 @@ try
     std::vector<std::string>                            unitNames;
     units.reserve(unitList.size());
     unitNames.reserve(unitList.size());
+
+    // Seed initial holdup + inlet from 0/ (single source of truth; inline
+    // initial{}/inlet{} is retired) BEFORE each unit initialises itself.
+    seedDynamicUnitsFrom0(unitList);
 
     for (const auto& uDict : unitList)
     {

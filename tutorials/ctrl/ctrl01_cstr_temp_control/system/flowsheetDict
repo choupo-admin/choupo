@@ -48,21 +48,7 @@ units
         name        reactor;
         type        dynamicCSTR;
 
-        initial
-        {
-            T            320.0 K;            // K  cold start
-            P            1.013 bar;
-            V            0.001;            // m³   (1 L)
-            totalMoles   0.012;             // kmol  (≈ 12 kmol/m³ liquid charge)
-            molarComposition  { compA 1.0;  compB 0.0; }
-        }
 
-        inlet
-        {
-            F            5.0e-5 kmol/s;           // kmol/s  (τ_res = N/F ≈ 240 s)
-            T            320.0 K;            // K   (cool feed)
-            molarComposition  { compA 1.0;  compB 0.0; }
-        }
 
         operation
         {
