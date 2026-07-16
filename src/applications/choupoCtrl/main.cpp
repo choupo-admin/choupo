@@ -421,7 +421,11 @@ try
         // The state vector is labelled (n_<comp>... , T, ...); n_<comp> entries
         // map to the holdup inventory, T to temperature, the rest to extras.
         // The unit's instantaneous outletStream() is the outlet face.
-        if (solWriter)
+        //
+        // The `0/` directory is the AUTHORED initial state (the single source of
+        // truth the seed reads back) -- the writer NEVER overwrites it.  Physical
+        // transient snapshots are 0.01/ 50/ 100/ ... (t > 0 only).
+        if (solWriter && std::abs(t) > 1.0e-9)
         {
             std::vector<DynamicUnitSnapshot> snaps;
             snaps.reserve(units.size());

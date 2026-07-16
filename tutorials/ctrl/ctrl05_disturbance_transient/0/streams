@@ -1,35 +1,19 @@
 /*--------------------------------*- Choupo -*----------------------------------*\
-| Choupo Choupo-2607   DYNAMIC instant   time 0 s   (ctrl)   outlet faces
-| Instantaneous outlet stream of each continuous unit at this time: F [kmol/s],
-| T [K], P [Pa] + per-species molarFlows [kmol/s].  A batch (closed) vessel has
-| no outlet face and contributes only to internalState.  SI-canonical.
+  0/streams -- DYNAMIC face state (the SINGLE source of truth; inline inlet{} is
+  retired).  The inlet face carries F [kmol/s], T [K] + per-species molarFlows.
 \*-----------------------------------------------------------------------------*/
-
 time            0;
 streams
 {
     "reactor.feed"
     {
-        bc          inlet;            // FEED -- the unit's instantaneous inlet face
-        T           320;   // K
-        P           101299.99999999999;   // Pa
-        vf          0;   // - (liquid holdup face)
-        molarFlows                        // kmol/s per species
+        bc          inlet;
+        T           320.0;
+        P           101299.99999999999;
+        molarFlows
         {
-            compA            5.0000000000000002e-05;
-            compB            0;
-        }
-    }
-    "reactor.out"
-    {
-        bc          computed;         // PRODUCT -- the unit's instantaneous outlet
-        T           320;   // K
-        P           101299.99999999999;   // Pa
-        vf          0;   // - (liquid holdup face)
-        molarFlows                        // kmol/s per species
-        {
-            compA            5.0000000000000002e-05;
-            compB            0;
+            compA   5e-05;
+            compB   0.0;
         }
     }
 }

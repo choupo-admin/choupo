@@ -1,33 +1,24 @@
 /*--------------------------------*- Choupo -*----------------------------------*\
-| Choupo Choupo-2607   DYNAMIC instant   time 0 s   (ctrl)
-| The time directory IS the real physical time.  A batch/dynamic unit is a 0-D
-| HOLDUP cell: its truth is the internal inventory (mole numbers n_i [kmol], T
-| [K], V [m^3]) PLUS any per-unit extras (conversion, supersaturation, ...).
-| Scrub a time and you see the reactor's ACTUAL state at that instant.  Reads
-| back via the engine's own dict tokenizer (never JSON).  SI-canonical.
+  0/internalState -- DYNAMIC initial state (the SINGLE source of truth; the inline
+  initial{} block is retired).  A holdup vessel carries T [K], P [Pa], V [m^3] +
+  holdupMolar [kmol]; a bed carries its initial molarComposition.  Materialised by
+  bin/choupo-init0.
 \*-----------------------------------------------------------------------------*/
-
-time            0;   // s (real, physical)
-application     ctrl;
+time            0;
+application     choupoCtrl;
 
 units
 {
     "reactor"
     {
         type        dynamicCSTR;
-        T           320;   // K
-        P           101299.99999999999;   // Pa
-        holdupMolar                       // kmol per species (inventory)
+        T           320.0;
+        P           101299.99999999999;
+        V           0.001;
+        holdupMolar
         {
-            compA            0.012;
-            compB            0;
-        }
-        extras
-        {
-            F_in             5.0000000000000002e-05;
-            z_in_compA       1;
-            z_in_compB       0;
-            T_jacket         320;
+            compA   0.012;
+            compB   0.0;
         }
     }
 }
