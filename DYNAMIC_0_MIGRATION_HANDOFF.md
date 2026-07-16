@@ -99,7 +99,29 @@ gémeo dinâmico do `streams{}`→`0/` já feito no steady.
 - **PENDENTE:** Fase B batch (por-tipo), `choupo-init0` dinâmico, doctrine-gate
   (adicionar `initial{}`/`inlet{}` às gramáticas retiradas), corpus final.
 
-## DESENHO FASE B (batch) — levantamento 2026-07-16, PARA O VÍTOR DECIDIR
+## FASE B (batch): FEITA + PUSHED 2026-07-16 (`dcd74dac3`)
+Resolvida por **relocação VERBATIM** (não canonicalização — foi isso que partiu
+16 casos antes): o bloco `initial{}` inteiro de cada vaso de holdup move-se
+tal-e-qual para `0/internalState units{<name>}`, e o `choupoBatch` reinjeta-o
+verbatim (zero tradução de valores). 27 casos migrados (reactor/still/crystalliser/
+accumulator/adsorber, single + multi-vaso incl. still06 com 7 vasos). Os 6
+`fixedBedAdsorber` NÃO foram tocados: o seu `initial{}` é `operation.initial`
+(perfil-Y do leito = parâmetro de operação) e o estado espacial já vive em
+`0/bed.profile`. Guard do writer replicado no choupoBatch. Recusa inline dura.
+Corpus **280/0**. Os 42 casos dinâmicos de holdup (33 batch + 9 ctrl) leem o
+estado inicial de `0/` — uma regra, zero exceções.
+
+### Follow-ups OPCIONAIS (não bloqueiam; para o Vítor)
+- **Formato:** ctrl usa `holdupMolar` (canonicalizado); batch usa verbatim
+  (`totalMoles`+`molarComposition`). Ambos corretos, mas não idênticos. Se
+  quiseres UM formato, o mais simples/seguro é passar o ctrl a verbatim também
+  (menos risco que o contrário). Não urgente.
+- **doctrine-gate:** a recusa-inline em runtime (nos dois binários) já garante
+  "no legacy" mais forte que um grep-gate; um gate `check_doctrine.py` teria de
+  distinguir `initial{}` unit-level de `operation.initial` (dos leitos) — deixei
+  de fora para não arriscar falsos positivos.
+
+## DESENHO FASE B (batch) — levantamento 2026-07-16 (histórico, já executado)
 Levantei os 33 casos batch (5 subcategorias, 6 tipos de unidade). **Só 2 formas
 de estado inicial**, mas com arestas que exigem decisão antes de codificar:
 
