@@ -39,7 +39,13 @@ const caseFiles = {
   },
   reactions: { rxn1: { stoichiometry: [] } },
   outerDict: { type: "designSpec" },
-  extraFiles: { "constant/components/benzene.dat": "// sample-specific" },
+  // Streams live in 0/ files (the streams{} block is retired).  The authored
+  // pre-run state rides here so a clone with no run can fall back to it.
+  extraFiles: {
+    "constant/components/benzene.dat": "// sample-specific",
+    "0/feed": "componentMolarFlows\n{\n    benzene    0.5;\n    toluene    0.5;\n}\nT    300 K;\nP    100000 Pa;\n",
+    "0/hot":  "componentMolarFlows\n{\n    benzene    0.5;\n    toluene    0.5;\n}\nT    320 K;\nP    200000 Pa;\n",
+  },
 } as unknown as CaseFiles;
 
 const runResult = {
@@ -62,16 +68,18 @@ describe("synthesizeUnitClone", () => {
   it("builds a self-contained 1-unit case with inlets FROZEN from the run", () => {
     const c = synthesizeUnitClone(caseFiles, runResult, "flash1")!;
     expect(c).not.toBeNull();
-    const fs = c.files.flowsheet as { units: Array<{ name: string }>; streams: Record<string, unknown> };
+    const fs = c.files.flowsheet as { units: Array<{ name: string }> };
     expect(fs.units).toHaveLength(1);
     expect(fs.units[0]!.name).toBe("flash1");
-    // The inlet "hot" carries the parent run's converged conditions.
-    expect(fs.streams["hot"]).toEqual({
-      F: 1, T: 340, P: 2e5,
-      molarComposition: { benzene: 0.5, toluene: 0.5 },
-    });
-    // Only the unit's inlets become feeds -- nothing else.
-    expect(Object.keys(fs.streams)).toEqual(["hot"]);
+    // Streams live in 0/ files (streams{} retired).  The inlet "hot" carries the
+    // parent RUN's converged conditions, frozen to canonical SI -- the run value
+    // (T 340) wins over the parent's authored 0/hot (T 320).
+    const zero = c.files.extraFiles!;
+    expect(zero["0/hot"]).toContain("T    340 K");
+    expect(zero["0/hot"]).toContain("benzene    0.5");
+    // EXACTLY this unit's streams (in + out) become 0/ files -- no foreign orphans.
+    const zeroKeys = Object.keys(zero).filter((k) => k.startsWith("0/")).sort();
+    expect(zeroKeys).toEqual(["0/hot", "0/liq", "0/vap"]);
   });
 
   it("resolves $variable operation values from the unit's KPIs", () => {
@@ -85,11 +93,9 @@ describe("synthesizeUnitClone", () => {
 
   it("falls back to the authored stream block when the run has no inlet", () => {
     const c = synthesizeUnitClone(caseFiles, null, "heater1")!;
-    const fs = c.files.flowsheet as { streams: Record<string, unknown> };
-    // Pre-run: "feed" is not in any run result -> the authored block rides.
-    expect(fs.streams["feed"]).toEqual({
-      F: 1, T: 300, P: 1e5, molarComposition: { benzene: 0.5, toluene: 0.5 },
-    });
+    // Pre-run: "feed" is in no run result -> the parent's authored 0/feed rides
+    // through verbatim (no run value to freeze).
+    expect(c.files.extraFiles!["0/feed"]).toBe(caseFiles.extraFiles!["0/feed"]);
     // And the $var stays unresolved (no KPIs to resolve it from).
     expect(c.operation["Q"]).toBe("$Q_spec");
   });
@@ -97,8 +103,13 @@ describe("synthesizeUnitClone", () => {
   it("carries reactions + extraFiles, NEVER the outerDict", () => {
     const c = synthesizeUnitClone(caseFiles, runResult, "flash1")!;
     expect(c.files.reactions).toEqual(caseFiles.reactions);
-    expect(c.files.extraFiles).toEqual(caseFiles.extraFiles);
     expect(c.files.outerDict).toBeUndefined();
+    // constant/ overlays ride; the 0/ tree is rebuilt to EXACTLY this unit's
+    // streams (flash1: hot, vap, liq) -- the parent's 0/feed orphan is dropped.
+    const extra = c.files.extraFiles!;
+    expect(extra["constant/components/benzene.dat"]).toBe("// sample-specific");
+    expect(Object.keys(extra).filter((k) => k.startsWith("0/")).sort())
+      .toEqual(["0/hot", "0/liq", "0/vap"]);
   });
 
   it("captures the internals payload (kpis, in/out streams)", () => {
