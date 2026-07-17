@@ -54,16 +54,6 @@ static std::filesystem::path resolveDeclared(const std::filesystem::path& repoRo
             fs::path candLocal = q / "constant" / declared.substr(pfx.size());
             if (fs::exists(candLocal)) return candLocal;
         }
-        // [legacy] the retired propertyData homes -- bare form (F2 pair
-        // paths) and prefix-stripped v2 form.
-        fs::path candPd = q / "constant" / "propertyData" / declared;
-        if (fs::exists(candPd)) return candPd;
-        if (stdForm)
-        {
-            fs::path candSnap = q / "constant" / "propertyData"
-                              / declared.substr(pfx.size());
-            if (fs::exists(candSnap)) return candSnap;
-        }
         fs::path par = q.parent_path();
         if (par == q) break;
         q = par;

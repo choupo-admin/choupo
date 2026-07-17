@@ -206,10 +206,6 @@ inline DictPtr findIon(const std::string& species)
             if (r->lookupWord("name") == species)
                 return bridgeTrueIon(r, species);
     }
-    const fs::path snap =
-        records::legacySnapshotRecord("species/aqueous/" + species + ".dat");
-    if (!snap.empty())
-        return bridgeTrueIon(parsedOnce(snap), species);
     if (records::sealed())
         records::refuseSealed("species/aqueous.dat: " + species,
                               "aqueous species record");

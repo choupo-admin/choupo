@@ -85,19 +85,6 @@ fs::path locatePairFile(const std::string& pairName, const std::string& nodeBase
                         / "constant" / "parameters" / "NRTL" / pairName;
     if (fs::exists(caseFile)) { tierOut = "caseRoot"; return caseFile; }
 
-    // [legacy] retired propertyData/parameters/ snapshot home (the two
-    // remaining v1 snapshots -- see the RecordResolver TODO).  Per-node
-    // context first, then the case root -- before the installation catalogue.
-    if (!nodeBase.empty())
-    {
-        fs::path nodeSnap = fs::path(nodeBase) / "constant" / "propertyData"
-                          / "parameters" / "NRTL" / pairName;
-        if (fs::exists(nodeSnap)) { tierOut = "perNodeSnapshot"; return nodeSnap; }
-    }
-    fs::path caseSnap = fs::current_path() / "constant" / "propertyData"
-                      / "parameters" / "NRTL" / pairName;
-    if (fs::exists(caseSnap)) { tierOut = "caseSnapshot"; return caseSnap; }
-
     // STRICTLY sealed case (constant/propertyManifest): the installation
     // catalogue is FORBIDDEN -- a pair missing from the case's mirrored
     // constant/parameters/NRTL/ resolves idealDefault, and the pair

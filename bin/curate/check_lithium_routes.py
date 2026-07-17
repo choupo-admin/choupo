@@ -2,11 +2,14 @@
 """Lithium route/composition gate (Codex checklist, M6 2026-07-16).
 
 The lithiumBrinePlant golden pins RESULTS; this gate pins the ROUTE: the five
-TUNED NRTL pairs of the EXTRACTION sector must resolve from the sealed
-snapshot (status perNodeSnapshot, provSource tuned) -- an idealDefault on any
-of them is exactly the silent degradation the 2026-07-16 audit caught (organic
+TUNED NRTL pairs of the EXTRACTION sector must resolve from the sector's OWN
+mirrored home (status perNode, source sectors/EXTRACTION/constant/parameters/
+NRTL/, provSource tuned) -- an idealDefault, or a silent standards read, on
+any of them is exactly the degradation the 2026-07-16 audit caught (organic
 phase collapsed while the smoke test stayed green).  Also asserts the organic
 phase composition is physical: LiCl loading present, water nearly excluded.
+(The old perNodeSnapshot tier died with the retired constant/propertyData/
+form, migrated 2026-07-17 -- the sector's mirrored constant/ is the ONE home.)
 
 ALWAYS reruns the case fresh and parses THAT run's log -- a pre-existing
 green log must never ratify a currently-broken route (Codex review of the
@@ -32,7 +35,8 @@ if r.returncode != 0 or not LOG.exists():
 log = LOG.read_text(errors="replace")
 bad = []
 
-# 1) route assertions: each pair resolved perNodeSnapshot + tuned, never idealDefault
+# 1) route assertions: each pair resolved perNode from the SECTOR's mirrored
+#    home + tuned -- never idealDefault, never a standards/catalogue read
 for pair in PAIRS:
     hits = [m for m in re.finditer(
         r'\{ "model": "NRTL"[^}]*"source": "[^"]*' + re.escape(pair) + r'\.dat"[^}]*\}', log)]
@@ -41,8 +45,11 @@ for pair in PAIRS:
         continue
     for m in hits:
         rec = m.group(0)
-        if '"status": "perNodeSnapshot"' not in rec:
-            bad.append(f"pair {pair}: status is not perNodeSnapshot: {rec[:120]}")
+        if '"status": "perNode"' not in rec:
+            bad.append(f"pair {pair}: status is not perNode: {rec[:120]}")
+        if 'sectors/EXTRACTION/constant/parameters/NRTL/' not in rec:
+            bad.append(f"pair {pair}: source is not the EXTRACTION sector's"
+                       f" mirrored home: {rec[:120]}")
         if '"provSource": "tuned"' not in rec:
             bad.append(f"pair {pair}: provSource is not tuned")
 
@@ -89,4 +96,4 @@ if bad:
     for b in bad:
         print("  " + b)
     sys.exit(1)
-print("lithium gate: 5 tuned pairs via perNodeSnapshot; organic loaded (x_LiCl ok, water excluded)")
+print("lithium gate: 5 tuned pairs via perNode (sector mirrored home); organic loaded (x_LiCl ok, water excluded)")

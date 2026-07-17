@@ -63,12 +63,12 @@ License
   exposes componentBase()/componentsScanDir() with sealed-only local-base
   semantics instead of routing components through resolveRecord().
 
-  TODO(legacy-propertyData): the constant/propertyData/ legs serve ONLY the
-  two remaining v1 snapshots (tutorials/plant/lithiumBrinePlant and
-  tutorials/steady/crystallisation/Crystallizer09chatGPT, both carrying
-  hand-tuned kind-local records).  Remove every `legacy` branch in this file
-  -- and the callers' propertyData tiers (NRTL/UNIQUAC locatePairFile,
-  resolveDeclared) -- when those two migrate to the mirrored constant/ form.
+  The retired constant/propertyData/ v1 snapshot form has NO readers left:
+  its last two cases (lithiumBrinePlant, Crystallizer09chatGPT) migrated to
+  the mirrored constant/ form on 2026-07-17 and every legacy leg -- here and
+  in the callers (NRTL/UNIQUAC locatePairFile, resolveDeclared, the Database
+  component base) -- was removed.  bin/choupo-import refuses a case that
+  still carries the old tree.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -107,21 +107,6 @@ inline fs::path localRecord(const std::string& sub)
     return {};
 }
 
-// [legacy] nearest constant/propertyData/<sub> -- see the TODO in the header.
-inline fs::path legacySnapshotRecord(const std::string& sub)
-{
-    fs::path p = fs::current_path();
-    for (int up = 0; up < walkUpDepth; ++up)
-    {
-        fs::path cand = p / "constant" / "propertyData" / sub;
-        if (fs::exists(cand)) return cand;
-        fs::path par = p.parent_path();
-        if (par == p) break;
-        p = par;
-    }
-    return {};
-}
-
 // Parse-once cache (manifests are static for the life of a run).
 inline const DictPtr& parsedManifest(const fs::path& p)
 {
@@ -132,40 +117,9 @@ inline const DictPtr& parsedManifest(const fs::path& p)
     return it->second;
 }
 
-// The nearest manifest walking up: constant/propertyManifest (the mirrored
-// form) first at each level, then the legacy propertyData/manifest.dat.
-// Returns the manifest BODY dict (propertyManifest / propertyDataManifest),
-// or nullptr when the case carries none.
+// The nearest manifest walking up (constant/propertyManifest).  Returns the
+// manifest BODY dict, or nullptr when the case carries none.
 inline DictPtr nearestManifest()
-{
-    fs::path p = fs::current_path();
-    for (int up = 0; up < walkUpDepth; ++up)
-    {
-        fs::path m = p / "constant" / "propertyManifest";
-        if (fs::exists(m))
-        {
-            const DictPtr& d = parsedManifest(m);
-            if (d->found("propertyManifest")) return d->subDict("propertyManifest");
-            return d;
-        }
-        fs::path lm = p / "constant" / "propertyData" / "manifest.dat";   // legacy
-        if (fs::exists(lm))
-        {
-            const DictPtr& d = parsedManifest(lm);
-            if (d->found("propertyDataManifest"))
-                return d->subDict("propertyDataManifest");
-            return nullptr;
-        }
-        fs::path par = p.parent_path();
-        if (par == p) break;
-        p = par;
-    }
-    return nullptr;
-}
-
-// The nearest NEW-form manifest (constant/propertyManifest) -- nullptr when
-// the case carries none, or only a legacy propertyData/manifest.dat.
-inline DictPtr nearestStrictManifest()
 {
     fs::path p = fs::current_path();
     for (int up = 0; up < walkUpDepth; ++up)
@@ -188,29 +142,17 @@ inline DictPtr nearestStrictManifest()
 // relocation rescue: a manifested case needs no installation catalogue.)
 inline bool hasManifest() { return nearestManifest() != nullptr; }
 
-// SEALED (either manifest generation): the per-record REQUIRED consumers
-// (component / ion / Pitzer / eNRTL pair) refuse a locally-missing record
-// under this flag -- the guard the phase-1 legs already enforced.
+// SEALED: the nearest constant/propertyManifest declares `sealed true;` --
+// every consumer (required AND absence-tolerant) then forbids the
+// installation catalogue.  sealedStrict() is a synonym kept for the callers'
+// vocabulary (the strict/legacy split died with the propertyData form).
 inline bool sealed()
 {
     DictPtr m = nearestManifest();
     return m && m->lookupWordOrDefault("sealed", "false") == "true";
 }
 
-// STRICTLY sealed: the NEW-form constant/propertyManifest declares sealed.
-// Only then do the absence-TOLERANT legs (crissCobble, chemistry/ scans,
-// declared-source fallbacks) forbid the catalogue too.  A LEGACY v1 snapshot
-// (lithiumBrinePlant / Crystallizer09chatGPT) keeps its phase-1 semantics:
-// records outside its closure still fall back to the catalogue (the honest
-// note of 2026-07-17 -- e.g. the lithium snapshot carries no crissCobble.dat)
-// -- fixing that is the migration of those two cases, not a silent behaviour
-// flip under them.  TODO(legacy-propertyData): fold into sealed() when they
-// migrate.
-inline bool sealedStrict()
-{
-    DictPtr m = nearestStrictManifest();
-    return m && m->lookupWordOrDefault("sealed", "false") == "true";
-}
+inline bool sealedStrict() { return sealed(); }
 
 // The installation-catalogue path for a subpath (exists or not -- callers
 // keep their own fs::exists guards, exactly as before the resolver).
@@ -240,8 +182,6 @@ inline fs::path resolveRecord(const std::string& sub)
 {
     fs::path p = localRecord(sub);
     if (!p.empty()) return p;
-    p = legacySnapshotRecord(sub);            // legacy -- see header TODO
-    if (!p.empty()) return p;
     if (sealedStrict()) return {};
     return standardsRecord(sub);
 }
@@ -252,7 +192,6 @@ inline fs::path resolveRecord(const std::string& sub)
 inline fs::path resolveRequired(const std::string& sub, const std::string& what)
 {
     fs::path p = localRecord(sub);
-    if (p.empty()) p = legacySnapshotRecord(sub);   // legacy -- see header TODO
     if (!p.empty()) return p;
     if (sealed()) refuseSealed(sub, what);
     return standardsRecord(sub);
@@ -267,8 +206,6 @@ inline fs::path resolveRequired(const std::string& sub, const std::string& what)
 inline fs::path componentBase(const std::string& name)
 {
     const std::string sub = "components/" + name + ".dat";
-    fs::path p = legacySnapshotRecord(sub);   // legacy -- see header TODO
-    if (!p.empty()) return p;
     if (sealedStrict())
         return localRecord(sub);              // one home; empty when absent
     return standardsRecord(sub);
@@ -285,22 +222,21 @@ inline std::vector<fs::path> listDatFiles(const fs::path& dir)
     return files;
 }
 
-// Nearest case-local DIRECTORY for a scan: constant/<sub> first, then the
-// legacy constant/propertyData/<sub>; the `legacy` flag reports which.
+// Nearest case-local DIRECTORY for a scan (constant/<sub>).  The `legacy`
+// out-flag is dead since the propertyData form retired -- always false; kept
+// so callers need no signature churn.
 inline fs::path localScanDir(const std::string& sub, bool& legacy)
 {
+    legacy = false;
     fs::path p = fs::current_path();
     for (int up = 0; up < walkUpDepth; ++up)
     {
         fs::path cand = p / "constant" / sub;
-        if (fs::is_directory(cand)) { legacy = false; return cand; }
-        fs::path lcand = p / "constant" / "propertyData" / sub;   // legacy
-        if (fs::is_directory(lcand)) { legacy = true; return lcand; }
+        if (fs::is_directory(cand)) return cand;
         fs::path par = p.parent_path();
         if (par == p) break;
         p = par;
     }
-    legacy = false;
     return {};
 }
 
@@ -317,7 +253,6 @@ inline std::vector<fs::path> scanRecordDir(const std::string& sub)
 {
     bool legacy = false;
     const fs::path local = localScanDir(sub, legacy);
-    if (!local.empty() && legacy) return listDatFiles(local);
     if (sealedStrict()) return listDatFiles(local);   // local-only; empty when absent
     std::vector<fs::path> out;
     const auto localFiles = listDatFiles(local);   // empty path -> empty list
@@ -343,7 +278,6 @@ inline fs::path componentsScanDir()
 {
     bool legacy = false;
     const fs::path local = localScanDir("components", legacy);
-    if (!local.empty() && legacy) return local;
     if (sealedStrict()) return local;           // local-only; empty when absent
     return standardsRecord("components");
 }

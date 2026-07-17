@@ -164,21 +164,13 @@ Component Database::loadComponent(const std::string& name) const
             p = p.parent_path();
         }
     }
-    // [legacy] CASE SNAPSHOT: a frozen copy under constant/propertyData/
-    // components/<name>.dat (the retired v1 form -- lithiumBrinePlant /
-    // Crystallizer09chatGPT only, see the RecordResolver TODO) is the BASE
-    // instead of the installation catalogue; the case-local overlay still
-    // wins on top.
-    const fs::path snapshot =
-        records::legacySnapshotRecord("components/" + name + ".dat");
     // SEALED: the property manifest FORBIDS the catalogue.
     const bool sealed = records::sealed();
-    if (sealed && snapshot.empty() && caseLocal.empty())
+    if (sealed && caseLocal.empty())
         throw std::runtime_error("SEALED case: component '" + name
             + "' is NOT in the case's constant/components/ --"
               " re-run `bin/choupo-import` (the installation catalogue is forbidden).");
-    fs::path standard  = !snapshot.empty() ? snapshot
-                       : fs::path(root_) / "standards" / "components" / (name + ".dat");
+    fs::path standard  = fs::path(root_) / "standards" / "components" / (name + ".dat");
     // ONE home (sealing redesign, 2026-07-17): in a STRICTLY sealed case the
     // mirrored constant/components/<name>.dat IS the record -- the imported
     // full copy claimed by constant/propertyManifest, or the author's ADOPTED
@@ -186,7 +178,7 @@ Component Database::loadComponent(const std::string& name) const
     // catalogue base to merge: read it alone.  (Unsealed cases keep the
     // overlay doctrine below byte-identically: standards base, case-local
     // full-shadow / overlayOf on top.)
-    if (records::sealedStrict() && snapshot.empty())
+    if (records::sealedStrict())
     {
         standard  = caseLocal;      // the ONE home is the base...
         caseLocal = fs::path();     // ...and there is no separate overlay file
