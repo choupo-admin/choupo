@@ -945,10 +945,91 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
         return out;
     }
 
+    if (form == "phiPhi")
+    {
+        auto eos = eq->subDict("equationOfState");
+        const std::string model = eos->lookupWord("model");
+        if (model != "SRK" && model != "PengRobinson")
+            throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
+                " equationOfState '" + model + "' -- implemented: SRK |"
+                " PengRobinson (PC-SAFT is T5, not built).");
+        if (eos->found("mixingRule")
+            && eos->lookupWord("mixingRule") != "vanDerWaalsOneFluid")
+            throw std::runtime_error("thermophysicalPropertySystem: the cubic"
+                " mixing rule implemented is vanDerWaalsOneFluid.");
+        pm->insert("liquid", "eos." + model);
+        pm->insert("vapour", "eos." + model);   // ONE cubic, two roots
+        out->insert("propertyMethods", EntryValue(pm));
+        if (eos->found("binaryInteractions"))
+        {
+            auto bi = eos->subDict("binaryInteractions");
+            auto kij = std::make_shared<Dictionary>("kijPairs");
+            for (const auto& pr : bi->keys())
+                kij->insert(pr, bi->subDict(pr)->entryValue("source"));
+            auto params = std::make_shared<Dictionary>("parameters");
+            params->insert("kijPairs", EntryValue(kij));
+            out->insert("parameters", EntryValue(params));
+        }
+        verifyRoute(cal, "liquid", "departureRoute", "equilibriumEquationOfState");
+        verifyRoute(cal, "vapour", "departureRoute", "equilibriumEquationOfState");
+        announce("equilibrium phiPhi: " + model + " on BOTH phases (one Gibbs"
+                 " surface, two roots); kij declared inside the EoS block."
+                 "  caloric: departure from the SAME EoS (elements datum).");
+        return out;
+    }
+
+    if (form == "gammaPhi" || form == "dilute")
+    { /* unreachable: gammaPhi handled above */ }
+
+    if (form == "diluteSolution")
+    {
+        // T6: solvent on the Raoult rung, solutes on infinite-dilution Henry.
+        auto liq = eq->subDict("liquid");
+        auto sol = liq->subDict("solvent");
+        auto sus = liq->subDict("solutes");
+        if (sol->found("standardState")
+            && sol->lookupWord("standardState") != "pureLiquid")
+            throw std::runtime_error("thermophysicalPropertySystem: the Henry"
+                " solvent sits on the pureLiquid (Raoult) rung.");
+        if (sus->found("standardState")
+            && sus->lookupWord("standardState") != "infiniteDilution")
+            throw std::runtime_error("thermophysicalPropertySystem: Henry"
+                " solutes sit on the infiniteDilution rung -- that is the"
+                " DEFINITION of the convention.");
+        if (sus->lookupWordOrDefault("solutionModel", "henryDilute") != "henryDilute")
+            throw std::runtime_error("thermophysicalPropertySystem: solutes"
+                " solutionModel implemented: henryDilute.");
+        const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
+        if (vap != "idealGas")
+            throw std::runtime_error("thermophysicalPropertySystem: the"
+                " henryDilute spike serves vapour idealGas.");
+        pm->insert("liquid", std::string("solution.henryDilute"));
+        pm->insert("vapour", std::string("builtin.idealGas"));
+        out->insert("propertyMethods", EntryValue(pm));
+        auto solution = std::make_shared<Dictionary>("solution");
+        solution->insert("solvent", sol->entryValue("component"));
+        solution->insert("solutes", sus->entryValue("components"));
+        out->insert("solution", EntryValue(solution));
+        if (sus->found("binaryParameters"))
+        {
+            auto bp = sus->subDict("binaryParameters");
+            auto hp = std::make_shared<Dictionary>("henryPairs");
+            for (const auto& pr : bp->keys())
+                hp->insert(pr, bp->subDict(pr)->entryValue("source"));
+            auto params = std::make_shared<Dictionary>("parameters");
+            params->insert("henryPairs", EntryValue(hp));
+            out->insert("parameters", EntryValue(params));
+        }
+        announce("equilibrium diluteSolution: solvent on Raoult, solutes on"
+                 " infinite-dilution Henry (K = gamma* H(T) / phi P); pairs"
+                 " declared inside the solutes group.");
+        return out;
+    }
+
     throw std::runtime_error("thermophysicalPropertySystem: formulation '"
-        + form + "' is not in this spike (implemented: gammaPhi,"
-        " electrolyteGammaPhi, aqueousProperties).  T4/T5/T6/T9+ come with"
-        " the ratified wave, not by accident.");
+        + form + "' is not in this spike (implemented: gammaPhi, phiPhi,"
+        " diluteSolution, electrolyteGammaPhi, aqueousProperties).  T5/T9+"
+        " come with the ratified wave, not by accident.");
 }
 
 ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db)

@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1: the ideal gamma-phi mixture, the SIMPLEST
+  physical statement a case can make.  Raoult's law is not a default here:
+  it is DECLARED -- activityModel ideal says "gamma = 1, and I mean it".
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( benzene toluene );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;            // gamma = 1 identically (Raoult)
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

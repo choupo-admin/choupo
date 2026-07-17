@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T6: the dilute-solution (Henry) world.  Henry is
+  a CONVENTION for the solutes group, not a model of the whole liquid: the
+  solvent sits on the pure-liquid (Raoult) rung, each solute on the
+  infinite-dilution rung -- gamma* -> 1 as x -> 0 is the DEFINITION, so the
+  references are implied by transferModel Henry (declared here for teaching).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water CO2 );
+
+equilibrium
+{
+    formulation diluteSolution;
+
+    liquid
+    {
+        solvent
+        {
+            component     water;
+            standardState pureLiquid;          // the Raoult rung
+        }
+        solutes
+        {
+            components    ( CO2 );
+            standardState infiniteDilution;    // the Henry rung
+            solutionModel henryDilute;
+            binaryParameters
+            {
+                // Sander (2015) compilation, CC-BY
+                CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; }
+            }
+        }
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

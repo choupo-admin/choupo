@@ -1,0 +1,37 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T4: the phi-phi world.  ONE cubic equation of
+  state serves BOTH phases (one Gibbs surface, two roots) -- K = phi_L/phi_V.
+  The kij lives INSIDE the EoS block that consumes it, and its record
+  declares the EoS it was fitted for (a kij is not portable between cubics).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( N2 CH4 );
+
+equilibrium
+{
+    formulation phiPhi;
+
+    equationOfState
+    {
+        model      SRK;
+        mixingRule vanDerWaalsOneFluid;
+        binaryInteractions
+        {
+            // Knapp et al., DECHEMA Chemistry Data Series VI (1982)
+            N2-CH4 { source "data/standards/parameters/SRK/N2-CH4.dat"; }
+        }
+    }
+
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

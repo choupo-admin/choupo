@@ -501,15 +501,12 @@ try
         // backward compatibility (0da8bcba) -- the engine reads only
         // constant/propertyDict (matching the *Dict convention:
         // flowsheetDict / solverDict / controlDict).
-        std::string pkgPath = resolveUp("constant/propertyDict");
+        // v2 name first (thermoPhysPropDict, the architect's choice
+        // 2026-07-17); constant/propertyDict stays the v1 home.
+        std::string pkgPath = resolveUp("constant/thermoPhysPropDict");
         bool deprecatedName = false;
         if (!fs::exists(pkgPath))
             pkgPath = resolveUp("constant/propertyDict");
-        if (!fs::exists(pkgPath))
-        {
-            const std::string legacy = resolveUp("constant/propertyDict");
-            if (fs::exists(legacy)) { pkgPath = legacy; deprecatedName = true; }
-        }
         if (fs::exists(pkgPath))
         {
             auto sel = Dictionary::fromFile(pkgPath);
@@ -526,6 +523,8 @@ try
                 sel = resolvePropertyContext(
                     fs::path(pkgPath).parent_path().string(), visited);
             }
+            if (sel->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
+                sel = ThermoPackageBuilder::translateV2(sel);   // v2 -> manifesto verificado
             if (sel->found("components") && sel->found("propertyMethods"))
             {
                 packageDict = sel;                       // rich MANIFEST -> builder
