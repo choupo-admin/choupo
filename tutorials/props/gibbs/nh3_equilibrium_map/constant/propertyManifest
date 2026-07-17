@@ -1,0 +1,48 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-07-17";
+    importerVersion    "2";
+    records
+    {
+        "components/H2.dat"
+        {
+            type          imported;
+            sha256        "d8ff0adb52de155aa6ae6a4b6cae0215c2ac100a6e09c0fb9ede028b278229e5";
+            origin        "data/standards/components/H2.dat";
+            originSha256  "5c94ad2306ce46027919eb69e2fa0e8605e39955f07c47c06a3b829962feb183";
+            release       Choupo-2607;
+        }
+        "components/N2.dat"
+        {
+            type          imported;
+            sha256        "920a4cb07f76f0b2455f3809fcefe7dcf41ce1a6492853cd6d2d7a5c287da324";
+            origin        "data/standards/components/N2.dat";
+            originSha256  "4792bef415c18fc04a56e17937a799cdd248c394fc1cc40c4da32b25546e78d1";
+            release       Choupo-2607;
+        }
+        "components/NH3.dat"
+        {
+            type          imported;
+            sha256        "74a33222bcf705fa0b8ba5156a88e6386c385e47fcef3de0e7342f9493b1d325";
+            origin        "data/standards/components/NH3.dat";
+            originSha256  "80410925ff5cdca14a73845c002901df5dde4161584ffca03d0b9ea6bd1c8b13";
+            release       Choupo-2607;
+        }
+    }
+}
