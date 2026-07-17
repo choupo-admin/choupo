@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1 + T13: N2 (carrier gas) + oilDroplet
+  (Dirgo-Leith mineral-oil aerosol, a solid pseudo-particle).  The cyclone
+  needs a gas viscosity for the Lapple d50, so the system carries a vapour
+  viscosity model (Chung, from Tc/Pc/omega).  oilDroplet is non-volatile
+  (K = 0) and lives in the solid phase (s[]), never in z.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( N2 oilDroplet );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;            // gamma = 1 identically (Raoult)
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    vapour
+    {
+        viscosity { model Chung; }      // gas mu for the Lapple d50
+    }
+}

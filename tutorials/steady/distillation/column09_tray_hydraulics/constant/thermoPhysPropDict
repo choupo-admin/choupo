@@ -1,0 +1,38 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1 + T13: the same near-ideal benzene/toluene
+  pair as column01, plus ONE addition: a surface-tension model on the
+  interface.  The flooding correlation needs sigma -- entrainment is a
+  competition between the vapour's drag on a droplet and the surface tension
+  holding it together -- so the column simply will not rate its trays without
+  it.  Brock-Bird is a corresponding-states estimate from Tc, Pc and Tb; for
+  these two non-polar aromatics that is a reasonable place to stand.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( benzene toluene );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;            // gamma = 1 identically (Raoult)
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    interface
+    {
+        surfaceTension { model BrockBird; }   // sigma for the flooding/entrainment rating
+    }
+}

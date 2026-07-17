@@ -1,0 +1,63 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1 + T13: ideal gamma-phi mixture WITH the full
+  transport surface the drying kinetics need.  Three components:
+      water    -- the volatile solvent (evaporates into the air)
+      air      -- the drying-air carrier gas
+      sucrose  -- the non-volatile solid (leaves as powder; never enters
+                  the vapour, so it carries no Antoine block)
+
+  Each transport property names its model in its own phase block, computed
+  from the per-component .dat data (no new data): Chung gas viscosity (mu),
+  Eucken gas k (Cp + mu), Fuller binary gas D (Sigma v).  The water-in-air
+  diffusivity (Fuller) drives the mass-transfer Sherwood number; component
+  order makes water (0) the diffusing species and air (1) the carrier.
+  sucrose stays out of the gas (y = 0) so its missing critical data are
+  never touched by the mixing rules.
+
+  interface surfaceTension { model BrockBird; } supplies the atomisation
+  sigma from the property layer -- sigma(T) of the volatile solvent (water,
+  Brock-Bird from its Tc/Pc/Tb) evaluated at the feed temperature, instead
+  of a hardcoded 0.072 N/m constant.  Brock-Bird is a corresponding-states
+  estimate that OVERPREDICTS strongly H-bonding water (~0.107 vs the real
+  ~0.072 N/m at 25 C -- exactly the deviation compare_transport_water
+  teaches for the generic correlations); the droplet d32 shifts only
+  slightly because sigma enters the Friedman correlation to the 0.1 power
+  (60.4 vs 58.1 um).  For an accurate water sigma(T), flag water IF97 in a
+  pureFluids block and the accessor routes to IAPWS R1-76 instead.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water air sucrose );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;            // gamma = 1 identically (Raoult)
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    vapour
+    {
+        viscosity           { model Chung; }    // gas mu (drying h/k_c)
+        thermalConductivity { model Eucken; }   // gas k  (Cp + mu)
+        diffusivity         { model Fuller; }   // binary gas D (Sigma v)
+    }
+
+    interface
+    {
+        surfaceTension { model BrockBird; }     // real sigma(T) of water (slice 4)
+    }
+}

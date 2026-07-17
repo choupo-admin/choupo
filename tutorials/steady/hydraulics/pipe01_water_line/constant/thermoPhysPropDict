@@ -1,0 +1,41 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1 + T13: single component (water).  The pipe
+  model needs:
+    * liquid DENSITY  -> the Rackett liquid branch of density() (Tc, Pc,
+      omega, Vc on water.dat);
+    * liquid VISCOSITY -> the liquid viscosity model below, required for
+      the Reynolds number.
+
+  water.dat is vendored under constant/components/ (case-local copy); the
+  case is self-DESCRIBING (inline manifest) -- seal with bin/choupo-import
+  for a certified runtime-self-contained copy.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;            // gamma = 1 identically (Raoult)
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity { model Vogel; }      // ln mu = A + B/(T - C)   [Pa.s]
+    }
+}
