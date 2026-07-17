@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/MnOH3m.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species MnOH3m; ion "Mn(OH)3-"; z -1; masters ( { ion Mn; nu 1; } { ion H; nu -3; } ); nuWater 3;
-      logK25 -34.8; source "USGS PHREEQC phreeqc.dat (public domain)";
-

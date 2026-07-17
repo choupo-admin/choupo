@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/SrOHp.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species SrOHp; ion "SrOH+"; z +1; masters ( { ion Sr; nu 1; } { ion H; nu -1; } ); nuWater 1;
-      logK25 -13.29; source "USGS PHREEQC phreeqc.dat (public domain)";
-

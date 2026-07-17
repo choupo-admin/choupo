@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/CaHCO3p.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species CaHCO3p; ion "CaHCO3+"; z +1; masters ( { ion Ca; nu 1; } { ion HCO3; nu 1; } );
-      logK25 -4.059; dH 158117.5; analytic ( -51.6141 -0.07430749 -6042.21 38.92561 -563713.9 ); source "USGS PHREEQC phreeqc.dat (public domain)";
-

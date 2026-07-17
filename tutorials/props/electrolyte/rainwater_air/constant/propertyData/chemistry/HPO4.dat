@@ -1,6 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/HPO4.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species HPO4; ion "HPO4-2"; z -2; masters ( { ion PO4; nu 1; } { ion H; nu 1; } );
-      logK25 12.346; dH -14769.5; source "USGS PHREEQC phreeqc.dat (public domain); phosphate 2nd protonation";

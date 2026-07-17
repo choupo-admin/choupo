@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/KX.dat"; }
-recordType ionExchangeEquilibrium;
-schemaVersion 1;
-
-species KX; masters ( { ion K; nu 1; } { site X; nu 1; } );
-      logK25 0.7; dH -4300; source "USGS PHREEQC phreeqc.dat (public domain); lit: Jardine & Sparks, 1984";
-

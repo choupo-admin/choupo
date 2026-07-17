@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/MnOHp.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species MnOHp; ion "MnOH+"; z +1; masters ( { ion Mn; nu 1; } { ion H; nu -1; } ); nuWater 1;
-      logK25 -10.59; dH 60249.6; source "USGS PHREEQC phreeqc.dat (public domain)";
-

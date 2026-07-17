@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/H2SiO4m2.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species H2SiO4m2; ion "H2SiO4-2"; z -2; masters ( { ion H4SiO4; nu 1; } { ion H; nu -2; } );
-      logK25 -23; dH 73638.4; analytic ( -294.0184 -0.07265 11204.49 108.18466 -1119669 ); source "USGS PHREEQC phreeqc.dat (public domain)";
-

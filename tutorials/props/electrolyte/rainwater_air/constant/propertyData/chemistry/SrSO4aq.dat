@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/SrSO4aq.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species SrSO4aq; ion "SrSO4"; z 0; masters ( { ion Sr; nu 1; } { ion SO4; nu 1; } );
-      logK25 2.29; dH 8702.7; source "USGS PHREEQC phreeqc.dat (public domain)";
-

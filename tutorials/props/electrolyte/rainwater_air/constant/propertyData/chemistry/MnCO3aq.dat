@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/MnCO3aq.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species MnCO3aq; ion "MnCO3"; z 0; masters ( { ion Mn; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
-      logK25 -5.429; source "USGS PHREEQC phreeqc.dat (public domain)";
-

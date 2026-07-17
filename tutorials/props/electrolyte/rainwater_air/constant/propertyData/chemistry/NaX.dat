@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/NaX.dat"; }
-recordType ionExchangeEquilibrium;
-schemaVersion 1;
-
-species NaX; reference true; masters ( { ion Na; nu 1; } { site X; nu 1; } );
-      logK25 0; source "USGS PHREEQC phreeqc.dat (public domain)";
-

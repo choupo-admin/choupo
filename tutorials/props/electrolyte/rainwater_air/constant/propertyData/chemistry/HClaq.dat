@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/HClaq.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species HClaq; ion "HCl"; z 0; masters ( { ion H; nu 1; } { ion Cl; nu 1; } );
-      logK25 -0.46; dH -4600; analytic ( 0.334 -0.002684 1.015 ); validC ( 0 50 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: from Pitzer.dat, up to 15 M HCl, 0 - 50 C";
-

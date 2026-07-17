@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/MgHCO3p.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species MgHCO3p; ion "MgHCO3+"; z +1; masters ( { ion Mg; nu 1; } { ion HCO3; nu 1; } );
-      logK25 1.07; dH 3305.4; analytic ( -59.215 0 2537.455 20.92298 ); source "USGS PHREEQC phreeqc.dat (public domain)";
-

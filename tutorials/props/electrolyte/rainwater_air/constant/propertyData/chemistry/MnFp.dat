@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/MnFp.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species MnFp; ion "MnF+"; z +1; masters ( { ion Mn; nu 1; } { ion F; nu 1; } );
-      logK25 0.84; source "USGS PHREEQC phreeqc.dat (public domain)";
-

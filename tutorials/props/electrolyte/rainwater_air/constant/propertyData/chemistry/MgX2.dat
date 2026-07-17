@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/MgX2.dat"; }
-recordType ionExchangeEquilibrium;
-schemaVersion 1;
-
-species MgX2; masters ( { ion Mg; nu 1; } { site X; nu 2; } );
-      logK25 0.6; dH 7400; source "USGS PHREEQC phreeqc.dat (public domain); lit: Laudelout et al., 1968";
-

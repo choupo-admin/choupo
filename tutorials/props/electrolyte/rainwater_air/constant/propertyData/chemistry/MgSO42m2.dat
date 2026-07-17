@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/MgSO42m2.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species MgSO42m2; ion "Mg(SO4)2-2"; z -2; masters ( { ion Mg; nu 1; } { ion SO4; nu 2; } );
-      logK25 2.94; dH 5400; analytic ( 0 0.00813 -136 0 86040 ); validC ( 0 200 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: epsomite/hexahydrite/kieserite solubilities, 0 - 200 oC";
-

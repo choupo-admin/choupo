@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/CaHSO4p.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species CaHSO4p; ion "CaHSO4+"; z +1; masters ( { ion Ca; nu 1; } { ion H; nu 1; } { ion SO4; nu 1; } );
-      logK25 3.068; source "USGS PHREEQC phreeqc.dat (public domain)";
-

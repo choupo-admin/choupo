@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/SiF6m2.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species SiF6m2; ion "SiF6-2"; z -2; masters ( { ion H; nu 4; } { ion H4SiO4; nu 1; } { ion F; nu 6; } ); nuWater -4;
-      logK25 30.18; dH -68031.8; source "USGS PHREEQC phreeqc.dat (public domain)";
-

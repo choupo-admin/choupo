@@ -1,7 +1,0 @@
-// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/FeOH2aq.dat"; }
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species FeOH2aq; ion "Fe(OH)2"; z 0; masters ( { ion Fe; nu 1; } { ion H; nu -2; } ); nuWater 2;
-      logK25 -20.57; dH 119516; source "USGS PHREEQC phreeqc.dat (public domain)";
-
