@@ -9,14 +9,18 @@
   claim types:  imported = installed + hash-verified copy;
                 adopted  = authored record explicitly adopted at
                            import time (never installed, never
-                           hash-enforced, never removed).
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
 \*----------------------------------------------------------*/
 
 propertyManifest
 {
     sealed             true;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-17";
+    importedAt         "2026-07-18";
     importerVersion    "2";
     records
     {
@@ -31,9 +35,9 @@ propertyManifest
         "components/ethanol.dat"
         {
             type          imported;
-            sha256        "e83a91e8b4dd5a280b950daf395deb76c61e0a1fd35c29e22789d248848e7888";
+            sha256        "08cfc7f17e278dc27dc5a183744db5289150d711d12c36946a09344e2f4ce8f9";
             origin        "data/standards/components/ethanol.dat";
-            originSha256  "6b1c4c1281eed4e80aa3bfe5d9421e36604ee8a736e920daa568ff51457d525f";
+            originSha256  "9823e1d6972bbbdd9b76f91e4bbe928c6e157d468336fd9475a9b054502bab4b";
             release       Choupo-2607;
         }
         "components/water.dat"
@@ -50,6 +54,14 @@ propertyManifest
             sha256        "562c6d8805d39e21ba5e879322de1bf8479f622c58728b0c169fa33dae261ae8";
             origin        "data/standards/methods/eNRTL.dat";
             originSha256  "1e5d17a3b1dcb60deedf36ddef9599fd26b97a4a846d25175599fffb41c0505e";
+            release       Choupo-2607;
+        }
+        "parameters/NRTL/ethanol-water.dat"
+        {
+            type          imported;
+            sha256        "c5cbfeff3ae15e0c5162cce367bab36a57b1cf3103d1c18b62b1207b66db293e";
+            origin        "data/standards/parameters/NRTL/ethanol-water.dat";
+            originSha256  "58fd0be3d81822788156fe593270b2e9900fa2b533fa3f88b33415fc18320ac5";
             release       Choupo-2607;
         }
         "parameters/Pitzer/pairs/Na-OH.dat"

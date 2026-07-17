@@ -9,14 +9,18 @@
   claim types:  imported = installed + hash-verified copy;
                 adopted  = authored record explicitly adopted at
                            import time (never installed, never
-                           hash-enforced, never removed).
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
 \*----------------------------------------------------------*/
 
 propertyManifest
 {
     sealed             true;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-17";
+    importedAt         "2026-07-18";
     importerVersion    "2";
     records
     {
@@ -31,9 +35,9 @@ propertyManifest
         "components/ethanol.dat"
         {
             type          imported;
-            sha256        "e83a91e8b4dd5a280b950daf395deb76c61e0a1fd35c29e22789d248848e7888";
+            sha256        "08cfc7f17e278dc27dc5a183744db5289150d711d12c36946a09344e2f4ce8f9";
             origin        "data/standards/components/ethanol.dat";
-            originSha256  "6b1c4c1281eed4e80aa3bfe5d9421e36604ee8a736e920daa568ff51457d525f";
+            originSha256  "9823e1d6972bbbdd9b76f91e4bbe928c6e157d468336fd9475a9b054502bab4b";
             release       Choupo-2607;
         }
         "components/nHexane.dat"

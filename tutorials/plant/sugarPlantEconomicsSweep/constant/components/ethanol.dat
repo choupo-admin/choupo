@@ -1,37 +1,35 @@
-/*----------------------------------------------------------*\
-  constant/components/ethanol.dat -- MERGED sealed record: the standards base with
-  this case's partial overlay applied top-level (Choupo-2607 release).
-  Materialised by bin/choupo-import so the sealed case reads ONE
-  complete record with the catalogue hidden; provenance (base +
-  overlay hashes) is recorded in constant/propertyManifest.
-\*----------------------------------------------------------*/
+// [imported] origin "data/standards/components/ethanol.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Ethanol  (C2H6O, CAS 64-17-5)
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients, Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).  The
+           Andrade/Vogel viscosity fits are least-squares over literature
+           mu(T), ~10-100 degC (see block comment); relativePermittivity
+           24.3 (25 degC) carries the same pending re-citation.
+\*---------------------------------------------------------------------------*/
 
 name        ethanol;
-
 formula     C2H6O;
-
 CAS         64-17-5;
 
+
+
 MW          46.069;
-
 Tc          513.92;
-
 Pc          61.48;
-
 omega       0.6490;
-
 Tb          351.44;
-
 HvapTb      38560;
-
 Vliq        5.850e-5;
+
 
 standardThermochemistry
 {
-    dHf_298   -234950.0;        
-    s_298     281.620;         
+    dHf_298   -234950.0;        // J/mol  -- ideal-gas reference
+    s_298     281.620;         // J/(mol·K)  -- third-law absolute
 }
-
 vaporPressure
 {
     model         Antoine;
@@ -53,15 +51,25 @@ liquidHeatCapacity
     Trange        (280  351);
 }
 
+// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
+// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
+// fitted to literature mu(T) over ~10-100 degC.
 associationFactor  1.5;
-
 liquidViscosity
 {
     andrade { A -12.6467; B 1736.8; }
     vogel   { A -10.8798; B 796.9; C 101.5; }
 }
 
-relativePermittivity 24.3;
+relativePermittivity 24.3;   // dielectric constant, 25 C (for mixed-solvent eNRTL / drowning-out)
+
+uniquac
+{
+    r   2.1055;
+    q   1.9720;     // van der Waals structural constants (Abrams & Prausnitz,
+                    // AIChE J. 21 (1975) 116; tabulated in Poling, Prausnitz &
+                    // O'Connell, 5th ed., UNIQUAC r,q)
+}
 
 groups
 {
