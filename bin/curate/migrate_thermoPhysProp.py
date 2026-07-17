@@ -357,17 +357,18 @@ def classify(dict_path):
     # package from the FLAT thermoDict every iteration (FitParameters.cpp:247)
     # -- a builder/manifest package leaves thermoDict null, so the op refuses.
     # The isotherm kind is pair-data regression and never rebuilds (line 244).
+    # G3 (Codex-ratified 2026-07-18): the fitParameters gate is LIFTED --
+    # choupoProps hands the fit op the AUTHORED v2 dict and FitParameters
+    # re-translates per iteration.  The op's pinned v1 paths
+    # (activityModel.pairs[K].<coef>) must be REWRITTEN to the named v2 form
+    # (equilibrium.liquid.activityModel.binaryParameters.<i>-<j>.<coef>) in
+    # the same conversion -- recorded below once the pair map is parsed.
     props = case / "system" / "propsDict"
+    has_fit_paths = False
     if props.exists():
         ps = strip_comments(props.read_text(errors="replace"))
-        if re.search(r'(?<![\w.])type\s+fitParameters\s*;', ps):
-            kinds = set(re.findall(r'(?<![\w.])kind\s+(\w+)\s*;', ps))
-            if kinds - {"isotherm"}:
-                return ('skip', "propsDict fitParameters (kind %s) needs the "
-                                "flat-thermoDict per-iteration rebuild -- the "
-                                "builder/manifest path leaves thermoDict null "
-                                "(engine gap, FitParameters.cpp:247)"
-                        % " ".join(sorted(kinds - {"isotherm"})))
+        if re.search(r'activityModel\.pairs\[', ps):
+            has_fit_paths = True
     # propsDict ops carrying their OWN thermo{} override (pureFluids /
     # transport routes per op -- compare_transport_water) merge against the
     # FLAT thermoDict; the builder/manifest path does not carry that per-op
@@ -469,10 +470,15 @@ def classify(dict_path):
         return ('skip', "unparseable activityModel block (%s)" % e)
     am_keys = [k for k, _, _, _ in am_entries]
     model = None
+    cosmo_source = None                             # G3 rider: cosmoSAC set
     pair_decls = []                                 # [(pairName, "quoted path")]
+    inline_pairs = []                               # G3: [(pairName, body)]
     for k, ekind, espan, payload in am_entries:
         if k == "model" and ekind == 'scalar':
             model = payload
+        elif k == "source" and ekind == 'scalar':
+            # the cosmoSAC named-set selector (contract 2026-07-15)
+            cosmo_source = payload
         elif k == "binaryPairs" and ekind == 'block':
             try:
                 for pk, pkind, pspan, ppayload in \
@@ -484,11 +490,24 @@ def classify(dict_path):
                     pair_decls.append((pk, ppayload))
             except ValueError as e:
                 return ('skip', "unparseable binaryPairs block (%s)" % e)
+        elif k == "pairs" and ekind == 'list':
+            # G3 (Codex-ratified 2026-07-18): inline coefficient pairs --
+            # the dict OWNS the numbers (fitting / self-contained cases).
+            try:
+                inline_pairs = parse_inline_pairs(stripped, original, espan)
+            except ValueError as e:
+                return ('skip', "unparseable inline pairs (%s)" % e)
         else:
             return ('skip', "activityModel carries '%s' -- no translateV2 "
                             "slot (accepted: model + file-declared "
-                            "binaryPairs; inline pairs()/rq{}/source have "
-                            "no v2 grammar)" % k)
+                            "binaryPairs + inline pairs + cosmoSAC source;"
+                            " rq{} has no v2 grammar)" % k)
+    if pair_decls and inline_pairs:
+        return ('skip', "activityModel mixes file-declared binaryPairs and"
+                        " inline pairs -- one dict, one form (STRICT)")
+    if cosmo_source and model != "cosmoSAC":
+        return ('skip', "activityModel source with model '%s' -- the set"
+                        " selector is the cosmoSAC contract" % model)
     if model is None:
         return ('skip', "activityModel has no `model <word>;` entry")
     if model not in GAMMA_MODELS:
@@ -629,9 +648,36 @@ def classify(dict_path):
                                 " source path)" % rel)
         return ('ok', emit_dilute(components_verbatim, solvent, solutes, eos))
 
-    # -- gamma-phi cohorts (T1 / T2 [+ T13 transport]) ----------------------
+    # -- gamma-phi cohorts (T1 / T2 [+ T13 transport] [+ G3 inline]) --------
+    if inline_pairs and (transport or pure_fluids_verbatim):
+        return ('skip', "inline pairs + transport/pureFluids: translateV2"
+                        " refuses the combination (flat emission would drop"
+                        " the pairs)")
+    if has_fit_paths and not inline_pairs:
+        return ('skip', "propsDict pins activityModel.pairs[K] paths but the"
+                        " dict carries no inline pairs -- nothing to rewrite"
+                        " the paths onto")
+    extra_files = []
+    if has_fit_paths:
+        # rewrite each pinned v1 path to the order-stable named v2 path,
+        # using THIS dict's pair order for the K -> <i>-<j> map.
+        txt = props.read_text(errors="replace")
+        def repl(m):
+            k = int(m.group(1))
+            if k >= len(inline_pairs):
+                raise ValueError("path pairs[%d] beyond the dict's %d pairs"
+                                 % (k, len(inline_pairs)))
+            return ("equilibrium.liquid.activityModel.binaryParameters."
+                    + inline_pairs[k][0])
+        try:
+            new_txt = re.sub(r'activityModel\.pairs\[(\d+)\]', repl, txt)
+        except ValueError as e:
+            return ('skip', "fit-path rewrite: %s" % e)
+        extra_files.append((props, new_txt))
     return ('ok', emit_gamma_phi(components_verbatim, model, pair_decls,
-                                 transport, pure_fluids_verbatim, eos))
+                                 transport, pure_fluids_verbatim, eos,
+                                 inline_pairs, cosmo_source),
+            extra_files)
 
 
 # ---------------------------------------------------------------------------
@@ -804,7 +850,8 @@ def emit_transport(transport):
 
 
 def emit_gamma_phi(components_verbatim, model, pair_decls, transport,
-                   pure_fluids_verbatim=None, eos="idealGas"):
+                   pure_fluids_verbatim=None, eos="idealGas",
+                   inline_pairs=None, cosmo_source=None):
     if model == "ideal":
         header = HEADER_T1
         liquid = ("    liquid\n"
@@ -816,10 +863,21 @@ def emit_gamma_phi(components_verbatim, model, pair_decls, transport,
         header = HEADER_T2
         am = "        activityModel\n        {\n"
         am += "            model %s;\n" % model
+        if cosmo_source:
+            am += "            source %s;      // named parameter set\n" \
+                  % cosmo_source
         if pair_decls:
             am += "            binaryParameters\n            {\n"
             for pname, ppath in pair_decls:
                 am += "                %s { source %s; }\n" % (pname, ppath)
+            am += "            }\n"
+        if inline_pairs:
+            am += "            binaryParameters   // the dict OWNS the" \
+                  " numbers (inline form)\n            {\n"
+            for pname, body in inline_pairs:
+                am += ("                " + pname + "\n"
+                       "                {\n" + body
+                       + "                }\n")
             am += "            }\n"
         am += "        }\n"
         liquid = ("    liquid\n"
@@ -880,7 +938,9 @@ def main():
     converted, skipped = [], []          # skipped: (rel_path, reason)
     for dp in dicts:
         rel = dp.relative_to(ROOT).as_posix()
-        verdict, payload = classify(dp)
+        result = classify(dp)
+        verdict, payload = result[0], result[1]
+        extra_files = result[2] if len(result) > 2 else []
         if verdict == 'skip':
             skipped.append((rel, payload))
             continue
@@ -888,6 +948,16 @@ def main():
         new_path.write_text(payload)
         subprocess.run(["git", "add", str(new_path)], cwd=ROOT, check=True)
         subprocess.run(["git", "rm", "-q", str(dp)], cwd=ROOT, check=True)
+        for ef_path, ef_text in extra_files:
+            ef_path.write_text(ef_text)
+            subprocess.run(["git", "add", str(ef_path)], cwd=ROOT, check=True)
+            MIGRATION_NOTES.setdefault(dp.parent.parent, "")
+            note = "fit paths rewritten to the named v2 grammar in %s" \
+                   % ef_path.name
+            if MIGRATION_NOTES[dp.parent.parent]:
+                MIGRATION_NOTES[dp.parent.parent] += "; " + note
+            else:
+                MIGRATION_NOTES[dp.parent.parent] = note
         converted.append(rel)
 
     reasons = Counter(r for _, r in skipped)

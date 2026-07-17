@@ -1,9 +1,0 @@
-/*--------------------------------*- Choupo -*-----------------------*\
-  propertyPackage (INLINE) -- COSMO-SAC 2002 activity model over five common
-  compounds whose sigma profiles live in their data/standards component files
-  (cosmo{} block, VT-2005 / NIST benchmark).  No pair parameters: the mixture
-  non-ideality comes entirely from the sigma profiles.
-\*---------------------------------------------------------------------------*/
-components       ( water ethanol acetone nHexane toluene );
-activityModel    { model cosmoSAC; source VT2005; }
-equationOfState  { model idealGas; }

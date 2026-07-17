@@ -21,10 +21,10 @@ operations
 
         parameters
         (
-            { path  activityModel.pairs[0].a_ij;  initial -0.8009;   min -15;    max 15;   }
-            { path  activityModel.pairs[0].b_ij;  initial  246.18;   min -5000;  max 5000; }
-            { path  activityModel.pairs[0].a_ji;  initial  3.4578;   min -15;    max 15;   }
-            { path  activityModel.pairs[0].b_ji;  initial -586.0809; min -5000;  max 5000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij;  initial -0.8009;   min -15;    max 15;   }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij;  initial  246.18;   min -5000;  max 5000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji;  initial  3.4578;   min -15;    max 15;   }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji;  initial -586.0809; min -5000;  max 5000; }
         );
 
         residual

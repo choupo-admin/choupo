@@ -860,8 +860,15 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
     {
         auto liq = eq->subDict("liquid");
         // activityModel: word (ideal) or block { model NRTL; binaryParameters{} }
-        std::string model;
-        DictPtr pairsOut;
+        // G3 (Codex-ratified 2026-07-18): each binaryParameters entry is
+        // `source "file"` XOR the inline coefficient block { i; j; a_ij; ... }
+        // -- the dict OWNS inline numbers (fitting, self-contained cases);
+        // inline pairs vert to the flat pairs() shape.  Mixing the two forms
+        // in one dict refuses (STRICT).  A cosmoSAC set selector
+        // (`source <setName>`, the 2026-07-15 contract) rides along verbatim.
+        std::string model, cosmoSet;
+        DictPtr pairsOut;                      // source-form: name -> path
+        std::vector<DictPtr> inlinePairs;      // inline-form: coefficient dicts
         if (liq->found("activityModel"))
         {
             const EntryValue& ev = liq->entryValue("activityModel");
@@ -871,13 +878,29 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
             {
                 auto am = liq->subDict("activityModel");
                 model = am->lookupWord("model");
+                if (am->found("source"))
+                    cosmoSet = am->lookupWord("source");
                 if (am->found("binaryParameters"))
                 {
                     auto bp = am->subDict("binaryParameters");
-                    pairsOut = std::make_shared<Dictionary>("binaryPairs");
                     for (const auto& pr : bp->keys())
-                        pairsOut->insert(pr,
-                            bp->subDict(pr)->entryValue("source"));
+                    {
+                        auto pd = bp->subDict(pr);
+                        if (pd->found("source"))
+                        {
+                            if (!pairsOut)
+                                pairsOut =
+                                    std::make_shared<Dictionary>("binaryPairs");
+                            pairsOut->insert(pr, pd->entryValue("source"));
+                        }
+                        else
+                            inlinePairs.push_back(pd);
+                    }
+                    if (pairsOut && !inlinePairs.empty())
+                        throw std::runtime_error(
+                            "thermophysicalPropertySystem: binaryParameters"
+                            " mixes source-form and inline-form pairs -- one"
+                            " dict, one form (STRICT).");
                 }
             }
         }
@@ -905,11 +928,11 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
         // never nested under one of them.
         if (v2->found("transport") || v2->found("pureFluids"))
         {
-            if (pairsOut)
+            if (pairsOut || !inlinePairs.empty() || !cosmoSet.empty())
                 throw std::runtime_error("thermophysicalPropertySystem:"
-                    " binaryParameters combined with transport/pureFluids"
-                    " -- the flat emission would DROP the declared pairs"
-                    " silently; this combination needs its own wiring"
+                    " binaryParameters/source combined with transport/"
+                    "pureFluids -- the flat emission would DROP the declared"
+                    " pairs silently; this combination needs its own wiring"
                     " (name the case, do not guess).");
             auto flatT = std::make_shared<Dictionary>("transport");
             DictPtr tr = v2->found("transport") ? v2->subDict("transport")
@@ -972,6 +995,60 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
                 announce("equilibrium gammaPhi: liquid activity." + model
                      + "; vapour " + vap + " (flat emission for the pureFluids"
                      " override).");
+            return flat;
+        }
+        // G3: inline pairs / a cosmoSAC set selector have their home in the
+        // FLAT reader (activityModel { model; source; pairs() }) -- emit it.
+        if (!inlinePairs.empty() || !cosmoSet.empty())
+        {
+            std::ostringstream ft;
+            ft << "components ( ";
+            for (const auto& c : v2->lookupWordList("components"))
+                ft << c << " ";
+            ft << ");\n";
+            ft << "activityModel\n{\n    model " << model << ";\n";
+            if (!cosmoSet.empty())
+                ft << "    source " << cosmoSet << ";\n";
+            if (!inlinePairs.empty())
+            {
+                ft << "    pairs\n    (\n";
+                for (const auto& pd : inlinePairs)
+                {
+                    ft << "        {\n";
+                    for (const auto& k : pd->keys())
+                    {
+                        const EntryValue& pv = pd->entryValue(k);
+                        ft << "            " << k << " ";
+                        if (std::holds_alternative<scalar>(pv))
+                        {
+                            std::ostringstream v;
+                            v << std::setprecision(17) << std::get<scalar>(pv);
+                            ft << v.str();
+                        }
+                        else if (std::holds_alternative<std::string>(pv))
+                            ft << std::get<std::string>(pv);
+                        else
+                            throw std::runtime_error(
+                                "thermophysicalPropertySystem: inline pair"
+                                " key '" + k + "' is neither scalar nor word.");
+                        ft << ";\n";
+                    }
+                    ft << "        }\n";
+                }
+                ft << "    );\n";
+            }
+            ft << "}\n";
+            ft << "equationOfState { model " << vap << "; }\n";
+            auto flat = Dictionary::fromString(ft.str(),
+                                               "translateV2.flatInlinePairs");
+            announce("equilibrium gammaPhi: liquid activity." + model
+                     + (inlinePairs.empty() ? ""
+                        : " (" + std::to_string(inlinePairs.size())
+                          + " inline pair(s) -- the dict OWNS the numbers:"
+                            " fitting / self-contained)")
+                     + (cosmoSet.empty() ? ""
+                        : " (parameter set '" + cosmoSet + "')")
+                     + "; vapour " + vap + ".");
             return flat;
         }
         pm->insert("liquid", "activity." + model);

@@ -299,8 +299,17 @@ try
         // whole downstream (speciation detection, builder, op readers) then
         // consumes the verified v1-shaped manifest.  Strict validation + the
         // [v2 plan] announce happen inside the translator.
+        // G3 (Codex-ratified 2026-07-18): the AUTHORED v2 dict is preserved
+        // -- a fitParameters op mutates a COPY of it by the NAMED v2 path
+        // (equilibrium.liquid.activityModel.binaryParameters.<i>-<j>.<coef>)
+        // and re-translates per iteration, so the fit varies the SOURCE
+        // grammar, never a translated intermediate.
+        DictPtr v2Authored;
         if (sel->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
+        {
+            v2Authored = sel;
             sel = ThermoPackageBuilder::translateV2(sel);
+        }
         if (deprecatedName)
             std::cout << "  [deprecated] legacy package name -- rename it to"
                          " constant/propertyDict (v1) or constant/thermoPhysPropDict (v2;"
@@ -338,13 +347,19 @@ try
                              "   (the case carries the full"
                              " manifest)\n";
             thermo = ThermoPackageBuilder::build(sel, db);   // rich MANIFEST
+            // fit ops (evaluate/fit) rebuild per iteration from the AUTHORED
+            // v2 grammar -- hand it over when the case is v2 (G3).
+            if (v2Authored) thermoDict = v2Authored;
         }
         else if (sel->found("components"))
         {
             if (verbosity >= 2)
                 std::cout << "Property package:  " << pkgPath
                           << "   (flat form: activityModel/equationOfState)\n";
-            thermoDict = sel;
+            // fit ops mutate the AUTHORED grammar: hand them the v2 source
+            // when the case is v2 (named-path mutation + per-iteration
+            // re-translate), else the flat v1 dict exactly as before.
+            thermoDict = v2Authored ? v2Authored : sel;
             thermo.readFromDict(sel, db);                    // FLAT form
         }
         else if (sel->found("package"))

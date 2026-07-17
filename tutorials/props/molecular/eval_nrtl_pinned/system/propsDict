@@ -47,10 +47,10 @@ operations
         mode        evaluate;
         parameters
         (
-            { path  activityModel.pairs[0].a_ij;  value -0.5;   }
-            { path  activityModel.pairs[0].b_ij;  value  100.0; }
-            { path  activityModel.pairs[0].a_ji;  value  2.0;   }
-            { path  activityModel.pairs[0].b_ji;  value -300.0; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij;  value -0.5;   }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij;  value  100.0; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji;  value  2.0;   }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji;  value -300.0; }
         );
         residual
         {

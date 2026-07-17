@@ -1,6 +1,5 @@
 # migrate_thermoPhysProp.py -- skipped cases (STRICT T1+T2+diluteSolution cohorts, 2026-07-17)
-# converted 0, skipped 23
-tutorials/batch/still/still02_ethanol_water_azeo/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
+# converted 10, skipped 13
 tutorials/plant/lithiumBrinePlant/constant/propertyDict	case contains nested constant/propertyDict files (inherits/walk-up chains read the v1 name)
 tutorials/plant/lithiumBrinePlant/sectors/BRINE/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
 tutorials/plant/lithiumBrinePlant/sectors/CARBONATION/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
@@ -8,18 +7,9 @@ tutorials/plant/lithiumBrinePlant/sectors/EXTRACTION/constant/propertyDict	no si
 tutorials/plant/lithiumBrinePlant/sectors/FINISHING/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
 tutorials/plant/lithiumBrinePlant/sectors/HOTAIR/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
 tutorials/props/compare/compare_transport_water/constant/propertyDict	propsDict op carries an inline thermo{} override (per-op merge exists on the flat path only -- no builder/manifest equivalent)
-tutorials/props/molecular/cosmoSAC01_water_ethanol/constant/propertyDict	activityModel carries 'source' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
-tutorials/props/molecular/eval_nrtl_catalogue/constant/propertyDict	propsDict fitParameters (kind T_bubble) needs the flat-thermoDict per-iteration rebuild -- the builder/manifest path leaves thermoDict null (engine gap, FitParameters.cpp:247)
-tutorials/props/molecular/eval_nrtl_pinned/constant/propertyDict	propsDict fitParameters (kind T_bubble) needs the flat-thermoDict per-iteration rebuild -- the builder/manifest path leaves thermoDict null (engine gap, FitParameters.cpp:247)
 tutorials/props/scan/binary01_lle_water_nbutanol/constant/propertyDict	phases: phase 'liquid1' activity carries 'rq' -- no gammaGamma slot
 tutorials/steady/crystallisation/Crystallizer09chatGPT/constant/propertyDict	case contains nested constant/propertyDict files (inherits/walk-up chains read the v1 name)
 tutorials/steady/crystallisation/Crystallizer09chatGPT/unitOperations/recovery/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
-tutorials/steady/distillation/column03_azeotrope_mesh/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
-tutorials/steady/flash/bubbleT01_ethanol_water/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
-tutorials/steady/flash/bubbleT02_uniquac_ethanol_water/constant/propertyDict	activityModel carries 'rq' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
-tutorials/steady/flash/dewT01_ethanol_water/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
-tutorials/steady/flash/flash02_ethanol_water/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
-tutorials/steady/flash/flash03_wilson_ethanol_water/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
+tutorials/steady/flash/bubbleT02_uniquac_ethanol_water/constant/propertyDict	activityModel carries 'rq' -- no translateV2 slot (accepted: model + file-declared binaryPairs + inline pairs + cosmoSAC source; rq{} has no v2 grammar)
 tutorials/steady/flash/vlle01_waterButanol/constant/propertyDict	phases: phase 'waterRich' activity carries 'rq' -- no gammaGamma slot
-tutorials/steady/optimisation/fitNRTL01_ethanol_water/constant/propertyDict	propsDict fitParameters (kind T_bubble) needs the flat-thermoDict per-iteration rebuild -- the builder/manifest path leaves thermoDict null (engine gap, FitParameters.cpp:247)
 tutorials/steady/thermo/perUnitThermo01_srk_nrtl/constant/propertyDict	inline thermo{} override without activityModel (inherits it from the flat global; the builder path would throw 'missing entry activityModel')

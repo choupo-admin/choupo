@@ -33,6 +33,7 @@ License
 #include "core/Units.H"
 #include "thermo/Database.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/ThermoPackageBuilder.H"
 #include "unitOperations/saturation/BubblePoint.H"
 
 #include <algorithm>
@@ -383,12 +384,25 @@ int FitParameters::run(const DictPtr& dict,
     // dict -- the fit contaminated the package for any operation after it in
     // the same propsDict.  The working tree is now genuinely private.
     DictPtr work = thermoDict()->deepCopy();
+    // G3 (Codex-ratified 2026-07-18): when the case is v2, `work` IS the
+    // authored thermophysicalPropertySystem -- the LM mutates it by the
+    // NAMED v2 path (equilibrium.liquid.activityModel.binaryParameters.
+    // <i>-<j>.<coef>, order-stable, never pairs[0]) and the copy passes
+    // through the translator EVERY iteration, so the fit varies the source
+    // grammar itself.  v1 flat dicts keep the exact old path.
+    const bool v2Work = work->lookupWordOrDefault("recordType", "")
+                        == "thermophysicalPropertySystem";
     auto buildThermo = [&](const std::vector<ParamSpec>& current)
     {
         for (const auto& ps : current)
             work->setScalarAtPath(ps.path, ps.value);
+        DictPtr eff = v2Work ? ThermoPackageBuilder::translateV2(work) : work;
+        // the translation may resolve to the FLAT shape (inline pairs) or the
+        // MANIFEST shape (catalogue-declared pairs) -- route accordingly.
+        if (eff->found("propertyMethods"))
+            return ThermoPackageBuilder::build(eff, *database());
         ThermoPackage tp;
-        tp.readFromDict(work, *database());
+        tp.readFromDict(eff, *database());
         return tp;
     };
 
@@ -902,30 +916,62 @@ int FitParameters::run(const DictPtr& dict,
         // flagged in the header, never hidden (the bar we hold).
         if (!proposalPath.empty())
         {
+            // Two recognised path grammars, ONE pair either way:
+            //   v1 flat :  activityModel.pairs[K].<coef>       (index-based)
+            //   v2 named:  equilibrium.liquid.activityModel.binaryParameters
+            //              .<i>-<j>.<coef>                     (order-stable)
             int pairIdx = -1; bool singlePair = true;
+            std::string v2PairKey;
             std::map<std::string, scalar> coef;   // a_ij/b_ij/a_ji/b_ji -> value
             for (const auto& ps : params)
             {
+                auto dot = ps.path.rfind('.');
+                if (dot == std::string::npos) { singlePair = false; break; }
+                if (ps.path.find(".binaryParameters.") != std::string::npos)
+                {
+                    auto pdot = ps.path.rfind('.', dot - 1);
+                    if (pdot == std::string::npos) { singlePair = false; break; }
+                    const std::string key =
+                        ps.path.substr(pdot + 1, dot - pdot - 1);
+                    if (v2PairKey.empty()) v2PairKey = key;
+                    else if (v2PairKey != key) { singlePair = false; break; }
+                    coef[ps.path.substr(dot + 1)] = ps.value;
+                    continue;
+                }
                 auto lb = ps.path.find("pairs[");
                 auto rb = ps.path.find(']');
-                auto dot = ps.path.rfind('.');
                 if (lb == std::string::npos || rb == std::string::npos
-                    || dot == std::string::npos || rb < lb)
+                    || rb < lb)
                 { singlePair = false; break; }
                 int k = std::atoi(ps.path.substr(lb + 6, rb - lb - 6).c_str());
                 if (pairIdx == -1) pairIdx = k;
                 else if (pairIdx != k) { singlePair = false; break; }
                 coef[ps.path.substr(dot + 1)] = ps.value;
             }
+            if (pairIdx >= 0 && !v2PairKey.empty()) singlePair = false;
 
-            if (singlePair && pairIdx >= 0)
+            DictPtr pd;                            // the fitted pair's block
+            std::string model = "NRTL";
+            if (singlePair && !v2PairKey.empty())
+            {
+                auto am = work->subDict("equilibrium")->subDict("liquid")
+                              ->subDict("activityModel");
+                model = am->lookupWordOrDefault("model", "NRTL");
+                auto bp = am->subDict("binaryParameters");
+                if (bp->found(v2PairKey)) pd = bp->subDict(v2PairKey);
+            }
+            else if (singlePair && pairIdx >= 0)
             {
                 auto am = work->subDict("activityModel");
-                const std::string model = am->lookupWordOrDefault("model", "NRTL");
+                model = am->lookupWordOrDefault("model", "NRTL");
                 auto pairs = am->lookupDictList("pairs");
                 if (pairIdx < static_cast<int>(pairs.size()))
+                    pd = pairs[static_cast<std::size_t>(pairIdx)];
+            }
+
+            if (pd)
+            {
                 {
-                    auto pd = pairs[static_cast<std::size_t>(pairIdx)];
                     const std::string ci = pd->lookupWord("i");
                     const std::string cj = pd->lookupWord("j");
                     const scalar alpha = pd->lookupScalarOrDefault("alpha", 0.30);
