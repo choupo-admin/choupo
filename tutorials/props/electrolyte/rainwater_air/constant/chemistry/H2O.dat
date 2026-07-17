@@ -1,0 +1,7 @@
+// [imported] origin "data/standards/chemistry/H2O.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+recordType gasLiquidEquilibrium;
+schemaVersion 1;
+
+gas H2O; reaction "H2O(g) = H2O"; dissolved "H2O";
+      logK25 1.506; dH -44030; analytic ( -16.5066 -0.0020013 2710.7 3.7646 0 2.24e-06 ); Tc 647.3; Pc 217.6; omega 0.344; source "USGS PHREEQC phreeqc.dat (public domain); primary not stated in db";
+
