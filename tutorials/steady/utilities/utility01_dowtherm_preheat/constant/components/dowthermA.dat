@@ -1,12 +1,4 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/dowthermA.dat
-// sha256   4011f09752fc883a665f265c9939a889067d6d8cec12ef7a24cdccdb43eeacbb
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/dowthermA.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Dowtherm A  (eutectic of 73.5 wt% diphenyl oxide + 26.5 wt% biphenyl)
   Pseudo-component for use as a high-temperature liquid heat-transfer fluid.
@@ -15,8 +7,9 @@
     Dow Chemical Technical Data Sheet, "Dowtherm A Heat Transfer Fluid",
       Doc 176-01463-01 (saturated liquid property tables at 100/200/300/400 C
       were extracted, then linear/quadratic fits below).
-    Reid, Prausnitz, Poling, "Properties of Gases and Liquids" 5th ed,
-      for Tc, Pc, omega (eutectic mixture estimates).
+    Tc, Pc, omega are eutectic-mixture estimates (pseudo-component); these
+      are individual literature/estimated values -- primary re-citation
+      pending (IST review).
 
   Use:
     Pseudo-fluid for the `dowthermA` utility (closed-loop sensible heat carrier

@@ -1,0 +1,21 @@
+/*----------------------------------------------------------*\
+  constant/species/aqueous.dat -- aqueous model species,
+  FILTERED to this case's closure (1 of 45 catalogue records).
+  Same grammar as data/standards/species/aqueous.dat; imported
+  by bin/choupo-import from the Choupo-2607 release -- ownership and
+  integrity are recorded in constant/propertyManifest.
+\*----------------------------------------------------------*/
+
+aqueousSpecies
+(
+    {
+        /* Dissolved nitrogen N2(aq) -- inert neutral, identity + MW only
+           (fixed-oxidation-state catalogue: no N2/NO3/NH4 redox coupling).
+           Summoned as the pinned master of an OPEN-system N2(g) Henry pin
+           (chemistry/ (recordType gasLiquidEquilibrium) N2.dat). */
+        name    N2;
+        ion     "N2";
+        charge  0;
+        MW { value 28.013; unit g/mol;}
+    }
+);

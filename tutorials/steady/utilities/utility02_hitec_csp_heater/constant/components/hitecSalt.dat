@@ -1,12 +1,4 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/hitecSalt.dat
-// sha256   73722443a43a08c159935f3b374f4980f1ab85f52d15c96d1e744780a602c09b
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/hitecSalt.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: HITEC molten salt  (7-49-44 mol% NaNO3-NaNO2-KNO3,
                                   equivalent to 7-40-53 wt%)

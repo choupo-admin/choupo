@@ -221,6 +221,7 @@ def closure_of(pp_path, caseDir, std, AQ):
     recs = {}
     ions = set()
     wantAllSpecies = False
+    solute_comps = set()
 
     def want(rel):
         src = std / rel
@@ -355,12 +356,35 @@ def closure_of(pp_path, caseDir, std, AQ):
             d2t = block(ctext, "speciesMap") or block(ctext, "dissociatesTo")
             if d2t:
                 ions.update(w for w in words(d2t) if not w.isdigit())
+            # a `role solute;` component dissolves by Henry's law -- its
+            # (solute, solvent) pair record must ride the closure (below).
+            if re.search(r'\brole\s+solute\s*;', ctext):
+                solute_comps.add(c)
         # flowsheet-ION basis: a component whose NAME is itself an aqueous
         # species (Na, Cl, Ca, SO4, ... carried AS flowsheet components -- the
         # multi-ion membrane / electrodialysis basis).  Its ion record + pairs
         # ride the closure like any dissociated salt's ions.
         if c in AQ:
             ions.add(c)
+    # ---- Henry's-law dilute-solution pairs -----------------------------------
+    # parameters/Henry/<solute>-<solvent>.dat: the HenrysLawRegistry scans the
+    # Henry home (case-local constant/parameters/Henry/ first).  A package that
+    # declares `solvent <name>;` dissolves each `role solute;` component (and any
+    # assembly-level `solutes ( ... );`) into it by Henry's law -- so the sealed
+    # case must carry each such (solute, solvent) pair record (existence-guarded,
+    # so only real pairs seal).  Mirrors the Pitzer/eNRTL pair tracing below.
+    t_nc = re.sub(r'/\*.*?\*/', '', t, flags=re.S)
+    t_nc = re.sub(r'(^|\s)//.*$', '', t_nc, flags=re.M)
+    ms = re.search(r'\bsolvent\s+([A-Za-z0-9_+\-]+)\s*;', t_nc)
+    if ms:
+        solvent = ms.group(1)
+        henry_solutes = set(solute_comps)
+        sblk = block(t_nc, "solutes")
+        if sblk:
+            henry_solutes.update(words(sblk))
+        for sol in sorted(henry_solutes):
+            want("parameters/Henry/" + sol + "-" + solvent + ".dat")
+
     if re.search(r'\brecordType\s+thermophysicalPropertySystem\s*;', t):
         harvest_v2(t)
     else:

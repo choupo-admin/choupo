@@ -1,12 +1,4 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/propyleneGlycol30.dat
-// sha256   cd64651c8f8f04152df101dfbceaf48913054789c1269b0ba5be3f011a3b56f5
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/propyleneGlycol30.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Propylene Glycol 30 vol % brine  (DOWFROST / GlycoChill class)
   Pseudo-component for use as a low-temperature secondary-loop refrigerant
@@ -32,6 +24,16 @@
 name        propyleneGlycol30;
 formula     "C3H8O2 (30 vol %) + H2O (70 vol %)";
 CAS         "n/a";              // pseudo-mixture
+
+// SPECIAL STATUS: this is NOT a pure compound -- it is a fixed-composition
+// 30 vol % propylene-glycol / 70 vol % water BRINE, lumped into one
+// pseudo-component for the closed secondary-refrigerant loop.  It carries NO
+// standardThermochemistry block ON PURPOSE: a fixed mixture has no single heat of
+// formation and never reacts (utility heat-carrier only -- "Do NOT put in a
+// reactor", above).  The deliberate absence is correct, not a curation gap;
+// a real glycol study would model PG and water as two SEPARATE components with
+// a Hᴱ mixing term, never one lumped brine.  (Pseudo-component policy:
+// docs/ai/components.md "Pseudo-components".)
 
 // Pseudo-MW for a 30 vol % (≈ 32 wt %) PG-in-water brine:
 // 0.32 * 76.09 + 0.68 * 18.02 = 36.6 g/mol

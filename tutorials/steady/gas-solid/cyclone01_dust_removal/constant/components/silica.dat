@@ -1,15 +1,4 @@
-// --- vendored for self-containment (2026-06-07; re-synced 2026-07-05) --
-// origin   standard
-// source   data/standards/components/silica.dat
-// sha256   a04d396a7b333240bf080c0078d34747e1f2f304a1a5b476c82d43e1e6a38ee1
-// note     byte-copy of the FROZEN reference at vendoring time.  This case
-//          is now self-contained + reproducible even if the standard evolves
-//          (the earlier vendored copy was a stale PARTIAL snapshot: it lacked
-//          the standardThermochemistry + solidHeatCapacity blocks the run was in fact
-//          taking from the standard entry via the field-by-field overlay).
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/silica.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Silica  (SiO2) --- a generic mineral particulate / dust.
 
@@ -61,4 +50,24 @@ solidHeatCapacity
     model         polynomial;          // Cp = a0 + a1*T + a2*T^2  [J/(mol*K)]
     coefficients  ( 8.24309   0.149929   -9.34656e-05 );
     Trange        ( 298  600 );        // [Robie-Hemingway 1995, USGS Bull. 2131]
+}
+
+// Solid phase(s) of this component (roadmap Phase D fold-in):
+solidPhases
+{
+    SiO2a
+    {
+        dissolutionReaction { masters ( { ion H4SiO4; nu 1; } ); nuWater -2; }
+        equilibrium { logK25 -2.71; dH 13974.6; analytic ( -0.26 0 -731 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    }
+    chalcedony
+    {
+        dissolutionReaction { masters ( { ion H4SiO4; nu 1; } ); nuWater -2; }
+        equilibrium { logK25 -3.55; dH 19748.5; analytic ( -0.09 0 -1032 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    }
+    quartz
+    {
+        dissolutionReaction { masters ( { ion H4SiO4; nu 1; } ); nuWater -2; }
+        equilibrium { logK25 -3.98; dH 25062.2; analytic ( 0.41 0 -1309 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    }
 }

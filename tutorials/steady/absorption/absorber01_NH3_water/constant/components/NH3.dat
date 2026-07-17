@@ -1,12 +1,4 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/NH3.dat
-// sha256   0cf18823c0ab644ba35fb6d8fb1eeb1808efdb9126e6222f6aa85312165bf89d
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/NH3.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Ammonia  (NH3, CAS 7664-41-7)
 
@@ -18,7 +10,10 @@
   CANONICAL FILE.  2026-06-06: the duplicate-CAS twin `ammonia.dat`
   (same CAS 7664-41-7, divergent constants) was merged into this file
   and removed -- one molecule, one file, one set of numbers.
-  Sources: Reid-Prausnitz-Poling 4th ed., Appendix A; NIST WebBook;
+  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
+           reference EOS; standardThermochemistry cross-checked vs NASA TM-4513
+           (McBride-Gordon-Reno 1993); vaporPressure -- individual
+           literature value, primary re-citation pending (IST review);
            liquidViscosity -- Engineering Toolbox saturated-liquid table.
 \*---------------------------------------------------------------------------*/
 
@@ -70,7 +65,8 @@ liquidHeatCapacity
 // Andrade A,B = least-squares fit to the Engineering Toolbox saturated-liquid
 // ammonia table:  mu = 0.306 / 0.239 / 0.186 mPa.s  @ 223 / 273 / 323 K
 // (AAD ~2% over 223-323 K).  Cross-check: mu(239.85 K, b.p.) = 0.277 mPa.s
-// (literature scatter 0.26-0.28; NIST JPCRD viscosity ref for tighter work).
+// (literature scatter 0.26-0.28; a calorimetric/JPCRD viscosity ref would
+// be needed for tighter work).
 liquidViscosity
 {
     andrade { A -9.665; B 353.6; }
@@ -78,14 +74,81 @@ liquidViscosity
 
 provenance
 {
-    vaporPressure  "NIST WebBook / RPP 4th ed. App. A";
-    constants      "Reid-Prausnitz-Poling 4th ed., Appendix A";
-    standardThermochemistry "NIST WebBook (ideal-gas, 298 K)";
+    vaporPressure  "individual literature value -- primary re-citation pending (IST review)";
+    constants      "cross-checked vs CoolProp 7.2.0 reference EOS";
+    standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), ideal-gas, 298 K";
     liquidViscosity
     {
         origin       regressed;
         method       "Andrade least-squares fit to Engineering Toolbox saturated-liquid mu(T) (3 pts, 223-323 K)";
         validity     (223 323);
         uncertainty  "~2% AAD vs the ET table";
+    }
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-1070-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7664-41-7";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        48.99575;
+        volume      30.80963;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.395986405372859
+            3.21304852151480
+            3.36761510784294
+            3.49136458100361
+            3.08658721900711
+            6.01107834528683
+            4.46932190007231
+            1.73752963879649
+            1.22321422024621
+            1.22851580038362
+            2.21092981626236
+            0.764987186729966
+            1.49649420014249
+            1.47458637187939
+            0.389518590342731
+            0.421831037421818
+            1.19379189776866
+            0.614010998748326
+            0.670189717971943
+            1.66279666112566
+            1.17235680360421
+            2.659497847567551E-002
+            0.000000000000000E+000
+            0.341635130225554
+            2.42913438154358
+            0.411574633989962
+            0.457395228555586
+            0.285926749404966
+            1.32933105954944
+            0.998440945576913
+            0.941991871153986
+            0.203735911324103
+            1.27423408867590
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
     }
 }
