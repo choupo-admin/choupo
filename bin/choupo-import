@@ -494,6 +494,20 @@ def closure_of(pp_path, caseDir, std, AQ):
         for sol in sorted(henry_solutes):
             want("parameters/Henry/" + sol + "-" + solvent + ".dat")
 
+    # ---- molecular NRTL pairs under an ELECTROLYTE world ---------------------
+    # The eNRTL mixed-solvent (and any electrolyte world with 2+ molecular
+    # solvents) resolves the molecular solvent-solvent NRTL pair IMPLICITLY
+    # from the catalogue (no declared path -- Crystallizer09's water-ethanol
+    # drowning-out).  Sealed, an absent pair silently defaults to IDEAL and the
+    # physics moves -- so trace parameters/NRTL/<a>-<b>.dat for every component
+    # pair, existence-guarded (only real catalogue pairs ride the closure).
+    if re.search(r'\belectrolyte\.[A-Za-z]+\s*;', t_nc) \
+       or re.search(r'\bformulation\s+electrolyteGammaPhi\s*;', t_nc):
+        for i in range(len(comps)):
+            for j in range(i + 1, len(comps)):
+                a, b = sorted((comps[i], comps[j]))
+                want("parameters/NRTL/" + a + "-" + b + ".dat")
+
     # ---- UNIFAC group-contribution tables ------------------------------------
     # UNIFAC's R_k/Q_k (groups.dat) + a_mn (interactions.dat) are SINGLETON
     # tables, not per-pair records: the model reads them through the case-local
@@ -801,8 +815,28 @@ def main():
             continue
         sd = pp.parent.parent            # SECTOR/constant/<dict> -> SECTOR
         recs, ions, wantAll = closure_of(pp, sd, std, AQ)
-        extra = {rel: src for rel, src in recs.items() if rel not in plant_recs}
-        sector[sd] = (extra, ions - plant_ions, wantAll and not plant_all)
+        # A sector keeps ONLY the records the engine resolves PER-NODE (the
+        # binary-pair ladders carry a nodeBase: parameters/NRTL|UNIQUAC|Wilson).
+        # Everything else (methods/, chemistry/, species, Pitzer pairs, ...) is
+        # resolved by the cwd walk-up, which starts at the PLANT ROOT when the
+        # whole plant runs -- so those records must live at the root (the
+        # drill-in run still finds them: the sector's walk-up climbs to the
+        # root).  The retired propertyData snapshots duplicated them into both;
+        # the mirrored form promotes instead.
+        per_node = ("parameters/NRTL/", "parameters/UNIQUAC/", "parameters/Wilson/")
+        extra = {}
+        for rel, src in recs.items():
+            if rel in plant_recs:
+                continue
+            if rel.startswith(per_node):
+                extra[rel] = src
+            else:
+                plant_recs[rel] = src
+        # ion species resolve through the same cwd walk-up (the filtered
+        # constant/species/aqueous.dat) -- promote them to the root catalogue.
+        plant_ions.update(ions)
+        plant_all = plant_all or wantAll
+        sector[sd] = (extra, set(), False)
 
     # A per-unit thermo{} override in a sector flowsheet is resolved by the
     # FLATTENED plant against the plant ROOT -- fold its records into the

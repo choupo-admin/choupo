@@ -2364,7 +2364,19 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
                                           const DictPtr&       udict,
                                           const ThermoPackage& global)
 {
-    const bool hasThermo  = udict->found("thermo");
+    // A `thermo {}` that carries only per-node AUXILIARIES (binaryPairsBase /
+    // activeComponents -- synthesized by the constant/parameters walk-up at
+    // wiring time) selects NO world: it must not eclipse the unit's property
+    // context (F2).  Only a thermo{} naming a MODEL is a world override.
+    const bool hasThermoBlock = udict->found("thermo");
+    auto declaresWorld = [](const DictPtr& th)
+    {
+        return th->found("activityModel") || th->found("phases")
+            || th->found("equationOfState") || th->found("propertyMethods")
+            || th->found("chemistry");
+    };
+    const bool hasThermo  = hasThermoBlock
+                            && declaresWorld(udict->subDict("thermo"));
     const bool hasContext = udict->found("propertyContextBase");
     if ((!hasThermo && !hasContext) || !db_)
         return global;
@@ -2479,6 +2491,15 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
         }
         else
             return global;   // context does not change the liquid world -> global
+        // Fold the auxiliary-only thermo{} (binaryPairsBase / activeComponents
+        // from the wiring walk-up) OVER the context translation -- the nearest
+        // pair-owning node wins, exactly the Item-0b precedence.
+        if (hasThermoBlock)
+        {
+            auto aux = udict->subDict("thermo");
+            for (const auto& k : aux->keys())
+                over->insert(k, aux->entryValue(k));
+        }
     }
     for (const auto& k : over->keys())
         merged->insert(k, over->entryValue(k));

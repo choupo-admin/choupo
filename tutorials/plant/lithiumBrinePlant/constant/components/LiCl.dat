@@ -1,0 +1,45 @@
+// [imported] origin "data/standards/components/LiCl.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Substance: Lithium chloride (LiCl, CAS 7447-41-8)
+
+  UNIFIED substance file.  A non-volatile, fully-dissociating 1-1 salt
+  (Li+ + Cl-), the most soluble common chloride (~19.9 mol/kg at 25 C) --
+  which is WHY the salar/brine route works (Li stays in the mother liquor while
+  NaCl/KCl crystallise out).  The Li+/Cl- ions live in species/aqueous/; the
+  Li-Cl Pitzer pair is curated in parameters/Pitzer/pairs/.
+  Promoted to the standard catalogue (was case-local in lithiumBrinePlant).
+
+  Sources: MW from atomic weights (IUPAC); solid rho_p 2068 kg/m^3
+  (crystallographic, public domain); solubility 19.9 mol/kg (25 C) -- primary
+  re-citation pending (candidate: Linke & Seidell, Solubilities, 4th ed.);
+  liquid-Cp an ASSERTED energy-closure proxy (see the block).
+\*---------------------------------------------------------------------------*/
+
+name           LiCl;
+formula        LiCl;
+CAS            7447-41-8;
+
+MW             42.394;         // g/mol
+nonvolatile    true;
+
+// APPARENT COMPONENT view -- the balance/representation map (apparent -> ions).
+component
+{
+    speciesMap { Li 1; Cl 1; }
+}
+
+// Anhydrous LiCl crystal (the LiCl.H2O hydrate is a separate mineral phase).
+solid
+{
+    rho_p   2068.0;     // crystalline LiCl density [kg/m^3]
+    k_v     1.0;        // volume shape factor (cube)
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (50.0);      // J/(mol.K), constant
+    Trange        (270  400);
+    origin        asserted;
+    why           "temporary energy-closure proxy; solid-lattice Dulong-Petit 6R value reused; not a physical liquid-LiCl Cp model";
+}

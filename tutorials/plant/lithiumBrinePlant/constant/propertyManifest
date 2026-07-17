@@ -1,0 +1,157 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-07-17";
+    importerVersion    "2";
+    records
+    {
+        "components/CH4.dat"
+        {
+            type          imported;
+            sha256        "b75e30c0797d6675119bd06113a93e71e55d9242c3ebddee57616e6dcac94bf1";
+            origin        "data/standards/components/CH4.dat";
+            originSha256  "e2784144d3a2bbd5a5a559fb48d0a77f4d5a39b86a5c07f066d13ffe364fe2a8";
+            release       Choupo-2607;
+        }
+        "components/CO.dat"
+        {
+            type          imported;
+            sha256        "6eef8c107b4bce2f790d98171c47829723cac8a14934d0252331b94b56211474";
+            origin        "data/standards/components/CO.dat";
+            originSha256  "1adbe60e0576e82ae71bae8bfd9e67123e8bc0dd5ef12514cf33dc8fce714837";
+            release       Choupo-2607;
+        }
+        "components/CO2.dat"
+        {
+            type          imported;
+            sha256        "33a99432a12a5431da19493588c73fa5b9d3f8b897e9cbb796b57d51ae8ded9f";
+            origin        "data/standards/components/CO2.dat";
+            originSha256  "6b092466e5da6b47d27dbed354401acf51563dd65b6adda01d70bfcc199b243c";
+            release       Choupo-2607;
+        }
+        "components/H2.dat"
+        {
+            type          imported;
+            sha256        "d8ff0adb52de155aa6ae6a4b6cae0215c2ac100a6e09c0fb9ede028b278229e5";
+            origin        "data/standards/components/H2.dat";
+            originSha256  "5c94ad2306ce46027919eb69e2fa0e8605e39955f07c47c06a3b829962feb183";
+            release       Choupo-2607;
+        }
+        "components/LiCl.dat"
+        {
+            type          imported;
+            sha256        "1bab6a4b3c2da3815745f96f97fe9035a1d1ecb40a3d508bf0e30894d716c2c9";
+            origin        "data/standards/components/LiCl.dat";
+            originSha256  "d1e84c6baf03d5970ed82b9058f4e9c042283327993811160630826fe3789b43";
+            release       Choupo-2607;
+        }
+        "components/N2.dat"
+        {
+            type          imported;
+            sha256        "920a4cb07f76f0b2455f3809fcefe7dcf41ce1a6492853cd6d2d7a5c287da324";
+            origin        "data/standards/components/N2.dat";
+            originSha256  "4792bef415c18fc04a56e17937a799cdd248c394fc1cc40c4da32b25546e78d1";
+            release       Choupo-2607;
+        }
+        "components/NaCl.dat"
+        {
+            type          merged;
+            sha256        "396713ec7cc84bf7dc46d78ff4de6d281a0be9672fba0b9ebc7e68688420ad8b";
+            origin        "data/standards/components/NaCl.dat";
+            originSha256  "4602d37208c6f6ef4637cf8a14b4936a9924b6d51d5cbfb5aeadda2f70936dde";
+            overlaySha256 "1d775eca86cea0656a39ce23fd42ccb68e59ad4d4ed9f5dd7cae1fa21589595f";
+            release       Choupo-2607;
+        }
+        "components/O2.dat"
+        {
+            type          imported;
+            sha256        "7e113451716852da86aa4f8648ad79fe745eef8a02c46a85eb7a6d3ca74b9d5d";
+            origin        "data/standards/components/O2.dat";
+            originSha256  "6e3be8a5a02a2d2363ca1c411bf8ef027aabb09e5eb44a05ea35454374aa96ed";
+            release       Choupo-2607;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "590702adfd0a04f54318ed97140943d672afd4f9c0526aeac5d31dbca1fcfc63";
+            origin        "data/standards/components/water.dat";
+            originSha256  "7d1996853ccc57b14e5dccf6febb031bf4b6683db7c18ef5622a80da3317a421";
+            release       Choupo-2607;
+        }
+        "methods/NRTL.dat"
+        {
+            type          imported;
+            sha256        "d799a507a0cd16c10e518e6dea9ca3ada992acb3923789183d1ffac6a45c3510";
+            origin        "data/standards/methods/NRTL.dat";
+            originSha256  "685ffda66992d4cae9c5e5e2e514c4ec6f6a287b438ecfb50ac570cf2ea2aeea";
+            release       Choupo-2607;
+        }
+        "methods/pitzer.dat"
+        {
+            type          imported;
+            sha256        "0a1ddc89be2089b3d7aef583ec97bb746b02d2430d54dfb14e2fd3d9b61dadb7";
+            origin        "data/standards/methods/pitzer.dat";
+            originSha256  "b59914e0fbb520b010354c3ebb4df5989efe4d4285ecafd27524df8781f74d87";
+            release       Choupo-2607;
+        }
+        "parameters/Pitzer/pairs/Li-Cl.dat"
+        {
+            type          imported;
+            sha256        "0e209137de957a3ba19d8b8cb62bae0e58f804f2ad153c48db411ed84b3870d3";
+            origin        "data/standards/parameters/Pitzer/pairs/Li-Cl.dat";
+            originSha256  "3fe6d4bfe777ce3905532ddc85ddc891f3e5806d0352d127fb36a5a285c448a6";
+            release       Choupo-2607;
+        }
+        "parameters/Pitzer/pairs/Na-Cl.dat"
+        {
+            type          imported;
+            sha256        "8efa88331d512d87057bd5b9766bb0a18fdfdc36abba6244c59531e16f9caa69";
+            origin        "data/standards/parameters/Pitzer/pairs/Na-Cl.dat";
+            originSha256  "dc44b0259620150a5a96e7783fd285fc378126d8b6f5ff3750243fd3f31d3a89";
+            release       Choupo-2607;
+        }
+        "parameters/eNRTL/Na-Cl.dat"
+        {
+            type          imported;
+            sha256        "2dbd301cdb40bb9b3e21ce3af4bcd58fb1df9d91baf08012ca6c6f83a5d8e280";
+            origin        "data/standards/parameters/eNRTL/Na-Cl.dat";
+            originSha256  "129a062cf834d94c00264c82361dac287d130528cd55c7daccdbbb9328180525";
+            release       Choupo-2607;
+        }
+        "parameters/electrolyte/crissCobble.dat"
+        {
+            type          imported;
+            sha256        "b26d227b4b7bcf1d093f586ad0ea430569aa4002061c0a6c3cbb8271861c55dc";
+            origin        "data/standards/parameters/electrolyte/crissCobble.dat";
+            originSha256  "82b7b4137e008f1fc81dbd8a7e6ec1ec4b1f62af91dc06962c5057ee0ffbd0f7";
+            release       Choupo-2607;
+        }
+        "species/aqueous.dat"
+        {
+            type          imported;
+            sha256        "6e794ff5c71deb87fa22644bf520ba84f868c0a909a7ddb30bfb8c4384cfc9de";
+            origin        "data/standards/species/aqueous.dat (filtered)";
+            originSha256  "e2c69cb55ecbefeab05d8522177a71db35d196ac299a90f1f0c7e3e5f1bcd46e";
+            release       Choupo-2607;
+        }
+    }
+}

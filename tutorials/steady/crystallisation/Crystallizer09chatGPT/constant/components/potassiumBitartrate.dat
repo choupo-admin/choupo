@@ -1,0 +1,70 @@
+// [imported] origin "data/standards/components/potassiumBitartrate.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Potassium bitartrate / potassium hydrogen tartrate
+             (KHC4H4O6, "cream of tartar", KHT; CAS 868-14-4)
+
+  A SPARINGLY soluble 1-1 salt (K+ + bitartrate HC4H4O6-).  Its hallmark:
+  solubility is LOW (~0.006 kg/kg water at 25 C) and rises STEEPLY with
+  temperature (~10x over 0-80 C) and falls with ethanol -- which is exactly
+  why KHT crystallises out of wine on cooling / fortification.  COOLING is
+  therefore its natural recovery lever.
+
+  Saturation is carried as a measured SOLUBILITY CURVE c_sat(T), not as an
+  ion-activity product: the bitartrate anion has no published Pitzer/eNRTL
+  interaction parameters, and the curve is the honest, data-anchored route
+  (the curve already embeds the dissociation).  c_sat(T) [kg KHT / kg water],
+  polynomial in T[degC]; illustrative wine-chemistry order of magnitude.
+  Sources: the c_sat(T) coefficients are an illustrative wine-chemistry
+           order of magnitude -- primary re-citation pending (IST review:
+           a measured KHT solubility-vs-T study should replace them).
+           rho_p 1980 kg/m^3 = KHT crystal density (public); liquid Cp is
+           a Dulong-Petit-order closure proxy (see block comment).  K+
+           ion tier: Wagman et al., NBS Tables (1982).
+\*---------------------------------------------------------------------------*/
+
+name           potassiumBitartrate;
+formula        KHC4H4O6;
+CAS            868-14-4;
+
+MW             188.177;        // g/mol
+nonvolatile    true;
+dissociation   2;              // K+ + HC4H4O6-
+
+// FORMATION DATUM -- NOT a component-level standardThermochemistry block by design.
+// KHT is a sparingly-soluble electrolyte (K+ + bitartrate HC4H4O6-).  Its
+// cation's aqueous thermodynamics live in the ion tier, species/aqueous/
+// (K+, z = +1), referenced BY NAME.  The bitartrate anion HC4H4O6- has NO
+// published Pitzer/eNRTL parameters and is INTENTIONALLY absent from the ion
+// tier (a deliberate gap, not an oversight) -- saturation is therefore carried
+// as the measured SLE solubility CURVE below, which already embeds the
+// dissociation.  See docs/ai/data-doctrine.md sec.2 (arity-2 lives in a tier;
+// where no tier datum exists the honest route is the measured curve).
+
+solubility
+{
+    // SOLVENT = water, DECLARED (sucrose-water / KHT-water SLE; never "implied").
+    //   This block is strictly arity-2 (solute + water); it is a tolerated
+    //   pre-tier legacy living in the component (no-forced-mass-migration).
+    //   New KHT-water solution thermo lands in data/standards/solution/.
+    // c_sat(T) = a0 + a1 t + a2 t^2,  t in degC, kg KHT / kg water.
+    // ~0.0034 at 5 C, ~0.0063 at 25 C, ~0.0147 at 50 C (rises ~10x over 0-80 C).
+    coefficients ( 0.00321429  1.60714e-05  4.26786e-06 );
+    dHcryst      0.0;     // crystallisation heat neglected (sensible cooling dominates)
+}
+
+// PRIMARY: KHT crystal density ~1.98 g/cm^3 (public); k_v = 0.5236 (rounded grains).
+solid
+{
+    rho_p   1980.0;     // crystalline KHT density [kg/m^3]
+    k_v     0.5235987756;
+}
+
+// Liquid heat capacity -- a CLOSURE proxy (energy-balance units: mixer, column).
+// ~300 J/(mol.K), Dulong-Petit order for the 16-atom KHC4H4O6 unit (partially excited).  In solution the salt is a minor, nonvolatile component; water/ethanol
+// dominate Cp, so the exact value is immaterial -- it only lets the balance close.
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (300.0);      // J/(mol.K), constant
+    Trange        (270  400);
+}
