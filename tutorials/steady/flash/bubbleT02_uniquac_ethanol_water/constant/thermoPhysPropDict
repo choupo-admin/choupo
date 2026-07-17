@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T2 gamma-phi mixture with a REAL activity model.
+  The builder VERIFIES the declared route against what actually runs and
+  prints the resolved plan ([v2 plan] in the log); pairs without an explicit
+  binaryParameters block resolve from the pair catalogue, exactly as before.
+  Migrated mechanically from the v1 flat form (physics identical);
+  v2 contract 2026-07-17.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( ethanol  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel
+        {
+            model UNIQUAC;
+            binaryParameters   // the dict OWNS the numbers (inline form)
+            {
+                ethanol-water
+                {
+                    i ethanol;
+                    j water;
+                    a_ij -21.44;
+                    a_ji 222.47;
+                }
+            }
+        }
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

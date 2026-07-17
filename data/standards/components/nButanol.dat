@@ -47,6 +47,14 @@ liquidHeatCapacity
     Trange        (280  390);
 }
 
+uniquac
+{
+    r   3.9243;
+    q   3.668;      // van der Waals structural constants (Bondi group sums;
+                    // as tabulated by Winkelman et al., Ind. Eng. Chem. Res.
+                    // 48 (2009), Table 1 -- the cited LLE regression set)
+}
+
 groups
 {
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } );

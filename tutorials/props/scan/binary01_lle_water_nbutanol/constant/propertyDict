@@ -26,11 +26,7 @@ phases
         activity
         {
             model UNIQUAC;
-            rq
-            {
-                water     { r 0.9200;  q 1.400; }
-                nButanol  { r 3.9243;  q 3.668; }
-            }
+
             pairs
             (
                 {
@@ -46,11 +42,7 @@ phases
         activity
         {
             model UNIQUAC;
-            rq
-            {
-                water     { r 0.9200;  q 1.400; }
-                nButanol  { r 3.9243;  q 3.668; }
-            }
+
             pairs
             (
                 {

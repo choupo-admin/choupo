@@ -62,6 +62,14 @@ liquidViscosity
 
 relativePermittivity 24.3;   // dielectric constant, 25 C (for mixed-solvent eNRTL / drowning-out)
 
+uniquac
+{
+    r   2.1055;
+    q   1.9720;     // van der Waals structural constants (Abrams & Prausnitz,
+                    // AIChE J. 21 (1975) 116; tabulated in Poling, Prausnitz &
+                    // O'Connell, 5th ed., UNIQUAC r,q)
+}
+
 groups
 {
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );

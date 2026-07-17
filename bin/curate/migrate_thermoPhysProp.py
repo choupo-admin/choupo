@@ -947,7 +947,7 @@ def main():
         new_path = dp.parent / "thermoPhysPropDict"
         new_path.write_text(payload)
         subprocess.run(["git", "add", str(new_path)], cwd=ROOT, check=True)
-        subprocess.run(["git", "rm", "-q", str(dp)], cwd=ROOT, check=True)
+        subprocess.run(["git", "rm", "-qf", str(dp)], cwd=ROOT, check=True)
         for ef_path, ef_text in extra_files:
             ef_path.write_text(ef_text)
             subprocess.run(["git", "add", str(ef_path)], cwd=ROOT, check=True)
