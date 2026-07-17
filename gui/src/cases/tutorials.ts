@@ -85,6 +85,14 @@ const CASE_FILES = import.meta.glob(
     "!../../../tutorials/**/.claude/**",
     "!../../../tutorials/**/AGENTS.md",
     "!../../../tutorials/**/CLAUDE.md",
+    // Sealed self-containment snapshots (bin/choupo-import): the corpus-wide
+    // sealing wave puts a constant/propertyData/ tree (records + manifest)
+    // in every case -- ~5 MiB raw over ~284 cases if inlined.  The browser
+    // build ships the standards catalogue anyway, so excluding the snapshot
+    // just means the GUI runs the case UNSEALED (manifest absent -> the
+    // engine's normal standards resolution) with identical physics.  The
+    // sealed leg stays a native-audit feature, not a bundle tax.
+    "!../../../tutorials/**/constant/propertyData/**",
     // Archived tutorials (pre-2026-05-27 reorganisation): kept as
     // regression fodder for bin/runTests, hidden from the GUI to keep
     // the menu aligned with the new comparison-first philosophy.
