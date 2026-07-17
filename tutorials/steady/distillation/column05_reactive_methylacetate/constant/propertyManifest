@@ -1,0 +1,72 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-07-17";
+    importerVersion    "2";
+    records
+    {
+        "components/aceticAcid.dat"
+        {
+            type          imported;
+            sha256        "f032b664de1fd3fc3bcfd2c638dc5dc8a53e0f174816cb27b190901c751f4b14";
+            origin        "data/standards/components/aceticAcid.dat";
+            originSha256  "de0ce86e5131c78a8ef5267eea5b4b97710d075f3693986ac37a67da4e9d01a0";
+            release       Choupo-2607;
+        }
+        "components/methanol.dat"
+        {
+            type          imported;
+            sha256        "95072a53b1124817e158faee733dad2a1d20d4109876f6e4d51c190d01460884";
+            origin        "data/standards/components/methanol.dat";
+            originSha256  "43c7c311d4a3d41dccfb0f1a1d972fc0fa0b4954b01dc2552c7c1141048c9a7e";
+            release       Choupo-2607;
+        }
+        "components/methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "2bfba725f77cd3f2c22fa1068d4ef036e8eec65caa2ff19d329948ec4273c2d7";
+            origin        "data/standards/components/methylAcetate.dat";
+            originSha256  "e2af255964551645c39e29cebc10888ab770df060846b5048e0c0dd5d4e5ec3a";
+            release       Choupo-2607;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "590702adfd0a04f54318ed97140943d672afd4f9c0526aeac5d31dbca1fcfc63";
+            origin        "data/standards/components/water.dat";
+            originSha256  "7d1996853ccc57b14e5dccf6febb031bf4b6683db7c18ef5622a80da3317a421";
+            release       Choupo-2607;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "c60e1cd37acb9b96c49f70cb22eefa9234e6d4a16bd5421e2d4e1e16d2de1fc1";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2607;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "b700edb4301baab42a5516e850ef2e4a3599e585d33199f90ef2a8bb2ae4fc98";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2607;
+        }
+    }
+}

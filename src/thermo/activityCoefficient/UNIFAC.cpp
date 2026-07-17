@@ -31,6 +31,7 @@ License
 #include "core/Dictionary.H"
 #include "thermo/Component.H"
 #include "thermo/Database.H"
+#include "thermo/RecordResolver.H"
 
 #include <cmath>
 #include <filesystem>
@@ -48,10 +49,20 @@ UNIFAC::UNIFAC(const DictPtr& dict, const std::vector<std::string>& names)
     namespace fs = std::filesystem;
     const std::size_t N = names.size();
 
-    // ---- load the published R_k/Q_k + a_mn tables (same channel NRTL uses) --
-    const fs::path base = fs::path(Database::currentRoot()) / "standards" / "parameters" / "UNIFAC";
-    auto gdict = Dictionary::fromFile((base / "groups.dat").string());
-    auto idict = Dictionary::fromFile((base / "interactions.dat").string());
+    // ---- load the published R_k/Q_k + a_mn tables through the SAME case-local
+    //      resolver ladder NRTL's pairs use: constant/parameters/UNIFAC/ first
+    //      (the sealed snapshot), else the standards catalogue.  Unsealed, this
+    //      returns the standards path unchanged; sealed, the case reads only its
+    //      own tier (an absent table is refused loudly, never a catalogue read).
+    const fs::path groupsFile = records::resolveRecord("parameters/UNIFAC/groups.dat");
+    const fs::path interFile  = records::resolveRecord("parameters/UNIFAC/interactions.dat");
+    if (groupsFile.empty() || interFile.empty())
+        throw std::runtime_error(
+            "UNIFAC: the group tables (parameters/UNIFAC/groups.dat +"
+            " interactions.dat) are NOT in this SEALED case's constant/ tree"
+            " -- re-run `bin/choupo-import`.");
+    auto gdict = Dictionary::fromFile(groupsFile.string());
+    auto idict = Dictionary::fromFile(interFile.string());
 
     std::map<std::string, double> Rmap, Qmap;
     std::map<std::string, std::string> mainMap;

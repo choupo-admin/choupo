@@ -385,6 +385,15 @@ def closure_of(pp_path, caseDir, std, AQ):
         for sol in sorted(henry_solutes):
             want("parameters/Henry/" + sol + "-" + solvent + ".dat")
 
+    # ---- UNIFAC group-contribution tables ------------------------------------
+    # UNIFAC's R_k/Q_k (groups.dat) + a_mn (interactions.dat) are SINGLETON
+    # tables, not per-pair records: the model reads them through the case-local
+    # resolver (UNIFAC.cpp), so any package selecting UNIFAC -- v2 `activityModel
+    # { model UNIFAC; }` or v1 `activity.UNIFAC` -- must carry BOTH in its closure.
+    if re.search(r'\bmodel\s+UNIFAC\s*;', t_nc) or re.search(r'\bactivity\.UNIFAC\b', t_nc):
+        want("parameters/UNIFAC/groups.dat")
+        want("parameters/UNIFAC/interactions.dat")
+
     if re.search(r'\brecordType\s+thermophysicalPropertySystem\s*;', t):
         harvest_v2(t)
     else:
