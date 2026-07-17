@@ -68,6 +68,7 @@ Description
 #include "thermo/Database.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/ThermoPackageBuilder.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/electrolyte/AqueousActivity.H"
 #include "thermo/pureFluid/PureFluidModel.H"
@@ -220,11 +221,14 @@ try
 
     auto controlDict   = Dictionary::fromFile("system/controlDict");
     auto flowsheetDict = Dictionary::fromFile("system/flowsheetDict");
-    // ONE property-package file: constant/propertyDict (there are more
-    // properties than thermodynamics -- transport, chemistry, solids).  The
-    // old thermoPackage/propertyPackage names were retired corpus-wide with
-    // NO backward compatibility (0da8bcba); the engine reads only this path.
-    const std::string pkgFile = "constant/propertyDict";
+    // ONE property-package file, TWO names: constant/thermoPhysPropDict (the
+    // v2 contract, resolved FIRST -- 2026-07-17) or constant/propertyDict
+    // (the v1 home).  Mirrors choupoSolve/choupoProps; translation + content
+    // routing happen at the build site below, after verbosity gates the
+    // announce chorus.
+    const std::string pkgFile =
+        fs::exists("constant/thermoPhysPropDict")
+            ? "constant/thermoPhysPropDict" : "constant/propertyDict";
     auto thermoDict    = Dictionary::fromFile(pkgFile);
 
     DictPtr reactionsDict;
@@ -311,8 +315,19 @@ try
                          "(0/ <t>/ ...) at the case root, every writeInterval\n\n";
     }
 
+    // v2 contract (thermophysicalPropertySystem): translate FIRST -- the
+    // routing below then consumes the verified v1-shaped manifest (strict
+    // validation + the [v2 plan] announce happen inside the translator).
+    // Routed by content, exactly like choupoSolve: manifest (components +
+    // propertyMethods) -> builder; flat form -> the legacy reader.
+    if (thermoDict->lookupWordOrDefault("recordType", "")
+        == "thermophysicalPropertySystem")
+        thermoDict = ThermoPackageBuilder::translateV2(thermoDict);
     ThermoPackage thermo;
-    thermo.readFromDict(thermoDict, db);
+    if (thermoDict->found("components") && thermoDict->found("propertyMethods"))
+        thermo = ThermoPackageBuilder::build(thermoDict, db);
+    else
+        thermo.readFromDict(thermoDict, db);
 
     // ---- Build dynamic units -----------------------------------------
     auto unitList = flowsheetDict->lookupDictList("units");
