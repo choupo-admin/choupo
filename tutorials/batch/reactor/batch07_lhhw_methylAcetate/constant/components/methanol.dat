@@ -1,0 +1,140 @@
+// [imported] origin "data/standards/components/methanol.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Methanol  (CH4O, CAS 67-56-1)
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients, Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).  Viscosity:
+           Andrade/Vogel fits to literature mu(T); UNIQUAC r,q are the van
+           der Waals values (Abrams-Prausnitz) as used by Popken 2000.
+\*---------------------------------------------------------------------------*/
+
+name        methanol;
+formula     CH4O;
+CAS         67-56-1;
+
+
+
+MW          32.042;
+Tc          512.64;
+Pc          80.97;
+omega       0.5650;
+Tb          337.85;
+HvapTb      35210;
+Vliq        4.070e-5;
+
+
+standardThermochemistry
+{
+    dHf_298   -200940.0;        // J/mol  -- ideal-gas reference
+    s_298     239.880;         // J/(mol·K)  -- third-law absolute
+}
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.20409   1581.341   -33.50);
+    Trange        (288  356);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (21.152   0.07092   2.587e-5   -2.852e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (81.0);
+    Trange        (280  340);
+}
+
+// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
+// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
+// fitted to literature mu(T) over ~10-100 degC.
+associationFactor  1.9;
+liquidViscosity
+{
+    andrade { A -11.5712; B 1207.4; }
+    vogel   { A -11.5712; B 1207.4; C 0.0; }
+}
+
+groups
+{
+    unifac ( { group CH3OH; count 1; } );
+    joback ( { group CH3; count 1; } { group OH; count 1; } );
+}
+
+uniquac
+{
+    r   1.4311;
+    q   1.4320;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0477-PROF.txt bundled in usnistgov/COSMOSAC; CAS 67-56-1";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        67.90159;
+        volume      48.77104;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.598418118076664
+            1.08146113336450
+            1.30351074855883
+            0.607371332168258
+            0.583950314756469
+            0.643975979289072
+            1.31754417381472
+            1.16042447015635
+            0.876047530339676
+            0.427920629839253
+            1.83275083199407
+            3.57574433405955
+            6.43077836149148
+            6.89719010464623
+            5.27259678880090
+            7.46346421293688
+            5.09413560208316
+            1.58169087900919
+            2.27114057314078
+            1.18085216621132
+            1.28189740061276
+            1.76195839951993
+            1.46000436796843
+            0.278650501462483
+            1.02400116247333
+            0.810133957481565
+            2.05629841138024
+            0.822218460070430
+            1.43581743247939
+            3.11201319366254
+            1.80608029237905
+            1.80321604660364
+            4.833208916886662E-002
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
+}

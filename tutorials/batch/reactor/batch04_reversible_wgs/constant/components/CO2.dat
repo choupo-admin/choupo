@@ -1,22 +1,18 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/CO2.dat
-// sha256   282b2515f85632ac841b2f211068237775be2df6dbcce63d6b1b0506f9b8da3d
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/CO2.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Carbon dioxide  (CO2, CAS 124-38-9)
   Above its triple point (216.55 K, 5.18 bar) CO2 has a normal liquid
   range only up to Tc = 304.13 K.  In process work above ambient T it
   is permanently gaseous.
-  Sources: Reid-Prausnitz-Poling 4th ed., Appendix A; NIST WebBook.
+  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
+  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
+  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
+  Gordon-Reno 1993).
 \*---------------------------------------------------------------------------*/
 
 name        CO2;
 formula     CO2;
+noncondensable true;     // permanent carrier gas (psychrometric carrier)
 CAS         124-38-9;
 
 // role solute (v0.28+): when the thermo package declares a solvent
@@ -52,7 +48,8 @@ vaporPressure
 idealGasHeatCapacity
 {
     model         polynomial;
-    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3   (Reid 4th ed. Table A.1)
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3  (ideal-gas Cp
+    // polynomial -- individual literature value, primary re-citation pending)
     coefficients  (19.80   7.344e-2   -5.602e-5   1.715e-8);
     Trange        (250  1500);
 }
@@ -64,3 +61,6 @@ liquidHeatCapacity
     model         polynomial;
     coefficients  (90.0);          // J/(mol·K), constant approximation
 }
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( carbonDioxide );
