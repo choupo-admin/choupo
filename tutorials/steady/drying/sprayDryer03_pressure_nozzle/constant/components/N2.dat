@@ -1,22 +1,18 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/N2.dat
-// sha256   1d6d927c975adbd592a4bdd9621ea023e4d4364856c383e4eec755e07e4d02d3
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/N2.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Nitrogen  (N2, CAS 7727-37-9)
   Element in its standard state -- dHf_298 = 0; s_298 is the only
   thermodynamic anchor.  Carries over as the (nearly) inert diluent in
   air-fed combustion.
-  Sources: Reid-Prausnitz-Poling 4th ed., Appendix A; NIST WebBook.
+  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
+  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
+  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
+  Gordon-Reno 1993).
 \*---------------------------------------------------------------------------*/
 
 name        N2;
 formula     N2;
+noncondensable true;     // permanent carrier gas (psychrometric carrier)
 CAS         7727-37-9;
 
 MW          28.013;       // kg/kmol
@@ -44,7 +40,8 @@ vaporPressure
 idealGasHeatCapacity
 {
     model         polynomial;
-    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3   (Reid 4th ed. Table A.1)
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3  (ideal-gas Cp
+    // polynomial -- individual literature value, primary re-citation pending)
     coefficients  (31.15   -1.357e-2   2.680e-5   -1.168e-8);
     Trange        (250  1500);
 }
@@ -59,3 +56,6 @@ liquidHeatCapacity
     model         polynomial;
     coefficients  (56.0);          // J/(mol·K), constant approximation
 }
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( nitrogen );

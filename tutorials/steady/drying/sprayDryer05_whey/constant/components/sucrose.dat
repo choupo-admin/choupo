@@ -1,25 +1,106 @@
-/*---------------------------------------------------------------------------*\
-  Case-local SAMPLE data for sucrose: the SORPTION ISOTHERM only.
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Sucrose (C12H22O11, CAS 57-50-1)
 
-  This file carries ONLY the THERMODYNAMIC EQUILIBRIUM sorption isotherm,
-  merged over data/standards/components/sucrose.dat (which supplies the
-  universal pure-component data: MW, Cp, rho_p, ...).  The case wins
-  field-by-field, so we write just the sorption block here.
+  Non-volatile crystalline disaccharide; the canonical solute for
+  sugar-industry evaporator and crystalliser exercises.  In the
+  Choupo catalogue we ship sucrose with the minimum metadata
+  needed for a non-volatile solute in a single-effect or
+  multi-effect evaporator: MW, role, dissociation = 1, and a
+  liquid Cp tuned so that the mixture Cp(x) reproduces the
+  Honig-style sugar-industry correlation
 
-  Why here and not in the standard catalogue: a sorption isotherm is NOT a
-  universal property of "sucrose".  It depends on the amorphous/crystalline
-  state, the formulation, the thermal history --- i.e. on the SAMPLE.
-  Solids are like that: a real powder is a sample, not a tabulated pure
-  compound.  Measure your own and put them here.
+      Cp(x)  ≈  4.19  -  2.35 · x    [kJ/(kg·K)]
 
-  GAB isotherm (equilibrium moisture vs water activity):
-      Xe = Xm·C·K·a_w / [(1-K·a_w)(1-K·a_w+C·K·a_w)]   (kg water / kg dry)
+  used in standard MCFT exercises (e.g. Coulson & Richardson 6th
+  ed. Example 14.4; the same coefficients appear in the course
+  notes Exemplo 10.4 for the triple-effect cocurrent evaporator).
 
-  KINETICS (the critical moisture Xc and the drying-rate curve) are NOT
-  here --- they are not equilibrium.  They live in constant/dryingKinetics,
-  exactly the way the sorption isotherm is kept separate from the drying
-  curve, and the way reaction kinetics live in constant/reactions.
+  With Cp_liq(sucrose) = 630 J/(mol·K)  and  Cp_liq(water) =
+  75.5 J/(mol·K), the mass-basis mixture Cp computed by
+  thermo.Hliquid recovers 4.07 kJ/(kg·K) at x = 0.05, matching the
+  4.19 - 2.35*0.05 = 4.07 of the correlation to three sig. figs.
+
+  No Antoine block (`nonvolatile true;`); the solute never enters
+  the vapour phase in flash or evaporator routines.
 \*---------------------------------------------------------------------------*/
+
+name           sucrose;
+formula        C12H22O11;
+CAS            57-50-1;
+
+role           nonvolatile;
+MW             342.297;       // kg/kmol  (= g/mol)
+dissociation   1;              // non-electrolyte
+Vliq           2.115e-4;      // apparent molar volume in aqueous solution [m^3/mol]
+
+solid
+{
+    rho_p   1590.0;     // crystalline sucrose density [kg/m^3]
+    k_v     0.5235987756;
+}
+
+solubility
+{
+    // Solid-liquid equilibrium: c_sat(T) in kg sucrose / kg water,
+    // polynomial in T[degC].  ~2.0 kg/kg at 20C, ~3.8 at 80C (literature order).
+    //
+    // SOLVENT = water, DECLARED (NOT "implied").  This block is strictly
+    // arity-2 (sucrose + water): it is sucrose-water SLE sitting in the
+    // component, a TOLERATED pre-tier legacy (no-forced-mass-migration credo),
+    // NOT a counterexample to the arity rule.  Going forward, new sucrose-water
+    // SOLUTION thermo (e.g. dHsoln) lands in data/standards/solution/
+    // sucrose-water.dat, referenced by name -- see docs/ai/data-doctrine.md
+    // sec.2.5.  The second species is NAMED here; nothing is implied.
+    coefficients ( 1.79  0.0074  0.00022 );
+    dHcryst      0.0;     // small for sucrose; neglected here
+}
+
+
+// standardThermochemistry kept for Gibbs-reactor consumers that might
+// want to model sugar decomposition (Maillard, caramelisation).
+// Individual literature values for crystalline sucrose -- primary
+// re-citation pending (IST review).
+standardThermochemistry
+{
+    dHf_298    -2226100.0;    // J/mol  (-2226.1 kJ/mol, crystalline)
+    s_298      392.4;          // J/(mol·K)
+    referenceState      pureSolid;
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Constant Cp = 630 J/(mol·K)  ~= 1.84 kJ/(kg·K) for pure sucrose;
+    // mixing with water's 75.5 J/(mol·K) reproduces Cp(x) = 4.19 -
+    // 2.35 x kJ/(kg·K) to better than 1 % over x = [0, 0.4].
+    coefficients  (630.0);
+    Trange        (270  400);
+}
+
+// REAL crystalline-sucrose solid heat capacity (used by the solid-phase
+// enthalpy leg; the dissolved-solute path keeps Cp_liquid above).  This does
+// NOT change the liquid/solution Cp the evaporator and crystalliser read, so
+// those balances are unaffected -- it is the honest Cp of the SOLID crystal.
+// PRIMARY: Putnam & Kilday, "Heat Capacities ... of crystalline sucrose",
+// J. Research NBS 91(4) 219-222 (1986) -- a U.S. Government (NBS) work,
+// PUBLIC DOMAIN.  Cp(298.15 K, crystalline) = 425.5 J/(mol*K).  Held constant
+// over the narrow stable-crystal window (sucrose decomposes near 459 K, so no
+// fusion enthalpy is declared -- it never melts cleanly, hence no Hfus block).
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = 425.5 J/(mol*K)  (crystalline)
+    coefficients  ( 425.5 );
+    Trange        ( 280  330 );        // [Putnam & Kilday 1986, J. Res. NBS 91]
+}
+
+
+// --- SAMPLE sorption isotherm (merged here for a self-contained SEALED case) ---
+// The GAB equilibrium-moisture isotherm is SAMPLE data (amorphous/crystalline
+// state, formulation, thermal history) -- not a universal property of sucrose.
+// It was authored as a case-local overlay over the standards pure-component
+// record; sealing requires ONE complete case-owned record, so the standards
+// pure-component data above is carried verbatim and the sample isotherm is
+// appended below.  This file is ADOPTED (authored) in constant/propertyManifest.
 
 sorption
 {
