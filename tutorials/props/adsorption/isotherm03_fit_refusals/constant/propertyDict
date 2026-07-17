@@ -1,6 +1,0 @@
-// fitParameters kind=isotherm regresses PAIR data (adsorbent x adsorbate);
-// it never rebuilds a thermo package -- one component keeps the loader happy.
-components       ( CO2 );
-
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }

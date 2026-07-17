@@ -1,9 +1,0 @@
-/*---------------------------------------------------------------------------*\
-  Water only --- the heat exchanger uses each stream's liquid Cp (water
-  carries a liquidHeatCapacity polynomial) for the sensible-heat balance.
-\*---------------------------------------------------------------------------*/
-
-components       ( water );
-
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }

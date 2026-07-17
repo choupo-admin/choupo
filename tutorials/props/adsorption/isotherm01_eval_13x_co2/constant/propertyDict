@@ -1,6 +1,0 @@
-// isothermEval reads the ADSORPTION pair catalogue, not a thermo model; a
-// single component keeps the props loader happy (same pattern as estimate).
-components       ( CO2 );
-
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }

@@ -1,5 +1,0 @@
-// Joback needs no thermo package; a single component keeps the loader happy.
-components       ( acetone );
-
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }

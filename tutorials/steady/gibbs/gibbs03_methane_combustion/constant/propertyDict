@@ -1,8 +1,0 @@
-/*---------------------------------------------------------------------------*\
-  Seven-species gas-phase Gibbs reactor for methane combustion in air.
-\*---------------------------------------------------------------------------*/
-
-components       ( CH4  O2  N2  CO  CO2  water  H2 );
-
-activityModel    { model  ideal; }
-equationOfState  { model  idealGas; }

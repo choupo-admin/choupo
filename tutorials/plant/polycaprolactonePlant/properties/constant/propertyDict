@@ -1,6 +1,0 @@
-// Yang2020 / VanKrevelen read only the polymer `groups` block; pclRepeat is the
-// case-local repeat-unit component (the SAME one the plant's reactor used for M0).
-components       ( pclRepeat );
-
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }

@@ -1,0 +1,27 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture.
+  Raoult DECLARED, not defaulted (gamma = 1 identically).
+  Migrated mechanically from the v1 flat form (physics identical);
+  v2 contract 2026-07-17.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( toluene  petCut_C7plus );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

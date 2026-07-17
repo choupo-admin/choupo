@@ -1,6 +1,0 @@
-/*--- Chlorophenol process species.  phenol + chlorophenol are JOBACK ESTIMATES
-      (auto-estimated from jobackGroups at load -- UNVALIDATED, glass-box);
-      Cl2, HCl from the standard catalogue.  Ideal thermo for the flash split. ---*/
-components       ( phenol Cl2 HCl chlorophenol );
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }

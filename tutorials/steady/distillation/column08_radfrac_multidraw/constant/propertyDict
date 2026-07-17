@@ -1,8 +1,0 @@
-/*--------------------------------*- Choupo -*--------------------------------*\
-  rigorous column demo: a C3-C6 hydrocarbon column with TWO feeds and TWO side draws.
-  Ideal (Raoult); the wide, well-separated volatilities (propane 231 K ->
-  n-hexane 342 K) let each product isolate one component.
-\*---------------------------------------------------------------------------*/
-components       ( propane  nButane  nPentane  nHexane );
-activityModel    { model  ideal; }
-equationOfState  { model  idealGas; }

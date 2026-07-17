@@ -1,7 +1,0 @@
-/*  thermoTest / model1: NaCl as a LUMPED molecular component (no dissociation).
-    Same evaporator as model2, but the salt is one balance entity -- the BPE
-    comes from the IDEAL water activity (Raoult), NOT the Pitzer a_w.  Compare
-    the two BPEs: this is the REPRESENTATION axis (lumped vs dissociated).      */
-components       ( water  NaCl );
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }
