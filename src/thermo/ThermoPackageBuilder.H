@@ -49,6 +49,13 @@ class Database;
 class ThermoPackageBuilder
 {
 public:
+    // v2 contract (spike 2026-07-17): translate a thermophysicalPropertySystem
+    // dict (physically-decomposed blocks) into the v1 in-memory manifest the
+    // assembly consumes.  STRICT: declared routes are verified against the
+    // implemented ones; unknown formulations/routes refuse loudly.  Prints the
+    // resolved plan ([v2 plan]).
+    static DictPtr translateV2(const DictPtr& v2);
+
     // Assemble a ThermoPackage from a parsed propertyPackage record.
     static ThermoPackage build(const DictPtr& pkg, const Database& db);
 };

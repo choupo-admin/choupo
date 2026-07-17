@@ -761,8 +761,208 @@ static ThermoPackage buildMolecularActivity(const DictPtr& pkg, const Database& 
     return out;
 }
 
+
+// ============================================================================
+// v2 CONTRACT (SPIKE, 2026-07-17): recordType thermophysicalPropertySystem,
+// schemaVersion 2 -- the Carlos/Claude physically-decomposed grammar
+// (equilibrium / caloric / volumetric / transport / aqueousProperties blocks;
+// no propertyMethods{}, no global parameters{} bag; every route DECLARED and
+// VERIFIED against what the engine actually implements).  The spike TRANSLATES
+// a v2 dict into the v1 in-memory package the existing assembly consumes --
+// physics byte-identical BY CONSTRUCTION; the dict becomes a true glass-box
+// statement of what runs.  Declared routes that do not match the implemented
+// branch REFUSE loudly (never a decorative declaration -- the Codex-audit
+// lesson).  Grammar surface implemented: T2 (molecular gammaPhi), T7
+// (electrolyteGammaPhi), T8 (aqueousProperties).  chemistry{} stays inline
+// TRANSITIONALLY (the chemistryDict grammar is not ratified).  The corpus-wide
+// migration wave is the ARCHITECT's decision, not this spike's.
+// ============================================================================
+DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
+{
+    auto out = std::make_shared<Dictionary>("propertyPackage");
+    auto announce = [&](const std::string& line)
+    { if (thermoAnnounce()) std::cout << "[v2 plan] " << line << "\n"; };
+
+    if (!v2->found("components")) absent("components", "thermophysicalPropertySystem");
+    out->insert("components", v2->entryValue("components"));
+
+    // Reusable: verify a declared caloric route against the implemented one.
+    auto verifyRoute = [&](const DictPtr& cal, const std::string& phase,
+                           const std::string& key, const std::string& implemented)
+    {
+        if (!cal || !cal->found(phase)) return;
+        auto ph = cal->subDict(phase);
+        if (ph->found(key))
+        {
+            const std::string r = ph->lookupWord(key);
+            if (r != implemented)
+                throw std::runtime_error("thermophysicalPropertySystem: caloric."
+                    + phase + "." + key + " '" + r + "' is DECLARED but the"
+                    " engine implements '" + implemented + "' for this"
+                    " formulation -- a route declaration must state what runs"
+                    " (declared+verified, never decorative).");
+        }
+    };
+    DictPtr cal = v2->found("caloric") ? v2->subDict("caloric") : nullptr;
+    if (cal && cal->found("energyBasis"))
+    {
+        const std::string eb = cal->lookupWord("energyBasis");
+        if (eb != "elementsDatum")
+            throw std::runtime_error("thermophysicalPropertySystem: "
+                "caloric.energyBasis '" + eb + "' -- the engine carries ONE"
+                " enthalpy datum (the elements at 298.15 K): declare"
+                " `energyBasis elementsDatum;` (settled 2026-06-27).");
+    }
+
+    // ---- T8: aqueousProperties (speciation-family activity surface) --------
+    if (v2->found("aqueousProperties"))
+    {
+        auto aq = v2->subDict("aqueousProperties");
+        auto ac = aq->subDict("activityCoefficients");
+        const std::string model = ac->lookupWord("model");
+        std::string key;
+        if      (model == "Davies")    key = "electrolyte.davies";
+        else if (model == "PitzerHMW") key = "electrolyte.pitzerHMW";
+        else throw std::runtime_error("thermophysicalPropertySystem: "
+                "aqueousProperties.activityCoefficients.model '" + model
+                + "' -- implemented: Davies | PitzerHMW.");
+        if (ac->found("referenceBasis")
+            && ac->lookupWord("referenceBasis") != "aqueousMolality")
+            throw std::runtime_error("thermophysicalPropertySystem: the aqueous"
+                " activity surface is molality-based (referenceBasis"
+                " aqueousMolality) -- any other basis is a named gap.");
+        auto pm = std::make_shared<Dictionary>("propertyMethods");
+        pm->insert("aqueousActivity", key);
+        out->insert("propertyMethods", EntryValue(pm));
+        if (aq->found("solvent"))
+        {
+            auto ib = std::make_shared<Dictionary>("inputBasis");
+            ib->insert("solvent", aq->entryValue("solvent"));
+            out->insert("inputBasis", EntryValue(ib));
+        }
+        announce("aqueousProperties: " + model + " on aqueousMolality"
+                 " (speciation ops consume this surface; the analysis lives"
+                 " in the op, the chemistry in the curated tree)");
+        return out;
+    }
+
+    // ---- T2 / T7: equilibrium block ----------------------------------------
+    if (!v2->found("equilibrium"))
+        absent("equilibrium (or aqueousProperties)", "thermophysicalPropertySystem");
+    auto eq = v2->subDict("equilibrium");
+    const std::string form = eq->lookupWord("formulation");
+    auto pm = std::make_shared<Dictionary>("propertyMethods");
+
+    if (form == "gammaPhi")
+    {
+        auto liq = eq->subDict("liquid");
+        // activityModel: word (ideal) or block { model NRTL; binaryParameters{} }
+        std::string model;
+        DictPtr pairsOut;
+        if (liq->found("activityModel"))
+        {
+            const EntryValue& ev = liq->entryValue("activityModel");
+            if (std::holds_alternative<std::string>(ev))
+                model = std::get<std::string>(ev);
+            else
+            {
+                auto am = liq->subDict("activityModel");
+                model = am->lookupWord("model");
+                if (am->found("binaryParameters"))
+                {
+                    auto bp = am->subDict("binaryParameters");
+                    pairsOut = std::make_shared<Dictionary>("binaryPairs");
+                    for (const auto& pr : bp->keys())
+                        pairsOut->insert(pr,
+                            bp->subDict(pr)->entryValue("source"));
+                }
+            }
+        }
+        if (model.empty()) absent("equilibrium.liquid.activityModel", "v2 gammaPhi");
+        if (liq->found("standardState")
+            && liq->lookupWord("standardState") != "pureLiquid")
+            throw std::runtime_error("thermophysicalPropertySystem: gammaPhi"
+                " liquid standardState must be pureLiquid (Henry/electrolyte"
+                " formulations carry the other conventions).");
+        const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
+        if (vap != "idealGas")
+            throw std::runtime_error("thermophysicalPropertySystem: vapour"
+                " fugacityModel '" + vap + "' -- the gammaPhi spike serves"
+                " idealGas (eos vapour = the phiPhi formulation, T4, not in"
+                " this spike).");
+        pm->insert("liquid", "activity." + model);
+        pm->insert("vapour", std::string("builtin.idealGas"));
+        out->insert("propertyMethods", EntryValue(pm));
+        if (pairsOut)
+        {
+            auto params = std::make_shared<Dictionary>("parameters");
+            params->insert("binaryPairs", EntryValue(pairsOut));
+            out->insert("parameters", EntryValue(params));
+        }
+        // caloric routes: what the gamma-phi world implements
+        verifyRoute(cal, "liquid", "enthalpyRoute", "pureCpPlusExcess");
+        verifyRoute(cal, "vapour", "enthalpyRoute", "idealGasCp");
+        announce("equilibrium gammaPhi: liquid activity." + model
+                 + (pairsOut ? " (pairs declared per-model, no global bag)" : "")
+                 + "; vapour idealGas.  caloric: liquid pureCpPlusExcess,"
+                 " vapour idealGasCp, liquidVapour componentCorrelation"
+                 " (elements datum).");
+        return out;
+    }
+
+    if (form == "electrolyteGammaPhi")
+    {
+        auto aq = eq->subDict("aqueous");
+        auto am = aq->subDict("activityModel");
+        const std::string model = am->lookupWord("model");
+        std::string key;
+        if      (model == "Pitzer") key = "electrolyte.pitzer";
+        else if (model == "eNRTL")  key = "electrolyte.eNRTL";
+        else throw std::runtime_error("thermophysicalPropertySystem: "
+                "electrolyteGammaPhi activityModel '" + model
+                + "' -- implemented: Pitzer | eNRTL.");
+        if (aq->found("compositionBasis")
+            && aq->lookupWord("compositionBasis") != "molality")
+            throw std::runtime_error("thermophysicalPropertySystem: the"
+                " electrolyte surface is molality-based.");
+        const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
+        if (vap != "idealGas")
+            throw std::runtime_error("thermophysicalPropertySystem: the"
+                " electrolyte path serves vapour idealGas only (as today).");
+        pm->insert("liquid", key);
+        pm->insert("vapour", std::string("builtin.idealGas"));
+        out->insert("propertyMethods", EntryValue(pm));
+        // chemistry{} inline rides through TRANSITIONALLY (chemistryDict
+        // grammar not ratified -- do not invent it here).
+        if (v2->found("chemistry"))
+            out->insert("chemistry", v2->entryValue("chemistry"));
+        verifyRoute(cal, "aqueous", "enthalpyRoute", "ionicReferencePlusExcess");
+        verifyRoute(cal, "vapour", "enthalpyRoute", "idealGasCp");
+        announce("equilibrium electrolyteGammaPhi: aqueous " + model
+                 + " (molality); vapour idealGas.  caloric: aqueous"
+                 " ionicReferencePlusExcess (aqueous inf-dilution ion datum"
+                 " + L_phi), vapour idealGasCp (elements datum).");
+        return out;
+    }
+
+    throw std::runtime_error("thermophysicalPropertySystem: formulation '"
+        + form + "' is not in this spike (implemented: gammaPhi,"
+        " electrolyteGammaPhi, aqueousProperties).  T4/T5/T6/T9+ come with"
+        " the ratified wave, not by accident.");
+}
+
 ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db)
 {
+    // v2 contract? translate FIRST (strict validation + resolved-plan
+    // announce), then run the identical assembly below.
+    if (pkg->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
+    {
+        if (pkg->lookupScalarOrDefault("schemaVersion", 0) != 2)
+            throw std::runtime_error("thermophysicalPropertySystem requires"
+                " schemaVersion 2;");
+        return build(translateV2(pkg), db);
+    }
+
     // GATE: parameters{} only carries the known parameter FAMILIES.  An unknown
     // key here is a silent no-op (a declaration nothing reads) -- the exact bug
     // class of a mis-spelled or mechanically-renamed block (`parameters.parameters`,

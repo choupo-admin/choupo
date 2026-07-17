@@ -285,22 +285,25 @@ try
     AdvisoryLog::instance().clear();   // capture binary-pair provenance
     ThermoPackage thermo;
     DictPtr thermoDict;   // null in the propertyPackage branch (only fit ops use it)
-    // ONE name: constant/propertyDict, accepting BOTH grammars (routed by
-    // content) with constant/propertyDict as a deprecated-but-read alias --
-    // mirrors choupoSolve.
-    std::string pkgPath = resolveUp("constant/propertyDict");
+    // v2 contract name FIRST (the architect's choice, 2026-07-17):
+    // constant/thermoPhysPropDict carries the thermophysicalPropertySystem
+    // grammar; constant/propertyDict stays the v1 home (routed by content).
+    std::string pkgPath = resolveUp("constant/thermoPhysPropDict");
     bool deprecatedName = false;
     if (!fs::exists(pkgPath))
-    {
-        const std::string legacy = resolveUp("constant/propertyDict");
-        if (fs::exists(legacy)) { pkgPath = legacy; deprecatedName = true; }
-    }
+        pkgPath = resolveUp("constant/propertyDict");
     if (fs::exists(pkgPath))
     {
         auto sel = Dictionary::fromFile(pkgPath);
+        // v2 contract (thermophysicalPropertySystem): translate FIRST -- the
+        // whole downstream (speciation detection, builder, op readers) then
+        // consumes the verified v1-shaped manifest.  Strict validation + the
+        // [v2 plan] announce happen inside the translator.
+        if (sel->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
+            sel = ThermoPackageBuilder::translateV2(sel);
         if (deprecatedName)
-            std::cout << "  [deprecated] constant/propertyDict -- rename it to"
-                         " constant/propertyDict (the property package is"
+            std::cout << "  [deprecated] legacy package name -- rename it to"
+                         " constant/propertyDict (v1) or constant/thermoPhysPropDict (v2;"
                          " more than thermo).\n";
         const bool speciationPkg = sel->found("propertyMethods")
             && sel->subDict("propertyMethods")->found("aqueousActivity")
@@ -313,8 +316,8 @@ try
             // basis (the op does the ion chemistry).  Build it lean -- no liquid /
             // vapour manifest required.
             if (verbosity >= 2)
-                std::cout << "Property package:  constant/propertyDict"
-                             "   (electrolyte speciation: aqueousActivity + inputBasis)\n";
+                std::cout << "Property package:  " << pkgPath
+                          << "   (electrolyte speciation: aqueousActivity + inputBasis)\n";
             thermoDict = sel;
             // The op consumes aqueousActivity + inputBasis from `sel`; the
             // ThermoPackage here is the (ideal) basis over ALL the package's
@@ -332,24 +335,24 @@ try
         {
             if (verbosity >= 2)
                 std::cout << "Property package:  INLINE in the case"
-                             "   (constant/propertyDict carries the full"
+                             "   (the case carries the full"
                              " manifest)\n";
             thermo = ThermoPackageBuilder::build(sel, db);   // rich MANIFEST
         }
         else if (sel->found("components"))
         {
             if (verbosity >= 2)
-                std::cout << "Property package:  constant/propertyDict"
-                             "   (flat form: activityModel/equationOfState)\n";
+                std::cout << "Property package:  " << pkgPath
+                          << "   (flat form: activityModel/equationOfState)\n";
             thermoDict = sel;
             thermo.readFromDict(sel, db);                    // FLAT form
         }
         else if (sel->found("package"))
         {
             throw std::runtime_error(
-                "constant/propertyDict is a `package " + sel->lookupWord("package")
+                "the property dict is a `package " + sel->lookupWord("package")
                 + ";` SELECTOR -- the shared propertyPackages catalogue is retired."
-                  " Write the propertyPackage manifest INLINE in constant/propertyDict"
+                  " Write the manifest INLINE (constant/propertyDict v1 or constant/thermoPhysPropDict v2)"
                   " (self-contained, the official form).");
         }
     }

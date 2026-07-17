@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  thermophysicalPropertySystem (v2 SPIKE, 2026-07-17) -- T8: the aqueous
+  activity SURFACE, nothing else.  This dict answers exactly one physical
+  question: with which model are ionic activities, water activity and the
+  osmotic coefficient computed.  It does NOT declare which species exist
+  (the curated chemistry tree does), does NOT carry the analysis (totals,
+  pH, atmosphere pins live in the OPERATION -- system/propsDict), and does
+  NOT invent a vapour phase for an aqueous-speciation evaluation.
+  Physics byte-identical to the v1 form (same golden, 18 refs).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+aqueousProperties
+{
+    solvent water;
+
+    activityCoefficients
+    {
+        model          Davies;          // the teaching rung (I < ~0.5 mol/kg;
+        referenceBasis aqueousMolality; //   the run says so and advises above)
+    }
+}

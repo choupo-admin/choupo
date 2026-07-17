@@ -1,0 +1,40 @@
+/*---------------------------------------------------------------------------*\
+  thermophysicalPropertySystem (v2 SPIKE, 2026-07-17) -- the physically-
+  decomposed contract: each block names a PHYSICAL question and answers it.
+  A student reads this file and sees WHAT computes WHAT -- no propertyMethods
+  soup, no global parameters bag.  The builder VERIFIES every declared route
+  against what actually runs and prints the resolved plan ([v2 plan] in the
+  log).  Physics byte-identical to the v1 form this replaces (same golden).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( ethanol water );
+
+equilibrium
+{
+    formulation gammaPhi;               // gamma (liquid) x phi (vapour)
+
+    liquid
+    {
+        activityModel
+        {
+            model NRTL;
+            binaryParameters            // declared WHERE consumed -- the pair
+            {                           // record carries the DECHEMA provenance
+                ethanol-water { source "data/standards/parameters/NRTL/ethanol-water.dat"; }
+            }
+        }
+        standardState pureLiquid;       // gamma_i -> 1 as x_i -> 1 (Raoult datum)
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;         // consistent with the pair regression
+    }                                   // (DECHEMA VLE-IG bank -- ideal-gas fit)
+}
+
+// No caloric block: this is an isothermal activity-coefficient evaluation
+// (the op asks for gamma only).  A missing block is an honest absence, not a
+// hidden default -- an adiabatic case MUST declare its routes.
