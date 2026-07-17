@@ -1,22 +1,18 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/O2.dat
-// sha256   2f5011efecaabf5ee8f26cf947eedc36f5febc2ece3c5356d51746e83ad221c3
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/O2.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Oxygen  (O2, CAS 7782-44-7)
   Element in its standard state -- dHf_298 = 0 by definition; the
   third-law absolute entropy is the only thermodynamic anchor.
   Permanent gas at all process temperatures (Tc = 154.58 K).
-  Sources: Reid-Prausnitz-Poling 4th ed., Appendix A; NIST WebBook.
+  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
+  reference EOS; standardThermochemistry cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
+  literature value, primary re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/
 
 name        O2;
 formula     O2;
+noncondensable true;     // permanent carrier gas (psychrometric carrier)
 CAS         7782-44-7;
 
 MW          31.999;       // kg/kmol
@@ -44,7 +40,10 @@ vaporPressure
 idealGasHeatCapacity
 {
     model         polynomial;
-    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3   (Reid 4th ed. Table A.1)
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3
     coefficients  (28.11   -3.680e-6   1.746e-5   -1.065e-8);
     Trange        (250  1500);
 }
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( oxygen );

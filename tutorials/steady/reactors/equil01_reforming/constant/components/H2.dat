@@ -1,18 +1,12 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/H2.dat
-// sha256   1cb38ebaf4f906ad9daae3e072889e615353446a8edc7a96223c3275b19426dc
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/H2.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Hydrogen  (H2, CAS 1333-74-0)
   Element in its standard state -- by convention dHf_298 = 0 and the
   third-law entropy s_298 is the only absolute thermodynamic anchor.
   Permanent gas at any process-relevant temperature (Tc = 33.18 K).
-  Sources: Reid-Prausnitz-Poling 4th ed., Appendix A; NIST WebBook.
+  Sources: constants (Tc/Pc/omega/MW/Tb) + vapour pressure cross-checked
+  against CoolProp 7.2.0 (MIT); ideal-gas formation enthalpy/entropy
+  against the NASA polynomial database (NASA TM-4513, public domain).
 \*---------------------------------------------------------------------------*/
 
 name        H2;
@@ -47,4 +41,74 @@ idealGasHeatCapacity
     // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3   (Reid 4th ed. Table A.1)
     coefficients  (27.14   9.274e-3   -1.381e-5   7.645e-9);
     Trange        (250  1500);
+}
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( hydrogen );
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0383-PROF.txt bundled in usnistgov/COSMOSAC; CAS 1333-74-0";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        27.37216;
+        volume      13.10017;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.545316868188471
+            1.27928667476266
+            4.67360104497315
+            0.214475412075706
+            4.87691776134562
+            2.34606223865439
+            2.67976962463690
+            8.79133144284190
+            1.96539893252119
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
 }

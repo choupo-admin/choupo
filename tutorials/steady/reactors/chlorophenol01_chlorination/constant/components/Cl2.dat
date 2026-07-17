@@ -1,0 +1,121 @@
+// [imported] origin "data/standards/components/Cl2.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Chlorine  (Cl2, CAS 7782-50-5)
+
+  Chlor-alkali product; widely used as a water-disinfection oxidiser
+  and as a feedstock for chlorinated hydrocarbons.  At ambient T
+  liquefies under modest pressure (Pc = 79.9 bar, Tc = 416.9 K).
+  When dissolved in water the Deacon hydrolysis equilibrium
+  Cl2 + H2O <-> HClO + HCl shifts the effective solubility; the
+  pure-physical Henry baseline lives in henrysLaw/Cl2-water.dat.
+  Sources: ideal-gas formation properties (dHf_298, s_298) cross-checked
+  against NASA TM-4513 (McBride-Gordon-Reno 1993); constants (Tc, Pc,
+  omega, Tb, Antoine) are individual literature values -- primary
+  re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        Cl2;
+formula     Cl2;
+CAS         7782-50-5;
+
+// role solute (v0.28+): when the thermo package declares water as
+// solvent, K_Cl2 = H_Cl2(T) / P via the Henry's-law registry.
+role        solute;
+
+MW          70.906;       // kg/kmol
+Tc          416.90;        // K
+Pc          79.91;         // bar
+omega       0.090;         // [-]
+Tb          239.18;        // K  (-34 °C at 1 atm)
+HvapTb      20410;         // J/mol
+Vliq        4.50e-5;       // m^3/mol
+
+standardThermochemistry
+{
+    dHf_298    0.0;             // J/mol  -- element in its standard state
+    s_298      223.08;          // J/(mol·K)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.13030   905.000   -25.000);
+    Trange        (200  300);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (33.49   1.86e-2   -1.69e-5   5.9e-9);
+    Trange        (250  1500);
+}
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( chlorine );
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0396-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7782-50-5";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        78.72007;
+        volume      61.4032;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.925306858888688
+            1.14067929697264
+            4.88714445249145
+            7.524939164722182E-002
+            0.440323806448159
+            6.32069642337704
+            4.38935684009219
+            0.270722930082599
+            2.471613069596305E-003
+            11.0039444560095
+            12.9267681543654
+            28.9851967020580
+            7.35220907449757
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
+}

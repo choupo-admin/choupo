@@ -1,14 +1,10 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/ethylAcetate.dat
-// sha256   141d78a129612fb010deb7c93b0413dc7942f1b515d27eac190819c07356ecce
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/ethylAcetate.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Ethyl Acetate  (C4H8O2, CAS 141-78-6)
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients, Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/
 
 name        ethylAcetate;
@@ -48,4 +44,77 @@ liquidHeatCapacity
     model         polynomial;
     coefficients  (170.7);
     Trange        (280  350);
+}
+
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH3COO; count 1; } );
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group ester; count 1; } );
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0639-PROF.txt bundled in usnistgov/COSMOSAC; CAS 141-78-6";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        133.61769;
+        volume      118.16930;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            3.838133311521209E-002
+            2.53133552565127
+            6.22949061679761
+            13.4069357895221
+            14.7061746572865
+            15.9944110417921
+            15.3341913624810
+            13.9052374456518
+            11.2602187803999
+            6.10309237647887
+            3.15688904605653
+            1.98554425582211
+            2.94483666831653
+            1.62989717206299
+            2.38641722733255
+            3.16549256926348
+            2.37117018799057
+            3.99903741309415
+            1.92008354316213
+            4.51193077573828
+            4.28377278386638
+            1.72253320930941
+            3.061621880854631E-002
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
 }

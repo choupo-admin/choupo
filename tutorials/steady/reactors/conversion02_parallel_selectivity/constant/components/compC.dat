@@ -1,0 +1,48 @@
+// [imported] origin "data/standards/components/compC.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*---------------------------------------------------------------------------*\
+  Component: compC  -- synthetic PSEUDO-component for VLLE algorithm audit.
+  Antoine giving Psat ≈ 0.5 bar at 350 K but with a smaller B-coefficient
+  than compB (a third audit partner, distinct from compA/compB).
+  Pedagogically only --- NOT A REAL SUBSTANCE (formula "C", CAS 00-00-0).
+
+  Carries NO standardThermochemistry block ON PURPOSE: a fictitious species has no
+  elements and no real heat of formation -- the elements datum is undefined
+  for it.  A deliberate, correct absence (the VLLE audit runs no reactor),
+  NOT a curation oversight.
+  Sources: none -- a synthetic audit species: the Antoine coefficients
+  (smaller B than compB) and the flat Cp values are TUNED for the VLLE
+  algorithm test; no physical primary exists (not a real substance).
+\*---------------------------------------------------------------------------*/
+
+name        compC;
+formula     C;
+CAS         00-00-0;
+
+MW          50.0;
+Tc          550.0;
+Pc          40.0;
+omega       0.20;
+Tb          355.0;
+HvapTb      35000;
+Vliq        1.0e-4;
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.0   1056.0   -30.0);   // log10 P_bar = A - B/(T + C)
+    Trange        (300  400);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (80.0   0.0   0.0   0.0);
+    Trange        (200  500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (120.0);
+    Trange        (300  400);
+}

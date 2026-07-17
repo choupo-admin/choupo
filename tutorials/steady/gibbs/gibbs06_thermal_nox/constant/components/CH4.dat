@@ -1,18 +1,13 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/CH4.dat
-// sha256   35453902e81beae9316b17dff983d42da9754d92a304502789c28284bbe30d2d
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/CH4.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Methane  (CH4, CAS 74-82-8)
   Permanent gas at process temperatures (Tc = 190.56 K).  The Antoine
   block is carried for schema compliance; in practice CH4 only ever
   appears as a vapour-phase species in v0.15 unit ops.
-  Sources: Reid-Prausnitz-Poling 4th ed., Appendix A; NIST WebBook.
+  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
+  reference EOS; standardThermochemistry cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
+  literature value, primary re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/
 
 name        CH4;
@@ -48,7 +43,77 @@ vaporPressure
 idealGasHeatCapacity
 {
     model         polynomial;
-    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3   (Reid 4th ed. Table A.1)
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3
     coefficients  (19.25   5.213e-2   1.197e-5   -1.132e-8);
     Trange        (250  1500);
+}
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( methane );
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0001-PROF.txt bundled in usnistgov/COSMOSAC; CAS 74-82-8";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        56.00744;
+        volume      37.95554;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            2.70820528367328
+            5.45691471632670
+            8.98479179174966
+            5.88970293151595
+            6.03013126806407
+            7.29041678653869
+            15.8236069260275
+            3.82367029610415
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
 }
