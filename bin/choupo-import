@@ -1,31 +1,65 @@
 #!/usr/bin/env python3
-# choupo-import -- materialise a case's property-data dependency closure into
-# its constant/propertyData/ snapshot, so the case runs from its OWN frozen copy
-# and NEVER the installation catalogue (the Choupo-2607 data strategy).
+# choupo-import -- SEAL a case: materialise its property-data dependency
+# closure INTO the case's own constant/ tree, which MIRRORS data/standards/
+# (the OpenFOAM form, ratified 2026-07-17: ONE home, ONE grammar -- a record
+# the catalogue stores at data/standards/<sub> lives case-locally at
+# constant/<sub>; there is no parallel machine-owned directory).
 #
-#   choupo-import <caseDir>
+#   choupo-import <caseDir> [--adopt-local <rel>]... [--overwrite <rel>]...
 #
-# It scans every propertyPackage in the case (plant + sectors), computes the
-# closure (components, aqueous ion species, pitzer/binary/henry pairs, salt
-# chemistry, solid phases, property methods), copies each record from the
-# standards catalogue into constant/propertyData/ with a provenance stamp, and
-# writes a manifest (release id, timestamp, per-record kind + sha256, sealed).
-# Case-local records (constant/components/, constant/electrolyte/) are ALREADY
-# in the case -- they are left where they are, not re-imported.
+# Ownership, provenance and integrity live in `constant/propertyManifest`
+# (one per fractal context -- plant root + each sector that declares its own
+# property system; each manifest claims ONLY files inside its own constant/).
+# Per claimed file the manifest records: relative path, installed sha256,
+# origin path, origin sha256, catalogue release, importer version, and the
+# claim type (`imported` | `adopted`).  `sealed true;` forbids the runtime
+# every catalogue fallback for the closure (see src/thermo/RecordResolver.H).
+#
+# FAIL-CLOSED TRANSACTION (the Codex rules a.1-a.6, 2026-07-17):
+#   1. A destination file that exists but is NOT in the manifest is a FATAL
+#      conflict -- the importer never overwrites an authored file.  The ONLY
+#      escape is the explicit `--adopt-local <rel>` decision: the authored
+#      file becomes the case's record (claim type `adopted`, never installed,
+#      never hash-enforced, never removed by the importer).
+#   2. A claimed file whose current hash equals the installed hash is the
+#      importer's to update or remove.
+#   3. A claimed file whose hash DIVERGED was edited locally: refuse before
+#      writing anything, presenting the two explicit choices --
+#      `--adopt-local <rel>` (withdraw it from importer ownership) or
+#      `--overwrite <rel>` (destructive, confirmed re-install).  No automatic
+#      merge of .dat files, ever.
+#   4. A claimed file whose record left the closure is removed ONLY if its
+#      hash is intact; otherwise it is a conflict, never silent cleanup.
+#   5. The whole operation is transactional: closure + hashes are computed
+#      first, all conflicts checked, the ENTIRE new case is staged in a temp
+#      area and VALIDATED (the staged case must run with the standards
+#      catalogue hidden) BEFORE anything is installed; the manifest is
+#      replaced LAST.
+#   6. Absolute paths, `..`, symlink escapes and duplicate claims are
+#      rejected.  In fractal plants each constant/ owns its own manifest and
+#      claims only within its own context.
 #
 # Curation-time tool (like bin/curate/*.py); the engine never estimates or
 # imports at runtime.
 
-import sys, os, re, hashlib, datetime, shutil
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+from hashlib import sha256 as _sha256
+from datetime import date
 from pathlib import Path
 
-# A sealed snapshot must never point the builder back at the installation
+IMPORTER_VERSION = "2"
+
+# A sealed record must never point the builder back at the installation
 # catalogue.  Method records ship active `path "data/standards/...";` search
-# declarations; the builder resolves pairs/salts by logical ID (e.g.
-# `pitzerPairs ( Na-Cl Li-Cl )`), NOT by these paths, so we drop each such
-# active declaration when copying a record into the snapshot.  Comments (`//`)
-# and `origin "data/standards/..."` provenance strings are left untouched.
+# declarations; the builder resolves pairs/salts by logical ID, NOT by these
+# paths, so each such active declaration is dropped on copy.  Comments and
+# `origin "data/standards/..."` provenance strings are left untouched.
 _ACTIVE_STD_PATH = re.compile(r'^\s*path\s+"data/standards/[^"]*"\s*;\s*$')
+
 
 def strip_install_paths(body):
     return "".join(
@@ -33,156 +67,176 @@ def strip_install_paths(body):
         if not _ACTIVE_STD_PATH.match(line)
     )
 
-def _read_release(root):
-    f = root / "data" / "standards" / "CATALOGUE.dat"
-    if f.is_file():
-        txt = "\n".join(l for l in f.read_text().splitlines()
-                         if not l.lstrip().startswith("//"))
-        m = re.search(r'\brelease\s+([A-Za-z][A-Za-z0-9_.-]*)\s*;', txt)
-        if m: return m.group(1)
-    return "Choupo-unknown"
 
-STANDARD_SET = None   # set from the installed catalogue in main()
+def sha(text):
+    return _sha256(text.encode() if isinstance(text, str) else text).hexdigest()
+
+
+def sha_file(p):
+    return _sha256(Path(p).read_bytes()).hexdigest()
+
 
 def die(msg):
-    sys.stderr.write("choupo-import: " + msg + "\n"); sys.exit(1)
+    sys.stderr.write("choupo-import: " + msg + "\n")
+    sys.exit(1)
+
 
 def read(p):
     pp = Path(p)
     return pp.read_text() if (str(p) and pp.is_file()) else None
 
+
 def words(block):
-    # crude token list from a `( a b c )` list or `{ ... }` body
     return re.findall(r'[A-Za-z0-9_+\-]+', block)
 
+
 def find_root():
-    # repo root = parent of data/standards
     here = Path(__file__).resolve()
     for p in [here] + list(here.parents):
         if (p / "data" / "standards" / "components").is_dir():
             return p
     die("cannot locate the Choupo data/standards catalogue")
 
-def walk_up_local(caseDir, rel):
-    # is `rel` already a case-local record anywhere up the tree from caseDir?
-    p = Path(caseDir).resolve()
-    for _ in range(8):
-        if (p / "constant" / rel).exists(): return p / "constant" / rel
-        if p.parent == p: break
-        p = p.parent
-    return None
 
-def parse_packages(caseDir):
-    # The case's property manifest: `constant/thermoPhysPropDict` (the v2
-    # thermophysicalPropertySystem contract), `constant/propertyDict` (v1) or
-    # `constant/propertyPackage` (legacy alias) -- accept any.
-    pkgs = []
-    for name in ("thermoPhysPropDict", "propertyDict", "propertyPackage"):
-        for pp in Path(caseDir).rglob("constant/" + name):
-            pkgs.append(pp)
-    return pkgs
+def read_release(root):
+    f = root / "data" / "standards" / "CATALOGUE.dat"
+    if f.is_file():
+        txt = "\n".join(l for l in f.read_text().splitlines()
+                        if not l.lstrip().startswith("//"))
+        m = re.search(r'\brelease\s+([A-Za-z][A-Za-z0-9_.-]*)\s*;', txt)
+        if m:
+            return m.group(1)
+    return "Choupo-unknown"
+
 
 def block(text, key):
     # extract the {...} or (...) body following `key`
     m = re.search(key + r'\s*([\{\(])', text)
-    if not m: return None
-    op = m.group(1); cl = '}' if op == '{' else ')'
-    i = m.end() - 1; depth = 0
+    if not m:
+        return None
+    op = m.group(1)
+    cl = '}' if op == '{' else ')'
+    i = m.end() - 1
+    depth = 0
     for j in range(i, len(text)):
-        if text[j] == op: depth += 1
+        if text[j] == op:
+            depth += 1
         elif text[j] == cl:
             depth -= 1
-            if depth == 0: return text[i+1:j]
+            if depth == 0:
+                return text[i + 1:j]
     return None
 
-def main():
-    if len(sys.argv) != 2: die("usage: choupo-import <caseDir>")
-    caseDir = Path(sys.argv[1]).resolve()
-    if not caseDir.is_dir(): die("not a directory: " + str(caseDir))
-    root = find_root()
-    global STANDARD_SET
-    STANDARD_SET = _read_release(root)
-    std = root / "data" / "standards"
 
-    # ---- aqueous model-species catalogue: per-record extraction ------------
-    # The standards store the aqueous model species as ONE catalogue
-    # (species/aqueous.dat, `aqueousSpecies ( {...} ... )`), but the runtime's
-    # SEALED leg reads per-file records -- caseSnapshotPath("species/aqueous/
-    # <ion>.dat"), bridged by bridgeTrueIon (SaltFromCatalogue.H).  The import
-    # therefore EXTRACTS each record into the per-file snapshot form (same
-    # fields, comments stripped, recordType modelSpecies header).
-    def parse_aqueous_catalogue():
-        out = {}
-        cat = std / "species" / "aqueous.dat"
-        if not cat.is_file():
-            return out
-        txt = cat.read_text()
-        m = re.search(r'aqueousSpecies\s*\(', txt)
-        if not m:
-            return out
-        i, depth = m.end(), 1
-        while i < len(txt):
-            c = txt[i]
-            if c == '{':
-                d, j = 0, i
-                while j < len(txt):
-                    if txt[j] == '{': d += 1
-                    elif txt[j] == '}':
-                        d -= 1
-                        if d == 0: break
-                    j += 1
-                body  = txt[i+1:j]
-                clean = re.sub(r'/\*.*?\*/', '', body, flags=re.S)
-                clean = re.sub(r'^\s*//.*$', '', clean, flags=re.M)
-                lines = [l.rstrip() for l in clean.splitlines() if l.strip()]
-                if lines:
-                    pad = min(len(l) - len(l.lstrip()) for l in lines)
-                    lines = [l[pad:] if len(l) >= pad else l for l in lines]
-                nm = re.search(r'\bname\s+([A-Za-z0-9_+\-]+)\s*;', clean)
-                zm = re.search(r'\bcharge\s+([+\-]?\d+)\s*;', clean)
-                if nm:
-                    rec = ("recordType modelSpecies;   // model species -- "
-                           "summoned by a property method; never placed in a flowsheet\n"
-                           "schemaVersion 1;\n"
-                           "// extracted by choupo-import from "
-                           "data/standards/species/aqueous.dat (per-record snapshot form)\n\n"
-                           + "\n".join(lines) + "\n")
-                    out[nm.group(1)] = (int(zm.group(1)) if zm else 0, rec)
-                i = j + 1
-                continue
-            elif c == '(':
-                depth += 1
-            elif c == ')':
-                depth -= 1
-                if depth == 0: break
-            i += 1
+# ---------------------------------------------------------------------------
+# The aqueous model-species catalogue: ONE file (standards grammar), sealed
+# as ONE file -- constant/species/aqueous.dat, FILTERED to the case's
+# transitive closure (the Codex c) decision: never a per-file forest, never a
+# second grammar).  Records are copied VERBATIM (their citations ride along).
+# ---------------------------------------------------------------------------
+def parse_aqueous_catalogue(std):
+    """-> {name: (charge, verbatim '{...}' record text)} preserving order."""
+    out = {}
+    cat = std / "species" / "aqueous.dat"
+    if not cat.is_file():
         return out
+    txt = cat.read_text()
+    m = re.search(r'aqueousSpecies\s*\(', txt)
+    if not m:
+        return out
+    i, depth = m.end(), 1
+    while i < len(txt):
+        c = txt[i]
+        if c == '{':
+            d, j = 0, i
+            while j < len(txt):
+                if txt[j] == '{':
+                    d += 1
+                elif txt[j] == '}':
+                    d -= 1
+                    if d == 0:
+                        break
+                j += 1
+            raw = txt[i:j + 1]                      # verbatim, braces included
+            clean = re.sub(r'/\*.*?\*/', '', raw, flags=re.S)
+            clean = re.sub(r'^\s*//.*$', '', clean, flags=re.M)
+            nm = re.search(r'\bname\s+([A-Za-z0-9_+\-]+)\s*;', clean)
+            zm = re.search(r'\bcharge\s+([+\-]?\d+)\s*;', clean)
+            if nm:
+                out[nm.group(1)] = (int(zm.group(1)) if zm else 0, raw)
+            i = j + 1
+            continue
+        elif c == '(':
+            depth += 1
+        elif c == ')':
+            depth -= 1
+            if depth == 0:
+                break
+        i += 1
+    return out
 
-    AQ = parse_aqueous_catalogue()
 
-    SPECIATION_KINDS = ("aqueousSpeciation", "gasLiquidEquilibrium",
-                        "ionExchangeEquilibrium")
+def filtered_species_catalogue(AQ, names, release, total):
+    """The sealed constant/species/aqueous.dat: standards grammar, records
+    verbatim, filtered to `names` (catalogue order preserved)."""
+    picked = [n for n in AQ if n in names]
+    L = []
+    L.append("/*----------------------------------------------------------*\\")
+    L.append("  constant/species/aqueous.dat -- aqueous model species,")
+    L.append("  FILTERED to this case's closure (%d of %d catalogue records)."
+             % (len(picked), total))
+    L.append("  Same grammar as data/standards/species/aqueous.dat; imported")
+    L.append("  by bin/choupo-import from the %s release -- ownership and" % release)
+    L.append("  integrity are recorded in constant/propertyManifest.")
+    L.append("\\*----------------------------------------------------------*/")
+    L.append("")
+    L.append("aqueousSpecies")
+    L.append("(")
+    for n in picked:
+        L.append("    " + AQ[n][1])
+    L.append(");")
+    return "\n".join(L) + "\n"
 
-    def want_speciation_closure(want):
+
+SPECIATION_KINDS = ("aqueousSpeciation", "gasLiquidEquilibrium",
+                    "ionExchangeEquilibrium")
+
+
+# ---------------------------------------------------------------------------
+# Closure of ONE property system (a package dict) -- mirrors what the RUNTIME
+# resolves (ThermoPackageBuilder::translateV2 + the branch builders + the
+# SpeciationSolver scans).  Returns ({rel: standardsPath}, ionNames:set,
+# wantAllSpecies:bool).
+# ---------------------------------------------------------------------------
+def closure_of(pp_path, caseDir, std, AQ):
+    recs = {}
+    ions = set()
+    wantAllSpecies = False
+
+    def want(rel):
+        src = std / rel
+        if src.exists():
+            # Seal the STANDARD record even when the case also carries a
+            # hand-authored file of the same name -- that collision is the
+            # conflict machinery's job (rule 1), never a silent skip.
+            recs[rel] = src
+
+    def want_speciation_closure():
         # T8 (aqueousProperties): the SpeciationSolver scans the WHOLE
         # chemistry/ home (recordType-filtered) and resolves master ions by
-        # name -- so the sealed copy carries the full family sets (the sealed
-        # run loads a byte-identical network) + every aqueous species record.
+        # name -- the sealed copy carries the full family sets (byte-identical
+        # network) + the full species catalogue.
+        nonlocal wantAllSpecies
         chem = std / "chemistry"
         if chem.is_dir():
             for f in sorted(chem.glob("*.dat")):
                 m = re.search(r'\brecordType\s+([A-Za-z]+)\s*;', f.read_text())
                 if m and m.group(1) in SPECIATION_KINDS:
                     want("chemistry/" + f.name)
-        for ion in sorted(AQ):
-            want("species/aqueous/" + ion + ".dat")
+        wantAllSpecies = True
 
-    def harvest_v2(text, want):
-        # v2 thermophysicalPropertySystem -- mirror what the runtime resolves
-        # (ThermoPackageBuilder::translateV2 + the branch builders):
-        # (1) every declared parameter record (equilibrium.liquid.activityModel
-        #     .binaryParameters / equationOfState.binaryInteractions /
-        #     solutes.binaryParameters): `source "data/standards/<rel>";`
+    def harvest_v2(text):
+        # (1) every declared parameter record: `source "data/standards/<rel>";`
         for m in re.finditer(r'source\s+"[^"]*?data/standards/([^"]+)"', text):
             want(m.group(1))
         eq = block(text, "equilibrium") or ""
@@ -191,14 +245,14 @@ def main():
         # (2) the method records the branch builders load + echo
         if form == "diluteSolution":
             want("methods/henryDilute.dat")            # buildSolutionHenry
-        if form == "electrolyteGammaPhi":               # buildElectrolyte
+        if form == "electrolyteGammaPhi":              # buildElectrolyte
             am = block(eq, "activityModel") or ""
             mm = re.search(r'\bmodel\s+([A-Za-z]+)\s*;', am)
             want("methods/" + ("eNRTL" if mm and mm.group(1) == "eNRTL"
                                else "pitzer") + ".dat")
-        # (3) chemistry.salts rides inline on v2 too (transitional block):
-        #     the salt's anchor / solid records (absence-tolerant -- the
-        #     UNIFIED component solidPhases{} carries them since Migration 5)
+        # (3) chemistry.salts rides inline on v2 (transitional block):
+        #     anchor / solid records, absence-tolerant (the UNIFIED component
+        #     solidPhases{} carries them since Migration 5)
         ch = block(text, "chemistry")
         if ch:
             sb = block(ch, "salts")
@@ -207,11 +261,11 @@ def main():
                 want("phases/solid/" + salt + ".dat")
         # (4) T8: the aqueous-speciation surface (speciate/scalingScan ops)
         if block(text, "aqueousProperties") is not None:
-            want_speciation_closure(want)
+            want_speciation_closure()
 
-    def harvest(text, want):
-        # Method / chemistry / parameter records declared by a block -- shared
-        # by a propertyPackage AND a per-unit thermo{} override (same grammar).
+    def harvest_v1(text):
+        # Method / chemistry / parameter records declared by a v1 block --
+        # shared by a propertyPackage AND a per-unit thermo{} override.
         pm = block(text, "propertyMethods")
         if pm:
             for m in re.finditer(r'(liquid|vapour|solid)\s+([A-Za-z0-9_.]+)\s*;', pm):
@@ -233,153 +287,452 @@ def main():
             for pair in (words(pp_blk) if pp_blk else []):
                 want("parameters/Pitzer/pairs/" + pair + ".dat")
 
-    # closure of ONE package (set of standards-relative record paths) -----
-    def closure_of(pp):
-        recs = {}
-        def want(rel):
-            src = std / rel
-            if src.exists():
-                # A standard record exists -> seal it into the snapshot even
-                # when the case also carries a local file: case-local records
-                # are field-by-field OVERLAYS (the Database merge), so the
-                # sealed standard is the BASE they complete.  Skipping it (the
-                # old walk_up_local guard) left partial overlays -- e.g. a
-                # case-local NaCl.dat that adds only a molecular liquid Cp --
-                # with no base once relocated away from data/standards.
-                recs[rel] = src
-                return
-            # species/aqueous/<ion>.dat has NO per-file standard source (the
-            # catalogue is ONE file) -- extract the record into the per-file
-            # form the sealed runtime leg reads (bridgeTrueIon).
-            m = re.match(r'species/aqueous/([A-Za-z0-9_+\-]+)\.dat$', rel)
-            if m and m.group(1) in AQ:
-                recs[rel] = AQ[m.group(1)][1]
-            # else: purely case-local record (no standard source) -- left in place
-        t = read(pp) or ""
-        comp_blk = block(t, "components")
-        comps = words(comp_blk) if comp_blk else []
-        allions = []
-        for c in comps:
-            want("components/" + c + ".dat")
-            csrc = std / "components" / (c + ".dat")
-            loc = walk_up_local(caseDir, "components/"+c+".dat")
-            ctext = read(csrc) or (read(loc) if loc else "") or ""
-            # component-basis ion map: UNIFIED component.speciesMap or the
-            # legacy top-level dissociatesTo (speciesMapOf, builder-identical)
-            d2t = block(ctext, "speciesMap") or block(ctext, "dissociatesTo")
-            if d2t:
-                ions = [w for w in words(d2t) if not w.isdigit()]
-                allions += ions
-                for ion in ions: want("species/aqueous/" + ion + ".dat")
-        if re.search(r'\brecordType\s+thermophysicalPropertySystem\s*;', t):
-            harvest_v2(t, want)   # v2 equilibrium / chemistry / aqueousProperties
+    def walk_up_local(rel):
+        p = Path(caseDir).resolve()
+        for _ in range(8):
+            if (p / "constant" / rel).exists():
+                return p / "constant" / rel
+            if p.parent == p:
+                break
+            p = p.parent
+        return None
+
+    t = read(pp_path) or ""
+    comp_blk = block(t, "components")
+    comps = words(comp_blk) if comp_blk else []
+    for c in comps:
+        want("components/" + c + ".dat")
+        csrc = std / "components" / (c + ".dat")
+        loc = walk_up_local("components/" + c + ".dat")
+        ctext = read(csrc) or (read(loc) if loc else "") or ""
+        # component-basis ion map: UNIFIED component.speciesMap or the legacy
+        # top-level dissociatesTo (speciesMapOf, builder-identical)
+        d2t = block(ctext, "speciesMap") or block(ctext, "dissociatesTo")
+        if d2t:
+            ions.update(w for w in words(d2t) if not w.isdigit())
+    if re.search(r'\brecordType\s+thermophysicalPropertySystem\s*;', t):
+        harvest_v2(t)
+    else:
+        harvest_v1(t)
+    # cation-anion pair records by CHARGE (the aqueous catalogue is the
+    # authority); existence-guarded, so only real pair records are sealed.
+    cats = sorted({i for i in ions if AQ.get(i, (0,))[0] > 0})
+    ans = sorted({i for i in ions if AQ.get(i, (0,))[0] < 0})
+    for ca in cats:
+        for an in ans:
+            want("parameters/Pitzer/pairs/" + ca + "-" + an + ".dat")
+            want("parameters/eNRTL/" + ca + "-" + an + ".dat")
+    # the ion Cp(T) tier (Criss-Cobble nodes) rides with any electrolyte
+    # closure -- a hidden catalogue must not silently degrade Cp(T).
+    if ions:
+        want("parameters/electrolyte/crissCobble.dat")
+    return recs, ions, wantAllSpecies
+
+
+def parse_packages(caseDir):
+    pkgs = []
+    for name in ("thermoPhysPropDict", "propertyDict", "propertyPackage"):
+        for pp in Path(caseDir).rglob("constant/" + name):
+            pkgs.append(pp)
+    return pkgs
+
+
+# ---------------------------------------------------------------------------
+# Manifest read / write
+# ---------------------------------------------------------------------------
+def read_manifest(constant):
+    """-> {rel: {'type':..., 'sha256':..., ...}} from constant/propertyManifest
+    (empty when the case has none)."""
+    f = Path(constant) / "propertyManifest"
+    out = {}
+    if not f.is_file():
+        return out
+    txt = re.sub(r'/\*.*?\*/', '', f.read_text(), flags=re.S)
+    txt = re.sub(r'^\s*//.*$', '', txt, flags=re.M)
+    recs = block(txt, r'\brecords\b')
+    if not recs:
+        return out
+    for m in re.finditer(r'"([^"]+)"\s*\{([^}]*)\}', recs):
+        rel, body = m.group(1), m.group(2)
+        entry = {}
+        for km in re.finditer(r'\b(\w+)\s+("([^"]*)"|[^;\s]+)\s*;', body):
+            entry[km.group(1)] = km.group(3) if km.group(3) is not None \
+                else km.group(2)
+        out[rel] = entry
+    return out
+
+
+def manifest_text(entries, release, ctx_label):
+    """entries: {rel: entry-dict} -> the constant/propertyManifest text."""
+    L = []
+    L.append("/*----------------------------------------------------------*\\")
+    L.append("  constant/propertyManifest -- property-record OWNERSHIP registry")
+    L.append("  (%s).  Written by bin/choupo-import from the %s catalogue"
+             % (ctx_label, release))
+    L.append("  release; the manifest is the authority on which files under")
+    L.append("  constant/ the importer owns.  A file it does NOT claim is")
+    L.append("  authored and untouchable; a claimed file it verifies by sha256.")
+    L.append("  `sealed true;` FORBIDS the runtime every catalogue fallback --")
+    L.append("  the case runs exclusively from its own constant/ records.")
+    L.append("  claim types:  imported = installed + hash-verified copy;")
+    L.append("                adopted  = authored record explicitly adopted at")
+    L.append("                           import time (never installed, never")
+    L.append("                           hash-enforced, never removed).")
+    L.append("\\*----------------------------------------------------------*/")
+    L.append("")
+    L.append("propertyManifest")
+    L.append("{")
+    L.append("    sealed             true;")
+    L.append("    catalogueRelease   %s;" % release)
+    L.append('    importedAt         "%s";' % date.today().isoformat())
+    L.append('    importerVersion    "%s";' % IMPORTER_VERSION)
+    L.append("    records")
+    L.append("    {")
+    for rel in sorted(entries):
+        e = entries[rel]
+        if e.get("type") == "adopted":
+            L.append('        "%s"' % rel)
+            L.append("        {")
+            L.append("            type          adopted;")
+            if "adoptedAt" in e:
+                L.append('            adoptedAt     "%s";' % e["adoptedAt"])
+            L.append("        }")
         else:
-            harvest(t, want)      # propertyMethods / chemistry / parameters
-        # cation-anion pair records by CHARGE (the aqueous.dat catalogue is the
-        # authority); existence-guarded, so only real pair records are sealed.
-        cats = sorted({i for i in allions if AQ.get(i, (0,))[0] > 0})
-        ans  = sorted({i for i in allions if AQ.get(i, (0,))[0] < 0})
-        for ca in cats:
-            for an in ans:
-                want("parameters/Pitzer/pairs/" + ca + "-" + an + ".dat")
-                want("parameters/eNRTL/" + ca + "-" + an + ".dat")
-        # the ion Cp(T) tier (Criss-Cobble nodes) rides with any electrolyte
-        # closure -- a hidden catalogue must not silently degrade Cp(T).
-        if allions:
-            want("parameters/electrolyte/crissCobble.dat")
-        return recs
+            L.append('        "%s"' % rel)
+            L.append("        {")
+            L.append("            type          imported;")
+            L.append('            sha256        "%s";' % e["sha256"])
+            L.append('            origin        "%s";' % e["origin"])
+            L.append('            originSha256  "%s";' % e["originSha256"])
+            L.append("            release       %s;" % e.get("release", release))
+            L.append("        }")
+    L.append("    }")
+    L.append("}")
+    return "\n".join(L) + "\n"
 
-    # PLANT package (constant/thermoPhysPropDict|propertyDict|propertyPackage
-    # directly under the case; v2 name first, mirroring the engine's lookup)
-    plant_pp = caseDir / "constant" / "thermoPhysPropDict"
-    if not plant_pp.exists():
-        plant_pp = caseDir / "constant" / "propertyDict"
-    if not plant_pp.exists():
-        plant_pp = caseDir / "constant" / "propertyPackage"
-    plant_recs = closure_of(plant_pp) if plant_pp.exists() else {}
-    sector_recs = {}   # sectorDir -> {rel: src}, MINUS what the plant already holds
+
+# ---------------------------------------------------------------------------
+# Path safety (rule 6)
+# ---------------------------------------------------------------------------
+def check_rel_safe(rel):
+    p = Path(rel)
+    if p.is_absolute():
+        die("unsafe claim (absolute path): " + rel)
+    if any(part in ("..", "") for part in p.parts):
+        die("unsafe claim (parent traversal): " + rel)
+
+
+def check_no_symlink_escape(constant, rel):
+    # No component of the destination path may traverse a symlink that leaves
+    # the context's constant/ tree.
+    base = Path(constant).resolve()
+    cur = Path(constant)
+    for part in Path(rel).parts:
+        cur = cur / part
+        if cur.is_symlink():
+            if not str(cur.resolve()).startswith(str(base) + "/"):
+                die("unsafe claim (symlink escapes constant/): " + rel)
+
+
+# ---------------------------------------------------------------------------
+# Validation (rule 5): the staged case must RUN with the catalogue hidden.
+# ---------------------------------------------------------------------------
+def app_binary(root, caseDir):
+    ctl = read(Path(caseDir) / "system" / "controlDict") or ""
+    ctl = re.sub(r'/\*.*?\*/', '', ctl, flags=re.S)
+    ctl = re.sub(r'^\s*//.*$', '', ctl, flags=re.M)
+    m = re.search(r'\bapplication\s+(\w+)\s*;', ctl)
+    app = m.group(1) if m else "choupoSolve"
+    for build in sorted((root / "build").glob("*")):
+        cand = build / app
+        if cand.is_file() and not build.name.endswith("Debug"):
+            return cand
+    for build in sorted((root / "build").glob("*")):
+        cand = build / app
+        if cand.is_file():
+            return cand
+    die("cannot find the %s binary under %s/build -- run `make` first"
+        % (app, root))
+
+
+def validate_staged(root, staged):
+    """Run the staged case with the standards catalogue HIDDEN (no
+    CHOUPO_HOME, cwd outside the repo) -- the sealed contract's own test."""
+    binary = app_binary(root, staged)
+    env = {k: v for k, v in __import__("os").environ.items()
+           if k != "CHOUPO_HOME"}
+    try:
+        # The engine resolves case-local records by walking UP from the CWD
+        # (RecordResolver::localScanDir uses fs::current_path()), so the
+        # validation must run FROM INSIDE the staged case -- exactly as
+        # runCase/runTests do -- or the sealed closure is invisible to itself.
+        r = subprocess.run([str(binary), "."],
+                           cwd=str(staged),
+                           env=env, capture_output=True, text=True,
+                           timeout=300)
+    except subprocess.TimeoutExpired:
+        die("validation TIMED OUT (300 s) -- nothing was installed")
+    if r.returncode != 0:
+        tail = "\n".join((r.stdout + "\n" + r.stderr).splitlines()[-25:])
+        die("validation FAILED: the staged sealed case does not run with the"
+            " catalogue hidden (exit %d) -- nothing was installed.\n"
+            "--- last lines ---\n%s" % (r.returncode, tail))
+
+
+# ---------------------------------------------------------------------------
+def main():
+    args = sys.argv[1:]
+    adopt, overwrite = set(), set()
+    pos = []
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "--adopt-local":
+            i += 1
+            adopt.add(args[i])
+        elif a == "--overwrite":
+            i += 1
+            overwrite.add(args[i])
+        elif a.startswith("--"):
+            die("unknown option " + a)
+        else:
+            pos.append(a)
+        i += 1
+    if len(pos) != 1:
+        die("usage: choupo-import <caseDir> [--adopt-local <rel>]..."
+            " [--overwrite <rel>]...")
+    caseDir = Path(pos[0]).resolve()
+    if not caseDir.is_dir():
+        die("not a directory: " + str(caseDir))
+    root = find_root()
+    std = root / "data" / "standards"
+    release = read_release(root)
+    AQ = parse_aqueous_catalogue(std)
+
+    # The retired v1 snapshot home may not coexist with the mirrored form:
+    # migrate (delete constant/propertyData/ after checking nothing hand-tuned
+    # lives there) before sealing.  Fail-closed, never a silent mix.
+    legacy = [p for p in caseDir.rglob("constant/propertyData")]
+    if legacy:
+        die("this case still carries the retired constant/propertyData/ "
+            "snapshot form:\n  "
+            + "\n  ".join(str(p) for p in legacy)
+            + "\nmigrate first (delete the snapshot tree; hand-tuned records "
+              "move to their mirrored constant/ homes), then re-run.")
+
+    # ---- closures per fractal context -------------------------------------
+    plant_pp = None
+    for name in ("thermoPhysPropDict", "propertyDict", "propertyPackage"):
+        cand = caseDir / "constant" / name
+        if cand.exists():
+            plant_pp = cand
+            break
+    plant_recs, plant_ions, plant_all = ({}, set(), False)
+    if plant_pp:
+        plant_recs, plant_ions, plant_all = closure_of(plant_pp, caseDir, std, AQ)
+    sector = {}          # sectorDir -> (recs, ions, wantAll)
     for pp in parse_packages(caseDir):
-        if pp.resolve() == plant_pp.resolve(): continue
-        sectorDir = pp.parent.parent           # SECTOR/constant/propertyDict -> SECTOR
-        cl = closure_of(pp)
-        extra = {rel: src for rel, src in cl.items() if rel not in plant_recs}
-        if extra:
-            sector_recs.setdefault(sectorDir, {}).update(extra)
+        if plant_pp and pp.resolve() == plant_pp.resolve():
+            continue
+        sd = pp.parent.parent            # SECTOR/constant/<dict> -> SECTOR
+        recs, ions, wantAll = closure_of(pp, sd, std, AQ)
+        extra = {rel: src for rel, src in recs.items() if rel not in plant_recs}
+        sector[sd] = (extra, ions - plant_ions, wantAll and not plant_all)
 
-    # A per-unit thermo{} override in a sector flowsheet (e.g. a crystalliser
-    # forced onto electrolyte.pitzer) is resolved by the FLATTENED plant against
-    # the plant ROOT snapshot -- not the sector's -- so its method/chemistry/
-    # parameter records must live in the plant snapshot too, or a relocated
-    # whole-plant run cannot find them.  Fold them into the plant closure AFTER
-    # the sector subtraction above, so the sector snapshots are unaffected.
+    # A per-unit thermo{} override in a sector flowsheet is resolved by the
+    # FLATTENED plant against the plant ROOT -- fold its records into the
+    # plant closure AFTER the sector subtraction (sectors unaffected).
     def want_plant(rel):
         src = std / rel
         if src.exists():
             plant_recs[rel] = src
-    for fs in Path(caseDir).rglob("system/flowsheetDict"):
-        ftext = read(fs) or ""
+    for fs_dict in Path(caseDir).rglob("system/flowsheetDict"):
+        ftext = read(fs_dict) or ""
         for m in re.finditer(r'\bthermo\b', ftext):
             blk = block(ftext[m.start():], "thermo")
             if blk:
-                harvest(blk, want_plant)
+                pm = block(blk, "propertyMethods")
+                if pm:
+                    for mm in re.finditer(
+                            r'(liquid|vapour|solid)\s+([A-Za-z0-9_.]+)\s*;', pm):
+                        fam = mm.group(2)
+                        if '.' in fam and not fam.startswith("builtin"):
+                            want_plant("methods/" + fam.split('.', 1)[1] + ".dat")
+                ch = block(blk, "chemistry")
+                if ch:
+                    sb = block(ch, "salts")
+                    for salt in (words(sb) if sb else []):
+                        want_plant("chemistry/salts/" + salt + ".dat")
+                        want_plant("phases/solid/" + salt + ".dat")
+                par = block(blk, "parameters")
+                if par:
+                    for mm in re.finditer(r'"([^"]*data/standards/([^"]+))"', par):
+                        want_plant(mm.group(2))
+                    ppb = block(par, "pitzerPairs")
+                    for pair in (words(ppb) if ppb else []):
+                        want_plant("parameters/Pitzer/pairs/" + pair + ".dat")
 
-    # ---- materialise: plant snapshot + one per sector ---------------------
-    now = datetime.date.today().isoformat()
+    # ---- per-context install content --------------------------------------
+    cat_sha = sha_file(std / "species" / "aqueous.dat") \
+        if (std / "species" / "aqueous.dat").is_file() else ""
 
-    def write_snapshot(baseDir, recs):
-        PDx = baseDir / "constant" / "propertyData"
-        # Rewrite from scratch: drop the whole previous record tree (copied
-        # .dat + manifest) so stale records from an earlier import -- e.g. a
-        # closure that shrank when a package changed world -- never linger.
-        # Scoped strictly to constant/propertyData/.
-        if PDx.exists():
-            shutil.rmtree(PDx)
-        PDx.mkdir(parents=True, exist_ok=True)
-        man_records = []
+    def install_map(recs, ions, wantAll):
+        """-> {rel: (content, origin, originSha)}"""
+        out = {}
         for rel, src in sorted(recs.items()):
-            dst = PDx / rel
+            body = strip_install_paths(src.read_text())
+            stamp = ('// [imported] origin "data/standards/%s" (%s release) --'
+                     ' owned + sha256-verified by constant/propertyManifest\n'
+                     % (rel, release))
+            out[rel] = (stamp + body, "data/standards/" + rel, sha_file(src))
+        names = set(AQ) if wantAll else set(ions)
+        names = {n for n in names if n in AQ}
+        if names:
+            out["species/aqueous.dat"] = (
+                filtered_species_catalogue(AQ, names, release, len(AQ)),
+                "data/standards/species/aqueous.dat (filtered)", cat_sha)
+        return out
+
+    contexts = [(caseDir, install_map(plant_recs, plant_ions, plant_all))]
+    for sd, (recs, ions, wantAll) in sector.items():
+        contexts.append((sd, install_map(recs, ions, wantAll)))
+
+    # ---- conflict analysis (rules 1-4, 6) -- BEFORE any write -------------
+    plans = []       # (ctxDir, installs {rel:(content,origin,osha)},
+    #                   removals [rel], entries {rel:entry})
+    conflicts = []
+    for ctxDir, inst in contexts:
+        constant = ctxDir / "constant"
+        old = read_manifest(constant)
+        entries = {}
+        installs = {}
+        claimed = set()
+        for rel in inst:
+            check_rel_safe(rel)
+            check_no_symlink_escape(constant, rel)
+            if rel in claimed:
+                die("duplicate claim: " + rel)
+            claimed.add(rel)
+        for rel, (content, origin, osha) in inst.items():
+            dst = constant / rel
+            oldE = old.get(rel)
+            if dst.exists() and oldE is None:
+                if rel in adopt:
+                    entries[rel] = {"type": "adopted",
+                                    "adoptedAt": date.today().isoformat()}
+                    continue
+                conflicts.append(
+                    "FATAL [rule 1] %s: destination constant/%s exists but is"
+                    " NOT in the manifest -- an authored file the importer"
+                    " never overwrites.  Either remove/relocate it yourself"
+                    " (a curation act), or adopt it as the case's record:"
+                    "  --adopt-local %s" % (ctxDir.name, rel, rel))
+                continue
+            if dst.exists() and oldE is not None:
+                if oldE.get("type") == "adopted":
+                    entries[rel] = oldE          # stays the author's, untouched
+                    continue
+                cur = sha_file(dst)
+                if cur != oldE.get("sha256"):
+                    if rel in adopt:
+                        entries[rel] = {"type": "adopted",
+                                        "adoptedAt": date.today().isoformat()}
+                        continue
+                    if rel in overwrite:
+                        installs[rel] = (content, origin, osha)
+                        entries[rel] = {"type": "imported",
+                                        "sha256": sha(content),
+                                        "origin": origin,
+                                        "originSha256": osha,
+                                        "release": release}
+                        continue
+                    conflicts.append(
+                        "REFUSED [rule 3] %s: constant/%s was edited locally"
+                        " (hash diverged from the installed record).  Choose"
+                        " explicitly:\n"
+                        "    --adopt-local %s   (keep your edit; withdraw the"
+                        " file from importer ownership)\n"
+                        "    --overwrite %s     (DESTRUCTIVE: discard your"
+                        " edit, re-install the catalogue record)"
+                        % (ctxDir.name, rel, rel, rel))
+                    continue
+                # hash intact -> rule 2: the importer's to update
+            installs[rel] = (content, origin, osha)
+            entries[rel] = {"type": "imported", "sha256": sha(content),
+                            "origin": origin, "originSha256": osha,
+                            "release": release}
+        # rule 4: claimed records whose dependency vanished from the closure
+        removals = []
+        for rel, oldE in old.items():
+            if rel in inst:
+                continue
+            if oldE.get("type") == "adopted":
+                entries[rel] = oldE              # adoption is durable
+                continue
+            dst = constant / rel
+            if not dst.exists():
+                continue                          # already gone; drop claim
+            if sha_file(dst) == oldE.get("sha256"):
+                removals.append(rel)
+            else:
+                conflicts.append(
+                    "REFUSED [rule 4] %s: constant/%s left the closure but was"
+                    " edited locally -- resolve by hand (keep it as an"
+                    " authored file after removing the manifest claim, or"
+                    " delete it), then re-run." % (ctxDir.name, rel))
+        plans.append((ctxDir, installs, removals, entries))
+
+    if conflicts:
+        sys.stderr.write("choupo-import: %d conflict(s); NOTHING was"
+                         " written.\n\n" % len(conflicts))
+        for c in conflicts:
+            sys.stderr.write(c + "\n\n")
+        sys.exit(1)
+
+    # ---- stage the ENTIRE new case + validate (rule 5) --------------------
+    with tempfile.TemporaryDirectory(prefix="choupo-import-") as tmp:
+        staged = Path(tmp) / caseDir.name
+        shutil.copytree(caseDir, staged, symlinks=True)
+        for ctxDir, installs, removals, entries in plans:
+            sconst = staged / ctxDir.relative_to(caseDir) / "constant"
+            for rel in removals:
+                (sconst / rel).unlink()
+            for rel, (content, _o, _s) in installs.items():
+                dst = sconst / rel
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                dst.write_text(content)
+            (sconst / "propertyManifest").write_text(
+                manifest_text(entries, release,
+                              "context: " + (ctxDir.name if ctxDir != caseDir
+                                             else "case root")))
+        validate_staged(root, staged)
+
+    # ---- install (validated): files first, each manifest LAST -------------
+    n_inst = n_adopt = n_rm = 0
+    for ctxDir, installs, removals, entries in plans:
+        constant = ctxDir / "constant"
+        for rel in removals:
+            (constant / rel).unlink()
+            n_rm += 1
+        for rel, (content, _o, _s) in installs.items():
+            dst = constant / rel
             dst.parent.mkdir(parents=True, exist_ok=True)
-            raw = src if isinstance(src, str) else src.read_text()
-            body = strip_install_paths(raw)
-            stamp = ('// [propertyData snapshot] provenance { kind standard; '
-                     'standardSet %s; record "%s"; }\n' % (STANDARD_SET, rel))
-            dst.write_text(stamp + body)
-            sha = hashlib.sha256((stamp + body).encode()).hexdigest()
-            man_records.append((rel, sha))
-        L = []
-        L.append("/*----------------------------------------------------------*\\")
-        L.append("  constant/propertyData/manifest.dat -- frozen property snapshot")
-        L.append("  Imported by `choupo-import` from the %s catalogue release." % STANDARD_SET)
-        L.append("  SEALED: the runtime reads ONLY this snapshot (+ the plant snapshot")
-        L.append("  it cascades to); the installation catalogue is NEVER consulted.")
-        L.append("\\*----------------------------------------------------------*/")
-        L.append("")
-        L.append("propertyDataManifest")
-        L.append("{")
-        L.append("    defaultStandardSet  %s;" % STANDARD_SET)
-        L.append('    importedAt          "%s";' % now)
-        L.append("    sealed              true;")
-        L.append('    importedBy { engineVersion "%s"; }' % STANDARD_SET)
-        L.append("    records")
-        L.append("    {")
-        for rel, sha in man_records:
-            L.append('        "%s" { kind standard; standardSet %s; sha256 "%s"; }'
-                     % (rel, STANDARD_SET, sha))
-        L.append("    }")
-        L.append("}")
-        (PDx / "manifest.dat").write_text("\n".join(L) + "\n")
-        return len(man_records)
+            dst.write_text(content)
+            n_inst += 1
+        (constant / "propertyManifest").write_text(
+            manifest_text(entries, release,
+                          "context: " + (ctxDir.name if ctxDir != caseDir
+                                         else "case root")))
+        n_adopt += sum(1 for e in entries.values()
+                       if e.get("type") == "adopted")
 
-    nplant = write_snapshot(caseDir, plant_recs)
-    nsector = 0
-    for sd, recs in sector_recs.items():
-        nsector += write_snapshot(sd, recs)
+    print("choupo-import: sealed %s (%s)" % (caseDir.name, release))
+    print("  %d record(s) installed, %d adopted (authored), %d removed,"
+          " %d context manifest(s)"
+          % (n_inst, n_adopt, n_rm, len(plans)))
+    print("  validation: staged case RAN with the standards catalogue hidden"
+          " before install")
 
-    print("choupo-import: plant snapshot = %d records; %d sector-specific across %d sectors"
-          % (nplant, nsector, len(sector_recs)))
-    for sd in sector_recs:
-        print("  %s: %d records" % (sd.relative_to(caseDir), len(sector_recs[sd])))
-    print("  sealed (%s) -- each sector carries its OWN records; plant holds the shared." % STANDARD_SET)
 
 if __name__ == "__main__":
     main()

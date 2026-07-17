@@ -32,6 +32,7 @@ License
 #include "core/Constants.H"
 #include "core/Dictionary.H"
 #include "solver/NewtonND.H"
+#include "thermo/RecordResolver.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/electrolyte/AqueousActivity.H"
 #include "thermo/electrolyte/PitzerHMW.H"
@@ -100,25 +101,6 @@ KTcorrection readKT(const DictPtr& e)
     return kt;
 }
 
-// Case SNAPSHOT (Choupo-2607 sealed cases): the frozen record tree under
-// constant/propertyData/<sub>, walking UP the fractal cascade from the case
-// cwd.  When present it is used INSTEAD of the installation catalogue -- the
-// sealed contract ("the run reads the case's own copy").  Absent -> the
-// standards tree, exactly as before (zero change for unsealed cases).
-fs::path snapshotDirOrStandards(const std::string& sub)
-{
-    fs::path p = fs::current_path();
-    for (int up = 0; up < 8; ++up)
-    {
-        fs::path cand = p / "constant" / "propertyData" / sub;
-        if (fs::is_directory(cand)) return cand;
-        fs::path par = p.parent_path();
-        if (par == p) break;
-        p = par;
-    }
-    return fs::path(Database::currentRoot()) / "standards" / sub;
-}
-
 } // namespace
 
 SpeciationSolver::SpeciationSolver(const std::string& activityModel)
@@ -179,9 +161,12 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
             // Migration 5: chemistry/ is ONE flat home; each record's
             // recordType names its family (aqueousSpeciation /
             // gasLiquidEquilibrium / ionExchangeEquilibrium) -- filter, never
-            // guess from a subdirectory.  Sealed cases read their snapshot copy.
-            const fs::path dir = snapshotDirOrStandards("chemistry");
-            if (!fs::exists(dir))
+            // guess from a subdirectory.  ONE resolver (sealing redesign):
+            // Choupo::records::scanRecordDir merges the nearest case-local
+            // constant/chemistry/ over the catalogue by filename (local wins);
+            // a strictly sealed case reads exclusively its local closure.
+            const auto files = Choupo::records::scanRecordDir("chemistry");
+            if (files.empty())
             {
                 if (cl.empty())
                     throw std::runtime_error(
@@ -190,10 +175,6 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
             }
             else
             {
-                std::vector<fs::path> files;
-                for (const auto& f : fs::directory_iterator(dir))
-                    if (f.path().extension() == ".dat") files.push_back(f.path());
-                std::sort(files.begin(), files.end());
                 for (const auto& f : files)
                 {
                     auto rec = Dictionary::fromFile(f.string());
@@ -249,13 +230,9 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
             // gone).  Each record's `dissolved` is an ION label (e.g. "CO2"); link it
             // to the network species whose `ion` matches (CO2 -> CO2aq), fallback the
             // label itself.  The analytic K(T) carried here is the re-baselined value.
-            const fs::path gdir = snapshotDirOrStandards("chemistry");
-            if (fs::exists(gdir))
+            // ONE resolver (sealing redesign): same merged scan as above.
+            const auto gfiles = Choupo::records::scanRecordDir("chemistry");
             {
-                std::vector<fs::path> gfiles;
-                for (const auto& f : fs::directory_iterator(gdir))
-                    if (f.path().extension() == ".dat") gfiles.push_back(f.path());
-                std::sort(gfiles.begin(), gfiles.end());
                 for (const auto& f : gfiles)
                 {
                     auto e = Dictionary::fromFile(f.string());
@@ -337,8 +314,12 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
         // equilibrium Ksp).  Scan them alongside the legacy mineralSolubility/ home.
         if (!caseLocal)
         {
-            const fs::path cdir = snapshotDirOrStandards("components");
-            if (fs::exists(cdir))
+            // ONE resolver (sealing redesign): the components sweep keeps the
+            // component doctrine -- unsealed, the catalogue is the set (the
+            // per-file case overlay is applied below); sealed / legacy
+            // snapshot, the case's own components dir is the set.
+            const fs::path cdir = Choupo::records::componentsScanDir();
+            if (!cdir.empty() && fs::exists(cdir))
             {
                 std::vector<fs::path> cfiles;
                 for (const auto& f : fs::directory_iterator(cdir))
@@ -415,17 +396,15 @@ std::vector<ExchangeReaction> SpeciationSolver::loadExchangeNetwork() const
     }
     else
     {
-        const fs::path dir = snapshotDirOrStandards("chemistry");
-        if (!fs::exists(dir))
+        // ONE resolver (sealing redesign): the same merged chemistry/ scan as
+        // the speciation network (local over standards; sealed local-only).
+        const auto files = Choupo::records::scanRecordDir("chemistry");
+        if (files.empty())
             throw std::runtime_error(
                 "exchange: no case-local exchange.dat and no standards "
                 "chemistry/ (recordType ionExchangeEquilibrium) -- generate it "
                 "(USGS PHREEQC EXCHANGE_SPECIES, "
                 "public domain) or copy a softener tutorial's snapshot into this case.");
-        std::vector<fs::path> files;
-        for (const auto& f : fs::directory_iterator(dir))
-            if (f.path().extension() == ".dat") files.push_back(f.path());
-        std::sort(files.begin(), files.end());
         for (const auto& f : files)
         {
             auto rec = Dictionary::fromFile(f.string());

@@ -42,6 +42,7 @@ License
 #pragma once
 
 #include "thermo/Database.H"
+#include "thermo/RecordResolver.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/electrolyte/PitzerSingleSalt.H"
 #include "thermo/electrolyte/ENRTLSingleSalt.H"
@@ -85,24 +86,6 @@ inline fs::path caseElectrolytePath(const std::string& file)
     return {};
 }
 
-// Case SNAPSHOT (Choupo-2607 data strategy): the frozen dependency copy under
-// constant/propertyData/<sub>, found by walking UP the cascade.  When present it
-// is used INSTEAD of the installation catalogue -- the run reads its own copy.
-// Opt-in by file presence: empty when the case ships no snapshot.
-inline fs::path caseSnapshotPath(const std::string& sub)
-{
-    fs::path p = fs::current_path();
-    for (int up = 0; up < 8; ++up)
-    {
-        fs::path cand = p / "constant" / "propertyData" / sub;
-        if (fs::exists(cand)) return cand;
-        fs::path par = p.parent_path();
-        if (par == p) break;
-        p = par;
-    }
-    return {};
-}
-
 // A parsed dictionary, held for the life of the run.  `findPitzerPair` is called
 // once per (cation, anion) per activity-model construction, and a scaling scan
 // constructs one model per grid point -- so re-reading and re-parsing the pair
@@ -124,30 +107,6 @@ inline bool announceOnce(const std::string& key)
 {
     static std::set<std::string> said;
     return said.insert(key).second;
-}
-
-// SEALED (Choupo-2607): a manifest with `sealed true;` FORBIDS the installation
-// catalogue -- a record missing from the snapshot is a HARD error (re-import),
-// never a silent catalogue read.  "Everything in each case", enforced.
-inline bool caseSnapshotSealed()
-{
-    fs::path p = fs::current_path();
-    for (int up = 0; up < 8; ++up)
-    {
-        fs::path m = p / "constant" / "propertyData" / "manifest.dat";
-        if (fs::exists(m))
-        {
-            auto d = parsedOnce(m);
-            if (d->found("propertyDataManifest"))
-                return d->subDict("propertyDataManifest")
-                        ->lookupWordOrDefault("sealed", "false") == "true";
-            return false;
-        }
-        fs::path par = p.parent_path();
-        if (par == p) break;
-        p = par;
-    }
-    return false;
 }
 
 // Catalogue files to scan, case-local FIRST (overlay) then standard (base).
@@ -213,17 +172,23 @@ inline DictPtr bridgeTrueIon(const DictPtr& r, const std::string& species)
     return Dictionary::fromString(os.str());
 }
 
-// Ion record by species name.  Two source legs (the ion kind is now stored ONLY
-// as per-species records under species/aqueous/; the old monolithic
+// Ion record by species name.  Source legs, case-first (the ion kind is now
+// stored ONLY as the species/aqueous.dat catalogue; the old monolithic
 // electrolyte/ions.dat is gone):
 //   (1) case-local constant/electrolyte/ions.dat -- OLD FLAT list, read EXACTLY
 //       as before, whole-row FIRST-FILE-WINS (do NOT merge fields with the
 //       standards leg: crystalliser05 ships {z,MW}-only Na with NO hfAq, and its
 //       golden depends on ionAqReference returning false there).
-//   (2) sealed snapshot species/aqueous/<species>.dat -- NESTED per-file (frozen).
-//   (3) standards species/aqueous.dat -- ONE catalogue (aqueousSpecies list),
-//       matched by `name`, bridged to flat.  (The 41 per-file records were
-//       consolidated into this single catalogue.)
+//   (2) case-local constant/species/aqueous.dat -- the MIRRORED single
+//       catalogue (a sealed import writes it FILTERED to the case's closure;
+//       same grammar as the standards catalogue, never a per-file forest),
+//       matched by `name`, bridged to flat.  Case wins per-record; unsealed,
+//       the standards catalogue fills any name the case does not carry.
+//   (3) [legacy] snapshot species/aqueous/<species>.dat -- the retired v1
+//       per-file form (lithiumBrinePlant / Crystallizer09chatGPT only; see
+//       the RecordResolver TODO).
+//   (4) standards species/aqueous.dat -- ONE catalogue (aqueousSpecies list),
+//       FORBIDDEN when the case is sealed (loud refusal instead).
 inline DictPtr findIon(const std::string& species)
 {
     const fs::path cl = caseElectrolytePath("ions.dat");
@@ -233,15 +198,22 @@ inline DictPtr findIon(const std::string& species)
         for (const auto& i : d->lookupDictList("ions"))
             if (i->lookupWord("species") == species) return i;
     }
-    const fs::path snap = caseSnapshotPath("species/aqueous/" + species + ".dat");
+    const fs::path localCat = records::localRecord("species/aqueous.dat");
+    if (!localCat.empty())
+    {
+        auto c = parsedOnce(localCat);
+        for (const auto& r : c->lookupDictList("aqueousSpecies"))
+            if (r->lookupWord("name") == species)
+                return bridgeTrueIon(r, species);
+    }
+    const fs::path snap =
+        records::legacySnapshotRecord("species/aqueous/" + species + ".dat");
     if (!snap.empty())
         return bridgeTrueIon(parsedOnce(snap), species);
-    if (caseSnapshotSealed())
-        throw std::runtime_error("SEALED snapshot: ion '" + species
-            + "' (species/aqueous/) is NOT in the case's constant/propertyData/ --"
-              " re-run `choupo-import` (the installation catalogue is forbidden).");
-    const fs::path cat = fs::path(Database::currentRoot())
-                      / "standards" / "species" / "aqueous.dat";
+    if (records::sealed())
+        records::refuseSealed("species/aqueous.dat: " + species,
+                              "aqueous species record");
+    const fs::path cat = records::standardsRecord("species/aqueous.dat");
     if (fs::exists(cat))
     {
         auto c = parsedOnce(cat);
@@ -373,17 +345,11 @@ inline DictPtr findPitzerPair(const std::string& cation, const std::string& anio
                 return memo(p);
             }
     }
-    const fs::path snap = caseSnapshotPath("parameters/Pitzer/pairs/"
-                                           + cation + "-" + anion + ".dat");
-    if (!snap.empty())
-        return memo(bridgePitzerPair(parsedOnce(snap)));
-    if (caseSnapshotSealed())
-        throw std::runtime_error("SEALED snapshot: pitzer pair (" + cation + ","
-            + anion + ") is NOT in constant/propertyData/ -- re-run `choupo-import`"
-              " (the installation catalogue is forbidden).");
-    const fs::path tp = fs::path(Database::currentRoot())
-                      / "standards" / "parameters" / "Pitzer" / "pairs"
-                      / (cation + "-" + anion + ".dat");
+    // ONE resolver (sealing redesign): case-local mirrored home -> legacy
+    // snapshot -> standards; a sealed case refuses a locally-missing pair.
+    const fs::path tp = records::resolveRequired(
+        "parameters/Pitzer/pairs/" + cation + "-" + anion + ".dat",
+        "Pitzer pair (" + cation + "," + anion + ")");
     if (fs::exists(tp))
         return memo(bridgePitzerPair(parsedOnce(tp)));
     return nullptr;
@@ -489,14 +455,12 @@ inline bool ionAqReference(const std::string& cation, const std::string& anion,
 inline bool crissCobbleNodes(const std::string& cation, const std::string& anion,
                              double nu_c, double nu_a, double nodes[5])
 {
-    // Case snapshot FIRST (Choupo-2607 sealed cases): the frozen copy under
-    // constant/propertyData/ -- a hidden/absent installation catalogue must
-    // not silently degrade the ion Cp(T) tier of a sealed case.
-    fs::path f = caseSnapshotPath("parameters/electrolyte/crissCobble.dat");
-    if (f.empty())
-        f = fs::path(Database::currentRoot())
-          / "standards" / "parameters" / "electrolyte" / "crissCobble.dat";
-    if (!fs::exists(f)) return false;
+    // ONE resolver (sealing redesign): case-local mirrored home -> legacy
+    // snapshot -> standards.  Absence-TOLERANT: a strictly sealed case whose
+    // closure carries no crissCobble.dat degrades to the constant-cpAq tier
+    // (the builder announces which tier runs), never a silent catalogue read.
+    fs::path f = records::resolveRecord("parameters/electrolyte/crissCobble.dat");
+    if (f.empty() || !fs::exists(f)) return false;
     auto d = parsedOnce(f);
     DictPtr ec = nullptr, ea = nullptr;
     for (const auto& e : d->lookupDictList("ions"))
@@ -554,20 +518,11 @@ inline DictPtr findENRTLPair(const std::string& cation, const std::string& anion
                 return p;
             }
     }
-    // Case snapshot (sealed self-containment): propertyData/parameters/ is the
-    // canonical home for a model parameter -- consulted BEFORE the installation
-    // catalogue, and (when sealed) the catalogue is forbidden.  Mirrors findPitzerPair.
-    const fs::path snap = caseSnapshotPath("parameters/eNRTL/"
-                                           + cation + "-" + anion + ".dat");
-    if (!snap.empty())
-        return bridgeENRTLPair(parsedOnce(snap));
-    if (caseSnapshotSealed())
-        throw std::runtime_error("SEALED snapshot: eNRTL pair (" + cation + ","
-            + anion + ") is NOT in constant/propertyData/ -- re-run `choupo-import`"
-              " (the installation catalogue is forbidden).");
-    const fs::path tp = fs::path(Database::currentRoot())
-                      / "standards" / "parameters" / "eNRTL"
-                      / (cation + "-" + anion + ".dat");
+    // ONE resolver (sealing redesign), mirroring findPitzerPair: case-local
+    // mirrored home -> legacy snapshot -> standards; sealed refuses absences.
+    const fs::path tp = records::resolveRequired(
+        "parameters/eNRTL/" + cation + "-" + anion + ".dat",
+        "eNRTL pair (" + cation + "," + anion + ")");
     if (fs::exists(tp))
         return bridgeENRTLPair(parsedOnce(tp));
     return nullptr;

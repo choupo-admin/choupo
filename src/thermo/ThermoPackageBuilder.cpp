@@ -7,6 +7,7 @@
 
 #include "thermo/Database.H"
 #include "thermo/Component.H"
+#include "thermo/RecordResolver.H"
 #include "thermo/ThermoAnnounce.H"   // [builder] lines: cout (pedagogy), gated at >= 2
 #include "thermo/activityCoefficient/ElectrolyteActivity.H"
 #include "thermo/electrolyte/PitzerSingleSalt.H"
@@ -29,29 +30,35 @@ namespace Choupo {
 // from the cwd (the case) trying <dir>/<declared>; only then fall back to the
 // installation repoRoot.  A sector-relative path ("constant/parameters/...")
 // thus resolves inside the moved case, never the original tree.
+// A v2 dict declares the INSTALLATION form (`source "data/standards/
+// parameters/NRTL/<pair>.dat";`): the case constant/ MIRRORS data/standards/
+// (the sealing redesign), so the same record lives case-locally at
+// constant/<sub> (prefix stripped) -- the form `bin/choupo-import` writes.
+// [legacy] The constant/propertyData/<...> legs serve the retired v1
+// snapshots only (see the RecordResolver TODO).  A STRICTLY sealed case whose
+// declared record is nowhere case-local REFUSES instead of silently reading
+// the catalogue.
 static std::filesystem::path resolveDeclared(const std::filesystem::path& repoRoot,
                                              const std::string& declared)
 {
     namespace fs = std::filesystem;
+    static const std::string pfx = "data/standards/";
+    const bool stdForm = declared.rfind(pfx, 0) == 0;
     fs::path q = fs::current_path();
-    for (int up = 0; up < 8; ++up)
+    for (int up = 0; up < Choupo::records::walkUpDepth; ++up)
     {
         fs::path cand = q / declared;
         if (fs::exists(cand)) return cand;
-        // F2 canonical home: a declared parameter path is propertyData-relative
-        // (`parameters/NRTL/<pair>.dat`), so also try it under
-        // `<dir>/constant/propertyData/` -- how a SEALED case (incl. a drilled
-        // standalone sub-case) stores its pairs.  The bare form above stays for
-        // the case-local `constant/parameters/` overlay.
+        if (stdForm)
+        {
+            fs::path candLocal = q / "constant" / declared.substr(pfx.size());
+            if (fs::exists(candLocal)) return candLocal;
+        }
+        // [legacy] the retired propertyData homes -- bare form (F2 pair
+        // paths) and prefix-stripped v2 form.
         fs::path candPd = q / "constant" / "propertyData" / declared;
         if (fs::exists(candPd)) return candPd;
-        // A v2 dict declares the INSTALLATION form (`source "data/standards/
-        // parameters/NRTL/<pair>.dat";`) -- in a SEALED snapshot the same
-        // record lives at constant/propertyData/<sub> (prefix stripped), the
-        // form choupo-import writes.  Try it, so a sealed case reads its own
-        // frozen copy and never the catalogue.
-        static const std::string pfx = "data/standards/";
-        if (declared.rfind(pfx, 0) == 0)
+        if (stdForm)
         {
             fs::path candSnap = q / "constant" / "propertyData"
                               / declared.substr(pfx.size());
@@ -61,6 +68,9 @@ static std::filesystem::path resolveDeclared(const std::filesystem::path& repoRo
         if (par == q) break;
         q = par;
     }
+    if (stdForm && Choupo::records::sealedStrict())
+        Choupo::records::refuseSealed(declared.substr(pfx.size()),
+                                      "declared parameter record");
     return repoRoot / declared;
 }
 
@@ -117,54 +127,31 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
             " declared-and-dropped lie (A3).");
     // Repo root = parent of the data/ dir (Database::currentRoot() is data/).
     const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
-    // CASE SNAPSHOT FIRST (Choupo-2607 data strategy): a case may carry a frozen
-    // copy of its dependency closure in constant/propertyData/.  When it does,
-    // the run uses the case's OWN record, walking UP the cascade
-    // (unit -> sector -> plant), and NEVER the installation catalogue.  Opt-in
-    // by file presence: a case WITHOUT constant/propertyData/<sub> falls through
-    // to data/standards/ exactly as before -- zero change for the corpus.
+    // ONE resolver (sealing redesign): a "data/standards/<sub>" rel resolves
+    // case-local FIRST (constant/<sub>, then the legacy propertyData form),
+    // walking UP the cascade (unit -> sector -> plant); a strictly sealed
+    // case never falls back to the catalogue (resolveRecord returns empty --
+    // the fs::exists guards downstream keep absence-tolerant reads tolerant).
+    // A case without local records falls through to data/standards/ exactly
+    // as before -- zero change for the unsealed corpus.
     auto resolve = [&](const std::string& rel) -> fs::path
     {
         static const std::string pfx = "data/standards/";
         if (rel.rfind(pfx, 0) == 0)
-        {
-            const std::string sub = rel.substr(pfx.size());
-            fs::path p = fs::current_path();
-            for (int up = 0; up < 8; ++up)   // bounded walk (parent of "/" is "/")
-            {
-                fs::path cand = p / "constant" / "propertyData" / sub;
-                if (fs::exists(cand)) return cand;
-                fs::path par = p.parent_path();
-                if (par == p) break;
-                p = par;
-            }
-        }
+            return records::resolveRecord(rel.substr(pfx.size()));
         return repoRoot / rel;
     };
-    // Confess the snapshot (Choupo-2607 data strategy): if the case ships a
-    // property-data manifest, say so once -- this run reads the case's own
-    // frozen copy, never the installation catalogue.
+    // Confess the seal: if the case ships a property manifest, say so once --
+    // this run reads the case's own records, never the installation catalogue.
     {
-        fs::path man = fs::current_path();
-        for (int up = 0; up < 8; ++up)
-        {
-            fs::path m = man / "constant" / "propertyData" / "manifest.dat";
-            if (fs::exists(m))
-            {
-                if (thermoAnnounce())
-                {
-                    auto md = Dictionary::fromFile(m.string())->subDict("propertyDataManifest");
-                    std::cout << "[propertyData] case runs from its FROZEN snapshot ("
-                              << md->lookupWordOrDefault("defaultStandardSet", "?")
-                              << ", imported " << md->lookupWordOrDefault("importedAt", "?")
-                              << ") -- installation catalogue NOT consulted.\n";
-                }
-                break;
-            }
-            fs::path par = man.parent_path();
-            if (par == man) break;
-            man = par;
-        }
+        DictPtr md = records::nearestManifest();
+        if (md && thermoAnnounce())
+            std::cout << "[sealed] case runs from its own constant/ records ("
+                      << md->lookupWordOrDefault("catalogueRelease",
+                             md->lookupWordOrDefault("defaultStandardSet", "?"))
+                      << ", imported "
+                      << md->lookupWordOrDefault("importedAt", "?")
+                      << ") -- installation catalogue NOT consulted.\n";
     }
 
     // (a) component list -----------------------------------------------------
@@ -179,8 +166,12 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
     //     -- the water solvent, an ethanol
     //     antisolvent, a curve-solute -- is a full molecular component loaded by
     //     name (overlay honoured), so the crystalliser reads its eps/Mw/v.
+    // Component BASE records keep the doctrine (records::componentBase): the
+    // hand-authored constant/components/ overlay tier must NOT serve as the
+    // raw base of an unsealed case -- only a legacy snapshot or a STRICTLY
+    // sealed one-home record replaces the catalogue base here.
     auto stdCompPath = [&](const std::string& cn)
-        { return resolve("data/standards/components/" + cn + ".dat"); };
+        { return records::componentBase(cn); };
 
     // SUBSET-AWARE (general solver): a flowsheet may run this electrolyte world
     // on a GLOBAL component union that carries MORE than one salt (a brine unit
@@ -332,7 +323,11 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
         const std::string methodName = isENRTL ? "eNRTL" : "pitzer";
         const std::string methodPath =
             "data/standards/methods/" + methodName + ".dat";
-        auto mRec = loadRec(resolve(methodPath), "propertyMethod " + methodName);
+        const fs::path mPath = resolve(methodPath);
+        if (mPath.empty())
+            records::refuseSealed("methods/" + methodName + ".dat",
+                                  "propertyMethod " + methodName);
+        auto mRec = loadRec(mPath, "propertyMethod " + methodName);
         if (!(mRec->found("requires")
               && mRec->subDict("requires")->found("ionSpecies")))
             absent("requires.ionSpecies", methodPath);
@@ -575,23 +570,16 @@ static ThermoPackage buildSolutionHenry(const DictPtr& pkg, const Database& db)
         auto rec = loadRec(resolveDeclared(repoRoot, hp->lookupWord(key)), "Henry pair " + key);
         (void)rec;   // parse = the verification; the runtime registry re-reads it
     }
-    // Echo the method's per-group referenceBasis (glass-box).  Snapshot leg
-    // (Choupo-2607 sealed cases): the frozen copy under constant/propertyData/
-    // wins over the installation catalogue.
+    // Echo the method's per-group referenceBasis (glass-box).  ONE resolver
+    // (sealing redesign): the case-local record (constant/methods/, or the
+    // legacy propertyData form) wins over the installation catalogue; a
+    // strictly sealed case refuses a locally-missing method record.
     {
-        fs::path methodRec = repoRoot / "data/standards/methods/henryDilute.dat";
-        {
-            fs::path q = fs::current_path();
-            for (int up = 0; up < 8; ++up)
-            {
-                fs::path cand = q / "constant" / "propertyData"
-                              / "methods" / "henryDilute.dat";
-                if (fs::exists(cand)) { methodRec = cand; break; }
-                fs::path par = q.parent_path();
-                if (par == q) break;
-                q = par;
-            }
-        }
+        const fs::path methodRec =
+            records::resolveRecord("methods/henryDilute.dat");
+        if (methodRec.empty())
+            records::refuseSealed("methods/henryDilute.dat",
+                                  "propertyMethod henryDilute");
         auto mRec = loadRec(methodRec, "propertyMethod henryDilute");
         if (thermoAnnounce())
             std::cout << "[builder] propertyMethod solution.henryDilute: referenceBasis "

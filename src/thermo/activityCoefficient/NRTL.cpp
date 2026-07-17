@@ -32,6 +32,7 @@ License
 #include "core/ThermoResolution.H"
 #include "thermo/PairAudit.H"
 #include "thermo/Database.H"
+#include "thermo/RecordResolver.H"
 
 #include <algorithm>
 #include <cmath>
@@ -84,9 +85,9 @@ fs::path locatePairFile(const std::string& pairName, const std::string& nodeBase
                         / "constant" / "parameters" / "NRTL" / pairName;
     if (fs::exists(caseFile)) { tierOut = "caseRoot"; return caseFile; }
 
-    // Case snapshot: propertyData/parameters/ is the CANONICAL home for a model
-    // parameter (sealed self-containment, F2).  Per-node context first, then the
-    // case root -- consulted BEFORE the installation catalogue.
+    // [legacy] retired propertyData/parameters/ snapshot home (the two
+    // remaining v1 snapshots -- see the RecordResolver TODO).  Per-node
+    // context first, then the case root -- before the installation catalogue.
     if (!nodeBase.empty())
     {
         fs::path nodeSnap = fs::path(nodeBase) / "constant" / "propertyData"
@@ -96,6 +97,12 @@ fs::path locatePairFile(const std::string& pairName, const std::string& nodeBase
     fs::path caseSnap = fs::current_path() / "constant" / "propertyData"
                       / "parameters" / "NRTL" / pairName;
     if (fs::exists(caseSnap)) { tierOut = "caseSnapshot"; return caseSnap; }
+
+    // STRICTLY sealed case (constant/propertyManifest): the installation
+    // catalogue is FORBIDDEN -- a pair missing from the case's mirrored
+    // constant/parameters/NRTL/ resolves idealDefault, and the pair
+    // announcement says so aloud (never a silent catalogue read).
+    if (records::sealedStrict()) { tierOut = "idealDefault"; return {}; }
 
     const auto& root = Database::currentRoot();
     if (!root.empty())

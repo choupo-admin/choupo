@@ -28,6 +28,7 @@ License
 
 #include "HenrysLawRegistry.H"
 #include "core/Dictionary.H"
+#include "thermo/RecordResolver.H"
 
 #include <filesystem>
 #include <map>
@@ -70,20 +71,18 @@ void HenrysLawRegistry::loadFrom(const std::string& dataRoot)
             registry()[key(h.solute(), h.solvent())] = std::move(h);
         }
     };
-    scan(fs::path(dataRoot) / "standards" / "parameters" / "Henry");
-    // Case SNAPSHOT (Choupo-2607 sealed cases): the frozen copy under
-    // constant/propertyData/parameters/Henry/, walking UP the cascade from the
-    // case cwd (loadFrom runs after the binary enters the case directory).
-    // Scanned AFTER the catalogue so the case's own record wins.
-    fs::path p = fs::current_path();
-    for (int up = 0; up < 8; ++up)
-    {
-        fs::path cand = p / "constant" / "propertyData" / "parameters" / "Henry";
-        if (fs::exists(cand)) { scan(cand); break; }
-        fs::path par = p.parent_path();
-        if (par == p) break;
-        p = par;
-    }
+    // ONE resolver policy (sealing redesign): identity-merge in the unsealed
+    // case -- the catalogue is the base, the nearest case-local dir
+    // (constant/parameters/Henry/, or the legacy propertyData form) is
+    // scanned AFTER it so the case's own record wins per (solute,solvent)
+    // key.  A STRICTLY sealed case reads EXCLUSIVELY its local closure (the
+    // catalogue is forbidden); loadFrom runs after the binary enters the
+    // case directory, so the cwd walk sees the case.
+    if (!records::sealedStrict())
+        scan(fs::path(dataRoot) / "standards" / "parameters" / "Henry");
+    bool legacy = false;
+    const fs::path local = records::localScanDir("parameters/Henry", legacy);
+    if (!local.empty()) scan(local);
 }
 
 bool HenrysLawRegistry::has(const std::string& solute,

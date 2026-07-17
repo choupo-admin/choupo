@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Database.H"
+#include "RecordResolver.H"
 #include "ThermoAnnounce.H"
 
 #include <iostream>
@@ -47,24 +48,13 @@ std::string Database::resolveRoot(const std::string& explicitRoot) const
             && fs::is_directory(p / "standards" / "components");
     };
 
-    // A fully SELF-CONTAINED case (Choupo-2607 data strategy) carries its own
-    // constant/propertyData/ snapshot and needs NO installation catalogue --
-    // so an absent standards/ must not stop the run.  Detect the snapshot by
-    // walking UP from the cwd; when present, accept a catalogue-less root (the
-    // relocation test: move the case anywhere, hide the catalogue, it still runs).
-    auto caseHasSnapshot = []() -> bool
-    {
-        fs::path p = fs::current_path();
-        for (int up = 0; up < 8; ++up)
-        {
-            if (fs::exists(p / "constant" / "propertyData" / "manifest.dat"))
-                return true;
-            fs::path par = p.parent_path();
-            if (par == p) break;
-            p = par;
-        }
-        return false;
-    };
+    // A fully SELF-CONTAINED case carries its own property manifest
+    // (constant/propertyManifest; legacy: constant/propertyData/manifest.dat)
+    // and needs NO installation catalogue -- so an absent standards/ must not
+    // stop the run.  Detect it via the ONE record resolver (walks UP from the
+    // cwd); when present, accept a catalogue-less root (the relocation test:
+    // move the case anywhere, hide the catalogue, it still runs).
+    auto caseHasSnapshot = []() -> bool { return records::hasManifest(); };
 
     if (!explicitRoot.empty())
     {
@@ -174,47 +164,33 @@ Component Database::loadComponent(const std::string& name) const
             p = p.parent_path();
         }
     }
-    // CASE SNAPSHOT (Choupo-2607 data strategy): a frozen copy under
-    // constant/propertyData/components/<name>.dat, walking UP the cascade, is the
-    // BASE instead of the installation catalogue -- the run reads the case's own
-    // copy.  Opt-in by file presence; the case-local constant/components/ overlay
-    // (sample-specific data) still wins on top.  Absent -> the catalogue base.
-    fs::path snapshot;
-    {
-        fs::path p = fs::current_path();
-        for (int up = 0; up < 8; ++up)
-        {
-            fs::path cand = p / "constant" / "propertyData" / "components" / (name + ".dat");
-            if (fs::exists(cand)) { snapshot = cand; break; }
-            fs::path par = p.parent_path();
-            if (par == p) break;
-            p = par;
-        }
-    }
-    // SEALED (Choupo-2607): a manifest with sealed true FORBIDS the catalogue.
-    bool sealed = false;
-    {
-        fs::path q = fs::current_path();
-        for (int u = 0; u < 8; ++u)
-        {
-            fs::path m = q / "constant" / "propertyData" / "manifest.dat";
-            if (fs::exists(m))
-            {
-                auto d = Dictionary::fromFile(m.string());
-                if (d->found("propertyDataManifest"))
-                    sealed = d->subDict("propertyDataManifest")
-                              ->lookupWordOrDefault("sealed", "false") == "true";
-                break;
-            }
-            fs::path par = q.parent_path(); if (par == q) break; q = par;
-        }
-    }
+    // [legacy] CASE SNAPSHOT: a frozen copy under constant/propertyData/
+    // components/<name>.dat (the retired v1 form -- lithiumBrinePlant /
+    // Crystallizer09chatGPT only, see the RecordResolver TODO) is the BASE
+    // instead of the installation catalogue; the case-local overlay still
+    // wins on top.
+    const fs::path snapshot =
+        records::legacySnapshotRecord("components/" + name + ".dat");
+    // SEALED: the property manifest FORBIDS the catalogue.
+    const bool sealed = records::sealed();
     if (sealed && snapshot.empty() && caseLocal.empty())
-        throw std::runtime_error("SEALED snapshot: component '" + name
-            + "' is NOT in the case's constant/propertyData/components/ --"
-              " re-run `choupo-import` (the installation catalogue is forbidden).");
+        throw std::runtime_error("SEALED case: component '" + name
+            + "' is NOT in the case's constant/components/ --"
+              " re-run `bin/choupo-import` (the installation catalogue is forbidden).");
     fs::path standard  = !snapshot.empty() ? snapshot
                        : fs::path(root_) / "standards" / "components" / (name + ".dat");
+    // ONE home (sealing redesign, 2026-07-17): in a STRICTLY sealed case the
+    // mirrored constant/components/<name>.dat IS the record -- the imported
+    // full copy claimed by constant/propertyManifest, or the author's ADOPTED
+    // record (an explicit adopt-local decision at import time).  There is no
+    // catalogue base to merge: read it alone.  (Unsealed cases keep the
+    // overlay doctrine below byte-identically: standards base, case-local
+    // full-shadow / overlayOf on top.)
+    if (records::sealedStrict() && snapshot.empty())
+    {
+        standard  = caseLocal;      // the ONE home is the base...
+        caseLocal = fs::path();     // ...and there is no separate overlay file
+    }
     // Third tier (LOWEST precedence): data/local/ (gitignored) holds UNVERIFIED, student-
     // review-pending proposals (estimates / bulk-ingested VLE skeletons).
     // Precedence, lowest -> highest:  proposed  <  standards  <  case-local.

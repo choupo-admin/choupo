@@ -29,6 +29,7 @@ License
 #include "UNIQUAC.H"
 #include "core/Advisory.H"
 #include "thermo/Database.H"
+#include "thermo/RecordResolver.H"
 #include "core/ThermoResolution.H"
 #include "thermo/PairAudit.H"
 
@@ -69,8 +70,8 @@ fs::path locatePairFile(const std::string& pairName, const std::string& nodeBase
     fs::path caseFile = fs::current_path() / "constant" / "parameters" / "UNIQUAC" / pairName;
     if (fs::exists(caseFile)) return caseFile;
 
-    // Case snapshot: propertyData/parameters/ is the CANONICAL param home (sealed
-    // self-containment, F2) -- per-node then case root, before the catalogue.
+    // [legacy] retired propertyData/parameters/ snapshot home (see the
+    // RecordResolver TODO) -- per-node then case root, before the catalogue.
     if (!nodeBase.empty())
     {
         fs::path nodeSnap = fs::path(nodeBase) / "constant" / "propertyData"
@@ -80,6 +81,10 @@ fs::path locatePairFile(const std::string& pairName, const std::string& nodeBase
     fs::path caseSnap = fs::current_path() / "constant" / "propertyData"
                       / "parameters" / "UNIQUAC" / pairName;
     if (fs::exists(caseSnap)) return caseSnap;
+
+    // STRICTLY sealed case: the installation catalogue is FORBIDDEN -- a pair
+    // missing from the mirrored constant/parameters/UNIQUAC/ stays missing.
+    if (records::sealedStrict()) return {};
 
     const auto& root = Database::currentRoot();
     if (!root.empty())

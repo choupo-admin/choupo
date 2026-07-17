@@ -425,23 +425,28 @@ try
     else if (fs::exists(launchCwd / "data" / "standards" / "components"))
         dataRoot = launchCwd / "data";
     // Enter the case dir BEFORE constructing the Database.  A SEALED case
-    // (constant/propertyData/) is then detected -- caseHasSnapshot() walks up
-    // from HERE -- so the Database skips the catalogue-root requirement and the
-    // engine consults ONLY the case.  dataRoot stays absolute (from launchCwd).
+    // (constant/propertyManifest; legacy constant/propertyData/) is then
+    // detected -- the record resolver walks up from HERE -- so the Database
+    // skips the catalogue-root requirement and the engine consults ONLY the
+    // case.  dataRoot stays absolute (from launchCwd).
     fs::current_path(caseDir);
     Database db(dataRoot.empty() ? "" : dataRoot.string());
 
-    // Load the materials and membranes registries from the same data root.
+    // Load the registries.  A SEALED case with the catalogue hidden has an
+    // EMPTY dataRoot -- but the directory-scan registries (Henry, ...) read
+    // the case's OWN constant/<sub>/ closure via the record resolver, so they
+    // must still load: loadFrom("") scans the case-local dir alone (sealed).
+    // The others (materials/membranes/adsorbents) have no case-local tier yet,
+    // so they stay gated on a real dataRoot.
     if (!dataRoot.empty())
     {
         MaterialRegistry::loadFrom(dataRoot.string());
         MembraneRegistry::loadFrom(dataRoot.string());
         AdsorbentRegistry::loadFrom(dataRoot.string());
-        HenrysLawRegistry::loadFrom(dataRoot.string());
-
-        SolutionRegistry::loadFrom(dataRoot.string());
-        UtilityCatalogue::loadFrom(dataRoot.string());
     }
+    HenrysLawRegistry::loadFrom(dataRoot.string());
+    SolutionRegistry::loadFrom(dataRoot.string());
+    UtilityCatalogue::loadFrom(dataRoot.string());
 
     std::cout << "Case directory: " << fs::current_path().string() << "\n"
               << "Database root:  " << db.root() << "\n\n";

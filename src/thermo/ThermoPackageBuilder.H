@@ -30,9 +30,10 @@ License
   The builder ONLY LOADS declared records; any missing field is a hard, named
   failure (it NEVER estimates -- U3 of docs/architecture/final-property-architecture.md).
 
-  Records are loaded + verified from the case's sealed constant/propertyData/
-  snapshot or the standards catalogue: components/ (the unified substance
-  records), species/aqueous.dat, chemistry/, and
+  Records are loaded + verified through the ONE record resolver
+  (thermo/RecordResolver.H: the case's mirrored constant/ tree, the legacy
+  propertyData/ snapshot, else the standards catalogue): components/ (the
+  unified substance records), species/aqueous.dat, chemistry/, and
   parameters/Pitzer/pairs/.  (Water, a plain molecular component,
   is loaded by name as usual.)
 \*---------------------------------------------------------------------------*/
