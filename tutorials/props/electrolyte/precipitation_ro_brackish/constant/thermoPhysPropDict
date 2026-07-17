@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T8: the aqueous activity SURFACE for the
+  brackish-RO precipitation case.  ONE physical statement: ionic activities
+  come from Davies on the molality basis.  The analysis (analyticalTotals)
+  lives in the OPERATIONS; the species/reactions live in the curated
+  chemistry tree.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+aqueousProperties
+{
+    solvent water;
+
+    activityCoefficients
+    {
+        model          Davies;
+        referenceBasis aqueousMolality;
+    }
+}

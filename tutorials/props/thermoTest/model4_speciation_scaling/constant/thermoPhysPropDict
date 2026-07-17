@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T8: the aqueous activity SURFACE for the
+  speciation/scaling thermo test.  ONE physical statement: ionic activities
+  come from Pitzer-HMW on the molality basis.  The analysis
+  (analyticalTotals) lives in the OPERATIONS; the species/reactions live in
+  the curated chemistry tree.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+aqueousProperties
+{
+    solvent water;
+
+    activityCoefficients
+    {
+        model          PitzerHMW;
+        referenceBasis aqueousMolality;
+    }
+}

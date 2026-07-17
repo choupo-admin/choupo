@@ -1,0 +1,25 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T8: the aqueous activity SURFACE for the calcite
+  brine.  Reference statement: ionic activities come from Pitzer-HMW on the
+  molality basis.  This is a model-CONTRAST case: the ops keep an explicit
+  per-op `activityModel` (davies vs pitzerHMW) as a deliberate override --
+  the whole point is to read the rival models against each other on ONE feed.
+  The analysis lives in the OPERATIONS; the species/reactions live in the
+  curated chemistry tree.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+aqueousProperties
+{
+    solvent water;
+
+    activityCoefficients
+    {
+        model          PitzerHMW;
+        referenceBasis aqueousMolality;
+    }
+}

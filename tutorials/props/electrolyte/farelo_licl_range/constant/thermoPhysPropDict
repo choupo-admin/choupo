@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T8: the aqueous activity SURFACE for the Farelo
+  LiCl concentration range.  ONE physical statement: ionic activities come
+  from Pitzer-HMW on the molality basis.  The analysis (composition, pH)
+  lives in the OPERATIONS; the species/reactions live in the curated
+  chemistry tree.
+  (LiCl is not yet a standard component -- promoting it is a later reviewed
+  step; the Li-Cl refit + LiCl.H2O calibrated Ksp still live in
+  constant/electrolyte/ pending monolith retirement.)
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water LiCl );
+
+aqueousProperties
+{
+    solvent water;
+
+    activityCoefficients
+    {
+        model          PitzerHMW;
+        referenceBasis aqueousMolality;
+    }
+}

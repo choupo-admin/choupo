@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T8: the aqueous activity SURFACE for the NaCl
+  composition-input case.  ONE physical statement: ionic activities come from
+  Davies on the molality basis.  The analysis (composition, pH) lives in the
+  OPERATION; the species/reactions live in the curated chemistry tree.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water NaCl );
+
+aqueousProperties
+{
+    solvent water;
+
+    activityCoefficients
+    {
+        model          Davies;
+        referenceBasis aqueousMolality;
+    }
+}
