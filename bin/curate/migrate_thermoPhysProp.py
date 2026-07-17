@@ -16,10 +16,10 @@
 # unchanged): translateV2 maps the T1 template to the same v1 in-memory package.
 #
 # HARD SAFETY GATES (readers of the v1 name that do NOT resolve v2):
-#   * only choupoSolve + choupoProps mains resolve constant/thermoPhysPropDict;
-#     choupoBatch/choupoCtrl read constant/propertyDict ONLY -> any case whose
-#     controlDict application is not choupoSolve/choupoProps is skipped
-#     (tutorials/batch/** and tutorials/ctrl/** fall out of this check).
+#   * only the four mains resolve constant/thermoPhysPropDict (choupoSolve +
+#     choupoProps since 9b4e2e5f5; choupoBatch + choupoCtrl since bb7bde3fe)
+#     -> any case whose controlDict application is not one of the four is
+#     skipped.
 #   * choupoSolve REFUSES outerDriver + builder package ("not yet wired",
 #     main.cpp:850) -> any case with system/outerDict is skipped;
 #   * the Flowsheet per-unit walk-up (propertyContextBase) and the
@@ -46,7 +46,8 @@ ROOT = Path(__file__).resolve().parents[2]
 TUTORIALS = ROOT / "tutorials"
 SKIPPED_LIST = ROOT / "bin/curate/migrate_thermoPhysProp.skipped.txt"
 
-V2_DISPATCHING_APPS = {"choupoSolve", "choupoProps"}
+V2_DISPATCHING_APPS = {"choupoSolve", "choupoProps",
+                       "choupoBatch", "choupoCtrl"}
 
 HEADER = """\
 /*---------------------------------------------------------------------------*\\

@@ -1,7 +1,0 @@
-/*---------------------------------------------------------------------------*\
-  WGS species pack -- CO/H2O/CO2/H2 at high T, ideal gas mixture.
-\*---------------------------------------------------------------------------*/
-
-components       ( CO water CO2 H2 );
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }
