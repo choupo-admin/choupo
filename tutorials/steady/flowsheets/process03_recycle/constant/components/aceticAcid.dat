@@ -1,16 +1,13 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/aceticAcid.dat
-// sha256   ffb9b61a8ce2c80a2db60c76e1a0604420ce8b3b19004227cda9de810a5abb3c
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/aceticAcid.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Acetic Acid  (CH3COOH, C2H4O2, CAS 64-19-7)
   Note: vapour-phase dimerisation is neglected here (would require
         a chemical-association EoS).  Adequate for LLE tutorial.
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients (marked 'individual literature value' at the block),
+           Cp polynomials and the ideal-gas formation datum -- primary
+           re-citation pending (IST review).  UNIQUAC r,q are the van der
+           Waals values (Abrams-Prausnitz) as used by Popken 2000, Table 2.
 \*---------------------------------------------------------------------------*/
 
 name        aceticAcid;
@@ -34,7 +31,7 @@ standardThermochemistry
 vaporPressure
 {
     model         Antoine;
-    // log10(Psat [bar]) = A - B / (T[K] + C)   (Poling Appendix A.4)
+    // log10(Psat [bar]) = A - B / (T[K] + C)   (individual literature value)
     coefficients  (4.68206   1642.540   -39.764);
     Trange        (290  392);
 }
@@ -51,4 +48,83 @@ liquidHeatCapacity
     model         polynomial;
     coefficients  (123.1);          // ~ 123 J/(mol·K) average
     Trange        (290  390);
+}
+
+groups
+{
+    unifac ( { group CH3; count 1; } { group COOH; count 1; } );
+    joback ( { group CH3; count 1; } { group acid; count 1; } );
+}
+
+uniquac
+{
+    r   2.2024;
+    q   2.0720;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0583-PROF.txt bundled in usnistgov/COSMOSAC; CAS 64-19-7";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        92.54447;
+        volume      74.68827;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.571057926802906
+            1.19543207319710
+            0.100433312167518
+            1.38742358582028
+            1.37511396932854
+            0.789162091741631
+            0.194887040942024
+            0.291888044636471
+            0.526609733477891
+            1.13291385235089
+            1.30059089076049
+            5.14701852937172
+            5.65288190305758
+            5.35962529966760
+            5.93738439186962
+            5.12244109472961
+            9.96073502058496
+            6.68201457429418
+            2.53101188909715
+            2.47804895737397
+            0.960047756362986
+            3.42560646035797
+            2.75223900653835
+            3.05489230660620
+            1.58207112465429
+            1.48186021571312
+            5.60260150566286
+            2.99092800470544
+            3.72469989208701
+            5.66790060876718
+            2.99931975939162
+            0.565629177880816
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
 }
