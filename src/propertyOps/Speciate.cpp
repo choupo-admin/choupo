@@ -30,6 +30,7 @@ License
 
 #include "core/Units.H"                             // atm_to_Pa
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // ionMW (ions.dat)
+#include "thermo/ThermoPackageBuilder.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
 
 #include <fstream>
@@ -260,6 +261,20 @@ DictPtr caseDictionary()
     fs::path p = fs::current_path();
     for (int up = 0; up < 6; ++up)
     {
+        // v2 name FIRST (thermoPhysPropDict, 2026-07-17): translate before
+        // returning so every consumer sees the SAME v1-shaped manifest --
+        // without this the op silently fell to the davies default while the
+        // [v2 plan] announce claimed otherwise (a decorative declaration,
+        // the Codex-audit sin).
+        fs::path v2 = p / "constant" / "thermoPhysPropDict";
+        if (fs::exists(v2))
+        {
+            auto d = Dictionary::fromFile(v2.string());
+            if (d->lookupWordOrDefault("recordType", "")
+                == "thermophysicalPropertySystem")
+                return ThermoPackageBuilder::translateV2(d);
+            return d;
+        }
         fs::path cand = p / "constant" / "propertyDict";
         if (fs::exists(cand)) return Dictionary::fromFile(cand.string());
         if (!p.has_parent_path()) break;

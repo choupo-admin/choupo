@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T8: the aqueous activity SURFACE for the Farelo
+  NaCl+NH4Cl common-ion system.  ONE physical statement: ionic activities,
+  water activity and the osmotic coefficient come from Pitzer-HMW on the
+  molality basis.  The analysis (totals, pH) lives in the OPERATION; the
+  species/reactions live in the curated chemistry tree.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+aqueousProperties
+{
+    solvent water;
+
+    activityCoefficients
+    {
+        model          PitzerHMW;
+        referenceBasis aqueousMolality;
+    }
+}
