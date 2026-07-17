@@ -1,0 +1,88 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-07-17";
+    importerVersion    "2";
+    records
+    {
+        "components/NaOH.dat"
+        {
+            type          imported;
+            sha256        "25fc2be6beb94437bc6308e462ab49f01ba6eeb541721cfe7fbc48c550bd1325";
+            origin        "data/standards/components/NaOH.dat";
+            originSha256  "b1948f3d39a85cc8b35f861f33640da92125ebe8cabebbbda90098a96554da33";
+            release       Choupo-2607;
+        }
+        "components/ethanol.dat"
+        {
+            type          imported;
+            sha256        "e83a91e8b4dd5a280b950daf395deb76c61e0a1fd35c29e22789d248848e7888";
+            origin        "data/standards/components/ethanol.dat";
+            originSha256  "6b1c4c1281eed4e80aa3bfe5d9421e36604ee8a736e920daa568ff51457d525f";
+            release       Choupo-2607;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "590702adfd0a04f54318ed97140943d672afd4f9c0526aeac5d31dbca1fcfc63";
+            origin        "data/standards/components/water.dat";
+            originSha256  "7d1996853ccc57b14e5dccf6febb031bf4b6683db7c18ef5622a80da3317a421";
+            release       Choupo-2607;
+        }
+        "methods/eNRTL.dat"
+        {
+            type          imported;
+            sha256        "562c6d8805d39e21ba5e879322de1bf8479f622c58728b0c169fa33dae261ae8";
+            origin        "data/standards/methods/eNRTL.dat";
+            originSha256  "1e5d17a3b1dcb60deedf36ddef9599fd26b97a4a846d25175599fffb41c0505e";
+            release       Choupo-2607;
+        }
+        "parameters/Pitzer/pairs/Na-OH.dat"
+        {
+            type          imported;
+            sha256        "9d81457f2682b0d08979678307f1294f15b7329559977dc19fd5d6a64f319368";
+            origin        "data/standards/parameters/Pitzer/pairs/Na-OH.dat";
+            originSha256  "1e3d9848129147d6f208abaeed35958c709a6b5a5ec48cb7cd3438120a0eedd9";
+            release       Choupo-2607;
+        }
+        "parameters/eNRTL/Na-OH.dat"
+        {
+            type          imported;
+            sha256        "42db23f83a2788ecc6e6d5f30cc87aad1a1c169eb596bb86fe31b24e9f13eaea";
+            origin        "data/standards/parameters/eNRTL/Na-OH.dat";
+            originSha256  "01a4a53b24edc2098d2b91303d22216daf7b5ea71ca39ef8a1f42a720dadfc92";
+            release       Choupo-2607;
+        }
+        "parameters/electrolyte/crissCobble.dat"
+        {
+            type          imported;
+            sha256        "b26d227b4b7bcf1d093f586ad0ea430569aa4002061c0a6c3cbb8271861c55dc";
+            origin        "data/standards/parameters/electrolyte/crissCobble.dat";
+            originSha256  "82b7b4137e008f1fc81dbd8a7e6ec1ec4b1f62af91dc06962c5057ee0ffbd0f7";
+            release       Choupo-2607;
+        }
+        "species/aqueous.dat"
+        {
+            type          imported;
+            sha256        "5d3e7838a4f492be0db3aa5eadcc1ac634b86a7a29035f73561c55f0cfe24823";
+            origin        "data/standards/species/aqueous.dat (filtered)";
+            originSha256  "e2c69cb55ecbefeab05d8522177a71db35d196ac299a90f1f0c7e3e5f1bcd46e";
+            release       Choupo-2607;
+        }
+    }
+}

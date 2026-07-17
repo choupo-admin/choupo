@@ -1,12 +1,4 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/sucrose.dat
-// sha256   7ea388a14c6aa83760c19879658fa59c784b0fb0e814ae963cb1cb5b24068815
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/sucrose.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Sucrose (C12H22O11, CAS 57-50-1)
 
@@ -52,6 +44,14 @@ solubility
 {
     // Solid-liquid equilibrium: c_sat(T) in kg sucrose / kg water,
     // polynomial in T[degC].  ~2.0 kg/kg at 20C, ~3.8 at 80C (literature order).
+    //
+    // SOLVENT = water, DECLARED (NOT "implied").  This block is strictly
+    // arity-2 (sucrose + water): it is sucrose-water SLE sitting in the
+    // component, a TOLERATED pre-tier legacy (no-forced-mass-migration credo),
+    // NOT a counterexample to the arity rule.  Going forward, new sucrose-water
+    // SOLUTION thermo (e.g. dHsoln) lands in data/standards/solution/
+    // sucrose-water.dat, referenced by name -- see docs/ai/data-doctrine.md
+    // sec.2.5.  The second species is NAMED here; nothing is implied.
     coefficients ( 1.79  0.0074  0.00022 );
     dHcryst      0.0;     // small for sucrose; neglected here
 }
@@ -59,7 +59,8 @@ solubility
 
 // standardThermochemistry kept for Gibbs-reactor consumers that might
 // want to model sugar decomposition (Maillard, caramelisation).
-// NIST WebBook values for crystalline sucrose.
+// Individual literature values for crystalline sucrose -- primary
+// re-citation pending (IST review).
 standardThermochemistry
 {
     dHf_298    -2226100.0;    // J/mol  (-2226.1 kJ/mol, crystalline)
@@ -75,4 +76,20 @@ liquidHeatCapacity
     // 2.35 x kJ/(kg·K) to better than 1 % over x = [0, 0.4].
     coefficients  (630.0);
     Trange        (270  400);
+}
+
+// REAL crystalline-sucrose solid heat capacity (used by the solid-phase
+// enthalpy leg; the dissolved-solute path keeps Cp_liquid above).  This does
+// NOT change the liquid/solution Cp the evaporator and crystalliser read, so
+// those balances are unaffected -- it is the honest Cp of the SOLID crystal.
+// PRIMARY: Putnam & Kilday, "Heat Capacities ... of crystalline sucrose",
+// J. Research NBS 91(4) 219-222 (1986) -- a U.S. Government (NBS) work,
+// PUBLIC DOMAIN.  Cp(298.15 K, crystalline) = 425.5 J/(mol*K).  Held constant
+// over the narrow stable-crystal window (sucrose decomposes near 459 K, so no
+// fusion enthalpy is declared -- it never melts cleanly, hence no Hfus block).
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = 425.5 J/(mol*K)  (crystalline)
+    coefficients  ( 425.5 );
+    Trange        ( 280  330 );        // [Putnam & Kilday 1986, J. Res. NBS 91]
 }
