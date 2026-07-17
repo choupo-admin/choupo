@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/components/NaOH.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*--------------------------------*\
   Component: Sodium hydroxide (NaOH, CAS 1310-73-2)
 
@@ -24,8 +25,8 @@ identity
 
 nonvolatile    true;                // never in the vapour (K = 0)
 dissociation   2;                   // van't Hoff factor (1:1 strong electrolyte)
+dissociatesTo  { Na 1; OH 1; }   // ion stoichiometry (formula-like identity; the package activates it)
 
-dissociatesTo  { Na 1; OH 1; }   // ion stoichiometry (formula-like identity)
 
 solid       // anhydrous NaOH(s) -- the solid-tabulated formation datum
 {
@@ -42,7 +43,7 @@ solid       // anhydrous NaOH(s) -- the solid-tabulated formation datum
 
 // aqueousInfDil                    // SLOT (electrolyte-enthalpy slice 2): the
 // {                                //   asymmetric infinite-dilution ion tier
-//     Hf_298   ?;                  //   lives per-ION in electrolyte/ions.dat
+//     Hf_298   ?;                  //   lives per-ION in species/aqueous/
 //     Gf_298   ?;                  //   (Na+ ~ -240.12 kJ/mol, OH- ~ -229.99
 //     Cp_298   ?;                  //   kJ/mol, Wagman 1982, H+(aq)=0 conv.) --
 // }                                //   filled by the gated build, cited per value.
@@ -51,4 +52,18 @@ transport
 {
     // Dissolved-only solute: liquid-phase transport is solvent-dominated;
     // no gas-phase correlations apply.  (Empty by design, not by neglect.)
+}
+
+// Solid phase of NaOH (roadmap Phase D fold-in from salts/ + phases/solid/):
+solidPhases
+{
+    sodiumHydroxide
+    {
+        calorimetric
+        {
+            solubility          { value 28.5;   unit mol/kgWater; T 298.15; }
+            dissolutionEnthalpy { value -44510; unit J/mol; basis "NaOH(s) -> Na+(aq) + OH-(aq) (exothermic)"; }
+        }
+        crystal { rho_p 2130.0; k_v 0.5235987756; habit sphere; }
+    }
 }
