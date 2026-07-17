@@ -995,6 +995,96 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
         return out;
     }
 
+    // ---- G2 (Codex-ratified 2026-07-18): gammaGamma -- the LLE/VLLE world.
+    //      Two+ NAMED liquid phases, each with its own activityModel (the LL
+    //      split comes from the gamma curvature, or from per-phase pairs);
+    //      vapour optional (present -> VLLE, absent -> pure LLE).  Emitted in
+    //      the FLAT phases() shape -- the same internal list the v1 form
+    //      built, same assembly, same Gibbs minimisation.
+    //      G3 rider: each binaryParameters entry is `source "file"` XOR the
+    //      inline coefficient block { i; j; a_ij; ... } -- inline verts to
+    //      the flat pairs() the reader already consumes; source-form inside
+    //      gammaGamma phases is NOT wired yet (refuse loudly, never drop).
+    if (form == "gammaGamma")
+    {
+        if (!eq->found("liquidPhases"))
+            absent("equilibrium.liquidPhases ( { name; activityModel{} } ... )",
+                   "v2 gammaGamma");
+        std::ostringstream ft;
+        ft << "components ( ";
+        for (const auto& c : v2->lookupWordList("components")) ft << c << " ";
+        ft << ");\n";
+        ft << "phases\n(\n";
+        std::string phaseNames;
+        for (const auto& ph : eq->lookupDictList("liquidPhases"))
+        {
+            const std::string pname = ph->lookupWord("name");
+            phaseNames += (phaseNames.empty() ? "" : ", ") + pname;
+            auto am = ph->subDict("activityModel");
+            const std::string model = am->lookupWord("model");
+            ft << "    {\n        name " << pname << ";\n"
+               << "        type liquid;\n"
+               << "        activity\n        {\n"
+               << "            model " << model << ";\n";
+            if (am->found("binaryParameters"))
+            {
+                ft << "            pairs\n            (\n";
+                auto bp = am->subDict("binaryParameters");
+                for (const auto& pr : bp->keys())
+                {
+                    auto pd = bp->subDict(pr);
+                    if (pd->found("source"))
+                        throw std::runtime_error("thermophysicalPropertySystem:"
+                            " gammaGamma phase '" + pname + "' pair '" + pr
+                            + "' declares `source` -- file-declared pairs"
+                            " inside gammaGamma phases are not wired yet;"
+                            " declare the coefficients inline (or leave the"
+                            " case v1 and name the gap).");
+                    ft << "                {\n";
+                    for (const auto& k : pd->keys())
+                    {
+                        const EntryValue& ev = pd->entryValue(k);
+                        ft << "                    " << k << " ";
+                        if (std::holds_alternative<scalar>(ev))
+                        {
+                            std::ostringstream v;
+                            v << std::setprecision(17)
+                              << std::get<scalar>(ev);
+                            ft << v.str();
+                        }
+                        else if (std::holds_alternative<std::string>(ev))
+                            ft << std::get<std::string>(ev);
+                        else
+                            throw std::runtime_error(
+                                "thermophysicalPropertySystem: gammaGamma"
+                                " inline pair '" + pr + "' key '" + k
+                                + "' is neither scalar nor word.");
+                        ft << ";\n";
+                    }
+                    ft << "                }\n";
+                }
+                ft << "            );\n";
+            }
+            ft << "        }\n    }\n";
+        }
+        if (eq->found("vapour"))
+        {
+            const std::string vap =
+                eq->subDict("vapour")->lookupWord("fugacityModel");
+            ft << "    { name vapor; type vapor; eos { model " << vap
+               << "; } }\n";
+        }
+        ft << ");\n";
+        auto flat = Dictionary::fromString(ft.str(), "translateV2.gammaGamma");
+        announce("equilibrium gammaGamma: named liquid phases (" + phaseNames
+                 + ") each on its own gamma surface"
+                 + (eq->found("vapour") ? ", vapour phi present (VLLE)"
+                                        : ", no vapour (LLE)")
+                 + " -- ONE Gibbs surface per phase, split by direct"
+                   " minimisation.");
+        return flat;
+    }
+
     if (form == "electrolyteGammaPhi")
     {
         auto aq = eq->subDict("aqueous");

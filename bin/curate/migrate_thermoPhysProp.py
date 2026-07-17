@@ -400,10 +400,43 @@ def classify(dict_path):
               for k, kind, span, payload in entries}
 
     allowed = {"components", "activityModel", "equationOfState",
-               "transport", "solvent", "solutes", "phase", "pureFluids"}
+               "transport", "solvent", "solutes", "phase", "pureFluids",
+               "phases"}
     extra = [k for k in keys if k not in allowed]
     if extra:
         return ('skip', "extra top-level key(s): %s" % " ".join(sorted(extra)))
+
+    # -- G2 (Codex-ratified 2026-07-18): phases ( {...} ... ) -> gammaGamma --
+    if "phases" in by_key:
+        others = [k for k in keys if k not in ("components", "phases")]
+        if others:
+            return ('skip', "phases + extra top-level key(s): %s (the"
+                            " gammaGamma cohort is components + phases"
+                            " ONLY)" % " ".join(sorted(others)))
+        if "components" not in by_key:
+            return ('skip', "phases without components")
+        kind, comp_span, _ = by_key["components"]
+        if kind != 'list':
+            return ('skip', "components is not a ( ... ); list")
+        components_verbatim = original[comp_span[0]:comp_span[1]]
+        kind, ph_span, _ = by_key["phases"]
+        if kind != 'list':
+            return ('skip', "phases is not a ( ... ); list")
+        try:
+            phase_list = parse_phase_list(stripped, original, ph_span)
+        except ValueError as e:
+            return ('skip', "phases: %s" % e)
+        liquids = [p for p in phase_list if p["type"] == "liquid"]
+        vapors = [p for p in phase_list if p["type"] == "vapor"]
+        if len(liquids) < 2:
+            return ('skip', "phases declares %d liquid phase(s) -- gammaGamma"
+                            " is the 2+-liquid LLE/VLLE formulation"
+                    % len(liquids))
+        if len(vapors) > 1:
+            return ('skip', "phases declares %d vapor phases" % len(vapors))
+        return ('ok', emit_gamma_gamma(components_verbatim, liquids,
+                                       vapors[0] if vapors else None))
+
     if "components" not in by_key or "activityModel" not in by_key:
         return ('skip', "missing components/activityModel")
 
@@ -599,6 +632,150 @@ def classify(dict_path):
     # -- gamma-phi cohorts (T1 / T2 [+ T13 transport]) ----------------------
     return ('ok', emit_gamma_phi(components_verbatim, model, pair_decls,
                                  transport, pure_fluids_verbatim, eos))
+
+
+# ---------------------------------------------------------------------------
+# G2: phases ( { name; type; activity{model[,pairs]} | eos{model} } ... )
+# ---------------------------------------------------------------------------
+def parse_phase_list(stripped, original, span):
+    """-> [ {name, type, model, pairs_verbatim(list of (key, body_text))} ]
+    STRICT: raises ValueError on any unmapped shape."""
+    lo, hi = span
+    # inside of the ( ... ) -- find the parens within the span
+    plo = stripped.index('(', lo) + 1
+    phi = stripped.rindex(')', lo, hi)
+    phases = []
+    i = plo
+    while i < phi:
+        while i < phi and stripped[i].isspace():
+            i += 1
+        if i >= phi:
+            break
+        if stripped[i] != '{':
+            raise ValueError("phase entry is not a { ... } block")
+        depth, blo = 0, i + 1
+        while i < phi:
+            if stripped[i] == '{':
+                depth += 1
+            elif stripped[i] == '}':
+                depth -= 1
+                if depth == 0:
+                    break
+            i += 1
+        if depth != 0:
+            raise ValueError("unbalanced { } in phase entry")
+        bhi = i
+        i += 1
+        entries = entries_of_block(stripped, (blo, bhi))
+        ph = {"name": None, "type": None, "model": None, "pairs": []}
+        for k, ekind, espan, payload in entries:
+            if k == "name" and ekind == 'scalar':
+                ph["name"] = payload
+            elif k == "type" and ekind == 'scalar':
+                ph["type"] = payload
+            elif k in ("activity", "eos") and ekind == 'block':
+                inner = entries_of_block(stripped, payload)
+                for ik, ikind, ispan, ipayload in inner:
+                    if ik == "model" and ikind == 'scalar':
+                        ph["model"] = ipayload
+                    elif ik == "pairs" and ikind == 'list':
+                        ph["pairs"] = parse_inline_pairs(stripped, original,
+                                                         ispan)
+                    else:
+                        raise ValueError("phase '%s' %s carries '%s' -- no"
+                                         " gammaGamma slot"
+                                         % (ph["name"], k, ik))
+            else:
+                raise ValueError("phase entry carries '%s' -- no gammaGamma"
+                                 " slot" % k)
+        if not ph["name"] or ph["type"] not in ("liquid", "vapor") \
+                or not ph["model"]:
+            raise ValueError("phase entry missing name/type/model")
+        phases.append(ph)
+    return phases
+
+
+def parse_inline_pairs(stripped, original, span):
+    """pairs ( { i X; j Y; a_ij ...; } ... ) -> [("X-Y", inner_text)],
+    inner_text re-indented for the v2 binaryParameters block."""
+    lo, hi = span
+    plo = stripped.index('(', lo) + 1
+    phi = stripped.rindex(')', lo, hi)
+    out = []
+    i = plo
+    while i < phi:
+        while i < phi and stripped[i].isspace():
+            i += 1
+        if i >= phi:
+            break
+        if stripped[i] != '{':
+            raise ValueError("pairs entry is not a { ... } block")
+        depth, blo = 0, i + 1
+        while i < phi:
+            if stripped[i] == '{':
+                depth += 1
+            elif stripped[i] == '}':
+                depth -= 1
+                if depth == 0:
+                    break
+            i += 1
+        bhi = i
+        i += 1
+        entries = entries_of_block(stripped, (blo, bhi))
+        kv = {}
+        for k, ekind, espan, payload in entries:
+            if ekind != 'scalar':
+                raise ValueError("pair key '%s' is not a scalar/word" % k)
+            kv[k] = payload
+        if "i" not in kv or "j" not in kv:
+            raise ValueError("pair block missing i/j")
+        body = "".join("                    %s %s;\n" % (k, v)
+                       for k, v in kv.items())
+        out.append((kv["i"] + "-" + kv["j"], body))
+    return out
+
+
+def emit_gamma_gamma(components_verbatim, liquids, vapor):
+    out = (HEADER_GAMMAGAMMA
+           + "\nrecordType    thermophysicalPropertySystem;\n"
+           + "schemaVersion 2;\n\n"
+           + components_verbatim + "\n\n"
+           + "equilibrium\n{\n"
+           + "    formulation gammaGamma;         "
+             "// 2+ liquid phases, one gamma surface each\n\n"
+           + "    liquidPhases\n    (\n")
+    for ph in liquids:
+        out += ("        {\n"
+                "            name " + ph["name"] + ";\n"
+                "            activityModel\n            {\n"
+                "                model " + ph["model"] + ";\n")
+        if ph["pairs"]:
+            out += "                binaryParameters\n                {\n"
+            for pname, body in ph["pairs"]:
+                out += ("                " + pname + "\n"
+                        "                {\n" + body
+                        + "                }\n")
+            out += "                }\n"
+        out += ("            }\n"
+                "        }\n")
+    out += "    );\n"
+    if vapor:
+        out += ("\n    vapour\n    {\n        fugacityModel "
+                + vapor["model"] + ";\n    }\n")
+    out += "}\n"
+    return out
+
+
+HEADER_GAMMAGAMMA = """\
+/*---------------------------------------------------------------------------*\\
+  thermoPhysPropDict (v2) -- gammaGamma: the LLE/VLLE world.  Two or more
+  NAMED liquid phases, each on its OWN gamma surface (the LL split comes
+  from the gamma curvature across the miscibility gap); vapour optional
+  (present -> VLLE).  ONE Gibbs surface per phase, split by direct
+  minimisation -- never a K-value saddle.  Migrated mechanically from the
+  v1 phases() form (physics identical); v2 contract 2026-07-18.
+\\*---------------------------------------------------------------------------*/
+"""
 
 
 # ---------------------------------------------------------------------------

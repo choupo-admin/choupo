@@ -1,0 +1,107 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- gammaGamma: the LLE/VLLE world.  Two or more
+  NAMED liquid phases, each on its OWN gamma surface (the LL split comes
+  from the gamma curvature across the miscibility gap); vapour optional
+  (present -> VLLE).  ONE Gibbs surface per phase, split by direct
+  minimisation -- never a K-value saddle.  Migrated mechanically from the
+  v1 phases() form (physics identical); v2 contract 2026-07-18.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( compA  compB  compC );
+
+equilibrium
+{
+    formulation gammaGamma;         // 2+ liquid phases, one gamma surface each
+
+    liquidPhases
+    (
+        {
+            name aqueous;
+            activityModel
+            {
+                model NRTL;
+                binaryParameters
+                {
+                compA-compB
+                {
+                    i compA;
+                    j compB;
+                    a_ij 0.0;
+                    b_ij 1750.0;
+                    a_ji 0.0;
+                    b_ji 1750.0;
+                    alpha 0.20;
+                }
+                compA-compC
+                {
+                    i compA;
+                    j compC;
+                    a_ij 0.0;
+                    b_ij 0.0;
+                    a_ji 0.0;
+                    b_ji 0.0;
+                    alpha 0.30;
+                }
+                compB-compC
+                {
+                    i compB;
+                    j compC;
+                    a_ij 0.0;
+                    b_ij 0.0;
+                    a_ji 0.0;
+                    b_ji 0.0;
+                    alpha 0.30;
+                }
+                }
+            }
+        }
+        {
+            name organic;
+            activityModel
+            {
+                model NRTL;
+                binaryParameters
+                {
+                compA-compB
+                {
+                    i compA;
+                    j compB;
+                    a_ij 0.0;
+                    b_ij 1750.0;
+                    a_ji 0.0;
+                    b_ji 1750.0;
+                    alpha 0.20;
+                }
+                compA-compC
+                {
+                    i compA;
+                    j compC;
+                    a_ij 0.0;
+                    b_ij 0.0;
+                    a_ji 0.0;
+                    b_ji 0.0;
+                    alpha 0.30;
+                }
+                compB-compC
+                {
+                    i compB;
+                    j compC;
+                    a_ij 0.0;
+                    b_ij 0.0;
+                    a_ji 0.0;
+                    b_ji 0.0;
+                    alpha 0.30;
+                }
+                }
+            }
+        }
+    );
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
