@@ -1,9 +1,0 @@
-/*---------------------------------------------------------------------------*\
-  thermoPackage --- single-effect orange juice evaporator (MCFT Ex. 10.2).
-  Uses USER-DEFINED `agua` + `solidos` from constant/components/.
-\*---------------------------------------------------------------------------*/
-
-components       ( agua  solidos );
-
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }

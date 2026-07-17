@@ -1,9 +1,0 @@
-/*---------------------------------------------------------------------------*\
-  thermoPackage --- counter-current triple-effect (MCFT 10.38 variant).
-  Same user-defined `agua` + `solidos` as evaporator03.
-\*---------------------------------------------------------------------------*/
-
-components       ( agua  solidos );
-
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }

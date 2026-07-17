@@ -1,8 +1,0 @@
-/*---------------------------------------------------------------------------*\
-  Sugar-water binary --- same package as evaporator02_triple_effect_sugar.
-\*---------------------------------------------------------------------------*/
-
-components       ( water sucrose );
-
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }

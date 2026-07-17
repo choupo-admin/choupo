@@ -1,15 +1,12 @@
-# migrate_thermoPhysProp.py -- skipped cases (STRICT-T1 cohort, 2026-07-17)
-# converted 1, skipped 75
-tutorials/batch/reactor/batch07_lhhw_methylAcetate/constant/propertyDict	activityModel is not exactly { model ideal; }
-tutorials/batch/still/still02_ethanol_water_azeo/constant/propertyDict	activityModel is not exactly { model ideal; }
-tutorials/plant/ChemicalPlantTutorial/constant/propertyDict	extra top-level key(s): transport
+# migrate_thermoPhysProp.py -- skipped cases (STRICT T1+T2+diluteSolution cohorts, 2026-07-17)
+# converted 26, skipped 49
+tutorials/batch/still/still02_ethanol_water_azeo/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
 tutorials/plant/lithiumBrinePlant/constant/propertyDict	case contains nested constant/propertyDict files (inherits/walk-up chains read the v1 name)
 tutorials/plant/lithiumBrinePlant/sectors/BRINE/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
 tutorials/plant/lithiumBrinePlant/sectors/CARBONATION/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
 tutorials/plant/lithiumBrinePlant/sectors/EXTRACTION/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
 tutorials/plant/lithiumBrinePlant/sectors/FINISHING/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
 tutorials/plant/lithiumBrinePlant/sectors/HOTAIR/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
-tutorials/plant/sugarPlantEconomicsSweep/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
 tutorials/props/compare/compare_transport_water/constant/propertyDict	extra top-level key(s): phase
 tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl/constant/propertyDict	extra top-level key(s): phase
 tutorials/props/electrolyte/pitzer01_nacl/constant/propertyDict	extra top-level key(s): phase
@@ -18,39 +15,28 @@ tutorials/props/electrolyte/pitzer_gamma_hamer_wu/constant/propertyDict	extra to
 tutorials/props/electrolyte/pitzer_nacl_sp77_hot/constant/propertyDict	extra top-level key(s): phase
 tutorials/props/gibbs/nh3_equilibrium_map/constant/propertyDict	extra top-level key(s): phase
 tutorials/props/heat/htbench01_correlations/constant/propertyDict	extra top-level key(s): phase
-tutorials/props/molecular/cosmoSAC01_water_ethanol/constant/propertyDict	activityModel is not exactly { model ideal; }
-tutorials/props/molecular/eval_nrtl_catalogue/constant/propertyDict	activityModel is not exactly { model ideal; }
-tutorials/props/molecular/eval_nrtl_pinned/constant/propertyDict	activityModel is not exactly { model ideal; }
+tutorials/props/molecular/cosmoSAC01_water_ethanol/constant/propertyDict	activityModel carries 'source' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
+tutorials/props/molecular/eval_nrtl_catalogue/constant/propertyDict	propsDict fitParameters (kind T_bubble) needs the flat-thermoDict per-iteration rebuild -- the builder/manifest path leaves thermoDict null (engine gap, FitParameters.cpp:247)
+tutorials/props/molecular/eval_nrtl_pinned/constant/propertyDict	propsDict fitParameters (kind T_bubble) needs the flat-thermoDict per-iteration rebuild -- the builder/manifest path leaves thermoDict null (engine gap, FitParameters.cpp:247)
 tutorials/props/scan/binary01_lle_water_nbutanol/constant/propertyDict	extra top-level key(s): phases
 tutorials/props/scan/ternary01_audit_vlle/constant/propertyDict	extra top-level key(s): phases
 tutorials/props/scan/ternary03_lle_water_ethanol_benzene/constant/propertyDict	extra top-level key(s): phases
 tutorials/props/steam/steam01_if97_verification/constant/propertyDict	extra top-level key(s): phase
 tutorials/props/steam/steam02_water_transport/constant/propertyDict	extra top-level key(s): phase pureFluids
-tutorials/steady/absorption/absorber01_NH3_water/constant/propertyDict	extra top-level key(s): solvent
-tutorials/steady/absorption/absorption01_CO2_water/constant/propertyDict	extra top-level key(s): solvent
 tutorials/steady/absorption/extract01_ethanol_water_benzene/constant/propertyDict	extra top-level key(s): phases
 tutorials/steady/absorption/extraction01_waterButanol/constant/propertyDict	extra top-level key(s): phases
-tutorials/steady/absorption/stripper01_NH3_water/constant/propertyDict	extra top-level key(s): solvent
 tutorials/steady/crystallisation/Crystallizer09chatGPT/constant/propertyDict	case contains nested constant/propertyDict files (inherits/walk-up chains read the v1 name)
 tutorials/steady/crystallisation/Crystallizer09chatGPT/unitOperations/recovery/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
-tutorials/steady/distillation/column03_azeotrope_mesh/constant/propertyDict	activityModel is not exactly { model ideal; }
-tutorials/steady/drying/sprayDryer02_residence_sweep/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/economics/economics02_irr_sweep/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/evaporation/evaporator03_co_current/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/evaporation/evaporator04_orange_juice_simple/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/evaporation/evaporator05_counter_current/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/flash/bubbleT01_ethanol_water/constant/propertyDict	activityModel is not exactly { model ideal; }
-tutorials/steady/flash/bubbleT02_uniquac_ethanol_water/constant/propertyDict	activityModel is not exactly { model ideal; }
-tutorials/steady/flash/dewT01_ethanol_water/constant/propertyDict	activityModel is not exactly { model ideal; }
-tutorials/steady/flash/flash02_ethanol_water/constant/propertyDict	activityModel is not exactly { model ideal; }
-tutorials/steady/flash/flash03_wilson_ethanol_water/constant/propertyDict	activityModel is not exactly { model ideal; }
-tutorials/steady/flash/flash06_sweep_T/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/flash/flash07_gridsweep_TP/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
+tutorials/steady/distillation/column03_azeotrope_mesh/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
+tutorials/steady/flash/bubbleT01_ethanol_water/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
+tutorials/steady/flash/bubbleT02_uniquac_ethanol_water/constant/propertyDict	activityModel carries 'rq' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
+tutorials/steady/flash/dewT01_ethanol_water/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
+tutorials/steady/flash/flash02_ethanol_water/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
+tutorials/steady/flash/flash03_wilson_ethanol_water/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
 tutorials/steady/flash/vlle01_waterButanol/constant/propertyDict	extra top-level key(s): phases
 tutorials/steady/flash/vlle03_audit_artificial/constant/propertyDict	extra top-level key(s): phases
-tutorials/steady/flowsheets/ammonia01_synthesis_loop/constant/propertyDict	extra top-level key(s): solvent
-tutorials/steady/flowsheets/ammonia02_full_plant/constant/propertyDict	extra top-level key(s): solvent
-tutorials/steady/gibbs/gibbs04_wgs_temperature_sweep/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
+tutorials/steady/flowsheets/ammonia01_synthesis_loop/constant/propertyDict	equationOfState is not exactly { model idealGas; }
+tutorials/steady/flowsheets/ammonia02_full_plant/constant/propertyDict	equationOfState is not exactly { model idealGas; }
 tutorials/steady/gibbs/gibbs06_h2_flame_radicals/constant/propertyDict	extra top-level key(s): phase
 tutorials/steady/gibbs/gibbs10_ammonia_fugacity/constant/propertyDict	equationOfState is not exactly { model idealGas; }
 tutorials/steady/heat/condenser01_film_nusselt/constant/propertyDict	extra top-level key(s): pureFluids
@@ -58,20 +44,8 @@ tutorials/steady/heat/heatExchanger02_geometry_U/constant/propertyDict	extra top
 tutorials/steady/heat/hxWorkflow1_design_from_duty/constant/propertyDict	extra top-level key(s): phase pureFluids
 tutorials/steady/heat/hxWorkflow2_rate_designed/constant/propertyDict	extra top-level key(s): phase pureFluids
 tutorials/steady/heat/reboiler_water_copper/constant/propertyDict	extra top-level key(s): pureFluids
-tutorials/steady/membranes/membrane03_concentration_polarization/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/optimisation/designSpec01_triple_equal_areas/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/optimisation/fitNRTL01_ethanol_water/constant/propertyDict	activityModel is not exactly { model ideal; }
-tutorials/steady/optimisation/optim01_column_reflux/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/optimisation/optim02_process_cost/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/optimisation/optim04_membrane_recovery_scaling/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/optimisation/optim05_reactor_npv/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/optimisation/optim06_integer_stages/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/optimisation/pareto01_purity_energy/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/optimisation/sensitivity01_column_reflux/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/optimisation/sensitivity02_feasibility_map/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/power/brayton01_gas_turbine/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
+tutorials/steady/optimisation/fitNRTL01_ethanol_water/constant/propertyDict	propsDict fitParameters (kind T_bubble) needs the flat-thermoDict per-iteration rebuild -- the builder/manifest path leaves thermoDict null (engine gap, FitParameters.cpp:247)
 tutorials/steady/power/rankine02_water/constant/propertyDict	extra top-level key(s): pureFluids
-tutorials/steady/rotating/compressor02_designspec_pout/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
-tutorials/steady/solids/pneumaticConveyor01_sand/constant/propertyDict	extra top-level key(s): phase transport
-tutorials/steady/solids/pneumaticConveyor02_bends/constant/propertyDict	extra top-level key(s): phase transport
+tutorials/steady/solids/pneumaticConveyor01_sand/constant/propertyDict	extra top-level key(s): phase
+tutorials/steady/solids/pneumaticConveyor02_bends/constant/propertyDict	extra top-level key(s): phase
 tutorials/steady/thermo/perUnitThermo01_srk_nrtl/constant/propertyDict	inline thermo{} override without activityModel (inherits it from the flat global; the builder path would throw 'missing entry activityModel')
