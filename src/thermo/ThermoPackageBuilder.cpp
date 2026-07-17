@@ -887,12 +887,11 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
             throw std::runtime_error("thermophysicalPropertySystem: gammaPhi"
                 " liquid standardState must be pureLiquid (Henry/electrolyte"
                 " formulations carry the other conventions).");
+        // G5 (Codex-ratified 2026-07-18): gamma-phi with a REAL vapour phi
+        // (SRK at 200 bar) is textbook gamma-phi, not a hybrid -- accept any
+        // implemented EoS word; the build path verts it to eos.<M> and the
+        // EquationOfState factory refuses an unknown model loudly.
         const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
-        if (vap != "idealGas")
-            throw std::runtime_error("thermophysicalPropertySystem: vapour"
-                " fugacityModel '" + vap + "' -- the gammaPhi spike serves"
-                " idealGas (eos vapour = the phiPhi formulation, T4, not in"
-                " this spike).");
 
         // T13: a transport{} block (vapour/liquid/interface, one named
         // sub-block per property).  The flat engine reader carries the FULL
@@ -948,7 +947,7 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
             ft << "components ( ";
             for (const auto& c : v2->lookupWordList("components")) ft << c << " ";
             ft << ");\nactivityModel { model " << model << "; }\n"
-               << "equationOfState { model idealGas; }\n";
+               << "equationOfState { model " << vap << "; }\n";
             auto flat = Dictionary::fromString(ft.str(), "translateV2.flatTransport");
             if (tr) flat->insert("transport", EntryValue(flatT));
             if (v2->found("pureFluids"))
@@ -971,12 +970,13 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
                      " (vapour/liquid/interface -> gas/liquid/sigma slots).");
             else
                 announce("equilibrium gammaPhi: liquid activity." + model
-                     + "; vapour idealGas (flat emission for the pureFluids"
+                     + "; vapour " + vap + " (flat emission for the pureFluids"
                      " override).");
             return flat;
         }
         pm->insert("liquid", "activity." + model);
-        pm->insert("vapour", std::string("builtin.idealGas"));
+        pm->insert("vapour", vap == "idealGas" ? std::string("builtin.idealGas")
+                                               : "eos." + vap);
         out->insert("propertyMethods", EntryValue(pm));
         if (pairsOut)
         {
@@ -989,7 +989,7 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
         verifyRoute(cal, "vapour", "enthalpyRoute", "idealGasCp");
         announce("equilibrium gammaPhi: liquid activity." + model
                  + (pairsOut ? " (pairs declared per-model, no global bag)" : "")
-                 + "; vapour idealGas.  caloric: liquid pureCpPlusExcess,"
+                 + "; vapour " + vap + ".  caloric: liquid pureCpPlusExcess,"
                  " vapour idealGasCp, liquidVapour componentCorrelation"
                  " (elements datum).");
         return out;
@@ -1084,12 +1084,14 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
         if (sus->lookupWordOrDefault("solutionModel", "henryDilute") != "henryDilute")
             throw std::runtime_error("thermophysicalPropertySystem: solutes"
                 " solutionModel implemented: henryDilute.");
+        // G5 (Codex-ratified 2026-07-18): the dilute-solution formulation
+        // also takes a REAL vapour phi (the 200-bar ammonia loop dissolves
+        // N2/H2 by Henry INTO liquid NH3 under SRK fugacities) -- same EoS
+        // wiring as gammaPhi, Henry route preserved and announced.
         const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
-        if (vap != "idealGas")
-            throw std::runtime_error("thermophysicalPropertySystem: the"
-                " henryDilute spike serves vapour idealGas.");
         pm->insert("liquid", std::string("solution.henryDilute"));
-        pm->insert("vapour", std::string("builtin.idealGas"));
+        pm->insert("vapour", vap == "idealGas" ? std::string("builtin.idealGas")
+                                               : "eos." + vap);
         out->insert("propertyMethods", EntryValue(pm));
         auto solution = std::make_shared<Dictionary>("solution");
         solution->insert("solvent", sol->entryValue("component"));
@@ -1106,8 +1108,8 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
             out->insert("parameters", EntryValue(params));
         }
         announce("equilibrium diluteSolution: solvent on Raoult, solutes on"
-                 " infinite-dilution Henry (K = gamma* H(T) / phi P); pairs"
-                 " declared inside the solutes group.");
+                 " infinite-dilution Henry (K = gamma* H(T) / phi P); vapour"
+                 " phi " + vap + "; pairs declared inside the solutes group.");
         return out;
     }
 

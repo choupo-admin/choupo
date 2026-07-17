@@ -1,0 +1,44 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T6 dilute-solution (Henry) world.  Henry is a
+  CONVENTION for the solutes group, not a model of the whole liquid: the
+  solvent sits on the pure-liquid (Raoult) rung, each solute on the
+  infinite-dilution rung.  The builder VERIFIES every declared pair file.
+  Migrated mechanically from the v1 flat solvent/solutes form (physics
+  identical -- the solutes list states the engine's own Henry selection);
+  v2 contract 2026-07-17.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( N2  H2  NH3  Ar );
+
+equilibrium
+{
+    formulation diluteSolution;
+
+    liquid
+    {
+        solvent
+        {
+            component     NH3;
+            standardState pureLiquid;          // the Raoult rung
+        }
+        solutes
+        {
+            components    ( N2 H2 );
+            standardState infiniteDilution;    // the Henry rung
+            solutionModel henryDilute;
+            binaryParameters
+            {
+                N2-NH3 { source "data/standards/parameters/Henry/N2-NH3.dat"; }
+                H2-NH3 { source "data/standards/parameters/Henry/H2-NH3.dat"; }
+            }
+        }
+    }
+
+    vapour
+    {
+        fugacityModel SRK;
+    }
+}

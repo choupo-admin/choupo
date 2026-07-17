@@ -1,5 +1,5 @@
 # migrate_thermoPhysProp.py -- skipped cases (STRICT T1+T2+diluteSolution cohorts, 2026-07-17)
-# converted 7, skipped 31
+# converted 3, skipped 28
 tutorials/batch/still/still02_ethanol_water_azeo/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
 tutorials/plant/lithiumBrinePlant/constant/propertyDict	case contains nested constant/propertyDict files (inherits/walk-up chains read the v1 name)
 tutorials/plant/lithiumBrinePlant/sectors/BRINE/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
@@ -26,8 +26,5 @@ tutorials/steady/flash/flash02_ethanol_water/constant/propertyDict	activityModel
 tutorials/steady/flash/flash03_wilson_ethanol_water/constant/propertyDict	activityModel carries 'pairs' -- no translateV2 slot (accepted: model + file-declared binaryPairs; inline pairs()/rq{}/source have no v2 grammar)
 tutorials/steady/flash/vlle01_waterButanol/constant/propertyDict	extra top-level key(s): phases
 tutorials/steady/flash/vlle03_audit_artificial/constant/propertyDict	extra top-level key(s): phases
-tutorials/steady/flowsheets/ammonia01_synthesis_loop/constant/propertyDict	equationOfState is not exactly { model idealGas; }
-tutorials/steady/flowsheets/ammonia02_full_plant/constant/propertyDict	equationOfState is not exactly { model idealGas; }
-tutorials/steady/gibbs/gibbs10_ammonia_fugacity/constant/propertyDict	equationOfState is not exactly { model idealGas; }
 tutorials/steady/optimisation/fitNRTL01_ethanol_water/constant/propertyDict	propsDict fitParameters (kind T_bubble) needs the flat-thermoDict per-iteration rebuild -- the builder/manifest path leaves thermoDict null (engine gap, FitParameters.cpp:247)
 tutorials/steady/thermo/perUnitThermo01_srk_nrtl/constant/propertyDict	inline thermo{} override without activityModel (inherits it from the flat global; the builder path would throw 'missing entry activityModel')

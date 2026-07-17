@@ -468,13 +468,27 @@ def classify(dict_path):
             return ('skip', "binaryPairs '%s' declares a missing file %s"
                     % (pname, rel))
 
-    # -- equationOfState: idealGas ONLY (optional) --------------------------
+    # -- equationOfState: idealGas or a real cubic phi (G5) -----------------
+    #    G5 (Codex-ratified 2026-07-18): gamma-phi / dilute-solution with a
+    #    REAL vapour phi (SRK at 200 bar) is textbook; the v2 slot is
+    #    `vapour { fugacityModel <EoS>; }`.  STRICT: exactly { model <word>; }
+    #    with a word in the implemented set.
+    eos = "idealGas"
     if "equationOfState" in by_key:
         kind, _span, body = by_key["equationOfState"]
-        if kind != 'block' or not block_is_exactly(stripped, body,
-                                                   "model", "idealGas"):
-            return ('skip',
-                    "equationOfState is not exactly { model idealGas; }")
+        if kind != 'block':
+            return ('skip', "equationOfState is not a { ... } block")
+        try:
+            eos_entries = entries_of_block(stripped, body)
+        except ValueError as e:
+            return ('skip', "unparseable equationOfState block (%s)" % e)
+        if len(eos_entries) != 1 or eos_entries[0][0] != "model" \
+                or eos_entries[0][1] != 'scalar':
+            return ('skip', "equationOfState is not exactly { model <word>; }")
+        eos = eos_entries[0][3]
+        if eos not in ("idealGas", "SRK"):
+            return ('skip', "equationOfState model '%s' is outside the"
+                            " ratified G5 set (idealGas, SRK)" % eos)
 
     # -- transport: 7 canonical keys, each EXACTLY { model <word>; } --------
     transport = {}                                  # v1key -> model word
@@ -580,11 +594,11 @@ def classify(dict_path):
                 return ('skip', "Henry pair %s missing from the installation"
                                 " catalogue (cannot write the declared"
                                 " source path)" % rel)
-        return ('ok', emit_dilute(components_verbatim, solvent, solutes))
+        return ('ok', emit_dilute(components_verbatim, solvent, solutes, eos))
 
     # -- gamma-phi cohorts (T1 / T2 [+ T13 transport]) ----------------------
     return ('ok', emit_gamma_phi(components_verbatim, model, pair_decls,
-                                 transport, pure_fluids_verbatim))
+                                 transport, pure_fluids_verbatim, eos))
 
 
 # ---------------------------------------------------------------------------
@@ -613,7 +627,7 @@ def emit_transport(transport):
 
 
 def emit_gamma_phi(components_verbatim, model, pair_decls, transport,
-                   pure_fluids_verbatim=None):
+                   pure_fluids_verbatim=None, eos="idealGas"):
     if model == "ideal":
         header = HEADER_T1
         liquid = ("    liquid\n"
@@ -643,7 +657,7 @@ def emit_gamma_phi(components_verbatim, model, pair_decls, transport,
             + "equilibrium\n{\n"
             + "    formulation gammaPhi;\n\n"
             + liquid + "\n"
-            + "    vapour\n    {\n        fugacityModel idealGas;\n    }\n"
+            + "    vapour\n    {\n        fugacityModel %s;\n    }\n" % eos
             + "}\n"
             + emit_transport(transport)
             + ("\n// Per-component multi-property surface override (dome +"
@@ -653,7 +667,7 @@ def emit_gamma_phi(components_verbatim, model, pair_decls, transport,
                if pure_fluids_verbatim else ""))
 
 
-def emit_dilute(components_verbatim, solvent, solutes):
+def emit_dilute(components_verbatim, solvent, solutes, eos="idealGas"):
     bp = ""
     for su in solutes:
         bp += ('                %s-%s { source "data/standards/parameters/'
@@ -680,7 +694,7 @@ def emit_dilute(components_verbatim, solvent, solutes):
             + "            }\n"
             + "        }\n"
             + "    }\n\n"
-            + "    vapour\n    {\n        fugacityModel idealGas;\n    }\n"
+            + "    vapour\n    {\n        fugacityModel %s;\n    }\n" % eos
             + "}\n")
 
 
