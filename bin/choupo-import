@@ -319,10 +319,29 @@ def closure_of(pp_path, caseDir, std, AQ):
             p = p.parent
         return None
 
+    def mixture_members(token):
+        # A predefined mixture (data/standards/mixtures/<token>.dat) is an
+        # EXPANSION TABLE, not a component: the loader splices `air` into
+        # N2/O2/Ar at assembly (ThermoPackage::expandMixtures).  A sealed case
+        # reads the mixture through its MIRRORED constant/mixtures/<token>.dat,
+        # so the seal must carry the mixture file AND each member component.
+        mf = std / "mixtures" / (token + ".dat")
+        if not mf.is_file():
+            return None
+        mtxt = mf.read_text()
+        return re.findall(r'\bcomponent\s+([A-Za-z0-9_+\-]+)\s*;',
+                          block(mtxt, "members") or "")
+
     t = read(pp_path) or ""
     comp_blk = block(t, "components")
     comps = words(comp_blk) if comp_blk else []
     for c in comps:
+        members = mixture_members(c)
+        if members is not None:
+            want("mixtures/" + c + ".dat")
+            for mc in members:
+                want("components/" + mc + ".dat")
+            continue
         want("components/" + c + ".dat")
         csrc = std / "components" / (c + ".dat")
         loc = walk_up_local("components/" + c + ".dat")

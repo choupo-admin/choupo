@@ -39,6 +39,7 @@ License
 #include "solution/SolutionRegistry.H"
 #include "propertyOps/DerivedClosures.H"   // closures::rackettVliq (liquid Vm)
 #include "core/Advisory.H"
+#include "thermo/RecordResolver.H"   // case-local mirrored constant/mixtures/ (sealing)
 
 #include <algorithm>
 #include <cmath>
@@ -410,7 +411,7 @@ ThermoPackage::expandMixtures(const std::vector<std::string>& names,
                              std::map<std::string, std::map<std::string, scalar>>* membersByToken)
 {
     namespace fs = std::filesystem;
-    const fs::path mixDir = fs::path(db.root()) / "standards" / "mixtures";
+    (void)db;   // mixtures now resolve through RecordResolver (case-local first)
 
     std::vector<std::string> out;
     out.reserve(names.size());
@@ -422,8 +423,15 @@ ThermoPackage::expandMixtures(const std::vector<std::string>& names,
 
     for (const auto& token : names)
     {
-        const fs::path mixFile = mixDir / (token + ".dat");
-        if (!fs::exists(mixFile))
+        // Sealing redesign: a predefined mixture is a property record like any
+        // other -- resolve it through RecordResolver so a SEALED case reads its
+        // own MIRRORED constant/mixtures/<token>.dat and NEVER the installation
+        // catalogue (resolveRecord returns an empty path when sealedStrict and
+        // the record is absent locally -> the token is treated as a plain
+        // component, exactly as an unknown catalogue file would be).
+        const fs::path mixFile =
+            records::resolveRecord("mixtures/" + token + ".dat");
+        if (mixFile.empty() || !fs::exists(mixFile))
         {
             // Plain component token -- keep it (dedup defensively).
             if (!already(token)) out.push_back(token);
