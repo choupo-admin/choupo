@@ -28,6 +28,7 @@ License
 
 #include "MaterialRegistry.H"
 #include "core/Dictionary.H"
+#include "thermo/RecordResolver.H"
 
 #include <filesystem>
 #include <map>
@@ -65,21 +66,30 @@ Material readMaterialFile(const fs::path& file)
 void MaterialRegistry::loadFrom(const std::string& dataRoot)
 {
     // Construction materials live in the flat data/standards/assets/ home
-    // (Migration 4), filtered by `kind constructionMaterial`.  Case-local
-    // overrides could be added later at <case>/constant/materials/.
-    fs::path dir = fs::path(dataRoot) / "standards" / "assets";
-    if (!fs::exists(dir)) return;
-
-    for (auto& e : fs::directory_iterator(dir))
+    // (Migration 4), filtered by `kind constructionMaterial`.  Sealing redesign:
+    // the case's MIRRORED constant/assets/ is the case-local tier, scanned OVER
+    // the catalogue so the case record wins by name.  The standards scan is
+    // fs::exists-guarded, so a SEALED case run with the catalogue HIDDEN (empty
+    // dataRoot / relocated) reads its own constant/assets/ ALONE -- and the seal
+    // is proven complete by bin/choupo-import's hidden-catalogue validation.
+    auto scan = [](const fs::path& dir)
     {
-        if (!e.is_regular_file()) continue;
-        if (e.path().extension() != ".dat") continue;
-        auto d = Dictionary::fromFile(e.path().string());
-        if (d->lookupWordOrDefault("kind", "") != "constructionMaterial")
-            continue;
-        Material m = readMaterialFile(e.path());
-        registry()[m.name] = m;
-    }
+        if (!fs::exists(dir)) return;
+        for (auto& e : fs::directory_iterator(dir))
+        {
+            if (!e.is_regular_file()) continue;
+            if (e.path().extension() != ".dat") continue;
+            auto d = Dictionary::fromFile(e.path().string());
+            if (d->lookupWordOrDefault("kind", "") != "constructionMaterial")
+                continue;
+            Material m = readMaterialFile(e.path());
+            registry()[m.name] = m;
+        }
+    };
+    scan(fs::path(dataRoot) / "standards" / "assets");
+    bool legacy = false;
+    const fs::path local = records::localScanDir("assets", legacy);
+    if (!local.empty()) scan(local);
 }
 
 const Material& MaterialRegistry::byName(const std::string& name)

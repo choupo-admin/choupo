@@ -433,17 +433,14 @@ try
     Database db(dataRoot.empty() ? "" : dataRoot.string());
 
     // Load the registries.  A SEALED case with the catalogue hidden has an
-    // EMPTY dataRoot -- but the directory-scan registries (Henry, ...) read
-    // the case's OWN constant/<sub>/ closure via the record resolver, so they
-    // must still load: loadFrom("") scans the case-local dir alone (sealed).
-    // The others (materials/membranes/adsorbents) have no case-local tier yet,
-    // so they stay gated on a real dataRoot.
-    if (!dataRoot.empty())
-    {
-        MaterialRegistry::loadFrom(dataRoot.string());
-        MembraneRegistry::loadFrom(dataRoot.string());
-        AdsorbentRegistry::loadFrom(dataRoot.string());
-    }
+    // EMPTY dataRoot -- every directory-scan registry reads the case's OWN
+    // MIRRORED constant/<sub>/ closure via the record resolver (assets/ for
+    // materials/membranes/adsorbents, parameters/Henry/ for Henry, ...), so
+    // they must ALL load unconditionally: loadFrom("") scans the case-local
+    // dir alone (sealed), and the empty standards path is fs::exists-guarded.
+    MaterialRegistry::loadFrom(dataRoot.string());
+    MembraneRegistry::loadFrom(dataRoot.string());
+    AdsorbentRegistry::loadFrom(dataRoot.string());
     HenrysLawRegistry::loadFrom(dataRoot.string());
     SolutionRegistry::loadFrom(dataRoot.string());
     UtilityCatalogue::loadFrom(dataRoot.string());

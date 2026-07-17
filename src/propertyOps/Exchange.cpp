@@ -57,13 +57,16 @@ namespace {
 fs::path resinPath(const std::string& name)
 {
     // case-local (constant/electrolyte/resins/) reuse the electrolytePaths walk,
-    // then the standards resin ASSET at standards/assets/ (kind ionExchangeResin; resins are an
-    // engineering asset; the electrolyte/resins/ folder is gone).
+    // then the resin ASSET (kind ionExchangeResin; resins are an engineering
+    // asset; the electrolyte/resins/ folder is gone).  ONE resolver (sealing
+    // redesign): the mirrored constant/assets/<name>.dat is the case-local tier,
+    // else the standards catalogue -- a SEALED case reads its own mirror ONLY
+    // (resolveRecord returns empty when sealed + absent, and the caller refuses
+    // loudly with the available list).
     for (const auto& base : electrolyte::electrolytePaths(std::string("resins/") + name + ".dat"))
         if (fs::exists(base)) return base;
-    const fs::path st = fs::path(Database::currentRoot())
-                      / "standards" / "assets" / (name + ".dat");
-    if (fs::exists(st)) return st;
+    const fs::path st = records::resolveRecord("assets/" + name + ".dat");
+    if (!st.empty() && fs::exists(st)) return st;
     return {};
 }
 

@@ -90,13 +90,16 @@ void readIEMPair(const std::string& name, IEMSpec& cem, IEMSpec& aem)
     }
     if (file.empty())
     {
-        const fs::path cand = fs::path(Database::currentRoot())
-                            / "standards" / "assets" / (name + ".dat");
-        if (fs::exists(cand)) file = cand;
+        // ONE resolver (sealing redesign): the mirrored constant/assets/<name>.dat
+        // is the case-local tier, else the standards catalogue -- a SEALED case
+        // reads its own mirror ONLY (resolveRecord returns empty when sealed +
+        // absent, and the loud refusal below fires).
+        const fs::path cand = records::resolveRecord("assets/" + name + ".dat");
+        if (!cand.empty() && fs::exists(cand)) file = cand;
     }
     if (file.empty())
         throw std::runtime_error("electrodialysisStack: IEM membrane '" + name
-            + "' not found in constant/membranes/ (case) or "
+            + "' not found in constant/membranes/ or constant/assets/ (case) or "
               "data/standards/assets/");
 
     auto d = Dictionary::fromFile(file.string());

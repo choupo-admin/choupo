@@ -201,6 +201,15 @@ def filtered_species_catalogue(AQ, names, release, total):
 SPECIATION_KINDS = ("aqueousSpeciation", "gasLiquidEquilibrium",
                     "ionExchangeEquilibrium")
 
+# propsDict op types that drive the multi-ion aqueous speciation engine (the
+# SpeciationSolver): they scan the whole chemistry/ network, the whole aqueous
+# species catalogue and every mineral-bearing component -- so the seal pulls the
+# whole electrolyte databank (species + chemistry + minerals + Pitzer pairs +
+# mixing), existence-guarded.  The single-salt activity ops (pitzerActivity /
+# electrolyteActivity / enrtlMultiSalt / enrtlMixedSolvent) are NOT here -- they
+# name their ions explicitly and pull only those ions' pairs.
+SPECIATION_OP_TYPES = {"speciate", "scalingScan", "exchange"}
+
 
 # ---------------------------------------------------------------------------
 # Closure of ONE property system (a package dict) -- mirrors what the RUNTIME
@@ -234,6 +243,19 @@ def closure_of(pp_path, caseDir, std, AQ):
                 if m and m.group(1) in SPECIATION_KINDS:
                     want("chemistry/" + f.name)
         wantAllSpecies = True
+
+    def want_all_minerals():
+        # The SpeciationSolver's saturation-index sweep scans EVERY component
+        # for a solidPhases{} block and reports SI only for the minerals whose
+        # ions are all present in the solved solution (self-filtering).  A
+        # sealed case reads that set from constant/components/, so the seal must
+        # carry every mineral-bearing component -- the extra ones self-filter to
+        # nothing, so the report is byte-identical to the catalogue sweep.
+        comps = std / "components"
+        if comps.is_dir():
+            for f in sorted(comps.glob("*.dat")):
+                if "solidPhases" in f.read_text():
+                    want("components/" + f.name)
 
     def harvest_v2(text):
         # (1) every declared parameter record: `source "data/standards/<rel>";`
@@ -304,16 +326,59 @@ def closure_of(pp_path, caseDir, std, AQ):
         want("components/" + c + ".dat")
         csrc = std / "components" / (c + ".dat")
         loc = walk_up_local("components/" + c + ".dat")
-        ctext = read(csrc) or (read(loc) if loc else "") or ""
         # component-basis ion map: UNIFIED component.speciesMap or the legacy
-        # top-level dissociatesTo (speciesMapOf, builder-identical)
-        d2t = block(ctext, "speciesMap") or block(ctext, "dissociatesTo")
-        if d2t:
-            ions.update(w for w in words(d2t) if not w.isdigit())
+        # top-level dissociatesTo (speciesMapOf, builder-identical).  Read it
+        # from BOTH the standards record AND the case-local overlay and UNION
+        # the ions -- a case may ADD the decomposition its standards base lacks
+        # (the DSPM-DE salts carry dissociatesTo the standards MgSO4 omits), and
+        # the runtime sees the merged record, so the closure must too.
+        for ctext in (read(csrc) or "", (read(loc) or "") if loc else ""):
+            d2t = block(ctext, "speciesMap") or block(ctext, "dissociatesTo")
+            if d2t:
+                ions.update(w for w in words(d2t) if not w.isdigit())
+        # flowsheet-ION basis: a component whose NAME is itself an aqueous
+        # species (Na, Cl, Ca, SO4, ... carried AS flowsheet components -- the
+        # multi-ion membrane / electrodialysis basis).  Its ion record + pairs
+        # ride the closure like any dissociated salt's ions.
+        if c in AQ:
+            ions.add(c)
     if re.search(r'\brecordType\s+thermophysicalPropertySystem\s*;', t):
         harvest_v2(t)
     else:
         harvest_v1(t)
+
+    # ---- operations in the case's system/propsDict --------------------------
+    # The property PACKAGE (pp_path) lists the flowsheet components; the propsDict
+    # OPERATIONS may name ions / salts / minerals it does not: the single-salt
+    # activity ops (pitzerActivity / electrolyteActivity + the eNRTL multi-salt
+    # ops) name their ions via `cation`/`anion`; the multi-ion speciation ops
+    # (speciate / scalingScan / exchange) reason over the WHOLE aqueous network
+    # + minerals.  The runtime resolves all of these, so the seal must carry them.
+    props = read(Path(caseDir) / "system" / "propsDict") or ""
+    props = re.sub(r'/\*.*?\*/', '', props, flags=re.S)
+    props = re.sub(r'(^|\s)//.*$', '', props, flags=re.M)
+    props_ops = block(props, "operations") or props
+    for m in re.finditer(r'\b(?:cation|anion)\s+([A-Za-z0-9_+\-]+)\s*;', props_ops):
+        ions.add(m.group(1))
+    op_types = set(re.findall(r'\btype\s+([A-Za-z]+)\s*;', props_ops))
+    speciates = bool(op_types & SPECIATION_OP_TYPES)
+
+    # A flowsheet unit may speciate INTERNALLY: the membrane / electrodialysis
+    # scaling audit (`scaling {}` block) runs the SpeciationSolver on the module
+    # bulk to record calcite / gypsum saturation indices.  Detect it so the seal
+    # carries the same aqueous network + minerals the unit resolves at runtime.
+    for fsd in Path(caseDir).rglob("system/flowsheetDict"):
+        ft = read(fsd) or ""
+        ft = re.sub(r'/\*.*?\*/', '', ft, flags=re.S)
+        ft = re.sub(r'(^|\s)//.*$', '', ft, flags=re.M)
+        if re.search(r'\bscaling\s*\{', ft):
+            speciates = True
+            break
+
+    if speciates:
+        want_speciation_closure()          # chemistry/ whole + wantAllSpecies
+        want_all_minerals()                # mineral-bearing components (self-filter)
+
     # cation-anion pair records by CHARGE (the aqueous catalogue is the
     # authority); existence-guarded, so only real pair records are sealed.
     cats = sorted({i for i in ions if AQ.get(i, (0,))[0] > 0})
@@ -322,9 +387,31 @@ def closure_of(pp_path, caseDir, std, AQ):
         for an in ans:
             want("parameters/Pitzer/pairs/" + ca + "-" + an + ".dat")
             want("parameters/eNRTL/" + ca + "-" + an + ".dat")
+
+    # A full-speciation closure (speciate / scalingScan / exchange) reasons over
+    # the WHOLE aqueous catalogue -- any ion the network derives (OH, CO3, the
+    # CaSO4aq / CO2aq neutral pairs) may enter the multi-ion Pitzer-HMW sums.
+    # Pull the COMPLETE Pitzer + eNRTL databank -- the WHOLE mixing home, exactly
+    # like want_speciation_closure pulls the whole chemistry/ home and all
+    # species.  Globbing the dirs (not enumerating over the ion set) is robust:
+    # the neutrals in the mixing files (CO2aq, CaSO4aq) are NOT in the
+    # aqueousSpecies list -- they are chemistry-network species -- so an ion-set
+    # enumeration would silently drop their lambda / zeta terms.  The runtime
+    # resolves each term through the sealed tier; an unused term self-filters.
+    if wantAllSpecies:
+        for sub in ("pairs", "theta", "psi", "lambda", "zeta"):
+            dpath = std / "parameters" / "Pitzer" / sub
+            if dpath.is_dir():
+                for f in sorted(dpath.glob("*.dat")):
+                    want("parameters/Pitzer/" + sub + "/" + f.name)
+        enrtl_dir = std / "parameters" / "eNRTL"
+        if enrtl_dir.is_dir():
+            for f in sorted(enrtl_dir.glob("*.dat")):
+                want("parameters/eNRTL/" + f.name)
+
     # the ion Cp(T) tier (Criss-Cobble nodes) rides with any electrolyte
     # closure -- a hidden catalogue must not silently degrade Cp(T).
-    if ions:
+    if ions or wantAllSpecies:
         want("parameters/electrolyte/crissCobble.dat")
     return recs, ions, wantAllSpecies
 
@@ -571,6 +658,33 @@ def main():
                     ppb = block(par, "pitzerPairs")
                     for pair in (words(ppb) if ppb else []):
                         want_plant("parameters/Pitzer/pairs/" + pair + ".dat")
+
+    # ---- physical assets referenced by the unit operations / props ops ------
+    # Membranes / adsorbents / construction materials / ion-exchange resins are
+    # named in the flowsheetDict units (`membrane SW30HR;`), the propsDict ops
+    # (`resin SAC_Na;`, isothermEval `adsorbent ...`) and the post/controlDict
+    # (`material SS304;` for sizing).  The MembraneRegistry / AdsorbentRegistry /
+    # MaterialRegistry / electrodialysisStack / exchange readers resolve them
+    # from data/standards/assets/ at runtime, so the seal must mirror each
+    # referenced asset (existence-guarded, so an authored case-local overlay --
+    # a membrane / adsorbent the case ships in constant/membranes|adsorbents/ --
+    # is left untouched).  Adsorbents also pull their per-species equilibria dir.
+    asset_names = set()
+    for sd_dict in Path(caseDir).rglob("system/*Dict"):
+        dtext = read(sd_dict) or ""
+        dtext = re.sub(r'/\*.*?\*/', '', dtext, flags=re.S)
+        dtext = re.sub(r'(^|\s)//.*$', '', dtext, flags=re.M)
+        for m in re.finditer(
+                r'\b(?:membrane|adsorbent|material|wallMaterial|wall|resin)'
+                r'\s+([A-Za-z0-9_]+)\s*;', dtext):
+            asset_names.add(m.group(1))
+    for name in sorted(asset_names):
+        want_plant("assets/" + name + ".dat")
+        eq = std / "parameters" / "adsorption" / "equilibria" / name
+        if eq.is_dir():
+            for f in sorted(eq.glob("*.dat")):
+                want_plant("parameters/adsorption/equilibria/"
+                           + name + "/" + f.name)
 
     # ---- per-context install content --------------------------------------
     cat_sha = sha_file(std / "species" / "aqueous.dat") \

@@ -30,6 +30,7 @@ License
 
 #include "IsothermModel.H"
 #include "core/Dictionary.H"
+#include "thermo/RecordResolver.H"
 
 #include <filesystem>
 #include <iostream>
@@ -84,22 +85,39 @@ void AdsorbentRegistry::loadFrom(const std::string& dataRoot)
     standardsEquilibriaDir() = eqRoot.string();
 
     // Adsorbent identities live in the flat data/standards/assets/ home
-    // (Migration 4), filtered by `kind adsorbent`.
-    fs::path dir = fs::path(dataRoot) / "standards" / "assets";
-    if (!fs::exists(dir)) return;
-
-    for (auto& e : fs::directory_iterator(dir))
+    // (Migration 4), filtered by `kind adsorbent`.  Sealing redesign: the case's
+    // MIRRORED constant/assets/ is the case-local tier, scanned OVER the
+    // catalogue so the case record wins by name; the standards scan is
+    // fs::exists-guarded, so a SEALED case run with the catalogue HIDDEN reads
+    // its own constant/assets/ ALONE.  Each adsorbent's per-species equilibria
+    // come from the nearest case-local
+    // constant/parameters/adsorption/equilibria/<name>/ (walking up), else the
+    // standards catalogue -- absent when hidden, so a sealed case's equilibria
+    // must be mirrored (bin/choupo-import's hidden validation proves it).
+    const fs::path eqStd = fs::path(dataRoot) / "standards" / "parameters"
+                         / "adsorption" / "equilibria";
+    auto scan = [&](const fs::path& dir)
     {
-        if (!e.is_regular_file()) continue;
-        if (e.path().extension() != ".dat") continue;
-        auto rec = Dictionary::fromFile(e.path().string());
-        if (rec->lookupWordOrDefault("kind", "") != "adsorbent") continue;
-        Adsorbent a;
-        a.readIdentity(rec,
-                       e.path().string());
-        attachEquilibria(a, eqRoot / a.name());
-        registry()[a.name()] = std::move(a);
-    }
+        if (!fs::exists(dir)) return;
+        for (auto& e : fs::directory_iterator(dir))
+        {
+            if (!e.is_regular_file()) continue;
+            if (e.path().extension() != ".dat") continue;
+            auto rec = Dictionary::fromFile(e.path().string());
+            if (rec->lookupWordOrDefault("kind", "") != "adsorbent") continue;
+            Adsorbent a;
+            a.readIdentity(rec, e.path().string());
+            fs::path eqDir = records::localRecord(
+                "parameters/adsorption/equilibria/" + a.name());
+            if (eqDir.empty()) eqDir = eqStd / a.name();
+            attachEquilibria(a, eqDir);           // fs::exists-guarded inside
+            registry()[a.name()] = std::move(a);
+        }
+    };
+    scan(fs::path(dataRoot) / "standards" / "assets");
+    bool legacy = false;
+    const fs::path local = records::localScanDir("assets", legacy);
+    if (!local.empty()) scan(local);
 }
 
 const Adsorbent& AdsorbentRegistry::byName(const std::string& name)

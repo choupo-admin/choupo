@@ -183,10 +183,16 @@ static double mixingFileValue(const std::string& kind, const std::string& name)
     auto it = cache.find(key);
     if (it != cache.end()) return it->second;
 
-    const fs::path tp = fs::path(Database::currentRoot())
-        / "standards" / "parameters" / "Pitzer"
-        / kind / (name + ".dat");
-    const double v = fs::exists(tp)
+    // ONE resolver (sealing redesign): case-local mirrored home
+    // (constant/parameters/Pitzer/<kind>/<name>.dat) -> legacy snapshot ->
+    // standards; a strictly sealed case reads its OWN closure ONLY (resolveRecord
+    // returns empty), never the catalogue.  Absence-tolerant: a genuinely absent
+    // mixing term stays NaN -> 0 (the historical behaviour); the closure walker
+    // pulls every mixing record the run enumerates, so a sealed run never
+    // silently drops a present term.
+    const fs::path tp = records::resolveRecord(
+        std::string("parameters/Pitzer/") + kind + "/" + name + ".dat");
+    const double v = (!tp.empty() && fs::exists(tp))
         ? parsedOnceHMW(tp)->lookupScalar("value")
         : std::nan("");
     cache.emplace(key, v);

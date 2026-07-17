@@ -28,6 +28,7 @@ License
 
 #include "MembraneRegistry.H"
 #include "core/Dictionary.H"
+#include "thermo/RecordResolver.H"
 
 #include <filesystem>
 #include <iostream>
@@ -55,28 +56,40 @@ void MembraneRegistry::loadFrom(const std::string& dataRoot)
     // membranes (kind RO | NF); every other kind (IEM, constructionMaterial,
     // adsorbent, ionExchangeResin) belongs to another reader -- skip, never
     // reject.  A record with NO kind in the shared folder is refused loudly.
-    fs::path dir = fs::path(dataRoot) / "standards" / "assets";
-    if (!fs::exists(dir)) return;
-
-    for (auto& e : fs::directory_iterator(dir))
+    //
+    // Sealing redesign: the case's MIRRORED constant/assets/ is the case-local
+    // tier, scanned OVER the catalogue so the case record wins by name.  The
+    // standards scan is fs::exists-guarded, so a SEALED case run with the
+    // catalogue HIDDEN (empty dataRoot / relocated) reads its own constant/assets/
+    // ALONE -- and the seal is proven complete by bin/choupo-import's
+    // hidden-catalogue validation.
+    auto scan = [](const fs::path& dir)
     {
-        if (!e.is_regular_file()) continue;
-        if (e.path().extension() != ".dat") continue;
-        auto d = Dictionary::fromFile(e.path().string());
-        const std::string kind = d->lookupWordOrDefault("kind", "");
-        if (kind.empty())
-            throw std::runtime_error("MembraneRegistry: asset '"
-                + e.path().string() + "' has no `kind` -- every record in the"
-                " shared assets/ home must declare its consumer (RO | NF | IEM"
-                " | constructionMaterial | adsorbent | ionExchangeResin)");
-        if (kind != "RO" && kind != "NF") continue;
-        Membrane m;
-        m.readFromDict(d);
-        if (m.name().empty())
-            throw std::runtime_error("MembraneRegistry: file '"
-                + e.path().string() + "' has no `name` entry");
-        registry()[m.name()] = std::move(m);
-    }
+        if (!fs::exists(dir)) return;
+        for (auto& e : fs::directory_iterator(dir))
+        {
+            if (!e.is_regular_file()) continue;
+            if (e.path().extension() != ".dat") continue;
+            auto d = Dictionary::fromFile(e.path().string());
+            const std::string kind = d->lookupWordOrDefault("kind", "");
+            if (kind.empty())
+                throw std::runtime_error("MembraneRegistry: asset '"
+                    + e.path().string() + "' has no `kind` -- every record in the"
+                    " shared assets/ home must declare its consumer (RO | NF | IEM"
+                    " | constructionMaterial | adsorbent | ionExchangeResin)");
+            if (kind != "RO" && kind != "NF") continue;
+            Membrane m;
+            m.readFromDict(d);
+            if (m.name().empty())
+                throw std::runtime_error("MembraneRegistry: file '"
+                    + e.path().string() + "' has no `name` entry");
+            registry()[m.name()] = std::move(m);
+        }
+    };
+    scan(fs::path(dataRoot) / "standards" / "assets");
+    bool legacy = false;
+    const fs::path local = records::localScanDir("assets", legacy);
+    if (!local.empty()) scan(local);
 }
 
 const Membrane& MembraneRegistry::byName(const std::string& name)

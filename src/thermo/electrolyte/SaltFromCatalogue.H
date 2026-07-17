@@ -346,11 +346,17 @@ inline DictPtr findPitzerPair(const std::string& cation, const std::string& anio
             }
     }
     // ONE resolver (sealing redesign): case-local mirrored home -> legacy
-    // snapshot -> standards; a sealed case refuses a locally-missing pair.
-    const fs::path tp = records::resolveRequired(
-        "parameters/Pitzer/pairs/" + cation + "-" + anion + ".dat",
-        "Pitzer pair (" + cation + "," + anion + ")");
-    if (fs::exists(tp))
+    // snapshot -> standards.  ABSENCE-TOLERANT (resolveRecord, not
+    // resolveRequired): the multi-ion Pitzer-HMW engine asks for EVERY
+    // (cation, anion) combination, and most pairs legitimately DO NOT exist
+    // (a missing pair is zero interaction, never an error).  A sealed case
+    // returns EMPTY for a locally-absent pair -> nullptr -> the caller decides:
+    // HMW readPair treats it as zero; the single-salt loadSalt throws (a salt
+    // that has no pair IS an error).  The seal closure pulls every pair that
+    // exists, so a sealed run never silently drops a present pair.
+    const fs::path tp = records::resolveRecord(
+        "parameters/Pitzer/pairs/" + cation + "-" + anion + ".dat");
+    if (!tp.empty() && fs::exists(tp))
         return memo(bridgePitzerPair(parsedOnce(tp)));
     return nullptr;
 }
@@ -519,11 +525,12 @@ inline DictPtr findENRTLPair(const std::string& cation, const std::string& anion
             }
     }
     // ONE resolver (sealing redesign), mirroring findPitzerPair: case-local
-    // mirrored home -> legacy snapshot -> standards; sealed refuses absences.
-    const fs::path tp = records::resolveRequired(
-        "parameters/eNRTL/" + cation + "-" + anion + ".dat",
-        "eNRTL pair (" + cation + "," + anion + ")");
-    if (fs::exists(tp))
+    // mirrored home -> legacy snapshot -> standards.  ABSENCE-TOLERANT: a
+    // locally-absent pair returns nullptr (the caller decides -- loadENRTL
+    // throws for a salt that needs one; a multi-salt survey treats it as zero).
+    const fs::path tp = records::resolveRecord(
+        "parameters/eNRTL/" + cation + "-" + anion + ".dat");
+    if (!tp.empty() && fs::exists(tp))
         return bridgeENRTLPair(parsedOnce(tp));
     return nullptr;
 }
