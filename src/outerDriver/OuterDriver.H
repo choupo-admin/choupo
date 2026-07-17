@@ -91,11 +91,13 @@ public:
     void setSimulator(Simulator f) { simulator_ = std::move(f); }
     void setFlowsheetDict(DictPtr d) { flowsheetDict_ = std::move(d); }
 
-    // Some drivers (parameter estimation, optimisation over thermo) need
-    // to mutate the thermoPackage as well between passes.  The simulator
-    // closure in main.cpp captures the thermoDict by shared_ptr, so any
-    // in-place setScalarAtPath() in the driver is picked up automatically
-    // on the next simulator call.
+    // Reference to the case's thermo dict, kept for driver-side inspection.
+    // NO concrete driver mutates it today: Sweep/GridSweep/DesignSpec/
+    // Optimization clone and mutate the flowsheetDict only, and the
+    // simulator rebuilds the thermo package from its own dict on every
+    // evaluation (pure-function semantics).  A future fitting driver that
+    // varies property parameters must deepCopy the manifest per pass --
+    // never mutate this shared pointer in place.
     void setThermoDict(DictPtr d) { thermoDict_ = std::move(d); }
 
     // OptimizationDriver-style drivers may want to run the post-processing

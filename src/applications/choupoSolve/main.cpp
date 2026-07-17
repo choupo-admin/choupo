@@ -846,10 +846,15 @@ try
         // Layer 2: outer driver controls the simulator.  (The old
         // streams{}-steering guard is gone with the legacy reader: a dict
         // carrying `streams {}` now REFUSES inside the Flowsheet itself.)
-        if (packageDict)
-            throw std::runtime_error("outerDriver + propertyPackage is not yet wired "
-                "(the driver varies the thermoPackage dict in-place; a builder-assembled "
-                "package carries no dict to mutate).  Use a thermoPackage for such cases.");
+        //
+        // outerDriver + builder propertyPackage works with NO extra wiring:
+        // runSimulation() rebuilds the package from packageDict on EVERY
+        // evaluation (ThermoPackageBuilder::build above), so each pass is a
+        // pure function of its inputs.  No concrete driver mutates the
+        // thermo dict -- Sweep/GridSweep/DesignSpec/Optimization clone and
+        // mutate the flowsheetDict only.  Fitting drivers that vary property
+        // PARAMETERS between passes are a separate feature (they will
+        // deepCopy the manifest and rebuild per evaluation, same semantics).
         auto driver = OuterDriver::New(outerDict);
         driver->setSimulator     (simulate);
         driver->setFlowsheetDict (flowsheetDict);
