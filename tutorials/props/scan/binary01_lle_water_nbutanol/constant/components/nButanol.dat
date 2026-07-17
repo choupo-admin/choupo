@@ -1,15 +1,12 @@
-// --- vendored for self-containment (2026-06-22) ---------------------
-// origin   standard
-// source   data/standards/components/nButanol.dat
-// sha256   828bad1520d8ed0b597d53e6e72549657b4eb966fca024762c50aed8f699eb44
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/nButanol.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: 1-Butanol  (C4H10O, CAS 71-36-3)
   Notable LLE: partially miscible with water below 125.5 °C (UCST).
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients, Cp polynomials and the ideal-gas formation datum
+           (JANAF convention) are individual literature values -- primary
+           re-citation pending (IST review); the 125.5 degC water/1-butanol
+           UCST above is the textbook figure, same pending re-citation.
 \*---------------------------------------------------------------------------*/
 
 name        nButanol;
@@ -55,4 +52,71 @@ groups
 {
     joback ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } );
     unifac ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } );
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0481-PROF.txt bundled in usnistgov/COSMOSAC; CAS 71-36-3";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        128.11687;
+        volume      113.87358;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.137741146739666
+            0.424365737004732
+            1.67077463397528
+            0.377598482280322
+            0.639518881831274
+            0.846966542667923
+            1.14005936475280
+            0.968125210748003
+            0.700921313881277
+            0.787478540042584
+            1.16604892307365
+            2.01886980518998
+            6.11511266622695
+            17.1011027143912
+            18.4758617556048
+            18.1910479877438
+            13.0871172110774
+            11.1449324669119
+            12.0296916842514
+            3.31098622132229
+            1.55881547322786
+            1.04679380165557
+            1.45447556330149
+            0.855828860032485
+            0.906511130881110
+            1.08466589899932
+            1.01260394792578
+            1.56177518210035
+            1.65693737871121
+            1.88497018621698
+            2.42871978801095
+            1.97020778644270
+            0.360243712776926
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
 }
