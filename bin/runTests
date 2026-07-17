@@ -392,6 +392,21 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/ligate.$$
 
+    # Seal-drift gate (sealing wave, 2026-07-17): every sealed record's origin
+    # sha256 vs the LIVE catalogue.  Drift (catalogue evolved under a frozen
+    # copy) is REPORTED but passes -- refreshing is a per-case curation act;
+    # DAMAGE (a claimed file missing / failing its own manifest hash) FAILS.
+    if "$ROOT/bin/curate/check_seal_drift.py" > /tmp/sealgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "seal-drift-gate" "$(head -1 /tmp/sealgate.$$)"
+        pass=$((pass+1))
+        if grep -q 'SEAL DRIFT' /tmp/sealgate.$$; then cat /tmp/sealgate.$$; fi
+    else
+        printf "FAIL  %-40s  (broken seal manifest -- run bin/curate/check_seal_drift.py)\n" "seal-drift-gate"
+        cat /tmp/sealgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sealgate.$$
+
     # Release-inventory gate (ChatGPT landing-plan §5): the generated single-
     # source-of-truth counts (generated/releaseInventory.json, consumed by the
     # homepage hero + "What is inside" + /models) must match the current tree --
