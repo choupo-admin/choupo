@@ -1,25 +1,16 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/acetone.dat
-// sha256   dd98ef46d9d7d2bf586316c209058fdd7582d1c491262ed7e52e8aa6b78f56b6
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/acetone.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Acetone  (C3H6O, CAS 67-64-1)
-  Sources:   vaporPressure  -- NIST WebBook (Ambrose & Sprake, 1974)
-             constants + Cp  -- Poling, Prausnitz, O'Connell (5th ed.), App. A
-             standardThermochemistry  -- NIST WebBook (ideal-gas, 298 K)
+  Sources:   constants + vapour pressure cross-checked against CoolProp
+             7.2.0 (MIT) within ~1%.  Ideal-gas formation properties and
+             liquid Cp are individual literature values -- primary
+             re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/
 
 name        acetone;
 formula     C3H6O;
 CAS         67-64-1;
 
-// Molecular structure (Joback groups) -- identity, like the formula.
-jobackGroups { CH3 2; ketone 1; }
 
 
 MW          58.080;        // kg/kmol
@@ -61,7 +52,85 @@ liquidHeatCapacity
 
 provenance
 {
-    vaporPressure  "NIST WebBook -- Ambrose & Sprake 1974";
-    constants      "Poling/Prausnitz/O'Connell 5th ed., Appendix A";
-    standardThermochemistry "NIST WebBook (ideal-gas, 298 K)";
+    vaporPressure  "cross-checked against CoolProp 7.2.0 (MIT) within ~1%";
+    constants      "cross-checked against CoolProp 7.2.0 (MIT) within ~1%";
+    standardThermochemistry "individual literature value -- primary re-citation pending (IST review)";
+}
+
+// Molecular group decomposition, per method (the curation RECIPE: a group-
+// contribution estimator / UNIFAC reads it from HERE instead of re-typed per
+// case).  Method-keyed because Joback groups != UNIFAC groups.  Acetone = CH3-CO-CH3.
+groups
+{
+    joback ( { group CH3; count 2; } { group ketone; count 1; } );
+    unifac ( { group CH3; count 1; } { group CH3CO; count 1; } );
+}
+
+diffusionVolume  67.7;   // Fuller (FSG revised: 3C+6H+O) -- enables Lewis-number wet-bulb
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0438-PROF.txt bundled in usnistgov/COSMOSAC; CAS 67-64-1";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        102.64522;
+        volume      86.41887;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            3.54806140612242
+            11.2555028625310
+            10.8674692382609
+            9.79485985981282
+            8.81980221871940
+            8.26133761109141
+            13.6168823862884
+            6.56953279569402
+            4.66502315113482
+            1.55140425221460
+            1.62155883063563
+            1.05040022584671
+            0.154095814295190
+            0.845599623229055
+            0.811877820681033
+            1.87885772426643
+            1.54132159683437
+            3.30905567309423
+            4.49769820957580
+            3.77053885685517
+            2.59391810716009
+            1.62042173565650
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
 }
