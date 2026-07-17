@@ -1,16 +1,16 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/compB.dat
-// sha256   99d3f25d0ad348d348b85c91d4cc9756de86e83d024be6708787e9622b47e86e
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/compB.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*---------------------------------------------------------------------------*\
-  Component: compB  -- synthetic component for VLLE algorithm audit.
-  Identical Antoine to compB and compC (Psat ≈ 0.5 bar at 350 K).
-  Pedagogically only --- not a real substance.
+  Component: compB  -- synthetic PSEUDO-component for VLLE algorithm audit.
+  Antoine giving Psat ≈ 0.5 bar at 350 K (the less-volatile audit partner).
+  Pedagogically only --- NOT A REAL SUBSTANCE (formula "B", CAS 00-00-0).
+
+  Carries NO standardThermochemistry block ON PURPOSE: a fictitious species has no
+  elements and no real heat of formation -- the elements datum is undefined
+  for it.  A deliberate, correct absence (the VLLE audit runs no reactor),
+  NOT a curation oversight.
+  Sources: none -- a synthetic audit species: the Antoine coefficients
+  (Psat ~0.5 bar at 350 K) and the flat Cp values are TUNED for the VLLE
+  algorithm test; no physical primary exists (not a real substance).
 \*---------------------------------------------------------------------------*/
 
 name        compB;
