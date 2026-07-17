@@ -1,0 +1,28 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T2 gamma-phi, shared thermo for the two-sector
+  demo: 10 case-local components, NRTL liquid gamma (10 case-local pairs
+  resolve from constant/parameters/NRTL -- no inline numbers, the catalogue
+  records travel with the case), ideal-gas vapour.  Cascades DOWN to both
+  sectors (fractal constant/).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( compA compB compC compD compE compF compG compH compI compJ );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel { model NRTL; }   // pairs from the case's own catalogue
+        standardState pureLiquid;       // Raoult datum: gamma_i -> 1 as x_i -> 1
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

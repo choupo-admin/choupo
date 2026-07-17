@@ -1,0 +1,34 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T2 gamma-phi: NRTL ethanol/water, parameters
+  loaded from file.
+
+  Note that there is NO inline pair block here.  The simulator resolves the
+  ethanol-water NRTL pair by looking, in this order:
+
+      1. an inline pair declaration in this dict          --  not present
+      2. <case>/constant/parameters/NRTL/ethanol-water.dat  --  PRESENT
+      3. $CHOUPO_HOME/data/standards/parameters/NRTL/ethanol-water.dat
+
+  The case-local file wins.  Open it to see the parameters this case uses.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( ethanol  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel { model NRTL; }   // pairs from the catalogue search path
+        standardState pureLiquid;       // Raoult datum: gamma_i -> 1 as x_i -> 1
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

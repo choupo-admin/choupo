@@ -1,4 +1,6 @@
 /*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T2 gamma-phi, UNIQUAC liquid.
+
   The activity model is NOT a free choice here.  A rate constant is meaningless
   without the activity model it was regressed with: Popken, Gotze & Gmehling
   fitted their kinetics on UNIQUAC activities, with the binary parameters they
@@ -10,6 +12,23 @@
   Swap this for UNIFAC and the numbers below stop being the authors' numbers.
 \*---------------------------------------------------------------------------*/
 
-components      ( methanol  aceticAcid  methylAcetate  water );
-activityModel   { model UNIQUAC; }
-equationOfState { model idealGas; }
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( methanol  aceticAcid  methylAcetate  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel { model UNIQUAC; }  // pairs from parameters/UNIQUAC/ (Popken Table 3)
+        standardState pureLiquid;         // Raoult datum: gamma_i -> 1 as x_i -> 1
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

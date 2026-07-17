@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T2 gamma-phi, predictive UNIFAC liquid.
+
+  methanol + aceticAcid are the two column feeds, methylAcetate + water the
+  esterification products formed on the reactive stages.  This quaternary
+  mixture is strongly non-ideal (two azeotropes involving methyl acetate),
+  so a predictive UNIFAC liquid is essential --- Raoult would misplace the
+  product split.  UNIFAC is group-contribution: NO binary pair records, the
+  gamma comes from each component's functional groups.  The vapour stays
+  ideal: acetic-acid dimerisation is a known, deliberately unmodelled
+  simplification (see the inline notes).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( methanol  aceticAcid  methylAcetate  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel { model UNIFAC; }   // predictive, group-contribution
+        standardState pureLiquid;         // Raoult datum: gamma_i -> 1 as x_i -> 1
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;           // acetic-acid dimerisation not modelled
+    }
+}
