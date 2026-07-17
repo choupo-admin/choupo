@@ -1,7 +1,0 @@
-// The heatTransferBench op runs the correlation verify() self-checks directly
-// (no fluid state is consumed); the package below is the minimal valid case
-// foundation.
-components ( water );
-phase { type vle; }
-activityModel { model ideal; }
-equationOfState { model idealGas; }

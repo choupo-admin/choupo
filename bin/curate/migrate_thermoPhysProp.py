@@ -74,6 +74,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 TUTORIALS = ROOT / "tutorials"
 SKIPPED_LIST = ROOT / "bin/curate/migrate_thermoPhysProp.skipped.txt"
+MIGRATION_NOTES = {}      # caseDir -> note printed with the converted report
 
 V2_DISPATCHING_APPS = {"choupoSolve", "choupoProps",
                        "choupoBatch", "choupoCtrl"}
@@ -367,6 +368,16 @@ def classify(dict_path):
                                 "builder/manifest path leaves thermoDict null "
                                 "(engine gap, FitParameters.cpp:247)"
                         % " ".join(sorted(kinds - {"isotherm"})))
+    # propsDict ops carrying their OWN thermo{} override (pureFluids /
+    # transport routes per op -- compare_transport_water) merge against the
+    # FLAT thermoDict; the builder/manifest path does not carry that per-op
+    # merge, so the case must stay v1 (proven: 46 op failures on conversion).
+    if props.exists():
+        ps2 = strip_comments(props.read_text(errors="replace"))
+        if re.search(r'(?<![\w.])thermo\s*\{', ps2):
+            return ('skip', "propsDict op carries an inline thermo{} override"
+                            " (per-op merge exists on the flat path only --"
+                            " no builder/manifest equivalent)")
     if (case / "constant" / "thermoPhysPropDict").exists():
         return ('skip', "constant/thermoPhysPropDict already exists")
     if incomplete_thermo_override(case):
@@ -389,12 +400,25 @@ def classify(dict_path):
               for k, kind, span, payload in entries}
 
     allowed = {"components", "activityModel", "equationOfState",
-               "transport", "solvent", "solutes"}
+               "transport", "solvent", "solutes", "phase"}
     extra = [k for k in keys if k not in allowed]
     if extra:
         return ('skip', "extra top-level key(s): %s" % " ".join(sorted(extra)))
     if "components" not in by_key or "activityModel" not in by_key:
         return ('skip', "missing components/activityModel")
+
+    # -- G1 (Codex-ratified 2026-07-18): `phase { type vle; }` is REDUNDANT
+    #    with `formulation gammaPhi` (gamma liquid x phi vapour IS the VLE
+    #    statement) -- dropped on migration, recorded in the report.  ANY
+    #    other content in the block refuses (never guess).
+    if "phase" in by_key:
+        kind, _span, body = by_key["phase"]
+        if kind != 'block' or not block_is_exactly(stripped, body,
+                                                   "type", "vle"):
+            return ('skip', "phase block is not exactly { type vle; } -- "
+                            "no v2 slot for a non-VLE phase declaration")
+        MIGRATION_NOTES[case] = "dropped redundant `phase { type vle; }`" \
+                                " (formulation gammaPhi IS the VLE statement)"
 
     kind, comp_span, _ = by_key["components"]
     if kind != 'list':
@@ -652,8 +676,12 @@ def main():
     for reason, n in reasons.most_common():
         print("  %4d  %s" % (n, reason))
     print("\nconverted:")
+    notes_by_rel = {c.relative_to(ROOT).as_posix(): n
+                    for c, n in MIGRATION_NOTES.items()}
     for rel in converted:
-        print("  " + rel)
+        case_rel = rel.rsplit("/constant/", 1)[0]
+        note = notes_by_rel.get(case_rel)
+        print("  " + rel + ("   [" + note + "]" if note else ""))
     print("\nfull skipped list -> %s"
           % SKIPPED_LIST.relative_to(ROOT).as_posix())
     return 0
