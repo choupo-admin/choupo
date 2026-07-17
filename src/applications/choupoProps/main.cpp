@@ -285,6 +285,7 @@ try
     AdvisoryLog::instance().clear();   // capture binary-pair provenance
     ThermoPackage thermo;
     DictPtr thermoDict;   // null in the propertyPackage branch (only fit ops use it)
+    DictPtr v2Authored;   // G3: the authored v2 grammar (fit ops mutate THIS)
     // v2 contract name FIRST (the architect's choice, 2026-07-17):
     // constant/thermoPhysPropDict carries the thermophysicalPropertySystem
     // grammar; constant/propertyDict stays the v1 home (routed by content).
@@ -304,7 +305,6 @@ try
         // (equilibrium.liquid.activityModel.binaryParameters.<i>-<j>.<coef>)
         // and re-translates per iteration, so the fit varies the SOURCE
         // grammar, never a translated intermediate.
-        DictPtr v2Authored;
         if (sel->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
         {
             v2Authored = sel;
@@ -347,19 +347,13 @@ try
                              "   (the case carries the full"
                              " manifest)\n";
             thermo = ThermoPackageBuilder::build(sel, db);   // rich MANIFEST
-            // fit ops (evaluate/fit) rebuild per iteration from the AUTHORED
-            // v2 grammar -- hand it over when the case is v2 (G3).
-            if (v2Authored) thermoDict = v2Authored;
         }
         else if (sel->found("components"))
         {
             if (verbosity >= 2)
                 std::cout << "Property package:  " << pkgPath
                           << "   (flat form: activityModel/equationOfState)\n";
-            // fit ops mutate the AUTHORED grammar: hand them the v2 source
-            // when the case is v2 (named-path mutation + per-iteration
-            // re-translate), else the flat v1 dict exactly as before.
-            thermoDict = v2Authored ? v2Authored : sel;
+            thermoDict = sel;
             thermo.readFromDict(sel, db);                    // FLAT form
         }
         else if (sel->found("package"))
@@ -431,6 +425,7 @@ try
 
         auto op = PropertyOperation::New(opType);
         op->setThermoDict(thermoDict);
+        op->setAuthoredV2(v2Authored);
         op->setDatabase(&db);
         const int rc = op->run(opDict, thermo, verbosity);
         if (rc != 0)

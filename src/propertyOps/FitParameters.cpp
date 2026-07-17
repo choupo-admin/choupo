@@ -245,11 +245,14 @@ int FitParameters::run(const DictPtr& dict,
     if (dict->subDict("residual")->lookupWord("kind") == "isotherm")
         return runIsothermFit(dict, verbosity);
 
-    if (!thermoDict() || !database())
+    // G3: prefer the AUTHORED v2 grammar (named-path mutation, re-translated
+    // per iteration); the flat v1 thermoDict stays the fallback channel.
+    const DictPtr fitSource = authoredV2() ? authoredV2() : thermoDict();
+    if (!fitSource || !database())
         throw std::runtime_error(
-            "fitParameters: needs thermoDict + database (set by choupoProps "
-            "main before.run()) --- a thermoPackage REBUILD per iteration "
-            "is required for parameter regression");
+            "fitParameters: needs the authored property dict + database (set "
+            "by choupoProps main before .run()) --- a thermoPackage REBUILD "
+            "per iteration is required for parameter regression");
 
     // -- mode (forum #62-64): fit (default) adjusts; evaluate only SCORES ----
     const std::string mode = dict->lookupWordOrDefault("mode", "fit");
@@ -383,7 +386,7 @@ int FitParameters::run(const DictPtr& dict,
     // was an ALIAS, so every setScalarAtPath of the LM landed in the SHARED
     // dict -- the fit contaminated the package for any operation after it in
     // the same propsDict.  The working tree is now genuinely private.
-    DictPtr work = thermoDict()->deepCopy();
+    DictPtr work = fitSource->deepCopy();
     // G3 (Codex-ratified 2026-07-18): when the case is v2, `work` IS the
     // authored thermophysicalPropertySystem -- the LM mutates it by the
     // NAMED v2 path (equilibrium.liquid.activityModel.binaryParameters.
