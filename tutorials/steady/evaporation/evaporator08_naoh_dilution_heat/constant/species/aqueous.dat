@@ -1,0 +1,45 @@
+/*----------------------------------------------------------*\
+  constant/species/aqueous.dat -- aqueous model species,
+  FILTERED to this case's closure (2 of 45 catalogue records).
+  Same grammar as data/standards/species/aqueous.dat; imported
+  by bin/choupo-import from the Choupo-2607 release -- ownership and
+  integrity are recorded in constant/propertyManifest.
+\*----------------------------------------------------------*/
+
+aqueousSpecies
+(
+    {
+        name    Na;
+        ion     "Na+";
+        charge  +1;
+        MW { value 22.99; unit g/mol;}
+        aqueousThermo
+        {
+        hfAq { value -240120; unit J/mol;}
+        sAq  { value 59.0;  unit J/mol/K;}
+        cpAq { value 46.4; unit J/mol/K;}
+        }
+        transport
+        {
+        radius { value 3.58e-10; unit m;}
+        D0     { value 1.33e-09;     unit m2/s;}
+        }
+    }
+    {
+        name    OH;
+        ion     "OH-";
+        charge  -1;
+        MW { value 17.007; unit g/mol;}
+        aqueousThermo
+        {
+        hfAq { value -229990; unit J/mol;}
+        sAq  { value -10.75;  unit J/mol/K;}
+        cpAq { value -148.5; unit J/mol/K;}
+        }
+        transport
+        {
+        radius { value 3.00e-10; unit m;}
+        D0     { value 5.27e-09;     unit m2/s;}
+        }
+    }
+);
