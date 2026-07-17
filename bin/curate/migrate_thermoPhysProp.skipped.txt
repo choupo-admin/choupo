@@ -1,7 +1,5 @@
 # migrate_thermoPhysProp.py -- skipped cases (STRICT-T1 cohort, 2026-07-17)
-# converted 38, skipped 78 (batch/ctrl cohort run, bb7bde3fe dispatch)
-tutorials/batch/adsorber/batch17_dilute_ergun_limit/constant/propertyDict	extra top-level key(s): transport
-tutorials/batch/adsorber/batch18_ergun_conservation/constant/propertyDict	extra top-level key(s): transport
+# converted 1, skipped 75
 tutorials/batch/reactor/batch07_lhhw_methylAcetate/constant/propertyDict	activityModel is not exactly { model ideal; }
 tutorials/batch/still/still02_ethanol_water_azeo/constant/propertyDict	activityModel is not exactly { model ideal; }
 tutorials/plant/ChemicalPlantTutorial/constant/propertyDict	extra top-level key(s): transport
@@ -11,7 +9,6 @@ tutorials/plant/lithiumBrinePlant/sectors/CARBONATION/constant/propertyDict	no s
 tutorials/plant/lithiumBrinePlant/sectors/EXTRACTION/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
 tutorials/plant/lithiumBrinePlant/sectors/FINISHING/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
 tutorials/plant/lithiumBrinePlant/sectors/HOTAIR/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
-tutorials/plant/polycaprolactonePlant/constant/propertyDict	now T1-eligible (its nested dicts were retired upstream) but OUTSIDE the batch/ctrl cohort mandate 2026-07-17 -- conversion reverted, left for the steady follow-up
 tutorials/plant/sugarPlantEconomicsSweep/constant/propertyDict	case has system/outerDict (choupoSolve refuses: outerDriver + builder propertyPackage is not yet wired -- the driver mutates the flat thermoDict)
 tutorials/props/compare/compare_transport_water/constant/propertyDict	extra top-level key(s): phase
 tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl/constant/propertyDict	extra top-level key(s): phase

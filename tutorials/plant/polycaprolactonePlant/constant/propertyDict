@@ -1,7 +1,0 @@
-// Self-DESCRIBING (inline manifest): the three components live in this case's constant/components/
-// (illustrative teaching data, clearly labelled in each .dat).  Ideal models —
-// the chain statistics come from the PFR's polymer{} block, not from a γ-φ model.
-components       ( hydroxyhexanoicAcid  pclRepeat  water );
-
-activityModel    { model  ideal; }
-equationOfState  { model  idealGas; }
