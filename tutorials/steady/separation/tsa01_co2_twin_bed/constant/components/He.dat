@@ -1,0 +1,46 @@
+// [imported] origin "data/standards/components/He.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Helium  (He, CAS 7440-59-7)
+
+  Monatomic noble gas; the lowest-Tc substance on the periodic table
+  (Tc = 5.19 K).  Used as a tracer gas, a low-temperature refrigerant,
+  and a process inert in semiconductor manufacturing.  In Choupo,
+  most relevant as a true inert in high-T GibbsReactor cases.
+  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
+  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
+  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
+  Gordon-Reno 1993).
+\*---------------------------------------------------------------------------*/
+
+name        He;
+formula     He;
+CAS         7440-59-7;
+
+MW          4.0026;            // kg/kmol
+Tc          5.19;               // K
+Pc          2.27;               // bar
+omega       -0.390;             // [-]  (the most negative omega in the periodic table)
+Tb          4.22;               // K
+HvapTb      83;                 // J/mol
+Vliq        3.20e-5;            // m^3/mol
+
+standardThermochemistry
+{
+    dHf_298    0.0;             // J/mol  -- element in its standard state
+    s_298      126.15;          // J/(mol·K)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (1.5982   8.595   1.000);
+    Trange        (1  5);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Monatomic: Cp = 5/2 R = 20.79 J/(mol·K) independent of T.
+    coefficients  (20.79   0.0   0.0   0.0);
+    Trange        (250  6000);
+}
