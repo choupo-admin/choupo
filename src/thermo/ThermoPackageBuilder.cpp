@@ -899,10 +899,24 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
         // canonical transport hierarchy, so a gammaPhi+transport system is
         // emitted in the FLAT shape (same models, same physics) -- the
         // builder manifest path has no transport slots beyond one word.
-        if (v2->found("transport"))
+        // G4 (Codex-ratified 2026-07-18): a top-level pureFluids{} override
+        // rides the SAME flat emission, verbatim -- IF97 is a MULTI-property
+        // surface (equilibrium dome, h/s/Cp, volume, transport), so it is a
+        // per-component route override orthogonal to the capability blocks,
+        // never nested under one of them.
+        if (v2->found("transport") || v2->found("pureFluids"))
         {
-            auto tr = v2->subDict("transport");
+            if (pairsOut)
+                throw std::runtime_error("thermophysicalPropertySystem:"
+                    " binaryParameters combined with transport/pureFluids"
+                    " -- the flat emission would DROP the declared pairs"
+                    " silently; this combination needs its own wiring"
+                    " (name the case, do not guess).");
             auto flatT = std::make_shared<Dictionary>("transport");
+            DictPtr tr = v2->found("transport") ? v2->subDict("transport")
+                                                : nullptr;
+            if (tr)
+            {
             struct Map { const char* v2phase; const char* v2prop; const char* v1key; };
             static const Map maps[] = {
                 {"vapour", "viscosity",           "viscosity"},
@@ -929,17 +943,36 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
                 mb->insert("model", pb->entryValue("model"));
                 flatT->insert(mrow.v1key, EntryValue(mb));
             }
+            }
             std::ostringstream ft;
             ft << "components ( ";
             for (const auto& c : v2->lookupWordList("components")) ft << c << " ";
             ft << ");\nactivityModel { model " << model << "; }\n"
                << "equationOfState { model idealGas; }\n";
             auto flat = Dictionary::fromString(ft.str(), "translateV2.flatTransport");
-            flat->insert("transport", EntryValue(flatT));
-            announce("equilibrium gammaPhi + transport (T13): " + model
+            if (tr) flat->insert("transport", EntryValue(flatT));
+            if (v2->found("pureFluids"))
+            {
+                flat->insert("pureFluids", v2->entryValue("pureFluids"));
+                std::string names;
+                for (const auto& k : v2->subDict("pureFluids")->keys())
+                    names += (names.empty() ? "" : ", ") + k;
+                announce("pureFluids override (" + names + "): the declared"
+                         " surface REPLACES the component-correlation routes"
+                         " it covers -- saturation dome (Psat), caloric"
+                         " (h/s/Cp), volumetric (v/rho) and transport, on"
+                         " that component only (readFromDict announces the"
+                         " model + datum per component).");
+            }
+            if (tr)
+                announce("equilibrium gammaPhi + transport (T13): " + model
                      + " liquid gamma, idealGas vapour; per-property transport"
                      " sub-blocks mapped onto the canonical hierarchy"
                      " (vapour/liquid/interface -> gas/liquid/sigma slots).");
+            else
+                announce("equilibrium gammaPhi: liquid activity." + model
+                     + "; vapour idealGas (flat emission for the pureFluids"
+                     " override).");
             return flat;
         }
         pm->insert("liquid", "activity." + model);

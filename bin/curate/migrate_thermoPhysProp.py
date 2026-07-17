@@ -400,7 +400,7 @@ def classify(dict_path):
               for k, kind, span, payload in entries}
 
     allowed = {"components", "activityModel", "equationOfState",
-               "transport", "solvent", "solutes", "phase"}
+               "transport", "solvent", "solutes", "phase", "pureFluids"}
     extra = [k for k in keys if k not in allowed]
     if extra:
         return ('skip', "extra top-level key(s): %s" % " ".join(sorted(extra)))
@@ -503,6 +503,39 @@ def classify(dict_path):
                                 "extra transport keys)" % k)
             transport[k] = inner[0][3]
 
+    # -- G4 (Codex-ratified 2026-07-18): pureFluids{} rides VERBATIM as a
+    #    top-level v2 override (a multi-property surface -- IF97 covers dome,
+    #    caloric, volume, transport -- so it is orthogonal to the capability
+    #    blocks, never nested under one).  Strict shape: each entry is a
+    #    component with exactly { method <word>; }.
+    pure_fluids_verbatim = None
+    if "pureFluids" in by_key:
+        kind, pf_span, pf_body = by_key["pureFluids"]
+        if kind != 'block':
+            return ('skip', "pureFluids is not a { ... } block")
+        try:
+            pf_entries = entries_of_block(stripped, pf_body)
+        except ValueError as e:
+            return ('skip', "unparseable pureFluids block (%s)" % e)
+        for k, ekind, espan, payload in pf_entries:
+            if k not in component_names:
+                return ('skip', "pureFluids names '%s' which is not a"
+                                " component" % k)
+            if ekind != 'block':
+                return ('skip', "pureFluids '%s' is not a { ... } block" % k)
+            try:
+                inner = entries_of_block(stripped, payload)
+            except ValueError as e:
+                return ('skip', "unparseable pureFluids '%s' (%s)" % (k, e))
+            if len(inner) != 1 or inner[0][0] != "method" \
+                    or inner[0][1] != 'scalar':
+                return ('skip', "pureFluids '%s' is not exactly"
+                                " { method <word>; }" % k)
+        if pair_decls:
+            return ('skip', "pureFluids + binaryPairs: the flat emission"
+                            " would drop the pairs (translateV2 refuses)")
+        pure_fluids_verbatim = original[pf_span[0]:pf_span[1]]
+
     # -- diluteSolution cohort (flat Henry) ---------------------------------
     if "solvent" in by_key or "solutes" in by_key:
         if "solvent" not in by_key:
@@ -551,7 +584,7 @@ def classify(dict_path):
 
     # -- gamma-phi cohorts (T1 / T2 [+ T13 transport]) ----------------------
     return ('ok', emit_gamma_phi(components_verbatim, model, pair_decls,
-                                 transport))
+                                 transport, pure_fluids_verbatim))
 
 
 # ---------------------------------------------------------------------------
@@ -579,7 +612,8 @@ def emit_transport(transport):
     return out
 
 
-def emit_gamma_phi(components_verbatim, model, pair_decls, transport):
+def emit_gamma_phi(components_verbatim, model, pair_decls, transport,
+                   pure_fluids_verbatim=None):
     if model == "ideal":
         header = HEADER_T1
         liquid = ("    liquid\n"
@@ -611,7 +645,12 @@ def emit_gamma_phi(components_verbatim, model, pair_decls, transport):
             + liquid + "\n"
             + "    vapour\n    {\n        fugacityModel idealGas;\n    }\n"
             + "}\n"
-            + emit_transport(transport))
+            + emit_transport(transport)
+            + ("\n// Per-component multi-property surface override (dome +"
+               " caloric + volume\n// + transport on the named component) --"
+               " orthogonal to the blocks above.\n"
+               + pure_fluids_verbatim + "\n"
+               if pure_fluids_verbatim else ""))
 
 
 def emit_dilute(components_verbatim, solvent, solutes):
