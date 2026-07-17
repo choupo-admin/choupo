@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/NaHCO3aq.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species NaHCO3aq; ion "NaHCO3"; z 0; masters ( { ion Na; nu 1; } { ion HCO3; nu 1; } );
+      logK25 -0.433; dH 11400; analytic ( -3.589 0.00794 273 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: with -gamma, from calcite solubilities in NaCl";
+

@@ -1,0 +1,14 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "species/aqueous/Fep3.dat"; }
+recordType modelSpecies;   // model species -- summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+// extracted by choupo-import from data/standards/species/aqueous.dat (per-record snapshot form)
+
+name    Fep3;
+ion     "Fe+3";
+charge  +3;
+MW { value 55.845; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -48500; unit J/mol;}
+sAq  { value -315.9;  unit J/mol/K;}
+}

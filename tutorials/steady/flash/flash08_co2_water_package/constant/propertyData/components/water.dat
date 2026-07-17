@@ -1,0 +1,151 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "components/water.dat"; }
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Water  (H2O, CAS 7732-18-5)
+  Warning: Antoine fit accurate for 273-373 K only.
+           Above ~373 K use steam tables or a proper EoS (IAPWS).
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), the Antoine
+           fit, the Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).  K_b/K_f
+           and the Andrade/Vogel viscosity fits repeat the same pending
+           re-citation at their blocks; UNIQUAC r,q are the van der Waals
+           values (Abrams-Prausnitz) as used by Popken 2000, Table 2.
+\*---------------------------------------------------------------------------*/
+
+name        water;
+formula     H2O;
+CAS         7732-18-5;
+
+MW          18.015;
+Tc          647.14;
+Pc          220.64;
+omega       0.3449;
+Tb          373.15;
+HvapTb      40660;
+Vliq        1.807e-5;
+diffusionVolume  13.1;          // Fuller diffusion volume [-]
+
+
+standardThermochemistry
+{
+    dHf_298   -241826.0;        // J/mol  -- ideal-gas reference
+    s_298     188.834;         // J/(mol·K)  -- third-law absolute
+}
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.40221   1838.675   -31.737);
+    Trange        (273  373);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (32.243   1.924e-3   1.0555e-5   -3.596e-9);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (75.5);
+    Trange        (273  373);
+}
+
+// Ebulioscopic / cryoscopic constants for water (v0.28+):
+//   K_b = 0.512 K * kg / mol  (boiling-point elevation, ΔT = K_b · m)
+//   K_f = 1.853 K * kg / mol  (freezing-point depression, ΔT = K_f · m)
+// Reference: individual literature values -- primary re-citation pending (IST review).
+ebulioscopic
+{
+    K_b   0.512;
+    K_f   1.853;
+}
+
+// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
+// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
+// fitted to literature mu(T) over ~10-100 degC.
+associationFactor  2.6;
+liquidViscosity
+{
+    andrade { A -13.03; B 1796.1; }
+    vogel   { A -10.5366; B 541.4; C 144.0; }
+}
+
+groups
+{
+    unifac ( { group H2O; count 1; } );
+}
+
+uniquac
+{
+    r   0.9200;
+    q   1.4000;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-1076-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7732-18-5";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        43.26928;
+        volume      25.73454;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.633945731595672
+            2.37761900179846
+            2.96856453401069
+            1.44455552560136
+            1.82204175422228
+            2.00355417508450
+            2.54564325007972
+            1.95869731379855
+            0.996725046164532
+            0.401363667644232
+            0.487173310652182
+            1.16535469657945
+            0.803501491504950
+            1.34866749331213
+            6.087300795129380E-002
+            1.852757905839252E-002
+            0.836695456381842
+            1.07831423996057
+            0.499516266810168
+            1.15689095262957
+            0.733891941014743
+            0.706732990947829
+            1.39022210273648
+            0.917417664068398
+            1.44266097719390
+            0.433118284033373
+            0.950353682683297
+            1.22948395992861
+            2.30884786507680
+            2.32448781457174
+            2.72211829071641
+            1.36818069695619
+            2.05339247450154
+            8.014676073014779E-002
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
+}

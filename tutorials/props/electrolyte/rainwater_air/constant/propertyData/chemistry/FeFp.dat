@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/FeFp.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species FeFp; ion "FeF+"; z +1; masters ( { ion Fe; nu 1; } { ion F; nu 1; } );
+      logK25 1; source "USGS PHREEQC phreeqc.dat (public domain)";
+

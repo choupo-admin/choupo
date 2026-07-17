@@ -489,8 +489,13 @@ inline bool ionAqReference(const std::string& cation, const std::string& anion,
 inline bool crissCobbleNodes(const std::string& cation, const std::string& anion,
                              double nu_c, double nu_a, double nodes[5])
 {
-    const fs::path f = fs::path(Database::currentRoot())
-                     / "standards" / "parameters" / "electrolyte" / "crissCobble.dat";
+    // Case snapshot FIRST (Choupo-2607 sealed cases): the frozen copy under
+    // constant/propertyData/ -- a hidden/absent installation catalogue must
+    // not silently degrade the ion Cp(T) tier of a sealed case.
+    fs::path f = caseSnapshotPath("parameters/electrolyte/crissCobble.dat");
+    if (f.empty())
+        f = fs::path(Database::currentRoot())
+          / "standards" / "parameters" / "electrolyte" / "crissCobble.dat";
     if (!fs::exists(f)) return false;
     auto d = parsedOnce(f);
     DictPtr ec = nullptr, ea = nullptr;

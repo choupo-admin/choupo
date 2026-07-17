@@ -1,0 +1,25 @@
+/*----------------------------------------------------------*\
+  constant/propertyData/manifest.dat -- frozen property snapshot
+  Imported by `choupo-import` from the Choupo-2607 catalogue release.
+  SEALED: the runtime reads ONLY this snapshot (+ the plant snapshot
+  it cascades to); the installation catalogue is NEVER consulted.
+\*----------------------------------------------------------*/
+
+propertyDataManifest
+{
+    defaultStandardSet  Choupo-2607;
+    importedAt          "2026-07-17";
+    sealed              true;
+    importedBy { engineVersion "Choupo-2607"; }
+    records
+    {
+        "components/NaCl.dat" { kind standard; standardSet Choupo-2607; sha256 "396030388adb579cbf5426a8b47e13ad533ce5baf37c1fee1e1d4d8412fd5ff8"; }
+        "components/water.dat" { kind standard; standardSet Choupo-2607; sha256 "d3ba86ed300090d5f1fb935205b08ca0c916345329a95b2d954394b1a7debd78"; }
+        "methods/pitzer.dat" { kind standard; standardSet Choupo-2607; sha256 "a8254660492b25429b9a1b3117642e9dc4df8446dea89188e5b07f0131751392"; }
+        "parameters/Pitzer/pairs/Na-Cl.dat" { kind standard; standardSet Choupo-2607; sha256 "6963f6672f1fe5b37e7162612fa70fde56cb68a37bb7e8c1dd90d8c230bca3d5"; }
+        "parameters/eNRTL/Na-Cl.dat" { kind standard; standardSet Choupo-2607; sha256 "87321fc24e3ad63f47cff1f6812e3431903eba0545a61c889566ffc8b162fb46"; }
+        "parameters/electrolyte/crissCobble.dat" { kind standard; standardSet Choupo-2607; sha256 "ca75f4007018401a6c8b01b2710e23f1a7fade36a70ac8c49be4454f8ec123c8"; }
+        "species/aqueous/Cl.dat" { kind standard; standardSet Choupo-2607; sha256 "d0de61c1cad09bb589c70f95b50ffd43cab3b0bd3937a2396f4a2d4ed6a79262"; }
+        "species/aqueous/Na.dat" { kind standard; standardSet Choupo-2607; sha256 "4d4f2dd2cba61f8da5c402a3883b6ce7896493a4661a8ba6694d372fb15f0913"; }
+    }
+}

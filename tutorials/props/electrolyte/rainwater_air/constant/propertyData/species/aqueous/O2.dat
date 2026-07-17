@@ -1,0 +1,9 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "species/aqueous/O2.dat"; }
+recordType modelSpecies;   // model species -- summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+// extracted by choupo-import from data/standards/species/aqueous.dat (per-record snapshot form)
+
+name    O2;
+ion     "O2";
+charge  0;
+MW { value 31.999; unit g/mol;}

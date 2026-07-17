@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/HF2m.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species HF2m; ion "HF2-"; z -1; masters ( { ion H; nu 1; } { ion F; nu 2; } );
+      logK25 3.76; dH 19037.2; source "USGS PHREEQC phreeqc.dat (public domain)";
+

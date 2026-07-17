@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/CO3.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species CO3; ion "CO3-2"; z -2; masters ( { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 -10.329; dH 14899.2; analytic ( -107.8871 -0.03252849 5151.79 38.92561 -563713.9 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+

@@ -54,20 +54,35 @@ std::map<std::string, HenrysLaw>& registry()
 
 void HenrysLawRegistry::loadFrom(const std::string& dataRoot)
 {
-    fs::path dir = fs::path(dataRoot) / "standards" / "parameters" / "Henry";
-    if (!fs::exists(dir)) return;
-
-    for (auto& e : fs::directory_iterator(dir))
+    auto scan = [](const fs::path& dir)
     {
-        if (!e.is_regular_file()) continue;
-        if (e.path().extension() != ".dat") continue;
-        auto d = Dictionary::fromFile(e.path().string());
-        HenrysLaw h;
-        h.readFromDict(d);
-        if (h.solute().empty() || h.solvent().empty())
-            throw std::runtime_error("HenrysLawRegistry: file '"
-                + e.path().string() + "' lacks `solute` or `solvent`");
-        registry()[key(h.solute(), h.solvent())] = std::move(h);
+        if (!fs::exists(dir)) return;
+        for (auto& e : fs::directory_iterator(dir))
+        {
+            if (!e.is_regular_file()) continue;
+            if (e.path().extension() != ".dat") continue;
+            auto d = Dictionary::fromFile(e.path().string());
+            HenrysLaw h;
+            h.readFromDict(d);
+            if (h.solute().empty() || h.solvent().empty())
+                throw std::runtime_error("HenrysLawRegistry: file '"
+                    + e.path().string() + "' lacks `solute` or `solvent`");
+            registry()[key(h.solute(), h.solvent())] = std::move(h);
+        }
+    };
+    scan(fs::path(dataRoot) / "standards" / "parameters" / "Henry");
+    // Case SNAPSHOT (Choupo-2607 sealed cases): the frozen copy under
+    // constant/propertyData/parameters/Henry/, walking UP the cascade from the
+    // case cwd (loadFrom runs after the binary enters the case directory).
+    // Scanned AFTER the catalogue so the case's own record wins.
+    fs::path p = fs::current_path();
+    for (int up = 0; up < 8; ++up)
+    {
+        fs::path cand = p / "constant" / "propertyData" / "parameters" / "Henry";
+        if (fs::exists(cand)) { scan(cand); break; }
+        fs::path par = p.parent_path();
+        if (par == p) break;
+        p = par;
     }
 }
 

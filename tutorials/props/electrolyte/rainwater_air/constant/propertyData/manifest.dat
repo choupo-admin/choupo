@@ -1,0 +1,133 @@
+/*----------------------------------------------------------*\
+  constant/propertyData/manifest.dat -- frozen property snapshot
+  Imported by `choupo-import` from the Choupo-2607 catalogue release.
+  SEALED: the runtime reads ONLY this snapshot (+ the plant snapshot
+  it cascades to); the installation catalogue is NEVER consulted.
+\*----------------------------------------------------------*/
+
+propertyDataManifest
+{
+    defaultStandardSet  Choupo-2607;
+    importedAt          "2026-07-17";
+    sealed              true;
+    importedBy { engineVersion "Choupo-2607"; }
+    records
+    {
+        "chemistry/BaCO3aq.dat" { kind standard; standardSet Choupo-2607; sha256 "0ae29f40f2d30f2fd4be46af2786f6b6c8db7d971bbfa858375b724488a0014b"; }
+        "chemistry/BaHCO3p.dat" { kind standard; standardSet Choupo-2607; sha256 "c40f36730a9a4cf14462d3817a5ceb82c3b279ff05b72719b9980c680632f4cd"; }
+        "chemistry/BaOHp.dat" { kind standard; standardSet Choupo-2607; sha256 "4058c52bad47961763811380de2a7b6fa16ed9ebfc01f758b3ad4a31a5f304d5"; }
+        "chemistry/BaX2.dat" { kind standard; standardSet Choupo-2607; sha256 "3bf54f3dd15891f61beeed75298906f906b73a6d17d0ef2a4d8d16144fe12f65"; }
+        "chemistry/CH4.dat" { kind standard; standardSet Choupo-2607; sha256 "537743a6e7ff4c51718334222803c77b368a7a862d562fb0e83e897621522685"; }
+        "chemistry/CO2.dat" { kind standard; standardSet Choupo-2607; sha256 "27068ff8da719894c36f6e0c983534188535b353f7d401b8b29bc4f89c79fc34"; }
+        "chemistry/CO2aq.dat" { kind standard; standardSet Choupo-2607; sha256 "c216152de4b96af108e07fb98f440a7614a3c54c2f36acbdd54edb0c1c159431"; }
+        "chemistry/CO3.dat" { kind standard; standardSet Choupo-2607; sha256 "5acef07d28e6aaa1bcc2fe5d42a655710867277a0891eaea9c5afc4278b72bae"; }
+        "chemistry/CaCO3aq.dat" { kind standard; standardSet Choupo-2607; sha256 "cb9272d1012d795eb030f30944bee0f09fea0da61e223e6db4e35c036bf0c06f"; }
+        "chemistry/CaHCO3p.dat" { kind standard; standardSet Choupo-2607; sha256 "73f5e3e6ac52b2fb650cb0524a514e176cc1f59ede871de39bcdccc36334f5ac"; }
+        "chemistry/CaHSO4p.dat" { kind standard; standardSet Choupo-2607; sha256 "d389407a041162d9df9846a2c5753809ba7e604113abc64e81e9d3bbaf113a3b"; }
+        "chemistry/CaOHp.dat" { kind standard; standardSet Choupo-2607; sha256 "64c99e69773423eda24ef31cb090605612a19fc1492b3c95ff2d156684611260"; }
+        "chemistry/CaSO4aq.dat" { kind standard; standardSet Choupo-2607; sha256 "ba090611dfee1c0200786f0c5e120b101184a702e4212b6bec9399b7e987557a"; }
+        "chemistry/CaX2.dat" { kind standard; standardSet Choupo-2607; sha256 "2e134553d625c53bcf357453ef1a68ab99735927a6b73219ff83e12fafac60bb"; }
+        "chemistry/FeCO3aq.dat" { kind standard; standardSet Choupo-2607; sha256 "58696b2dcce8bcb472b63dc4b71646cc02f6adb354266e719b8d473739638706"; }
+        "chemistry/FeClp.dat" { kind standard; standardSet Choupo-2607; sha256 "c3e702d376530dbc2195323d720699f584f6ec983700cf2ff73b8f7ffac5972b"; }
+        "chemistry/FeFp.dat" { kind standard; standardSet Choupo-2607; sha256 "81aef9ad9295d28392309a330a8349cc4edec122ecbda96a6c8153f533420abb"; }
+        "chemistry/FeHCO3p.dat" { kind standard; standardSet Choupo-2607; sha256 "25e69e40a1c193aafb98e1813e079c950a841bab6679c447ee4999b7f18c5fcf"; }
+        "chemistry/FeHSO4p.dat" { kind standard; standardSet Choupo-2607; sha256 "5a35bb593175efba30bf64d898d6070edfbc4c703f6b99bb76bcd64e1197bc87"; }
+        "chemistry/FeOH2aq.dat" { kind standard; standardSet Choupo-2607; sha256 "bbb6dbd8471a9fb2e8ae646385308222d1194b7ae6127911dc2f52b6f3b4e7a3"; }
+        "chemistry/FeOH3m.dat" { kind standard; standardSet Choupo-2607; sha256 "5aefe92607e7cad7f61b710a9824b28fbf8c46b5311a7801a03edc99c96e68f6"; }
+        "chemistry/FeOHp.dat" { kind standard; standardSet Choupo-2607; sha256 "25dbc96bd27c2585f381abbe15eccdadc6c2c6ce1c8fb05fa6614438f9c8ad67"; }
+        "chemistry/FeSO4aq.dat" { kind standard; standardSet Choupo-2607; sha256 "80813da1fcb75adff2b3e5449f75c0fd3dd817440d372490cde53cd374744609"; }
+        "chemistry/H2.dat" { kind standard; standardSet Choupo-2607; sha256 "ac43c3a2f29d5898487c171b99cfca6307a1aae1dac65f9b855f7a5ac302c1ee"; }
+        "chemistry/H2O.dat" { kind standard; standardSet Choupo-2607; sha256 "3db73dfdb7b99495dbbf7386cc0a701b3122081c3e7f345d8703720752882843"; }
+        "chemistry/H2PO4.dat" { kind standard; standardSet Choupo-2607; sha256 "0e53c609fb4774a2715fcc90db0d870235f19eddbcb5c3d8a1c699ffc3e31030"; }
+        "chemistry/H2S.dat" { kind standard; standardSet Choupo-2607; sha256 "3225e9c979e3df4bad7734b8a71da1ba915bfc8f396ef65c2ca9b79add3c8624"; }
+        "chemistry/H2SiO4m2.dat" { kind standard; standardSet Choupo-2607; sha256 "ee11c456621278875bbeaa588bc4541c90056b521b319e2ebad68b6bd8f2f4dc"; }
+        "chemistry/H3PO4.dat" { kind standard; standardSet Choupo-2607; sha256 "9b629712c62aa8a935f331f7d4f268096b179c0b255c6809338ec1824b6e2b32"; }
+        "chemistry/H3SiO4m.dat" { kind standard; standardSet Choupo-2607; sha256 "656c3707b4f4f634210efd986ae48e6aef17a7e5d7384b7d422ecc8a28b85634"; }
+        "chemistry/HClaq.dat" { kind standard; standardSet Choupo-2607; sha256 "1679e6eedd9f071e298263f26dd2f5f01c8e23d338b6183e3d339779af907965"; }
+        "chemistry/HF2m.dat" { kind standard; standardSet Choupo-2607; sha256 "fa35fb40d3bba281bbb07f0238756108b76014bc2093a2ca2359425af13f55db"; }
+        "chemistry/HFaq.dat" { kind standard; standardSet Choupo-2607; sha256 "18b7b3484638a7566189cc2fad7bc4169fb1a7f973eba099d55fd08d1ea31ec8"; }
+        "chemistry/HPO4.dat" { kind standard; standardSet Choupo-2607; sha256 "3f6257f2012d8890d909187b1d297948162c52fa92012c2559db8d0697f6bfb0"; }
+        "chemistry/HSO4.dat" { kind standard; standardSet Choupo-2607; sha256 "510e0188692952b1a4b9cff9c93ffbadb8791a699a4608fa0cc9555294f597b7"; }
+        "chemistry/KFaq.dat" { kind standard; standardSet Choupo-2607; sha256 "9812049f55bc5ce3ed1af08ea912e6d580749d531e020db15474e651689aedac"; }
+        "chemistry/KHCO3aq.dat" { kind standard; standardSet Choupo-2607; sha256 "9964d4f1956a5cdbb813517f7a37d278fecef144d4ab7dba338400b01f237bb9"; }
+        "chemistry/KSO4m.dat" { kind standard; standardSet Choupo-2607; sha256 "2e24feca03ae78db1cdb43fcb05191c4c402d6b2f81b37146bc9d50b57e7e6f1"; }
+        "chemistry/KX.dat" { kind standard; standardSet Choupo-2607; sha256 "ffa4cf50e546348e9e6fd2530cc070b0d5a93ffa5568148fbd59fe9fd63b8f2e"; }
+        "chemistry/MgCO3aq.dat" { kind standard; standardSet Choupo-2607; sha256 "bb6235242e1026c7cfcd3366f5df00e902a577b2b8008b4bbdee58b0c8331165"; }
+        "chemistry/MgFp.dat" { kind standard; standardSet Choupo-2607; sha256 "b1cb4b777e938f3067406ef997e069e6d982dd9bd8f1d5c7d4386d1a3416ab86"; }
+        "chemistry/MgHCO3p.dat" { kind standard; standardSet Choupo-2607; sha256 "61696bea88a659cc256d8295ea32c371cda42a7888189b3d238442e678947cd7"; }
+        "chemistry/MgOH.dat" { kind standard; standardSet Choupo-2607; sha256 "fe4584ad211f6856377598b31b297593adbdb2b45598ea1812e4ed491c5720d8"; }
+        "chemistry/MgSO42m2.dat" { kind standard; standardSet Choupo-2607; sha256 "c94e7e1c04f1d87644623814612eead67093f2a98f475d17fcf7ff71664ea6c2"; }
+        "chemistry/MgSO4aq.dat" { kind standard; standardSet Choupo-2607; sha256 "f02f22383e598c7bc319e40dfd896da68e1456533ce119f6de1509473280daba"; }
+        "chemistry/MgX2.dat" { kind standard; standardSet Choupo-2607; sha256 "2c406daafd6150cdccdec5342183fd66a3fd14c7c4752e2ae6434ef42da1947e"; }
+        "chemistry/MnCO3aq.dat" { kind standard; standardSet Choupo-2607; sha256 "5318dc21819c22376121783a87912af3c08f49120854838b709dfd1c9884ad75"; }
+        "chemistry/MnCl2aq.dat" { kind standard; standardSet Choupo-2607; sha256 "bfa40774e469445c4e0d592c3ae7043e42840ac412bc5fcf630cb7095ca6a2be"; }
+        "chemistry/MnCl3m.dat" { kind standard; standardSet Choupo-2607; sha256 "8945852427964c60aefc4e1fe4195c42ee96c24b6f6a78812306759bc8420ddc"; }
+        "chemistry/MnClp.dat" { kind standard; standardSet Choupo-2607; sha256 "502b67975c836b89eb134b78447a035788a65952f6fe9f44db8b2288f7f79e8b"; }
+        "chemistry/MnFp.dat" { kind standard; standardSet Choupo-2607; sha256 "42464336b0e3ea7eec44e5d19880609619708637939981b388e682741344d3ab"; }
+        "chemistry/MnHCO3p.dat" { kind standard; standardSet Choupo-2607; sha256 "d158b6d5ea9417ccda02075569f46de09174489f0f185856ec08012af15699f1"; }
+        "chemistry/MnOH3m.dat" { kind standard; standardSet Choupo-2607; sha256 "83ac92762d932c3869f0360eb4678691f8a70bf76ad24dc05c9a9085315846b9"; }
+        "chemistry/MnOHp.dat" { kind standard; standardSet Choupo-2607; sha256 "ec4a69458532b621fc62cd18848b1a096cea84f454cdfeaa607f2faa1724609e"; }
+        "chemistry/MnSO4aq.dat" { kind standard; standardSet Choupo-2607; sha256 "b5cab54d497f1c87b1b77f6e44c2d12a0082906e4d7b36614488453c5db93ebd"; }
+        "chemistry/N2.dat" { kind standard; standardSet Choupo-2607; sha256 "d59acf6dba96806ebe19e3e2c8d6562014720d6ab5b485b66f798c6a129c085c"; }
+        "chemistry/NH3.dat" { kind standard; standardSet Choupo-2607; sha256 "3219f563a725ba9b73a6c8ca36f33852e8742ee377ded4bbe26e50620a2c07a9"; }
+        "chemistry/Na2SO4aq.dat" { kind standard; standardSet Choupo-2607; sha256 "6a07a8f6f150d21c087f4fe9adc759411172f85d6b34a65448069e4fb8958dc0"; }
+        "chemistry/NaFaq.dat" { kind standard; standardSet Choupo-2607; sha256 "df29c86dc22f0f0fa60707ecf8f945dd43e9726c347421e6fdeaf93abbbaf8c8"; }
+        "chemistry/NaHCO3aq.dat" { kind standard; standardSet Choupo-2607; sha256 "e576dd486b05cef1f53afae5ef59a2fa7b60719d8d4a1a413e90ea2f806ef1ec"; }
+        "chemistry/NaSO4m.dat" { kind standard; standardSet Choupo-2607; sha256 "440f3d49c1272be8290dc7b1b2d101d32d65591e95ea8bc023e35415af8e6203"; }
+        "chemistry/NaX.dat" { kind standard; standardSet Choupo-2607; sha256 "46ea771f4aa4b46e6a1bc54033a52c26378d3b4cf02592692b006c147ee883e3"; }
+        "chemistry/O2.dat" { kind standard; standardSet Choupo-2607; sha256 "7c9bb09c63df513e368e14a43389d52de8e81683947988ebe0076d49accb8fec"; }
+        "chemistry/OH.dat" { kind standard; standardSet Choupo-2607; sha256 "8b2a577b06b9db861cdec7130b5fef7a3e02ad57aca0595795c9df4b897001e8"; }
+        "chemistry/SiF6m2.dat" { kind standard; standardSet Choupo-2607; sha256 "615836e736b4878c3bf08aa32b2a3cdb9a6f572e6668c6d1ccf7cc06284d54bc"; }
+        "chemistry/SrCO3aq.dat" { kind standard; standardSet Choupo-2607; sha256 "7450414ce3f27b3af4e670b003ab053ac2b1d2c035427fa959cfb5f9b1df5edd"; }
+        "chemistry/SrHCO3p.dat" { kind standard; standardSet Choupo-2607; sha256 "d2e044b7454210796c6b0f98eb407735270a0dbd4db76dd291699dfe30be81a7"; }
+        "chemistry/SrOHp.dat" { kind standard; standardSet Choupo-2607; sha256 "9aaa8ee273c0eaf1903526fd099a37ac43f470123f9ce4dd17969208eccf5567"; }
+        "chemistry/SrSO4aq.dat" { kind standard; standardSet Choupo-2607; sha256 "7fe760e68e8818048a922a534c81ce0742fdc213438771fe69dd31fe78c8ad93"; }
+        "chemistry/SrX2.dat" { kind standard; standardSet Choupo-2607; sha256 "ce5df83da21ae620075e4aba4c505c246ce49d24794ff7b11652288b341391ff"; }
+        "components/water.dat" { kind standard; standardSet Choupo-2607; sha256 "d3ba86ed300090d5f1fb935205b08ca0c916345329a95b2d954394b1a7debd78"; }
+        "species/aqueous/Al.dat" { kind standard; standardSet Choupo-2607; sha256 "65139a901f68bd3535a353cf88f3bb09b76af44bbbc3cca048421940c71251ba"; }
+        "species/aqueous/B3O3OH4.dat" { kind standard; standardSet Choupo-2607; sha256 "393e458d52fe0d63d46a139e0653e339bfb4ec37449b7ab441f8a6701cf41285"; }
+        "species/aqueous/B4O5OH4.dat" { kind standard; standardSet Choupo-2607; sha256 "8e04de17d0a70f20a488c4299bbf6ac7042bf86562009da51a5f98cb5c832790"; }
+        "species/aqueous/BOH4.dat" { kind standard; standardSet Choupo-2607; sha256 "53b8c36113184bee0ed46e66b1786d7ad2eae4ad7cc8c9fec68ab86cc38bd956"; }
+        "species/aqueous/Ba.dat" { kind standard; standardSet Choupo-2607; sha256 "eed36036e15bbf9393cebed07894bb70a8f4700f94bf13e3e81a8fd313aadcfd"; }
+        "species/aqueous/Br.dat" { kind standard; standardSet Choupo-2607; sha256 "6636d95363ec1d98fd37a2ddf60168920febdd91ceceef751ecf066288e18f2c"; }
+        "species/aqueous/CH4.dat" { kind standard; standardSet Choupo-2607; sha256 "09d3966edcac5f0b5d37c0608b32906938f5524066d659ed19b5edf5065599b2"; }
+        "species/aqueous/CO3.dat" { kind standard; standardSet Choupo-2607; sha256 "43c7b2b581a5451a19d8ec74e0a3fa92a8c525b1714a67b25d0b6c6c1b5a693e"; }
+        "species/aqueous/Ca.dat" { kind standard; standardSet Choupo-2607; sha256 "207d056168f68c6a2824001b29ef8a75ab0abebe2231492679f1605e43c9e983"; }
+        "species/aqueous/CaBOH4.dat" { kind standard; standardSet Choupo-2607; sha256 "b839a4610d23fc869bc0354d6b57a1de2d7074cade055c381adc63ae14f31d0b"; }
+        "species/aqueous/Cd.dat" { kind standard; standardSet Choupo-2607; sha256 "8becfa7d65b8c6ee19dd4fe401413e1355776a4f0002fe21bb66c608f373f612"; }
+        "species/aqueous/Cl.dat" { kind standard; standardSet Choupo-2607; sha256 "d0de61c1cad09bb589c70f95b50ffd43cab3b0bd3937a2396f4a2d4ed6a79262"; }
+        "species/aqueous/Cu.dat" { kind standard; standardSet Choupo-2607; sha256 "b7227acfddbb9390bf2cb82309b275d067f1dcff85a6c76988aef163e8c323d7"; }
+        "species/aqueous/Cup.dat" { kind standard; standardSet Choupo-2607; sha256 "06c19547a741694c6f46b9a3c5c045a8fc4130fd0ad464dba228571be63f797f"; }
+        "species/aqueous/F.dat" { kind standard; standardSet Choupo-2607; sha256 "ed00af4a0c2435d374132f1a2f6e9738de982710fc50b40b25385f3d2bf900fd"; }
+        "species/aqueous/Fe.dat" { kind standard; standardSet Choupo-2607; sha256 "2441756c5783ac5e1d439b5effba9af25676420405ae1363398b2c24ea6502eb"; }
+        "species/aqueous/Fep3.dat" { kind standard; standardSet Choupo-2607; sha256 "2e633369fe0df2d8c32828a46dea8130d473845277e343f6d823cec006cf6429"; }
+        "species/aqueous/H.dat" { kind standard; standardSet Choupo-2607; sha256 "55ff4a49ae971ec3162c4839260e0b3569c251ec6096166a618526eee7b7e0ad"; }
+        "species/aqueous/H2.dat" { kind standard; standardSet Choupo-2607; sha256 "2ddf26be3efa687c55670b0870bf7e1d136e5ad184c509398cfa37b4656f319b"; }
+        "species/aqueous/H3BO3.dat" { kind standard; standardSet Choupo-2607; sha256 "d6e6100eb92e82d7ea156e7e23f30b5e37830c27b0b7c818ac02f87f26dc9328"; }
+        "species/aqueous/H4SiO4.dat" { kind standard; standardSet Choupo-2607; sha256 "4246776e8a71fcefde09f6579b8f30115e0f302f52488f0e3db51541c26ceab0"; }
+        "species/aqueous/HCO3.dat" { kind standard; standardSet Choupo-2607; sha256 "88cf17856eab2bacb8e9b197c5f2dc17a85cd2ec85eeee223d92b558fddb5c85"; }
+        "species/aqueous/HS.dat" { kind standard; standardSet Choupo-2607; sha256 "7744909a1e5ec7022dafe7c7d129434627cddef3fabb81f4d32799d2c9c98890"; }
+        "species/aqueous/HSO4.dat" { kind standard; standardSet Choupo-2607; sha256 "86302deead9b46005bea79f549361261ad69a385c5c1094a062141c3a55411bf"; }
+        "species/aqueous/HTart.dat" { kind standard; standardSet Choupo-2607; sha256 "65a763fc388baaa31fc1aebcfaa490e4fc9581d3127884964d5bad0add71a47b"; }
+        "species/aqueous/K.dat" { kind standard; standardSet Choupo-2607; sha256 "4e420fcc125291ae4e937f32eabc790a305eaa27f83c882c79fc68ee7521fe2d"; }
+        "species/aqueous/Li.dat" { kind standard; standardSet Choupo-2607; sha256 "d812809536fb4e2e5fe0950de337d55d80585d5b369d7bf383e827e32a382e61"; }
+        "species/aqueous/Mg.dat" { kind standard; standardSet Choupo-2607; sha256 "9dd0143c143610a0e23e01c0109033f7989a89b54f874a93721e30780959e733"; }
+        "species/aqueous/MgBOH4.dat" { kind standard; standardSet Choupo-2607; sha256 "3ef7db4f4392dd63b8dd678f21193a9dd0e92b6a3c84dc81c485852ea8936fb4"; }
+        "species/aqueous/MgOH.dat" { kind standard; standardSet Choupo-2607; sha256 "c845a6fd8e7b1d4403c423efedf89a881749b96653c004f830f08bcdbece2d72"; }
+        "species/aqueous/Mn.dat" { kind standard; standardSet Choupo-2607; sha256 "5e78cde3d805caddf90a83ffdeb054f418e94cd7a489c8d87e0b97af3bbe934e"; }
+        "species/aqueous/Mnp3.dat" { kind standard; standardSet Choupo-2607; sha256 "22cbe6b67b7fc054e0176be855b14313e8d39af983c6461f6512d0c363b3d3e6"; }
+        "species/aqueous/N2.dat" { kind standard; standardSet Choupo-2607; sha256 "e3c5524937619b15c1471c4ca4857caf3238f6f983fac95610efd8ce8c6f87b2"; }
+        "species/aqueous/NH4.dat" { kind standard; standardSet Choupo-2607; sha256 "5282716a18af9372263d817f9024cdeea303d84c2a28e615980ed2cb0839966a"; }
+        "species/aqueous/NO2.dat" { kind standard; standardSet Choupo-2607; sha256 "ea314e83d9bbeecde40cf2f664a01e3382e82f7ee0b6cb03b0263b9a5e88a0ad"; }
+        "species/aqueous/NO3.dat" { kind standard; standardSet Choupo-2607; sha256 "6d73b9f6ac74661b3156a295ef98e53f973ef4b0d103c43ee5fade1d09d29c1d"; }
+        "species/aqueous/Na.dat" { kind standard; standardSet Choupo-2607; sha256 "4d4f2dd2cba61f8da5c402a3883b6ce7896493a4661a8ba6694d372fb15f0913"; }
+        "species/aqueous/O2.dat" { kind standard; standardSet Choupo-2607; sha256 "4bc680ec6f7e6cac130f3241eef7434f21717f88d9d66445fc8d6942d5439e99"; }
+        "species/aqueous/OH.dat" { kind standard; standardSet Choupo-2607; sha256 "8a22227652a9e002375480a443f8a152ed7593bcbc3ac907d149b037f600d655"; }
+        "species/aqueous/PO4.dat" { kind standard; standardSet Choupo-2607; sha256 "daa3f338b9e999d4937a09bf0fbb505e9de8fd6377ecb0f2c0d32751387132f1"; }
+        "species/aqueous/Pb.dat" { kind standard; standardSet Choupo-2607; sha256 "2f6e670ad8bb1ab536259e72b9f45c7080b2e5d65465660d2f267ecb7c635574"; }
+        "species/aqueous/SO4.dat" { kind standard; standardSet Choupo-2607; sha256 "e65d0a8e6c88128897ee5972e04d611daad102850483c3432a7ac611ef46a695"; }
+        "species/aqueous/Sr.dat" { kind standard; standardSet Choupo-2607; sha256 "040a379c0d8c3d60a3171ada64b2a0473fa579a498268f86f7b277cb183b7c83"; }
+        "species/aqueous/Tart.dat" { kind standard; standardSet Choupo-2607; sha256 "794ff530ad504124efbd34838e39cc208b1a13bd84f231895d98f9d067b1bfac"; }
+        "species/aqueous/Zn.dat" { kind standard; standardSet Choupo-2607; sha256 "289dee4a32ce2998fcda79f47092d4386647265e2179f7f9cfc3d57f7be265ab"; }
+    }
+}

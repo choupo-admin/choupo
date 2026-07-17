@@ -1,0 +1,15 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "species/aqueous/NO2.dat"; }
+recordType modelSpecies;   // model species -- summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+// extracted by choupo-import from data/standards/species/aqueous.dat (per-record snapshot form)
+
+name    NO2;
+ion     "NO2-";
+charge  -1;
+MW { value 46.005; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -104600; unit J/mol;}
+sAq  { value 123;  unit J/mol/K;}
+cpAq { value -97.5; unit J/mol/K;}
+}

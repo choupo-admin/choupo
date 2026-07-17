@@ -1,0 +1,14 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "species/aqueous/HCO3.dat"; }
+recordType modelSpecies;   // model species -- summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+// extracted by choupo-import from data/standards/species/aqueous.dat (per-record snapshot form)
+
+name    HCO3;
+ion     "HCO3-";
+charge  -1;
+MW { value 61.02; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -691990; unit J/mol;}
+sAq  { value 91.2;  unit J/mol/K;}
+}

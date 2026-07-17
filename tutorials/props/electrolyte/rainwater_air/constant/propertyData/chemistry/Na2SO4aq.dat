@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/Na2SO4aq.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species Na2SO4aq; ion "Na2SO4"; z 0; masters ( { ion Na; nu 2; } { ion SO4; nu 1; } );
+      logK25 -2.37; dH 82000; analytic ( 15.432 -0.00575 -4796 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: sulfates solubilities in NaCl";
+

@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/BaOHp.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species BaOHp; ion "BaOH+"; z +1; masters ( { ion Ba; nu 1; } { ion H; nu -1; } ); nuWater 1;
+      logK25 -13.47; source "USGS PHREEQC phreeqc.dat (public domain)";
+

@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/FeSO4aq.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species FeSO4aq; ion "FeSO4"; z 0; masters ( { ion Fe; nu 1; } { ion SO4; nu 1; } );
+      logK25 2.25; dH 13514.3; source "USGS PHREEQC phreeqc.dat (public domain)";
+

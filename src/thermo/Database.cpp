@@ -84,6 +84,16 @@ std::string Database::resolveRoot(const std::string& explicitRoot) const
     if (check("../../data"))    return "../../data";
     if (check("../../../data")) return "../../../data";
 
+    // SEALED case, catalogue nowhere (relocated / hidden installation): the
+    // snapshot IS the catalogue.  Return the nominal root anyway -- every
+    // loader guards with fs::exists, and the snapshot legs supply the records.
+    if (caseHasSnapshot())
+    {
+        if (const char* env = std::getenv("CHOUPO_HOME"))
+            return (fs::path(env) / "data").string();
+        return "data";
+    }
+
     throw std::runtime_error(
         "Database: cannot find data/standards/components.  "
         "Set CHOUPO_HOME or run from a directory that has 'data/' "

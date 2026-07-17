@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/FeHCO3p.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species FeHCO3p; ion "FeHCO3+"; z +1; masters ( { ion Fe; nu 1; } { ion HCO3; nu 1; } );
+      logK25 2; source "USGS PHREEQC phreeqc.dat (public domain)";
+

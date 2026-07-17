@@ -73,10 +73,11 @@ def walk_up_local(caseDir, rel):
     return None
 
 def parse_packages(caseDir):
-    # The case's property manifest is `constant/propertyDict` (preferred name) or
-    # `constant/propertyDict` (legacy alias) -- accept either.
+    # The case's property manifest: `constant/thermoPhysPropDict` (the v2
+    # thermophysicalPropertySystem contract), `constant/propertyDict` (v1) or
+    # `constant/propertyPackage` (legacy alias) -- accept any.
     pkgs = []
-    for name in ("propertyDict", "propertyPackage"):
+    for name in ("thermoPhysPropDict", "propertyDict", "propertyPackage"):
         for pp in Path(caseDir).rglob("constant/" + name):
             pkgs.append(pp)
     return pkgs
@@ -102,6 +103,111 @@ def main():
     global STANDARD_SET
     STANDARD_SET = _read_release(root)
     std = root / "data" / "standards"
+
+    # ---- aqueous model-species catalogue: per-record extraction ------------
+    # The standards store the aqueous model species as ONE catalogue
+    # (species/aqueous.dat, `aqueousSpecies ( {...} ... )`), but the runtime's
+    # SEALED leg reads per-file records -- caseSnapshotPath("species/aqueous/
+    # <ion>.dat"), bridged by bridgeTrueIon (SaltFromCatalogue.H).  The import
+    # therefore EXTRACTS each record into the per-file snapshot form (same
+    # fields, comments stripped, recordType modelSpecies header).
+    def parse_aqueous_catalogue():
+        out = {}
+        cat = std / "species" / "aqueous.dat"
+        if not cat.is_file():
+            return out
+        txt = cat.read_text()
+        m = re.search(r'aqueousSpecies\s*\(', txt)
+        if not m:
+            return out
+        i, depth = m.end(), 1
+        while i < len(txt):
+            c = txt[i]
+            if c == '{':
+                d, j = 0, i
+                while j < len(txt):
+                    if txt[j] == '{': d += 1
+                    elif txt[j] == '}':
+                        d -= 1
+                        if d == 0: break
+                    j += 1
+                body  = txt[i+1:j]
+                clean = re.sub(r'/\*.*?\*/', '', body, flags=re.S)
+                clean = re.sub(r'^\s*//.*$', '', clean, flags=re.M)
+                lines = [l.rstrip() for l in clean.splitlines() if l.strip()]
+                if lines:
+                    pad = min(len(l) - len(l.lstrip()) for l in lines)
+                    lines = [l[pad:] if len(l) >= pad else l for l in lines]
+                nm = re.search(r'\bname\s+([A-Za-z0-9_+\-]+)\s*;', clean)
+                zm = re.search(r'\bcharge\s+([+\-]?\d+)\s*;', clean)
+                if nm:
+                    rec = ("recordType modelSpecies;   // model species -- "
+                           "summoned by a property method; never placed in a flowsheet\n"
+                           "schemaVersion 1;\n"
+                           "// extracted by choupo-import from "
+                           "data/standards/species/aqueous.dat (per-record snapshot form)\n\n"
+                           + "\n".join(lines) + "\n")
+                    out[nm.group(1)] = (int(zm.group(1)) if zm else 0, rec)
+                i = j + 1
+                continue
+            elif c == '(':
+                depth += 1
+            elif c == ')':
+                depth -= 1
+                if depth == 0: break
+            i += 1
+        return out
+
+    AQ = parse_aqueous_catalogue()
+
+    SPECIATION_KINDS = ("aqueousSpeciation", "gasLiquidEquilibrium",
+                        "ionExchangeEquilibrium")
+
+    def want_speciation_closure(want):
+        # T8 (aqueousProperties): the SpeciationSolver scans the WHOLE
+        # chemistry/ home (recordType-filtered) and resolves master ions by
+        # name -- so the sealed copy carries the full family sets (the sealed
+        # run loads a byte-identical network) + every aqueous species record.
+        chem = std / "chemistry"
+        if chem.is_dir():
+            for f in sorted(chem.glob("*.dat")):
+                m = re.search(r'\brecordType\s+([A-Za-z]+)\s*;', f.read_text())
+                if m and m.group(1) in SPECIATION_KINDS:
+                    want("chemistry/" + f.name)
+        for ion in sorted(AQ):
+            want("species/aqueous/" + ion + ".dat")
+
+    def harvest_v2(text, want):
+        # v2 thermophysicalPropertySystem -- mirror what the runtime resolves
+        # (ThermoPackageBuilder::translateV2 + the branch builders):
+        # (1) every declared parameter record (equilibrium.liquid.activityModel
+        #     .binaryParameters / equationOfState.binaryInteractions /
+        #     solutes.binaryParameters): `source "data/standards/<rel>";`
+        for m in re.finditer(r'source\s+"[^"]*?data/standards/([^"]+)"', text):
+            want(m.group(1))
+        eq = block(text, "equilibrium") or ""
+        fm = re.search(r'\bformulation\s+([A-Za-z]+)\s*;', eq)
+        form = fm.group(1) if fm else ""
+        # (2) the method records the branch builders load + echo
+        if form == "diluteSolution":
+            want("methods/henryDilute.dat")            # buildSolutionHenry
+        if form == "electrolyteGammaPhi":               # buildElectrolyte
+            am = block(eq, "activityModel") or ""
+            mm = re.search(r'\bmodel\s+([A-Za-z]+)\s*;', am)
+            want("methods/" + ("eNRTL" if mm and mm.group(1) == "eNRTL"
+                               else "pitzer") + ".dat")
+        # (3) chemistry.salts rides inline on v2 too (transitional block):
+        #     the salt's anchor / solid records (absence-tolerant -- the
+        #     UNIFIED component solidPhases{} carries them since Migration 5)
+        ch = block(text, "chemistry")
+        if ch:
+            sb = block(ch, "salts")
+            for salt in (words(sb) if sb else []):
+                want("chemistry/salts/" + salt + ".dat")
+                want("phases/solid/" + salt + ".dat")
+        # (4) T8: the aqueous-speciation surface (speciate/scalingScan ops)
+        if block(text, "aqueousProperties") is not None:
+            want_speciation_closure(want)
 
     def harvest(text, want):
         # Method / chemistry / parameter records declared by a block -- shared
@@ -141,6 +247,13 @@ def main():
                 # case-local NaCl.dat that adds only a molecular liquid Cp --
                 # with no base once relocated away from data/standards.
                 recs[rel] = src
+                return
+            # species/aqueous/<ion>.dat has NO per-file standard source (the
+            # catalogue is ONE file) -- extract the record into the per-file
+            # form the sealed runtime leg reads (bridgeTrueIon).
+            m = re.match(r'species/aqueous/([A-Za-z0-9_+\-]+)\.dat$', rel)
+            if m and m.group(1) in AQ:
+                recs[rel] = AQ[m.group(1)][1]
             # else: purely case-local record (no standard source) -- left in place
         t = read(pp) or ""
         comp_blk = block(t, "components")
@@ -151,21 +264,36 @@ def main():
             csrc = std / "components" / (c + ".dat")
             loc = walk_up_local(caseDir, "components/"+c+".dat")
             ctext = read(csrc) or (read(loc) if loc else "") or ""
-            d2t = block(ctext, "dissociatesTo")
+            # component-basis ion map: UNIFIED component.speciesMap or the
+            # legacy top-level dissociatesTo (speciesMapOf, builder-identical)
+            d2t = block(ctext, "speciesMap") or block(ctext, "dissociatesTo")
             if d2t:
                 ions = [w for w in words(d2t) if not w.isdigit()]
                 allions += ions
                 for ion in ions: want("species/aqueous/" + ion + ".dat")
-        harvest(t, want)          # propertyMethods / chemistry / parameters
-        cats = [i for i in allions if i in ("Na","K","Li","Ca","Mg","H","NH4")]
-        ans  = [i for i in allions if i in ("Cl","SO4","OH","CO3","HCO3","Br","NO3")]
+        if re.search(r'\brecordType\s+thermophysicalPropertySystem\s*;', t):
+            harvest_v2(t, want)   # v2 equilibrium / chemistry / aqueousProperties
+        else:
+            harvest(t, want)      # propertyMethods / chemistry / parameters
+        # cation-anion pair records by CHARGE (the aqueous.dat catalogue is the
+        # authority); existence-guarded, so only real pair records are sealed.
+        cats = sorted({i for i in allions if AQ.get(i, (0,))[0] > 0})
+        ans  = sorted({i for i in allions if AQ.get(i, (0,))[0] < 0})
         for ca in cats:
             for an in ans:
                 want("parameters/Pitzer/pairs/" + ca + "-" + an + ".dat")
+                want("parameters/eNRTL/" + ca + "-" + an + ".dat")
+        # the ion Cp(T) tier (Criss-Cobble nodes) rides with any electrolyte
+        # closure -- a hidden catalogue must not silently degrade Cp(T).
+        if allions:
+            want("parameters/electrolyte/crissCobble.dat")
         return recs
 
-    # PLANT package (constant/propertyDict|propertyPackage directly under the case)
-    plant_pp = caseDir / "constant" / "propertyDict"
+    # PLANT package (constant/thermoPhysPropDict|propertyDict|propertyPackage
+    # directly under the case; v2 name first, mirroring the engine's lookup)
+    plant_pp = caseDir / "constant" / "thermoPhysPropDict"
+    if not plant_pp.exists():
+        plant_pp = caseDir / "constant" / "propertyDict"
     if not plant_pp.exists():
         plant_pp = caseDir / "constant" / "propertyPackage"
     plant_recs = closure_of(plant_pp) if plant_pp.exists() else {}
@@ -211,7 +339,8 @@ def main():
         for rel, src in sorted(recs.items()):
             dst = PDx / rel
             dst.parent.mkdir(parents=True, exist_ok=True)
-            body = strip_install_paths(src.read_text())
+            raw = src if isinstance(src, str) else src.read_text()
+            body = strip_install_paths(raw)
             stamp = ('// [propertyData snapshot] provenance { kind standard; '
                      'standardSet %s; record "%s"; }\n' % (STANDARD_SET, rel))
             dst.write_text(stamp + body)

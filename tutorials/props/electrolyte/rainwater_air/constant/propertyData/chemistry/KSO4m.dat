@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/KSO4m.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species KSO4m; ion "KSO4-"; z -1; masters ( { ion K; nu 1; } { ion SO4; nu 1; } );
+      logK25 1.18; dH 3000; analytic ( -3.0246 0.009986 0 0 109300 ); validC ( 0 200 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: arcanite solubility, 0 - 200 oC";
+

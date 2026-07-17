@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/NaFaq.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species NaFaq; ion "NaF"; z 0; masters ( { ion Na; nu 1; } { ion F; nu 1; } );
+      logK25 -2.38; dH 24500; analytic ( -5 0.01159 -250 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+

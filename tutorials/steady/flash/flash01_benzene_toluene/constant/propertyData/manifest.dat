@@ -1,0 +1,19 @@
+/*----------------------------------------------------------*\
+  constant/propertyData/manifest.dat -- frozen property snapshot
+  Imported by `choupo-import` from the Choupo-2607 catalogue release.
+  SEALED: the runtime reads ONLY this snapshot (+ the plant snapshot
+  it cascades to); the installation catalogue is NEVER consulted.
+\*----------------------------------------------------------*/
+
+propertyDataManifest
+{
+    defaultStandardSet  Choupo-2607;
+    importedAt          "2026-07-17";
+    sealed              true;
+    importedBy { engineVersion "Choupo-2607"; }
+    records
+    {
+        "components/benzene.dat" { kind standard; standardSet Choupo-2607; sha256 "a23d7175b77745ee4bf19d1a11d88c78a6ac54caad5be512515eef0a9fec53c2"; }
+        "components/toluene.dat" { kind standard; standardSet Choupo-2607; sha256 "155d940e3be4d61c8ba566d882ad9a45dcc2cdf5fedf78393994247c8c2ab575"; }
+    }
+}

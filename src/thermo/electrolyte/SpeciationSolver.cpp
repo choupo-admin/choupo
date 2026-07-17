@@ -100,6 +100,25 @@ KTcorrection readKT(const DictPtr& e)
     return kt;
 }
 
+// Case SNAPSHOT (Choupo-2607 sealed cases): the frozen record tree under
+// constant/propertyData/<sub>, walking UP the fractal cascade from the case
+// cwd.  When present it is used INSTEAD of the installation catalogue -- the
+// sealed contract ("the run reads the case's own copy").  Absent -> the
+// standards tree, exactly as before (zero change for unsealed cases).
+fs::path snapshotDirOrStandards(const std::string& sub)
+{
+    fs::path p = fs::current_path();
+    for (int up = 0; up < 8; ++up)
+    {
+        fs::path cand = p / "constant" / "propertyData" / sub;
+        if (fs::is_directory(cand)) return cand;
+        fs::path par = p.parent_path();
+        if (par == p) break;
+        p = par;
+    }
+    return fs::path(Database::currentRoot()) / "standards" / sub;
+}
+
 } // namespace
 
 SpeciationSolver::SpeciationSolver(const std::string& activityModel)
@@ -160,9 +179,8 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
             // Migration 5: chemistry/ is ONE flat home; each record's
             // recordType names its family (aqueousSpeciation /
             // gasLiquidEquilibrium / ionExchangeEquilibrium) -- filter, never
-            // guess from a subdirectory.
-            const fs::path dir = fs::path(Database::currentRoot())
-                               / "standards" / "chemistry";
+            // guess from a subdirectory.  Sealed cases read their snapshot copy.
+            const fs::path dir = snapshotDirOrStandards("chemistry");
             if (!fs::exists(dir))
             {
                 if (cl.empty())
@@ -231,8 +249,7 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
             // gone).  Each record's `dissolved` is an ION label (e.g. "CO2"); link it
             // to the network species whose `ion` matches (CO2 -> CO2aq), fallback the
             // label itself.  The analytic K(T) carried here is the re-baselined value.
-            const fs::path gdir = fs::path(Database::currentRoot())
-                                / "standards" / "chemistry";
+            const fs::path gdir = snapshotDirOrStandards("chemistry");
             if (fs::exists(gdir))
             {
                 std::vector<fs::path> gfiles;
@@ -320,8 +337,7 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
         // equilibrium Ksp).  Scan them alongside the legacy mineralSolubility/ home.
         if (!caseLocal)
         {
-            const fs::path cdir = fs::path(Database::currentRoot())
-                                / "standards" / "components";
+            const fs::path cdir = snapshotDirOrStandards("components");
             if (fs::exists(cdir))
             {
                 std::vector<fs::path> cfiles;
@@ -399,8 +415,7 @@ std::vector<ExchangeReaction> SpeciationSolver::loadExchangeNetwork() const
     }
     else
     {
-        const fs::path dir = fs::path(Database::currentRoot())
-                           / "standards" / "chemistry";
+        const fs::path dir = snapshotDirOrStandards("chemistry");
         if (!fs::exists(dir))
             throw std::runtime_error(
                 "exchange: no case-local exchange.dat and no standards "

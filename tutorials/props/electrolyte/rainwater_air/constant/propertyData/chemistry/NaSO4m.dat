@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/NaSO4m.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species NaSO4m; ion "NaSO4-"; z -1; masters ( { ion Na; nu 1; } { ion SO4; nu 1; } );
+      logK25 0.94; dH 8230; analytic ( -0.304 0.00451 -28.9 ); validC ( 0 200 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: mirabilite/thenardite solubilities, 0 - 200 oC";
+

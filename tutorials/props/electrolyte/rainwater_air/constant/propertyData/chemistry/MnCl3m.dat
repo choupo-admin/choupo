@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/MnCl3m.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species MnCl3m; ion "MnCl3-"; z -1; masters ( { ion Mn; nu 1; } { ion Cl; nu 3; } );
+      logK25 -0.31; source "USGS PHREEQC phreeqc.dat (public domain)";
+

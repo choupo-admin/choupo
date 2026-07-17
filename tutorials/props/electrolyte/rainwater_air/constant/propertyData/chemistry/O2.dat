@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/O2.dat"; }
+recordType gasLiquidEquilibrium;
+schemaVersion 1;
+
+gas O2; reaction "O2(g) = O2"; dissolved "O2";
+      logK25 -2.8983; analytic ( -7.5001 0.0078981 0 0 200270 ); Tc 154.6; Pc 49.8; omega 0.021; source "USGS PHREEQC phreeqc.dat (public domain); primary not stated in db";
+

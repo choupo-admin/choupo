@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/OH.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species OH; ion "OH-"; z -1; masters ( { ion H; nu -1; } ); nuWater 1;
+      logK25 -14; dH 56400; analytic ( 293.29227 0.1360833 -10576.913 -123.73158 0 -6.996455e-05 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+

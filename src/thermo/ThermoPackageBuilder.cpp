@@ -45,6 +45,18 @@ static std::filesystem::path resolveDeclared(const std::filesystem::path& repoRo
         // the case-local `constant/parameters/` overlay.
         fs::path candPd = q / "constant" / "propertyData" / declared;
         if (fs::exists(candPd)) return candPd;
+        // A v2 dict declares the INSTALLATION form (`source "data/standards/
+        // parameters/NRTL/<pair>.dat";`) -- in a SEALED snapshot the same
+        // record lives at constant/propertyData/<sub> (prefix stripped), the
+        // form choupo-import writes.  Try it, so a sealed case reads its own
+        // frozen copy and never the catalogue.
+        static const std::string pfx = "data/standards/";
+        if (declared.rfind(pfx, 0) == 0)
+        {
+            fs::path candSnap = q / "constant" / "propertyData"
+                              / declared.substr(pfx.size());
+            if (fs::exists(candSnap)) return candSnap;
+        }
         fs::path par = q.parent_path();
         if (par == q) break;
         q = par;
@@ -563,11 +575,24 @@ static ThermoPackage buildSolutionHenry(const DictPtr& pkg, const Database& db)
         auto rec = loadRec(resolveDeclared(repoRoot, hp->lookupWord(key)), "Henry pair " + key);
         (void)rec;   // parse = the verification; the runtime registry re-reads it
     }
-    // Echo the method's per-group referenceBasis (glass-box).
+    // Echo the method's per-group referenceBasis (glass-box).  Snapshot leg
+    // (Choupo-2607 sealed cases): the frozen copy under constant/propertyData/
+    // wins over the installation catalogue.
     {
-        auto mRec = loadRec(repoRoot /
-            "data/standards/methods/henryDilute.dat",
-            "propertyMethod henryDilute");
+        fs::path methodRec = repoRoot / "data/standards/methods/henryDilute.dat";
+        {
+            fs::path q = fs::current_path();
+            for (int up = 0; up < 8; ++up)
+            {
+                fs::path cand = q / "constant" / "propertyData"
+                              / "methods" / "henryDilute.dat";
+                if (fs::exists(cand)) { methodRec = cand; break; }
+                fs::path par = q.parent_path();
+                if (par == q) break;
+                q = par;
+            }
+        }
+        auto mRec = loadRec(methodRec, "propertyMethod henryDilute");
         if (thermoAnnounce())
             std::cout << "[builder] propertyMethod solution.henryDilute: referenceBasis "
                       << (mRec->found("referenceBasis") ? "declared (per-GROUP rungs: "

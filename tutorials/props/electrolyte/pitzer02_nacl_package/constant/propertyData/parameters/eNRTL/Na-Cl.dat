@@ -1,0 +1,26 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "parameters/eNRTL/Na-Cl.dat"; }
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Electrolyte-NRTL binary energy parameters --- water / Na(+)Cl(-).
+  Role: the molecule-electrolyte pair taus of the Chen local-composition
+  model, tau_m_ca (water -> Na+Cl- pair, 8.885) and tau_ca_m (Na+Cl- pair ->
+  water, -4.549) with nonrandomness alpha 0.2 -- the short-range half of the
+  eNRTL excess Gibbs energy (the long-range Pitzer-Debye-Huckel part is
+  parameter-free), consumed by the eNRTL activity engine for aqueous NaCl.
+  Source: Chen & Evans, AIChE J. 32 (1986) 444, the water-NaCl reference
+  regression (their Table 1) -- full string in the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteNRTLParameters;
+schemaVersion 1;
+
+model eNRTL;
+
+pair { cation Na; anion Cl; }
+
+parameters
+{
+    tau_m_ca 8.885;
+    tau_ca_m -4.549;
+    alpha 0.2;
+}
+
+source "Chen & Evans, AIChE J. 32 (1986) 444 (water-NaCl reference)";

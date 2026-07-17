@@ -1,0 +1,7 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/HSO4.dat"; }
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species HSO4; ion "HSO4-"; z -1; masters ( { ion H; nu 1; } { ion SO4; nu 1; } );
+      logK25 1.988; dH 16108.4; analytic ( -56.889 0.006473 2307.9 19.8858 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+
