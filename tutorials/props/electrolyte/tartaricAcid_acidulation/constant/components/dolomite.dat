@@ -1,0 +1,81 @@
+// [imported] origin "data/standards/components/dolomite.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Substance: Dolomite (CaMg(CO3)2)
+
+  UNIFIED substance file -- the MULTI-ION proof case (ratified 2026-07-14).
+
+  Demonstrates general (>1 cation) stoichiometry. The apparent-component
+  speciesMap uses the Ca/Mg/CO3 basis and is distinct from the solid
+  phase dissolutionReaction, which is written in the HCO3/H+ basis.
+
+  This record currently supplies equilibrium data only. It carries no
+  calorimetric or crystal block because no current consumer requires
+  those data.
+
+  Replaces chemistry/mineralSolubility/dolomite.dat.
+\*---------------------------------------------------------------------------*/
+
+name           dolomite;
+formula        "CaMg(CO3)2";
+MW             184.40;         // g/mol
+
+// APPARENT COMPONENT VIEW
+//
+// Stoichiometric balance/representation map from the apparent component
+// to aqueous species. General stoichiometry is legal here; only the
+// legacy single-salt adapter is restricted to one cation + one anion.
+component
+{
+    speciesMap
+    {
+        Ca   1;
+        Mg   1;
+        CO3  2;
+    }
+}
+
+// SOLID-PHASE VIEW
+solidPhases
+{
+    dolomite
+    {
+        // Thermodynamic dissolution reaction in the HCO3/H+ basis:
+        //
+        // CaMg(CO3)2(s) + 2 H+
+        //     <=> Ca2+ + Mg2+ + 2 HCO3-
+        //
+        // Coefficients follow the Choupo convention:
+        // products positive, reactants negative.
+        dissolutionReaction
+        {
+            masters
+            (
+                { ion Ca;    nu  1; }
+                { ion Mg;    nu  1; }
+                { ion HCO3;  nu  2; }
+                { ion H;     nu -2; }
+            );
+        }
+
+        equilibrium
+        {
+            logK25  3.568;
+
+            // J/mol: reaction enthalpy for the exact HCO3/H+ reaction
+            // written above. This is not a calorimetric crystalliser-duty
+            // dissolutionEnthalpy.
+            dH      -69278.7;
+
+            analytic
+            (
+                 247.0572
+                  -0.02474302
+              -16741.58
+                 -77.85122
+             1127427.8
+            );
+
+            source "Derived by exact reaction-basis transformation from USGS PHREEQC phreeqc.dat: Dolomite = Ca+2 + Mg+2 + 2 CO3-2, combined with twice CO3-2 + H+ = HCO3-. Original dolomite data reference: Hemingway & Robie 1994; Benezeth et al. 2018, GCA 224, 262-275.";
+        }
+    }
+}

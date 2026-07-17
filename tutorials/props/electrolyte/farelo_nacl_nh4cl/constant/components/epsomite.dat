@@ -1,0 +1,25 @@
+// [imported] origin "data/standards/components/epsomite.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: epsomite (MgSO4:7H2O) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name epsomite;
+formula "MgSO4:7H2O";
+
+solidPhases
+{
+    epsomite
+    {
+        dissolutionReaction { masters ( { ion Mg; nu 1; } { ion SO4; nu 1; } ); nuWater 7; }
+        equilibrium { logK25 -1.74; dH 10570; analytic ( -3.59 0.00621 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
+        thermochemistry
+        {
+            Hf298 -3.38871e+06;   // J/mol   (formation enthalpy of the solid)
+            S298  371.288;   // J/(mol.K)
+            Cp298 166.074;   // J/(mol.K) at 298.15 K (Maier-Kelley a+bT+c/T^2)
+            source "Grevel & Majzlan 2009, Geochim. Cosmochim. Acta 73 -- via CHNOSZ OBIGT (open compilation)";
+        }
+    }
+}

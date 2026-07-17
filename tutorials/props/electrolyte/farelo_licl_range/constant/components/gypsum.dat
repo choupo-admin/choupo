@@ -1,0 +1,25 @@
+// [imported] origin "data/standards/components/gypsum.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: gypsum (CaSO4:2H2O) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name gypsum;
+formula "CaSO4:2H2O";
+
+solidPhases
+{
+    gypsum
+    {
+        dissolutionReaction { masters ( { ion Ca; nu 1; } { ion SO4; nu 1; } ); nuWater 2; }
+        equilibrium { logK25 -4.55; dH -6700; analytic ( 72.244 -0.01474 -4040 -23.7823 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: fits the appendix data of Appelo, 2015, AG 55, 62"; }
+        thermochemistry
+        {
+            Hf298 -2.023e+06;   // J/mol   (formation enthalpy of the solid)
+            S298  193.803;   // J/(mol.K)
+            Cp298 186.185;   // J/(mol.K) at 298.15 K (Maier-Kelley a+bT+c/T^2)
+            source "Robie & Hemingway 1995, USGS Bulletin 2131 (public domain; Literature/report.pdf) -- via CHNOSZ OBIGT (open compilation)";
+        }
+    }
+}

@@ -1,0 +1,20 @@
+// [imported] origin "data/standards/parameters/Pitzer/psi/CO3-Cl-K.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer ternary mixing parameter psi(CO3,Cl|K) --- the two anions CO3(2-)
+  and Cl(-) with the common cation K(+).
+  Role: the triple-ion correction of the Harvie-Moller-Weare formulation,
+  active in the pitzerHMW multi-ion engine only when all three ions coexist
+  in solution; it refines the theta(CO3,Cl) mixing term and the binary
+  beta/Cphi pair sets, it never replaces them.
+  Source: Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723 (HMW
+  seawater system); via USGS PHREEQC pitzer.dat (public domain) -- full
+  string in the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteMixingParameter;
+schemaVersion 1;
+kind psi;
+a CO3;
+b Cl;
+c K;
+value 0.004;
+source "Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723 (HMW seawater system); via USGS PHREEQC pitzer.dat (public domain)";

@@ -1,0 +1,25 @@
+// [imported] origin "data/standards/components/fluorite.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: fluorite (CaF2) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name fluorite;
+formula "CaF2";
+
+solidPhases
+{
+    fluorite
+    {
+        dissolutionReaction { masters ( { ion Ca; nu 1; } { ion F; nu 2; } ); }
+        equilibrium { logK25 -10.61; dH 10600; analytic ( 57.313 0 -3495 -22.714 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: Strubel, 1965, NJbM,M 83-95; Henry, 2018, PhD, Colorado School of Mines."; }
+        thermochemistry
+        {
+            Hf298 -1.22591e+06;   // J/mol   (formation enthalpy of the solid)
+            S298  68.5758;   // J/(mol.K)
+            Cp298 71.1249;   // J/(mol.K) at 298.15 K (Maier-Kelley a+bT+c/T^2)
+            source "Helgeson, Delany, Nesbitt & Bird 1978, Am. J. Sci. 278-A -- via CHNOSZ OBIGT (open compilation)";
+        }
+    }
+}

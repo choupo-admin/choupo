@@ -1,0 +1,7 @@
+// [imported] origin "data/standards/chemistry/SrHCO3p.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species SrHCO3p; ion "SrHCO3+"; z +1; masters ( { ion Sr; nu 1; } { ion HCO3; nu 1; } );
+      logK25 1.18; dH 25313.2; analytic ( -3.248 0.014867 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+

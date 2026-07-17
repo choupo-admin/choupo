@@ -1,0 +1,30 @@
+// [imported] origin "data/standards/parameters/Pitzer/pairs/K-OH.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer binary ion-interaction parameters --- K(+) / OH(-) in aqueous
+  solution.
+  Role: the beta0 / beta1 / Cphi set (alpha1 2.0) of the Pitzer virial
+  expansion -- the cation-anion second and third virial coefficients behind
+  the mean activity and osmotic coefficients of the K-OH pair, consumed by
+  the pitzer (single-salt VLE) and pitzerHMW (multi-ion speciation) activity
+  engines.
+  Source: Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49 --
+  full provenance string in the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolytePairParameters;
+schemaVersion 1;
+
+model pitzer;
+
+pair { cation K; anion OH; }
+
+parameters
+{
+    beta0 0.1298;
+    beta1 0.32;
+    beta2 0.0;
+    Cphi 0.0041;
+    alpha1 2.0;
+    alpha2 12.0;
+}
+
+source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49";

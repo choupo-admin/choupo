@@ -1,0 +1,6 @@
+// [imported] origin "data/standards/chemistry/H3PO4.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H3PO4; ion "H3PO4"; z 0; masters ( { ion PO4; nu 1; } { ion H; nu 3; } );
+      logK25 21.721; dH -10100; source "USGS PHREEQC phreeqc.dat (public domain)";

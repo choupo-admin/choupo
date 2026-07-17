@@ -1,0 +1,7 @@
+// [imported] origin "data/standards/chemistry/CaOHp.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species CaOHp; ion "CaOH+"; z +1; masters ( { ion Ca; nu 1; } { ion H; nu -1; } ); nuWater 1;
+      logK25 -12.78; source "USGS PHREEQC phreeqc.dat (public domain)";
+

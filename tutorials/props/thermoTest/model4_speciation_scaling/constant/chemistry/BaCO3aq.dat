@@ -1,0 +1,7 @@
+// [imported] origin "data/standards/chemistry/BaCO3aq.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species BaCO3aq; ion "BaCO3"; z 0; masters ( { ion Ba; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 -7.619; dH 29752.4; analytic ( -107.7741 -0.02380749 5151.79 38.92561 -563713.9 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+

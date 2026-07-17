@@ -1,0 +1,119 @@
+/*----------------------------------------------------------*\
+  constant/species/aqueous.dat -- aqueous model species,
+  FILTERED to this case's closure (7 of 45 catalogue records).
+  Same grammar as data/standards/species/aqueous.dat; imported
+  by bin/choupo-import from the Choupo-2607 release -- ownership and
+  integrity are recorded in constant/propertyManifest.
+\*----------------------------------------------------------*/
+
+aqueousSpecies
+(
+    {
+        name    Br;
+        ion     "Br-";
+        charge  -1;
+        MW { value 79.904; unit g/mol;}
+        aqueousThermo
+        {
+        hfAq { value -121550; unit J/mol;}
+        sAq  { value 82.4;  unit J/mol/K;}
+        cpAq { value -141.8; unit J/mol/K;}
+        }
+    }
+    {
+        name    Cl;
+        ion     "Cl-";
+        charge  -1;
+        MW { value 35.453; unit g/mol;}
+        aqueousThermo
+        {
+        hfAq { value -167160; unit J/mol;}
+        sAq  { value 56.5;  unit J/mol/K;}
+        cpAq { value -136.4; unit J/mol/K;}
+        }
+        transport
+        {
+        radius { value 3.32e-10; unit m;}
+        D0     { value 2.03e-09;     unit m2/s;}
+        }
+    }
+    {
+        name    H;
+        ion     "H+";
+        charge  +1;
+        MW { value 1.008; unit g/mol;}
+        aqueousThermo
+        {
+        hfAq { value 0; unit J/mol;}
+        sAq  { value 0;  unit J/mol/K;}
+        cpAq { value 0; unit J/mol/K;}
+        }
+        transport
+        {
+        radius { value 2.82e-10; unit m;}
+        D0     { value 9.31e-09;     unit m2/s;}
+        }
+    }
+    {
+        name    K;
+        ion     "K+";
+        charge  +1;
+        MW { value 39.098; unit g/mol;}
+        aqueousThermo
+        {
+        hfAq { value -252380; unit J/mol;}
+        sAq  { value 102.5;  unit J/mol/K;}
+        cpAq { value 21.8; unit J/mol/K;}
+        }
+        transport
+        {
+        radius { value 3.31e-10; unit m;}
+        D0     { value 1.96e-09;     unit m2/s;}
+        }
+    }
+    {
+        name    Li;
+        ion     "Li+";
+        charge  +1;
+        MW { value 6.941; unit g/mol;}
+        aqueousThermo
+        {
+        hfAq { value -278490; unit J/mol;}
+        sAq  { value 13.4;  unit J/mol/K;}
+        }
+    }
+    {
+        name    Na;
+        ion     "Na+";
+        charge  +1;
+        MW { value 22.99; unit g/mol;}
+        aqueousThermo
+        {
+        hfAq { value -240120; unit J/mol;}
+        sAq  { value 59.0;  unit J/mol/K;}
+        cpAq { value 46.4; unit J/mol/K;}
+        }
+        transport
+        {
+        radius { value 3.58e-10; unit m;}
+        D0     { value 1.33e-09;     unit m2/s;}
+        }
+    }
+    {
+        name    OH;
+        ion     "OH-";
+        charge  -1;
+        MW { value 17.007; unit g/mol;}
+        aqueousThermo
+        {
+        hfAq { value -229990; unit J/mol;}
+        sAq  { value -10.75;  unit J/mol/K;}
+        cpAq { value -148.5; unit J/mol/K;}
+        }
+        transport
+        {
+        radius { value 3.00e-10; unit m;}
+        D0     { value 5.27e-09;     unit m2/s;}
+        }
+    }
+);

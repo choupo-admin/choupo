@@ -1,0 +1,30 @@
+// [imported] origin "data/standards/parameters/Pitzer/pairs/Ba-Cl.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer binary ion-interaction parameters --- Ba(2+) / Cl(-) in aqueous
+  solution.
+  Role: the beta0 / beta1 / Cphi set (alpha1 2.0) of the Pitzer virial
+  expansion -- the cation-anion second and third virial coefficients behind
+  the mean activity and osmotic coefficients of the Ba-Cl pair, consumed by
+  the pitzer (single-salt VLE) and pitzerHMW (multi-ion speciation) activity
+  engines.
+  Source: Appelo, Appl. Geochem. 55 (2015) 62 -- full provenance string in
+  the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolytePairParameters;
+schemaVersion 1;
+
+model pitzer;
+
+pair { cation Ba; anion Cl; }
+
+parameters
+{
+    beta0 0.5268;
+    beta1 0.687;
+    beta2 0.0;
+    Cphi -0.143;
+    alpha1 2.0;
+    alpha2 12.0;
+}
+
+source "Appelo, Appl. Geochem. 55 (2015) 62";

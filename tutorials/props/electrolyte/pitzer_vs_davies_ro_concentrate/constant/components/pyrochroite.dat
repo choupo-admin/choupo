@@ -1,0 +1,25 @@
+// [imported] origin "data/standards/components/pyrochroite.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: pyrochroite (Mn(OH)2) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name pyrochroite;
+formula "Mn(OH)2";
+
+solidPhases
+{
+    pyrochroite
+    {
+        dissolutionReaction { masters ( { ion Mn; nu 1; } { ion H; nu -2; } ); nuWater 2; }
+        equilibrium { logK25 15.2; dH 0; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Pyrochroite"; }
+        thermochemistry
+        {
+            Hf298 -2.90955e+06;   // J/mol   (formation enthalpy of the solid)
+            S298  415.053;   // J/(mol.K)
+            Cp298 477.782;   // J/(mol.K) at 298.15 K (Maier-Kelley a+bT+c/T^2)
+            source "Wagman et al. 1982, NBS Tables -- via CHNOSZ OBIGT (open compilation)";
+        }
+    }
+}

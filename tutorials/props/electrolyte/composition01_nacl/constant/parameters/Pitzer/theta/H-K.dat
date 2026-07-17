@@ -1,0 +1,19 @@
+// [imported] origin "data/standards/parameters/Pitzer/theta/H-K.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer like-charge mixing parameter theta(H,K) --- the two cations H(+) and
+  K(+).
+  Role: the binary mixing (second-virial) correction of the Harvie-Moller-
+  Weare formulation, active in the pitzerHMW multi-ion engine whenever both
+  cations coexist in solution; it works together with the psi(H,K|counter-
+  ion) ternary terms and never replaces the single-pair beta/Cphi sets.
+  Source: Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723 (HMW
+  seawater system); via USGS PHREEQC pitzer.dat (public domain) -- full
+  string in the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteMixingParameter;
+schemaVersion 1;
+kind theta;
+a H;
+b K;
+value 0.005;
+source "Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723 (HMW seawater system); via USGS PHREEQC pitzer.dat (public domain)";

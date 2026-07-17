@@ -1,0 +1,7 @@
+// [imported] origin "data/standards/chemistry/HFaq.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species HFaq; ion "HF"; z 0; masters ( { ion H; nu 1; } { ion F; nu 1; } );
+      logK25 3.18; dH 13305.1; analytic ( -2.033 0.012645 429.01 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+

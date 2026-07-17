@@ -1,0 +1,18 @@
+// [imported] origin "data/standards/components/artinite.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: artinite (Mg2CO3(OH)2:3H2O) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name artinite;
+formula "Mg2CO3(OH)2:3H2O";
+
+solidPhases
+{
+    artinite
+    {
+        dissolutionReaction { masters ( { ion HCO3; nu 1; } { ion Mg; nu 2; } { ion H; nu -3; } ); nuWater 5; }
+        equilibrium { logK25 19.66; dH -130000; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Artinite"; }
+    }
+}

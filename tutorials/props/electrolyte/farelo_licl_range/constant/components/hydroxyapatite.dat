@@ -1,0 +1,18 @@
+// [imported] origin "data/standards/components/hydroxyapatite.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: hydroxyapatite (Ca5(PO4)3OH) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name hydroxyapatite;
+formula "Ca5(PO4)3OH";
+
+solidPhases
+{
+    hydroxyapatite
+    {
+        dissolutionReaction { masters ( { ion PO4; nu 3; } { ion H; nu -1; } { ion Ca; nu 5; } ); nuWater 1; }
+        equilibrium { logK25 -40.459; dH -106964; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Hydroxyapatite"; }
+    }
+}
