@@ -1,0 +1,53 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T7 electrolyteGammaPhi: aqueous electrolyte
+  (Pitzer) x ideal vapour; the REAL solid equilibrium rides in the inline
+  chemistry{} block (TRANSITIONAL: the chemistryDict grammar is not ratified).
+  Rigorous NaCl Pitzer package for the brine evaporator.
+  Pitzer pair resolved by cation-anion name: data/standards/parameters/Pitzer/pairs/Na-Cl.dat
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water NaCl );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;    // aqueous electrolyte x ideal vapour
+
+    aqueous
+    {
+        solvent            water;
+        apparentComponents ( NaCl );  // stream carries the salt; the model
+                                        //   activates its ions (dissociatesTo)
+        activityModel
+        {
+            model Pitzer;
+        }
+        compositionBasis molality;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+chemistry
+{
+    salts ( halite );                  // the active solid equilibrium: SLE via
+}                                      //   the component's solidPhases{} Ksp
+
+caloric
+{
+    energyBasis elementsDatum;          // ONE datum: the elements at 298.15 K
+
+    aqueous
+    {
+        enthalpyRoute ionicReferencePlusExcess;   // aqueous inf-dilution ion
+    }                                             //   datum + L_phi excess
+    vapour
+    {
+        enthalpyRoute idealGasCp;
+    }
+}
