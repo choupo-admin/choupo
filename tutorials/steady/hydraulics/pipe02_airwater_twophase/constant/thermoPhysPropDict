@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1 + T13: ideal gamma-phi mixture WITH the
+  transport surface the two-phase pipe needs.  Each property names its model
+  in its own phase block -- the gas and the liquid are DIFFERENT physical
+  questions, so they get different lines.  N2 (~air) + water; the pipe's
+  Layer-1 models (homogeneous / Lockhart-Martinelli) consume both phase
+  viscosities + densities; sigma feeds Friedel / Beggs-Brill (Layer 2).
+  N2.dat + water.dat vendored under constant/components/ (case-local copies).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( N2 water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;         // vapour density branch
+    }
+}
+
+transport
+{
+    vapour
+    {
+        viscosity { model Chung; }      // N2, from Tc/Pc/omega
+    }
+
+    liquid
+    {
+        viscosity { model Vogel; }      // water
+    }
+
+    interface
+    {
+        surfaceTension { model BrockBird; }   // sigma for Friedel/Beggs-Brill
+    }
+}

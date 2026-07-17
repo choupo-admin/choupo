@@ -890,6 +890,55 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
                 " fugacityModel '" + vap + "' -- the gammaPhi spike serves"
                 " idealGas (eos vapour = the phiPhi formulation, T4, not in"
                 " this spike).");
+
+        // T13: a transport{} block (vapour/liquid/interface, one named
+        // sub-block per property).  The flat engine reader carries the FULL
+        // canonical transport hierarchy, so a gammaPhi+transport system is
+        // emitted in the FLAT shape (same models, same physics) -- the
+        // builder manifest path has no transport slots beyond one word.
+        if (v2->found("transport"))
+        {
+            auto tr = v2->subDict("transport");
+            auto flatT = std::make_shared<Dictionary>("transport");
+            struct Map { const char* v2phase; const char* v2prop; const char* v1key; };
+            static const Map maps[] = {
+                {"vapour", "viscosity",           "viscosity"},
+                {"vapour", "thermalConductivity", "thermalConductivity"},
+                {"vapour", "diffusivity",         "diffusivity"},
+                {"liquid", "viscosity",           "liquidViscosity"},
+                {"liquid", "thermalConductivity", "liquidConductivity"},
+                {"liquid", "diffusivity",         "liquidDiffusivity"},
+                {"interface", "surfaceTension",   "surfaceTension"},
+            };
+            for (const auto& mrow : maps)
+            {
+                if (!tr->found(mrow.v2phase)) continue;
+                auto ph = tr->subDict(mrow.v2phase);
+                if (!ph->found(mrow.v2prop)) continue;
+                auto pb = ph->subDict(mrow.v2prop);
+                if (pb->found("mixingRule"))
+                    throw std::runtime_error("thermophysicalPropertySystem:"
+                        " transport mixingRule is not SELECTABLE yet -- the"
+                        " implemented rule is announced by the model; declare"
+                        " only `model <X>;` (the selectable-rule wave comes"
+                        " later, never by accident).");
+                auto mb = std::make_shared<Dictionary>(mrow.v1key);
+                mb->insert("model", pb->entryValue("model"));
+                flatT->insert(mrow.v1key, EntryValue(mb));
+            }
+            std::ostringstream ft;
+            ft << "components ( ";
+            for (const auto& c : v2->lookupWordList("components")) ft << c << " ";
+            ft << ");\nactivityModel { model " << model << "; }\n"
+               << "equationOfState { model idealGas; }\n";
+            auto flat = Dictionary::fromString(ft.str(), "translateV2.flatTransport");
+            flat->insert("transport", EntryValue(flatT));
+            announce("equilibrium gammaPhi + transport (T13): " + model
+                     + " liquid gamma, idealGas vapour; per-property transport"
+                     " sub-blocks mapped onto the canonical hierarchy"
+                     " (vapour/liquid/interface -> gas/liquid/sigma slots).");
+            return flat;
+        }
         pm->insert("liquid", "activity." + model);
         pm->insert("vapour", std::string("builtin.idealGas"));
         out->insert("propertyMethods", EntryValue(pm));
