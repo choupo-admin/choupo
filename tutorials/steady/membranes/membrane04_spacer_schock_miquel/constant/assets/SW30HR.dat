@@ -1,0 +1,53 @@
+// [imported] origin "data/standards/assets/SW30HR.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: SW30HR-style high-rejection seawater RO
+  (DuPont FilmTec SW30HR-380 archetype)
+
+  A thin-film composite polyamide RO membrane for seawater
+  desalination.  The values below are representative of the
+  manufacturer-published envelope for clean-water permeance and
+  NaCl rejection at standard test conditions (32 g/L NaCl,
+  55 bar, 25 °C, 8 % recovery): observed NaCl rejection ≈ 99.7 %,
+  water flux ≈ 14 LMH per bar of effective driving pressure.
+
+  Solution-diffusion permeabilities (v0.26 transport model):
+     A_w (water)  ≈ 1.0 × 10⁻⁶  m / (s · bar)
+                   = 3.6 × 10⁻³  m / (h · bar)
+                   = 14 L / (m² · h · bar)     (a.k.a. LMH/bar)
+
+     B_s (NaCl)   ≈ 2.0 × 10⁻⁸  m / s          (m/s in the form
+                                                  J_s = B_s · Δc
+                                                  with Δc in kmol/m³)
+
+  These numbers reproduce ~99 % observed rejection in
+  membrane01_RO_NaCl_seawater within the standard concentration-
+  polarization film model.  For research-grade modelling against a
+  specific element, replace these values with regression fits to
+  your own test-loop data.
+
+  Source (named public document):
+     DuPont Water Solutions, FilmTec SW30HR-380 Product Data Sheet
+     (public).  Standard test conditions there: 32 000 ppm NaCl,
+     55 bar (800 psi), 25 °C, pH 8, 8 % recovery — minimum salt
+     rejection 99.60 %, stabilized 99.70 %.  A_w / B_s below are
+     Choupo solution-diffusion fits reproducing that envelope,
+     NOT vendor-tabulated coefficients.
+\*---------------------------------------------------------------------------*/
+
+name           SW30HR;
+kind           RO;
+manufacturer   "DuPont FilmTec";
+
+A_w            1.0e-6  m/s/bar;
+permeabilities
+{
+    NaCl       2.0e-8  m/s;
+    MgSO4      1.0e-9  m/s;     // essentially fully rejected
+    glucose    5.0e-10 m/s;     // way below MWCO --- rejected
+}
+
+P_max          82.7;            // bar (1200 psi)
+T_max          318;             // K (45 °C)
+pH_min         2;
+pH_max         11;
+MWCO           100;              // Da (RO --- nominal "tight")

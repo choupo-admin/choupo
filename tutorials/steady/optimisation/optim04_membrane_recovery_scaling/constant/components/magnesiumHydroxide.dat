@@ -1,0 +1,57 @@
+// [imported] origin "data/standards/components/magnesiumHydroxide.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Magnesium hydroxide (Mg(OH)2), BRUCITE.  CAS 1309-42-8.
+
+  A NON-VOLATILE sparingly-soluble base: never enters the vapour (K = 0).
+  Milk-of-magnesia neutralisation, seawater-Mg recovery and flue-gas
+  scrubbing exercises; thermal-decomposition feed (Mg(OH)2 -> MgO + H2O).
+  Carries the solid-phase formation datum and a real solid heat capacity.
+
+  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
+  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
+  Density: brucite ~ 2.34-2.36 g/cm^3 (mineralogical).
+\*---------------------------------------------------------------------------*/
+
+name        magnesiumHydroxide;
+formula     "Mg(OH)2";
+CAS         1309-42-8;
+
+MW          58.320;            // kg/kmol
+
+role        nonvolatile;       // never goes to the vapour (K = 0)
+
+solid
+{
+    rho_p   2345.0;            // brucite particle density [kg/m^3]
+}
+
+standardThermochemistry
+{
+    dHf_298   -924540;         // J/mol  [Wagman et al. NBS Tables 1982]
+    s_298     63.18;           // J/(mol*K) [Wagman 1982]
+    referenceState     pureSolid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 77.03 );           // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  600 );        // constant-Cp validity flag (near ambient)
+}
+
+provenance
+{
+    standardThermochemistry { origin literature; method "Wagman et al. NBS Tables 1982"; }
+    solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    rho_p { origin literature; method "brucite mineralogical density ~2.34 g/cm3"; }
+}
+
+// Solid phase(s) of this component (roadmap Phase D fold-in):
+solidPhases
+{
+    brucite
+    {
+        dissolutionReaction { masters ( { ion Mg; nu 1; } { ion H; nu -2; } ); nuWater 2; }
+        equilibrium { logK25 17.12; dH -92507.6; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Brucite"; }
+    }
+}

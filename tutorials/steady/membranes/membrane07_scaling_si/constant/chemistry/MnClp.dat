@@ -1,0 +1,7 @@
+// [imported] origin "data/standards/chemistry/MnClp.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species MnClp; ion "MnCl+"; z +1; masters ( { ion Mn; nu 1; } { ion Cl; nu 1; } );
+      logK25 0.61; source "USGS PHREEQC phreeqc.dat (public domain)";
+

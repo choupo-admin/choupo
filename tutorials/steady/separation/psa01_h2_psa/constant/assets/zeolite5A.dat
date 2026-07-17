@@ -1,0 +1,27 @@
+// [imported] origin "data/standards/assets/zeolite5A.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Adsorbent: Zeolite 5A
+
+  What this IS: the INTRINSIC identity of one adsorbent material -- name,
+  material class and packed bulk density.  Nothing pair-dependent lives here:
+  the per-species adsorption equilibria are (adsorbent x adsorbate) PAIR data
+  and live one record per pair under
+      data/standards/parameters/adsorption/equilibria/zeolite5A/
+  (migrated there 1:1 on 2026-07-12, numbers unchanged; the engine REFUSES a
+  file that still embeds an isotherms block, and
+  bin/curate/check_adsorption_tree.py gates the layout).  A species with no
+  record in that catalogue adsorbs nothing -> reports fully to the raffinate.
+\*-----------------------------------------------------------------------------*/
+
+kind adsorbent;
+adsorbent
+{
+    name        zeolite5A;
+    type        "zeolite (Ca-exchanged LTA)";
+    rho_bulk    700;            // kg/m3 packed bulk density
+}
+
+provenance
+{
+    identity { origin literature; method "material class + packed bulk density: Ruthven, Principles of Adsorption and Adsorption Processes (Wiley, 1984) -- representative 5A value"; }
+}

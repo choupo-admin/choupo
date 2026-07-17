@@ -1,0 +1,114 @@
+// [imported] origin "data/standards/components/H2.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Hydrogen  (H2, CAS 1333-74-0)
+  Element in its standard state -- by convention dHf_298 = 0 and the
+  third-law entropy s_298 is the only absolute thermodynamic anchor.
+  Permanent gas at any process-relevant temperature (Tc = 33.18 K).
+  Sources: constants (Tc/Pc/omega/MW/Tb) + vapour pressure cross-checked
+  against CoolProp 7.2.0 (MIT); ideal-gas formation enthalpy/entropy
+  against the NASA polynomial database (NASA TM-4513, public domain).
+\*---------------------------------------------------------------------------*/
+
+name        H2;
+formula     H2;
+CAS         1333-74-0;
+
+MW          2.016;        // kg/kmol
+Tc          33.18;        // K
+Pc          13.13;        // bar
+omega       -0.220;       // [-]   (anomalously negative for H2)
+Tb          20.39;        // K
+HvapTb      904;          // J/mol
+Vliq        2.84e-5;      // m^3/mol  (28.4 cm^3/mol at Tb)
+diffusionVolume  6.12;          // Fuller diffusion volume [-]
+
+standardThermochemistry
+{
+    dHf_298   0.0;                // J/mol  -- element in standard state
+    s_298     130.680;            // J/(mol·K)  -- third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.54314   99.395   7.726);
+    Trange        (14  25);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3   (Reid 4th ed. Table A.1)
+    coefficients  (27.14   9.274e-3   -1.381e-5   7.645e-9);
+    Trange        (250  1500);
+}
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( hydrogen );
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0383-PROF.txt bundled in usnistgov/COSMOSAC; CAS 1333-74-0";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        27.37216;
+        volume      13.10017;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.545316868188471
+            1.27928667476266
+            4.67360104497315
+            0.214475412075706
+            4.87691776134562
+            2.34606223865439
+            2.67976962463690
+            8.79133144284190
+            1.96539893252119
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
+}

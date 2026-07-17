@@ -1,0 +1,65 @@
+// [imported] origin "data/standards/assets/CMX_AMX.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Ion-exchange membrane PAIR: Neosepta CMX (cation) + AMX (anion)
+  (Tokuyama Soda / ASTOM standard-grade homogeneous IEMs --- the
+   textbook representative electrodialysis membrane pair)
+
+  kind IEM  -- this is NOT a solution-diffusion (RO/NF) membrane: it has
+  no water permeability A_w and no per-solute B_s.  The standard membrane
+  reader (MembraneRegistry / Membrane::readFromDict) SKIPS `kind IEM`
+  files (they would fail its required-A_w read); the electrodialysisStack
+  unit reads this file with its own small reader.  Keeping it here (next
+  to SW30HR / NF270) means "membranes live in one place" -- the kind tag,
+  not the folder, distinguishes them.
+
+  An electrodialysis CELL PAIR is one CEM (CMX) + one AEM (AMX).  This file
+  bundles BOTH because they are deployed as a pair; the stack sums their
+  area resistances per cell pair.
+
+  PROPERTIES (per membrane):
+    R_area  [Ohm.m2]  area (areal) resistance, measured in 0.5 M NaCl, 25 C
+    t_cu    [-]       counter-ion transport number IN THE MEMBRANE
+                      (permselectivity; CEM passes cations, AEM passes anions)
+    thickness [m]
+
+  Counter-ion = the ion the membrane is MEANT to pass (cation for the CEM,
+  anion for the AEM).  Co-ion transport number t_co = 1 - t_cu (the leakage
+  that lowers current efficiency); the Cowan-Brown limiting-current form uses
+  (t_cu - t_co) = (2 t_cu - 1).
+
+  SOURCES (primary, cited per value):
+    * thickness, ion-exchange capacity, transport number t_cu:
+        Golubenko et al., "Transport Characteristics of Fujifilm Ion-Exchange
+        Membranes as Compared to Homogeneous Membranes AMX and CMX...",
+        Int. J. Mol. Sci. 20 (2019) 3712 (PMC6680501), Tables 2 & 5
+        (CMX 170-175 um, t* 0.995; AMX 135 um, t* 0.996; 0.5 M NaCl, 25 C).
+    * area resistance R_area:
+        Strathmann, "Ion-Exchange Membrane Separation Processes", Membrane
+        Science and Technology Series 9, Elsevier (2004), Table (Neosepta
+        standard-grade), and the Tokuyama/ASTOM Neosepta product nameplate:
+        CMX ~ 3.0 Ohm.cm2, AMX ~ 2.4 Ohm.cm2 in 0.5 M NaCl at 25 C.
+  Licence: representative literature/nameplate values (not a no-grant table);
+  cite the primary per value as above.  See parameters/electrolyte/PROVENANCE.md ethos.
+\*---------------------------------------------------------------------------*/
+
+name           CMX_AMX;
+kind           IEM;
+manufacturer   "Tokuyama / ASTOM (Neosepta)";
+
+// Cation-exchange membrane (passes cations).
+cem
+{
+    name       CMX;
+    R_area     3.0e-4;     // Ohm.m2  (= 3.0 Ohm.cm2, 0.5 M NaCl, 25 C; Strathmann 2004)
+    t_cu       0.98;       // apparent counter-ion (cation) transport number (Golubenko 2019)
+    thickness  1.70e-4;    // m  (170 um wet; Golubenko 2019 Table 2)
+}
+
+// Anion-exchange membrane (passes anions).
+aem
+{
+    name       AMX;
+    R_area     2.4e-4;     // Ohm.m2  (= 2.4 Ohm.cm2, 0.5 M NaCl, 25 C; Strathmann 2004)
+    t_cu       0.98;       // apparent counter-ion (anion) transport number (Golubenko 2019)
+    thickness  1.35e-4;    // m  (135 um wet; Golubenko 2019 Table 5)
+}

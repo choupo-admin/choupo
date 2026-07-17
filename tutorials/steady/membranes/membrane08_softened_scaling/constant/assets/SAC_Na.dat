@@ -1,0 +1,45 @@
+// [imported] origin "data/standards/assets/SAC_Na.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*---------------------------------------------------------------------------*\
+  Choupo electrolyte catalogue --- ION-EXCHANGE RESIN (nameplate).
+
+  SAC_Na --- a Strong-Acid Cation exchange resin in the SODIUM form, the
+  workhorse of household / industrial water softening (sulfonated
+  polystyrene-DVB, e.g. Dowex/Amberlite/Purolite SAC grades).
+
+  This is the resin NOUN (resolved BY EXACT NAME, like materials/ and
+  membranes/): it names the fixed exchanger (X), the Gaines-Thomas convention
+  it equilibrates under (so the engine reads exchange.dat for the half-reaction
+  selectivities), and its CAPACITY in the two bases a vendor quotes:
+
+    CEC      [eq/L bed]      --- per litre of settled bed (the volumetric
+                                nameplate used to size a contactor); the engine
+                                converts to eq/kg WATER through the water/resin
+                                loading of the contact (announced).
+    CEC_dry  [eq/kg dry]     --- the intrinsic exchange capacity per kg of dry
+                                resin (the material property, basis-independent).
+    rho_bulk [kg/m3]         --- settled-bed bulk density (ties the two bases:
+                                CEC ~ CEC_dry * rho_dry-fraction).
+
+  form        the ionic form as shipped/regenerated (Na for a softener: every
+              site starts loaded with Na, released eq-for-eq as hardness binds).
+  T_max       the manufacturer's maximum service temperature.
+
+  Nameplate values (textbook representatives, NOT a specific product datasheet
+  --- a real selection reads the vendor's certificate):
+  source "Wachinski, Ion Exchange Treatment for Water (2017), Ch. 2-3;
+          Helfferich, Ion Exchange (1962, Dover reprint) --- SAC nameplate".
+\*---------------------------------------------------------------------------*/
+
+name        SAC_Na;
+kind        ionExchangeResin;
+exchanger   X;
+convention  GainesThomas;
+
+CEC         2.0  eq/L;       // total exchange capacity, per litre of settled bed
+CEC_dry     4.4  eq/kg;      // intrinsic capacity, per kg of dry resin
+rho_bulk    800  kg/m3;      // settled-bed bulk density
+
+form        Na;             // shipped / regenerated in the sodium form
+T_max       333  K;          // ~60 C service ceiling
+
+source      "Wachinski 2017; Helfferich 1962 (textbook nameplate)";

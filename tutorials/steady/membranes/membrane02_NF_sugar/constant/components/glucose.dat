@@ -1,12 +1,4 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
-// origin   standard
-// source   data/standards/components/glucose.dat
-// sha256   aeed1c8d3f5cb69aaa8cf37f756dd81cbb9980e4752d3efbf55f4f07f2d81ecf
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/glucose.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: D-Glucose (C6H12O6, CAS 50-99-7)
 
@@ -18,6 +10,12 @@
   separations.  NF membranes partially reject glucose
   (MW 180 ≈ NF270 cutoff of 200 Da), giving the partial-rejection
   curve that pedagogically distinguishes NF from RO.
+  Sources: dHf_298 from Ponomarev & Migarskaya, Russ. J. Phys. Chem. 34
+           (1960) -- combustion calorimetry; s_298 from Boerio-Goates,
+           J. Chem. Thermodyn. 23 (1991) -- adiabatic calorimetry (full
+           citations at the standardThermochemistry block).  MW from standard
+           atomic weights; solid Cp deliberately absent (flagged, not
+           fabricated -- see body).
 \*---------------------------------------------------------------------------*/
 
 name           glucose;
@@ -27,3 +25,45 @@ CAS            50-99-7;
 MW             180.16;         // g/mol
 nonvolatile    true;
 dissociation   1;              // non-electrolyte
+
+
+// ---------------------------------------------------------------------------
+// Standard enthalpy + entropy of formation of CRYSTALLINE alpha-D-glucose.
+// ARITY-1 INTRINSIC (the molecule + its elements): lives here in the
+// component .dat, NOT in a solvent tier (see docs/ai/data-doctrine.md).
+// phase = solid: glucose decomposes before it vaporises, so NIST/primary
+// tables give the SOLID datum -- the energy ladder never integrates a
+// glucose vapour leg (the phase keyword routes it on the solid line, exactly
+// as for sucrose; see theoryGuide.tex sec:gibbs-phase).
+//
+// PRIMARY (dHf_298): Ponomarev & Migarskaya, "Heats of combustion of some
+//   monosaccharides", Russ. J. Phys. Chem. 34 (1960) 1182-1183 -- combustion
+//   calorimetry, dHc = -(2801.5 +/- 0.5) kJ/mol => dHf(cr) = -(1274.6 +/- 0.6)
+//   kJ/mol.  (The rounded -1273.3 kJ/mol seen in textbooks traces to the same
+//   combustion lineage; the calorimetric primary value is kept.)
+// PRIMARY (s_298): Boerio-Goates, "Heat-capacity measurements and
+//   thermodynamic functions of crystalline alpha-D-glucose at temperatures
+//   from 10 K to 340 K", J. Chem. Thermodyn. 23 (1991) 403-409 -- adiabatic
+//   calorimetry; S(298.15 K) = (209.2 +/- 0.4) J/(mol K).
+standardThermochemistry
+{
+    dHf_298    -1274600.0;   // J/mol  (-1274.6 kJ/mol, crystalline alpha-D-glucose)
+                             //   [Ponomarev & Migarskaya 1960, combustion]
+    s_298      209.2;        // J/(mol K), third-law absolute
+                             //   [Boerio-Goates 1991, adiabatic calorimetry]
+    referenceState      pureSolid;
+}
+
+// solidHeatCapacity -- the SOLID crystal Cp.  PRIMARY would be Boerio-Goates
+// 1991 (same adiabatic-calorimetry study, Cp tabulated 10-340 K).  FLAGGED,
+// NOT FABRICATED: the exact Cp(298.15 K) value was not transcribable from a
+// clean primary at curation time, and glucose is dissolved-only in every
+// shipped case (NF separation: no energy balance runs on the solute, water
+// dominates Cp by orders of magnitude -- the same closure rationale as NaCl).
+// Fill `coefficients` from Boerio-Goates 1991 Table before any case runs a
+// solid-glucose energy balance.  Do NOT invent a number.
+
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 5; } { group CHO; count 1; } );   // added from data/groupEstimative (UNIFAC decomposition; vocab-checked vs groups.dat)
+}

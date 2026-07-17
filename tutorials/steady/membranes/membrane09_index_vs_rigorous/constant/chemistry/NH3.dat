@@ -1,0 +1,7 @@
+// [imported] origin "data/standards/chemistry/NH3.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+recordType gasLiquidEquilibrium;
+schemaVersion 1;
+
+gas NH3; reaction "NH3(g) = NH3"; dissolved "NH3";
+      logK25 1.7966; analytic ( -18.758 0.0003367 2511.3 4.8619 39.192 ); Tc 405.6; Pc 111.3; omega 0.25; source "USGS PHREEQC phreeqc.dat (public domain); primary not stated in db";
+

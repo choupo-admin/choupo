@@ -1,0 +1,52 @@
+// [imported] origin "data/standards/assets/NF270.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: NF270-style loose-NF
+  (DuPont FilmTec NF270-400 archetype)
+
+  A thin-film composite polyamide NF membrane with intermediate
+  selectivity: high rejection of divalent ions (MgSO4 ~ 98 %),
+  moderate rejection of small uncharged solutes like glucose
+  (~50 %), low rejection of monovalent salts (NaCl ~ 50-70 %).
+  Used for water softening, sugar concentration, and partial
+  desalination at modest pressures (5--10 bar).
+
+  Solution-diffusion permeabilities (v0.26 transport model):
+     A_w (water)  ≈ 1.0 × 10⁻⁵  m / (s · bar)
+                   = 36 × 10⁻³  m / (h · bar)
+                   = 36 LMH / bar
+                   (NF270 is ~10× more permeable to water than SW30HR --- the
+                    classic NF vs RO trade-off)
+
+  Solute permeabilities are chosen to reproduce manufacturer-published
+  rejections at typical test conditions:
+      NaCl     ~ 2 × 10⁻⁶  m/s  →  obs rejection ~ 50-70 % at 2 g/L
+      MgSO4    ~ 5 × 10⁻⁸  m/s  →  obs rejection ~ 98 %
+      glucose  ~ 2 × 10⁻⁷  m/s  →  obs rejection ~ 50 %
+
+  Source (named public document):
+     DuPont Water Solutions, FilmTec NF270-400 Product Data Sheet
+     (public).  Standard test conditions there: 2000 ppm MgSO4,
+     4.8 bar (70 psi), 25 °C, 15 % recovery — stabilized MgSO4
+     rejection ≥ 97 %.  The permeabilities below are Choupo
+     solution-diffusion fits that reproduce that datasheet
+     performance (plus the typically published NaCl / glucose NF270
+     rejections); they are NOT vendor-tabulated coefficients.
+\*---------------------------------------------------------------------------*/
+
+name           NF270;
+kind           NF;
+manufacturer   "DuPont FilmTec";
+
+A_w            1.0e-5  m/s/bar;     // much more permeable than RO
+permeabilities
+{
+    NaCl       5.0e-6  m/s;     // R_obs ~ 60-70 % at 2 g/L
+    MgSO4      5.0e-8  m/s;     // R_obs ~ 98 % (divalent retention)
+    glucose    8.0e-6  m/s;     // R_obs ~ 50 % at typical NF conditions
+}
+
+P_max          41.4;            // bar (600 psi)
+T_max          318;             // K (45 °C)
+pH_min         3;
+pH_max         10;
+MWCO           200;              // Da (loose NF)

@@ -20,6 +20,22 @@ propertyManifest
     importerVersion    "2";
     records
     {
+        "assets/SS304.dat"
+        {
+            type          imported;
+            sha256        "090eab1f294014a0aa7f48969ee138c1eee5597facd5898e2b1d2e05dd3b2988";
+            origin        "data/standards/assets/SS304.dat";
+            originSha256  "3fb99cfe8b8042e0c8c8975405f9f606da22ddd065a197675c22b2064003e4c4";
+            release       Choupo-2607;
+        }
+        "assets/SS316.dat"
+        {
+            type          imported;
+            sha256        "2c845d6cd53b1e5e12f8ae68fe51639baebe2002607ec5b5a2b0bf8a814d60e8";
+            origin        "data/standards/assets/SS316.dat";
+            originSha256  "62722fa29029900929c031078a53d695725f2c1cb7361d9f3f2a982c470217b6";
+            release       Choupo-2607;
+        }
         "components/aceticAcid.dat"
         {
             type          imported;
