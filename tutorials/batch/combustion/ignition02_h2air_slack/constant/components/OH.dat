@@ -1,0 +1,42 @@
+// [imported] origin "data/standards/components/OH.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Hydroxyl radical  (OH, CAS 3352-57-6)
+
+  The dominant chain-carrier in any high-temperature combustion;
+  abundance peaks just behind the flame front (2000-2400 K).
+  Including OH in a GibbsReactor that contains H2 / H2O / O2 lifts
+  the equilibrium prediction of adiabatic flame temperatures by
+  50-150 K because the equilibrium pool steals enthalpy from the
+  products.  Pedagogically: with OH the textbook "stoichiometric
+  CH4-air flame at 2225 K" is recovered; without it the model
+  predicts ~2330 K, the well-known too-high closed-system answer.
+
+  No vapour pressure: OH is a transient gas-phase species and never
+  appears as a condensed liquid.  We tag it `nonvolatile true` to
+  tell the rest of the package not to call Antoine on it (Antoine
+  is left empty for schema compliance and never read).
+  Sources: JANAF / NASA TM-4513 (McBride-Gordon-Reno 1993);
+  cross-checked with Burcat's thermodynamic database (TAE Report 867)
+  and vs cantera's NASA-polynomial standardThermochemistry at 298.15 K.
+\*---------------------------------------------------------------------------*/
+
+name           OH;
+formula        OH;
+CAS            3352-57-6;
+
+MW             17.008;       // kg/kmol
+nonvolatile    true;         // never a liquid in any process context
+
+standardThermochemistry
+{
+    dHf_298    39000.0;      // J/mol  -- ideal-gas reference
+    s_298      183.74;       // J/(mol·K)
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp fitted from JANAF tables 300-3000 K (RMS error < 0.4 J/mol/K)
+    coefficients  (30.05   -1.124e-2   1.793e-5   -7.000e-9);
+    Trange        (250  3000);
+}

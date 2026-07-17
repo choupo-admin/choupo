@@ -1,12 +1,4 @@
-// --- vendored for self-containment (2026-07-13) ---------------------
-// origin   standard
-// source   data/standards/components/CO2.dat
-// sha256   91a4619cf3fbc687b4a3e1b2f6aa3f4ec2a2de0e4af74c044c868b4e571dcc32
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/CO2.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Carbon dioxide  (CO2, CAS 124-38-9)
   Above its triple point (216.55 K, 5.18 bar) CO2 has a normal liquid

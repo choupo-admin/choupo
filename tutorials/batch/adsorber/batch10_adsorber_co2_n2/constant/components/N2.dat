@@ -1,12 +1,4 @@
-// --- vendored for self-containment (2026-07-13) ---------------------
-// origin   standard
-// source   data/standards/components/N2.dat
-// sha256   593cdfb5fe027414dad7cbcf8afd3a35854d709b0bc3cb643c4c7d43232512dc
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
-//          Verify-vs-standard / re-sync is a deliberate curation act.
-// ----------------------------------------------------------------------
-
+// [imported] origin "data/standards/components/N2.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Nitrogen  (N2, CAS 7727-37-9)
   Element in its standard state -- dHf_298 = 0; s_298 is the only
