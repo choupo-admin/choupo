@@ -1,0 +1,31 @@
+// [imported] origin "data/standards/parameters/Henry/N2-NH3.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*---------------------------------------------------------------------------*\
+  NITROGEN dissolved in liquid AMMONIA -- full Krichevsky-Kasarnovsky form.
+  =======================================================================
+  Same rigorous formulation as H2-NH3 (see that file for the derivation):
+      y phi_V P  =  x gamma2* H(T) exp[ v_inf (P - Ps_NH3) / RT ].
+
+  Source DATA: Larson & Black (1925), Ind. Eng. Chem. 17, 715 (DOI
+  10.1021/ie50187a028) -- the 3:1 H2:N2 syngas mix in liquid NH3 at 248-295 K,
+  5.07/10.13/15.20 MPa -- as compiled with BOTH gases' liquid mole fractions by
+  C. L. Young, IUPAC Solubility Data Series Vol 5/6 p. 634.  The evaluation
+  confirms the two gases dissolve INDEPENDENTLY (linear in partial pressure).
+
+  FIT (KK): the 273.2 K rows at 5.07 vs 10.13 MPa give the Poynting slope
+  directly: v_inf = 23 cm^3/mol (the "5% drift of H with P" IS the Poynting);
+  back-extrapolated intercepts H(273) = 1.28e9, H(292) = 9.34e8 Pa; van't Hoff
+  between them: dH_diss = +11040 J/mol; H_ref(298.15) = 8.5e8 Pa.
+  margulesA = 0 (x_N2 < 0.3% throughout -- rigorously dilute).
+  REFINEMENT HOOK: Wiebe & Tremearne (1933), JACS 55, 975 (DOI
+  10.1021/ja01330a016) has direct N2-only isotherms when it lands in
+  Literature.
+\*---------------------------------------------------------------------------*/
+solute      N2;
+solvent     NH3;
+model       vantHoff;
+H_ref       8.5e8 Pa;             // infinite-dilution reference fugacity, 298.15 K
+T_ref       298.15 K;
+enthalpy    11040 J/mol;          // dH_diss > 0: more soluble hot
+v_inf       2.3e-5;               // m^3/mol -- KK Poynting (23 cm^3/mol, fitted)
+margulesA   0.0;                  // J/mol   -- KI gamma2* (x_N2 < 0.3%, dilute)
+Trange      ( 238  305 );   // data 248-295 K +-10 K margin -- beyond = EXTRAPOLATION (announced)

@@ -1,3 +1,11 @@
+/*----------------------------------------------------------*\
+  constant/components/H2.dat -- MERGED sealed record: the standards base with
+  this case's partial overlay applied top-level (Choupo-2607 release).
+  Materialised by bin/choupo-import so the sealed case reads ONE
+  complete record with the catalogue hidden; provenance (base +
+  overlay hashes) is recorded in constant/propertyManifest.
+\*----------------------------------------------------------*/
+
 /* Case-local OVERLAY -- the ROLE SWITCH only.  In THIS loop H2 is a
    supercritical SOLUTE in liquid NH3; flipping role makes the K-value take the
    Henry path.  THE PHYSICS ("o sumo") lives in the PAIR catalogue:
@@ -6,5 +14,117 @@
        fitted to Wiebe & Tremearne 1934 (50-1000 atm, ~2%); the run log
        announces it as [henry].  Everything else (MW, Tc, Pc, omega, Cp...)
        merges from the standard H2.dat -- this file is deliberately a delta. */
+
 name  H2;
+
+formula     H2;
+
+CAS         1333-74-0;
+
+MW          2.016;
+
+Tc          33.18;
+
+Pc          13.13;
+
+omega       -0.220;
+
+Tb          20.39;
+
+HvapTb      904;
+
+Vliq        2.84e-5;
+
+diffusionVolume  6.12;
+
+standardThermochemistry
+{
+    dHf_298   0.0;                
+    s_298     130.680;            
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.54314   99.395   7.726);
+    Trange        (14  25);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    
+    coefficients  (27.14   9.274e-3   -1.381e-5   7.645e-9);
+    Trange        (250  1500);
+}
+
+aliases ( hydrogen );
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0383-PROF.txt bundled in usnistgov/COSMOSAC; CAS 1333-74-0";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        27.37216;
+        volume      13.10017;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.545316868188471
+            1.27928667476266
+            4.67360104497315
+            0.214475412075706
+            4.87691776134562
+            2.34606223865439
+            2.67976962463690
+            8.79133144284190
+            1.96539893252119
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
+}
+
 role  solute;

@@ -1,3 +1,11 @@
+/*----------------------------------------------------------*\
+  constant/components/sucrose.dat -- MERGED sealed record: the standards base with
+  this case's partial overlay applied top-level (Choupo-2607 release).
+  Materialised by bin/choupo-import so the sealed case reads ONE
+  complete record with the catalogue hidden; provenance (base +
+  overlay hashes) is recorded in constant/propertyManifest.
+\*----------------------------------------------------------*/
+
 /*---------------------------------------------------------------------------*\
   chemicalPlantTutorial / constant/components/sucrose.dat
 
@@ -16,9 +24,69 @@
   are specific to each instance.
 \*---------------------------------------------------------------------------*/
 
+name           sucrose;
+
+formula        C12H22O11;
+
+CAS            57-50-1;
+
+role           nonvolatile;
+
+MW             342.297;
+
+dissociation   1;
+
+Vliq           2.115e-4;
+
+solid
+{
+    rho_p   1590.0;     
+    k_v     0.5235987756;
+}
+
+solubility
+{
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    coefficients ( 1.79  0.0074  0.00022 );
+    dHcryst      0.0;     
+}
+
+standardThermochemistry
+{
+    dHf_298    -2226100.0;    
+    s_298      392.4;          
+    referenceState      pureSolid;
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    
+    
+    
+    coefficients  (630.0);
+    Trange        (270  400);
+}
+
+solidHeatCapacity
+{
+    model         polynomial;          
+    coefficients  ( 425.5 );
+    Trange        ( 280  330 );        
+}
+
 sorption
 {
-    Xm   0.045;     // GAB monolayer moisture
-    C    6.0;       // GAB energy constant
-    K    0.96;      // GAB multilayer factor
+    Xm   0.045;     
+    C    6.0;       
+    K    0.96;      
 }

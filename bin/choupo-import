@@ -212,6 +212,115 @@ SPECIATION_OP_TYPES = {"speciate", "scalingScan", "exchange"}
 
 
 # ---------------------------------------------------------------------------
+# Partial-overlay MERGE (the sealed form of a non-overlayOf `.dat` overlay).
+#
+# A case-local constant/components/<name>.dat that is a PARTIAL by-name overlay
+# (a delta: e.g. `name` + `role solute;` -- the ammonia loop's role switch --,
+# or a lone sorption{} block) relies at RUNTIME on Database::loadComponent
+# merging it top-level field-by-field OVER the standards base.  A SEALED case
+# reads exactly ONE constant/components/<name>.dat with the catalogue hidden, so
+# the seal must carry that merge PRE-MATERIALISED: the standards base with the
+# overlay's top-level entries applied.  This mirrors the engine's own overlay
+# semantic (top-level replacement -- NOT the `overlayOf` deep-merge, whose demo
+# cases stay live against the base by design).  The overlay's own header comment
+# ("o sumo" -- WHY the delta) is preserved atop the merged record.
+# ---------------------------------------------------------------------------
+def _strip_dat_comments(s):
+    s = re.sub(r'/\*.*?\*/', '', s, flags=re.S)
+    s = re.sub(r'//[^\n]*', '', s)
+    return s
+
+def _toplevel_entries(text):
+    """[(key, entryText)] at brace-depth 0: `key ... ;` or `key { ... }`."""
+    t = _strip_dat_comments(text)
+    entries, i, n = [], 0, len(t)
+    while i < n:
+        while i < n and t[i].isspace():
+            i += 1
+        if i >= n:
+            break
+        j = i
+        while j < n and (not t[j].isspace()) and t[j] not in '{;':
+            j += 1
+        key = t[i:j]
+        k = j
+        while k < n and t[k].isspace():
+            k += 1
+        if k < n and t[k] == '{':
+            depth, m = 0, k
+            while m < n:
+                if t[m] == '{':
+                    depth += 1
+                elif t[m] == '}':
+                    depth -= 1
+                    if depth == 0:
+                        m += 1
+                        break
+                m += 1
+            entries.append((key, t[i:m].strip()))
+            i = m
+        else:
+            depth, m = 0, k
+            while m < n:
+                c = t[m]
+                if c in '([':
+                    depth += 1
+                elif c in ')]':
+                    depth -= 1
+                elif c == ';' and depth == 0:
+                    m += 1
+                    break
+                m += 1
+            entries.append((key, t[i:m].strip()))
+            i = m
+    return [(k, e) for (k, e) in entries if k]
+
+def _leading_comment(text):
+    m = re.match(r'\s*(/\*.*?\*/)', text, flags=re.S)
+    return m.group(1) if m else ""
+
+def merge_overlay_text(base_text, overlay_text, rel, release):
+    """Standards base with the overlay's top-level entries applied; the
+    overlay's header comment kept.  Raises if the overlay declares overlayOf
+    (a deep-merge demo, not a flat delta -- never pre-materialise those)."""
+    if re.search(r'\boverlayOf\b', overlay_text):
+        die("[--merge-overlay %s] declares `overlayOf` -- that is a deep-merge"
+            " demo meant to stay live against the standards base; do NOT seal it"
+            " by pre-merging." % rel)
+    base_entries = _toplevel_entries(base_text)
+    over_entries = _toplevel_entries(overlay_text)
+    over_map = dict(over_entries)
+    base_keys = {k for k, _ in base_entries}
+    used = set()
+    body = []
+    for k, entry in base_entries:
+        if k in over_map:
+            body.append(over_map[k])
+            used.add(k)
+        else:
+            body.append(entry)
+    for k, entry in over_entries:            # overlay-only additions, in order
+        if k not in base_keys and k not in used:
+            body.append(entry)
+            used.add(k)
+    hdr = [
+        "/*----------------------------------------------------------*\\",
+        "  constant/%s -- MERGED sealed record: the standards base with" % rel,
+        "  this case's partial overlay applied top-level (%s release)." % release,
+        "  Materialised by bin/choupo-import so the sealed case reads ONE",
+        "  complete record with the catalogue hidden; provenance (base +",
+        "  overlay hashes) is recorded in constant/propertyManifest.",
+        "\\*----------------------------------------------------------*/",
+    ]
+    lead = _leading_comment(overlay_text)
+    parts = ["\n".join(hdr)]
+    if lead:
+        parts.append(lead)
+    parts.append("\n\n".join(body))
+    return "\n\n".join(parts) + "\n"
+
+
+# ---------------------------------------------------------------------------
 # Closure of ONE property system (a package dict) -- mirrors what the RUNTIME
 # resolves (ThermoPackageBuilder::translateV2 + the branch builders + the
 # SpeciationSolver scans).  Returns ({rel: standardsPath}, ionNames:set,
@@ -516,7 +625,11 @@ def manifest_text(entries, release, ctx_label):
     L.append("  claim types:  imported = installed + hash-verified copy;")
     L.append("                adopted  = authored record explicitly adopted at")
     L.append("                           import time (never installed, never")
-    L.append("                           hash-enforced, never removed).")
+    L.append("                           hash-enforced, never removed);")
+    L.append("                merged   = standards base with a partial by-name")
+    L.append("                           overlay applied top-level, materialised")
+    L.append("                           at import time (base + overlay hashes")
+    L.append("                           both recorded; durable like adopted).")
     L.append("\\*----------------------------------------------------------*/")
     L.append("")
     L.append("propertyManifest")
@@ -535,6 +648,16 @@ def manifest_text(entries, release, ctx_label):
             L.append("            type          adopted;")
             if "adoptedAt" in e:
                 L.append('            adoptedAt     "%s";' % e["adoptedAt"])
+            L.append("        }")
+        elif e.get("type") == "merged":
+            L.append('        "%s"' % rel)
+            L.append("        {")
+            L.append("            type          merged;")
+            L.append('            sha256        "%s";' % e["sha256"])
+            L.append('            origin        "%s";' % e["origin"])
+            L.append('            originSha256  "%s";' % e["originSha256"])
+            L.append('            overlaySha256 "%s";' % e["overlaySha256"])
+            L.append("            release       %s;" % e.get("release", release))
             L.append("        }")
         else:
             L.append('        "%s"' % rel)
@@ -621,7 +744,7 @@ def validate_staged(root, staged):
 # ---------------------------------------------------------------------------
 def main():
     args = sys.argv[1:]
-    adopt, overwrite = set(), set()
+    adopt, overwrite, merge_overlay = set(), set(), set()
     pos = []
     i = 0
     while i < len(args):
@@ -632,6 +755,9 @@ def main():
         elif a == "--overwrite":
             i += 1
             overwrite.add(args[i])
+        elif a == "--merge-overlay":
+            i += 1
+            merge_overlay.add(args[i])
         elif a.startswith("--"):
             die("unknown option " + a)
         else:
@@ -639,7 +765,7 @@ def main():
         i += 1
     if len(pos) != 1:
         die("usage: choupo-import <caseDir> [--adopt-local <rel>]..."
-            " [--overwrite <rel>]...")
+            " [--overwrite <rel>]... [--merge-overlay <rel>]...")
     caseDir = Path(pos[0]).resolve()
     if not caseDir.is_dir():
         die("not a directory: " + str(caseDir))
@@ -787,16 +913,35 @@ def main():
                     entries[rel] = {"type": "adopted",
                                     "adoptedAt": date.today().isoformat()}
                     continue
+                if rel in merge_overlay:
+                    # partial by-name overlay -> pre-materialise the top-level
+                    # merge (standards base `content` + authored delta at dst).
+                    overlay_text = dst.read_text()
+                    merged = merge_overlay_text(content, overlay_text, rel, release)
+                    installs[rel] = (merged, origin, osha)
+                    entries[rel] = {"type": "merged",
+                                    "sha256": sha(merged),
+                                    "origin": origin,
+                                    "originSha256": osha,
+                                    "overlaySha256": sha(overlay_text),
+                                    "release": release}
+                    continue
                 conflicts.append(
                     "FATAL [rule 1] %s: destination constant/%s exists but is"
                     " NOT in the manifest -- an authored file the importer"
                     " never overwrites.  Either remove/relocate it yourself"
-                    " (a curation act), or adopt it as the case's record:"
-                    "  --adopt-local %s" % (ctxDir.name, rel, rel))
+                    " (a curation act), adopt it as the case's record"
+                    " (--adopt-local %s), or -- for a PARTIAL by-name overlay --"
+                    " seal the base+delta merge (--merge-overlay %s)."
+                    % (ctxDir.name, rel, rel, rel))
                 continue
             if dst.exists() and oldE is not None:
-                if oldE.get("type") == "adopted":
-                    entries[rel] = oldE          # stays the author's, untouched
+                if oldE.get("type") in ("adopted", "merged"):
+                    # durable: the author's adopted record, or the pre-
+                    # materialised base+overlay merge (the partial overlay it
+                    # was built from no longer exists on disk -- never re-
+                    # install the bare base over it).
+                    entries[rel] = oldE
                     continue
                 cur = sha_file(dst)
                 if cur != oldE.get("sha256"):
@@ -832,8 +977,8 @@ def main():
         for rel, oldE in old.items():
             if rel in inst:
                 continue
-            if oldE.get("type") == "adopted":
-                entries[rel] = oldE              # adoption is durable
+            if oldE.get("type") in ("adopted", "merged"):
+                entries[rel] = oldE              # adoption / merge is durable
                 continue
             dst = constant / rel
             if not dst.exists():

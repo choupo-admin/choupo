@@ -1,39 +1,36 @@
-/*----------------------------------------------------------*\
-  constant/components/water.dat -- MERGED sealed record: the standards base with
-  this case's partial overlay applied top-level (Choupo-2607 release).
-  Materialised by bin/choupo-import so the sealed case reads ONE
-  complete record with the catalogue hidden; provenance (base +
-  overlay hashes) is recorded in constant/propertyManifest.
-\*----------------------------------------------------------*/
+// [imported] origin "data/standards/components/water.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Water  (H2O, CAS 7732-18-5)
+  Warning: Antoine fit accurate for 273-373 K only.
+           Above ~373 K use steam tables or a proper EoS (IAPWS).
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), the Antoine
+           fit, the Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).  K_b/K_f
+           and the Andrade/Vogel viscosity fits repeat the same pending
+           re-citation at their blocks; UNIQUAC r,q are the van der Waals
+           values (Abrams-Prausnitz) as used by Popken 2000, Table 2.
+\*---------------------------------------------------------------------------*/
 
 name        water;
-
 formula     H2O;
-
 CAS         7732-18-5;
 
 MW          18.015;
-
 Tc          647.14;
-
 Pc          220.64;
-
 omega       0.3449;
-
 Tb          373.15;
-
 HvapTb      40660;
-
 Vliq        1.807e-5;
+diffusionVolume  13.1;          // Fuller diffusion volume [-]
 
-diffusionVolume  13.1;
 
 standardThermochemistry
 {
-    dHf_298   -241826.0;        
-    s_298     188.834;         
+    dHf_298   -241826.0;        // J/mol  -- ideal-gas reference
+    s_298     188.834;         // J/(mol·K)  -- third-law absolute
 }
-
 vaporPressure
 {
     model         Antoine;
@@ -55,14 +52,20 @@ liquidHeatCapacity
     Trange        (273  373);
 }
 
+// Ebulioscopic / cryoscopic constants for water (v0.28+):
+//   K_b = 0.512 K * kg / mol  (boiling-point elevation, ΔT = K_b · m)
+//   K_f = 1.853 K * kg / mol  (freezing-point depression, ΔT = K_f · m)
+// Reference: individual literature values -- primary re-citation pending (IST review).
 ebulioscopic
 {
     K_b   0.512;
     K_f   1.853;
 }
 
+// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
+// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
+// fitted to literature mu(T) over ~10-100 degC.
 associationFactor  2.6;
-
 liquidViscosity
 {
     andrade { A -13.03; B 1796.1; }
@@ -77,7 +80,7 @@ groups
 uniquac
 {
     r   0.9200;
-    q   1.4000;     
+    q   1.4000;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
 }
 
 cosmo
