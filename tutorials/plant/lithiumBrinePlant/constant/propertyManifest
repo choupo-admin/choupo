@@ -20,7 +20,7 @@ propertyManifest
 {
     sealed             true;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-17";
+    importedAt         "2026-07-18";
     importerVersion    "2";
     records
     {
@@ -95,14 +95,6 @@ propertyManifest
             sha256        "590702adfd0a04f54318ed97140943d672afd4f9c0526aeac5d31dbca1fcfc63";
             origin        "data/standards/components/water.dat";
             originSha256  "7d1996853ccc57b14e5dccf6febb031bf4b6683db7c18ef5622a80da3317a421";
-            release       Choupo-2607;
-        }
-        "methods/NRTL.dat"
-        {
-            type          imported;
-            sha256        "d799a507a0cd16c10e518e6dea9ca3ada992acb3923789183d1ffac6a45c3510";
-            origin        "data/standards/methods/NRTL.dat";
-            originSha256  "685ffda66992d4cae9c5e5e2e514c4ec6f6a287b438ecfb50ac570cf2ea2aeea";
             release       Choupo-2607;
         }
         "methods/pitzer.dat"

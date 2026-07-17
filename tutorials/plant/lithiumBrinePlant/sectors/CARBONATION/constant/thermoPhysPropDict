@@ -1,0 +1,17 @@
+/*---------------------------------------------------------------------------*\
+  CARBONATION property context (v2).  Inherits the plant root; narrows the
+  component set (the Li2CO3 precipitation world stays on the molecular
+  ideal default -- the crystalliser reads the solubility curve).
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+inherits "../../../constant";
+
+components ( water Li2CO3 );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal; standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}

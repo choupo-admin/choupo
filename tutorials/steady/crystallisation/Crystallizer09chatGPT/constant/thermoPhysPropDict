@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------*\
+  Crystallizer09chatGPT / constant/thermoPhysPropDict (v2) -- SELF-CONTAINED.
+  KCl is the electrolyte component (eNRTL ion-activity Ksp, the TUNED K-Cl
+  tau set adopted in constant/parameters/eNRTL/); KHT crystallises off its
+  molecular solubility curve; ethanol is the antisolvent (mixed-solvent
+  drowning-out).  The recovery column overrides this context with its own
+  molecular NRTL equilibrium (unitOperations/recovery/constant/).
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components      ( water ethanol KCl potassiumBitartrate );
+
+chemistry
+{
+    salts ( sylvite );
+}
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+    aqueous
+    {
+        activityModel { model eNRTL; }
+        compositionBasis molality;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

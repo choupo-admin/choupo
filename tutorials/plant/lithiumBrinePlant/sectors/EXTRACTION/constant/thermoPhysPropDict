@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  EXTRACTION property context (v2).  Inherits the plant root and REPLACES
+  the equilibrium whole: TWO liquid phases (aqueous / organicPhase) on the
+  NRTL gamma surface -- the LL split of the solvent-extraction settler.
+  The 15 pair records are PER-NODE data: they live in THIS sector's
+  constant/parameters/NRTL/ (the 5 tuned pairs + 10 owned assumedIdeal
+  assumptions) and resolve nearest-owner-first; every resolution is
+  announced with its provenance in the run log (the lithium-route-gate
+  pins exactly that).  activeComponents projects the pair domain.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+inherits "../../../constant";
+
+activeComponents
+(
+    water
+    NaCl
+    LiCl
+    kerosene_C12cut
+    LiX_extractant
+    Li2CO3
+);
+
+equilibrium
+{
+    formulation gammaGamma;
+    liquidPhases
+    (
+        { name aqueous;      activityModel { model NRTL; } }
+        { name organicPhase; activityModel { model NRTL; } }
+    );
+}

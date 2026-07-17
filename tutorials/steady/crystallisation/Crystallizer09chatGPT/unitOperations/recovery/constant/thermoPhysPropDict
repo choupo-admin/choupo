@@ -1,0 +1,24 @@
+/*---------------------------------------------------------------------------*\
+  recovery property context (v2).  Inherits the case root and REPLACES the
+  equilibrium whole: the ethanol/water azeotrope column runs on molecular
+  NRTL -- the inherited salt chemistry (sylvite / ion speciation) stays
+  AVAILABLE but INACTIVE for this liquid (not required by NRTL, never a
+  contamination).  Inheritance is explicit (`inherits`, a directory).
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+inherits "../../../constant";
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel { model NRTL; }
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

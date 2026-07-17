@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  FINISHING property context (v2).  Inherits the plant root; narrows the
+  component set (drying/recovery air world, molecular ideal default).
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+inherits "../../../constant";
+
+components ( water N2 O2 CO2 Li2CO3 );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal; standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}

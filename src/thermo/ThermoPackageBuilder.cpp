@@ -789,6 +789,19 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
     if (!v2->found("components")) absent("components", "thermophysicalPropertySystem");
     out->insert("components", v2->entryValue("components"));
 
+    // G7: declarative projections ride through EVERY translation shape --
+    // activeComponents (the pair-domain projection, forum M6) and, on the
+    // flat emissions, the transitional chemistry{} block, exactly as the v1
+    // merged context carried them to thermoFor.
+    auto carry = [&](const DictPtr& d)
+    {
+        if (v2->found("activeComponents") && !d->found("activeComponents"))
+            d->insert("activeComponents", v2->entryValue("activeComponents"));
+        if (v2->found("chemistry") && !d->found("chemistry"))
+            d->insert("chemistry", v2->entryValue("chemistry"));
+        return d;
+    };
+
     // Reusable: verify a declared caloric route against the implemented one.
     auto verifyRoute = [&](const DictPtr& cal, const std::string& phase,
                            const std::string& key, const std::string& implemented)
@@ -846,7 +859,7 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
         announce("aqueousProperties: " + model + " on aqueousMolality"
                  " (speciation ops consume this surface; the analysis lives"
                  " in the op, the chemistry in the curated tree)");
-        return out;
+        return carry(out);
     }
 
     // ---- T2 / T7: equilibrium block ----------------------------------------
@@ -995,7 +1008,7 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
                 announce("equilibrium gammaPhi: liquid activity." + model
                      + "; vapour " + vap + " (flat emission for the pureFluids"
                      " override).");
-            return flat;
+            return carry(flat);
         }
         // G3: inline pairs / a cosmoSAC set selector have their home in the
         // FLAT reader (activityModel { model; source; pairs() }) -- emit it.
@@ -1049,7 +1062,7 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
                      + (cosmoSet.empty() ? ""
                         : " (parameter set '" + cosmoSet + "')")
                      + "; vapour " + vap + ".");
-            return flat;
+            return carry(flat);
         }
         pm->insert("liquid", "activity." + model);
         pm->insert("vapour", vap == "idealGas" ? std::string("builtin.idealGas")
@@ -1069,7 +1082,7 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
                  + "; vapour " + vap + ".  caloric: liquid pureCpPlusExcess,"
                  " vapour idealGasCp, liquidVapour componentCorrelation"
                  " (elements datum).");
-        return out;
+        return carry(out);
     }
 
     // ---- G2 (Codex-ratified 2026-07-18): gammaGamma -- the LLE/VLLE world.
@@ -1159,7 +1172,7 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
                                         : ", no vapour (LLE)")
                  + " -- ONE Gibbs surface per phase, split by direct"
                    " minimisation.");
-        return flat;
+        return carry(flat);
     }
 
     if (form == "electrolyteGammaPhi")
@@ -1194,7 +1207,7 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
                  + " (molality); vapour idealGas.  caloric: aqueous"
                  " ionicReferencePlusExcess (aqueous inf-dilution ion datum"
                  " + L_phi), vapour idealGasCp (elements datum).");
-        return out;
+        return carry(out);
     }
 
     if (form == "phiPhi")
@@ -1227,7 +1240,7 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
         announce("equilibrium phiPhi: " + model + " on BOTH phases (one Gibbs"
                  " surface, two roots); kij declared inside the EoS block."
                  "  caloric: departure from the SAME EoS (elements datum).");
-        return out;
+        return carry(out);
     }
 
     if (form == "gammaPhi" || form == "dilute")
@@ -1277,7 +1290,7 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
         announce("equilibrium diluteSolution: solvent on Raoult, solutes on"
                  " infinite-dilution Henry (K = gamma* H(T) / phi P); vapour"
                  " phi " + vap + "; pairs declared inside the solutes group.");
-        return out;
+        return carry(out);
     }
 
     throw std::runtime_error("thermophysicalPropertySystem: formulation '"

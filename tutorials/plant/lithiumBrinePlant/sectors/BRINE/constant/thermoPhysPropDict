@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  BRINE property context (v2).  Inherits the plant root and REPLACES the
+  equilibrium whole: the brine liquid is an aqueous electrolyte on the
+  Pitzer molality surface (halite SLE activates via chemistry.salts; Ksp
+  from the component's solidPhases{}).
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+inherits "../../../constant";
+
+components ( water NaCl LiCl );
+
+chemistry
+{
+    salts ( halite );
+}
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+    aqueous
+    {
+        activityModel { model Pitzer; }
+        compositionBasis molality;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  HOTAIR property context (v2).  Inherits the plant root; narrows the
+  component set (methane burner: combustion species, ideal-gas world).
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+inherits "../../../constant";
+
+components ( CH4 O2 N2 CO CO2 water H2 );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal; standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}

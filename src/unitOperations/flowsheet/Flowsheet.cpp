@@ -1340,7 +1340,11 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 std::string base = memberBase.substr(0, memberBase.size() - 1);
                 for (int up = 0; up < 8 && !base.empty(); ++up)
                 {
-                    if (std::filesystem::exists(base + "/constant/propertyDict"))
+                    // G7: both grammar names anchor a property context (v2
+                    // first is resolvePropertyContext's job; HERE either name
+                    // marks the owning node).
+                    if (std::filesystem::exists(base + "/constant/propertyDict")
+                        || std::filesystem::exists(base + "/constant/thermoPhysPropDict"))
                     { u->insert("propertyContextBase", std::string(base + "/constant")); break; }
                     const auto slash = base.rfind('/');
                     if (slash == std::string::npos) break;
@@ -2422,6 +2426,41 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
         std::set<std::string> visited;
         DictPtr ctx = resolvePropertyContext(udict->lookupWord("propertyContextBase"),
                                              visited);
+        // G7: a v2 chain resolves in the AUTHORED grammar; translate ONCE on
+        // the completed system so the F2 logic below reads the v1 shape.
+        const bool wasV2 = isV2System(ctx);
+        if (wasV2)
+            ctx = ThermoPackageBuilder::translateV2(ctx);
+        // A v2 translation may resolve to the FLAT shape (gammaGamma phases,
+        // inline pairs) -- no propertyMethods to parse; the flat blocks ARE
+        // the override.  Copy them (+ the per-node auxiliaries) directly.
+        if (wasV2 && !ctx->found("propertyMethods"))
+        {
+            over = std::make_shared<Dictionary>("thermo");
+            for (const char* k : {"phases", "activityModel", "equationOfState",
+                                  "transport", "pureFluids", "activeComponents",
+                                  "chemistry"})
+                if (ctx->found(k)) over->insert(k, ctx->entryValue(k));
+            {
+                const std::string pcb = udict->lookupWord("propertyContextBase");
+                const auto s = pcb.rfind("/constant");
+                if (s != std::string::npos && s + 9 == pcb.size())
+                    over->insert("binaryPairsBase", pcb.substr(0, s));
+            }
+            if (hasThermoBlock)
+            {
+                auto aux = udict->subDict("thermo");
+                for (const auto& k : aux->keys())
+                    over->insert(k, aux->entryValue(k));
+            }
+            for (const auto& k : over->keys())
+                merged->insert(k, over->entryValue(k));
+            std::unique_ptr<ThermoPackage> tpf = std::make_unique<ThermoPackage>();
+            tpf->readFromDict(merged, *db_);
+            const ThermoPackage& reff = *tpf;
+            unitThermo_[uname] = std::move(tpf);
+            return reff;
+        }
         over = std::make_shared<Dictionary>("thermo");
         std::string liq;
         if (ctx->found("propertyMethods")

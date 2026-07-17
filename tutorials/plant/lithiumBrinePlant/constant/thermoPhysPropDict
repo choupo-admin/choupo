@@ -1,0 +1,40 @@
+/*---------------------------------------------------------------------------*\
+  lithiumBrinePlant / constant/thermoPhysPropDict  (v2)
+  Root property context: the GLOBAL component universe + the molecular
+  default world (T1 ideal gamma-phi).  Real sectors inherit this file and
+  override only what differs -- each declares its OWN complete equilibrium
+  (a physical block is atomic: a formulation is stated whole, never merged
+  half-and-half).  No `inherits`: this is the top of the explicit chain.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components
+(
+    water
+    NaCl
+    LiCl
+    kerosene_C12cut
+    LiX_extractant
+    Li2CO3
+    CH4
+    O2
+    N2
+    CO
+    CO2
+    H2
+);
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
