@@ -1,0 +1,130 @@
+// [imported] origin "data/standards/components/nButane.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-Butane  (C4H10, CAS 106-97-8)
+
+  The other half of LPG; refinery alkylation feedstock; aerosol
+  propellant.  Tc = 425 K means it is liquefiable at room temperature
+  under modest pressure (~3 bar).  iso-Butane has Tc ~408 K and
+  similar Cp --- close enough that this entry doubles as a rough
+  surrogate when the isomer is not separated.
+  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
+  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
+  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
+  Gordon-Reno 1993).
+\*---------------------------------------------------------------------------*/
+
+name        nButane;
+formula     C4H10;
+CAS         106-97-8;
+
+MW          58.123;            // kg/kmol
+Tc          425.12;             // K
+Pc          37.96;              // bar
+omega       0.200;              // [-]
+Tb          272.65;             // K
+HvapTb      22440;              // J/mol
+Vliq        9.62e-5;            // m^3/mol
+
+standardThermochemistry
+{
+    dHf_298    -125790.0;       // J/mol  -- ideal-gas reference
+    s_298      310.12;          // J/(mol·K)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.93266   935.773   -34.361);
+    Trange        (273  425);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (9.487   0.3313   -1.108e-4   -2.822e-9);
+    Trange        (250  1500);
+}
+
+groups
+{
+    joback ( { group CH3; count 2; } { group CH2; count 2; } );
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } );
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)] -- fitted to CoolProp 7.2.0 saturated-liquid cp (maxerr 0.00%)
+    coefficients  (127.406  -0.185729  0.000648415  4.57156e-07);
+    Trange        (213  273);
+}
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( n-butane butane C4H10 );
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0005-PROF.txt bundled in usnistgov/COSMOSAC; CAS 106-97-8";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        117.34339;
+        volume      102.43321;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.544588135073877
+            9.80065439624953
+            17.8972660229419
+            23.9077512052113
+            17.5435397896482
+            18.2584038556234
+            19.2142975482379
+            9.84334519690273
+            0.333543850111165
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
+}

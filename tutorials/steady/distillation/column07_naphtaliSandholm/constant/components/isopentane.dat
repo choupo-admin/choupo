@@ -1,0 +1,142 @@
+// [imported] origin "data/standards/components/isopentane.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isopentane  (C5H12, CAS 78-78-4)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Lemmon-JCED-2006
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        isopentane;
+formula     C5H12;
+CAS         78-78-4;
+
+MW          72.1488;        // kg/kmol  [CoolProp]
+Tc          460.3498;        // K        [CoolProp EOS]
+Pc          33.78217;        // bar      [CoolProp EOS]
+omega       0.22740;        // [-]      [CoolProp EOS]
+Tb          300.9763;        // K  normal boiling [CoolProp]
+HvapTb      24767.7;        // J/mol  at Tb     [CoolProp]
+Vliq        1.1732e-04;        // m3/mol @298K     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.05002   1084.16   -33.0086);
+    Trange        (207.16  451.14);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (1.83706  0.44384  -0.000167017  7.05093e-09);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (110.736  -0.0231064  0.000692185  -4.9663e-08);
+    Trange        (230  301);
+}
+
+triplePoint
+{
+    T   112.6500;
+    P   0.0001;
+}
+
+standardThermochemistry
+{
+    dHf_298   -153758.9;        // J/mol  ideal-gas [origin=measured method=NASA-TM4513]
+    s_298     343.74;        // J/(mol.K) third-law absolute [NASA-TM4513]
+}
+
+groups { joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } ); }
+
+provenance
+{
+    constants      "CoolProp 7.2.0 -- Lemmon-JCED-2006";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.60%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 1.17%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+    preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
+    standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), H0/S0(298.15) from NASA-7 poly";
+}
+
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } );
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0007-PROF.txt bundled in usnistgov/COSMOSAC; CAS 78-78-4";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        133.44354;
+        volume      124.67696;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.702777946027283
+            12.6468896744126
+            20.1951471536796
+            27.5146435272156
+            17.9940148863977
+            19.2494742855239
+            21.0742714997614
+            13.1048904546379
+            0.961430572344065
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
+}

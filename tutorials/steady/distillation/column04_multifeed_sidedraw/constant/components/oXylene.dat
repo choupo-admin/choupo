@@ -1,0 +1,152 @@
+// [imported] origin "data/standards/components/oXylene.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oXylene  (C8H10, CAS 95-47-6)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Zhou-JPCRD-2012
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        oXylene;
+formula     C8H10;
+CAS         95-47-6;
+
+MW          106.1650;        // kg/kmol  [CoolProp]
+Tc          630.2590;        // K        [CoolProp EOS]
+Pc          37.37460;        // bar      [CoolProp EOS]
+omega       0.31200;        // [-]      [CoolProp EOS]
+Tb          417.5210;        // K  normal boiling [CoolProp]
+HvapTb      36383.9;        // J/mol  at Tb     [CoolProp]
+Vliq        1.2120e-04;        // m3/mol @298K     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.22028   1538.93   -52.5474);
+    Trange        (283.62  617.65);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (-3.37066  0.51896  -0.000193422  -1.30232e-08);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (159.089  -0.213632  0.00130891  -9.22123e-07);
+    Trange        (315  418);
+}
+
+triplePoint
+{
+    T   247.9850;
+    P   22.8058;
+}
+
+standardThermochemistry
+{
+    dHf_298   16610;      // J/mol ideal-gas -- provenance: see the structured dHf_298 block below
+    dGf_298   119260;      // J/mol  ideal-gas [Joback]
+    s_298     355.03;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S]
+}
+
+groups { joback ( { group CH3; count 2; } { group arCH; count 4; } { group arC; count 2; } ); }
+
+provenance
+{
+    dHf_298
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH3:2,arC:2,arCH:4";
+        uncertainty      { status unquantified; reason "bulk-import band ~9 kJ/mol, primary basis not verified"; }
+    }
+
+    constants      "CoolProp 7.2.0 -- Zhou-JPCRD-2012";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.63%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 4.07%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+    preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
+}
+
+groups
+{
+    unifac ( { group ACH; count 4; } { group ACCH3; count 2; } );
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0245-PROF.txt bundled in usnistgov/COSMOSAC; CAS 95-47-6";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        157.46773;
+        volume      153.88669;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            4.04784531765769
+            14.1242035300920
+            18.6235551238809
+            17.1157278846700
+            12.9554732952080
+            10.6220106266593
+            13.6834327208222
+            16.5167920181172
+            8.16967519395318
+            8.10996354582234
+            6.63013121739317
+            6.45837881576970
+            9.54995360157957
+            6.31549616253241
+            4.32980330370511
+            0.215287642137226
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
+}
