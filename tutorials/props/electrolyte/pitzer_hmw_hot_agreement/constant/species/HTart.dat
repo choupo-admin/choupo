@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HTart.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HTart;
+ion     "HC4H4O6-";
+charge  -1;
+MW { value 149.08; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -1292100; unit J/mol;}
+}

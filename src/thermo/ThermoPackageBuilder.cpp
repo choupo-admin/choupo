@@ -242,7 +242,7 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
             auto iRec = electrolyte::findIon(ion);
             if (!iRec)
                 throw std::runtime_error("propertyPackage: ion '" + ion
-                    + "' not found (case ions.dat / snapshot / species/aqueous.dat).");
+                    + "' not found (case ions.dat / constant/species/<ion>.dat / standards species/<ion>.dat).");
             const int z = static_cast<int>(std::lround(iRec->lookupScalar("z")));
             if      (z > 0) catName = ion;
             else if (z < 0) anName = ion;

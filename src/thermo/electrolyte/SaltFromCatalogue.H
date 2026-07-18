@@ -29,7 +29,7 @@ License
 /*---------------------------------------------------------------------------*\
   loadSalt(cation, anion) -- the ONE place that turns a pair of ion NAMES into a
   configured single-salt Pitzer kernel, reading the curated catalogue
-  (species/aqueous.dat + parameters/Pitzer/pairs/).  Charges come from
+  (species/<name>.dat + parameters/Pitzer/pairs/).  Charges come from
   the species record;
   the salt stoichiometry is DERIVED from electroneutrality (Ca + Cl -> CaCl2).
 
@@ -189,6 +189,18 @@ inline DictPtr bridgeTrueIon(const DictPtr& r, const std::string& species)
 //       the RecordResolver TODO).
 //   (4) standards species/aqueous.dat -- ONE catalogue (aqueousSpecies list),
 //       FORBIDDEN when the case is sealed (loud refusal instead).
+// The RAW model-species record (species/<name>.dat, the 2026-07-18 flat-file
+// decision: ONE typed file per model species -- a sealed case copies exactly
+// the species it reaches).  Resolution: case-local constant/species/<name>.dat
+// (walk-up) -> standards species/<name>.dat -> [transitional, dies with the
+// monolith] the aqueous.dat catalogue.  nullptr when absent everywhere.
+inline DictPtr rawSpeciesRecord(const std::string& species)
+{
+    const fs::path f = records::resolveRecord("species/" + species + ".dat");
+    if (!f.empty() && fs::exists(f)) return parsedOnce(f);
+    return nullptr;
+}
+
 inline DictPtr findIon(const std::string& species)
 {
     const fs::path cl = caseElectrolytePath("ions.dat");
@@ -198,25 +210,11 @@ inline DictPtr findIon(const std::string& species)
         for (const auto& i : d->lookupDictList("ions"))
             if (i->lookupWord("species") == species) return i;
     }
-    const fs::path localCat = records::localRecord("species/aqueous.dat");
-    if (!localCat.empty())
-    {
-        auto c = parsedOnce(localCat);
-        for (const auto& r : c->lookupDictList("aqueousSpecies"))
-            if (r->lookupWord("name") == species)
-                return bridgeTrueIon(r, species);
-    }
+    DictPtr rec = rawSpeciesRecord(species);
+    if (rec) return bridgeTrueIon(rec, species);
     if (records::sealed())
-        records::refuseSealed("species/aqueous.dat: " + species,
+        records::refuseSealed("species/" + species + ".dat",
                               "aqueous species record");
-    const fs::path cat = records::standardsRecord("species/aqueous.dat");
-    if (fs::exists(cat))
-    {
-        auto c = parsedOnce(cat);
-        for (const auto& r : c->lookupDictList("aqueousSpecies"))
-            if (r->lookupWord("name") == species)
-                return bridgeTrueIon(r, species);
-    }
     return nullptr;
 }
 
@@ -462,24 +460,7 @@ inline bool ionAqReference(const std::string& cation, const std::string& anion,
 // the ion carries no cpAvg298 block (caller falls to the cpAq tier).
 inline bool ionCCNodes(const std::string& ion, double v[5])
 {
-    DictPtr rec;
-    const fs::path localCat = records::localRecord("species/aqueous.dat");
-    if (!localCat.empty())
-    {
-        auto c = parsedOnce(localCat);
-        for (const auto& r : c->lookupDictList("aqueousSpecies"))
-            if (r->lookupWord("name") == ion) { rec = r; break; }
-    }
-    if (!rec && !records::sealed())
-    {
-        const fs::path cat = records::standardsRecord("species/aqueous.dat");
-        if (fs::exists(cat))
-        {
-            auto c = parsedOnce(cat);
-            for (const auto& r : c->lookupDictList("aqueousSpecies"))
-                if (r->lookupWord("name") == ion) { rec = r; break; }
-        }
-    }
+    DictPtr rec = rawSpeciesRecord(ion);
     if (!rec || !rec->found("aqueousThermo")) return false;
     auto at = rec->subDict("aqueousThermo");
     if (!at->found("cpAvg298")) return false;

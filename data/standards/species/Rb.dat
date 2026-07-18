@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Rb.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+// CURATION STUB (Criss-Cobble migration 2026-07-18): the ion's
+// T-averaged Cp is PRIMARY-cited below; hfAq/sAq are NOT curated
+// yet -- a package consuming this ion's formation data must wait
+// for that curation (the loud-absence doctrine), the CC heat-
+// capacity tier alone is served.
+name    Rb;
+ion     "Rb+";
+charge  +1;
+MW { value 85.468; unit g/mol;}
+aqueousThermo
+{
+// Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+// T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+// cal/mol/K on the CC ABSOLUTE single-ion scale.
+cpAvg298
+{
+    model  crissCobble1964;
+    scale  crissCobbleAbsolute;
+    units  "cal/mol/K";
+    averageFrom298
+    (
+        { T 298.15; value 30; }
+        { T 333.15; value 25; }
+        { T 373.15; value 32; }
+        { T 423.15; value 31; }
+        { T 473.15; value 35; }
+    );
+    source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
+}
+}

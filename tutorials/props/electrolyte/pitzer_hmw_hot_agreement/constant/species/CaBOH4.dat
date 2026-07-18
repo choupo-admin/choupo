@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/CaBOH4.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+/*--------------------------------*- Choupo -*-----------------------*\
+Model species: calcium-borate ion pair CaB(OH)4+  (charge +1)
+Identity + charge record only (no thermo block yet) -- summoned by
+the pitzerHMW borate system; its Pitzer interaction parameters live
+in parameters/Pitzer/pairs/ (CaBOH4-Cl).
+Species lineage: the borate speciation set of Felmy & Weare (1986),
+"The prediction of borate mineral equilibria in natural waters:
+application to Searles Lake, California", Geochim. Cosmochim. Acta
+50, 2771-2783 (the Harvie-Moller-Weare Pitzer extension), as carried
+by USGS PHREEQC pitzer.dat (public domain; databank provenance
+Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49).
+\*---------------------------------------------------------------------------*/
+name    CaBOH4;
+ion     "CaB(OH)4+";
+charge  +1;

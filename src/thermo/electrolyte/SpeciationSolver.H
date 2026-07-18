@@ -126,7 +126,7 @@ Description
     e.g. calcite against CO3 --- both resolve in the final activity table).
 
     DATA: the curated tree (chemistry/ (recordType aqueousSpeciation) , components/ solidPhases,
-    species/aqueous.dat charges).  A case-local speciation.dat carries the case DELTA;
+    species/<ion>.dat charges).  A case-local speciation.dat carries the case DELTA;
     its `speciationMode` decides how it meets the tree: `extend` (DEFAULT) MERGES the
     case reactions over the tree (override same-species, add new -- e.g. an organic
     acid on top of the inorganic catalogue), `replace` ECLIPSES the tree entirely

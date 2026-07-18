@@ -33,7 +33,7 @@ License
   Records are loaded + verified through the ONE record resolver
   (thermo/RecordResolver.H: the case's mirrored constant/ tree, the legacy
   propertyData/ snapshot, else the standards catalogue): components/ (the
-  unified substance records), species/aqueous.dat, chemistry/, and
+  unified substance records), species/<name>.dat, chemistry/, and
   parameters/Pitzer/pairs/.  (Water, a plain molecular component,
   is loaded by name as usual.)
 \*---------------------------------------------------------------------------*/

@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/H3BO3.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    H3BO3;
+ion     "H3BO3";
+charge  0;
+MW { value 61.831; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -1072320; unit J/mol;}
+sAq  { value 162.3;  unit J/mol/K;}
+}

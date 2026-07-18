@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/MgOH.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+/*--------------------------------*- Choupo -*-----------------------*\
+Model species: hydroxo complex MgOH+  (charge +1)
+Identity + charge + MW record.  Species lineage: USGS PHREEQC
+phreeqc.dat (public domain); the matching association equilibrium
+(logK25 -11.44) lives in chemistry/ (recordType aqueousSpeciation) MgOH.dat, and a
+Pitzer pair in parameters/Pitzer/pairs/MgOH-Cl.dat.
+MW 41.31 g/mol is summed from the IUPAC standard atomic weights
+(Mg 24.305 + O 15.999 + H 1.008) -- derived, no independent primary
+needed.
+\*---------------------------------------------------------------------------*/
+name    MgOH;
+ion     "MgOH+";
+charge  +1;
+MW { value 41.31; unit g/mol;}

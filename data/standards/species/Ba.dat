@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Ba.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Ba;
+ion     "Ba+2";
+charge  +2;
+MW { value 137.327; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -537640; unit J/mol;}
+sAq  { value 9.6;  unit J/mol/K;}
+        // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+// T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+// cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+// 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+// only thing the engine consumes).
+cpAvg298
+{
+    model  crissCobble1964;
+    scale  crissCobbleAbsolute;
+    units  "cal/mol/K";
+    averageFrom298
+    (
+        { T 298.15; value 44; }
+        { T 333.15; value 38; }
+        { T 373.15; value 50; }
+        { T 423.15; value 50; }
+        { T 473.15; value 55; }
+    );
+    source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
+}
+}

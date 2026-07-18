@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/H4SiO4.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    H4SiO4;
+ion     "H4SiO4";
+charge  0;
+MW { value 96.113; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -1468600; unit J/mol;}
+sAq  { value 180;  unit J/mol/K;}
+}

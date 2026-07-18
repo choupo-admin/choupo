@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Cup.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Cup;
+ion     "Cu+1";
+charge  +1;
+MW { value 63.546; unit g/mol;}
+aqueousThermo
+{
+hfAq { value 71670; unit J/mol;}
+sAq  { value 40.6;  unit J/mol/K;}
+}

@@ -134,6 +134,25 @@ def block(text, key):
 # transitive closure (the Codex c) decision: never a per-file forest, never a
 # second grammar).  Records are copied VERBATIM (their citations ride along).
 # ---------------------------------------------------------------------------
+def parse_species_files(std):
+    """-> {name: (charge,)} from the flat species/<name>.dat home (the
+    2026-07-18 dismantling -- one typed file per model species)."""
+    out = {}
+    d = std / "species"
+    if not d.is_dir():
+        return out
+    for f in sorted(d.glob("*.dat")):
+        if f.name == "aqueous.dat":
+            continue
+        txt = re.sub(r'/\*.*?\*/', '', f.read_text(), flags=re.S)
+        txt = re.sub(r'(^|\s)//.*$', '', txt, flags=re.M)
+        nm = re.search(r'\bname\s+([A-Za-z0-9_+\-]+)\s*;', txt)
+        zm = re.search(r'\bcharge\s+([+\-]?\d+)\s*;', txt)
+        if nm:
+            out[nm.group(1)] = (int(zm.group(1)) if zm else 0,)
+    return out
+
+
 def parse_aqueous_catalogue(std):
     """-> {name: (charge, verbatim '{...}' record text)} preserving order."""
     out = {}
@@ -909,7 +928,7 @@ def main():
     root = find_root()
     std = root / "data" / "standards"
     release = read_release(root)
-    AQ = parse_aqueous_catalogue(std)
+    AQ = parse_species_files(std)
 
     # The retired v1 snapshot home may not coexist with the mirrored form:
     # migrate (delete constant/propertyData/ after checking nothing hand-tuned
@@ -1034,12 +1053,17 @@ def main():
                      ' owned + sha256-verified by constant/propertyManifest\n'
                      % (rel, release))
             out[rel] = (stamp + body, "data/standards/" + rel, sha_file(src))
+        # ONE typed file per reached species (2026-07-18: the filtered
+        # aqueous catalogue is gone -- the student sees exactly the species
+        # files the case consumes).
         names = set(AQ) if wantAll else set(ions)
         names = {n for n in names if n in AQ}
-        if names:
-            out["species/aqueous.dat"] = (
-                filtered_species_catalogue(AQ, names, release, len(AQ)),
-                "data/standards/species/aqueous.dat (filtered)", cat_sha)
+        for nm in sorted(names):
+            src = std / "species" / (nm + ".dat")
+            if src.is_file():
+                rel = "species/" + nm + ".dat"
+                out[rel] = (strip_install_paths(src.read_text()),
+                            "data/standards/" + rel, sha_file(src))
         return out
 
     contexts = [(caseDir, install_map(plant_recs, plant_ions, plant_all))]

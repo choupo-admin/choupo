@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/NO2.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    NO2;
+ion     "NO2-";
+charge  -1;
+MW { value 46.005; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -104600; unit J/mol;}
+sAq  { value 123;  unit J/mol/K;}
+cpAq { value -97.5; unit J/mol/K;}
+}

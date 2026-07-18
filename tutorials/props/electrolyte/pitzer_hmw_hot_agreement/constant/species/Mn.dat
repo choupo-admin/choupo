@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Mn.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Mn;
+ion     "Mn+2";
+charge  +2;
+MW { value 54.938; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -220750; unit J/mol;}
+sAq  { value -73.6;  unit J/mol/K;}
+cpAq { value 50.0; unit J/mol/K;}
+}

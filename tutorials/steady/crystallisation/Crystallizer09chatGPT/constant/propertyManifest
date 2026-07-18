@@ -85,12 +85,20 @@ propertyManifest
             type          adopted;
             adoptedAt     "2026-07-17";
         }
-        "species/aqueous.dat"
+        "species/Cl.dat"
         {
             type          imported;
-            sha256        "5bfd236e439cbb25bc3b3b666d64b90db362e7179e1d2979eca3fa4e23af59d4";
-            origin        "data/standards/species/aqueous.dat (filtered)";
-            originSha256  "898ea196b9533e6b0dcad265328cf1bb4803a139fbcdb6a859b4f5c5a377b0e3";
+            sha256        "10a413dda4bcc53d2f95100c02517235201535bcabad1a9dd41bf19e827a9ed7";
+            origin        "data/standards/species/Cl.dat";
+            originSha256  "10a413dda4bcc53d2f95100c02517235201535bcabad1a9dd41bf19e827a9ed7";
+            release       Choupo-2607;
+        }
+        "species/K.dat"
+        {
+            type          imported;
+            sha256        "72ecf3ba57ad5191efb81f89d5de0eff0395eaf3c867f9355f525cf818fe18b8";
+            origin        "data/standards/species/K.dat";
+            originSha256  "72ecf3ba57ad5191efb81f89d5de0eff0395eaf3c867f9355f525cf818fe18b8";
             release       Choupo-2607;
         }
     }

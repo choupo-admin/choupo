@@ -84,12 +84,12 @@ propertyManifest
             overlaySha256 "6ab7d44972f1baecd5cdbf930d1702506453562e3d674d988b4927e5eb94b06a";
             release       Choupo-2607;
         }
-        "species/aqueous.dat"
+        "species/N2.dat"
         {
             type          imported;
-            sha256        "c8ee6898c847a767231e4dd929e8f5a518cbf207532fe3c986647e90935fdb0e";
-            origin        "data/standards/species/aqueous.dat (filtered)";
-            originSha256  "898ea196b9533e6b0dcad265328cf1bb4803a139fbcdb6a859b4f5c5a377b0e3";
+            sha256        "9f8bbd72affa2762f4e97da6a2c2da020594427959356d800f482318b1615aab";
+            origin        "data/standards/species/N2.dat";
+            originSha256  "9f8bbd72affa2762f4e97da6a2c2da020594427959356d800f482318b1615aab";
             release       Choupo-2607;
         }
     }
