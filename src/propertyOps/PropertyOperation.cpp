@@ -102,32 +102,8 @@ PropertyOperation::thermoForOp(const DictPtr& opDict) const
         return nullptr;
     auto over = opDict->subDict("thermo");
 
-    if (thermoDict_)
-    {
-        // FLAT world: merge — start from the global thermoPackage; the op's
-        // `thermo {}` block REPLACES the model sub-dicts it names
-        // (activityModel, equationOfState, vaporPressure, transport, etc.).
-        // Components stay global — comparing 2 models for the same
-        // components is the whole point.
-        auto merged = std::make_shared<Dictionary>("thermoPackage");
-        for (const auto& k : thermoDict_->keys())
-            merged->insert(k, thermoDict_->entryValue(k));
-        for (const auto& k : over->keys())
-            merged->insert(k, over->entryValue(k));
-
-        auto tp = std::make_unique<ThermoPackage>();
-        tp->readFromDict(merged, *database_);
-        return tp;
-    }
-
-    // BUILDER world (the translated manifest has propertyMethods; the flat
-    // thermoDict_ is never set): a flat key merge would be silently ignored
-    // -- the one honest route is the AUTHORED v2 grammar: replace the
-    // formulation's own slot in a COPY of the source dict and re-translate
-    // (merge in authored form, translate once -- the consolidation
-    // principle).  Implemented: phiPhi `equationOfState {}` (the model
-    // cross-check use).  Anything else REFUSES loudly -- never an
-    // override that silently does nothing.
+    // The override is a typed v2 FRAGMENT applied onto the case's authored
+    // system -- the ONE merge (ThermoOverride.H).
     if (!authoredV2_)
         throw std::runtime_error("per-op thermo{} override: this world is"
             " builder-form and no authored v2 grammar is available to merge"

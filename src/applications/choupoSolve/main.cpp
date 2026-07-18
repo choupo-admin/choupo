@@ -127,8 +127,7 @@ void registerUserTypes();
 // --------------------------------------------------------------------------
 static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     const Database&    db,
-    const DictPtr&     thermoDict,
-    const DictPtr&     packageDict,       // null => legacy thermoDict; non-null => builder
+    const DictPtr&     packageDict,       // THE authored v2 system (required)
     const ChemistrySystem* chem,          // constant/chemistryDict (may be null)
     const DictPtr&     solverDict,        // may be null
     const DictPtr&     reactionsDict,     // may be null
@@ -145,17 +144,15 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     AdvisoryLog::instance().clear();
     ThermoResolutionLog::instance().clear();   // per-pass binary-pair provenance
 
-    ThermoPackage thermo;
-    if (packageDict)
-        thermo = ThermoPackageBuilder::build(packageDict, db, chem);   // manifest path: case SELECTS a package
-    else
-        thermo.readFromDict(thermoDict, db);
+    if (!packageDict)
+        throw std::runtime_error("choupoSolve: no constant/thermoPhysPropDict"
+            " -- every case declares its thermophysical system (v2 grammar).");
+    ThermoPackage thermo = ThermoPackageBuilder::build(packageDict, db, chem);
 
     // Run-block (integrity teeth): refuse to SOLVE on an UNVERIFIED estimate of a
     // REQUIRED property unless the package opts in with `acceptUnverified true;`.
     requireVerifiedOrThrow(thermo.auditFindings(),
-        (packageDict ? packageDict : thermoDict)
-            ->lookupWordOrDefault("acceptUnverified", "false") == "true");
+        packageDict->lookupWordOrDefault("acceptUnverified", "false") == "true");
 
     Flowsheet flowsheet;
     flowsheet.setStreamOverrides(overrides);
@@ -163,13 +160,9 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     flowsheet.setSolverDict   (solverDict);
     flowsheet.setReactionsDict(reactionsDict);
     flowsheet.setDatabase     (&db);          // per-unit thermo overrides
-    flowsheet.setThermoDict   (thermoDict);
     // The AUTHORED v2 system is the base every per-unit thermo{} FRAGMENT
-    // merges onto (wave I): for native worlds packageDict IS the authored
-    // dict; a null is fine (v1 retired -- no fragment can apply).
-    if (packageDict && packageDict->lookupWordOrDefault("recordType", "")
-            == "thermophysicalPropertySystem")
-        flowsheet.setAuthoredV2(packageDict);
+    // merges onto.
+    flowsheet.setAuthoredV2(packageDict);
 
     // ---- Solution-directory (OpenFOAM-style per-iteration writer) ---------
     //  Installed ONLY when controlDict carried `solutionControl{ write true; }`.
@@ -496,7 +489,7 @@ try
     // Aspen property architecture: a case SELECTS a propertyPackage (the builder
     // assembles the ThermoPackage from the new records, reads zero old salt files)
     // XOR carries a thermoPackage (the legacy reader).  Mirrors choupoProps.
-    DictPtr thermoDict, packageDict;
+    DictPtr packageDict;
     ChemistrySystem chem;                 // constant/chemistryDict selection
     const ChemistrySystem* chemPtr = nullptr;
     {
@@ -544,41 +537,19 @@ try
                 sel = resolvePropertyContext(
                     fs::path(pkgPath).parent_path().string(), visited);
             }
-            if (sel->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
-            {
-                // The AUTHORED v2 dict IS the package source -- build()'s
-                // ONE dispatch assembles a claimed formulation natively and
-                // gives every other shape a NAMED refusal (scaffold dead).
-                packageDict = sel;
-                if (verbosity >= 2)
-                    std::cout << "Property package:  INLINE in the case"
-                                 "   (v2 grammar, NATIVE assembly)\n";
-            }
-            if (packageDict)
-            { /* native: already set above */ }
-            else if (sel->found("components") && sel->found("propertyMethods"))
-            {
-                packageDict = sel;                       // rich MANIFEST -> builder
-                if (verbosity >= 2)
-                    std::cout << "Property package:  INLINE in the case"
-                                 "   (constant/propertyDict carries the full"
-                                 " manifest)\n";
-            }
-            else if (sel->found("components"))
-            {
-                thermoDict = sel;                        // FLAT form -> legacy reader
-                if (verbosity >= 2)
-                    std::cout << "Property package:  constant/propertyDict"
-                                 "   (flat form: activityModel/equationOfState)\n";
-            }
-            else if (sel->found("package"))
-            {
-                throw std::runtime_error(
-                    "constant/propertyDict is a `package " + sel->lookupWord("package")
-                    + ";` SELECTOR -- the shared propertyPackages catalogue is retired."
-                      " Write the propertyPackage manifest INLINE in constant/propertyDict"
-                      " (self-contained, the official form).");
-            }
+            if (sel->lookupWordOrDefault("recordType", "")
+                    != "thermophysicalPropertySystem")
+                throw std::runtime_error("constant/thermoPhysPropDict must"
+                    " declare `recordType thermophysicalPropertySystem;`"
+                    " (the ONE case grammar -- every v1/flat/manifest form"
+                    " is retired).");
+            // The AUTHORED v2 dict IS the package source -- build()'s ONE
+            // dispatch assembles a claimed formulation natively and gives
+            // every other shape a NAMED refusal.
+            packageDict = sel;
+            if (verbosity >= 2)
+                std::cout << "Property package:  INLINE in the case"
+                             "   (v2 grammar, NATIVE assembly)\n";
         }
     }
 
@@ -733,7 +704,7 @@ try
     // ---- Simulator functor reusable by outer driver --------------------
     auto simulate = [&](const DictPtr& flowDictForRun,
                         const StreamOverrides& overrides) {
-        auto r = runSimulation(flowDictForRun, db, thermoDict, packageDict,
+        auto r = runSimulation(flowDictForRun, db, packageDict,
                                chemPtr, solverDict, reactionsDict, verbosity,
                                haveSolutionCtl ? &solutionCtl : nullptr,
                                false, false, overrides);
@@ -753,8 +724,7 @@ try
     auto runReports = [&](SimulationResult& result) {
         if (!reportsDict || !result.converged) return;
         ThermoPackage thermoForReports;
-        if (packageDict) thermoForReports = ThermoPackageBuilder::build(packageDict, db, chemPtr);
-        else             thermoForReports.readFromDict(thermoDict, db);
+        thermoForReports = ThermoPackageBuilder::build(packageDict, db, chemPtr);
         const bool postProc = (reportsLayout == "postProcessing");
         const fs::path reportsDir =
             fs::current_path() / (postProc ? "postProcessing" : "reports");
@@ -816,8 +786,7 @@ try
     auto writeConverged = [&](const SimulationResult& result) {
         if (!result.converged) return;
         ThermoPackage tp;
-        if (packageDict) tp = ThermoPackageBuilder::build(packageDict, db, chemPtr);
-        else             tp.readFromDict(thermoDict, db);
+        tp = ThermoPackageBuilder::build(packageDict, db, chemPtr);
         const fs::path dir = fs::current_path() / "converged";
         fs::remove_all(dir);                 // stale state must never linger
         StreamStateIO::writeStateDir(result.streams, tp, dir, sectorOwnedPaths(result));
@@ -866,7 +835,7 @@ try
     //      converged/ writer, no result JSON -- this is a PREPARATION step.
     if (init0Mode)
     {
-        auto r = runSimulation(flowsheetDict, db, thermoDict, packageDict,
+        auto r = runSimulation(flowsheetDict, db, packageDict,
                                chemPtr, solverDict, reactionsDict, verbosity,
                                nullptr, true, init0Force);
         return r.converged ? 0 : 1;
@@ -889,7 +858,6 @@ try
         auto driver = OuterDriver::New(outerDict);
         driver->setSimulator     (simulate);
         driver->setFlowsheetDict (flowsheetDict);
-        driver->setThermoDict    (thermoDict);
         driver->setPostDict      (postDict);   // may be null; drivers that don't need it ignore
         finalRc = driver->run();
 

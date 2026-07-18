@@ -245,9 +245,9 @@ int FitParameters::run(const DictPtr& dict,
     if (dict->subDict("residual")->lookupWord("kind") == "isotherm")
         return runIsothermFit(dict, verbosity);
 
-    // G3: prefer the AUTHORED v2 grammar (named-path mutation, re-translated
-    // per iteration); the flat v1 thermoDict stays the fallback channel.
-    const DictPtr fitSource = authoredV2() ? authoredV2() : thermoDict();
+    // The AUTHORED v2 grammar is the ONE fit source (named-path mutation,
+    // rebuilt natively per iteration).
+    const DictPtr fitSource = authoredV2();
     if (!fitSource || !database())
         throw std::runtime_error(
             "fitParameters: needs the authored property dict + database (set "
@@ -399,14 +399,13 @@ int FitParameters::run(const DictPtr& dict,
     {
         for (const auto& ps : current)
             work->setScalarAtPath(ps.path, ps.value);
-        // wave H: the builder's ONE dispatch serves the mutated authored copy
-        // directly (native for every claimed formulation/shape -- the fit's
-        // inline pairs included); v1 flat dicts keep the exact old path.
-        if (v2Work)
-            return ThermoPackageBuilder::build(work, *database());
-        ThermoPackage tp;
-        tp.readFromDict(work, *database());
-        return tp;
+        // The builder's ONE dispatch serves the mutated authored copy
+        // directly (native; the fit's inline pairs included).
+        if (!v2Work)
+            throw std::runtime_error("fitParameters: the case system must be"
+                " the v2 grammar (recordType thermophysicalPropertySystem)"
+                " -- every v1/flat form is retired.");
+        return ThermoPackageBuilder::build(work, *database());
     };
 
     if (verbosity >= 2)

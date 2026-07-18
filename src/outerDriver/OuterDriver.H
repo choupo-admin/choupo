@@ -98,7 +98,6 @@ public:
     // evaluation (pure-function semantics).  A future fitting driver that
     // varies property parameters must deepCopy the manifest per pass --
     // never mutate this shared pointer in place.
-    void setThermoDict(DictPtr d) { thermoDict_ = std::move(d); }
 
     // OptimizationDriver-style drivers may want to run the post-processing
     // chain (sizing + costing) after each simulator pass to use the
@@ -132,7 +131,6 @@ protected:
 
     Simulator   simulator_;
     DictPtr     flowsheetDict_;     // template — cloned per design point
-    DictPtr     thermoDict_;        // optional, mutated by parameter-estimation drivers
     DictPtr     postDict_;          // optional, used by optimisation over cost
     SimulationResult finalResult_;
     bool             hasFinalResult_ = false;

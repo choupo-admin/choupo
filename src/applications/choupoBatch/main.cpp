@@ -287,15 +287,12 @@ try
     // 2026-07-18): same context chain, nearest owner wins; optional.
     ChemistrySystem chem = resolveChemistryContext("constant");
     const ChemistrySystem* chemPtr = chem.present ? &chem : nullptr;
-    ThermoPackage thermo;
     if (thermoDict->lookupWordOrDefault("recordType", "")
-        == "thermophysicalPropertySystem")
-        thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);  // ONE dispatch
-    else if (thermoDict->found("components")
-             && thermoDict->found("propertyMethods"))
-        thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);
-    else
-        thermo.readFromDict(thermoDict, db);
+        != "thermophysicalPropertySystem")
+        throw std::runtime_error("constant/thermoPhysPropDict must declare"
+            " `recordType thermophysicalPropertySystem;` (the ONE case"
+            " grammar -- every v1/flat/manifest form is retired).");
+    ThermoPackage thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);
 
     // ---- Build batch units from flowsheetDict ------------------------
     auto unitList = flowsheetDict->lookupDictList("units");

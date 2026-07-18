@@ -286,7 +286,6 @@ try
     ThermoResolutionLog::instance().clear();
     AdvisoryLog::instance().clear();   // capture binary-pair provenance
     ThermoPackage thermo;
-    DictPtr thermoDict;   // null in the propertyPackage branch (only fit ops use it)
     DictPtr v2Authored;   // G3: the authored v2 grammar (fit ops mutate THIS)
     // v2 contract name FIRST (the architect's choice, 2026-07-17):
     // constant/thermoPhysPropDict carries the thermophysicalPropertySystem
@@ -340,9 +339,6 @@ try
             std::cout << "  [deprecated] legacy package name -- rename it to"
                          " constant/propertyDict (v1) or constant/thermoPhysPropDict (v2;"
                          " more than thermo).\n";
-        const bool speciationPkg = sel->found("propertyMethods")
-            && sel->subDict("propertyMethods")->found("aqueousActivity")
-            && !sel->subDict("propertyMethods")->found("liquid");
         if (aqNative)
         {
             // NATIVE speciation surface (wave F): the ops read the authored
@@ -369,46 +365,7 @@ try
                              "   (v2 grammar, NATIVE assembly)\n";
             thermo = ThermoPackageBuilder::build(sel, db, chemPtr);
         }
-        else if (speciationPkg)
-        {
-            // SPECIATION package (roadmap Phase B): the case's dictionary declares the
-            // electrolyte SYSTEM (aqueousActivity + inputBasis) consumed by the
-            // speciate/scalingScan ops; the ThermoPackage here is just the solvent
-            // basis (the op does the ion chemistry).  Build it lean -- no liquid /
-            // vapour manifest required.
-            if (verbosity >= 2)
-                std::cout << "Property package:  " << pkgPath
-                          << "   (electrolyte speciation: aqueousActivity + inputBasis)\n";
-            thermoDict = sel;
-            // The op consumes aqueousActivity + inputBasis from `sel`; the
-            // ThermoPackage here is the (ideal) basis over ALL the package's
-            // declared components, so `components (...)` keeps the full canonical
-            // list.  Ideal activity/eos are supplied here so the package file itself
-            // stays clean of a degenerate `activityModel ideal`.
-            std::string manifest = "components ( ";
-            for (const auto& c : sel->lookupWordList("components")) manifest += c + " ";
-            manifest += "); activityModel { model ideal; } "
-                        "equationOfState { model idealGas; }";
-            auto basis = Dictionary::fromString(manifest, "<speciation-basis>");
-            thermo.readFromDict(basis, db);
-        }
-        else if (sel->found("components") && sel->found("propertyMethods"))
-        {
-            if (verbosity >= 2)
-                std::cout << "Property package:  INLINE in the case"
-                             "   (the case carries the full"
-                             " manifest)\n";
-            thermo = ThermoPackageBuilder::build(sel, db, chemPtr);   // rich MANIFEST
-        }
-        else if (sel->found("components"))
-        {
-            if (verbosity >= 2)
-                std::cout << "Property package:  " << pkgPath
-                          << "   (flat form: activityModel/equationOfState)\n";
-            thermoDict = sel;
-            thermo.readFromDict(sel, db);                    // FLAT form
-        }
-        else if (sel->found("package"))
+        else if (false)
         {
             throw std::runtime_error(
                 "the property dict is a `package " + sel->lookupWord("package")
@@ -476,7 +433,6 @@ try
                       << "   (type = " << opType << ")\n";
 
         auto op = PropertyOperation::New(opType);
-        op->setThermoDict(thermoDict);
         op->setAuthoredV2(v2Authored);
         op->setDatabase(&db);
         const int rc = op->run(opDict, thermo, verbosity);

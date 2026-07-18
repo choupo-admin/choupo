@@ -93,14 +93,11 @@ public:
     // each iteration (e.g. `fitParameters` mutates pair coefficients and
     // needs to re-construct ThermoPackage with the new values).  Ops that
     // don't need these can safely ignore them.
-    void setThermoDict(const DictPtr& d) { thermoDict_ = d; }
-    // G3: the AUTHORED v2 thermophysicalPropertySystem, consumed ONLY by the
-    // fitParameters op (named-path mutation + per-iteration re-translate).
-    // The general thermoDict_ channel stays the FLAT/translated dict so
-    // per-op thermo{} overrides keep merging against the shape they expect.
+    // The AUTHORED v2 thermophysicalPropertySystem -- THE case system every
+    // op reads (the fit mutates a copy by named path; per-op thermo{}
+    // fragments merge onto it via ThermoOverride.H).
     void setAuthoredV2(const DictPtr& d) { authoredV2_ = d; }
     void setDatabase(const Database* db) { database_ = db; }
-    DictPtr        thermoDict() const { return thermoDict_; }
     DictPtr        authoredV2() const { return authoredV2_; }
     const Database* database()  const { return database_;   }
 
@@ -122,7 +119,6 @@ protected:
 private:
     static std::map<std::string, Factory>& registry();
 
-    DictPtr         thermoDict_;
     DictPtr         authoredV2_;    // G3: v2 source grammar (fit ops only)
     const Database* database_ = nullptr;
 };
