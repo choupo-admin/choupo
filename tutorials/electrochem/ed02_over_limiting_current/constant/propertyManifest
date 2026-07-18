@@ -26,11 +26,8 @@ propertyManifest
     {
         "assets/CMX_AMX.dat"
         {
-            type          imported;
-            sha256        "16377f50c157d1b81ec7b9766d51d5dc785cf2a6145be1e2c13e99519c23d582";
-            origin        "data/standards/assets/CMX_AMX.dat";
-            originSha256  "88c38df1456dc40661ccd0d754e5c118893c0024de29b5804529626dd112fd78";
-            release       Choupo-2607;
+            type          adopted;
+            adoptedAt     "2026-07-18";
         }
         "components/Cl.dat"
         {

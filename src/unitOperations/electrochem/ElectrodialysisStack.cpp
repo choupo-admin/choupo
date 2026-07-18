@@ -71,36 +71,21 @@ struct IEMSpec
     scalar      thickness = 0.0;   // m
 };
 
-// Read a `kind IEM` membrane-pair file (case-local constant/membranes first,
-// then data/standards/assets) -- the stack's OWN reader, so the standard
-// solution-diffusion Membrane reader is never bent to fit IEMs.
+// Read a `kind IEM` membrane-pair file from the ONE asset home (Codex
+// assets-audit 2026-07-18): the mirrored constant/assets/<name>.dat is the
+// case-local tier, else the standards catalogue -- a SEALED case reads its
+// own mirror ONLY.  The legacy constant/membranes/ overlay leg is retired
+// (it let a sealed case open unowned input).
 void readIEMPair(const std::string& name, IEMSpec& cem, IEMSpec& aem)
 {
     fs::path file;
-    // case-local overlay (the standard fractal cascade)
     {
-        fs::path p = fs::current_path();
-        for (int up = 0; up < 6; ++up)
-        {
-            const fs::path cand = p / "constant" / "membranes" / (name + ".dat");
-            if (fs::exists(cand)) { file = cand; break; }
-            if (!p.has_parent_path()) break;
-            p = p.parent_path();
-        }
-    }
-    if (file.empty())
-    {
-        // ONE resolver (sealing redesign): the mirrored constant/assets/<name>.dat
-        // is the case-local tier, else the standards catalogue -- a SEALED case
-        // reads its own mirror ONLY (resolveRecord returns empty when sealed +
-        // absent, and the loud refusal below fires).
         const fs::path cand = records::resolveRecord("assets/" + name + ".dat");
         if (!cand.empty() && fs::exists(cand)) file = cand;
     }
     if (file.empty())
         throw std::runtime_error("electrodialysisStack: IEM membrane '" + name
-            + "' not found in constant/membranes/ or constant/assets/ (case) or "
-              "data/standards/assets/");
+            + "' not found in constant/assets/ (case) or data/standards/assets/");
 
     auto d = Dictionary::fromFile(file.string());
     if (d->lookupWordOrDefault("kind", "") != "IEM")

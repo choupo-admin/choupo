@@ -26,11 +26,8 @@ propertyManifest
     {
         "assets/SW30HR.dat"
         {
-            type          imported;
-            sha256        "f6acd0d16cc381b4aed3b25de510831022e91fab063b01ba3e732410e48352ec";
-            origin        "data/standards/assets/SW30HR.dat";
-            originSha256  "139e2bf9ed05ff798d8d0735284d30d47d8df188f8ac5ba27563004eae1a6d1e";
-            release       Choupo-2607;
+            type          adopted;
+            adoptedAt     "2026-07-18";
         }
         "chemistry/CO2aq.dat"
         {

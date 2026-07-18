@@ -404,6 +404,19 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/spgate.$$
 
+    # Asset-home gate (Codex assets-audit, 2026-07-18): a physical asset lives
+    # in ONE home (constant/assets/) -- the legacy membranes/ overlay let a
+    # sealed case open input its manifest never claimed.
+    if "$ROOT/bin/curate/check_asset_homes.py" > /tmp/assetgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "asset-home-gate" "$(head -1 /tmp/assetgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_asset_homes.py)\n" "asset-home-gate"
+        cat /tmp/assetgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/assetgate.$$
+
     # Empty-dir gate (2026-07-18): reachable-closure / methods removals must
     # leave no hollow species/ or parameters/ shells (the importer prunes).
     if "$ROOT/bin/curate/check_empty_dirs.py" > /tmp/emptygate.$$ 2>&1; then

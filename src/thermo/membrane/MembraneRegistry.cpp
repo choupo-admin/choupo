@@ -94,33 +94,11 @@ void MembraneRegistry::loadFrom(const std::string& dataRoot)
 
 const Membrane& MembraneRegistry::byName(const std::string& name)
 {
-    // Case-local overlay: the NEAREST `constant/membranes/<name>.dat` walking
-    // UP from the cwd ECLIPSES the standard entry whole -- the same fractal
-    // cascade as components / electrolyte catalogues, and announced loudly
-    // (no silent crutch): a membrane is sample-specific data the case may
-    // legitimately carry (a self-contained case ships its own element).
-    {
-        static std::map<std::string, Membrane> caseRegistry;
-        auto cit = caseRegistry.find(name);
-        if (cit != caseRegistry.end()) return cit->second;
-
-        fs::path p = fs::current_path();
-        for (int up = 0; up < 6; ++up)
-        {
-            const fs::path cand = p / "constant" / "membranes" / (name + ".dat");
-            if (fs::exists(cand))
-            {
-                Membrane m;
-                m.readFromDict(Dictionary::fromFile(cand.string()));
-                std::cerr << "[overlay] membrane '" << name
-                          << "' from case-local " << cand.string() << "\n";
-                return caseRegistry.emplace(name, std::move(m)).first->second;
-            }
-            if (!p.has_parent_path()) break;
-            p = p.parent_path();
-        }
-    }
-
+    // ONE home (Codex assets-audit 2026-07-18): a case-specific membrane is a
+    // manifest-owned record in constant/assets/ (loadFrom scanned it OVER the
+    // catalogue).  The legacy constant/membranes/ overlay leg is retired -- it
+    // let a SEALED case open physical input its propertyManifest did not claim
+    // (the assets/ vs membranes/ split with different per-ion B_s).
     auto it = registry().find(name);
     if (it == registry().end())
     {

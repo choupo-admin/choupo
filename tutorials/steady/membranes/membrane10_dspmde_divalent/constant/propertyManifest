@@ -26,11 +26,8 @@ propertyManifest
     {
         "assets/NF270_dspmde.dat"
         {
-            type          imported;
-            sha256        "1659fb82d6527e4b250a61590e89ddf327531ba27b575ef656144718ad444151";
-            origin        "data/standards/assets/NF270_dspmde.dat";
-            originSha256  "dd5d6d48d97f6b01eded490a491c2b9592c351e8ec3a0bfbd1037d5a944cd068";
-            release       Choupo-2607;
+            type          adopted;
+            adoptedAt     "2026-07-18";
         }
         "components/CaCl2.dat"
         {
