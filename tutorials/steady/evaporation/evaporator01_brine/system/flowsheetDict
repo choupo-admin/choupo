@@ -38,10 +38,13 @@
       Q = U · A · ΔT             ≈ 2000 · 20 · 30      ≈ 1200 kW
       V evaporated               ≈ Q / ΔHvap           ≈ 110 kmol/h
                                                        ≈ 1980 kg/h water
-      V/F (mol-basis)            ≈ 0.55
+      V/F (mol-basis)            ≈ 0.82   (the CONVERGED run; the
+                                          rough hand-estimate above is
+                                          order-of-magnitude only)
       Steam consumption          ≈ Q / ΔHvap_at_steam  ≈ 2000 kg/h
       Economy                    ≈ V_evap / F_steam     ≈ 0.99
-      x_NaCl_outlet              ≈ 0.0237   (~ doubled from feed)
+      x_NaCl_outlet              ≈ 0.059    (~5.5x the feed, matching
+                                          the run header)
 
   Industrial relevance: this is the building block of multi-effect
   evaporators in seawater desalination (MED, MSF), brine
