@@ -443,6 +443,19 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/comprep.$$
 
+    # Stream-face gate: the aggregated snapshot grammar (streamFaces/faces{})
+    # is what every writer AND the official migrator produce -- the retired
+    # `streams` spelling must not be resurrectable.
+    if "$ROOT/bin/curate/check_stream_faces.py" > /tmp/sfgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "stream-face-gate" "$(head -1 /tmp/sfgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_stream_faces.py)\n" "stream-face-gate"
+        cat /tmp/sfgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sfgate.$$
+
     # Asset-home gate (Codex assets-audit, 2026-07-18): a physical asset lives
     # in ONE home (constant/assets/) -- the legacy membranes/ overlay let a
     # sealed case open input its manifest never claimed.

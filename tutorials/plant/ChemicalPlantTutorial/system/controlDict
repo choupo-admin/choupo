@@ -50,7 +50,7 @@ reportsLayout postProcessing;
 //                  per-stream bc tag (fixedValue feed / computed product /
 //                  tear true), and the lossless T/P/vf/H + molarFlows body.
 //                  Reads back through the engine's own dict tokenizer.
-//    byUnit/<dotted.unit>/ -- per-unit projection: a `streams -> ../../streams`
+//    byUnit/<dotted.unit>/ -- per-unit projection: a `streamFaces -> ../../streamFaces`
 //                  symlink (single source) + a `ports` dict naming this unit's
 //                  inlets/outlets by global key + bc role.  A shared interior
 //                  stream appears in BOTH touching units' ports but is stored

@@ -2636,7 +2636,7 @@ int Flowsheet::solve(const DictPtr& dict,
         //  write true;).  When empty, this whole block is two null-tests ---
         //  zero behavioural change, byte-identical stdout.
         //
-        //  Restart FIRST (reseeds the tear streams from solution/latest/streams
+        //  Restart FIRST (reseeds the tear streams from solution/latest/streamFaces
         //  and resets the acceleration history --- it is NOT restored; the
         //  recycle fixed point is unique to topology+feeds, so we converge to
         //  the SAME answer along a possibly different path), then write 0/ as

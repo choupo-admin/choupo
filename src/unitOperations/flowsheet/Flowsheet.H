@@ -169,7 +169,7 @@ public:
     // ---- Restart hook (Slice 1) -------------------------------------------
     //  An OPTIONAL callback invoked AFTER tear auto-init and BEFORE the
     //  recycle loop, with `streams_` mutable.  It reseeds the tear streams
-    //  from `solution/latest/streams` (reads the durable instant) and
+    //  from `solution/latest/streamFaces` (reads the durable instant) and
     //  returns the iteration number to resume from, or -1 if nothing to
     //  resume.  Default empty => fresh start (today's behaviour).
     using RestartHook = std::function<int(

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Migrate a dynamic case's inline initial{}/inlet{} -> 0/internalState + 0/streams.
+"""Migrate a dynamic case's inline initial{}/inlet{} -> 0/internalState + 0/streamFaces.
 
 Reads the case's system/flowsheetDict, for its (single) dynamic unit pulls the
 `initial{}` (holdup) and `inlet{}` (feed face), writes 0/internalState +
-0/streams in the engine's format, and DELETES the inline blocks (no legacy).
+0/streamFaces in the engine's format, and DELETES the inline blocks (no legacy).
 
 Units seen in ctrl cases: T [K], P [bar], F [kmol/s]; V + totalMoles are bare SI.
 """
@@ -98,7 +98,7 @@ units
     (Path(case) / "0").mkdir(exist_ok=True)
     (Path(case) / "0" / "internalState").write_text(istate)
 
-    # 0/streams (inlet face)
+    # 0/streamFaces (inlet face)
     streams_txt = ""
     if inlet_inner is not None:
         nsc = scalars(inlet_inner)
@@ -106,11 +106,11 @@ units
         ncomp = comp_block(inlet_inner, "molarComposition")
         mf = "\n".join(f"            {c}   {fmt(F*x)};" for c, x in ncomp.items())
         streams_txt = f"""/*--------------------------------*- Choupo -*----------------------------------*\\
-  0/streams -- DYNAMIC face state (the SINGLE source of truth; inline inlet{{}} is
-  retired).  The inlet face carries F [kmol/s], T [K] + per-species molarFlows.
+  0/streamFaces -- DYNAMIC face state (the SINGLE source of truth; inline inlet{{}}
+  is retired).  The inlet face carries F [kmol/s], T [K] + per-species molarFlows.
 \\*-----------------------------------------------------------------------------*/
 time            0;
-streams
+faces
 {{
     "{uname}.feed"
     {{
@@ -124,7 +124,7 @@ streams
     }}
 }}
 """
-        (Path(case) / "0" / "streams").write_text(streams_txt)
+        (Path(case) / "0" / "streamFaces").write_text(streams_txt)
 
     # delete the inline blocks (highest span first so offsets stay valid)
     spans = [s for s in (init_span, inlet_span) if s]
@@ -135,7 +135,7 @@ streams
         if end < len(txt) and txt[end] == "\n": end += 1
         txt = txt[:a] + txt[b:]
     fd.write_text(txt)
-    print(f"  {case}: 0/internalState + 0/streams written; inline blocks removed")
+    print(f"  {case}: 0/internalState + 0/streamFaces written; inline blocks removed")
 
 for c in sys.argv[1:]:
     migrate(c)

@@ -351,7 +351,7 @@ std::string SolutionWriter::renderTopology(
 //    - a generated `ports` dict naming this unit's inlets/outlets by their
 //      GLOBAL dotted key + bc role.
 //  A stream shared by two units (an interior face) appears in BOTH units'
-//  ports lists but is stored ONCE in <n>/streams.  Written under the instant's
+//  ports lists but is stored ONCE in <n>/streamFaces.  Written under the instant's
 //  TMP dir so it publishes atomically with the streams payload (relative
 //  symlinks survive the rename of the parent dir).
 // ---------------------------------------------------------------------------
@@ -392,12 +392,12 @@ void SolutionWriter::writeByUnit(
         // (2) the ports dict: which global keys are this unit's in/outlets.
         std::ostringstream p;
         p << "// byUnit/" << u.name << "/ports --- this unit's slice of the\n"
-             "// single-source ../../streams face-flux field.  Each entry names\n"
+             "// single-source ../../streamFaces face-flux field.  Each entry names\n"
              "// the GLOBAL stream key + its bc role; an interior stream shared\n"
              "// with the neighbour unit also appears in THAT unit's ports.\n";
         p << "unit        \"" << u.name << "\";\n";
         p << "type        " << (u.type.empty() ? "?" : u.type) << ";\n";
-        p << "streams     \"../../streams\";       // the single-source projection target\n";
+        p << "streamFaces \"../../streamFaces\";   // the single-source projection target\n";
         p << "inlets\n{\n";
         for (std::size_t i = 0; i < u.ins.size(); ++i)
             p << "    port" << i << " { global \"" << u.ins[i] << "\"; bc "
@@ -484,7 +484,7 @@ bool SolutionWriter::writeStreamsFileChecked(
         fsyncPath(file, /*isDir=*/false);
 
     // Per-unit byUnit/ projection for THIS view's units (gated).  Written into
-    // the same tmp dir so it publishes atomically; the relative `../../streams`
+    // the same tmp dir so it publishes atomically; the relative `../../streamFaces`
     // symlink resolves to this view's streams once the parent dir is in place.
     if (cfg_.byUnit && !viewUnits.empty())
         writeByUnit(dir, viewUnits, roles);
@@ -568,7 +568,7 @@ void SolutionWriter::writeInstant(
             viewStreams[""].insert(name);
     }
     // The plant view always exists (even an empty plant streams file documents
-    // the boundary), so a reader can rely on `<n>/streams` being present.
+    // the boundary), so a reader can rely on `<n>/streamFaces` being present.
     viewStreams.emplace("", std::set<std::string>{});
 
     // ---- Write each view's `streams` (+ byUnit/) into the SAME tmp dir so the
@@ -602,7 +602,7 @@ void SolutionWriter::writeInstant(
         // Rename can fail across exotic filesystems; fall back to a recursive
         // copy so we never silently lose the instant (streams + byUnit/).  The
         // relative byUnit symlinks copy as symlinks (copy_symlinks), staying
-        // valid because the ../../streams target moves with them.
+        // valid because the ../../streamFaces target moves with them.
         fs::remove_all(instDir, ec);
         fs::copy(tmpDir, instDir,
                  fs::copy_options::recursive | fs::copy_options::copy_symlinks
@@ -992,7 +992,7 @@ int SolutionWriter::restartFromLatest(
 
     // PER-BRANCH restart: the instant is fractal.  An intra-sector tear (e.g.
     // FERMENTATION.Recycle) lives ONLY in its sector view <n>/<sector>/streams,
-    // not in the plant <n>/streams (which carries boundary + inter-sector faces).
+    // not in the plant <n>/streamFaces (which carries boundary + inter-sector faces).
     // So we scan EVERY streams file in the instant --- the plant view plus each
     // sector subdir --- and reseed each flagged tear ONCE (the first view that
     // carries it; an inter-sector tear seen in two views is identical in both).

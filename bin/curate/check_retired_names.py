@@ -18,6 +18,10 @@ the refusal messages themselves must pronounce the old names):
 
 3. src/: `translateV2` must not exist anywhere.
 
+4. Aggregated-snapshot spelling: writers/migrators (bin/curate),
+   teaching docs (docs/ai) and src comments speak streamFaces/faces{}
+   -- never the retired aggregated `streams` name.
+
 Exit 1 listing offenders."""
 import re
 import sys
@@ -109,10 +113,35 @@ for f in (ROOT / "src").rglob("*"):
     except OSError:
         continue
 
+# ---- 4. aggregated-snapshot spelling: streamFaces/faces{}, never streams ----
+# The aggregated instant snapshot is the `streamFaces` file (faces{} block).
+# No writer, migrator, source comment or teaching doc may spell the retired
+# aggregated name.  Word-boundary regexes: `0/streamFaces` does NOT match.
+AGG = re.compile(r"0/streams\b|<t>/streams\b|<n>/streams\b"
+                 r"|latest/streams\b|\.\./streams\b")
+agg_files = []
+for d, exts in ((ROOT / "bin" / "curate", (".py",)),
+                (ROOT / "docs" / "ai", (".md",)),
+                (ROOT / "src", (".H", ".cpp"))):
+    for f in d.rglob("*"):
+        if f.suffix in exts:
+            agg_files.append(f)
+for f in agg_files:
+    if f.name in ("check_retired_names.py", "check_stream_faces.py"):
+        continue                      # the gates name the pattern they hunt
+    try:
+        txt = f.read_text(errors="replace")
+    except OSError:
+        continue
+    m = AGG.search(txt)
+    if m and not allowed_history(txt, m.start()):
+        bad.append(f"{f.relative_to(ROOT)}: retired aggregated-snapshot"
+                   f" spelling '{m.group(0)}'")
+
 if bad:
     print("RETIRED-NAME GATE FAILED (%d):" % len(bad))
     for b in bad[:60]:
         print("  " + b)
     sys.exit(1)
 print("retired-name gate: component corpus flat, tutorial sources clean,"
-      " src/ clean")
+      " src/ clean, aggregated snapshot speaks streamFaces")

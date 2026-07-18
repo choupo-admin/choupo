@@ -258,7 +258,7 @@ public:
     static std::string formatTime(scalar t);
 
     // ---- Restart (Slice 1) --------------------------------------------
-    //  Read `<caseRoot>/<n>/streams` for the highest numbered instant n (max
+    //  Read `<caseRoot>/<n>/streamFaces` for the highest numbered instant n (max
     //  integer dir name) and reseed the tear streams flagged `tear true;` in the
     //  file AND present in `tears`.  Non-tear streams are left untouched (they
     //  keep normal auto-init).  Returns ITS iteration number, or -1 (leaving
@@ -301,7 +301,7 @@ private:
     // The SECTOR a dotted unit name belongs to: the FIRST segment of a
     // multi-segment name (`CONCENTRATION.Cryst` -> `CONCENTRATION`).  A
     // single-segment name (`JuiceSplitter`) is a plant-root resident and has
-    // NO sector --- returns "" (it lives in the plant `<n>/streams`).
+    // NO sector --- returns "" (it lives in the plant `<n>/streamFaces`).
     static std::string sectorOf(const std::string& dottedUnit);
 
     // The set of sectors a STREAM touches: the sector of its producer (if any)
@@ -340,7 +340,7 @@ private:
                                  const std::map<std::string, Bc>&            roles) const;
 
     // Write the per-unit byUnit/<unit>/ projection under `baseDir` (for the
-    // units in `viewUnits`): one relative `streams -> ../../streams` symlink +
+    // units in `viewUnits`): one relative `streamFaces -> ../../streamFaces` symlink +
     // a generated `ports` dict.
     void writeByUnit(const std::string&                  baseDir,
                      const std::vector<FlatUnit>&        viewUnits,

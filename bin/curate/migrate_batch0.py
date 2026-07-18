@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Relocate a batch case's inline unit-level initial{} -> 0/internalState (VERBATIM).
 
-Batch vessels are closed (no continuous inlet), so there is NO 0/streams -- only
+Batch vessels are closed (no continuous inlet), so there is NO 0/streamFaces -- only
 the holdup lives in 0/.  The relocation is VERBATIM: the initial{} block's inner
 text (all keys AND sub-dicts: T/P/V/totalMoles/molarComposition/initialLoading)
 is moved unchanged into 0/internalState under units{ "<name>" { ... } }, and the
@@ -122,7 +122,7 @@ def migrate(case):
               "  truth; the inline initial{} block is retired, no legacy).  Each unit's\n"
               "  block is its authored initial state VERBATIM (T, P, V, totalMoles,\n"
               "  molarComposition, ...); a closed vessel has no inlet, so there is no\n"
-              "  0/streams.  Reads back via the engine's own dict tokenizer.\n"
+              "  0/streamFaces.  Reads back via the engine's own dict tokenizer.\n"
               "\\*-----------------------------------------------------------------------------*/\n\n"
               "time            0;\n"
               "application     batch;\n\n"

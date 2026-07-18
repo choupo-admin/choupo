@@ -1105,7 +1105,7 @@ the `period` to build a one-point Bode by trial-and-error
 (it delegates to the `staircase` signal, so legacy cases are unchanged).
 
 The dynamic unit also exposes its **feed face** alongside its outlet:
-when `solutionControl { write true; }` is on, each `<t>/streams` carries
+when `solutionControl { write true; }` is on, each `<t>/streamFaces` carries
 both `<unit>.feed` (`bc inlet;`) and `<unit>.out` (`bc computed;`), and
 `<t>/internalState` records the controller-driven jacket as a per-unit
 extra — so the live overlay shows input and output flux at once
