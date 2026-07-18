@@ -964,7 +964,7 @@ function readLeaf(flowsheet: JsonDict, rawFiles?: { [relPath: string]: string })
 const AMBIENT_T = 298.15;      // K   (25 C)
 const AMBIENT_P = 101325;      // Pa  (1 atm)
 
-// A dynamicCSTR's feed lives in 0/streams (the authored inlet face).  The
+// A dynamicCSTR's feed lives in 0/streamFaces (the authored inlet face).  The
 // face carries T, P and per-species molarFlows{} (F is their sum,
 // composition their normalisation).
 function feedSpecFromFace(face: JsonValue | undefined): StreamSpec {
@@ -988,16 +988,16 @@ function feedSpecFromFace(face: JsonValue | undefined): StreamSpec {
   return spec;
 }
 
-// The 0/streams file (a dynamic case's authored inlet faces) parsed to a faces
+// The 0/streamFaces file (a dynamic case's authored inlet faces) parsed to a faces
 // map { "<unit>.feed": {bc, T, P, molarFlows}, ... }; {} when absent/unparseable.
 function zeroStreamsFaces(
   rawFiles: { [relPath: string]: string } | undefined,
 ): JsonDict {
-  const text = rawFiles?.["0/streams"];
+  const text = rawFiles?.["0/streamFaces"];
   if (!text) return {};
   try {
     const j = toJson(parse(text)) as JsonDict;
-    const blk = j["streams"];
+    const blk = j["faces"];
     if (blk && typeof blk === "object" && !Array.isArray(blk)) return blk as JsonDict;
   } catch { /* unparseable -> no faces */ }
   return {};
@@ -1057,11 +1057,11 @@ function readFlowsheet(
 
   const units: UnitSpec[] = (unitsJson as JsonDict[]).map((u) => {
     // A DYNAMIC continuous holdup unit (dynamicCSTR) declares its feed in
-    // 0/streams (the authored inlet face) plus an `operation{}` jacket,
+    // 0/streamFaces (the authored inlet face) plus an `operation{}` jacket,
     // instead of in/outputs.  Without a synthesis it renders as a lone box.
     // SYNTHESISE its feed + product streams: a `<name>.feed` terminal (read
-    // from the 0/streams face) and a `<name>.out` product (the name the
-    // engine writes in <t>/streams, so the live scrub overlay keys cleanly).
+    // from the 0/streamFaces face) and a `<name>.out` product (the name the
+    // engine writes in <t>/streamFaces, so the live scrub overlay keys cleanly).
     // Additive: only when the unit declares no streams of its own.
     const uname = String(u["name"]);
     const utype = String(u["type"]);

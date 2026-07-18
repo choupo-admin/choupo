@@ -256,7 +256,7 @@ T, V, conversion) and, for continuous units, `streams` (the instantaneous outlet
 face).  In WASM these land in MEMFS.  The flow:
 
 1. `solverWorker.js` walks `/case` after the run and harvests every
-   `<t>/internalState` + `<t>/streams` (where `<t>` is an all-digit dir),
+   `<t>/internalState` + `<t>/streamFaces` (where `<t>` is an all-digit dir),
    posting them on the `instants` channel.
 2. `WasmAdapter` parses them with `parseDynamicInstants` (`gui/src/case/
    dynamicInstants.ts`) — reusing the engine's OWN dict tokenizer (`parse` +

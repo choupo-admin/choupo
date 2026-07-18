@@ -36,7 +36,7 @@
     worker -> main:  { type: "trajectory", csv:  string }              (legacy)
     worker -> main:  { type: "csvFiles",   files: { [relPath]: string } }
     worker -> main:  { type: "instants",   files: { "<t>/internalState": string,
-                                                     "<t>/streams": string, ... } }
+                                                     "<t>/streamFaces": string, ... } }
     worker -> main:  { type: "done",       rc:    number }
     worker -> main:  { type: "error",      message: string }
 \*---------------------------------------------------------------------------*/
@@ -198,7 +198,7 @@ self.addEventListener("message", async (e) => {
               // OpenFOAM-style real-time INSTANT files the dynamic binaries
               // (choupoBatch / choupoCtrl) drop under <t>/ at the case root:
               //   <t>/internalState   holdup truth (mole inventory, T, V, ...)
-              //   <t>/streams         instantaneous outlet faces (continuous)
+              //   <t>/streamFaces     instantaneous outlet faces (continuous)
               // <t> is a single all-digit directory name.  We harvest these so
               // the GUI can offer a TIME SCRUBBER over the transient (read-only
               // harvest of a run output; the GUI never writes).
@@ -224,7 +224,7 @@ self.addEventListener("message", async (e) => {
                     } catch (_) {
                       /* ignore individual file failures */
                     }
-                  } else if ((name === "internalState" || name === "streams")
+                  } else if ((name === "internalState" || name === "streamFaces")
                              && parentName && isNumericDir(parentName)) {
                     try {
                       const body = Module.FS.readFile(path, { encoding: "utf8" });

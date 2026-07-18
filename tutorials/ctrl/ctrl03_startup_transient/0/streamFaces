@@ -1,9 +1,9 @@
 /*--------------------------------*- Choupo -*----------------------------------*\
-  0/streams -- DYNAMIC face state (the SINGLE source of truth; inline inlet{} is
+  0/streamFaces -- DYNAMIC face state (the SINGLE source of truth; inline inlet{} is
   retired).  The inlet face carries F [kmol/s], T [K] + per-species molarFlows.
 \*-----------------------------------------------------------------------------*/
 time            0;
-streams
+faces
 {
     "reactor.feed"
     {

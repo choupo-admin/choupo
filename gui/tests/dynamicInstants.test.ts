@@ -1,5 +1,5 @@
 // Tests for the dynamic-instant pipeline: the parser of the OpenFOAM-style
-// <t>/internalState + <t>/streams files the choupoBatch / choupoCtrl WASM
+// <t>/internalState + <t>/streamFaces files the choupoBatch / choupoCtrl WASM
 // binaries write at the case root, and the binary-dispatch logic that routes a
 // case to the right WASM module by controlDict.application.
 //
@@ -14,7 +14,7 @@ import { selectBinary } from "../src/adapters/WasmAdapter.js";
 
 // ---- Fixtures (verbatim from a native run) --------------------------------
 
-// ctrl03 (continuous dynamicCSTR) -- internalState + streams, two instants.
+// ctrl03 (continuous dynamicCSTR) -- internalState + streamFaces, two instants.
 const ctrlInternal0 = `/*--------------------------------*- Choupo -*----------------------------------*\\
 | Choupo v0.3.0   DYNAMIC instant   time 0 s   (ctrl)
 \\*-----------------------------------------------------------------------------*/
@@ -39,7 +39,7 @@ units
 `;
 
 const ctrlStreams0 = `time            0;
-streams
+faces
 {
     "reactor.out"
     {
@@ -109,7 +109,7 @@ describe("parseDynamicInstants", () => {
   it("parses a continuous (ctrl) run: ordered instants + holdup + outlet faces", () => {
     const out = parseDynamicInstants({
       "0/internalState": ctrlInternal0,
-      "0/streams": ctrlStreams0,
+      "0/streamFaces": ctrlStreams0,
       "500/internalState": ctrlInternal500,
     });
     expect(out).not.toBeNull();
@@ -127,11 +127,11 @@ describe("parseDynamicInstants", () => {
     expect(reactor0.T).toBeCloseTo(320, 6);
     expect(reactor0.holdupMolar.compA).toBeCloseTo(0.012, 9);
     expect(reactor0.holdupMolar.compB).toBe(0);
-    // Outlet face overlaid from the streams file.
+    // Outlet face overlaid from the streamFaces file.
     expect(reactor0.outletMolarFlows!.compA).toBeCloseTo(1.388888888888889e-8, 12);
     expect(reactor0.outletT).toBeCloseTo(320, 6);
 
-    // The 500 s instant evolved (compB grew, T rose); no streams file here.
+    // The 500 s instant evolved (compB grew, T rose); no streamFaces file here.
     const reactor500 = out!.instants[1]!.units[0]!;
     expect(reactor500.T).toBeGreaterThan(320);
     expect(reactor500.holdupMolar.compB).toBeGreaterThan(0);
@@ -171,7 +171,7 @@ describe("parseDynamicInstants", () => {
       "0/internalState": ctrlInternal0,
       "trajectory.csv": "t,x\n0,1\n",
       "constant/internalState": "bogus",   // nested -> not a root instant dir
-      "system/streams": "bogus",
+      "system/streamFaces": "bogus",
     });
     expect(out).not.toBeNull();
     expect(out!.instants).toHaveLength(1);

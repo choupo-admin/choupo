@@ -737,7 +737,7 @@ try
                 if (nm.empty() || !std::all_of(nm.begin(), nm.end(),
                         [](char c){ return std::isdigit(static_cast<unsigned char>(c)); }))
                     continue;
-                if (!fs::exists(e.path() / "streams")) continue;
+                if (!fs::exists(e.path() / "streamFaces")) continue;
                 try { instant = std::max(instant, std::stoi(nm)); }
                 catch (const std::exception&) {}
             }

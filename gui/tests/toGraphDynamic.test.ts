@@ -1,10 +1,10 @@
 /*---------------------------------------------------------------------------*\
   toGraph dynamic-holdup synthesis tests.
 
-  A dynamicCSTR declares its feed in the 0/streams inlet face + its jacket in
+  A dynamicCSTR declares its feed in the 0/streamFaces inlet face + its jacket in
   `operation{}` instead of the steady in/outputs keys, so without the
   synthesis branch it renders as a LONE BOX.  readFlowsheet must grow:
-    - a `<unit>.feed` feed terminal (read from the 0/streams face),
+    - a `<unit>.feed` feed terminal (read from the 0/streamFaces face),
     - a `<unit>.out` product terminal (the engine's stream key),
     - a jacket UTILITY stub (dutyPort:"jacket") when operation.UA > 0.
   These tests pin that down so the lone-box regression can't return.
@@ -16,11 +16,11 @@ import { parse, toJson } from "../src/dict/index.js";
 import type { JsonDict } from "../src/dict/index.js";
 import { flowsheetToGraph } from "../src/case/toGraph.js";
 
-// The authored dynamic state: 0/streams carries the inlet FACE (the engine's
+// The authored dynamic state: 0/streamFaces carries the inlet FACE (the engine's
 // grammar -- bc inlet, T, P, per-species molarFlows).
 const ZERO_STREAMS = `
 time 0;
-streams
+faces
 {
     "reactor.feed"
     {
@@ -52,7 +52,7 @@ units
 function graphFrom(text: string) {
   const fs = toJson(parse(text, { sourceName: "flowsheetDict" })) as JsonDict;
   return flowsheetToGraph(fs, {
-    "0/streams": ZERO_STREAMS,
+    "0/streamFaces": ZERO_STREAMS,
     "0/internalState": ZERO_INTERNAL,
   });
 }
@@ -78,7 +78,7 @@ describe("toGraph — dynamicCSTR grows feed/product/jacket from its sub-dicts",
   const g = graphFrom(CSTR_TEXT);
   const ids = new Set(g.nodes.map((n) => n.id));
 
-  it("synthesises a feed terminal from the 0/streams inlet face", () => {
+  it("synthesises a feed terminal from the 0/streamFaces inlet face", () => {
     expect(ids.has("stream:reactor.feed")).toBe(true);
     const feed = g.nodes.find((n) => n.id === "stream:reactor.feed")!;
     expect((feed.data as { role?: string }).role).toBe("feed");

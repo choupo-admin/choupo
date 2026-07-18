@@ -36,8 +36,8 @@ License
     <t>/internalState   the HOLDUP truth, a Choupo dict:
                           time, application, units { "<name>" { type T P [V]
                           holdupMolar{ <comp> ... } [extras{ <k> ... }] } }
-    <t>/streams         (continuous units only) the instantaneous outlet faces:
-                          time, streams { "<name>.out" { T P vf molarFlows{...} } }
+    <t>/streamFaces     (continuous units only) the instantaneous outlet faces:
+                          time, faces { "<name>.out" { T P vf molarFlows{...} } }
 
   The worker harvests these files verbatim from MEMFS (keyed by their path
   relative to the case root, e.g. "500/internalState"); this module parses
@@ -160,7 +160,7 @@ function parseInternalState(dir: string, text: string): DynamicInstant | null {
   return { t, dir, units };
 }
 
-/** Overlay the `<t>/streams` outlet faces onto an already-parsed instant.
+/** Overlay the `<t>/streamFaces` outlet faces onto an already-parsed instant.
  *  Stream "name.out" maps back to unit "name". */
 function applyStreams(instant: DynamicInstant, text: string): void {
   let json: JsonDict;
@@ -169,7 +169,7 @@ function applyStreams(instant: DynamicInstant, text: string): void {
   } catch {
     return;
   }
-  const streamsBlock = json["streams"];
+  const streamsBlock = json["faces"];
   if (!streamsBlock || typeof streamsBlock !== "object" || Array.isArray(streamsBlock)) {
     return;
   }
@@ -204,9 +204,9 @@ function applyStreams(instant: DynamicInstant, text: string): void {
  *
  * `files` keys are paths relative to the case root, exactly as the worker
  * harvested them from MEMFS:
- *     { "0/internalState": "...", "0/streams": "...", "50/internalState": "...", ... }
+ *     { "0/internalState": "...", "0/streamFaces": "...", "50/internalState": "...", ... }
  *
- * Files that are not `<t>/internalState` or `<t>/streams` are ignored, so the
+ * Files that are not `<t>/internalState` or `<t>/streamFaces` are ignored, so the
  * same generic file bag can be passed in safely.  Returns null when no
  * instant parses (steady run / solutionControl off).
  */
@@ -227,9 +227,9 @@ export function parseDynamicInstants(
   }
   if (byDir.size === 0) return null;
 
-  // Second pass: overlay the outlet faces where a streams file exists.
+  // Second pass: overlay the outlet faces where a streamFaces file exists.
   for (const [rel, text] of Object.entries(files)) {
-    const m = /^(.+)\/streams$/.exec(rel);
+    const m = /^(.+)\/streamFaces$/.exec(rel);
     if (!m) continue;
     const dir = m[1]!;
     if (dir.includes("/")) continue;

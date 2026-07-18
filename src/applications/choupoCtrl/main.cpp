@@ -105,7 +105,7 @@ namespace fs = std::filesystem;
 // Seed each dynamic unit's initial holdup + inlet from the case's 0/ state --
 // the SINGLE source of truth.  The inline initial{}/inlet{} blocks in
 // flowsheetDict do not exist: 0/internalState carries the holdup and
-// 0/streams the inlet face, exactly as the engine writes them.  This translates
+// 0/streamFaces the inlet face, exactly as the engine writes them.  This translates
 // them into the initial{}/inlet{} dicts each unit's initialise() already reads
 // and injects them into the unit dict, so no unit code changes.  Must run with
 // the CWD already at the case root (choupoCtrl chdir's before calling this).
@@ -113,8 +113,8 @@ static void seedDynamicUnitsFrom0(const std::vector<DictPtr>& unitList)
 {
     DictPtr istate  = fs::exists("0/internalState")
                     ? Dictionary::fromFile("0/internalState") : nullptr;
-    DictPtr sstreams = fs::exists("0/streams")
-                    ? Dictionary::fromFile("0/streams") : nullptr;
+    DictPtr sstreams = fs::exists("0/streamFaces")
+                    ? Dictionary::fromFile("0/streamFaces") : nullptr;
 
     for (const auto& uDict : unitList)
     {
@@ -123,7 +123,7 @@ static void seedDynamicUnitsFrom0(const std::vector<DictPtr>& unitList)
         if (uDict->found("initial") || uDict->found("inlet"))
             throw std::runtime_error("choupoCtrl: unit '" + uname + "' carries an "
                 "inline initial{}/inlet{} block -- the initial holdup and"
-                " inlet live in 0/internalState + 0/streams (bin/choupo-init0"
+                " inlet live in 0/internalState + 0/streamFaces (bin/choupo-init0"
                 " materialises them).  Delete the inline block from flowsheetDict.");
 
         if (!istate)
@@ -147,9 +147,9 @@ static void seedDynamicUnitsFrom0(const std::vector<DictPtr>& unitList)
         uDict->insert("initial", Dictionary::fromString(is.str(), "initial"));
 
         // --- inlet face  ->  inlet{ F T molarComposition } ---
-        if (sstreams && sstreams->found("streams"))
+        if (sstreams && sstreams->found("faces"))
         {
-            auto strm = sstreams->subDict("streams");
+            auto strm = sstreams->subDict("faces");
             for (const auto& sn : strm->keys())
             {
                 auto face = strm->subDict(sn);

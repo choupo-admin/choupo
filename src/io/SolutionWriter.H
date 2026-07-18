@@ -59,18 +59,18 @@ Description
     where each region carries its own field plus the boundary/interface faces it
     shares with the neighbour region:
 
-      - `<n>/streams`            -- the PLANT view: the external boundary streams
+      - `<n>/streamFaces`       -- the PLANT view: the external boundary streams
                                     (feeds + products) and the INTER-SECTOR
                                     interface streams (a face whose two sides live
                                     in different sectors).  Single-segment units
                                     (a leaf at the plant root, e.g. JuiceSplitter)
                                     are plant residents, so their streams live here.
-      - `<n>/<sector>/streams`   -- one BRANCH's view: every stream that TOUCHES a
+      - `<n>/<sector>/streamFaces` -- one BRANCH's view: every stream that TOUCHES a
                                     unit in that sector (its internal flows + its
                                     boundary faces).  An INTER-SECTOR stream
                                     appears on BOTH sides (in sector A's streams as
                                     its outlet, in sector B's streams as its inlet)
-                                    AND in the plant `<n>/streams` -- the interface
+                                    AND in the plant `<n>/streamFaces` -- the interface
                                     is represented PER BRANCH, never a hidden global
                                     side-channel ("information follows the streams").
 
@@ -80,7 +80,7 @@ Description
     face, shared by the two owner/neighbour cells (units).  The file holds the
     FACE-FLUXES; a shared (internal) stream is written ONCE per branch that
     touches it and projected into each touching unit's byUnit/ports.  Units are
-    0-D cells (no internalField).  Each `streams` file (plant + per-sector)
+    0-D cells (no internalField).  Each `streamFaces` file (plant + per-sector)
     carries:
       - the header (pseudoTime/converged/tearResidual/tolerance);
       - a read-only `topology{}` echo (tearStreams + connections) so the
@@ -93,7 +93,7 @@ Description
         (so F and z reconstruct without a Sigma z = 1 renormalisation) + solids.
 
     PER-UNIT PROJECTION `byUnit/<dotted.unit>/` (gated by `byUnit`, default true):
-    a relative symlink `streams -> ../../streams` (the SINGLE source within that
+    a relative symlink `streamFaces -> ../../streamFaces` (the SINGLE source within that
     branch) and a generated `ports` dict (inlets/outlets, each with its global
     dotted key + bc role).  Each unit's projection lives UNDER ITS SECTOR
     (`<n>/<sector>/byUnit/<unit>/`); a plant-root leaf's projection lives at
@@ -179,7 +179,7 @@ struct SolutionControl
 //  its truth is the internal STATE (mole inventory n_i, T, V), not a face
 //  flux.  So each unit contributes a `DynamicUnitSnapshot` --- the holdup
 //  written verbatim into `<t>/internalState`, plus (where the unit exposes
-//  one) an instantaneous outlet face into `<t>/streams`.  Scrubbing a time
+//  one) an instantaneous outlet face into `<t>/streamFaces`.  Scrubbing a time
 //  directory therefore shows the reactor's ACTUAL state at that instant.
 // -------------------------------------------------------------------------
 struct DynamicUnitSnapshot
@@ -222,7 +222,7 @@ public:
                    const SolutionControl& cfg,
                    std::vector<std::string> compNames);
 
-    // Write one instant: `<caseRoot>/<meta.iteration>/streams` (atomic rename
+    // Write one instant: `<caseRoot>/<meta.iteration>/streamFaces` (atomic rename
     // of the whole instant dir, including the byUnit/ projection), append to
     // `<caseRoot>/solution.log`, refresh the `latest` symlink, and purge old
     // numbered instants per `purgeWrite`.  `tears` names the tear streams so
@@ -240,7 +240,7 @@ public:
     //  physical simulation time in SECONDS formatted OpenFOAM-style (trailing
     //  zeros trimmed: `0`, `0.5`, `1`, `10.5`).  Each unit's HOLDUP STATE goes
     //  to `<time>/internalState` (mole inventory, T, V, conversion, ...) and
-    //  --- where a unit exposes an instantaneous outlet --- a `<time>/streams`
+    //  --- where a unit exposes an instantaneous outlet --- a `<time>/streamFaces`
     //  face is written in the same self-describing dict format the steady path
     //  uses, so the dict reader parses both back.  Appends one row per time to
     //  `solution.log` and refreshes the `latest` symlink.  Purge is OFF for the

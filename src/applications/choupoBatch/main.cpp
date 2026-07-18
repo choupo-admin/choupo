@@ -96,7 +96,7 @@ namespace fs = std::filesystem;
 
 // Seed each batch vessel's initial holdup from the case's 0/internalState -- the
 // SINGLE source of truth.  A closed batch vessel has no continuous inlet, so the
-// holdup is ALL of its authored state and there is no 0/streams.  The inline
+// holdup is ALL of its authored state and there is no 0/streamFaces.  The inline
 // initial{} block does not live in flowsheetDict: 0/internalState
 // carries each holdup unit's block VERBATIM (T, P, V, totalMoles,
 // molarComposition, ...), re-inserted here as the initial{} dict the unit's

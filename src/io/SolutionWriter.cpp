@@ -347,7 +347,7 @@ std::string SolutionWriter::renderTopology(
 
 // ---------------------------------------------------------------------------
 //  The per-unit byUnit/<dotted.unit>/ projection.  For each flattened unit:
-//    - a relative symlink `streams -> ../../streams` (the SINGLE source);
+//    - a relative symlink `streamFaces -> ../../streamFaces` (the SINGLE source);
 //    - a generated `ports` dict naming this unit's inlets/outlets by their
 //      GLOBAL dotted key + bc role.
 //  A stream shared by two units (an interior face) appears in BOTH units'
@@ -382,10 +382,10 @@ void SolutionWriter::writeByUnit(
         const fs::path udir = byUnit / u.name;   // u.name is the dotted address
         fs::create_directories(udir, ec);
 
-        // (1) the single-source symlink: byUnit/<unit>/streams -> ../../streams
-        const fs::path link = udir / "streams";
+        // (1) the single-source symlink: byUnit/<unit>/streamFaces -> ../../streamFaces
+        const fs::path link = udir / "streamFaces";
         fs::remove(link, ec);
-        fs::create_symlink("../../streams", link, ec);
+        fs::create_symlink("../../streamFaces", link, ec);
         // (a symlink-hostile filesystem just drops the convenience link; the
         //  ports dict below still carries every global key as plain text.)
 
@@ -460,7 +460,7 @@ bool SolutionWriter::writeStreamsFileChecked(
     // the mesh) --- self-describing per branch.
     body << renderTopology(viewUnits, tears) << "\n";
 
-    body << "streams\n{\n";
+    body << "faces\n{\n";
     for (const auto& name : keep)
     {
         auto sit = streams.find(name);
@@ -472,7 +472,7 @@ bool SolutionWriter::writeStreamsFileChecked(
     body << "}\n";
 
     std::error_code ec;
-    const fs::path file = fs::path(dir) / "streams";
+    const fs::path file = fs::path(dir) / "streamFaces";
     {
         std::ofstream f(file.string(), std::ios::out | std::ios::trunc);
         f << body.str();
@@ -817,7 +817,7 @@ void SolutionWriter::writeDynamicInstant(
 "| no outlet face and contributes only to internalState.  SI-canonical.\n"
 "\\*-----------------------------------------------------------------------------*/\n\n";
         sb << "time            " << sci(t) << ";\n";
-        sb << "streams\n{\n";
+        sb << "faces\n{\n";
         // Render one face (a feed `<unit>.feed` or an outlet `<unit>.out`) as a
         // self-describing stream block --- SAME shape the steady path uses so the
         // dict reader parses both back.  `bc inlet;` for the Dirichlet feed face,
@@ -855,7 +855,7 @@ void SolutionWriter::writeDynamicInstant(
         }
         sb << "}\n";
 
-        const fs::path f = tmpDir / "streams";
+        const fs::path f = tmpDir / "streamFaces";
         std::ofstream of(f.string(), std::ios::out | std::ios::trunc);
         of << sb.str();
         of.flush();
@@ -969,7 +969,7 @@ int SolutionWriter::latestInstantNumber() const
         if (!e.is_directory()) continue;
         const std::string nm = e.path().filename().string();
         if (!isNumericName(nm)) continue;
-        if (!fs::exists(e.path() / "streams")) continue;
+        if (!fs::exists(e.path() / "streamFaces")) continue;
         // D6 (robustness): guard the same overflow as purgeOldInstants.
         try { best = std::max(best, std::stoi(nm)); }
         catch (const std::exception&) { continue; }
@@ -997,13 +997,13 @@ int SolutionWriter::restartFromLatest(
     // sector subdir --- and reseed each flagged tear ONCE (the first view that
     // carries it; an inter-sector tear seen in two views is identical in both).
     std::vector<fs::path> streamFiles;
-    if (fs::exists(instRoot / "streams")) streamFiles.push_back(instRoot / "streams");
+    if (fs::exists(instRoot / "streamFaces")) streamFiles.push_back(instRoot / "streamFaces");
     std::error_code ecScan;
     for (const auto& e : fs::directory_iterator(instRoot, ecScan))
     {
         if (!e.is_directory()) continue;
         if (e.path().filename() == "byUnit") continue;  // not a sector
-        const fs::path sf = e.path() / "streams";
+        const fs::path sf = e.path() / "streamFaces";
         if (fs::exists(sf)) streamFiles.push_back(sf);
     }
     if (streamFiles.empty()) return -1;
@@ -1052,8 +1052,8 @@ int SolutionWriter::restartFromLatest(
         DictPtr d;
         try { d = Dictionary::fromFile(sfPath.string()); }
         catch (const std::exception&) { continue; }
-        if (!d->found("streams")) continue;
-        auto sblock = d->subDict("streams");
+        if (!d->found("faces")) continue;
+        auto sblock = d->subDict("faces");
         for (const auto& sname : sblock->keys())
         {
             if (!tearSet.count(sname) || done.count(sname)) continue;
@@ -1067,7 +1067,7 @@ int SolutionWriter::restartFromLatest(
     // R4: announce the TRUTH about the reseed.
     std::cout << "  RESTART: reseeded " << reseeded << " of " << tears.size()
               << " tear stream(s) from instant " << n
-              << "/ (plant + per-sector streams).\n";
+              << "/ (plant + per-sector streamFaces).\n";
     std::set<std::string> reported;
     for (const auto& m : missing)
         if (reported.insert(m).second)

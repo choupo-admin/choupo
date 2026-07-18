@@ -52,7 +52,7 @@ bool looksLikeStreamState(const std::string& body)
     // Component-wise forms are self-identifying.  The total-flow forms require
     // their companion fractions block -- so `molarFlow` never false-matches the
     // SolutionWriter's `molarFlows` block (a substring), which carries no
-    // moleFractions -- so a SolutionWriter instant snapshot is never
+    // moleFractions -- so a SolutionWriter streamFaces snapshot is never
     // mistaken for per-stream state.
     if (has("componentMolarFlows") || has("componentMassFlows") || has("componentFlows"))
         return true;
@@ -385,10 +385,9 @@ readStateDir(const fs::path& dir, const ThermoPackage& thermo)
         if (!e.is_regular_file()) continue;
         if (e.path().filename() == "manifest.dat") continue;
         // A stream-state file is CANONICAL: it carries a `componentFlows` block.
-        // This is also the distinguisher from the per-iteration SolutionWriter
-        // snapshot (`0/streams`, `0/byUnit/…`), which shares the `0/` name but
-        // NOT the grammar -- those files are skipped (they are aggregated
-        // faces, not per-stream state).
+        // This is also the distinguisher from the aggregated SolutionWriter
+        // snapshot (`0/streamFaces`, `0/byUnit/…`) -- a different grammar;
+        // those files are skipped (faces, not per-stream state).
         {
             std::ifstream probe(e.path());
             std::string body((std::istreambuf_iterator<char>(probe)),
