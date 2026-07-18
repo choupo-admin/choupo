@@ -6,8 +6,8 @@ engine; HERE your job is this case.
 
 ## Orient yourself
 - Authoring rules -- dict syntax, **UNITS ARE MANDATORY**, the unit-op catalogue,
-  patterns, pitfalls: **read `ai/choupo-authoring.md`** (right here in this case;
-  local + offline -- you never need the network to author).  Deeper theory/user
+  patterns, pitfalls: **run `bin/llmctx`** in the repo (it concatenates docs/ai/ -- dict syntax,
+  the case-authoring guide; local + offline).  Deeper theory/user
   manuals: a Choupo repo's `docs/*.pdf` (`find / -name theoryGuide.pdf 2>/dev/null`)
   or the Choupo site's `/docs/`.
 - The case's live state IS these dicts + the last run's results + the Decision
