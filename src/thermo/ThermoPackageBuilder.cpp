@@ -1321,13 +1321,17 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
 
 ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db)
 {
-    // v2 contract? translate FIRST (strict validation + resolved-plan
-    // announce), then run the identical assembly below.
+    // v2 contract?  ONE dispatch point (migration step 1): the formulations
+    // the NATIVE path serves assemble directly from the authored grammar
+    // (buildV2); the rest ride the translateV2 SCAFFOLD (strict validation +
+    // resolved-plan announce) into the identical assembly below.
     if (pkg->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
     {
         if (pkg->lookupScalarOrDefault("schemaVersion", 0) != 2)
             throw std::runtime_error("thermophysicalPropertySystem requires"
                 " schemaVersion 2;");
+        if (v2NativeFormulation(pkg))
+            return buildV2(pkg, db);
         return build(translateV2(pkg), db);
     }
 
@@ -1392,6 +1396,127 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
 
     throw std::runtime_error("ThermoPackageBuilder: unsupported liquid propertyMethod '"
         + liquid + "' (have electrolyte.pitzer, electrolyte.eNRTL, activity.<model>, solution.henryDilute).");
+}
+
+// ---- v2-NATIVE path (migration steps 1-2 pilot: the phiPhi world) ----------
+// docs/architecture/v2-native-migration.md.  No v1-shaped dict, no
+// synthesized text: the authored equilibrium{} block is read directly and
+// the package assembled via ThermoPackage::assemblePhiPhi.
+
+bool ThermoPackageBuilder::v2NativeFormulation(const DictPtr& v2)
+{
+    if (!v2->found("equilibrium")) return false;
+    auto eq = v2->subDict("equilibrium");
+    if (eq->lookupWordOrDefault("formulation", "") != "phiPhi") return false;
+    // The pilot serves the pure phiPhi surface only; a phiPhi case declaring
+    // blocks the native assembly does not wire yet stays on the scaffold
+    // (translateV2), which validates/refuses them itself.
+    if (v2->found("transport") || v2->found("pureFluids")
+        || v2->found("activeComponents") || v2->found("chemistry"))
+        return false;
+    return true;
+}
+
+ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& db)
+{
+    if (!v2NativeFormulation(v2))
+        throw std::runtime_error("ThermoPackageBuilder::buildV2: the native"
+            " path serves the phiPhi formulation only (pilot) -- gate the"
+            " call with v2NativeFormulation().");
+    if (!v2->found("components"))
+        throw std::runtime_error("thermophysicalPropertySystem: required key"
+            " 'components' is absent");
+    auto eq  = v2->subDict("equilibrium");
+    auto eos = eq->subDict("equationOfState");
+    const std::string model = eos->lookupWord("model");
+    if (model != "SRK" && model != "PengRobinson" && model != "PCSAFT")
+        throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
+            " equationOfState '" + model + "' -- implemented: SRK |"
+            " PengRobinson | PCSAFT (the non-associating PC-SAFT core).");
+    // The vdW-one-fluid mixing rule is the CUBIC combining rule; PC-SAFT
+    // has its own (sigma arithmetic, epsilon geometric) -- do not impose it.
+    if (model != "PCSAFT" && eos->found("mixingRule")
+        && eos->lookupWord("mixingRule") != "vanDerWaalsOneFluid")
+        throw std::runtime_error("thermophysicalPropertySystem: the cubic"
+            " mixing rule implemented is vanDerWaalsOneFluid.");
+
+    // Declared caloric routes must state what runs (declared+verified).
+    DictPtr cal = v2->found("caloric") ? v2->subDict("caloric") : nullptr;
+    if (cal && cal->found("energyBasis")
+        && cal->lookupWord("energyBasis") != "elementsDatum")
+        throw std::runtime_error("thermophysicalPropertySystem: "
+            "caloric.energyBasis '" + cal->lookupWord("energyBasis")
+            + "' -- the engine carries ONE enthalpy datum (the elements at"
+            " 298.15 K): declare `energyBasis elementsDatum;`.");
+    for (const char* phase : {"liquid", "vapour"})
+        if (cal && cal->found(phase))
+        {
+            auto ph = cal->subDict(phase);
+            if (ph->found("departureRoute")
+                && ph->lookupWord("departureRoute") != "equilibriumEquationOfState")
+                throw std::runtime_error("thermophysicalPropertySystem: caloric."
+                    + std::string(phase) + ".departureRoute '"
+                    + ph->lookupWord("departureRoute") + "' is DECLARED but the"
+                    " engine implements 'equilibriumEquationOfState' for phiPhi"
+                    " -- a route declaration must state what runs.");
+        }
+
+    // Native EoS config: model + binaryInteractions with each declared
+    // SOURCE record loaded, eos-match-verified and inlined as the {i;j;kij}
+    // dicts the EoS constructors consume (the same refusals + citation
+    // announce as the scaffold path -- one contract, two assemblies).
+    auto eosDict = std::make_shared<Dictionary>("equationOfState");
+    eosDict->insert("model", model);
+    if (eos->found("binaryInteractions"))
+    {
+        const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
+        auto bi = eos->subDict("binaryInteractions");
+        std::vector<DictPtr> pairDicts;
+        for (const auto& key : bi->keys())
+        {
+            auto decl = bi->subDict(key);
+            if (!decl->found("source"))
+                throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
+                    " binaryInteractions." + key + " needs `source \"<pair"
+                    " record>\";` (the cited kij record; never an invented"
+                    " inline number).");
+            auto rec = loadRec(resolveDeclared(repoRoot, decl->lookupWord("source")),
+                               "kij pair " + key);
+            const std::string recEos = rec->lookupWordOrDefault("eos", "");
+            if (recEos.empty() && thermoAnnounce())
+                std::cout << "[builder] kij pair " << key << ": record"
+                             " carries NO eos field -- cannot verify it was"
+                             " regressed for " << model << "; using it"
+                             " UNVERIFIED.\n";
+            if (!recEos.empty() && recEos != model)
+                throw std::runtime_error("propertyPackage: kij pair " + key
+                    + " was regressed for eos " + recEos
+                    + " but this package declares " + model
+                    + " -- kij values are NOT transferable between models;"
+                    " provide a " + model + "-regressed pair record.");
+            auto p = std::make_shared<Dictionary>(key);
+            p->insert("i",   rec->entryValue("i"));
+            p->insert("j",   rec->entryValue("j"));
+            p->insert("kij", rec->entryValue("kij"));
+            pairDicts.push_back(p);
+            if (thermoAnnounce())
+                std::cout << "[builder] kij pair " << rec->lookupWord("i") << "-"
+                          << rec->lookupWord("j")
+                          << "  --- " << decl->lookupWord("source") << "\n";
+        }
+        eosDict->insert("binaryInteractions", EntryValue(pairDicts));
+    }
+
+    if (thermoAnnounce())
+        std::cout << "[v2 native] equilibrium phiPhi: " << model << " on BOTH"
+                     " phases (one Gibbs surface, two roots); kij declared"
+                     " inside the EoS block.  caloric: departure from the SAME"
+                     " EoS (elements datum).  Assembled NATIVELY from the v2"
+                     " grammar (no translated intermediate).\n";
+
+    ThermoPackage out;
+    out.assemblePhiPhi(v2->lookupWordList("components"), eosDict, db);
+    return out;
 }
 
 } // namespace Choupo

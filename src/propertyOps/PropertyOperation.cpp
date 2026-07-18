@@ -147,9 +147,10 @@ PropertyOperation::thermoForOp(const DictPtr& opDict) const
               " supported: phiPhi equationOfState{} (model cross-checks)."
               "  Refusing rather than silently ignoring the override.");
     }
-    auto sel = ThermoPackageBuilder::translateV2(v2);
+    // build() owns the v2 dispatch (native formulations assemble via buildV2;
+    // the rest translate) -- one entry point, no pre-translation here.
     return std::make_unique<ThermoPackage>(
-        ThermoPackageBuilder::build(sel, *database_));
+        ThermoPackageBuilder::build(v2, *database_));
 }
 
 void PropertyOperation::registerBuiltins()

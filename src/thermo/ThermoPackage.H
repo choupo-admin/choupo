@@ -121,12 +121,24 @@ public:
 
     void readFromDict(const DictPtr& dict, const Database& db);
 
-    // Aspen ThermoPackageBuilder seam: adopt an already-assembled electrolyte
+    // ThermoPackageBuilder seam: adopt an already-assembled electrolyte
     // package (components + activity + EoS), mirroring what readFromDict sets,
     // without re-reading any data file.  Used only by ThermoPackageBuilder.
     void adoptElectrolytePackage(std::vector<Component> comps,
                                  std::unique_ptr<ActivityModel> act,
                                  std::unique_ptr<EquationOfState> eos);
+
+    // v2-NATIVE assembly, migration step 2 PILOT (the phiPhi world; the plan:
+    // docs/architecture/v2-native-migration.md).  Consumes the v2 sub-blocks
+    // DIRECTLY -- component names + the equationOfState config dict (model +
+    // inlined binaryInteractions, prepared by ThermoPackageBuilder::buildV2)
+    // -- and establishes the SAME invariants readFromDict does for a phiPhi
+    // world (loaded/canonicalised components, ideal liquid activity, the two
+    // phases, coherence check, world announcement, audits).  No v1-shaped
+    // package dict, no synthesized text, no reparse.
+    void assemblePhiPhi(const std::vector<std::string>& names,
+                        const DictPtr& eosDict,
+                        const Database& db);
 
     std::size_t n() const { return components_.size(); }
     const Component& comp(std::size_t i) const { return components_.at(i); }
@@ -454,6 +466,13 @@ private:
                    const Database& db,
                    std::map<std::string, scalar>& seedByName,
                    std::map<std::string, std::map<std::string, scalar>>* membersByToken = nullptr);
+
+    // Load-time helper shared by readFromDict and the v2-native assembly:
+    // mixture expansion + alias canonicalisation + flat-by-name component
+    // load + mixture-seed re-keying.  Returns the post-expansion canonical
+    // names (the vector the phases and pair-file builders consume).
+    std::vector<std::string>
+    loadComponentSet(std::vector<std::string> names, const Database& db);
 
 
     std::vector<Component>                 components_;

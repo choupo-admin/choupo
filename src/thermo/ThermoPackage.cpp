@@ -71,12 +71,10 @@ void ThermoPackage::adoptElectrolytePackage(std::vector<Component> comps,
     eos_        = std::move(eos);
 }
 
-void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
+std::vector<std::string>
+ThermoPackage::loadComponentSet(std::vector<std::string> names,
+                                const Database& db)
 {
-    auto names = dict->lookupWordList("components");
-    if (names.empty())
-        throw std::runtime_error("thermoPackage: 'components' list is empty");
-
     // ----- TRACK A: predefined-mixture expansion (`air`, ...) -------------
     // Splice any token that names a data/standards/mixtures/<token>.dat file
     // into its member component names (de-duplicated), capturing the member
@@ -121,6 +119,62 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
             mixtureSeed_[i] = (sum > 0.0) ? x / sum : 0.0;
         }
     }
+    return names;
+}
+
+void ThermoPackage::assemblePhiPhi(const std::vector<std::string>& namesIn,
+                                   const DictPtr& eosDict,
+                                   const Database& db)
+{
+    // v2-NATIVE phiPhi assembly (migration step 2 pilot): the same
+    // invariants readFromDict establishes for `vleWorld phiPhi;`, built
+    // straight from the v2 sub-blocks -- no v1-shaped dict, no text.
+    if (namesIn.empty())
+        throw std::runtime_error("thermophysicalPropertySystem: 'components'"
+            " list is empty");
+    const auto names = loadComponentSet(namesIn, db);
+
+    solventName_.clear();
+    declaredSolutes_.clear();
+    vleWorld_ = "phiPhi";
+
+    // ONE Gibbs surface, two roots: the liquid phase carries an ideal
+    // activity placeholder (unused in the phi-phi K), the vapour the EoS --
+    // the same two implicit phases the flat reader builds.
+    phases_.clear();
+    auto idealAct = std::make_shared<Dictionary>("activity");
+    idealAct->insert("model", std::string("ideal"));
+    auto liqDict = std::make_shared<Dictionary>("liquid");
+    liqDict->insert("type",     std::string("liquid"));
+    liqDict->insert("name",     std::string("liquid"));
+    liqDict->insert("activity", EntryValue(idealAct));
+    phases_.push_back(Phase::New(liqDict, names, components_));
+    auto vapDict = std::make_shared<Dictionary>("vapor");
+    vapDict->insert("type", std::string("vapor"));
+    vapDict->insert("name", std::string("vapor"));
+    vapDict->insert("eos",  EntryValue(eosDict));
+    phases_.push_back(Phase::New(vapDict, names, components_));
+
+    activity_ = ActivityModel::New(idealAct, components_);
+    eos_      = EquationOfState::New(eosDict, components_);
+    if (!eos_ || eos_->isIdeal())
+        throw std::runtime_error("thermoPackage: vleWorld phiPhi needs a real"
+            " cubic EoS (SRK/PengRobinson), not idealGas.");
+    if (thermoAnnounce())
+        std::cout << "VLE world: phi-phi (K = phi_L/phi_V, "
+                  << eos_->modelName() << " both phases)\n";
+
+    auditFindings_ = collectAuditFindings(components_, activity_.get(), eos_.get());
+    auditPackage(components_, activity_.get(), eos_.get());
+    pureFluid_.clear();
+}
+
+void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
+{
+    auto names = dict->lookupWordList("components");
+    if (names.empty())
+        throw std::runtime_error("thermoPackage: 'components' list is empty");
+    names = loadComponentSet(names, db);
 
     // Designated solvent -----------------------------------------
     // Optional `solvent <name>;` keyword.  Used by the K-value selector

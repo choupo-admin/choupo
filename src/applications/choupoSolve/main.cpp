@@ -530,8 +530,23 @@ try
                     fs::path(pkgPath).parent_path().string(), visited);
             }
             if (sel->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
-                sel = ThermoPackageBuilder::translateV2(sel);   // v2 -> manifesto verificado
-            if (sel->found("components") && sel->found("propertyMethods"))
+            {
+                if (ThermoPackageBuilder::v2NativeFormulation(sel))
+                {
+                    // NATIVE path (migration step 1-2): the AUTHORED v2 dict
+                    // itself is the package source -- build() assembles it
+                    // via buildV2, no translated intermediate.
+                    packageDict = sel;
+                    if (verbosity >= 2)
+                        std::cout << "Property package:  INLINE in the case"
+                                     "   (v2 grammar, NATIVE assembly)\n";
+                }
+                else
+                    sel = ThermoPackageBuilder::translateV2(sel);   // scaffold -> manifesto verificado
+            }
+            if (packageDict)
+            { /* native: already set above */ }
+            else if (sel->found("components") && sel->found("propertyMethods"))
             {
                 packageDict = sel;                       // rich MANIFEST -> builder
                 if (verbosity >= 2)

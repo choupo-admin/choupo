@@ -309,10 +309,14 @@ try
         // (equilibrium.liquid.activityModel.binaryParameters.<i>-<j>.<coef>)
         // and re-translates per iteration, so the fit varies the SOURCE
         // grammar, never a translated intermediate.
+        bool v2Native = false;
         if (sel->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
         {
             v2Authored = sel;
-            sel = ThermoPackageBuilder::translateV2(sel);
+            if (ThermoPackageBuilder::v2NativeFormulation(sel))
+                v2Native = true;    // authored dict -> buildV2 below, no translate
+            else
+                sel = ThermoPackageBuilder::translateV2(sel);
         }
         if (deprecatedName)
             std::cout << "  [deprecated] legacy package name -- rename it to"
@@ -321,7 +325,16 @@ try
         const bool speciationPkg = sel->found("propertyMethods")
             && sel->subDict("propertyMethods")->found("aqueousActivity")
             && !sel->subDict("propertyMethods")->found("liquid");
-        if (speciationPkg)
+        if (v2Native)
+        {
+            // NATIVE path (migration step 1-2): build() dispatches the
+            // authored v2 grammar to buildV2 -- no translated intermediate.
+            if (verbosity >= 2)
+                std::cout << "Property package:  INLINE in the case"
+                             "   (v2 grammar, NATIVE assembly)\n";
+            thermo = ThermoPackageBuilder::build(sel, db);
+        }
+        else if (speciationPkg)
         {
             // SPECIATION package (roadmap Phase B): the case's dictionary declares the
             // electrolyte SYSTEM (aqueousActivity + inputBasis) consumed by the

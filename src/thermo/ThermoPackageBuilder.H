@@ -50,19 +50,37 @@ class Database;
 class ThermoPackageBuilder
 {
 public:
-    // THE v2 reader (consolidated 2026-07-18: the v1 propertyDict grammar is
+    // The v2 ADAPTER (consolidated 2026-07-18: the v1 propertyDict grammar is
     // RETIRED -- thermophysicalPropertySystem is the ONE case grammar).  Reads
     // the physically-decomposed blocks (equilibrium / aqueousProperties /
-    // caloric / transport / pureFluids) into the in-memory assembly forms:
+    // caloric / transport / pureFluids) into the v1-SHAPED in-memory forms:
     // the FLAT dict for plain worlds (readFromDict), the manifest for the
     // worlds that need the builder (declared pair files, electrolyte, Henry).
     // STRICT: declared routes are verified against the implemented ones;
     // unknown formulations/routes refuse loudly.  Prints the resolved plan
-    // ([v2 plan]).  The name keeps its history; the role is permanent.
+    // ([v2 plan]).  HONESTY: this is a SCAFFOLD, not the end state -- the
+    // engine does not yet read v2 natively; the ratified migration (one
+    // shared buildV2, block-native assembly, then delete this function) is
+    // docs/architecture/v2-native-migration.md.
     static DictPtr translateV2(const DictPtr& v2);
 
     // Assemble a ThermoPackage from a parsed propertyPackage record.
     static ThermoPackage build(const DictPtr& pkg, const Database& db);
+
+    // ---- v2-NATIVE path (migration steps 1-2; the plan lives in
+    // docs/architecture/v2-native-migration.md) ---------------------------
+    // v2NativeFormulation: does the authored v2 dict declare a formulation
+    // the NATIVE path serves?  (Pilot: phiPhi.)  The caller uses it to pick
+    // buildV2 (native, no v1-shaped intermediate) over translateV2 (the
+    // scaffold) -- announced either way, never a silent switch.
+    static bool v2NativeFormulation(const DictPtr& v2);
+
+    // buildV2: authored v2 grammar -> assembled ThermoPackage, directly.
+    // Verifies the declared caloric routes, resolves binaryInteractions
+    // source records (with the eos-match refusal + citation announce), and
+    // assembles via ThermoPackage::assemblePhiPhi.  Refuses a formulation
+    // v2NativeFormulation() does not claim.
+    static ThermoPackage buildV2(const DictPtr& v2, const Database& db);
 };
 
 } // namespace Choupo
