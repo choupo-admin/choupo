@@ -70,3 +70,25 @@ traceable explanation.  Do not mix this migration with model growth
   pcsaft01/pcsaft02 (+ its per-op SRK cross-check override).  Goldens
   byte-intact; a phiPhi case declaring transport/pureFluids/activeComponents/
   chemistry falls back to the scaffold until the native assembly wires them.
+- 2026-07-18 (wave A): **gammaPhi assembles natively** — the ideal-liquid and
+  the source-declared-pairs shapes (Codex's two pilots: flash01,
+  nrtl01_ethanol_water_package with the per-pair citation announce).
+  `assemblePhiPhi` generalised to `ThermoPackage::assembleTwoPhase` (one
+  native assembly for both worlds; the Phase gets the RAW activity config and
+  injects its own UNIFAC/UNIQUAC copy — forum #69 idempotence).  All FOUR
+  binaries now route v2 through `build()`'s one dispatch (choupoBatch /
+  choupoCtrl rewired; the mains never decide to translate); the scaffold
+  branch inside build() routes the translated shape by content
+  (manifest → builder, FLAT → readFromDict).  The per-op `thermo{}`
+  authored-merge learned the gammaPhi slots (activityModel / equationOfState
+  → vapour.fugacityModel / transport via the inverse T13 map / pureFluids
+  verbatim).  **Engine gap 2 CLOSED as a consequence** (perUnitThermo01: an
+  EoS-only per-unit override now inherits the global molecular gamma — the
+  synthesized base carries `activityModel { model <global> }` when the unit
+  does not name its own liquid world; electrolyte surfaces excluded via
+  `asElectrolyte()`, those units declare their own world as before).
+  Count: ~210 of 242 gammaPhi contexts + 4 phiPhi native; ~32 gammaPhi stay
+  on the scaffold (transport / pureFluids / inline-pairs / cosmoSAC-set /
+  explicit-phases shapes) plus gammaGamma, diluteSolution,
+  electrolyteGammaPhi, aqueousProperties and the Flowsheet
+  propertyContextBase chain.  Full suite 292/0; GUI 1778/1778.

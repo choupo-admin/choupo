@@ -277,16 +277,29 @@ try
     }
 
     // ---- Build thermo package ----------------------------------------
-    // v2 contract (thermophysicalPropertySystem): translate FIRST -- the
-    // routing below then consumes the verified v1-shaped manifest (strict
-    // validation + the [v2 plan] announce happen inside the translator).
-    // Routed by content, exactly like choupoSolve: manifest (components +
-    // propertyMethods) -> builder; flat form -> the legacy reader.
+    // v2 contract (thermophysicalPropertySystem): the BUILDER owns the
+    // dispatch (native buildV2 for the formulations it serves; the
+    // translateV2 scaffold for the rest) -- the main never decides to
+    // translate.  Routed by content, exactly like choupoSolve: manifest
+    // (components + propertyMethods) -> builder; flat form -> legacy reader.
+    ThermoPackage thermo;
     if (thermoDict->lookupWordOrDefault("recordType", "")
         == "thermophysicalPropertySystem")
-        thermoDict = ThermoPackageBuilder::translateV2(thermoDict);
-    ThermoPackage thermo;
-    if (thermoDict->found("components") && thermoDict->found("propertyMethods"))
+    {
+        if (ThermoPackageBuilder::v2NativeFormulation(thermoDict))
+            thermo = ThermoPackageBuilder::build(thermoDict, db);   // native
+        else
+        {
+            thermoDict = ThermoPackageBuilder::translateV2(thermoDict);
+            if (thermoDict->found("components")
+                && thermoDict->found("propertyMethods"))
+                thermo = ThermoPackageBuilder::build(thermoDict, db);
+            else
+                thermo.readFromDict(thermoDict, db);
+        }
+    }
+    else if (thermoDict->found("components")
+             && thermoDict->found("propertyMethods"))
         thermo = ThermoPackageBuilder::build(thermoDict, db);
     else
         thermo.readFromDict(thermoDict, db);

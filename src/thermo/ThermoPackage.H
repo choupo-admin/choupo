@@ -128,17 +128,21 @@ public:
                                  std::unique_ptr<ActivityModel> act,
                                  std::unique_ptr<EquationOfState> eos);
 
-    // v2-NATIVE assembly, migration step 2 PILOT (the phiPhi world; the plan:
-    // docs/architecture/v2-native-migration.md).  Consumes the v2 sub-blocks
-    // DIRECTLY -- component names + the equationOfState config dict (model +
-    // inlined binaryInteractions, prepared by ThermoPackageBuilder::buildV2)
-    // -- and establishes the SAME invariants readFromDict does for a phiPhi
-    // world (loaded/canonicalised components, ideal liquid activity, the two
-    // phases, coherence check, world announcement, audits).  No v1-shaped
-    // package dict, no synthesized text, no reparse.
-    void assemblePhiPhi(const std::vector<std::string>& names,
-                        const DictPtr& eosDict,
-                        const Database& db);
+    // v2-NATIVE assembly, migration step 2 (the plan:
+    // docs/architecture/v2-native-migration.md).  Consumes MODEL CONFIG dicts
+    // DIRECTLY (the factory-input form -- activity model + pairs, EoS model +
+    // kij -- prepared by ThermoPackageBuilder::buildV2 from the authored v2
+    // sub-blocks) and establishes the SAME invariants readFromDict does for a
+    // two-phase (liquid, vapour) world: loaded/canonicalised components,
+    // UNIFAC-group / UNIQUAC-r,q injection, the two phases, the phiPhi
+    // coherence check + world announcement, audits.  No v1-shaped package
+    // dict, no synthesized text, no reparse.  `world` is "gammaPhi" or
+    // "phiPhi"; for phiPhi pass the ideal-activity placeholder as activityDict.
+    void assembleTwoPhase(const std::vector<std::string>& names,
+                          const DictPtr& activityDict,
+                          const DictPtr& eosDict,
+                          const std::string& world,
+                          const Database& db);
 
     std::size_t n() const { return components_.size(); }
     const Component& comp(std::size_t i) const { return components_.at(i); }
@@ -286,6 +290,7 @@ public:
 
     const std::vector<Component>& components() const { return components_; }
     const ActivityModel&    activity() const { return *activity_; }
+    bool hasActivity() const { return activity_ != nullptr; }
 
     // Does component i have ANY route to an ELEMENTS-datum enthalpy that the
     // H_*_formation kernels actually honour?  The two such routes:

@@ -122,13 +122,15 @@ ThermoPackage::loadComponentSet(std::vector<std::string> names,
     return names;
 }
 
-void ThermoPackage::assemblePhiPhi(const std::vector<std::string>& namesIn,
-                                   const DictPtr& eosDict,
-                                   const Database& db)
+void ThermoPackage::assembleTwoPhase(const std::vector<std::string>& namesIn,
+                                     const DictPtr& activityDict,
+                                     const DictPtr& eosDict,
+                                     const std::string& world,
+                                     const Database& db)
 {
-    // v2-NATIVE phiPhi assembly (migration step 2 pilot): the same
-    // invariants readFromDict establishes for `vleWorld phiPhi;`, built
-    // straight from the v2 sub-blocks -- no v1-shaped dict, no text.
+    // v2-NATIVE two-phase assembly (migration step 2): the same invariants
+    // readFromDict establishes for a (liquid, vapour) world, built straight
+    // from model config dicts -- no v1-shaped dict, no text.
     if (namesIn.empty())
         throw std::runtime_error("thermophysicalPropertySystem: 'components'"
             " list is empty");
@@ -136,18 +138,15 @@ void ThermoPackage::assemblePhiPhi(const std::vector<std::string>& namesIn,
 
     solventName_.clear();
     declaredSolutes_.clear();
-    vleWorld_ = "phiPhi";
+    vleWorld_ = world;
 
-    // ONE Gibbs surface, two roots: the liquid phase carries an ideal
-    // activity placeholder (unused in the phi-phi K), the vapour the EoS --
-    // the same two implicit phases the flat reader builds.
     phases_.clear();
-    auto idealAct = std::make_shared<Dictionary>("activity");
-    idealAct->insert("model", std::string("ideal"));
     auto liqDict = std::make_shared<Dictionary>("liquid");
     liqDict->insert("type",     std::string("liquid"));
     liqDict->insert("name",     std::string("liquid"));
-    liqDict->insert("activity", EntryValue(idealAct));
+    // The Phase gets the RAW config and injects its OWN private copy (forum
+    // #69 idempotence: two consumers -> two copies), same as the flat reader.
+    liqDict->insert("activity", EntryValue(activityDict));
     phases_.push_back(Phase::New(liqDict, names, components_));
     auto vapDict = std::make_shared<Dictionary>("vapor");
     vapDict->insert("type", std::string("vapor"));
@@ -155,14 +154,22 @@ void ThermoPackage::assemblePhiPhi(const std::vector<std::string>& namesIn,
     vapDict->insert("eos",  EntryValue(eosDict));
     phases_.push_back(Phase::New(vapDict, names, components_));
 
-    activity_ = ActivityModel::New(idealAct, components_);
+    // Intrinsic component data rides into the legacy activity_ pointer's
+    // config exactly as the flat reader does: UNIFAC groups + UNIQUAC r/q
+    // live ONCE in each component's .dat, never re-declared per case.
+    DictPtr activityRef = injectUnifacGroups(activityDict, names, components_);
+    injectUniquacRQ(activityRef, names, components_);
+    activity_ = ActivityModel::New(activityRef, components_);
     eos_      = EquationOfState::New(eosDict, components_);
-    if (!eos_ || eos_->isIdeal())
-        throw std::runtime_error("thermoPackage: vleWorld phiPhi needs a real"
-            " cubic EoS (SRK/PengRobinson), not idealGas.");
-    if (thermoAnnounce())
-        std::cout << "VLE world: phi-phi (K = phi_L/phi_V, "
-                  << eos_->modelName() << " both phases)\n";
+    if (vleWorld_ == "phiPhi")
+    {
+        if (!eos_ || eos_->isIdeal())
+            throw std::runtime_error("thermoPackage: vleWorld phiPhi needs a"
+                " real cubic EoS (SRK/PengRobinson), not idealGas.");
+        if (thermoAnnounce())
+            std::cout << "VLE world: phi-phi (K = phi_L/phi_V, "
+                      << eos_->modelName() << " both phases)\n";
+    }
 
     auditFindings_ = collectAuditFindings(components_, activity_.get(), eos_.get());
     auditPackage(components_, activity_.get(), eos_.get());

@@ -1332,7 +1332,15 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
                 " schemaVersion 2;");
         if (v2NativeFormulation(pkg))
             return buildV2(pkg, db);
-        return build(translateV2(pkg), db);
+        // Scaffold: route the translated shape by content, exactly like the
+        // mains -- manifest (propertyMethods) -> this builder; FLAT emission
+        // (activityModel/equationOfState/transport) -> the flat reader.
+        auto sel = translateV2(pkg);
+        if (sel->found("propertyMethods"))
+            return build(sel, db);
+        ThermoPackage out;
+        out.readFromDict(sel, db);
+        return out;
     }
 
     // GATE: parameters{} only carries the known parameter FAMILIES.  An unknown
@@ -1401,32 +1409,150 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
 // ---- v2-NATIVE path (migration steps 1-2 pilot: the phiPhi world) ----------
 // docs/architecture/v2-native-migration.md.  No v1-shaped dict, no
 // synthesized text: the authored equilibrium{} block is read directly and
-// the package assembled via ThermoPackage::assemblePhiPhi.
+// the package assembled via ThermoPackage::assembleTwoPhase.
 
 bool ThermoPackageBuilder::v2NativeFormulation(const DictPtr& v2)
 {
     if (!v2->found("equilibrium")) return false;
     auto eq = v2->subDict("equilibrium");
-    if (eq->lookupWordOrDefault("formulation", "") != "phiPhi") return false;
-    // The pilot serves the pure phiPhi surface only; a phiPhi case declaring
-    // blocks the native assembly does not wire yet stays on the scaffold
-    // (translateV2), which validates/refuses them itself.
+    const std::string form = eq->lookupWordOrDefault("formulation", "");
+    // Blocks the native assembly does not wire yet keep the whole system on
+    // the scaffold (translateV2), which validates/refuses them itself.
     if (v2->found("transport") || v2->found("pureFluids")
         || v2->found("activeComponents") || v2->found("chemistry"))
         return false;
-    return true;
+    if (form == "phiPhi") return true;
+    if (form == "gammaPhi")
+    {
+        // Wave A (2026-07-18): the ideal liquid and the source-declared-pairs
+        // shapes.  Inline pairs, a cosmoSAC set selector and explicit phases
+        // stay on the scaffold until their native wiring lands.
+        if (v2->found("phases")) return false;
+        auto liq = eq->subDict("liquid");
+        if (!liq->found("activityModel")) return false;
+        const EntryValue& ev = liq->entryValue("activityModel");
+        if (std::holds_alternative<std::string>(ev)) return true;   // word form
+        auto am = liq->subDict("activityModel");
+        if (am->found("source")) return false;                      // cosmoSAC set
+        if (am->found("binaryParameters"))
+            for (const auto& pr : am->subDict("binaryParameters")->keys())
+                if (!am->subDict("binaryParameters")->subDict(pr)->found("source"))
+                    return false;                                   // inline pair
+        return true;
+    }
+    return false;
 }
 
 ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& db)
 {
     if (!v2NativeFormulation(v2))
-        throw std::runtime_error("ThermoPackageBuilder::buildV2: the native"
-            " path serves the phiPhi formulation only (pilot) -- gate the"
+        throw std::runtime_error("ThermoPackageBuilder::buildV2: this system's"
+            " formulation/shape is not on the native path yet -- gate the"
             " call with v2NativeFormulation().");
     if (!v2->found("components"))
         throw std::runtime_error("thermophysicalPropertySystem: required key"
             " 'components' is absent");
-    auto eq  = v2->subDict("equilibrium");
+    auto eq = v2->subDict("equilibrium");
+    const std::string form = eq->lookupWord("formulation");
+
+    // Declared caloric routes must state what runs (declared+verified) --
+    // the same refusals the scaffold applies, one contract, two assemblies.
+    DictPtr cal = v2->found("caloric") ? v2->subDict("caloric") : nullptr;
+    if (cal && cal->found("energyBasis")
+        && cal->lookupWord("energyBasis") != "elementsDatum")
+        throw std::runtime_error("thermophysicalPropertySystem: "
+            "caloric.energyBasis '" + cal->lookupWord("energyBasis")
+            + "' -- the engine carries ONE enthalpy datum (the elements at"
+            " 298.15 K): declare `energyBasis elementsDatum;`.");
+    auto verifyCal = [&](const char* phase, const char* key,
+                         const std::string& implemented)
+    {
+        if (!cal || !cal->found(phase)) return;
+        auto ph = cal->subDict(phase);
+        if (ph->found(key) && ph->lookupWord(key) != implemented)
+            throw std::runtime_error("thermophysicalPropertySystem: caloric."
+                + std::string(phase) + "." + key + " '" + ph->lookupWord(key)
+                + "' is DECLARED but the engine implements '" + implemented
+                + "' for this formulation -- a route declaration must state"
+                " what runs.");
+    };
+
+    if (form == "gammaPhi")
+    {
+        auto liq = eq->subDict("liquid");
+        if (liq->found("standardState")
+            && liq->lookupWord("standardState") != "pureLiquid")
+            throw std::runtime_error("thermophysicalPropertySystem: gammaPhi"
+                " liquid standardState must be pureLiquid (Henry/electrolyte"
+                " formulations carry the other conventions).");
+        verifyCal("liquid", "enthalpyRoute", "pureCpPlusExcess");
+        verifyCal("vapour", "enthalpyRoute", "idealGasCp");
+
+        // Activity config: the model word + every source-declared pair record
+        // loaded and inlined as ENTRY VALUES (verbatim -- full precision, no
+        // reformat), with the per-pair source citation announced, exactly the
+        // scaffold's contract.
+        auto activityDict = std::make_shared<Dictionary>("activityModel");
+        std::string model;
+        const EntryValue& ev = liq->entryValue("activityModel");
+        if (std::holds_alternative<std::string>(ev))
+            model = std::get<std::string>(ev);
+        else
+        {
+            auto am = liq->subDict("activityModel");
+            model = am->lookupWord("model");
+            if (am->found("binaryParameters"))
+            {
+                const fs::path repoRoot =
+                    fs::path(Database::currentRoot()).parent_path();
+                auto bp = am->subDict("binaryParameters");
+                std::vector<DictPtr> pairDicts;
+                for (const auto& pr : bp->keys())
+                {
+                    const std::string src =
+                        bp->subDict(pr)->lookupWord("source");
+                    auto pairRec = loadRec(resolveDeclared(repoRoot, src),
+                                           "binary pair " + pr);
+                    if (thermoAnnounce())
+                        std::cout << "[builder] binary pair " << pr
+                                  << "  --- " << src << "\n";
+                    auto pp = pairRec->subDict("parameters");
+                    auto p = std::make_shared<Dictionary>(pr);
+                    p->insert("i", pp->entryValue("i"));
+                    p->insert("j", pp->entryValue("j"));
+                    for (const char* k : {"a_ij", "b_ij", "a_ji", "b_ji",
+                                          "c_ij", "c_ji", "alpha"})
+                        if (pp->found(k)) p->insert(k, pp->entryValue(k));
+                    // Honesty flag rides along (the H^E calorimetric gate).
+                    if (pp->found("calorimetricFit"))
+                        p->insert("calorimetricFit",
+                                  pp->entryValue("calorimetricFit"));
+                    else if (pairRec->found("calorimetricFit"))
+                        p->insert("calorimetricFit",
+                                  pairRec->entryValue("calorimetricFit"));
+                    pairDicts.push_back(p);
+                }
+                if (!pairDicts.empty())
+                    activityDict->insert("pairs", EntryValue(pairDicts));
+            }
+        }
+        activityDict->insert("model", model);
+
+        const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
+        auto eosDict = std::make_shared<Dictionary>("equationOfState");
+        eosDict->insert("model", vap);
+
+        if (thermoAnnounce())
+            std::cout << "[v2 native] equilibrium gammaPhi: liquid activity."
+                      << model << "; vapour " << vap << ".  Assembled NATIVELY"
+                         " from the v2 grammar (no translated intermediate).\n";
+
+        ThermoPackage out;
+        out.assembleTwoPhase(v2->lookupWordList("components"), activityDict,
+                             eosDict, "gammaPhi", db);
+        return out;
+    }
+
     auto eos = eq->subDict("equationOfState");
     const std::string model = eos->lookupWord("model");
     if (model != "SRK" && model != "PengRobinson" && model != "PCSAFT")
@@ -1440,26 +1566,9 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
         throw std::runtime_error("thermophysicalPropertySystem: the cubic"
             " mixing rule implemented is vanDerWaalsOneFluid.");
 
-    // Declared caloric routes must state what runs (declared+verified).
-    DictPtr cal = v2->found("caloric") ? v2->subDict("caloric") : nullptr;
-    if (cal && cal->found("energyBasis")
-        && cal->lookupWord("energyBasis") != "elementsDatum")
-        throw std::runtime_error("thermophysicalPropertySystem: "
-            "caloric.energyBasis '" + cal->lookupWord("energyBasis")
-            + "' -- the engine carries ONE enthalpy datum (the elements at"
-            " 298.15 K): declare `energyBasis elementsDatum;`.");
-    for (const char* phase : {"liquid", "vapour"})
-        if (cal && cal->found(phase))
-        {
-            auto ph = cal->subDict(phase);
-            if (ph->found("departureRoute")
-                && ph->lookupWord("departureRoute") != "equilibriumEquationOfState")
-                throw std::runtime_error("thermophysicalPropertySystem: caloric."
-                    + std::string(phase) + ".departureRoute '"
-                    + ph->lookupWord("departureRoute") + "' is DECLARED but the"
-                    " engine implements 'equilibriumEquationOfState' for phiPhi"
-                    " -- a route declaration must state what runs.");
-        }
+    // phiPhi: departure from the SAME EoS on both phases.
+    verifyCal("liquid", "departureRoute", "equilibriumEquationOfState");
+    verifyCal("vapour", "departureRoute", "equilibriumEquationOfState");
 
     // Native EoS config: model + binaryInteractions with each declared
     // SOURCE record loaded, eos-match-verified and inlined as the {i;j;kij}
@@ -1515,7 +1624,10 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
                      " grammar (no translated intermediate).\n";
 
     ThermoPackage out;
-    out.assemblePhiPhi(v2->lookupWordList("components"), eosDict, db);
+    auto idealAct = std::make_shared<Dictionary>("activityModel");
+    idealAct->insert("model", std::string("ideal"));   // unused in the phi-phi K
+    out.assembleTwoPhase(v2->lookupWordList("components"), idealAct, eosDict,
+                         "phiPhi", db);
     return out;
 }
 

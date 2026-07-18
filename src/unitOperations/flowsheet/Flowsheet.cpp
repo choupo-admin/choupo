@@ -2406,7 +2406,20 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
         std::string clist = "components ( ";
         for (std::size_t i = 0; i < global.n(); ++i)
             clist += global.comp(i).name() + " ";
-        clist += ");\nequationOfState { model idealGas; }\n";   // package EoS default;
+        clist += ");\n";
+        // Gap 2 (perUnitThermo01): the GLOBAL's molecular gamma must survive
+        // an EoS-only unit override -- carry it into the base when the unit
+        // does not name its own liquid world and the global activity is
+        // name-constructible (an electrolyte surface cannot be rebuilt from
+        // its name; those units declare their own world, unchanged).
+        const bool unitNamesLiquid = hasThermo
+            && (udict->subDict("thermo")->found("activityModel")
+                || udict->subDict("thermo")->found("phases"));
+        if (!unitNamesLiquid && global.hasActivity()
+            && !global.activity().asElectrolyte())
+            clist += "activityModel { model "
+                   + global.activity().modelName() + "; }\n";
+        clist += "equationOfState { model idealGas; }\n";   // package EoS default;
         // the unit override REPLACES it below if it declares its own.
         auto cdict = Dictionary::fromString(clist, "thermoFor.components");
         for (const auto& k : cdict->keys())
