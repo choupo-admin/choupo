@@ -8,7 +8,7 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   No `cation`/`anion` keys: the salt is resolved by the SELECTED propertyPackage
-  (constant/propertyDict -> aqueousNaCl_pitzer).  The op consumes the
+  (constant/thermoPhysPropDict -> aqueousNaCl_pitzer).  The op consumes the
   assembled package via thermo.electrolyte() and reports gamma_pm / phi / a_w.
 \*---------------------------------------------------------------------------*/
 

@@ -5,7 +5,7 @@
   data/standards/components/MgSO4.dat carries no `electrolyte{}` block; the
   DSPM-DE transport law needs the ion decomposition (Mg + SO4), so this
   self-contained case copy ADDS it.  Both ions carry the transport tier
-  (radius + D0) in the case-local constant/electrolyte/ions.dat.
+  (radius + D0) in the case-local constant/species/ records (one per ion).
 
   Divalent 2:2 electrolyte (Mg++ + SO4--): the canonical NF contrast to NaCl
   -- NF rejects the divalent salt far more strongly (Donnan co-ion exclusion of

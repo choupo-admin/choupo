@@ -404,6 +404,19 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/spgate.$$
 
+    # Retired-name gate (Codex tutorial-audit P2, 2026-07-18): no tutorial
+    # SOURCE may cite a retired architecture name -- a green case with a false
+    # comment teaches the wrong layout.
+    if "$ROOT/bin/curate/check_retired_names.py" > /tmp/retgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "retired-name-gate" "$(head -1 /tmp/retgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_retired_names.py)\n" "retired-name-gate"
+        cat /tmp/retgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/retgate.$$
+
     # Asset-home gate (Codex assets-audit, 2026-07-18): a physical asset lives
     # in ONE home (constant/assets/) -- the legacy membranes/ overlay let a
     # sealed case open input its manifest never claimed.

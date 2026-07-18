@@ -6,7 +6,7 @@ end: `runCase tutorials/plant/lithiumBrinePlant` converges, `0/` is complete
 (15 stream IDs == 15 state files), and mass closes on every element.  Each of the
 five sectors is a real thermodynamic subdomain (BRINE Pitzer · EXTRACTION NRTL LLE ·
 CARBONATION solubility · HOTAIR Gibbs · FINISHING drying) whose world comes from a
-local `constant/propertyDict` that `inherits "../../../constant"` and overrides the
+local `constant/thermoPhysPropDict` that `inherits "../../../constant"` and overrides the
 method — no inline `thermo {}`.  Every unit op declares the streams it consumes and
 produces (`inputs`/`outputs`), so it also runs standalone (`cd
 sectors/<S>/unitOperations/<u> && runCase`, projected from the plant solution) and
@@ -69,7 +69,7 @@ A property context is:
 
 ```text
 constant/
-├── propertyDict
+├── thermoPhysPropDict
 └── propertyData/
 ```
 

@@ -18,7 +18,7 @@
 
   Data: transcribed from constant/experiments/ethanol-water-101kPa (the raw-
   data home; DECHEMA / Gmehling-Onken Vol. I Part 1, pedagogical subset).
-  Starting point: the catalogue NRTL values in constant/propertyDict.
+  Starting point: the catalogue NRTL values in constant/thermoPhysPropDict.
 \*---------------------------------------------------------------------------*/
 
 operations

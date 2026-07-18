@@ -4,7 +4,7 @@
   A master ion of the electrolyte catalogue used AS a flowsheet
   component, so a process stream can carry a water ANALYSIS (the
   membrane scaling audit speciates the stream per module).  Name
-  matches the `species` key in constant/electrolyte/ions.dat; MW is
+  matches the `species` key in the model-species catalogue (constant/species/); MW is
   the same row (USGS PHREEQC, public domain).
 
   nonvolatile: an ion never enters the vapour; the membrane unit op

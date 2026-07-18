@@ -87,7 +87,7 @@ published precisely because the VLE table mis-predicts LLE.)
 Per the Choupo "cases are self-contained" credo, this case vendors its own
 component data in `constant/components/` (`water.dat`, `nButanol.dat`,
 byte-copied from `data/standards/` with a source + sha256 header). UNIQUAC needs
-only the structural r,q (carried inline in `constant/thermoPackage`) plus the
+only the structural r,q (carried inline in `constant/thermoPhysPropDict`) plus the
 pure-component data here; the scan runs unchanged with the standard catalogue
 hidden.
 

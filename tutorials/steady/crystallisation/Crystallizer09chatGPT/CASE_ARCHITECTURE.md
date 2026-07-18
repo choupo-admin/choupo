@@ -9,19 +9,19 @@ Code / Codex what the repository should support.
 > `unitOperations/<unit>/`), the FLAT `0/`+`converged/` state, the named-edge
 > topology, the tear in `solverDict`, and the self-contained `constant/propertyData/`
 > snapshot are live.  **F2 (1) `inherits` resolver:** a unit's
-> `constant/propertyDict` may carry `inherits "../../../constant";`; the engine
+> `constant/thermoPhysPropDict` may carry `inherits "../../../constant";`; the engine
 > resolves the linear chain (cycle-detected, loud shadowing, no filesystem crawling),
 > merges local over parent, and the SELECTED liquid method defines the ACTIVE world --
 > `recovery`'s `liquid activity.NRTL` runs molecular and the inherited salt chemistry
 > stays available but INACTIVE (announced: *"inherited chemistry INACTIVE"*).  **F2 (2)
 > parameters:** every model parameter resolves from
 > `constant/propertyData/parameters/<family>/<model>/<key>.dat`, before the catalogue.
-> **F2 (3):** `recovery` carries `constant/propertyDict` (`inherits` + `liquid
+> **F2 (3):** `recovery` carries `constant/thermoPhysPropDict` (`inherits` + `liquid
 > activity.NRTL`) -- NO inline `thermo{}` -- and its NRTL ethanol-water parameter is
 > inherited from the plant context's `propertyData/parameters/activity/NRTL/` (its
 > natural home: a molecular pair the plant also owns).  The `constant/electrolyte/`
 > and `constant/parameters/` overlays are GONE; the case runs with `data/standards`
-> hidden, from `propertyDict` + `propertyData/` + the `inherits` chain alone.
+> hidden, from `thermoPhysPropDict` + `propertyData/` + the `inherits` chain alone.
 
 ## 1. Domain hierarchy
 
@@ -117,7 +117,7 @@ Property-context heritage is an explicit keyword pointing at the parent
 **directory** `constant/`:
 
 ```cpp
-// unitOperations/recovery/constant/propertyDict   (F2 TARGET)
+// unitOperations/recovery/constant/thermoPhysPropDict   (F2 TARGET)
 inherits "../../../constant";
 
 propertyMethods
@@ -128,7 +128,7 @@ propertyMethods
 
 Semantics (deliberately simple, glass-box):
 
-1. the parent property context (its `propertyDict` config AND its sibling
+1. the parent property context (its `thermoPhysPropDict` config AND its sibling
    `propertyData/`) enters the resolution chain;
 2. the nearest local declaration wins; local data overlays parent data, and a
    shadowed record is announced, never silent;
@@ -136,7 +136,7 @@ Semantics (deliberately simple, glass-box):
 4. the runtime never falls back to the installation catalogue;
 5. model parameters resolve from `propertyData/parameters/…` (declared, not crawled).
 
-**Status (on disk today — F2 complete):** `recovery/constant/propertyDict` carries
+**Status (on disk today — F2 complete):** `recovery/constant/thermoPhysPropDict` carries
 exactly `inherits "../../../constant";` + `propertyMethods { liquid activity.NRTL; }`.
 `cryst1`/`cryst2` carry no local `constant/` — they use the plant context unchanged.
 The engine resolves the chain, and because the selected liquid method is molecular,
@@ -159,7 +159,7 @@ case.
 ## 7. Root property architecture
 
 ```text
-constant/propertyDict
+constant/thermoPhysPropDict
     declares
 
 constant/propertyData/

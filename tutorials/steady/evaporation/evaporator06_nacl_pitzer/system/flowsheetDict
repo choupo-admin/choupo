@@ -12,7 +12,7 @@
   PITZER water activity (a_w), not the ideal K_b*m: concentrated brine is a
   REAL electrolyte, and the BPE follows from the osmotic coefficient.  The
   thermo arrives via the aqueousNaCl_pitzer property package (see
-  constant/propertyDict) -- swap to evaporator07's eNRTL to compare.
+  constant/thermoPhysPropDict) -- swap to evaporator07's eNRTL to compare.
 \*---------------------------------------------------------------------------*/
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 units

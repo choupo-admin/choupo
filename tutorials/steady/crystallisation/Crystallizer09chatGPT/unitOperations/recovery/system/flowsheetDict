@@ -8,7 +8,7 @@
 \*-----------------------------------------------------------------------------*/
 /* recovery -- ethanol/water distillation recovery column.
    Process model and operating configuration only.  (Thermodynamics: see
-   constant/propertyDict.) */
+   constant/thermoPhysPropDict.) */
 type        distillationColumn;
 model       simultaneous;
 operation

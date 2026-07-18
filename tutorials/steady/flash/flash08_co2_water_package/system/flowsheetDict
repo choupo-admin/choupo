@@ -10,7 +10,7 @@
   flash08_co2_water_package -- the property-package convention, minimal.
   ====================================================================
   Soda water at 298 K: 1 bar flash of a CO2-rich feed.  The THERMO is not a
-  pile of flat keys -- the case's constant/propertyDict IS the full INLINE
+  pile of flat keys -- the case's constant/thermoPhysPropDict IS the full INLINE
   manifest (name flash08_co2Water) and the ThermoPackageBuilder assembles everything from it: liquid =
   solution.henryDilute (water on the Raoult rung, CO2 on the infinite-dilution
   Henry rung -- ONE Gibbs surface, two conventions), vapour = ideal gas, the

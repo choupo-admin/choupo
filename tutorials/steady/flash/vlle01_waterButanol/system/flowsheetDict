@@ -16,7 +16,7 @@
   no vapour.  A simple `phaseSet LL` flash (Michelsen TPD pre-check, then direct
   Gibbs-energy minimisation, multi-start Nelder-Mead) finds the split.
 
-  THE PARAMETERS (cited, NOT fabricated -- see constant/propertyDict and
+  THE PARAMETERS (cited, NOT fabricated -- see constant/thermoPhysPropDict and
   README.md):  the UNIQUAC interaction parameters are the LLE-specific fit of
 
       J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, Fluid Phase Equilibria 284

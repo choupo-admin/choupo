@@ -41,7 +41,7 @@ refitted γ and the osmotic a_w together reproduce the measured solubility.
   Farelo, valid to ~19 mol/kg (supersedes the Appelo low-*m* fit for concentrated
   LiCl).
 - `electrolyte/minerals.dat`: the **LiCl·H₂O** hydrate Ksp, calibrated to Farelo.
-- `electrolyte/ions.dat`: Li⁺ aqueous formation datum (`hfAq` = −278.49 kJ/mol,
+- `constant/species/Li.dat`: Li⁺ aqueous formation datum (`hfAq` = −278.49 kJ/mol,
   CODATA).
 
 ## Notes (the honest limits)

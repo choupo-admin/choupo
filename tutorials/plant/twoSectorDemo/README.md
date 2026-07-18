@@ -18,7 +18,7 @@ collaborator, they unzip + build + run.
 - **2 custom unit operations, compiled from source in the case:**
   - `SECTOR_R/code/StoichReactor` — a specified-conversion reactor.
   - `SECTOR_S/code/SharpSplitColumn` — a sharp-split distillation (2 outlets).
-- Shared thermo (`constant/thermoPackage`) cascades DOWN to both sectors.
+- Shared thermo (`constant/thermoPhysPropDict`) cascades DOWN to both sectors.
 
 ## Build + run (each sector runs on its own)
 ```

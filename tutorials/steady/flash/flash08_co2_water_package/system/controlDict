@@ -7,5 +7,5 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application  choupoSolve;
-description  "Carbonated water flash whose thermo is an INLINE property-package MANIFEST: constant/propertyDict IS the full record (components, methods per phase, solvent+solutes, the CO2-water Henry pair declared+verified). CO2 dissolves by the unsymmetric Henry convention; water stays Raoult. Read the run log: the assembly announces itself.";
+description  "Carbonated water flash whose thermo is an INLINE property-package MANIFEST: constant/thermoPhysPropDict IS the full record (components, methods per phase, solvent+solutes, the CO2-water Henry pair declared+verified). CO2 dissolves by the unsymmetric Henry convention; water stays Raoult. Read the run log: the assembly announces itself.";
 verbosity    3;

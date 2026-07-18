@@ -8,7 +8,7 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   pitzer02_nacl_package -- the FIRST case to run on the declarative property
-  architecture.  It carries NO constant/thermoPackage; it SELECTS a
+  architecture.  It carries NO constant/thermoPhysPropDict; it SELECTS a
   propertyPackage (constant/propertyPackage), and the ThermoPackageBuilder
   assembles the ThermoPackage from the NEW-format records, reading ZERO old salt
   files (no flat NaCl.dat, no electrolyte/{ions,pairs}.dat).  The numbers MUST
