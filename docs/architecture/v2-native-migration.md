@@ -49,6 +49,25 @@ traceable explanation.  Do not mix this migration with model growth
 
 ## Step log
 
+- 2026-07-18 (waves I+J — **STEP 5 EXECUTED: translateV2 is DELETED**):
+  the per-unit / per-op `thermo{}` override is a TYPED v2 FRAGMENT
+  (`src/thermo/ThermoOverride.H`, one merge for both paths: same-formulation
+  fragments override per slot, a formulation change replaces the whole
+  equilibrium block; components/chemistry forbidden; the flat keys refused
+  with the migration message; all 11 existing overrides migrated).  The
+  builder dispatch is EXHAUSTIVE with named refusals (no silent fallback);
+  the four mains collapse onto it; `rg translateV2` over src/ is EMPTY.
+  The NEGATIVE-PARITY GATE (`bin/curate/check_v2_refusals.py`, in runTests)
+  pins 10 refusals with their named messages — its first run caught a real
+  hole (an aqueousProperties system with a bad model was accepted when no
+  speciation op read it; choupoProps now validates the surface eagerly).
+  tartaricAcid fixed physically (H2SO4 `role nonvolatile;` overlay, sealed
+  via --merge-overlay; 0/ flattened to the completeness contract; expected
+  recorded) and ENTERS the suite: 293 PASS / 0 FAIL, GUI 1778/1778.
+  REMAINING of the plan: step 3 leftovers (build()'s v1-shaped manifest
+  branches — now reachable only programmatically), step 4 (Component
+  block-native + alias removal), then the solverDict phase.
+
 - 2026-07-18: this record opened; `ThermoPackageBuilder.H` comment corrected
   (it claimed the translator's "role is permanent" — it is a scaffold).
 - 2026-07-18: **steps 1–2 PILOT landed — the phiPhi world assembles natively.**
