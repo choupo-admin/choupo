@@ -113,6 +113,7 @@ public:
             vleWorld_           = std::move(o.vleWorld_);
             pureFluid_          = std::move(o.pureFluid_);
             mixtureSeed_        = std::move(o.mixtureSeed_);
+            mixtureMembersByToken_ = std::move(o.mixtureMembersByToken_);
             auditFindings_      = std::move(o.auditFindings_);
             for (auto& p : phases_) if (p) p->rebindComponents(&components_);
         }
@@ -142,7 +143,9 @@ public:
                           const DictPtr& activityDict,
                           const DictPtr& eosDict,
                           const std::string& world,
-                          const Database& db);
+                          const Database& db,
+                          const DictPtr& transportDict = nullptr,
+                          const DictPtr& pureFluidsDict = nullptr);
 
     // v2-NATIVE assembly for NAMED phases (gammaGamma LLE/VLLE): each config
     // dict is one phase ({name; type; activity{...}} or {name; type vapor;
@@ -483,6 +486,11 @@ private:
     // mixtures, capturing member mole fractions into `seedByName`.  Announces
     // every splice + dedup reconciliation LOUDLY on stderr.  Leaves plain
     // component tokens untouched.
+    // Shared config readers (readFromDict + the v2-native assemblies): the
+    // canonical flat transport hierarchy and the pureFluids override.
+    void readTransportBlock(const DictPtr& td);
+    void readPureFluids(const DictPtr& pf);
+
     static std::vector<std::string>
     expandMixtures(const std::vector<std::string>& names,
                    const Database& db,

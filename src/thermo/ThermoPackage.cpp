@@ -126,7 +126,9 @@ void ThermoPackage::assembleTwoPhase(const std::vector<std::string>& namesIn,
                                      const DictPtr& activityDict,
                                      const DictPtr& eosDict,
                                      const std::string& world,
-                                     const Database& db)
+                                     const Database& db,
+                                     const DictPtr& transportDict,
+                                     const DictPtr& pureFluidsDict)
 {
     // v2-NATIVE two-phase assembly (migration step 2): the same invariants
     // readFromDict establishes for a (liquid, vapour) world, built straight
@@ -173,7 +175,9 @@ void ThermoPackage::assembleTwoPhase(const std::vector<std::string>& namesIn,
 
     auditFindings_ = collectAuditFindings(components_, activity_.get(), eos_.get());
     auditPackage(components_, activity_.get(), eos_.get());
+    if (transportDict) readTransportBlock(transportDict);
     pureFluid_.clear();
+    if (pureFluidsDict) readPureFluids(pureFluidsDict);
 }
 
 void ThermoPackage::assembleNamedPhases(const std::vector<std::string>& namesIn,
@@ -280,6 +284,66 @@ void ThermoPackage::applySolution(const std::string& solvent,
     }
 }
 
+void ThermoPackage::readTransportBlock(const DictPtr& td)
+{
+    // CANONICAL hierarchy (Vitor 2026-07-04: "poe ordem nisto!"): every
+    // transport property gets its own named sub-block,
+    //     transport { viscosity { model Chung; }
+    //                 thermalConductivity { model Eucken; } ... }
+    // The bare legacy `model Chung;` at transport level (gas viscosity
+    // implied) stays ACCEPTED for old cases -- a degenerate form, like the
+    // flat thermoPackage itself.  Shared by readFromDict and the v2-native
+    // assembly (which maps the phase-structured authored form onto this
+    // canonical config first).
+    transport_ = td->found("viscosity")
+               ? TransportModel::New(td->subDict("viscosity"))
+               : TransportModel::New(td);
+    if (td->found("thermalConductivity"))
+        thermalConductivity_ =
+            ThermalConductivityModel::New(td->subDict("thermalConductivity"));
+    if (td->found("diffusivity"))
+        diffusivity_ = DiffusivityModel::New(td->subDict("diffusivity"));
+    // Liquid transport.
+    if (td->found("liquidViscosity"))
+        liquidViscosity_ =
+            LiquidViscosityModel::New(td->subDict("liquidViscosity"));
+    if (td->found("liquidConductivity"))
+        liquidConductivity_ =
+            LiquidConductivityModel::New(td->subDict("liquidConductivity"));
+    if (td->found("liquidDiffusivity"))
+        liquidDiffusivity_ =
+            LiquidDiffusivityModel::New(td->subDict("liquidDiffusivity"));
+    if (td->found("surfaceTension"))
+        surfaceTension_ =
+            SurfaceTensionModel::New(td->subDict("surfaceTension"));
+}
+
+void ThermoPackage::readPureFluids(const DictPtr& pf)
+{
+    // ----- Pure-fluid absolute-property override (IF97 et al.) ------------
+    //   pureFluids { water { method IF97; } }
+    // Attach a PureFluidModel to a named component by index.  The kernel
+    // speaks per-mass, so hand it the component's MW [g/mol] to bridge.
+    // Shared by readFromDict and the v2-native assembly.
+    for (const auto& key : pf->keys())
+    {
+        const std::size_t i = indexOf(key);   // throws if not a component
+        pureFluid_[i] = PureFluidModel::New(pf->subDict(key),
+                                            components_[i].MW());
+    }
+    // Glass-box: announce the override as loudly as the per-unit thermo
+    // cascade.  IF97 carries the IAPWS triple-point datum, regions 1/2/4.
+    for (std::size_t i = 0; i < n(); ++i)
+        if (pureFluid_.count(i))
+        {
+            const std::string t = pureFluid_.at(i)->type();
+            std::cout << components_[i].name() << ": PureFluidModel " << t;
+            if (t == "IF97")
+                std::cout << " (IAPWS-IF97, triple-point datum, regions 1/2/4)";
+            std::cout << '\n';
+        }
+}
+
 void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
 {
     auto names = dict->lookupWordList("components");
@@ -304,37 +368,7 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
     // model directly (legacy `model Chung;`) plus optional sub-blocks for
     // the other transport properties.
     if (dict->found("transport"))
-    {
-        auto td = dict->subDict("transport");
-        // CANONICAL hierarchy (Vitor 2026-07-04: "poe ordem nisto!"): every
-        // transport property gets its own named sub-block,
-        //     transport { viscosity { model Chung; }
-        //                 thermalConductivity { model Eucken; } ... }
-        // The bare legacy `model Chung;` at transport level (gas viscosity
-        // implied) stays ACCEPTED for old cases -- a degenerate form, like the
-        // flat thermoPackage itself.
-        transport_ = td->found("viscosity")
-                   ? TransportModel::New(td->subDict("viscosity"))
-                   : TransportModel::New(td);
-        if (td->found("thermalConductivity"))
-            thermalConductivity_ =
-                ThermalConductivityModel::New(td->subDict("thermalConductivity"));
-        if (td->found("diffusivity"))
-            diffusivity_ = DiffusivityModel::New(td->subDict("diffusivity"));
-        // Liquid transport.
-        if (td->found("liquidViscosity"))
-            liquidViscosity_ =
-                LiquidViscosityModel::New(td->subDict("liquidViscosity"));
-        if (td->found("liquidConductivity"))
-            liquidConductivity_ =
-                LiquidConductivityModel::New(td->subDict("liquidConductivity"));
-        if (td->found("liquidDiffusivity"))
-            liquidDiffusivity_ =
-                LiquidDiffusivityModel::New(td->subDict("liquidDiffusivity"));
-        if (td->found("surfaceTension"))
-            surfaceTension_ =
-                SurfaceTensionModel::New(td->subDict("surfaceTension"));
-    }
+        readTransportBlock(dict->subDict("transport"));
 
     // Per-node binary-pair search base (Item 0b): the Flowsheet injects
     // `binaryPairsBase` at the thermo level for a unit that owns a local
@@ -449,26 +483,7 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
     // speaks per-mass, so hand it the component's MW [g/mol] to bridge.
     pureFluid_.clear();
     if (dict->found("pureFluids"))
-    {
-        auto pf = dict->subDict("pureFluids");
-        for (const auto& key : pf->keys())
-        {
-            const std::size_t i = indexOf(key);   // throws if not a component
-            pureFluid_[i] = PureFluidModel::New(pf->subDict(key),
-                                                components_[i].MW());
-        }
-        // Glass-box: announce the override as loudly as the per-unit thermo
-        // cascade.  IF97 carries the IAPWS triple-point datum, regions 1/2/4.
-        for (std::size_t i = 0; i < n(); ++i)
-            if (pureFluid_.count(i))
-            {
-                const std::string t = pureFluid_.at(i)->type();
-                std::cout << components_[i].name() << ": PureFluidModel " << t;
-                if (t == "IF97")
-                    std::cout << " (IAPWS-IF97, triple-point datum, regions 1/2/4)";
-                std::cout << '\n';
-            }
-    }
+        readPureFluids(dict->subDict("pureFluids"));
 }
 
 std::size_t ThermoPackage::phaseIndexByName(const std::string& name) const

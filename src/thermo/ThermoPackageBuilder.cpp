@@ -1432,33 +1432,26 @@ bool ThermoPackageBuilder::v2NativeFormulation(const DictPtr& v2)
     if (!v2->found("equilibrium")) return false;
     auto eq = v2->subDict("equilibrium");
     const std::string form = eq->lookupWordOrDefault("formulation", "");
-    // Blocks the native assembly does not wire yet keep the whole system on
-    // the scaffold (translateV2), which validates/refuses them itself.
-    if (v2->found("transport") || v2->found("pureFluids")
-        || v2->found("activeComponents") || v2->found("chemistry"))
+    // Projections the native assembly does not wire yet keep the whole
+    // system on the scaffold (translateV2), which handles them itself.
+    if (v2->found("activeComponents") || v2->found("chemistry"))
+        return false;
+    if (form == "gammaPhi")
+    {
+        // Wave G (2026-07-18): ALL authored gammaPhi shapes -- ideal/word,
+        // source pairs, inline pairs, a cosmoSAC set selector, transport,
+        // pureFluids.  Explicit `phases` stays out (that IS gammaGamma).
+        if (v2->found("phases")) return false;
+        return eq->subDict("liquid")->found("activityModel");
+    }
+    // The other formulations carry no transport/pureFluids wiring natively
+    // yet -- a system declaring them stays on the scaffold.
+    if (v2->found("transport") || v2->found("pureFluids"))
         return false;
     if (form == "phiPhi") return true;
     if (form == "gammaGamma") return true;   // both pair forms wired natively
     if (form == "diluteSolution") return true;
     if (form == "electrolyteGammaPhi") return true;
-    if (form == "gammaPhi")
-    {
-        // Wave A (2026-07-18): the ideal liquid and the source-declared-pairs
-        // shapes.  Inline pairs, a cosmoSAC set selector and explicit phases
-        // stay on the scaffold until their native wiring lands.
-        if (v2->found("phases")) return false;
-        auto liq = eq->subDict("liquid");
-        if (!liq->found("activityModel")) return false;
-        const EntryValue& ev = liq->entryValue("activityModel");
-        if (std::holds_alternative<std::string>(ev)) return true;   // word form
-        auto am = liq->subDict("activityModel");
-        if (am->found("source")) return false;                      // cosmoSAC set
-        if (am->found("binaryParameters"))
-            for (const auto& pr : am->subDict("binaryParameters")->keys())
-                if (!am->subDict("binaryParameters")->subDict(pr)->found("source"))
-                    return false;                                   // inline pair
-        return true;
-    }
     return false;
 }
 
@@ -1712,10 +1705,13 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
         verifyCal("liquid", "enthalpyRoute", "pureCpPlusExcess");
         verifyCal("vapour", "enthalpyRoute", "idealGasCp");
 
-        // Activity config: the model word + every source-declared pair record
-        // loaded and inlined as ENTRY VALUES (verbatim -- full precision, no
-        // reformat), with the per-pair source citation announced, exactly the
-        // scaffold's contract.
+        // Activity config: the model word; SOURCE pairs loaded from their
+        // records (whitelisted coefficient keys + the calorimetricFit honesty
+        // flag, citation announced); INLINE pairs copied verbatim from the
+        // authored dict (the dict OWNS the numbers -- fitting /
+        // self-contained cases); a cosmoSAC parameter-SET selector
+        // (`source <setName>`) rides along verbatim (the 2026-07-15
+        // contract).  Exactly the scaffold's contract, no text emission.
         auto activityDict = std::make_shared<Dictionary>("activityModel");
         std::string model;
         const EntryValue& ev = liq->entryValue("activityModel");
@@ -1725,37 +1721,67 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
         {
             auto am = liq->subDict("activityModel");
             model = am->lookupWord("model");
+            if (am->found("source"))
+                activityDict->insert("source", am->entryValue("source"));
             if (am->found("binaryParameters"))
             {
                 const fs::path repoRoot =
                     fs::path(Database::currentRoot()).parent_path();
                 auto bp = am->subDict("binaryParameters");
                 std::vector<DictPtr> pairDicts;
+                bool anySource = false, anyInline = false;
                 for (const auto& pr : bp->keys())
                 {
-                    const std::string src =
-                        bp->subDict(pr)->lookupWord("source");
-                    auto pairRec = loadRec(resolveDeclared(repoRoot, src),
-                                           "binary pair " + pr);
-                    if (thermoAnnounce())
-                        std::cout << "[builder] binary pair " << pr
-                                  << "  --- " << src << "\n";
-                    auto pp = pairRec->subDict("parameters");
-                    auto p = std::make_shared<Dictionary>(pr);
-                    p->insert("i", pp->entryValue("i"));
-                    p->insert("j", pp->entryValue("j"));
-                    for (const char* k : {"a_ij", "b_ij", "a_ji", "b_ji",
-                                          "c_ij", "c_ji", "alpha"})
-                        if (pp->found(k)) p->insert(k, pp->entryValue(k));
-                    // Honesty flag rides along (the H^E calorimetric gate).
-                    if (pp->found("calorimetricFit"))
-                        p->insert("calorimetricFit",
-                                  pp->entryValue("calorimetricFit"));
-                    else if (pairRec->found("calorimetricFit"))
-                        p->insert("calorimetricFit",
-                                  pairRec->entryValue("calorimetricFit"));
-                    pairDicts.push_back(p);
+                    auto pd = bp->subDict(pr);
+                    if (pd->found("source"))
+                    {
+                        anySource = true;
+                        const std::string src = pd->lookupWord("source");
+                        auto pairRec = loadRec(resolveDeclared(repoRoot, src),
+                                               "binary pair " + pr);
+                        if (thermoAnnounce())
+                            std::cout << "[builder] binary pair " << pr
+                                      << "  --- " << src << "\n";
+                        auto pp = pairRec->subDict("parameters");
+                        auto p = std::make_shared<Dictionary>(pr);
+                        p->insert("i", pp->entryValue("i"));
+                        p->insert("j", pp->entryValue("j"));
+                        for (const char* k : {"a_ij", "b_ij", "a_ji", "b_ji",
+                                              "c_ij", "c_ji", "alpha"})
+                            if (pp->found(k)) p->insert(k, pp->entryValue(k));
+                        // Honesty flag rides along (the H^E calorimetric gate).
+                        if (pp->found("calorimetricFit"))
+                            p->insert("calorimetricFit",
+                                      pp->entryValue("calorimetricFit"));
+                        else if (pairRec->found("calorimetricFit"))
+                            p->insert("calorimetricFit",
+                                      pairRec->entryValue("calorimetricFit"));
+                        pairDicts.push_back(p);
+                    }
+                    else
+                    {
+                        anyInline = true;
+                        auto p = std::make_shared<Dictionary>(pr);
+                        for (const auto& k : pd->keys())
+                        {
+                            const EntryValue& pv = pd->entryValue(k);
+                            if (std::holds_alternative<scalar>(pv)
+                                || std::holds_alternative<std::string>(pv))
+                                p->insert(k, pv);   // verbatim, full precision
+                            else
+                                throw std::runtime_error(
+                                    "thermophysicalPropertySystem: inline pair"
+                                    " key '" + k + "' is neither scalar nor"
+                                    " word.");
+                        }
+                        pairDicts.push_back(p);
+                    }
                 }
+                if (anySource && anyInline)
+                    throw std::runtime_error(
+                        "thermophysicalPropertySystem: binaryParameters mixes"
+                        " source-form and inline-form pairs -- one dict, one"
+                        " form (STRICT).");
                 if (!pairDicts.empty())
                     activityDict->insert("pairs", EntryValue(pairDicts));
             }
@@ -1766,14 +1792,72 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
         auto eosDict = std::make_shared<Dictionary>("equationOfState");
         eosDict->insert("model", vap);
 
+        // T13 transport: the authored phase-structured block maps onto the
+        // canonical flat hierarchy -- as DICT OBJECTS (no text emission);
+        // mixingRule stays non-selectable (refused, never by accident).
+        DictPtr transportDict;
+        if (v2->found("transport"))
+        {
+            struct Map { const char* v2phase; const char* v2prop; const char* v1key; };
+            static const Map maps[] = {
+                {"vapour", "viscosity",           "viscosity"},
+                {"vapour", "thermalConductivity", "thermalConductivity"},
+                {"vapour", "diffusivity",         "diffusivity"},
+                {"liquid", "viscosity",           "liquidViscosity"},
+                {"liquid", "thermalConductivity", "liquidConductivity"},
+                {"liquid", "diffusivity",         "liquidDiffusivity"},
+                {"interface", "surfaceTension",   "surfaceTension"},
+            };
+            auto tr = v2->subDict("transport");
+            transportDict = std::make_shared<Dictionary>("transport");
+            for (const auto& mrow : maps)
+            {
+                if (!tr->found(mrow.v2phase)) continue;
+                auto ph = tr->subDict(mrow.v2phase);
+                if (!ph->found(mrow.v2prop)) continue;
+                auto pb = ph->subDict(mrow.v2prop);
+                if (pb->found("mixingRule"))
+                    throw std::runtime_error("thermophysicalPropertySystem:"
+                        " transport mixingRule is not SELECTABLE yet -- the"
+                        " implemented rule is announced by the model; declare"
+                        " only `model <X>;` (the selectable-rule wave comes"
+                        " later, never by accident).");
+                auto mb = std::make_shared<Dictionary>(mrow.v1key);
+                mb->insert("model", pb->entryValue("model"));
+                transportDict->insert(mrow.v1key, EntryValue(mb));
+            }
+        }
+        // G4: pureFluids{} rides verbatim -- a per-component multi-property
+        // surface override, announced.
+        DictPtr pureFluidsDict;
+        if (v2->found("pureFluids"))
+        {
+            pureFluidsDict = v2->subDict("pureFluids");
+            if (thermoAnnounce())
+            {
+                std::string names;
+                for (const auto& k : pureFluidsDict->keys())
+                    names += (names.empty() ? "" : ", ") + k;
+                std::cout << "[v2 native] pureFluids override (" << names
+                          << "): the declared surface REPLACES the"
+                             " component-correlation routes it covers --"
+                             " saturation dome (Psat), caloric (h/s/Cp),"
+                             " volumetric (v/rho) and transport, on that"
+                             " component only.\n";
+            }
+        }
+
         if (thermoAnnounce())
             std::cout << "[v2 native] equilibrium gammaPhi: liquid activity."
-                      << model << "; vapour " << vap << ".  Assembled NATIVELY"
-                         " from the v2 grammar (no translated intermediate).\n";
+                      << model << "; vapour " << vap
+                      << (transportDict ? "; per-property transport (T13)" : "")
+                      << ".  Assembled NATIVELY from the v2 grammar (no"
+                         " translated intermediate).\n";
 
         ThermoPackage out;
         out.assembleTwoPhase(v2->lookupWordList("components"), activityDict,
-                             eosDict, "gammaPhi", db);
+                             eosDict, "gammaPhi", db, transportDict,
+                             pureFluidsDict);
         return out;
     }
 

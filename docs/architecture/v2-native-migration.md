@@ -136,10 +136,22 @@ traceable explanation.  Do not mix this migration with model growth
   override (the model-CONTRAST mechanism) is unchanged.  choupoProps builds
   the ideal solvent BASIS via `assembleTwoPhase` (no synthesized text) and
   never translates a speciation system.  15/15 family cases green.
+- 2026-07-18 (wave G): **every authored gammaPhi shape assembles natively**
+  — transport (the T13 phase-structured block mapped onto the canonical flat
+  hierarchy as DICT OBJECTS; mixingRule still refused), pureFluids (verbatim
+  + the G4 announce), inline pairs (copied verbatim, source-XOR-inline
+  STRICT kept), the cosmoSAC set selector (`source <setName>` rides along).
+  `readTransportBlock`/`readPureFluids` factored out of readFromDict and
+  shared with `assembleTwoPhase`.  The wave exposed a LATENT move bug: the
+  hand-written ThermoPackage move operator never carried
+  `mixtureMembersByToken_` ("KEEP THE MEMBER LIST IN SYNC" violated), so any
+  by-value package with a predefined mixture (`air`) lost its stream-token
+  splice — bit only now because the flat path read in-place.  Fixed; the
+  sprayDryer family caught it.
 - ~~BOUNDARY: the electrolyte formulations stay on the scaffold~~ (resolved
-  by the chemistryDict ratification + waves E/F).  Still scaffold: the ~32
-  shaped gammaPhi cases (transport / pureFluids / inline-pairs / cosmoSAC /
-  explicit phases), the Flowsheet propertyContextBase chain, fitParameters.
+  by the chemistryDict ratification + waves E/F).  Still scaffold: systems
+  carrying `activeComponents` (the EXTRACTION-sector projection), the
+  Flowsheet propertyContextBase chain, fitParameters.
 - 2026-07-18 (wave B): **gammaGamma assembles natively** —
   `ThermoPackage::assembleNamedPhases` (each liquid phase from its own
   config dict, shared activity model resolved once per phase — no cross-phase
