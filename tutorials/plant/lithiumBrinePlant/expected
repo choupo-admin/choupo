@@ -1,18 +1,18 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-stream  carbLiquor             F                0.0277777777778    1e-4
-stream  cleanAir               F                0.0320991487231    1e-4
-stream  emulsion               F                0.0345064991464    1e-4
-stream  fines                  F                0                  1e-4
-stream  fuelAir                F                0.0108555555558    1e-4
-stream  halite                 F                0.00104905640962   1e-4
-stream  hotAir                 F                0.010855555556     1e-4
-stream  humidExhaust           F                0.0320991487231    1e-4
-stream  liquor                 F                0.0233953880353    1e-4
-stream  loadedOrganic          F                0.0115474151639    1e-4
-stream  organic                F                0.0111111111111    1e-4
-stream  product                F                0.00644893419035   1e-4
-stream  raffinate              F                0.0229590839824    1e-4
-stream  salarBrine             F                0.0277777777778    1e-4
-stream  slurry                 F                0.0276925273575    1e-4
+stream  carbLiquor             F                0.0277777777778  1e-4
+stream  cleanAir               F                0.0320991487231  1e-4
+stream  emulsion               F                0.0380203541089  1e-4
+stream  fines                  F                0                1e-4
+stream  fuelAir                F                0.0108555555558  1e-4
+stream  halite                 F                0.000179323046651 1e-4
+stream  hotAir                 F                0.010855555556   1e-4
+stream  humidExhaust           F                0.0320991487231  1e-4
+stream  liquor                 F                0.0269092429978  1e-4
+stream  loadedOrganic          F                0.0124069292995  1e-4
+stream  organic                F                0.0111111111111  1e-4
+stream  product                F                0.00644893419035 1e-4
+stream  raffinate              F                0.0256134248094  1e-4
+stream  salarBrine             F                0.0277777777778  1e-4
+stream  slurry                 F                0.0276925273575  1e-4

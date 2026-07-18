@@ -2529,10 +2529,6 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
             // stay GLOBAL; the doctrine is untouched).
             if (ctx->found("activeComponents"))
                 over->insert("activeComponents", ctx->entryValue("activeComponents"));
-            if (ctx->found("chemistry"))
-                std::cout << "  [context] " << uname << ": liquid method " << liq
-                          << " -> molecular world; inherited chemistry INACTIVE"
-                             " (not required by " << liq << ")\n";
         }
         else if (liq.rfind("electrolyte.", 0) == 0)
         {
@@ -2583,7 +2579,15 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
         pkg->insert("components", cd->entryValue("components"));
         for (const auto& k : over->keys())
             if (k != "binaryPairsBase") pkg->insert(k, over->entryValue(k));
-        tp = std::make_unique<ThermoPackage>(ThermoPackageBuilder::build(pkg, *db_));
+        // The node's ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict,
+        // ratified 2026-07-18) resolves along the node's own context chain --
+        // nearest owner wins.
+        ChemistrySystem nodeChem;
+        if (hasContext)
+            nodeChem = resolveChemistryContext(
+                udict->lookupWord("propertyContextBase"));
+        tp = std::make_unique<ThermoPackage>(ThermoPackageBuilder::build(
+            pkg, *db_, nodeChem.present ? &nodeChem : nullptr));
     }
     else
     {

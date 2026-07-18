@@ -97,6 +97,25 @@ traceable explanation.  Do not mix this migration with model growth
   vapour phi; the dissolution wiring factored to ONE home
   (`ThermoPackage::applySolution`, shared with readFromDict).  Native:
   ammonia01/02, flash08, stripper01, absorption01, absorber01.
+- 2026-07-18 (wave D): **the chemistry home ratified and migrated** —
+  `constant/chemistryDict` (recordType `chemistrySystem`, `equilibria {
+  solidPhases ( ... ); }`) is THE selection home; `ChemistrySystem::fromDict`
+  (strict minimal grammar), `resolveChemistryContext` on the same inherits
+  chain (nearest owner wins, replace-whole), the builder takes the OBJECT
+  (`build(pkg, db, chem)`), all 17 transitional inline `chemistry{}` blocks
+  migrated mechanically, the translateV2 carry removed, and BOTH gates live
+  (inline chemistry{} refused in the property dict AND in the v1-shaped
+  package).  The importer harvests the new home.  **The wave exposed and
+  fixed a REAL bug:** the per-node electrolyte context (Flowsheet::thermoFor)
+  never copied the ctx's chemistry into the node's package — the
+  lithiumBrinePlant BRINE crystalliser ran with NO active salt (m_sat 1e-9,
+  Ksp_activity 0, yield ≈ 100 % — degenerate physics the golden had pinned).
+  With the selection now resolved along the node's chain, crystNaCl computes
+  the REAL Pitzer halite saturation (Ksp 38.48, m_sat 6.144 mol/kg, γ± 1.0097
+  — bit-identical to crystalliser05's standalone numbers) → yield 20.7 %,
+  halite 3.78 → 0.646 kmol/h, downstream ripple; golden re-recorded with this
+  explanation (the ONE physical change of the wave; everything else 292/0
+  byte-intact).
 - 2026-07-18 — **BOUNDARY (deliberate stop): the electrolyte formulations
   (electrolyteGammaPhi, aqueousProperties) stay on the scaffold.**  Their
   translate step is already a thin OBJECT-dict key-mapping (no text

@@ -59,6 +59,7 @@ Description
 #include "thermo/Database.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/PropertyContext.H"
 #include "thermo/ThermoPackageBuilder.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/electrolyte/AqueousActivity.H"
@@ -282,25 +283,29 @@ try
     // translateV2 scaffold for the rest) -- the main never decides to
     // translate.  Routed by content, exactly like choupoSolve: manifest
     // (components + propertyMethods) -> builder; flat form -> legacy reader.
+    // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict, ratified
+    // 2026-07-18): same context chain, nearest owner wins; optional.
+    ChemistrySystem chem = resolveChemistryContext("constant");
+    const ChemistrySystem* chemPtr = chem.present ? &chem : nullptr;
     ThermoPackage thermo;
     if (thermoDict->lookupWordOrDefault("recordType", "")
         == "thermophysicalPropertySystem")
     {
         if (ThermoPackageBuilder::v2NativeFormulation(thermoDict))
-            thermo = ThermoPackageBuilder::build(thermoDict, db);   // native
+            thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);   // native
         else
         {
             thermoDict = ThermoPackageBuilder::translateV2(thermoDict);
             if (thermoDict->found("components")
                 && thermoDict->found("propertyMethods"))
-                thermo = ThermoPackageBuilder::build(thermoDict, db);
+                thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);
             else
                 thermo.readFromDict(thermoDict, db);
         }
     }
     else if (thermoDict->found("components")
              && thermoDict->found("propertyMethods"))
-        thermo = ThermoPackageBuilder::build(thermoDict, db);
+        thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);
     else
         thermo.readFromDict(thermoDict, db);
 

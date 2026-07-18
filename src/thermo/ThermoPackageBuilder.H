@@ -41,6 +41,7 @@ License
 #pragma once
 
 #include "core/Dictionary.H"
+#include "thermo/ChemistrySystem.H"
 #include "thermo/ThermoPackage.H"
 
 namespace Choupo {
@@ -65,7 +66,12 @@ public:
     static DictPtr translateV2(const DictPtr& v2);
 
     // Assemble a ThermoPackage from a parsed propertyPackage record.
-    static ThermoPackage build(const DictPtr& pkg, const Database& db);
+    // `chem` (optional) is the case's ACTIVE-CHEMISTRY SELECTION, resolved
+    // from constant/chemistryDict by the caller via resolveChemistryContext
+    // (ratified 2026-07-18); a chemistry{} block inside the package dict is
+    // REFUSED with the migration message.
+    static ThermoPackage build(const DictPtr& pkg, const Database& db,
+                               const ChemistrySystem* chem = nullptr);
 
     // ---- v2-NATIVE path (migration steps 1-2; the plan lives in
     // docs/architecture/v2-native-migration.md) ---------------------------
@@ -80,7 +86,8 @@ public:
     // source records (with the eos-match refusal + citation announce), and
     // assembles via ThermoPackage::assemblePhiPhi.  Refuses a formulation
     // v2NativeFormulation() does not claim.
-    static ThermoPackage buildV2(const DictPtr& v2, const Database& db);
+    static ThermoPackage buildV2(const DictPtr& v2, const Database& db,
+                                 const ChemistrySystem* chem = nullptr);
 };
 
 } // namespace Choupo

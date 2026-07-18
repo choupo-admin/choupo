@@ -529,6 +529,20 @@ def closure_of(pp_path, caseDir, std, AQ):
     else:
         harvest_v1(t_nc)      # same comment-stripping guard as harvest_v2
 
+    # ---- constant/chemistryDict (the active-chemistry SELECTION, ratified
+    #      2026-07-18: chemistry{} left the property dict) -- the admitted
+    #      solid phases anchor the salt + solid records in the closure.
+    chem_dict = Path(pp_path).parent / "chemistryDict"
+    if chem_dict.exists():
+        ct = chem_dict.read_text()
+        ct = re.sub(r'/\*.*?\*/', '', ct, flags=re.S)
+        ct = re.sub(r'(^|\s)//.*$', '', ct, flags=re.M)
+        eqb = block(ct, "equilibria")
+        sb = block(eqb, "solidPhases") if eqb else None
+        for salt in (words(sb) if sb else []):
+            want("chemistry/salts/" + salt + ".dat")
+            want("phases/solid/" + salt + ".dat")
+
     # ---- operations in the case's system/propsDict --------------------------
     # The property PACKAGE (pp_path) lists the flowsheet components; the propsDict
     # OPERATIONS may name ions / salts / minerals it does not: the single-salt

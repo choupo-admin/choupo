@@ -40,6 +40,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
+#include "thermo/ChemistrySystem.H"
 
 #include <filesystem>
 #include <iostream>
@@ -156,6 +157,46 @@ inline DictPtr resolvePropertyContext(const std::string&      constantDir,
         if (k != "inherits") localClean->insert(k, local->entryValue(k));
     return mergePropertyDicts(parent, localClean, "propertyDict",
                               isV2System(parent));
+}
+
+// Resolve the case's ACTIVE-CHEMISTRY SELECTION (`constant/chemistryDict`,
+// ratified 2026-07-18) along the SAME `inherits` chain the property context
+// walks: the NEAREST owner wins, replace-whole (a local chemistryDict
+// eclipses the parent's -- no merge; chemistry selection is one fact).
+// Absent everywhere -> an empty (present = false) system: chemistry is
+// optional.
+inline ChemistrySystem resolveChemistryContext(const std::string& constantDir,
+                                               std::set<std::string>& visited)
+{
+    namespace fs = std::filesystem;
+    const std::string path = constantDir + "/chemistryDict";
+    const std::string canon = fs::weakly_canonical(path).string();
+    if (!visited.insert(canon).second)
+        throw std::runtime_error("Choupo: chemistry-context `inherits` CYCLE at "
+                                 + path);
+    if (fs::exists(path))
+        return ChemistrySystem::fromDict(Dictionary::fromFile(path));
+
+    // Follow the property context's OWN inherits pointer (the one chain).
+    const std::string tp = constantDir + "/thermoPhysPropDict";
+    if (fs::exists(tp))
+    {
+        auto local = Dictionary::fromFile(tp);
+        if (local->found("inherits"))
+        {
+            const std::string rel = local->lookupWord("inherits");
+            const std::string parentDir =
+                fs::weakly_canonical(fs::path(constantDir) / rel).string();
+            return resolveChemistryContext(parentDir, visited);
+        }
+    }
+    return ChemistrySystem{};
+}
+
+inline ChemistrySystem resolveChemistryContext(const std::string& constantDir)
+{
+    std::set<std::string> visited;
+    return resolveChemistryContext(constantDir, visited);
 }
 
 } // namespace Choupo

@@ -57,6 +57,7 @@ Description
 #include "thermo/Database.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/PropertyContext.H"
 #include "thermo/ThermoPackageBuilder.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/electrolyte/AqueousActivity.H"
@@ -297,9 +298,15 @@ try
                 " consolidation): this case still carries one.  Migrate it --"
                 " bin/curate/migrate_thermoPhysProp.py (mechanical, golden-safe)"
                 " -- then re-run.");
+    ChemistrySystem chem;
+    const ChemistrySystem* chemPtr = nullptr;
     if (fs::exists(pkgPath))
     {
         auto sel = Dictionary::fromFile(pkgPath);
+        // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict, ratified
+        // 2026-07-18): same context chain, nearest owner wins; optional.
+        chem = resolveChemistryContext(fs::path(pkgPath).parent_path().string());
+        if (chem.present) chemPtr = &chem;
         // v2 contract (thermophysicalPropertySystem): translate FIRST -- the
         // whole downstream (speciation detection, builder, op readers) then
         // consumes the verified v1-shaped manifest.  Strict validation + the
@@ -332,7 +339,7 @@ try
             if (verbosity >= 2)
                 std::cout << "Property package:  INLINE in the case"
                              "   (v2 grammar, NATIVE assembly)\n";
-            thermo = ThermoPackageBuilder::build(sel, db);
+            thermo = ThermoPackageBuilder::build(sel, db, chemPtr);
         }
         else if (speciationPkg)
         {
@@ -363,7 +370,7 @@ try
                 std::cout << "Property package:  INLINE in the case"
                              "   (the case carries the full"
                              " manifest)\n";
-            thermo = ThermoPackageBuilder::build(sel, db);   // rich MANIFEST
+            thermo = ThermoPackageBuilder::build(sel, db, chemPtr);   // rich MANIFEST
         }
         else if (sel->found("components"))
         {

@@ -7,28 +7,16 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  BRINE property context (v2).  Inherits the plant root and REPLACES the
-  equilibrium whole: the brine liquid is an aqueous electrolyte on the
-  Pitzer molality surface (halite SLE activates via chemistry.salts; Ksp
-  from the component's solidPhases{}).
+  chemistryDict -- the case's ACTIVE-CHEMISTRY SELECTION (one home, ratified
+  2026-07-18): WHICH solid phases are admitted in the chemistry network.
+  Availability, not presence: the Ksp/dH facts live in the phase/component
+  records, and only an OPERATION (here the crystalliser) asks for saturation
+  or crystallisation.
 \*---------------------------------------------------------------------------*/
-recordType    thermophysicalPropertySystem;
-schemaVersion 2;
-inherits "../../../constant";
+recordType    chemistrySystem;
+schemaVersion 1;
 
-components ( water NaCl LiCl );
-
-
-equilibrium
+equilibria
 {
-    formulation electrolyteGammaPhi;
-    aqueous
-    {
-        activityModel { model Pitzer; }
-        compositionBasis molality;
-    }
-    vapour
-    {
-        fugacityModel idealGas;
-    }
+    solidPhases ( sodiumHydroxide );
 }

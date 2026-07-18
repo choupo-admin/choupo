@@ -96,7 +96,8 @@ bool hasSpeciesMap(const DictPtr& rec) { return speciesMapOf(rec) != nullptr; }
 // ---- ELECTROLYTE path: assemble a PitzerSingleSalt directly from the unified
 //      substance records (no readFromDict, no loadSalt, no old catalogue) ----
 static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
-                                      bool isENRTL)
+                                      bool isENRTL,
+                                      const ChemistrySystem* chem)
 {
     // Round-4 (professor): this path serves ONLY the ideal-gas vapour; a
     // package declaring another vapour method was silently overridden.  A3:
@@ -172,10 +173,9 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
     // engine treats only the active salt, announced).  With no chemistry.salts
     // and a single salt, this is byte-identical to the old "exactly one" rule.
     std::string activeSaltFormula;
-    if (pkg->found("chemistry") && pkg->subDict("chemistry")->found("salts"))
+    if (chem && chem->present && !chem->solidPhases.empty())
     {
-        const auto slist = pkg->subDict("chemistry")->lookupWordList("salts");
-        if (!slist.empty())
+        const auto& slist = chem->solidPhases;
         {
             const fs::path sf = resolve("data/standards/chemistry/salts/" + slist.front() + ".dat");
             if (fs::exists(sf))
@@ -255,13 +255,13 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
     // package declares in chemistry.salts -> phases/solid/<phase>.dat (rho_p,k_v)
     // and chemistry/salts/<phase>.dat (anchor).  Absence-tolerant.
     std::string phaseName;
-    if (pkg->found("chemistry") && pkg->subDict("chemistry")->found("salts"))
+    if (chem && chem->present && !chem->solidPhases.empty())
     {
-        const auto salts = pkg->subDict("chemistry")->lookupWordList("salts");
-        if (!salts.empty()) phaseName = salts.front();
+        const auto& salts = chem->solidPhases;
+        phaseName = salts.front();
         if (salts.size() > 1 && thermoAnnounce())
-            std::cout << "[builder] chemistry.salts lists " << salts.size()
-                      << " salts but the single-salt adapter honours ONLY '"
+            std::cout << "[builder] chemistryDict solidPhases lists " << salts.size()
+                      << " phases but the single-salt adapter honours ONLY '"
                       << salts.front() << "' -- the rest are IGNORED (multi-salt"
                          " needs the eNRTL multi-salt op).\n";
     }
@@ -582,7 +582,8 @@ static ThermoPackage buildSolutionHenry(const DictPtr& pkg, const Database& db)
 }
 
 static ThermoPackage buildMolecularActivity(const DictPtr& pkg, const Database& db,
-                                            const std::string& model)
+                                            const std::string& model,
+                                            const ChemistrySystem* chem)
 {
     const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
     const std::vector<std::string> compNames = pkg->lookupWordList("components");
@@ -668,7 +669,7 @@ static ThermoPackage buildMolecularActivity(const DictPtr& pkg, const Database& 
             std::cout << "[builder] VLE world: gamma-phi (" << model
                       << " liquid gamma from the binaryPairs catalogue, "
                       << vapourModelOf(pkg) << " vapour phi)"
-                      << (pkg->found("chemistry") ? "; inherited chemistry INACTIVE" : "")
+                      << ((chem && chem->present) ? "; inherited chemistry INACTIVE" : "")
                       << "\n";
         DictPtr tdict = Dictionary::fromString(txt.str(), "ThermoPackageBuilder.molecularCatalogue");
         ThermoPackage out;
@@ -768,6 +769,17 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
     { if (thermoAnnounce()) std::cout << "[v2 plan] " << line << "\n"; };
 
     if (!v2->found("components")) absent("components", "thermophysicalPropertySystem");
+    // GATE (ratified 2026-07-18): the active-chemistry selection has ONE home,
+    // constant/chemistryDict -- an inline chemistry{} here is refused.
+    if (v2->found("chemistry"))
+        throw std::runtime_error("thermophysicalPropertySystem: the inline"
+            " `chemistry {}` block is RETIRED (2026-07-18) -- move it to"
+            " constant/chemistryDict:\n"
+            "    recordType    chemistrySystem;\n"
+            "    schemaVersion 1;\n"
+            "    equilibria { solidPhases ( <salt> ... ); }\n"
+            "  (bin/curate/migrate_thermoPhysProp.py does not do this yet --"
+            " it is a 4-line mechanical move).");
     out->insert("components", v2->entryValue("components"));
 
     // G7: declarative projections ride through EVERY translation shape --
@@ -778,8 +790,6 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
     {
         if (v2->found("activeComponents") && !d->found("activeComponents"))
             d->insert("activeComponents", v2->entryValue("activeComponents"));
-        if (v2->found("chemistry") && !d->found("chemistry"))
-            d->insert("chemistry", v2->entryValue("chemistry"));
         return d;
     };
 
@@ -1215,10 +1225,6 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
         pm->insert("liquid", key);
         pm->insert("vapour", std::string("builtin.idealGas"));
         out->insert("propertyMethods", EntryValue(pm));
-        // chemistry{} inline rides through TRANSITIONALLY (chemistryDict
-        // grammar not ratified -- do not invent it here).
-        if (v2->found("chemistry"))
-            out->insert("chemistry", v2->entryValue("chemistry"));
         verifyRoute(cal, "aqueous", "enthalpyRoute", "ionicReferencePlusExcess");
         verifyRoute(cal, "vapour", "enthalpyRoute", "idealGasCp");
         announce("equilibrium electrolyteGammaPhi: aqueous " + model
@@ -1319,8 +1325,17 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
         " come with the ratified wave, not by accident.");
 }
 
-ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db)
+ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db,
+                                          const ChemistrySystem* chem)
 {
+    // The active-chemistry SELECTION lives in constant/chemistryDict
+    // (ratified 2026-07-18) and arrives as the `chem` object -- a
+    // chemistry{} block inside the package/system dict is RETIRED.
+    if (pkg->found("chemistry"))
+        throw std::runtime_error("propertyPackage: the inline `chemistry {}`"
+            " block is RETIRED (2026-07-18) -- the active-chemistry selection"
+            " lives in constant/chemistryDict (recordType chemistrySystem;"
+            " equilibria { solidPhases ( ... ); }).  Move the block there.");
     // v2 contract?  ONE dispatch point (migration step 1): the formulations
     // the NATIVE path serves assemble directly from the authored grammar
     // (buildV2); the rest ride the translateV2 SCAFFOLD (strict validation +
@@ -1331,13 +1346,13 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
             throw std::runtime_error("thermophysicalPropertySystem requires"
                 " schemaVersion 2;");
         if (v2NativeFormulation(pkg))
-            return buildV2(pkg, db);
+            return buildV2(pkg, db, chem);
         // Scaffold: route the translated shape by content, exactly like the
         // mains -- manifest (propertyMethods) -> this builder; FLAT emission
         // (activityModel/equationOfState/transport) -> the flat reader.
         auto sel = translateV2(pkg);
         if (sel->found("propertyMethods"))
-            return build(sel, db);
+            return build(sel, db, chem);
         ThermoPackage out;
         out.readFromDict(sel, db);
         return out;
@@ -1365,9 +1380,9 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
     const std::string liquid = pkg->subDict("propertyMethods")->lookupWord("liquid");
 
     if (liquid == "electrolyte.pitzer")
-        return buildElectrolyte(pkg, db, /*isENRTL=*/false);
+        return buildElectrolyte(pkg, db, /*isENRTL=*/false, chem);
     if (liquid == "electrolyte.eNRTL")
-        return buildElectrolyte(pkg, db, /*isENRTL=*/true);
+        return buildElectrolyte(pkg, db, /*isENRTL=*/true, chem);
     if (liquid.rfind("eos.", 0) == 0)
     {
         // World 2 opt-in (forum: the liquid slot IS the world).  The SAME
@@ -1400,7 +1415,7 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
     if (liquid == "solution.henryDilute")
         return buildSolutionHenry(pkg, db);
     if (liquid.rfind("activity.", 0) == 0)
-        return buildMolecularActivity(pkg, db, liquid.substr(9));
+        return buildMolecularActivity(pkg, db, liquid.substr(9), chem);
 
     throw std::runtime_error("ThermoPackageBuilder: unsupported liquid propertyMethod '"
         + liquid + "' (have electrolyte.pitzer, electrolyte.eNRTL, activity.<model>, solution.henryDilute).");
@@ -1445,8 +1460,11 @@ bool ThermoPackageBuilder::v2NativeFormulation(const DictPtr& v2)
     return false;
 }
 
-ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& db)
+ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& db,
+                                            const ChemistrySystem* chem)
 {
+    (void)chem;   // the native formulations so far carry no chemistry (the
+                  // electrolyte wave consumes it when it lands)
     if (!v2NativeFormulation(v2))
         throw std::runtime_error("ThermoPackageBuilder::buildV2: this system's"
             " formulation/shape is not on the native path yet -- gate the"

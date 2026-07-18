@@ -19,10 +19,6 @@ schemaVersion 2;
 
 components      ( water ethanol KCl potassiumBitartrate );
 
-chemistry
-{
-    salts ( sylvite );
-}
 
 equilibrium
 {

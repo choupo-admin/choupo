@@ -129,6 +129,7 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     const Database&    db,
     const DictPtr&     thermoDict,
     const DictPtr&     packageDict,       // null => legacy thermoDict; non-null => builder
+    const ChemistrySystem* chem,          // constant/chemistryDict (may be null)
     const DictPtr&     solverDict,        // may be null
     const DictPtr&     reactionsDict,     // may be null
     int                verbosity,
@@ -146,7 +147,7 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
 
     ThermoPackage thermo;
     if (packageDict)
-        thermo = ThermoPackageBuilder::build(packageDict, db);   // Aspen path: case SELECTS a package
+        thermo = ThermoPackageBuilder::build(packageDict, db, chem);   // manifest path: case SELECTS a package
     else
         thermo.readFromDict(thermoDict, db);
 
@@ -490,6 +491,8 @@ try
     // assembles the ThermoPackage from the new records, reads zero old salt files)
     // XOR carries a thermoPackage (the legacy reader).  Mirrors choupoProps.
     DictPtr thermoDict, packageDict;
+    ChemistrySystem chem;                 // constant/chemistryDict selection
+    const ChemistrySystem* chemPtr = nullptr;
     {
         // ONE name: constant/propertyDict (there are more properties than
         // thermodynamics -- transport, chemistry, solids).  It accepts BOTH
@@ -520,6 +523,12 @@ try
                 std::cout << "  [deprecated] constant/propertyDict -- rename it"
                              " to constant/propertyDict (the property package"
                              " is more than thermo).\n";
+            // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict, ratified
+            // 2026-07-18): resolved along the same context chain, nearest
+            // owner wins; absent -> no chemistry (optional).
+            chem = resolveChemistryContext(
+                fs::path(pkgPath).parent_path().string());
+            if (chem.present) chemPtr = &chem;
             // A case-level propertyDict may itself `inherit` a parent context: a
             // projected local unit run (choupo-project) points at the plant
             // context this way, copying no property data.
@@ -724,7 +733,7 @@ try
     auto simulate = [&](const DictPtr& flowDictForRun,
                         const StreamOverrides& overrides) {
         auto r = runSimulation(flowDictForRun, db, thermoDict, packageDict,
-                               solverDict, reactionsDict, verbosity,
+                               chemPtr, solverDict, reactionsDict, verbosity,
                                haveSolutionCtl ? &solutionCtl : nullptr,
                                false, false, overrides);
         // Size plant utilities for every duty HERE, so BOTH the direct path and
@@ -743,7 +752,7 @@ try
     auto runReports = [&](SimulationResult& result) {
         if (!reportsDict || !result.converged) return;
         ThermoPackage thermoForReports;
-        if (packageDict) thermoForReports = ThermoPackageBuilder::build(packageDict, db);
+        if (packageDict) thermoForReports = ThermoPackageBuilder::build(packageDict, db, chemPtr);
         else             thermoForReports.readFromDict(thermoDict, db);
         const bool postProc = (reportsLayout == "postProcessing");
         const fs::path reportsDir =
@@ -806,7 +815,7 @@ try
     auto writeConverged = [&](const SimulationResult& result) {
         if (!result.converged) return;
         ThermoPackage tp;
-        if (packageDict) tp = ThermoPackageBuilder::build(packageDict, db);
+        if (packageDict) tp = ThermoPackageBuilder::build(packageDict, db, chemPtr);
         else             tp.readFromDict(thermoDict, db);
         const fs::path dir = fs::current_path() / "converged";
         fs::remove_all(dir);                 // stale state must never linger
@@ -857,7 +866,7 @@ try
     if (init0Mode)
     {
         auto r = runSimulation(flowsheetDict, db, thermoDict, packageDict,
-                               solverDict, reactionsDict, verbosity,
+                               chemPtr, solverDict, reactionsDict, verbosity,
                                nullptr, true, init0Force);
         return r.converged ? 0 : 1;
     }

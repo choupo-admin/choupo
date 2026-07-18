@@ -43,10 +43,6 @@ equilibrium
     }
 }
 
-chemistry
-{
-    salts ( sylvite );                  // the active solid equilibrium: SLE via
-}                                      //   the component's solidPhases{} Ksp
 
 caloric
 {
