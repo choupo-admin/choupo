@@ -48,6 +48,7 @@ License
 #include "streams/StreamMass.H"
 #include "thermo/utility/UtilityCatalogue.H"
 #include "thermo/PropertyContext.H"
+#include "thermo/ThermoOverride.H"
 #include "unitOperations/flash/IsothermalFlash.H"   // solveCore: feed-flash for the true vf
 
 // The dispatcher for unit-op types lives in UnitOperation::New().
@@ -2374,7 +2375,14 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
     const bool hasThermoBlock = udict->found("thermo");
     auto declaresWorld = [](const DictPtr& th)
     {
-        return th->found("activityModel") || th->found("phases")
+        // v2 FRAGMENT blocks (wave I) -- a thermo{} carrying any system
+        // block IS a world/config override; the flat keys stay listed only
+        // to reach the mergeThermoOverride anti-flat REFUSAL (loud), never
+        // to be silently treated as auxiliaries.
+        return th->found("equilibrium") || th->found("caloric")
+            || th->found("volumetric") || th->found("transport")
+            || th->found("pureFluids")
+            || th->found("activityModel") || th->found("phases")
             || th->found("equationOfState") || th->found("propertyMethods")
             || th->found("chemistry");
     };
@@ -2395,6 +2403,47 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
     //     the built global package, so a per-unit override (e.g. an NRTL recovery
     //     column over an electrolyte global) builds on the SAME component set --
     //     readFromDict re-loads them (case-local, full) exactly as the legacy merge.
+    // NATIVE per-unit override (wave I, Codex-ratified 2026-07-18): the
+    // thermo{} FRAGMENT (typed v2 grammar) merges onto the node's EFFECTIVE
+    // authored system -- the root's authored v2, or the node's resolved
+    // property context when it has one -- then builds via the ONE dispatch.
+    // COMPONENTS STAY GLOBAL; the per-node auxiliaries ride alongside.
+    if (hasThermo)
+    {
+        DictPtr effBase;
+        if (hasContext)
+        {
+            std::set<std::string> vis;
+            effBase = resolvePropertyContext(
+                udict->lookupWord("propertyContextBase"), vis);
+        }
+        else
+            effBase = authoredV2_;
+        if (effBase && isV2System(effBase))
+        {
+            auto mergedV2 = mergeThermoOverride(effBase,
+                udict->subDict("thermo"), "unit '" + uname + "'");
+            std::vector<std::string> gnames;
+            gnames.reserve(global.n());
+            for (std::size_t i = 0; i < global.n(); ++i)
+                gnames.push_back(global.comp(i).name());
+            mergedV2->insert("components", EntryValue(gnames));
+            const std::string base = hasContext
+                ? udict->lookupWord("propertyContextBase")
+                : std::string("constant");
+            const auto sfx = base.rfind("/constant");
+            if (sfx != std::string::npos && sfx + 9 == base.size())
+                mergedV2->insert("binaryPairsBase", base.substr(0, sfx));
+            ChemistrySystem nodeChem = resolveChemistryContext(base);
+            auto tpn = std::make_unique<ThermoPackage>(
+                ThermoPackageBuilder::build(mergedV2, *db_,
+                    nodeChem.present ? &nodeChem : nullptr));
+            const ThermoPackage& refn = *tpn;
+            unitThermo_[uname] = std::move(tpn);
+            return refn;
+        }
+    }
+
     auto merged = std::make_shared<Dictionary>("thermoPackage");
     if (thermoDict_)
     {

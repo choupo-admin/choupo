@@ -36,7 +36,7 @@ operations
         type        propertyScan1D;
         vary        { variable T;  from 280 K;  to 360 K;  n 41; }
         state       { P 1 bar;  composition { water 1.0; } }
-        thermo      { transport { liquidViscosity { model Andrade; } } }
+        thermo      { transport { liquid { viscosity { model Andrade; } } } }
         properties  ( viscosity_liquid );
         output      { file mu_andrade.csv; }
     }
@@ -45,7 +45,7 @@ operations
         type        propertyScan1D;
         vary        { variable T;  from 280 K;  to 360 K;  n 41; }
         state       { P 1 bar;  composition { water 1.0; } }
-        thermo      { transport { liquidViscosity { model Vogel; } } }
+        thermo      { transport { liquid { viscosity { model Vogel; } } } }
         properties  ( viscosity_liquid );
         output      { file mu_vogel.csv; }
     }

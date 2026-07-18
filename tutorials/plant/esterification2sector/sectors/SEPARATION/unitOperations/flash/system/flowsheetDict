@@ -18,7 +18,7 @@ operation
     P   1.01325 bar;
 }
 
-thermo      { activityModel { model NRTL; } }
+thermo      { equilibrium { liquid { activityModel { model NRTL; } } } }
 
 inputs   ( reactorOut );
 outputs  ( liquid vapor );

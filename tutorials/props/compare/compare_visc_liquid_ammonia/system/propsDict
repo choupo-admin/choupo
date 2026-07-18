@@ -32,7 +32,7 @@ operations
         type        propertyScan1D;
         vary        { variable T;  from 235 K;  to 300 K;  n 27; }
         state       { P 1 bar;  composition { NH3 1.0; } }
-        thermo      { transport { liquidViscosity { model Andrade; } } }
+        thermo      { transport { liquid { viscosity { model Andrade; } } } }
         properties  ( viscosity_liquid );
         output      { file mu_andrade.csv; }
     }

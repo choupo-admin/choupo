@@ -33,7 +33,7 @@ units
         in          feed;
         outputs     ( expanded );
         operation   { W_shaft -3.0 kW;  eta 0.80; }
-        thermo      { equationOfState { model SRK; } }     // real gas
+        thermo      { equilibrium { vapour { fugacityModel SRK; } } }     // real gas
     }
 
     {
@@ -44,19 +44,14 @@ units
         operation   { T 353.0 K;  P 1.0 bar; }
         thermo
         {
-            activityModel
+            equilibrium { liquid { activityModel
             {
                 model  NRTL;
-                pairs
-                (
-                    {
-                        i ethanol;  j water;
-                        a_ij -0.8009;  b_ij 246.18;
-                        a_ji  3.4578;  b_ji -586.0809;
-                        alpha 0.30;
-                    }
-                );
+                binaryParameters
+            {
+                ethanol-water { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; }
             }
+            } } }
         }
     }
 );

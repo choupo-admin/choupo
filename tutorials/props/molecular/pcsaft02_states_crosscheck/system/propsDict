@@ -32,7 +32,7 @@ operations
         name        CH4_vapour_srk;
         type        propertyPoint;
         state       { T 300 K;  P 50 bar;  composition { CH4 1.0; } }
-        thermo      { equationOfState { model SRK; } }
+        thermo      { equilibrium { equationOfState { model SRK; } } }
         properties  ( Z  molarVolume );
     }
     {

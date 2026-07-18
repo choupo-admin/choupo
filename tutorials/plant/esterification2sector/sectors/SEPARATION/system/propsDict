@@ -51,15 +51,24 @@ operations
         rationale   "inspect the activity coefficients NRTL predicts across composition";
         vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }
         state       { P 1.01325 bar;  composition { ethanol 0.5;  water 0.5; } }
-        thermo      { activityModel { model NRTL;
-            pairs ( { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; } ); } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL;
+            binaryParameters
+            {
+                ethanol-water { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; }
+            } } } }
+        }
         properties  ( gamma_ethanol  gamma_water );  output { file gamma_etoh_water.csv; }
     }
     {
         name        etoh_water_ideal;  type propertyScan1D;
         vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }
         state       { P 1.01325 bar;  composition { ethanol 0.5;  water 0.5; } }
-        thermo      { activityModel { model ideal; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
         // (x, T_bubble, y_eq_ethanol) trio -> the comparison can switch to the
         // x-y McCabe view with every model overlaid.  Ideal (Raoult) has NO
         // azeotrope: its equilibrium curve never meets the y=x diagonal.
@@ -71,8 +80,14 @@ operations
         source      "DECHEMA Vol.I (Gmehling-Onken)";
         vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }
         state       { P 1.01325 bar;  composition { ethanol 0.5;  water 0.5; } }
-        thermo      { activityModel { model NRTL;
-            pairs ( { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; } ); } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL;
+            binaryParameters
+            {
+                ethanol-water { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; }
+            } } } }
+        }
         properties  ( T_bubble  y_eq_ethanol );  output { file etoh_water_nrtl.csv; }
     }
     {
@@ -81,8 +96,14 @@ operations
         source      "DECHEMA Vol.I (Gmehling-Onken)";
         vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }
         state       { P 1.01325 bar;  composition { ethanol 0.5;  water 0.5; } }
-        thermo      { activityModel { model Wilson;
-            pairs ( { i ethanol; j water; A_ij 1157.95; A_ji 4081.65; } ); } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson;
+            binaryParameters
+            {
+                ethanol-water { i ethanol; j water; A_ij 1157.95; A_ji 4081.65; }
+            } } } }
+        }
         properties  ( T_bubble  y_eq_ethanol );  output { file etoh_water_wilson.csv; }
     }
 );

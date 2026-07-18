@@ -1732,6 +1732,18 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
         {
             auto am = liq->subDict("activityModel");
             model = am->lookupWord("model");
+            // Parity gate: an unknown key here would be a silently-dropped
+            // declaration (the decorative sin) -- refuse.  `pairs()` is the
+            // RETIRED flat form; the authored grammar is binaryParameters{}.
+            for (const auto& k : am->keys())
+                if (k != "model" && k != "source" && k != "binaryParameters")
+                    throw std::runtime_error("thermophysicalPropertySystem:"
+                        " activityModel key '" + k + "' is not part of the"
+                        " authored grammar (have: model / source /"
+                        " binaryParameters" + std::string(k == "pairs"
+                            ? "; the flat `pairs()` form is RETIRED --"
+                              " write binaryParameters { <i>-<j> {...} }"
+                            : "") + ").");
             if (am->found("source"))
                 activityDict->insert("source", am->entryValue("source"));
             if (am->found("binaryParameters"))

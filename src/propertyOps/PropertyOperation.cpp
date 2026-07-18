@@ -54,6 +54,7 @@ License
 #include "VaporPressureFit.H"
 #include "VleConsistency.H"
 #include "thermo/Database.H"
+#include "thermo/ThermoOverride.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/ThermoPackageBuilder.H"
 
@@ -132,81 +133,10 @@ PropertyOperation::thermoForOp(const DictPtr& opDict) const
             " builder-form and no authored v2 grammar is available to merge"
             " into -- the override cannot apply (and silently ignoring it"
             " would be a lie).");
-    auto v2 = authoredV2_->deepCopy();
-    auto eq = v2->subDict("equilibrium");
-    const std::string form = eq->lookupWordOrDefault("formulation", "");
-    for (const auto& k : over->keys())
-    {
-        if (form == "phiPhi" && k == "equationOfState")
-        {
-            eq->insert(k, over->entryValue(k));
-            continue;
-        }
-        if (form == "gammaPhi" && k == "activityModel")
-        {
-            // The liquid gamma slot: replace equilibrium.liquid.activityModel
-            // with the override block verbatim (model + inline pairs etc.).
-            eq->subDict("liquid")->insert(k, over->entryValue(k));
-            continue;
-        }
-        if (form == "gammaPhi" && k == "equationOfState")
-        {
-            // The vapour phi slot: v2 declares it as a WORD
-            // (equilibrium.vapour.fugacityModel) -- lift the override's model.
-            eq->subDict("vapour")->insert("fugacityModel",
-                over->subDict(k)->lookupWord("model"));
-            continue;
-        }
-        if (k == "pureFluids")
-        {
-            // G4: a per-component multi-property surface override (IF97 ...)
-            // rides top-level, verbatim -- the merged system then takes the
-            // scaffold's flat emission, which wires it.
-            v2->insert(k, over->entryValue(k));
-            continue;
-        }
-        if (k == "transport")
-        {
-            // The override arrives in the flat v1 hierarchy (viscosity /
-            // liquidViscosity / surfaceTension ...); the authored grammar is
-            // phase-structured -- the inverse of the translator's T13 map.
-            struct Map { const char* v1key; const char* v2phase; const char* v2prop; };
-            static const Map maps[] = {
-                {"viscosity",           "vapour",    "viscosity"},
-                {"thermalConductivity", "vapour",    "thermalConductivity"},
-                {"diffusivity",         "vapour",    "diffusivity"},
-                {"liquidViscosity",     "liquid",    "viscosity"},
-                {"liquidConductivity",  "liquid",    "thermalConductivity"},
-                {"liquidDiffusivity",   "liquid",    "diffusivity"},
-                {"surfaceTension",      "interface", "surfaceTension"},
-            };
-            auto trOver = over->subDict(k);
-            auto trV2 = std::make_shared<Dictionary>("transport");
-            for (const auto& tk : trOver->keys())
-            {
-                const Map* m = nullptr;
-                for (const auto& row : maps)
-                    if (tk == row.v1key) { m = &row; break; }
-                if (!m)
-                    throw std::runtime_error("per-op thermo{} transport"
-                        " override key '" + tk + "' is not a known transport"
-                        " slot (have viscosity/thermalConductivity/diffusivity"
-                        " x vapour/liquid + surfaceTension).");
-                DictPtr phaseD = trV2->found(m->v2phase)
-                    ? trV2->subDict(m->v2phase)
-                    : std::make_shared<Dictionary>(m->v2phase);
-                phaseD->insert(m->v2prop, trOver->entryValue(tk));
-                trV2->insert(m->v2phase, EntryValue(phaseD));
-            }
-            v2->insert("transport", EntryValue(trV2));
-            continue;
-        }
-        throw std::runtime_error("per-op thermo{} override of '" + k
-            + "' is not supported in the '" + form + "' builder world yet --"
-              " supported: phiPhi equationOfState{}; gammaPhi activityModel{}"
-              " / equationOfState{} / transport{}."
-              "  Refusing rather than silently ignoring the override.");
-    }
+    // The ONE typed merge (Codex-ratified 2026-07-18): the fragment applies
+    // onto the case's authored system; the anti-flat gate lives inside.
+    auto v2 = mergeThermoOverride(authoredV2_, over, "op thermo{} override");
+
     // build() owns the v2 dispatch (native formulations assemble via buildV2;
     // the rest translate) -- one entry point, no pre-translation here.
     return std::make_unique<ThermoPackage>(

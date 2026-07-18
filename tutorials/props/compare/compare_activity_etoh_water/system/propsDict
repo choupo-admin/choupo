@@ -35,7 +35,10 @@ operations
         type        propertyScan1D;
         vary        { variable T;  from 280 K;  to 360 K;  n 41; }
         state       { P 1 bar;  composition { ethanol 0.5;  water 0.5; } }
-        thermo      { activityModel { model ideal; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
         properties  ( gamma_ethanol );
         output      { file gamma_ideal.csv; }
     }
@@ -46,19 +49,14 @@ operations
         state       { P 1 bar;  composition { ethanol 0.5;  water 0.5; } }
         thermo
         {
-            activityModel
+            equilibrium { liquid { activityModel
             {
                 model NRTL;
-                pairs
-                (
-                    {
-                        i      ethanol;  j      water;
-                        a_ij  -0.8009;   b_ij   246.18;
-                        a_ji   3.4578;   b_ji  -586.0809;
-                        alpha  0.30;
-                    }
-                );
+                binaryParameters
+            {
+                ethanol-water { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; }
             }
+            } } }
         }
         properties  ( gamma_ethanol );
         output      { file gamma_nrtl.csv; }
@@ -70,18 +68,15 @@ operations
         state       { P 1 bar;  composition { ethanol 0.5;  water 0.5; } }
         thermo
         {
-            activityModel
+            equilibrium { liquid { activityModel
             {
                 model Wilson;
-                pairs
-                (
-                    {
-                        i      ethanol;  j      water;
-                        A_ij   1157.95;  // J/mol  (DECHEMA)
-                        A_ji   4081.65;  // J/mol
-                    }
-                );
+                binaryParameters
+            {
+                // A_ij / A_ji in J/mol (DECHEMA)
+                ethanol-water { i ethanol; j water; A_ij 1157.95; A_ji 4081.65; }
             }
+            } } }
         }
         properties  ( gamma_ethanol );
         output      { file gamma_wilson.csv; }

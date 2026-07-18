@@ -48,7 +48,7 @@ operations
         type        propertyScan1D;
         vary        { variable P;  from 1.0 bar;  to 100.0 bar;  n 50; }
         state       { T 310 K;  composition { CO2 1.0; } }
-        thermo      { equationOfState { model idealGas; } }
+        thermo      { equilibrium { vapour { fugacityModel idealGas; } } }
         properties  ( Z );
         output      { file z_ideal.csv; }
     }
@@ -57,7 +57,7 @@ operations
         type        propertyScan1D;
         vary        { variable P;  from 1.0 bar;  to 100.0 bar;  n 50; }
         state       { T 310 K;  composition { CO2 1.0; } }
-        thermo      { equationOfState { model SRK; } }
+        thermo      { equilibrium { vapour { fugacityModel SRK; } } }
         properties  ( Z );
         output      { file z_srk.csv; }
     }
@@ -66,7 +66,7 @@ operations
         type        propertyScan1D;
         vary        { variable P;  from 1.0 bar;  to 100.0 bar;  n 50; }
         state       { T 310 K;  composition { CO2 1.0; } }
-        thermo      { equationOfState { model PR; } }
+        thermo      { equilibrium { vapour { fugacityModel PR; } } }
         properties  ( Z );
         output      { file z_pr.csv; }
     }

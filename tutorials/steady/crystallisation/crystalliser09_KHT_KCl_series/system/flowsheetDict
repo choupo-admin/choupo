@@ -105,9 +105,17 @@ units
         // OVERRIDES the activity model to NRTL (ethanol-water), capping the
         // distillate at the azeotrope; the salts, with no NRTL pair, stay ideal
         // and nonvolatile -> the bottoms.  (The crystallisers keep eNRTL.)
+        // The formulation CHANGES here (molecular gamma-phi over the case's
+        // electrolyte world) -- the fragment carries the COMPLETE equilibrium
+        // for the new world (no hybrid remains of the electrolyte block).
         thermo
         {
-            activityModel { model NRTL; }
+            equilibrium
+            {
+                formulation gammaPhi;
+                liquid { activityModel { model NRTL; } }
+                vapour { fugacityModel idealGas; }
+            }
         }
     }
 );

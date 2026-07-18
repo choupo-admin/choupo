@@ -164,6 +164,12 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     flowsheet.setReactionsDict(reactionsDict);
     flowsheet.setDatabase     (&db);          // per-unit thermo overrides
     flowsheet.setThermoDict   (thermoDict);
+    // The AUTHORED v2 system is the base every per-unit thermo{} FRAGMENT
+    // merges onto (wave I): for native worlds packageDict IS the authored
+    // dict; a null is fine (v1 retired -- no fragment can apply).
+    if (packageDict && packageDict->lookupWordOrDefault("recordType", "")
+            == "thermophysicalPropertySystem")
+        flowsheet.setAuthoredV2(packageDict);
 
     // ---- Solution-directory (OpenFOAM-style per-iteration writer) ---------
     //  Installed ONLY when controlDict carried `solutionControl{ write true; }`.

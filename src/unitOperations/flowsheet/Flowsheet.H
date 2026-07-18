@@ -124,6 +124,10 @@ public:
     // override MODELS.  Without them every unit uses the global thermo.
     void setDatabase  (const Database* db) { db_ = db; }
     void setThermoDict(DictPtr d)          { thermoDict_ = std::move(d); }
+    // The case's AUTHORED v2 system (the root of the per-unit override merge
+    // -- Codex-ratified 2026-07-18: a thermo{} override is a typed v2
+    // FRAGMENT applied onto the node's effective authored system).
+    void setAuthoredV2(DictPtr d)          { authoredV2_ = std::move(d); }
 
     // ---- Solution-directory hook (OpenFOAM-style per-iteration writer) ----
     //  An OPTIONAL callback, invoked once per recycle OUTER iteration with
@@ -281,6 +285,7 @@ private:
     // Per-unit thermo overrides.
     const Database*                                        db_ = nullptr;
     DictPtr                                                thermoDict_;
+    DictPtr                                                authoredV2_;
     std::map<std::string, std::unique_ptr<ThermoPackage>>  unitThermo_;
 
     // Solution-directory hooks (default empty => feature OFF, zero change).
