@@ -307,26 +307,16 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
     if (saltRec->found("liquidHeatCapacity"))
         comps[soluteIdx].setLiquidCp(saltRec->subDict("liquidHeatCapacity"));
 
-    // (d) property method -- consulted for honesty, asserted, echoed (NOT in the
-    //     gamma math; the per-phase referenceBasis carries the enthalpy datum).
-    {
-        const std::string methodName = isENRTL ? "eNRTL" : "pitzer";
-        const std::string methodPath =
-            "data/standards/methods/" + methodName + ".dat";
-        const fs::path mPath = resolve(methodPath);
-        if (mPath.empty())
-            records::refuseSealed("methods/" + methodName + ".dat",
-                                  "propertyMethod " + methodName);
-        auto mRec = loadRec(mPath, "propertyMethod " + methodName);
-        if (!(mRec->found("requires")
-              && mRec->subDict("requires")->found("ionSpecies")))
-            absent("requires.ionSpecies", methodPath);
-        if (thermoAnnounce())
-            std::cout << "[builder] propertyMethod " << methodName
-                      << ": referenceBasis "
-                      << (mRec->found("referenceBasis") ? "declared (per-phase)" : "ABSENT")
-                      << "; gamma math is reference-free (basis carried for enthalpy honesty).\n";
-    }
+    // (d) property method -- the SELECTION is `model eNRTL|pitzer` in the case
+    //     propDict; the EQUATIONS are this C++; the PARAMETERS are the pair
+    //     .dat; the EXPLANATION is the manuals.  A separate methods/<model>.dat
+    //     record was pure ceremony (a referenceBasis echo, reference-free for
+    //     the gamma math) -- retired 2026-07-18 (Codex "não inventar gramática").
+    if (thermoAnnounce())
+        std::cout << "[builder] propertyMethod " << (isENRTL ? "eNRTL" : "pitzer")
+                  << ": aqueous inf-dilution ion reference (per-phase);"
+                  << " gamma math is reference-free (basis carried for enthalpy"
+                     " honesty).\n";
 
     // (e) the FULL electrolyte contract, every field via the SAME SaltFromCatalogue
     //     helpers ElectrolyteActivity::configure() calls -- so the kernel (incl.
@@ -560,23 +550,14 @@ static ThermoPackage buildSolutionHenry(const DictPtr& pkg, const Database& db)
         auto rec = loadRec(resolveDeclared(repoRoot, hp->lookupWord(key)), "Henry pair " + key);
         (void)rec;   // parse = the verification; the runtime registry re-reads it
     }
-    // Echo the method's per-group referenceBasis (glass-box).  ONE resolver
-    // (sealing redesign): the case-local record (constant/methods/, or the
-    // legacy propertyData form) wins over the installation catalogue; a
-    // strictly sealed case refuses a locally-missing method record.
-    {
-        const fs::path methodRec =
-            records::resolveRecord("methods/henryDilute.dat");
-        if (methodRec.empty())
-            records::refuseSealed("methods/henryDilute.dat",
-                                  "propertyMethod henryDilute");
-        auto mRec = loadRec(methodRec, "propertyMethod henryDilute");
-        if (thermoAnnounce())
-            std::cout << "[builder] propertyMethod solution.henryDilute: referenceBasis "
-                      << (mRec->found("referenceBasis") ? "declared (per-GROUP rungs: "
-                         "solvent pureLiquidRaoult, solutes infiniteDilutionHenry)"
-                         : "ABSENT") << "\n";
-    }
+    // The per-GROUP reference rungs are FIXED by the diluteSolution formulation
+    // (solvent pureLiquidRaoult, solutes infiniteDilutionHenry) -- announced
+    // directly; the methods/henryDilute.dat ceremony record was retired
+    // 2026-07-18 (the selection is the propDict formulation, not a file).
+    if (thermoAnnounce())
+        std::cout << "[builder] propertyMethod solution.henryDilute:"
+                     " per-GROUP rungs solvent pureLiquidRaoult,"
+                     " solutes infiniteDilutionHenry\n";
     // The world line, symmetric with the other liquid-method branches.
     if (thermoAnnounce())
         std::cout << "[builder] VLE world: gamma-phi with Henry solutes"

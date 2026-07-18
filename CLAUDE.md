@@ -352,7 +352,7 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
 * **284 runnable tutorial cases** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
   `bin/runTests` validates them via golden-master KPI + NaN/inf guard + the
   doctrine + release-inventory gates (0 FAIL, 0 KNOWN-BROKEN; deliberate EXPECTED-FAILs).
-* **247 components** (incl. the combustion library — GRI-Mech 3.0 + Burcat sulfur/chlorine/soot-PAH/low-T/NOx families) + **41 aqueous species/ions** (single `species/aqueous.dat` catalogue),
+* **247 components** (incl. the combustion library — GRI-Mech 3.0 + Burcat sulfur/chlorine/soot-PAH/low-T/NOx families) + **41 aqueous species/ions** (one `recordType modelSpecies` file per species, `species/<name>.dat`),
   **205 Henry's-law pairs**, **5 public binary-interaction pairs** (NRTL/UNIQUAC; the bulk moved to `data/local` in the legal scrub) + **55 Pitzer + 3 eNRTL pairs**,
   **49 unit-operation models**, **4 materials**, **4 membranes**, **9 utilities** in the standard catalogue.
 * **Four binaries by problem class:** `choupoSolve` (steady, F(x)=0,

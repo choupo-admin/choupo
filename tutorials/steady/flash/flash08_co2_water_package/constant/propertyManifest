@@ -9,14 +9,18 @@
   claim types:  imported = installed + hash-verified copy;
                 adopted  = authored record explicitly adopted at
                            import time (never installed, never
-                           hash-enforced, never removed).
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
 \*----------------------------------------------------------*/
 
 propertyManifest
 {
     sealed             true;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-17";
+    importedAt         "2026-07-18";
     importerVersion    "2";
     records
     {
@@ -34,14 +38,6 @@ propertyManifest
             sha256        "590702adfd0a04f54318ed97140943d672afd4f9c0526aeac5d31dbca1fcfc63";
             origin        "data/standards/components/water.dat";
             originSha256  "7d1996853ccc57b14e5dccf6febb031bf4b6683db7c18ef5622a80da3317a421";
-            release       Choupo-2607;
-        }
-        "methods/henryDilute.dat"
-        {
-            type          imported;
-            sha256        "9ae39b8caea6dbf8bedf98710759be4d0a7b07d67045627a5d4e278b28e208ba";
-            origin        "data/standards/methods/henryDilute.dat";
-            originSha256  "0da2434f778fe4f4d6d116b53a4f8ffb2e33d4a89b81845171ad3b694efc2d98";
             release       Choupo-2607;
         }
         "parameters/Henry/CO2-water.dat"

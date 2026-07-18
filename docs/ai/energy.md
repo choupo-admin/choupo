@@ -231,8 +231,9 @@ thermally-neutral.
 **A crystallising SALT's enthalpy is DERIVED from the ions, never stored
 (settled 2026-06-29, forum).**  A salt that dissolves / crystallises gets its
 **solid formation from the ions**, not a component block:
-`Hf_solid = Σνᵢ·hfAq_i − dH_soln`, where each `hfAq` lives in
-`data/standards/species/aqueous.dat` and `dH_soln` is the component's
+`Hf_solid = Σνᵢ·hfAq_i − dH_soln`, where each `hfAq` lives in that ion's
+`data/standards/species/<name>.dat` (one `recordType modelSpecies` file per
+species) and `dH_soln` is the component's
 `electrolyte { dissolutionEnthalpy }` (primary-cited).  Writing the salt a
 component-level `standardThermochemistry` block is **forbidden** — it is a second source
 of truth that silently drifts from the ions (*trees never store derivatives*),

@@ -158,7 +158,7 @@ mineral file would re-create duplication, not remove it:
 
 - `components/<salt>.dat` — apparent-salt identity + `dissociatesTo` (the
   *dissolved* salt, a different object from the crystal).
-- `species/aqueous/<ion>.dat` — ion thermo (Na⁺ is shared by NaCl, Na₂SO₄, NaOH…).
+- `species/<name>.dat` — ion thermo, one `recordType modelSpecies` file per species (Na⁺ is shared by NaCl, Na₂SO₄, NaOH…).
 - `parameters/Pitzer/…` — **pair** params (Na-Cl is a *pair*, shared).
 - `chemistry/ (recordType aqueousSpeciation) …` — complex-formation reactions (relational).
 
@@ -239,14 +239,14 @@ partially exists.** The work is bounded reader alignment, not new plumbing.
    `calorimetric.dissolutionEnthalpy` (measured ΔH_soln). Never conflate (the halite
    3841-vs-3880 confusion).
 2. **Salt solid enthalpy stays ion-derived** at build time (`Σν·hfAq − dH_soln`,
-   the subtraction never stored); the ions' `hfAq` live in `species/aqueous/`
-   (relational, shared — NOT in the component file). A dissociating salt carries NO
+   the subtraction never stored); the ions' `hfAq` live in each ion's
+   `species/<name>.dat` (relational, shared — NOT in the component file). A dissociating salt carries NO
    `standardThermochemistry` (`check_ion_pins.py` exits 1 if both). A MOLECULAR solid
    (sucrose) DOES carry its solid rung in `molecular{}`. Mutually exclusive.
 3. The "1 cation + 1 anion" limit is a property of the single-salt ADAPTER, not the
    data — `dissociatesTo` takes general stoichiometry; a true double salt (carnallite)
    simply routes through the multi-ion PitzerHMW path, which ignores `dissociatesTo`.
-4. The multi-ion speciation world stays `species/aqueous/` + `chemistry/ (recordType aqueousSpeciation) `
+4. The multi-ion speciation world stays `species/<name>.dat` (one file per model species) + `chemistry/ (recordType aqueousSpeciation) `
    network-driven; the unified salt file reaches it ONLY via the existing
    `recordType mineral` component scan.
 

@@ -797,9 +797,9 @@ parameter of a pair, the equilibrium of a reaction:
 data/standards/
   components/<name>.dat            intrinsic, one substance (Tc, Antoine, Cp)
                                    + dissociatesTo { Na 1; Cl 1; }  [salts]
-  species/aqueous.dat              one catalogue; each record a model species
-                                   (Na, Cl, CO2aq): charge + medium-tagged
-                                   thermo; never fed to a flowsheet
+  species/<name>.dat               one modelSpecies file per species
+                                   (Na, Cl, CO2aq, O2): formula + charge +
+                                   medium-tagged thermo; never fed to a flowsheet
   phases/solid/<phase>.dat         crystal phase (rho_p, k_v): halite, sylvite
   chemistry/.../<name>.dat         an equilibrium: dissolution, speciation
   parameters/.../<i>-<j>.dat       a pair: NRTL, Pitzer, eNRTL

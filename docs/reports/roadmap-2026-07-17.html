@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<title>Choupo-2607 - Roadmap de consolidação</title>
+<style>
+  @page { size: A4; margin: 15mm 15mm 17mm; }
+  * { box-sizing: border-box; }
+  html { color: #172126; font-family: Arial, Helvetica, sans-serif; font-size: 10.2pt; line-height: 1.42; }
+  body { margin: 0; }
+  h1, h2, h3 { color: #163f4b; margin: 0; page-break-after: avoid; }
+  h1 { font-size: 27pt; line-height: 1.05; letter-spacing: 0; }
+  h2 { font-size: 16pt; margin-top: 7mm; padding-bottom: 2mm; border-bottom: 1.5px solid #78aab0; }
+  h3 { font-size: 11.5pt; margin-top: 4mm; }
+  p { margin: 2.2mm 0; }
+  ul, ol { margin: 2mm 0 3mm 5mm; padding-left: 4mm; }
+  li { margin: 1.2mm 0; }
+  code { font-family: "DejaVu Sans Mono", monospace; font-size: 9pt; color: #173c45; }
+  .cover { min-height: 258mm; display: flex; flex-direction: column; justify-content: space-between; }
+  .brand { border-top: 8px solid #176b73; padding-top: 9mm; }
+  .kicker { color: #176b73; font-weight: 700; text-transform: uppercase; font-size: 9pt; margin-bottom: 4mm; }
+  .subtitle { max-width: 150mm; color: #465b61; font-size: 14pt; margin-top: 7mm; }
+  .decision { margin-top: 15mm; padding: 6mm; border-left: 5px solid #d1922e; background: #f8f2e7; font-size: 13pt; font-weight: 700; }
+  .meta { color: #52656a; border-top: 1px solid #aebdc0; padding-top: 5mm; }
+  .page { page-break-before: always; }
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 5mm 0; }
+  .metric { border-top: 4px solid #176b73; background: #edf4f3; padding: 4mm 3mm; min-height: 25mm; }
+  .metric strong { display: block; font-size: 19pt; color: #164a52; line-height: 1; }
+  .metric span { display: block; color: #516468; margin-top: 2mm; font-size: 8.5pt; }
+  .good { border-left: 4px solid #3f8b61; background: #eef6f0; padding: 3mm 4mm; }
+  .warn { border-left: 4px solid #d1922e; background: #faf4e9; padding: 3mm 4mm; }
+  .stop { border-left: 4px solid #a9423d; background: #f8eeee; padding: 3mm 4mm; }
+  table { width: 100%; border-collapse: collapse; margin: 4mm 0; page-break-inside: avoid; }
+  th { background: #164a52; color: white; text-align: left; padding: 2.5mm; font-size: 9pt; }
+  td { border-bottom: 1px solid #cbd6d8; padding: 2.5mm; vertical-align: top; }
+  tr:nth-child(even) td { background: #f4f7f7; }
+  .phase { margin: 4mm 0; padding: 4mm; border: 1px solid #bac9cb; page-break-inside: avoid; }
+  .phase-head { display: flex; align-items: baseline; gap: 4mm; margin-bottom: 2mm; }
+  .phase-no { width: 10mm; height: 10mm; border-radius: 50%; background: #176b73; color: white; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+  .phase h3 { margin: 0; }
+  .tag { display: inline-block; padding: 1mm 2mm; margin-right: 1.5mm; background: #dce9e8; color: #174a51; font-size: 8pt; font-weight: 700; }
+  .gate { color: #29585f; font-weight: 700; }
+  .small { font-size: 8.5pt; color: #596a6e; }
+  .footer-note { margin-top: 8mm; padding-top: 3mm; border-top: 1px solid #aebdc0; color: #596a6e; font-size: 8.5pt; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="brand">
+    <div class="kicker">Choupo-2607 · decisão de arquitetura</div>
+    <h1>Roadmap de<br>consolidação</h1>
+    <p class="subtitle">Onde estamos, o que fica congelado e a sequência mínima para terminar a arquitetura das propriedades sem voltar a desestabilizar o simulador.</p>
+    <div class="decision">Decisão imediata: PARAR as migrações e estabilizar o estado atual.</div>
+  </div>
+  <div class="meta">
+    <strong>Estado de referência:</strong> 17 de julho de 2026<br>
+    <strong>Branch:</strong> <code>cleanup/binarypairs-parameters-tidy</code><br>
+    <strong>HEAD observado:</strong> <code>169b03dbf</code> · alterações ainda sem push
+  </div>
+</section>
+
+<section class="page">
+  <h2>1. Estado atual</h2>
+  <div class="metrics">
+    <div class="metric"><strong>289</strong><span>dicionários de propriedades no corpus</span></div>
+    <div class="metric"><strong>214</strong><span><code>thermoPhysPropDict</code> v2</span></div>
+    <div class="metric"><strong>75</strong><span><code>propertyDict</code> v1 ainda necessários</span></div>
+    <div class="metric"><strong>231</strong><span>contextos com <code>propertyManifest</code></span></div>
+  </div>
+  <div class="good">
+    <strong>O simulador está funcional.</strong> A suite terminou com 284 casos aprovados, zero falhas e quatro recusas pedagógicas esperadas. A GUI mantém 1770/1770 testes segundo o último gate registado.
+  </div>
+
+  <h3>O que já está sólido</h3>
+  <ul>
+    <li>As listas de componentes foram preservadas nos 214 casos migrados.</li>
+    <li>Os casos v2 são traduzidos uma vez na montagem e usam a física já testada do motor.</li>
+    <li>A selagem espelha os dados em <code>constant/</code>, com precedência case-local sobre standards.</li>
+    <li>Os manifestos instalados verificados não apresentam hashes divergentes.</li>
+    <li>Assets e closures principais de eletrólitos já entram na selagem.</li>
+  </ul>
+
+  <h3>O que ainda não está consolidado</h3>
+  <table>
+    <thead><tr><th>Área</th><th>Situação</th><th>Consequência</th></tr></thead>
+    <tbody>
+      <tr><td>Rotas caloríficas</td><td>198/214 v2 não têm bloco <code>caloric</code>.</td><td>H, Cp e mudanças de fase continuam implícitos em muitos casos energéticos.</td></tr>
+      <tr><td>Fases/capabilities</td><td>155 T1 mecânicos declaram gamma-phi completo.</td><td>Casos gas-only, liquid-only, adsorção ou membranas afirmam modelos que não consomem.</td></tr>
+      <tr><td>Validação</td><td>A v2 não possui allowlist recursiva completa.</td><td>Uma chave mal escrita pode ficar sem consumidor.</td></tr>
+      <tr><td>Gramática</td><td>214 v2 coexistem com 75 v1; <code>chemistry{}</code> ainda é transitório.</td><td>A arquitetura não é ainda uma única linguagem fechada.</td></tr>
+      <tr><td>Pedagogia</td><td>125 migrações perderam comentários específicos.</td><td>Desapareceram justificações de modelos, limites e fronteiras de física.</td></tr>
+      <tr><td>Documentação</td><td>Guias canónicos ainda descrevem v1 e <code>propertyData/</code>.</td><td>O aluno recebe instruções contraditórias.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn"><strong>Distinção essencial:</strong> “v2” descreve a gramática do dicionário; “selado” descreve a autonomia dos dados. Um caso pode ser v1 e selado, ou v2 e não selado.</div>
+</section>
+
+<section class="page">
+  <h2>2. O que fica congelado agora</h2>
+  <div class="stop">
+    <strong>STOP de engenharia:</strong> não remover <code>translateV2</code>, não iniciar nova vaga de conversão, não voltar a selar o corpus e não lançar agentes em paralelo até o contrato mínimo ser ratificado.
+  </div>
+
+  <h3>Decisões de estabilização</h3>
+  <ol>
+    <li><strong>Manter <code>translateV2</code>.</strong> É um adaptador de montagem com custo irrelevante e suite verde. A leitura nativa pode esperar.</li>
+    <li><strong>Não otimizar o bundle GUI agora.</strong> Os homes espelhados misturam ficheiros importados com overlays autorados. Uma exclusão por glob pode remover dados necessários ou deixar manifestos selados sem closure.</li>
+    <li><strong>Não converter os 75 v1 mecanicamente.</strong> Muitos representam LLE/VLLE, fluidos puros, Henry, contextos por unidade e plantas fractais que a v2 ainda não cobre.</li>
+    <li><strong>Preservar reversibilidade.</strong> Alterações do motor, gramática, corpus e selagem permanecem em commits separados.</li>
+  </ol>
+
+  <h3>Critério de “estado dormível”</h3>
+  <ul>
+    <li>Suite completa verde e GUI verde.</li>
+    <li>Build de produção medido, sem redesign.</li>
+    <li>Handoff único com HEAD, commits, contagens e gaps.</li>
+    <li>Working tree inventariada; nenhum ficheiro de outra sessão apagado.</li>
+  </ul>
+
+  <h2>3. Próxima etapa: três pilotos</h2>
+  <p>Quando o trabalho for retomado, a arquitetura não volta a ser testada em centenas de casos. Fecha-se primeiro em três sistemas contrastantes:</p>
+  <table>
+    <thead><tr><th>Piloto</th><th>O que deve declarar</th><th>O que prova</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Gas-only</strong><br>ignição ou turbina</td><td>Fase vapor, EOS/fugacidade, Cp/entalpia gasosa e transporte necessário. Sem líquido decorativo.</td><td>Capabilities por fase e ausência de Raoult artificial.</td></tr>
+      <tr><td><strong>Liquid-energy-only</strong><br>bomba ou heater</td><td>Fase líquida, densidade, Cp/entalpia e transporte aplicável. VLE apenas se efetivamente consumido.</td><td>Balanço de energia explícito sem fase vapor ornamental.</td></tr>
+      <tr><td><strong>Multiphase</strong><br>flash ou cristalizador</td><td>Equilíbrio entre fases, rotas caloríficas, mudança de fase, química/sólido e parâmetros.</td><td>Contrato completo e ponte entre superfícies.</td></tr>
+    </tbody>
+  </table>
+  <p class="gate">Gate: os três dicionários devem ser compreensíveis sem ler o código, recusar chaves desconhecidas e produzir os mesmos resultados numéricos atuais.</p>
+</section>
+
+<section class="page">
+  <h2>4. Roadmap de execução</h2>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-no">0</span><h3>Estabilizar</h3></div>
+    <span class="tag">AGORA</span><span class="tag">SEM CIRURGIA</span>
+    <p>Congelar motor e corpus; medir build; produzir handoff; descansar a arquitetura.</p>
+    <p class="gate">Saída: HEAD reproduzível, suites verdes e nenhuma ação pendente automática.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-no">1</span><h3>Fechar o contrato mínimo</h3></div>
+    <p>Definir blocos e capabilities efetivamente executáveis: <code>equilibrium</code>, <code>caloric</code>, <code>volumetric</code>, <code>transport</code>, <code>aqueousProperties</code>, química e sólidos. Decidir quando cada bloco é obrigatório.</p>
+    <p class="gate">Saída: especificação curta, três pilotos aprovados e validador recursivo estrito.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-no">2</span><h3>Corrigir o corpus por famílias</h3></div>
+    <p>Migrar apenas famílias suportadas, uma de cada vez. Restaurar comentários que expliquem física, proveniência, limitações e modelos não consumidos.</p>
+    <p class="gate">Saída: cada coorte passa golden inalterado e revisão pedagógica; nenhuma conversão apenas para aumentar contagens.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-no">3</span><h3>Completar a autonomia dos casos</h3></div>
+    <p>Resolver misturas como <code>air</code>, base+overlay, fitting/SQP e políticas para casos expected-fail. Corrigir metadados de origens filtradas nos manifestos.</p>
+    <p class="gate">Saída: caso selado corre sem standards e preserva overlays autorados sem ambiguidades.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-no">4</span><h3>Leitura v2 nativa, se ainda justificar</h3></div>
+    <p>Só depois de a gramática estar fechada e o corpus coberto. Substituir o adaptador por leitura nativa sem alterar a física.</p>
+    <p class="gate">Saída: <code>translateV2</code> removido com equivalência integral e sem leitor dual permanente.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-no">5</span><h3>Documentação, GUI e publicação</h3></div>
+    <p>Atualizar a Constituição, <code>docs/ai/thermo.md</code>, guias e GUI para uma só linguagem. Otimizar o bundle com seleção manifest-aware, não por exclusão cega.</p>
+    <p class="gate">Saída: um aluno encontra um nome, uma arquitetura e exemplos que correspondem ao motor.</p>
+  </div>
+</section>
+
+<section class="page">
+  <h2>5. Definição de acabado</h2>
+  <p>O trabalho das propriedades termina quando estes critérios forem simultaneamente verdadeiros:</p>
+  <table>
+    <thead><tr><th>Gate</th><th>Critério verificável</th></tr></thead>
+    <tbody>
+      <tr><td>Uma gramática</td><td>Um documento canónico e um validador; nenhuma chave sem consumidor.</td></tr>
+      <tr><td>Física explícita</td><td>Cada fase e capability usada está declarada; nenhuma fase decorativa é obrigatória.</td></tr>
+      <tr><td>Energia explícita</td><td>Todo consumidor de H/Cp/duty resolve uma rota calorífica declarada e auditável.</td></tr>
+      <tr><td>Corpus coerente</td><td>Casos migrados por suporte real; exceções v1 nomeadas até a capability existir.</td></tr>
+      <tr><td>Autonomia</td><td>Casos selados executam sem catálogo e preservam overlays humanos.</td></tr>
+      <tr><td>Pedagogia</td><td>Comentários explicam escolhas, limites e proveniência; não repetem cabeçalhos mecânicos.</td></tr>
+      <tr><td>Qualidade</td><td>Suite numérica, gates declarativos, testes de selagem e GUI aprovados.</td></tr>
+      <tr><td>Publicação</td><td>Guias, exemplos, GUI e motor usam o mesmo vocabulário e os mesmos caminhos.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="decision">Mensagem final: o Choupo não precisa de mais uma vaga. Precisa de três pilotos bem desenhados, um contrato fechado e execução disciplinada.</div>
+
+  <h2>6. Próxima decisão do Vítor</h2>
+  <p><strong>Nenhuma decisão técnica é necessária hoje.</strong> O estado atual pode ser conservado. Quando o trabalho recomeçar, a única autorização inicial é:</p>
+  <div class="good"><strong>“Fechar a fase 1 nos três pilotos, sem tocar no resto do corpus.”</strong></div>
+
+  <p class="footer-note">Documento gerado a partir da auditoria local do repositório em 2026-07-17. Contagens observadas: 75 <code>propertyDict</code>, 214 <code>thermoPhysPropDict</code>, 231 <code>propertyManifest</code>, 251 casos com golden e 4 expected-fail.</p>
+</section>
+
+</body>
+</html>

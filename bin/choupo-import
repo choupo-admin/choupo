@@ -372,19 +372,10 @@ def closure_of(pp_path, caseDir, std, AQ):
         eq = block(text, "equilibrium") or ""
         fm = re.search(r'\bformulation\s+([A-Za-z]+)\s*;', eq)
         form = fm.group(1) if fm else ""
-        # (2) the method records the branch builders load + echo
-        if form == "diluteSolution":
-            want("methods/henryDilute.dat")            # buildSolutionHenry
-        if form == "electrolyteGammaPhi":              # buildElectrolyte
-            # the activityModel nests INSIDE aqueous{} -- search the whole
-            # equilibrium text (never default the METHOD by a parse miss).
-            mm = re.search(r'\bmodel\s+(Pitzer|eNRTL)\s*;', eq)
-            if not mm:
-                die("electrolyteGammaPhi without a recognisable"
-                    " aqueous.activityModel.model (Pitzer|eNRTL) -- refusing"
-                    " to guess the method record")
-            want("methods/" + ("eNRTL" if mm.group(1) == "eNRTL"
-                               else "pitzer") + ".dat")
+        # (2) the methods/<model>.dat ceremony record was retired 2026-07-18
+        #     (Codex "não inventar gramática"): the selection is the propDict
+        #     formulation, the equations are C++, the parameters are the pair
+        #     .dat -- there is no separate method file to seal.
         # (3) chemistry.salts rides inline on v2 (transitional block):
         #     anchor / solid records, absence-tolerant (the UNIFIED component
         #     solidPhases{} carries them since Migration 5)
@@ -402,13 +393,7 @@ def closure_of(pp_path, caseDir, std, AQ):
     def harvest_v1(text):
         # Method / chemistry / parameter records declared by a v1 block --
         # shared by a propertyPackage AND a per-unit thermo{} override.
-        pm = block(text, "propertyMethods")
-        if pm:
-            for m in re.finditer(r'(liquid|vapour|solid)\s+([A-Za-z0-9_.]+)\s*;', pm):
-                fam = m.group(2)
-                if '.' in fam and not fam.startswith("builtin"):
-                    a, b = fam.split('.', 1)
-                    want("methods/" + b + ".dat")
+        # (methods/<model>.dat retired 2026-07-18 -- no method record to seal)
         ch = block(text, "chemistry")
         if ch:
             sb = block(ch, "salts")
@@ -961,12 +946,7 @@ def main():
             blk = block(ftext[m.start():], "thermo")
             if blk:
                 pm = block(blk, "propertyMethods")
-                if pm:
-                    for mm in re.finditer(
-                            r'(liquid|vapour|solid)\s+([A-Za-z0-9_.]+)\s*;', pm):
-                        fam = mm.group(2)
-                        if '.' in fam and not fam.startswith("builtin"):
-                            want_plant("methods/" + fam.split('.', 1)[1] + ".dat")
+                # (methods/<model>.dat retired 2026-07-18 -- nothing to seal)
                 ch = block(blk, "chemistry")
                 if ch:
                     sb = block(ch, "salts")
@@ -1167,10 +1147,18 @@ def main():
 
     # ---- install (validated): files first, each manifest LAST -------------
     n_inst = n_adopt = n_rm = 0
+    def prune_empty(d, stop):
+        # Remove d and any now-empty parent up to (not including) `stop`.
+        while d != stop and d.is_dir() and not any(d.iterdir()):
+            d.rmdir()
+            d = d.parent
+
     for ctxDir, installs, removals, entries in plans:
         constant = ctxDir / "constant"
         for rel in removals:
-            (constant / rel).unlink()
+            f = constant / rel
+            f.unlink()
+            prune_empty(f.parent, constant)     # no empty dir left behind
             n_rm += 1
         for rel, (content, _o, _s) in installs.items():
             dst = constant / rel

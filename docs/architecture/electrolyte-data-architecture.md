@@ -12,9 +12,13 @@
 > This document is the DESIGN record; the shipped tree concretised four of its
 > homes differently (the normative statement of the current tree is
 > [`property-architecture.md`](property-architecture.md) §2):
-> * `species/` landed as **ONE catalogue file** `species/aqueous.dat` (45
->   masters), not per-species files — the per-file layout survives only inside
->   sealed case snapshots (`constant/propertyData/`);
+> * `species/` first landed as **ONE catalogue file** `species/aqueous.dat` (45
+>   masters); it was **DISMANTLED 2026-07-18** into one `recordType modelSpecies`
+>   file per species (`species/Na.dat`, `species/Cl.dat`, `species/O2.dat`, …),
+>   matching the per-file `species/<name>.dat` design above — so a sealed case
+>   copies exactly the species it reaches. The identity field is `formula` (a
+>   neutral dissolved gas such as O₂(aq)/N₂(aq) is a molecular model species, not
+>   an ion); `ion`/`cation`/`anion` are reserved for charge ≠ 0;
 > * `phases/solid/` and `chemistry/{salts,mineralSolubility}/` were **retired**
 >   — a mineral's dissolution equilibrium, solid thermochemistry and crystal
 >   data folded into its own `components/<mineral>.dat` `solidPhases{}` block
@@ -53,7 +57,7 @@ method (`reference = fused`, `solvent = none`), species unchanged.
 | home | declares | example (NaCl) |
 |---|---|---|
 | `components/<name>.dat` | identity (name, MW, formula) **+ `dissociatesTo`** — the ion stoichiometry, a formula-like *identity*, not behaviour | `components/NaCl.dat` → `dissociatesTo { Na 1; Cl 1; }` |
-| `species/<name>.dat` | model species: charge + `…Thermo{}` blocks **tagged by medium** (`aqueousThermo`, later `fusedThermo`); header "never fed to a flowsheet" | `species/aqueous/Na.dat`, `Cl.dat` |
+| `species/<name>.dat` | model species: `formula` + charge + `…Thermo{}` blocks **tagged by medium** (`aqueousThermo`, later `fusedThermo`); header "never fed to a flowsheet"; one file per species (`recordType modelSpecies`) | `species/Na.dat`, `species/Cl.dat` |
 | `phases/solid/<phase>.dat` | crystalline phase (ρ_p, k_v, polymorphs) | `phases/solid/halite.dat` |
 | `chemistry/` | REAL equilibria (stoichiometry + K + ΔH): `dissolution` (solid⇌ions+nH₂O), `association`/`speciation` (has a K) | `chemistry/salts/halite.dat` |
 | `parameters/` | model interaction params (Pitzer pairs + mixing θ/ψ, NRTL, fused, transfer terms) — keyed by method | `parameters/Pitzer/pairs/Na-Cl.dat` |

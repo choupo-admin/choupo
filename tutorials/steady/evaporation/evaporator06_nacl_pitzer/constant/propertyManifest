@@ -40,14 +40,6 @@ propertyManifest
             originSha256  "7d1996853ccc57b14e5dccf6febb031bf4b6683db7c18ef5622a80da3317a421";
             release       Choupo-2607;
         }
-        "methods/pitzer.dat"
-        {
-            type          imported;
-            sha256        "0a1ddc89be2089b3d7aef583ec97bb746b02d2430d54dfb14e2fd3d9b61dadb7";
-            origin        "data/standards/methods/pitzer.dat";
-            originSha256  "b59914e0fbb520b010354c3ebb4df5989efe4d4285ecafd27524df8781f74d87";
-            release       Choupo-2607;
-        }
         "parameters/Pitzer/pairs/Na-Cl.dat"
         {
             type          imported;

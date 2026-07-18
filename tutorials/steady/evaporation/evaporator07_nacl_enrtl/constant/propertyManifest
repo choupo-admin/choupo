@@ -40,14 +40,6 @@ propertyManifest
             originSha256  "7d1996853ccc57b14e5dccf6febb031bf4b6683db7c18ef5622a80da3317a421";
             release       Choupo-2607;
         }
-        "methods/eNRTL.dat"
-        {
-            type          imported;
-            sha256        "562c6d8805d39e21ba5e879322de1bf8479f622c58728b0c169fa33dae261ae8";
-            origin        "data/standards/methods/eNRTL.dat";
-            originSha256  "1e5d17a3b1dcb60deedf36ddef9599fd26b97a4a846d25175599fffb41c0505e";
-            release       Choupo-2607;
-        }
         "parameters/Pitzer/pairs/Na-Cl.dat"
         {
             type          imported;

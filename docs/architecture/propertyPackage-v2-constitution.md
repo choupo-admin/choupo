@@ -168,7 +168,7 @@ the EXAMPLE obey the architecture, plus two genuine engine/grammar gaps.
 
 **Example errors (the document violated OUR OWN ratified rules — fixed):**
 - (#1) Li+ was placed under constant/components/ — ions are MODEL SPECIES
-  (constant/species/aqueous/Li.dat), per the 2026-07-01 clean-tree doctrine.
+  (constant/species/Li.dat, `recordType modelSpecies`), per the 2026-07-01 clean-tree doctrine.
 - (#3) the deposit-specific Li2CO3 solubility overlay sat on the COMPONENT —
   equilibria belong to chemistry/salts/ (case-local chemistry/salts/zabuyelite.dat
   overlay); the component keeps identity + dissociatesTo only.

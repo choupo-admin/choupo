@@ -404,6 +404,18 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/spgate.$$
 
+    # Empty-dir gate (2026-07-18): reachable-closure / methods removals must
+    # leave no hollow species/ or parameters/ shells (the importer prunes).
+    if "$ROOT/bin/curate/check_empty_dirs.py" > /tmp/emptygate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "empty-dir-gate" "$(head -1 /tmp/emptygate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_empty_dirs.py)\n" "empty-dir-gate"
+        cat /tmp/emptygate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/emptygate.$$
+
     # Seal-drift gate (sealing wave, 2026-07-17): every sealed record's origin
     # sha256 vs the LIVE catalogue.  Drift (catalogue evolved under a frozen
     # copy) is REPORTED but passes -- refreshing is a per-case curation act;

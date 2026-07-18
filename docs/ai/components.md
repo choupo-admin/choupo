@@ -19,7 +19,8 @@ the catalogue's `k_v`).  See [`data-doctrine.md`](data-doctrine.md) §3.
 A property whose definition names a **solvent** — an "in-water" ΔH_soln, an
 aqueous Hf°, a solubility curve — is arity-2 and lives in a **catalogue**
 (`data/standards/solution/<solute>-<solvent>.dat` for molecular solutes;
-`data/standards/species/aqueous.dat` for the ∞-dilution ion tier), referenced
+`data/standards/species/<name>.dat` for the ∞-dilution ion tier — one
+`recordType modelSpecies` file per aqueous species), referenced
 by name, never copied into `<name>.dat`.  The solvent is always **named**, not
 implied (`data-doctrine.md` §2).
 

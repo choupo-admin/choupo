@@ -838,7 +838,7 @@ water open to AIR: the generic multi-gas Henry pin.
 
 Each gas listed in atmosphere\{\} pins its dissolved species by Henry's law, a = K\_H(T) p, and the pinned master's mole balance is REPLACED by the pin -- the OPEN system of the speciation solver, generalised beyond CO2. Two pin shapes appear side by side, which is the point of the case:
 
-CO2 dissolves into a COMPUTED species (CO2aq, formed from the HCO3 master): the pin swaps the HCO3 row and the whole carbonate family (CO2aq / HCO3- / CO3--) equilibrates with the gas -- DIC is a solved OUTCOME. O2, N2 dissolve into INERT NEUTRAL MASTERS (species/aqueous O2, N2 -- identity records, charge 0): the pin replaces each master's own row directly -- the dissolved concentration is set by the gas phase alone.
+CO2 dissolves into a COMPUTED species (CO2aq, formed from the HCO3 master): the pin swaps the HCO3 row and the whole carbonate family (CO2aq / HCO3- / CO3--) equilibrates with the gas -- DIC is a solved OUTCOME. O2, N2 dissolve into INERT NEUTRAL MASTERS (the modelSpecies files species/O2.dat, species/N2.dat -- identity records, charge 0, so their identity field is formula, not ion): the pin replaces each master's own row directly -- the dissolved concentration is set by the gas phase alone.
 
 THE TWO CLASSIC NUMBERS (textbook checks): pH \textasciitilde{} 5.6 -- unpolluted rainwater, carbonic acid from 420 ppm CO2 only (pH solve; H+ from electroneutrality against HCO3-); DO 8.5 $\to$ 11 mg/L -- dissolved-oxygen saturation from 25 C to 10 C: the analytic K\_H(T) (USGS PHREEQC PHASES, public domain) makes gas solubility RETROGRADE, so cold water holds more oxygen. N2 saturates near 14 mg/L (25 C) for the same reason.
 

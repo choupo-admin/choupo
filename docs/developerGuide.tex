@@ -1001,9 +1001,9 @@ stored on the substance.  Two orthogonal choices define the role:
 data/standards/
   components/<name>.dat        identity (name, MW, nonvolatile)
                                + dissociatesTo { Na 1; Cl 1; }  [salts]
-  species/aqueous.dat          single catalogue of model species records:
-                               charge + medium-tagged thermo
-                               (never fed to a flowsheet)
+  species/<name>.dat           one modelSpecies file per species:
+                               formula + charge + medium-tagged thermo
+                               (charge 0 for O2/N2(aq); never fed to a flowsheet)
   phases/solid/<phase>.dat     crystalline phase (rho_p, k_v)
   chemistry/                   REAL equilibria (stoichiometry + K + dH):
     salts/                       calorimetric dissolution anchors
@@ -1045,7 +1045,7 @@ pair is resolved by cation--anion name from the parameter catalogue.
 component list; (2)~identifies the ONE salt as the component whose standards
 record carries \code{dissociatesTo}, and takes its identity (MW, role) from
 \code{components/<salt>.dat}; (3)~classifies the ions by charge sign from
-\code{species/aqueous.dat}; (4)~loads the crystal (\(\rho_p, k_v\)) from
+each ion's \code{species/<name>.dat}; (4)~loads the crystal (\(\rho_p, k_v\)) from
 \code{phases/solid/} and the saturation anchor from \code{chemistry/salts/},
 both by the phase name the package's \code{chemistry.salts} declares;
 (5)~assembles the Pitzer/eNRTL kernel through the same
