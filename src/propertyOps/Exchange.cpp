@@ -247,7 +247,7 @@ int Exchange::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
 
     // Optional aqueous-activity-model selection (default Davies, the only S1
     // builtin; an unknown name is refused with the available list).
-    electrolyte::SpeciationSolver solver(propertyOps::resolveAqueousActivity(dict));
+    electrolyte::SpeciationSolver solver(propertyOps::resolveAqueousActivity(dict, authoredV2()));
     propertyOps::readExchange(dict, in, solver, verbosity);
 
     // -- the MANDATORY honesty banner (non-suppressible at verbosity >= 2 +

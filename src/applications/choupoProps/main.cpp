@@ -286,12 +286,9 @@ try
     ThermoResolutionLog::instance().clear();
     AdvisoryLog::instance().clear();   // capture binary-pair provenance
     ThermoPackage thermo;
-    DictPtr v2Authored;   // G3: the authored v2 grammar (fit ops mutate THIS)
-    // v2 contract name FIRST (the architect's choice, 2026-07-17):
-    // constant/thermoPhysPropDict carries the thermophysicalPropertySystem
-    // grammar; constant/propertyDict stays the v1 home (routed by content).
+    DictPtr v2Authored;   // the authored system (fit ops mutate a copy)
+    // The case system lives in constant/thermoPhysPropDict.
     std::string pkgPath = resolveUp("constant/thermoPhysPropDict");
-    bool deprecatedName = false;
     if (!fs::exists(pkgPath) && fs::exists(resolveUp("constant/propertyDict")))
         throw std::runtime_error(
             "this case carries a constant/propertyDict -- the case grammar is"
@@ -302,14 +299,18 @@ try
     if (fs::exists(pkgPath))
     {
         auto sel = Dictionary::fromFile(pkgPath);
+        // A system may `inherits` a parent context -- resolve the chain ONCE
+        // here; every op then receives the RESOLVED authored object.
+        if (sel->found("inherits"))
+        {
+            std::set<std::string> visited;
+            sel = resolvePropertyContext(
+                fs::path(pkgPath).parent_path().string(), visited);
+        }
         // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict): the same
         // context chain, nearest owner wins; optional.
         chem = resolveChemistryContext(fs::path(pkgPath).parent_path().string());
         if (chem.present) chemPtr = &chem;
-        // v2 contract (thermophysicalPropertySystem): translate FIRST -- the
-        // whole downstream (speciation detection, builder, op readers) then
-        // consumes the verified v1-shaped manifest.  Strict validation + the
-        // [v2 plan] announce happen inside the translator.
         // The AUTHORED dict is preserved -- a fitParameters op mutates a
         // COPY of it by the NAMED path (equilibrium.liquid.activityModel.
         // binaryParameters.<i>-<j>.<coef>) and rebuilds per iteration, so
@@ -323,20 +324,15 @@ try
             {
                 aqNative = true;    // the speciation ops read the
                                     // AUTHORED surface (caseAqueousSurface)
-                // Validate the surface EAGERLY (negative-parity gate): a bad
-                // model/basis must refuse at LOAD, not only when a speciation
-                // op happens to read it -- a declaration nothing checks is
-                // the decorative sin.
-                (void)propertyOps::caseAqueousSurface();
+                // Validate the surface EAGERLY: a bad model/basis refuses
+                // at LOAD, not only when a speciation op reads it -- a
+                // declaration nothing checks would be decorative.
+                (void)propertyOps::aqueousSurfaceOf(sel);
             }
             else
                 v2Native = true;    // build()'s ONE dispatch: native for a
                                     // claimed formulation, NAMED refusal else
         }
-        if (deprecatedName)
-            std::cout << "  [deprecated] legacy package name -- rename it to"
-                         " constant/propertyDict (v1) or constant/thermoPhysPropDict (v2;"
-                         " more than thermo).\n";
         if (aqNative)
         {
             // Speciation surface: the ops read the authored
@@ -362,14 +358,6 @@ try
                 std::cout << "Property package:  INLINE in the case"
                              "   (v2 grammar, NATIVE assembly)\n";
             thermo = ThermoPackageBuilder::build(sel, db, chemPtr);
-        }
-        else if (false)
-        {
-            throw std::runtime_error(
-                "the property dict is a `package " + sel->lookupWord("package")
-                + ";` SELECTOR -- the shared propertyPackages catalogue is retired."
-                  " Write the manifest INLINE (constant/propertyDict v1 or constant/thermoPhysPropDict v2)"
-                  " (self-contained, the official form).");
         }
     }
 

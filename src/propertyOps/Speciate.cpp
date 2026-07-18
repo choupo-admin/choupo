@@ -268,7 +268,8 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     // surface (molality basis, SolventProperties, Debye-Hueckel A(T)) -- a
     // declared non-water solvent refuses loudly (a NAMED gap, never a silent
     // substitution).
-    const propertyOps::AqueousSurface surface = propertyOps::caseAqueousSurface();
+    const propertyOps::AqueousSurface surface =
+        propertyOps::aqueousSurfaceOf(authoredV2());
     std::string model = dict->lookupWordOrDefault("activityModel", "");
     if (surface.present)
     {

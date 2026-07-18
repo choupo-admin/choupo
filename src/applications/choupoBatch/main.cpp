@@ -178,11 +178,7 @@ try
     // ---- Required dictionaries ----------------------------------------
     auto controlDict   = Dictionary::fromFile("system/controlDict");
     auto flowsheetDict = Dictionary::fromFile("system/flowsheetDict");
-    // ONE property-package file, TWO names: constant/thermoPhysPropDict (the
-    // v2 contract, resolved FIRST -- 2026-07-17) or constant/propertyDict
-    // (the v1 home).  Mirrors choupoSolve/choupoProps; translation + content
-    // routing happen at the build site below, after verbosity gates the
-    // announce chorus.
+    // The case system lives in constant/thermoPhysPropDict.
     if (!fs::exists("constant/thermoPhysPropDict")
         && fs::exists("constant/propertyDict"))
         throw std::runtime_error(

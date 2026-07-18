@@ -148,7 +148,7 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
 
     // Optional aqueous-activity-model selection (default Davies, the only S1
     // builtin; an unknown name is refused with the available list).
-    const std::string activityModel = propertyOps::resolveAqueousActivity(dict);
+    const std::string activityModel = propertyOps::resolveAqueousActivity(dict, authoredV2());
     electrolyte::SpeciationSolver solver(activityModel);
 
     // Optional per-ion gamma columns (the MECHANISM plot): `diagSpecies ( Ca SO4
