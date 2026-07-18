@@ -92,6 +92,23 @@ traceable explanation.  Do not mix this migration with model growth
   explicit-phases shapes) plus gammaGamma, diluteSolution,
   electrolyteGammaPhi, aqueousProperties and the Flowsheet
   propertyContextBase chain.  Full suite 292/0; GUI 1778/1778.
+- 2026-07-18 (wave C): **diluteSolution assembles natively** — the T6 rung
+  refusals, every Henry pair record loaded fail-closed + cited, G5 real
+  vapour phi; the dissolution wiring factored to ONE home
+  (`ThermoPackage::applySolution`, shared with readFromDict).  Native:
+  ammonia01/02, flash08, stripper01, absorption01, absorber01.
+- 2026-07-18 — **BOUNDARY (deliberate stop): the electrolyte formulations
+  (electrolyteGammaPhi, aqueousProperties) stay on the scaffold.**  Their
+  translate step is already a thin OBJECT-dict key-mapping (no text
+  synthesis) into `buildElectrolyte`, which assembles via the
+  `adoptElectrolytePackage` seam — but making them native means rewiring
+  buildElectrolyte's input layer, and that is entangled with the
+  TRANSITIONAL inline `chemistry{}` blocks whose permanent home is NOT yet
+  ratified (Codex 2026-07-18: "ratificar primeiro uma única casa para a
+  química ativa do caso e só então migrar" — do not improvise it here).
+  Next native wave AFTER that ratification; also still scaffold: the ~32
+  shaped gammaPhi cases (transport / pureFluids / inline-pairs / cosmoSAC /
+  explicit phases), the Flowsheet propertyContextBase chain, fitParameters.
 - 2026-07-18 (wave B): **gammaGamma assembles natively** —
   `ThermoPackage::assembleNamedPhases` (each liquid phase from its own
   config dict, shared activity model resolved once per phase — no cross-phase
