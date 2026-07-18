@@ -11,7 +11,7 @@ formula        C16H30N2O6;
 CAS            55075-35-9;
 InChIKey       XFFHJHRKTCXIFN-UHFFFAOYSA-N;
 MW             346.424;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   3;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 1,4,7,10,13,16-hexaoxacyclooctadecane, compd. with acetonitrile(1:2)

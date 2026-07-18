@@ -11,7 +11,7 @@ formula        C14H31NO5;
 CAS            38584-87-1;
 InChIKey       WOIZEJSXFHDUNX-UHFFFAOYSA-N;
 MW             293.404;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 2-ethylhexanoic acid- 2,2',2''-nitrilotriethanol(1:1)

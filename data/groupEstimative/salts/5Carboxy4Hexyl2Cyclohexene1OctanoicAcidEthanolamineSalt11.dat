@@ -11,7 +11,7 @@ formula        C23H43NO5;
 CAS            67939-53-1;
 InChIKey       WJSMHCRJYTZKHE-UHFFFAOYSA-N;
 MW             413.599;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 5-carboxy-4-hexyl-2-cyclohexene-1-octanoic acid ethanolamine salt (1:1)

@@ -12,7 +12,7 @@ formula        O;
 CAS            17778-80-2;
 
 MW             15.999;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion );
 
 standardThermochemistry

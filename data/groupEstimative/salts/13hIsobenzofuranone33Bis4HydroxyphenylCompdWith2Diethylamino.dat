@@ -11,7 +11,7 @@ formula        C26H29NO5;
 CAS            67874-86-6;
 InChIKey       VAZCKEBLMFALSW-UHFFFAOYSA-N;
 MW             435.52;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 1(3h)-isobenzofuranone, 3,3-bis(4-hydroxyphenyl)-, compd. with 2-(diethylamino)ethanol(1:1)

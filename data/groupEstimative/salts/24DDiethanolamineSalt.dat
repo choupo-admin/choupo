@@ -11,7 +11,7 @@ formula        C12H17Cl2NO5;
 CAS            5742-19-8;
 InChIKey       FDMDZIBZKGXZPT-UHFFFAOYSA-N;
 MW             326.17;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 2,4-d diethanolamine salt

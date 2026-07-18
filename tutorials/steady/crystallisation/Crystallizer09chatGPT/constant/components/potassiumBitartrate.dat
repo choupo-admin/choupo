@@ -27,7 +27,7 @@ formula        KHC4H4O6;
 CAS            868-14-4;
 
 MW             188.177;        // g/mol
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // K+ + HC4H4O6-
 
 // FORMATION DATUM -- NOT a component-level standardThermochemistry block by design.

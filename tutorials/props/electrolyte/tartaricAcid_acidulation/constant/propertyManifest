@@ -83,7 +83,7 @@ propertyManifest
         "components/CaSO4.dat"
         {
             type          imported;
-            sha256        "d7572a90c876ffe5b41b6c02af933b321f82320c8464d5cb6386eb386e99c44e";
+            sha256        "b9a5c29fe3ac7fe4afd33a54616a9e022087644000c8b225abee367f5901121a";
             origin        "data/standards/components/CaSO4.dat";
             originSha256  "bc804838119b08800cd450a3dfdbee1db6b06ed81ab13a13bb779f7930350697";
             release       Choupo-2607;
@@ -99,7 +99,7 @@ propertyManifest
         "components/KCl.dat"
         {
             type          imported;
-            sha256        "120474f2c2a0d1fd4999cbc8a873ebe5b6b73e8ee7cee2ab29d6a2cdf999ffb3";
+            sha256        "948921576fb473812b8871dc290dfad0d226f4e9af00d98c56c1b6bb2743c5dd";
             origin        "data/standards/components/KCl.dat";
             originSha256  "491c5612018e89bade1d64f70a8ad4accc06b7f61f97aa059ea3419904e8d94f";
             release       Choupo-2607;
@@ -107,7 +107,7 @@ propertyManifest
         "components/calciumHydroxide.dat"
         {
             type          imported;
-            sha256        "a172f91c73c996c2aa3c9ee724154badac5a7542bd840775e6bf9703d422de91";
+            sha256        "2b63c9e2c32a52defc5b992d330f287c9e62c32eae59829eaecdf228ccd93a0f";
             origin        "data/standards/components/calciumHydroxide.dat";
             originSha256  "b75612f4ad8df0fd27a086f2b6089efc770a2114d75bd193a4f8cfb79c45b56c";
             release       Choupo-2607;

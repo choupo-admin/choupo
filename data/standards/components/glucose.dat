@@ -22,7 +22,7 @@ formula        C6H12O6;
 CAS            50-99-7;
 
 MW             180.16;         // g/mol
-nonvolatile    true;
+role        nonvolatile;
 dissociation   1;              // non-electrolyte
 
 

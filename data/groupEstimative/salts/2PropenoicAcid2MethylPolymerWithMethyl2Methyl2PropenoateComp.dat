@@ -11,7 +11,7 @@ formula        C12H21NO4;
 CAS            70715-05-8;
 InChIKey       JPAOASCADIKNKG-UHFFFAOYSA-N;
 MW             243.303;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 2-propenoic acid, 2-methyl-, polymer with methyl 2-methyl-2-propenoate, compd. with 2-methylaziridine

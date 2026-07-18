@@ -31,7 +31,7 @@ propertyManifest
         "components/glucose.dat"
         {
             type          imported;
-            sha256        "43b920c1ae2a4ab6a4064289a79f0d4a531e7d49e894c4dfd7313c59cffa9a5f";
+            sha256        "67013f293f7ff86478d6f9ad4f42768036a19b704e20e4cefe6d30c0fa64fc47";
             origin        "data/standards/components/glucose.dat";
             originSha256  "a68fe9465453b45948c9af4764ea470c37b5a71a2fcd82087194dadfb4ca2db3";
             release       Choupo-2607;

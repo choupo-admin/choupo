@@ -12,7 +12,7 @@ formula        HONO;
 CAS            7782-77-6;
 
 MW             47.013;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( gasPhase combustion nox );
 
 standardThermochemistry

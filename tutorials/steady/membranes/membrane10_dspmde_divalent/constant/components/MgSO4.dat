@@ -17,7 +17,7 @@ name           MgSO4;
 formula        MgSO4;
 CAS            7487-88-9;
 MW             120.37;         // g/mol
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor (Mg++ + SO4--)
 
 dissociatesTo  { Mg 1; SO4 1; }   // ion stoichiometry (formula-like identity)

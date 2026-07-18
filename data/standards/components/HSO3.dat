@@ -12,7 +12,7 @@ formula        HSO3;
 CAS            n/a;        // radical registry number: pending curation
 
 MW             81.065;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion sulfur );
 
 standardThermochemistry

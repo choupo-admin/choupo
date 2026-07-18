@@ -11,7 +11,7 @@ formula        C17H8F29NO2;
 CAS            68052-68-6;
 InChIKey       VIZSCVXDHHKCBQ-UHFFFAOYSA-N;
 MW             809.198;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: tetradecanoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,14,14,14-hexacosafluoro-13-(trifluoromethyl)-,compd. with ethanamine(1:1)

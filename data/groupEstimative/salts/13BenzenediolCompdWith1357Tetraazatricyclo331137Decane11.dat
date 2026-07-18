@@ -11,7 +11,7 @@ formula        C12H18N4O2;
 CAS            13423-47-7;
 InChIKey       CIMLIXQVXBAFPF-UHFFFAOYSA-N;
 MW             250.302;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 1,3-benzenediol, compd. with 1,3,5,7-tetraazatricyclo(3.3.1.13,7)decane (1:1)

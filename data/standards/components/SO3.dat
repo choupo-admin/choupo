@@ -12,7 +12,7 @@ formula        SO3;
 CAS            7446-11-9;
 
 MW             80.057;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( gasPhase combustion sulfur );
 
 standardThermochemistry

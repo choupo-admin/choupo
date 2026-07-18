@@ -11,6 +11,6 @@ formula        C26H51NO3;
 CAS            68015-99-6;
 InChIKey       YFLWNDYFXXOSBP-KVVVOXFISA-N;
 MW             425.698;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { erucic acid 1; morpholine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

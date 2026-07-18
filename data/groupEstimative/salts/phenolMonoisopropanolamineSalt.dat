@@ -11,6 +11,6 @@ formula        C9H15NO2;
 CAS            68213-80-9;
 InChIKey       QZNXAYBIEPQEHN-UHFFFAOYSA-N;
 MW             169.224;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { phenol 1; monoisopropanolamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

@@ -11,7 +11,7 @@ formula        C23H38O5;
 CAS            1337-89-9;
 InChIKey       PICABBUEHGURLB-XTICBAGASA-N;
 MW             394.552;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: abieta-7,13-dien-18-oic acid- propane-1,2,3-triol(1:1)

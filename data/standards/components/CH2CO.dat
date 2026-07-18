@@ -12,7 +12,7 @@ formula        CH2CO;
 CAS            463-51-4;
 
 MW             42.037;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( gasPhase combustion );
 
 standardThermochemistry

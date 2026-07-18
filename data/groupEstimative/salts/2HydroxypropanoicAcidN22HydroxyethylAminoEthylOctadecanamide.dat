@@ -11,7 +11,7 @@ formula        C25H52N2O5;
 CAS            68016-02-4;
 InChIKey       KPYQBPNFLHDHGG-UHFFFAOYSA-N;
 MW             460.7;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 2-hydroxypropanoic acid- n-{2-[(2-hydroxyethyl)amino]ethyl}octadecanamide(1:1)

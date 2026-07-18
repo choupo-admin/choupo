@@ -11,7 +11,7 @@ formula        C20H42N2O4;
 CAS            69898-43-7;
 InChIKey       XBUJROAKAXQHEJ-UHFFFAOYSA-N;
 MW             374.566;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: n,n-dimethyl-n-(3-dodecanamidopropyl)amine, lactic acid salt

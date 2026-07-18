@@ -11,6 +11,6 @@ formula        C13H29NO3;
 CAS            64012-04-0;
 InChIKey       XXOPKUIPDUCOSI-UHFFFAOYSA-N;
 MW             247.379;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { capric acid 1; isopropanolamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

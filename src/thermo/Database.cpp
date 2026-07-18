@@ -276,59 +276,22 @@ Component Database::loadComponent(const std::string& name) const
             for (const auto& k : local->keys())
                 dict->insert(k, local->entryValue(k));   // full shadow/replacement
 
-        // A modern block-form overlay may sit on a legacy flat catalogue base.
-        // Project the local datum onto its flat compatibility key as well, so
-        // the higher-precedence overlay replaces the base in BOTH reader forms.
-        // Component::readFromDict still refuses contradictory duplicate forms
-        // inside a single file; this only resolves a legitimate tier merge.
-        auto projectLocal = [&](const char* block, const char* key,
-                                const char* legacy)
-        {
-            if (!local->found(block)) return;
-            auto b = local->subDict(block);
-            if (b->found(key)) dict->insert(legacy, b->entryValue(key));
-        };
-        projectLocal("identity",   "name",    "name");
-        projectLocal("identity",   "formula", "formula");
-        projectLocal("identity",   "CAS",     "CAS");
-        projectLocal("identity",   "MW",      "MW");
-        projectLocal("critical",   "Tc",      "Tc");
-        projectLocal("critical",   "Pc",      "Pc");
-        projectLocal("critical",   "omega",   "omega");
-        projectLocal("liquidPure", "Tb",      "Tb");
-        projectLocal("liquidPure", "HvapTb",  "HvapTb");
-        projectLocal("liquidPure", "Vliq",    "Vliq");
-        projectLocal("liquidPure", "Psat",    "vaporPressure");
-        projectLocal("liquidPure", "Cp",      "liquidHeatCapacity");
-        projectLocal("gasIdeal",   "Cp",      "idealGasHeatCapacity");
-        projectLocal("solid",      "Cp",      "solidHeatCapacity");
-        projectLocal("transport", "diffusionVolume", "diffusionVolume");
-        projectLocal("transport", "associationFactor", "associationFactor");
-        projectLocal("transport", "liquidViscosity", "liquidViscosity");
-
         // No silent crutch: a Joback ESTIMATE leaves Psat / Vliq / standardThermochemistry
         // as declared GAPS (omitted).  If the FROZEN standard backfills them, the
         // merged component is a HYBRID (estimated constants + curated gap data) --
         // announce it per key, never let the estimate look self-sufficient.
         if (isEstimate)
         {
-            auto localHas = [&](const char* legacy, const char* block,
-                                const char* key)
-            {
-                return local->found(legacy)
-                    || (local->found(block)
-                        && local->subDict(block)->found(key));
-            };
             const char* baseLabel = hasStd ? "FROZEN catalogue"
                                             : "PROPOSED catalogue";
             if (dict->found("vaporPressure")
-                && !localHas("vaporPressure", "liquidPure", "Psat"))
+                && !local->found("vaporPressure"))
                 std::cerr << "[backfill] component '" << name
                           << "'.vaporPressure: the ESTIMATE leaves this a GAP, but the "
                           << baseLabel << " is filling it -- the merged component is a hybrid,"
                              " not a pure estimate.\n";
             if (dict->found("Vliq")
-                && !localHas("Vliq", "liquidPure", "Vliq"))
+                && !local->found("Vliq"))
                 std::cerr << "[backfill] component '" << name
                           << "'.Vliq: the ESTIMATE leaves this a GAP, but the "
                           << baseLabel << " is filling it -- the merged component is a hybrid,"
@@ -350,13 +313,8 @@ Component Database::loadComponent(const std::string& name) const
     // match it; absence or mismatch is a curation slip, so ANNOUNCE it and keep
     // the stem as canonical (silently adopting a divergent in-file name would
     // itself be a hidden crutch, and would diverge from how the GUI refers to it).
-    // The name may live flat (legacy) OR inside identity{} (the reference-state
-    // layout, forum 2026-06-11) -- check both before declaring it absent.
     const std::string storedName =
-        dict->found("name") ? dict->lookupWord("name")
-      : (dict->found("identity") && dict->subDict("identity")->found("name"))
-            ? dict->subDict("identity")->lookupWord("name")
-            : std::string();
+        dict->found("name") ? dict->lookupWord("name") : std::string();
     if (storedName.empty())
     {
         std::cerr << "[identity] component '" << name
@@ -368,10 +326,7 @@ Component Database::loadComponent(const std::string& name) const
         std::cerr << "[identity] component '" << name << "': stored name '"
                   << storedName << "' != filename stem '" << name
                   << "' -- keeping the stem as canonical (it is the resolution key).\n";
-        if (dict->found("identity"))
-            dict->subDict("identity")->insert("name", std::string(name));
-        else
-            dict->insert("name", std::string(name));
+        dict->insert("name", std::string(name));
     }
 
     // LOUD estimate (no silent crutch): a promoted Joback proposal carries

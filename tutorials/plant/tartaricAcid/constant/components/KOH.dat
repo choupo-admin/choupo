@@ -17,7 +17,7 @@ CAS         1310-58-3;
 
 MW          56.105;            // kg/kmol
 
-nonvolatile true;       // never goes to the vapour (K = 0)
+role        nonvolatile;       // never goes to the vapour (K = 0)
 
 solid
 {

@@ -19,7 +19,7 @@ formula        KCl;
 CAS            7447-40-7;
 
 MW             74.551;         // g/mol
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // K+ + Cl-
 dissociatesTo  { K 1; Cl 1; }   // ion stoichiometry (formula-like identity; the package activates it)
 

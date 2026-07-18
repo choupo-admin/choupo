@@ -11,6 +11,6 @@ formula        C14H25N3O9;
 CAS            67952-29-8;
 InChIKey       OTBUUVUWBMMSLH-UHFFFAOYSA-N;
 MW             379.366;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { ethylenediaminetetraacetic acid 1; morpholine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

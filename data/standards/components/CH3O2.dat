@@ -12,7 +12,7 @@ formula        CH3O2;
 CAS            n/a;        // radical registry number: pending curation
 
 MW             47.033;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion lowT );
 
 standardThermochemistry

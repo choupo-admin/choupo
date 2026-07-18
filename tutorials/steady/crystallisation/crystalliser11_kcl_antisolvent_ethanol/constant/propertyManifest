@@ -27,7 +27,7 @@ propertyManifest
         "components/KCl.dat"
         {
             type          imported;
-            sha256        "120474f2c2a0d1fd4999cbc8a873ebe5b6b73e8ee7cee2ab29d6a2cdf999ffb3";
+            sha256        "948921576fb473812b8871dc290dfad0d226f4e9af00d98c56c1b6bb2743c5dd";
             origin        "data/standards/components/KCl.dat";
             originSha256  "491c5612018e89bade1d64f70a8ad4accc06b7f61f97aa059ea3419904e8d94f";
             release       Choupo-2607;

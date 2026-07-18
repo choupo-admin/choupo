@@ -11,6 +11,6 @@ formula        C24H49NO3;
 CAS            69847-51-4;
 InChIKey       GZNMENHFXPXDBK-UHFFFAOYSA-N;
 MW             399.66;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { eicosanoic acid 1; morpholine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

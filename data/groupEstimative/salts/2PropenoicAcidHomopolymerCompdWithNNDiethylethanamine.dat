@@ -11,7 +11,7 @@ formula        C9H19NO2;
 CAS            55576-87-9;
 InChIKey       CKCQRGCWKDEOSO-UHFFFAOYSA-N;
 MW             173.256;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 2-propenoic acid, homopolymer, compd. with n,n-diethylethanamine

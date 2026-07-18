@@ -12,7 +12,7 @@ formula        C4H4;
 CAS            689-97-4;
 
 MW             52.076;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( gasPhase combustion soot );
 
 standardThermochemistry

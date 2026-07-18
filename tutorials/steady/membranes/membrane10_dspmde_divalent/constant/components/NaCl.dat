@@ -17,9 +17,9 @@
   Properties relevant to membrane simulation:
     MW             58.44 g/mol
     dissociation    2 (fully dissociated 1-1 electrolyte)
-    nonvolatile    true (never appears in the vapour)
+    role nonvolatile (never appears in the vapour)
 
-  The vapour-pressure block is left empty: with nonvolatile=true
+  The vapour-pressure block is left empty: with role nonvolatile
   the runtime never reads it.  Liquid Cp is intentionally absent
   too --- membrane simulations do not run an energy balance on the
   solute side; for tutorials that DO need an energy balance with
@@ -32,7 +32,7 @@ formula        NaCl;
 CAS            7647-14-5;
 
 MW             58.44;          // g/mol  (= kg/kmol)
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for π = ν R T c
 
 // Salt dissociation map for the electrolyte activity model (pitzer).  cation/anion

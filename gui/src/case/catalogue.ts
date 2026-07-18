@@ -10,7 +10,7 @@
   FROZEN catalogue on disk / in MEMFS; this manifest is for the browser UI only.
 
   Role from the data (vetting: VLE-able vs not, not a fragment/pseudo zoo):
-    vleAble = has a vaporPressure block AND Tc, and not `nonvolatile true`.
+    vleAble = has a vaporPressure block AND Tc, and not `role nonvolatile`.
   A non-VLE-able component (a nonvolatile solute, or a fragment/ion .dat with no
   Tc / no vaporPressure) cannot appear in a T-x-y plot -- the gating disables
   those templates WITH a true reason.
@@ -31,7 +31,7 @@ export interface ComponentMeta {
    *  constant/components/<name>.dat, or a case-local file shadowing a same-named
    *  standard component. Drives the provenance chip in the compound browser. */
   origin?: "standard" | "proposed" | "local" | "local-shadow";
-  /** Can appear in a VLE plot (T-x-y, gamma, ...): vaporPressure + Tc, not nonvolatile. */
+  /** Can appear in a VLE plot (T-x-y, gamma, ...): vaporPressure + Tc, role not nonvolatile. */
   vleAble: boolean;
   /** Carries dissolved-ion thermodynamics (an `electrolyte{}` block, or a
    *  declared dissociation > 1 on a non-solid) — gates the RO scaling view. */
@@ -63,7 +63,7 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
   const name = typeof j.name === "string" ? j.name : "";
   if (!name) return null;
   const formula = typeof j.formula === "string" ? j.formula : "";
-  const nonvol = j.nonvolatile === "true" || j.nonvolatile === true;
+  const nonvol = j.role === "nonvolatile";
   const hasTc = typeof j.Tc === "number" && j.Tc > 0;
   const hasVp = j.vaporPressure !== undefined && j.vaporPressure !== null;
   const vleAble = hasVp && hasTc && !nonvol;

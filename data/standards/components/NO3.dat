@@ -12,7 +12,7 @@ formula        NO3;
 CAS            12033-49-7;
 
 MW             62.004;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion nox );
 
 standardThermochemistry

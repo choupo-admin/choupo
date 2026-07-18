@@ -12,7 +12,7 @@ formula        CS2;
 CAS            75-15-0;
 
 MW             76.131;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( gasPhase combustion sulfur );
 
 standardThermochemistry

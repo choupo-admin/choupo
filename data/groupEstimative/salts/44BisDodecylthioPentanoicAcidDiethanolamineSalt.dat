@@ -11,7 +11,7 @@ formula        C33H69NO4S2;
 CAS            71519-96-5;
 InChIKey       OXSJXZPFJVTJDY-UHFFFAOYSA-N;
 MW             608.038;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 4,4-bis(dodecylthio)pentanoic acid, diethanolamine salt

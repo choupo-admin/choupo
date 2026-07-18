@@ -12,7 +12,7 @@ formula        CN;
 CAS            n/a;        // radical registry number: pending curation
 
 MW             26.018;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion );
 
 standardThermochemistry

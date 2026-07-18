@@ -11,6 +11,6 @@ formula        C13H27NO3;
 CAS            67952-98-1;
 InChIKey       NKJHSNBLMRLJOE-UHFFFAOYSA-N;
 MW             245.363;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { nonanoic acid 1; morpholine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

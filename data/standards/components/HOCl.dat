@@ -12,7 +12,7 @@ formula        HOCL;
 CAS            7790-92-3;
 
 MW             52.457;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( gasPhase combustion chlorine );
 
 standardThermochemistry

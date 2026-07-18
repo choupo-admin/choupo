@@ -27,7 +27,7 @@ propertyManifest
         "components/NaOH.dat"
         {
             type          imported;
-            sha256        "25fc2be6beb94437bc6308e462ab49f01ba6eeb541721cfe7fbc48c550bd1325";
+            sha256        "d41994bdc8fbdff5daf88f36764870ac1ab46db0f8f5040e070a6aceef8e1214";
             origin        "data/standards/components/NaOH.dat";
             originSha256  "b1948f3d39a85cc8b35f861f33640da92125ebe8cabebbbda90098a96554da33";
             release       Choupo-2607;

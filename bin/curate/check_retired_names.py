@@ -8,7 +8,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-RETIRED = ["electrolyte/ions.dat", "constant/propertyDict", "constant/thermoPackage"]
+RETIRED = ["electrolyte/ions.dat", "constant/propertyDict", "constant/thermoPackage",
+           "nonvolatile    true", "component.speciesMap", "speciesMap {",
+           "identity\n{", "translateV2"]
 bad = []
 for f in (ROOT / "tutorials").rglob("*"):
     if not f.is_file():

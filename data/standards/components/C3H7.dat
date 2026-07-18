@@ -12,7 +12,7 @@ formula        C3H7;
 CAS            n/a;        // radical registry number: pending curation
 
 MW             43.089;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion );
 
 standardThermochemistry

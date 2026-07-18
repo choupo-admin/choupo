@@ -11,6 +11,6 @@ formula        C24H47NO5;
 CAS            67674-19-5;
 InChIKey       WXXOHSFUHUTFKS-NBTZWHCOSA-N;
 MW             429.642;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { linoleic acid 1; triethanolamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

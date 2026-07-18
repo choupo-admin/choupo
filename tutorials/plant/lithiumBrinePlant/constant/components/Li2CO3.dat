@@ -17,7 +17,7 @@ formula        Li2CO3;
 CAS            554-13-2;
 
 MW             73.891;         // g/mol
-nonvolatile    true;
+role        nonvolatile;
 solidPhase    zabuyelite;
 
 solid

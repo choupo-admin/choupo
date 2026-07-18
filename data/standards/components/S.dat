@@ -12,7 +12,7 @@ formula        S;
 CAS            n/a;        // radical registry number: pending curation
 
 MW             32.06;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion sulfur );
 
 standardThermochemistry

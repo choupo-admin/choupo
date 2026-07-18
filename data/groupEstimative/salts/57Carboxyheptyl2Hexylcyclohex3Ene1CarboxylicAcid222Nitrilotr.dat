@@ -11,7 +11,7 @@ formula        C33H66N2O10;
 CAS            67859-77-2;
 InChIKey       GRFNJRQHEQBPPC-UHFFFAOYSA-N;
 MW             650.895;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   3;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 5-(7-carboxyheptyl)-2-hexylcyclohex-3-ene-1-carboxylic acid- 2,2',2''-nitrilotriethanol(1:2)

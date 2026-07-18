@@ -12,7 +12,7 @@ formula        NCO;
 CAS            n/a;        // radical registry number: pending curation
 
 MW             42.017;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion );
 
 standardThermochemistry

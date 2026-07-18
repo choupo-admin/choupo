@@ -14,31 +14,28 @@
   hydrate's home when slice 2 of the electrolyte-enthalpy build lands.
 \*-----------------------------------------------------------------------------*/
 
-identity
-{
-    name        NaOH;
-    formula     NaOH;
-    CAS         1310-73-2;
-    MW          39.997;             // g/mol
-}
+name        NaOH;
+formula     NaOH;
+CAS         1310-73-2;
+MW          39.997;             // g/mol
 
-nonvolatile    true;                // never in the vapour (K = 0)
+
+role        nonvolatile;                // never in the vapour (K = 0)
 dissociation   2;                   // van't Hoff factor (1:1 strong electrolyte)
 dissociatesTo  { Na 1; OH 1; }   // ion stoichiometry (formula-like identity; the package activates it)
 
 
-solid       // anhydrous NaOH(s) -- the solid-tabulated formation datum
-{
-    Hf_298     -425600;             // J/mol   NaOH(s), Wagman et al. (1982)
-    S_298       64.46;              // J/(mol K), third-law, Wagman et al. (1982)
-    rho_p       2130;               // kg/m3 crystal density -- VERIFY (public compound summary 2.13 g/cm3)
-    // k_v      0.5235987756;       // sphere default; set when PSD shape data lands
+// ---- solid anhydrous NaOH(s) -- the solid-tabulated formation datum ----
+Hf_298     -425600;             // J/mol   NaOH(s), Wagman et al. (1982)
+S_298       64.46;              // J/(mol K), third-law, Wagman et al. (1982)
+rho_p       2130;               // kg/m3 crystal density -- VERIFY (public compound summary 2.13 g/cm3)
+// k_v      0.5235987756;       // sphere default; set when PSD shape data lands
 
-    // forms ( ... );               // SLOT (electrolyte-enthalpy slice 2): the
-    //   MONOHYDRATE NaOH.H2O is a DISTINCT solid phase with its own Hf_298 --
-    //   it, not anhydrous NaOH, crystallises below ~65 C.  Source its
-    //   formation data (NBS) before the crystalliser claims hydrate yields.
-}
+// forms ( ... );               // SLOT (electrolyte-enthalpy slice 2): the
+//   MONOHYDRATE NaOH.H2O is a DISTINCT solid phase with its own Hf_298 --
+//   it, not anhydrous NaOH, crystallises below ~65 C.  Source its
+//   formation data (NBS) before the crystalliser claims hydrate yields.
+
 
 // aqueousInfDil                    // SLOT (electrolyte-enthalpy slice 2): the
 // {                                //   asymmetric infinite-dilution ion tier
@@ -47,11 +44,9 @@ solid       // anhydrous NaOH(s) -- the solid-tabulated formation datum
 //     Cp_298   ?;                  //   kJ/mol, Wagman 1982, H+(aq)=0 conv.) --
 // }                                //   filled by the gated build, cited per value.
 
-transport
-{
-    // Dissolved-only solute: liquid-phase transport is solvent-dominated;
-    // no gas-phase correlations apply.  (Empty by design, not by neglect.)
-}
+// Dissolved-only solute: liquid-phase transport is solvent-dominated;
+// no gas-phase correlations apply.  (Empty by design, not by neglect.)
+
 
 // Solid phase of NaOH (roadmap Phase D fold-in from salts/ + phases/solid/):
 solidPhases

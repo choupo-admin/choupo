@@ -11,7 +11,7 @@ formula        C10H16N2O2;
 CAS            878-28-4;
 InChIKey       YFOHQUFTBDUYQO-UHFFFAOYSA-N;
 MW             196.25;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 1,4-benzenediol, compd. with piperazine (1:1)

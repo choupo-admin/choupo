@@ -9,7 +9,7 @@
     identity { MW }        -- a lump average molar mass (NO formula / CAS:
                               there is no single molecule)
     critical { Tc Pc omega}-- corresponding-states constants of the cut
-    gasIdeal  { Cp }       -- ideal-gas heat capacity (NO Hf_298 / S_298:
+    idealGasHeatCapacity{}       -- ideal-gas heat capacity (NO Hf_298 / S_298:
                               standardThermochemistry needs a stoichiometric reaction,
                               and a lump has none)
     liquidPure{ Tb Vliq Cp Psat }  -- enough to FLASH and to close an
@@ -27,46 +27,41 @@
   true -- "NOT a real species".  Estimation has error, and a lump has more.
 \*---------------------------------------------------------------------------*/
 
-identity
+name        petCut_C7plus;
+// formula / CAS OMITTED -- a pseudo-component is a LUMP, not a molecule.
+MW          151.51;           // g/mol  lump-average molar mass (Riazi-Daubert)
+
+
+// ---- critical corresponding-states constants of the lumped cut ----
+Tc      617.80;               // K     (Riazi-Daubert from Tb,SG)
+Pc      19.78;                // bar   (Riazi-Daubert from Tb,SG)
+omega   0.4813;               // [-]   Lee-Kesler from (Tb,Tc,Pc)
+
+
+// ---- ideal-gas Cp ONLY -- NO formation datum (a lump has no reaction) ----
+idealGasHeatCapacity
 {
-    name        petCut_C7plus;
-    // formula / CAS OMITTED -- a pseudo-component is a LUMP, not a molecule.
-    MW          151.51;           // g/mol  lump-average molar mass (Riazi-Daubert)
+    model         polynomial;
+    // Cp_ig [J/(mol K)] = a0 + a1 T + a2 T^2 + a3 T^3   (Kesler-Lee 1976)
+    coefficients  (11.27   0.896253   -3.423096e-04   0.0);
+    Trange        (250  1000);
 }
 
-critical    // corresponding-states constants of the lumped cut
-{
-    Tc      617.80;               // K     (Riazi-Daubert from Tb,SG)
-    Pc      19.78;                // bar   (Riazi-Daubert from Tb,SG)
-    omega   0.4813;               // [-]   Lee-Kesler from (Tb,Tc,Pc)
-}
 
-gasIdeal    // ideal-gas Cp ONLY -- NO formation datum (a lump has no reaction)
+// ---- pure-liquid (Raoult) reference -- Psat IS f(T) ----
+Tb         447.30;            // K      pseudo normal boiling point (assay anchor)
+Vliq       2.03e-4;           // m^3/mol  Rackett at 298 K (estimate)
+liquidHeatCapacity
 {
-    Cp
-    {
-        model         polynomial;
-        // Cp_ig [J/(mol K)] = a0 + a1 T + a2 T^2 + a3 T^3   (Kesler-Lee 1976)
-        coefficients  (11.27   0.896253   -3.423096e-04   0.0);
-        Trange        (250  1000);
-    }
+    model         polynomial;
+    // Cp_liq approximated by the ideal-gas polynomial (a lump estimate).
+    coefficients  (11.27   0.896253   -3.423096e-04   0.0);
+    Trange        (250  600);
 }
+// Ambrose-Walton corresponding states from critical{} -- FLASHABLE with
+// no measured Antoine data.
+vaporPressure { model AmbroseWalton; }
 
-liquidPure  // pure-liquid (Raoult) reference -- Psat IS f(T)
-{
-    Tb         447.30;            // K      pseudo normal boiling point (assay anchor)
-    Vliq       2.03e-4;           // m^3/mol  Rackett at 298 K (estimate)
-    Cp
-    {
-        model         polynomial;
-        // Cp_liq approximated by the ideal-gas polynomial (a lump estimate).
-        coefficients  (11.27   0.896253   -3.423096e-04   0.0);
-        Trange        (250  600);
-    }
-    // Ambrose-Walton corresponding states from critical{} -- FLASHABLE with
-    // no measured Antoine data.
-    Psat { model AmbroseWalton; }
-}
 
 provenance
 {

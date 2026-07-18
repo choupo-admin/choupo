@@ -10,14 +10,12 @@
   GRADE-dependent -- isotactic; Tg spans -20..0 C with tacticity; amorphous density ~852 kg/m3. Re-source the primary for a design number.
 \*-----------------------------------------------------------------------------*/
 
-identity
-{
-    name        polypropylene;
-    formula     "C3H6 (-[CH2-CH(CH3)]-)";
-    MW          42.08;            // g/mol of the REPEAT UNIT (not the chain)
-}
+name        polypropylene;
+formula     "C3H6 (-[CH2-CH(CH3)]-)";
+MW          42.08;            // g/mol of the REPEAT UNIT (not the chain)
 
-nonvolatile    true;             // a solid polymer: never in the vapour (K = 0)
+
+role        nonvolatile;             // a solid polymer: never in the vapour (K = 0)
 
 polymer        // polymer-specific reference properties (glass-box; not VLE data)
 {
@@ -35,16 +33,13 @@ polymer        // polymer-specific reference properties (glass-box; not VLE data
     }
 }
 
-solid          // the engine's solid slot (density feeds sizing / hold-up)
+// ---- solid the engine's solid slot (density feeds sizing / hold-up) ----
+rho_p       905;           // kg/m3, bulk density (see grade note)
+provenance
 {
-    rho_p       905;           // kg/m3, bulk density (see grade note)
-    provenance
-    {
-        rho_p { origin literature; method "Van Krevelen & Te Nijenhuis, Properties of Polymers, 4th ed. (Elsevier, 2009) (amorphous) + handbook bulk value for the named grade"; }
-    }
+    rho_p { origin literature; method "Van Krevelen & Te Nijenhuis, Properties of Polymers, 4th ed. (Elsevier, 2009) (amorphous) + handbook bulk value for the named grade"; }
 }
 
-transport
-{
-    // Solid polymer: no gas/liquid transport correlations apply (empty by design).
-}
+
+// Solid polymer: no gas/liquid transport correlations apply (empty by design).
+

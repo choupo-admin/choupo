@@ -12,7 +12,7 @@ formula        CL;
 CAS            22537-15-1;
 
 MW             35.45;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion chlorine );
 
 standardThermochemistry

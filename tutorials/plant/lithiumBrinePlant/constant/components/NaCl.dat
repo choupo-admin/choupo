@@ -21,14 +21,11 @@ CAS            7647-14-5;
 
 MW             58.44;
 
-nonvolatile    true;
+role        nonvolatile;
 
 dissociation   2;
 
-component
-{
-    speciesMap { Na 1; Cl 1; }
-}
+dissociatesTo  { Na 1; Cl 1; }   // ion stoichiometry (formula-like identity)
 
 solidPhases
 {

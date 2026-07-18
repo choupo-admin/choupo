@@ -11,7 +11,7 @@ formula        C13H18ClNO4;
 CAS            22131-80-2;
 InChIKey       UDHFAAXTCWFTKP-UHFFFAOYSA-N;
 MW             287.74;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: mervan ethanolamine salt

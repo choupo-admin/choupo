@@ -11,7 +11,7 @@ formula        C22H37IN2;
 CAS            21602-32-4;
 InChIKey       FPMKBTFPOZFXOV-UHFFFAOYSA-N;
 MW             456.452;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 1-(4-tert-butyl-1-phenylcyclohexyl)-4-methylpiperazine- iodomethane(1:1)

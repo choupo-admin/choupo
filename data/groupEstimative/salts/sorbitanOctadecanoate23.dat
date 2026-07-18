@@ -11,7 +11,7 @@ formula        C54H108O19;
 CAS            51938-44-4;
 InChIKey       PAFJZWHXMSQJKV-UQZRNVAESA-N;
 MW             1061.439;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   5;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: sorbitan, octadecanoate (2:3)

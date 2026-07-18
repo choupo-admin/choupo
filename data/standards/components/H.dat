@@ -12,7 +12,7 @@ formula        H;
 CAS            12385-13-6;
 
 MW             1.008;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion );
 
 standardThermochemistry

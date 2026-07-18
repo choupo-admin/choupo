@@ -12,7 +12,7 @@ formula        CH;
 CAS            n/a;        // radical registry number: pending curation
 
 MW             13.019;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion );
 
 standardThermochemistry

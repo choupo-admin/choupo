@@ -12,7 +12,7 @@ formula        SO;
 CAS            n/a;        // radical registry number: pending curation
 
 MW             48.059;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion sulfur );
 
 standardThermochemistry

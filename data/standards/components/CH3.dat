@@ -12,7 +12,7 @@ formula        CH3;
 CAS            2229-07-4;
 
 MW             15.0345;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion );
 
 standardThermochemistry

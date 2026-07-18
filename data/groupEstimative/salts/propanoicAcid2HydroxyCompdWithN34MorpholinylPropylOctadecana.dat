@@ -11,7 +11,7 @@ formula        C28H56N2O5;
 CAS            55852-14-7;
 InChIKey       BFWRTWBSOCPDQX-UHFFFAOYSA-N;
 MW             500.765;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: propanoic acid, 2-hydroxy-, compd. with n-(3-(4-morpholinyl)propyl)octadecanamide

@@ -12,7 +12,7 @@ formula        S2;
 CAS            23550-45-0;
 
 MW             64.12;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( gasPhase combustion sulfur );
 
 standardThermochemistry

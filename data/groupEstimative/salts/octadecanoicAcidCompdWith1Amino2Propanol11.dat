@@ -11,6 +11,6 @@ formula        C21H45NO3;
 CAS            10042-65-6;
 InChIKey       TUSQGJPKLFNBCZ-UHFFFAOYSA-N;
 MW             359.595;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { octadecanoic acid 1; 1-amino-2-propanol 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

@@ -11,7 +11,7 @@ formula        C24H50N2O4;
 CAS            68189-10-6;
 InChIKey       CKMHSHPONIDAHN-UHFFFAOYSA-N;
 MW             430.674;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: n-{2-[(2-hydroxyethyl)amino]ethyl}-16-methylheptadecanamideacetate(1:1)

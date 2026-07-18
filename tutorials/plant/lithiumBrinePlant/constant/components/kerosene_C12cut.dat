@@ -9,7 +9,7 @@
 
     identity { MW }         -- lump-average molar mass (NO formula / CAS)
     critical { Tc Pc omega }-- corresponding-states constants of the cut
-    gasIdeal  { Cp }        -- ideal-gas Cp (NO Hf: a lump has no reaction)
+    idealGasHeatCapacity{}  -- ideal-gas Cp (NO Hf: a lump has no reaction)
     liquidPure{ Tb Vliq Cp Psat } -- enough to run and close energy.
 
   Numbers are Riazi-Daubert (1987) style estimates anchored on a C12
@@ -19,46 +19,41 @@
   ESTIMATE, origin estimated, lumped true.
 \*---------------------------------------------------------------------------*/
 
-identity
+name        kerosene_C12cut;
+// formula / CAS OMITTED -- a pseudo-component is a LUMP, not a molecule.
+MW          170.3;            // g/mol  lump-average (~C12H26)
+
+
+// ---- critical corresponding-states constants of the lumped cut ----
+Tc      658.0;                // K     (n-dodecane anchor for the narrow cut)
+Pc      18.2;                 // bar
+omega   0.576;                // [-]
+
+
+// ---- ideal-gas Cp ONLY -- NO formation datum (a lump has no reaction) ----
+idealGasHeatCapacity
 {
-    name        kerosene_C12cut;
-    // formula / CAS OMITTED -- a pseudo-component is a LUMP, not a molecule.
-    MW          170.3;            // g/mol  lump-average (~C12H26)
+    model         polynomial;
+    // Cp_ig [J/(mol K)] ~ paraffinic C12 (Kesler-Lee style estimate)
+    coefficients  (14.0   1.05   -4.0e-04   0.0);
+    Trange        (250  1000);
 }
 
-critical    // corresponding-states constants of the lumped cut
-{
-    Tc      658.0;                // K     (n-dodecane anchor for the narrow cut)
-    Pc      18.2;                 // bar
-    omega   0.576;                // [-]
-}
 
-gasIdeal    // ideal-gas Cp ONLY -- NO formation datum (a lump has no reaction)
+// ---- pure-liquid (Raoult) reference -- Psat IS f(T) ----
+Tb         489.0;             // K      cut normal boiling point (assay anchor)
+Vliq       2.27e-4;           // m^3/mol  (~rho 750 kg/m^3 at 298 K)
+liquidHeatCapacity
 {
-    Cp
-    {
-        model         polynomial;
-        // Cp_ig [J/(mol K)] ~ paraffinic C12 (Kesler-Lee style estimate)
-        coefficients  (14.0   1.05   -4.0e-04   0.0);
-        Trange        (250  1000);
-    }
+    model         polynomial;
+    // Cp_liq ~ 375 J/(mol K) at 298 K, paraffinic slope (estimate)
+    coefficients  (150.0   0.75   0.0   0.0);
+    Trange        (250  480);
 }
+// Ambrose-Walton corresponding states from critical{} -- runnable with
+// no measured Antoine data.
+vaporPressure { model AmbroseWalton; }
 
-liquidPure  // pure-liquid (Raoult) reference -- Psat IS f(T)
-{
-    Tb         489.0;             // K      cut normal boiling point (assay anchor)
-    Vliq       2.27e-4;           // m^3/mol  (~rho 750 kg/m^3 at 298 K)
-    Cp
-    {
-        model         polynomial;
-        // Cp_liq ~ 375 J/(mol K) at 298 K, paraffinic slope (estimate)
-        coefficients  (150.0   0.75   0.0   0.0);
-        Trange        (250  480);
-    }
-    // Ambrose-Walton corresponding states from critical{} -- runnable with
-    // no measured Antoine data.
-    Psat { model AmbroseWalton; }
-}
 
 provenance
 {

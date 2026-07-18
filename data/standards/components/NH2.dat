@@ -12,7 +12,7 @@ formula        NH2;
 CAS            13770-40-6;
 
 MW             16.0226;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion );
 
 standardThermochemistry

@@ -11,7 +11,7 @@ formula        C22H48N2O3;
 CAS            68189-45-7;
 InChIKey       QIVCZDWOQMMPPU-UHFFFAOYSA-N;
 MW             388.637;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: n-[3-(tetradecyloxy)propyl]propane-1,3-diamine acetate(1:1)

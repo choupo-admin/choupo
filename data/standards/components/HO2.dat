@@ -12,7 +12,7 @@ formula        HO2;
 CAS            3170-83-0;
 
 MW             33.0067;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion );
 
 standardThermochemistry

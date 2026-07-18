@@ -11,6 +11,6 @@ formula        C16H35N;
 CAS            50616-05-2;
 InChIKey       SAIKULLUBZKPDA-IYBDPMFKSA-N;
 MW             241.463;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { acetic acid 1; di(2-ethylhexyl)amine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

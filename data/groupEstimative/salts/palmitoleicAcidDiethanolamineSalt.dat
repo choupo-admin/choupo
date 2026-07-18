@@ -11,6 +11,6 @@ formula        C20H41NO4;
 CAS            68171-51-7;
 InChIKey       WMTVNSRGDKFVBA-CFYXSCKTSA-N;
 MW             359.551;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { palmitoleic acid 1; diethanolamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

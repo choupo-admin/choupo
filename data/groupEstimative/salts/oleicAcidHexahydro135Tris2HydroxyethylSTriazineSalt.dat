@@ -11,7 +11,7 @@ formula        C27H55N3O5;
 CAS            68227-25-8;
 InChIKey       XUKNNEQNKFYXCS-KVVVOXFISA-N;
 MW             501.753;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: oleic acid, hexahydro-1,3,5-tris(2-hydroxyethyl)-s-triazine salt

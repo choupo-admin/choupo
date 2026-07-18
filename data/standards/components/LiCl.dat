@@ -19,20 +19,15 @@ formula        LiCl;
 CAS            7447-41-8;
 
 MW             42.394;         // g/mol
-nonvolatile    true;
+role        nonvolatile;
 
 // APPARENT COMPONENT view -- the balance/representation map (apparent -> ions).
-component
-{
-    speciesMap { Li 1; Cl 1; }
-}
+dissociatesTo  { Li 1; Cl 1; }   // ion stoichiometry (formula-like identity)
 
 // Anhydrous LiCl crystal (the LiCl.H2O hydrate is a separate mineral phase).
-solid
-{
-    rho_p   2068.0;     // crystalline LiCl density [kg/m^3]
-    k_v     1.0;        // volume shape factor (cube)
-}
+rho_p   2068.0;     // crystalline LiCl density [kg/m^3]
+k_v     1.0;        // volume shape factor (cube)
+
 
 liquidHeatCapacity
 {

@@ -21,7 +21,7 @@ formula     C4H6O6;
 CAS         87-69-4;
 MW          150.087;            // kg/kmol  (L-(+)-tartaric acid)
 
-nonvolatile true;               // crystalline organic acid; never to the vapour (K = 0) --
+role        nonvolatile;               // crystalline organic acid; never to the vapour (K = 0) --
                                 //   the `phase solid` datum routes it on the solid line in
                                 //   liquid streams too (same as glucose/sucrose), no gas leg
 dissociation 1;                 // molecular (the dissociated HTart-/Tart2- ions live in ions.dat)

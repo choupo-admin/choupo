@@ -11,7 +11,7 @@ formula        C38H77NO2;
 CAS            70069-12-4;
 InChIKey       ISXUPALXMVVLSU-UHFFFAOYSA-N;
 MW             580.039;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: oleic acid, compound with n,n-dimethyloctadecylamine (1:1)

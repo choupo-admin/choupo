@@ -11,7 +11,7 @@ formula        C28H58N2O10;
 CAS            65166-21-4;
 InChIKey       ZATZBEFPTDZRTF-YHPRVSEPSA-N;
 MW             582.776;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   3;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: succinic acid, dodecenyl-, triethanolamine salt (1:2)

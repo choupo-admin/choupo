@@ -80,12 +80,9 @@ DictPtr loadRec(const fs::path& f, const std::string& what)
     return Dictionary::fromFile(f.string());
 }
 
-// The component-basis ion map (speciesMap) of a raw substance record: the UNIFIED
-// component.speciesMap if present, else the legacy top-level dissociatesTo.
+// The component-basis ion map of a substance record: `dissociatesTo { ... }`.
 DictPtr speciesMapOf(const DictPtr& rec)
 {
-    if (rec->found("component") && rec->subDict("component")->found("speciesMap"))
-        return rec->subDict("component")->subDict("speciesMap");
     if (rec->found("dissociatesTo")) return rec->subDict("dissociatesTo");
     return nullptr;
 }
@@ -191,15 +188,9 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
             saltName  = cn;
             saltRec   = rec;
             soluteIdx = comps.size();
-            // MW / nonvolatile may be FLAT (legacy layout: NaCl, KCl) or nested in
-            // an identity{} block (reference-state layout: NaOH).  Read either.
-            DictPtr idRec = rec->found("identity") ? rec->subDict("identity") : rec;
-            const scalar saltMW = idRec->found("MW")
-                ? idRec->lookupScalar("MW") : rec->lookupScalar("MW");
-            const std::string nv = rec->found("nonvolatile")
-                ? rec->lookupWordOrDefault("nonvolatile", "false")
-                : idRec->lookupWordOrDefault("nonvolatile", "false");
-            const std::string saltRole = (nv == "true") ? "nonvolatile" : "volatile";
+            const scalar saltMW = rec->lookupScalar("MW");
+            const std::string saltRole =
+                rec->lookupWordOrDefault("role", "volatile");
             comps.push_back(Component::identity(cn, saltMW, saltRole));
         }
         else

@@ -11,6 +11,6 @@ formula        C26H52N2O4;
 CAS            69898-44-8;
 InChIKey       VRTUIPADMRQBPL-AFEZEDKISA-N;
 MW             456.712;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { n-(3-dimethylaminopropyl)oleamide 1; lactic acid 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

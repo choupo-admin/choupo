@@ -11,6 +11,6 @@ formula        C23H39NO10S;
 CAS            63149-34-8;
 InChIKey       FYBLLTVZEMQDNU-AUNMYQSKSA-N;
 MW             521.622;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   5;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { l-cysteine 1; pentanedial 4; }   // DRAFT constituents from the name -- verify & map to real components/ions

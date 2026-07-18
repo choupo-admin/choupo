@@ -20,7 +20,7 @@ formula        MgSO4;
 CAS            7487-88-9;
 
 MW             120.37;         // g/mol
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // fully dissociated 1-1 (one Mg²⁺ + one SO₄²⁻)
 
 // FORMATION DATUM -- NOT in this file by design (arity-2 electrolyte).

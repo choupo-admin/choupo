@@ -11,7 +11,7 @@ formula        C20H41NO4;
 CAS            18738-11-9;
 InChIKey       WEMORKLQWAGJFS-DPMBMXLASA-N;
 MW             359.551;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: ricinoleic acid, monoethanolamine-salt

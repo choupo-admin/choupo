@@ -12,7 +12,7 @@ formula        CS;
 CAS            2944-05-0;
 
 MW             44.071;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion sulfur );
 
 standardThermochemistry

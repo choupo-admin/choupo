@@ -11,7 +11,7 @@ formula        C15H31NO7;
 CAS            68954-02-9;
 InChIKey       FCKXCXDSXHADAX-UHFFFAOYSA-N;
 MW             337.413;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: nonanedioic acid- 2,2',2''-nitrilotriethanol(1:1)

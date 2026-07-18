@@ -11,6 +11,6 @@ formula        C36H73NO2;
 CAS            94042-67-8;
 InChIKey       SNYNFOXIGQIWMC-UHFFFAOYSA-N;
 MW             551.985;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { oleic acid 1; octadecylamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

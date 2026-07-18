@@ -11,6 +11,6 @@ formula        C24H49NO2;
 CAS            10103-17-0;
 InChIKey       GCVIWLTVOFILLW-UHFFFAOYSA-N;
 MW             383.661;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { oleic acid 1; triethylamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

@@ -11,7 +11,7 @@ formula        C16H36N2O3;
 CAS            68877-35-0;
 InChIKey       UVOBIASOMQLCEF-UHFFFAOYSA-N;
 MW             304.475;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: n-{3-[(2-ethylhexyl)oxy]propyl}propane-1,3-diamine acetate(1:1)

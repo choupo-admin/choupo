@@ -11,7 +11,7 @@ formula        C15H32N2O4;
 CAS            38775-37-0;
 InChIKey       LQNCHIQVPSEFRS-UHFFFAOYSA-N;
 MW             304.431;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: azelaic acid, compound with hexane-1,6-diamine(1:1)

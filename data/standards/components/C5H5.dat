@@ -12,7 +12,7 @@ formula        C5H5;
 CAS            n/a;        // radical registry number: pending curation
 
 MW             65.095;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion soot );
 
 standardThermochemistry

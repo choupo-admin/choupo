@@ -12,7 +12,7 @@ formula        N2H3;
 CAS            n/a;        // radical registry number: pending curation
 
 MW             31.038;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion nox );
 
 standardThermochemistry

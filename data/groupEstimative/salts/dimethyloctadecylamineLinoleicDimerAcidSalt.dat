@@ -11,6 +11,6 @@ formula        C76H150N2O4;
 CAS            71412-32-3;
 InChIKey       NEQAZPQRINNBIN-YZIKIUMYSA-N;
 MW             1156.046;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { dimethyloctadecylamine 1; linoleic dimer acid 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

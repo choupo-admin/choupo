@@ -11,6 +11,6 @@ formula        C16H35NO3;
 CAS            31756-97-5;
 InChIKey       KPYDHOVAALYKRO-UHFFFAOYSA-N;
 MW             289.46;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { myristic acid 1; 2-aminoethanol 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

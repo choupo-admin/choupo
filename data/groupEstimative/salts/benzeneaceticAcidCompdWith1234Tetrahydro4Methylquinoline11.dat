@@ -11,7 +11,7 @@ formula        C18H21NO2;
 CAS            68992-05-2;
 InChIKey       KTOIYVCXJONBLL-UHFFFAOYSA-N;
 MW             283.371;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: benzeneacetic acid, compd. with 1,2,3,4-tetrahydro-4-methylquinoline (1:1)

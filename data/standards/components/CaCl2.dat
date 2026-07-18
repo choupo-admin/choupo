@@ -14,15 +14,13 @@
   slot is its future home.
 \*-----------------------------------------------------------------------------*/
 
-identity
-{
-    name        CaCl2;
-    formula     CaCl2;
-    CAS         10043-52-4;
-    MW          110.98;             // g/mol
-}
+name        CaCl2;
+formula     CaCl2;
+CAS         10043-52-4;
+MW          110.98;             // g/mol
 
-nonvolatile    true;                // never in the vapour (K = 0)
+
+role        nonvolatile;                // never in the vapour (K = 0)
 dissociation   3;                   // van't Hoff factor (2:1 strong electrolyte)
 
 // FORMATION DATUM lives PER ION in species/aqueous/ (Ca+2, Cl-; H+(aq)=0

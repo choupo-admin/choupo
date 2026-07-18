@@ -11,7 +11,7 @@ formula        C26H53NO6;
 CAS            17329-61-2;
 InChIKey       SKADIAAODVDROI-UHFFFAOYSA-N;
 MW             475.711;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: octadecanoic acid, 2-[bis(2-hydroxyethyl)amino]ethyl ester,acetate(1:1)

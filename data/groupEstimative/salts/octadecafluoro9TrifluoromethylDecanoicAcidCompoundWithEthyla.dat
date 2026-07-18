@@ -11,6 +11,6 @@ formula        C13H8F21NO2;
 CAS            68015-85-0;
 InChIKey       JKTIKJAUCOVFKU-UHFFFAOYSA-N;
 MW             609.17;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { octadecafluoro-9-(trifluoromethyl)decanoic acid 1; ethylamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

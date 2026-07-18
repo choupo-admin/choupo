@@ -11,7 +11,7 @@ formula        C22H43NO7;
 CAS            64396-12-9;
 InChIKey       SNKGYMIRPZSXRO-CALJPSDSSA-N;
 MW             433.586;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: succinic acid, dodecenyl-, triethanolamine salt (1:1)

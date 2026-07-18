@@ -24,7 +24,7 @@ formula        OH;
 CAS            3352-57-6;
 
 MW             17.008;       // kg/kmol
-nonvolatile    true;         // never a liquid in any process context
+role        nonvolatile;         // never a liquid in any process context
 
 standardThermochemistry
 {

@@ -12,7 +12,7 @@ formula        C2H4O;
 CAS            75-07-0;
 
 MW             44.053;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( gasPhase combustion );
 
 standardThermochemistry

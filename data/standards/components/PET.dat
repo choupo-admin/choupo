@@ -10,14 +10,12 @@
   GRADE-dependent -- amorphous (quenched) density ~1335; semicrystalline (bottle/fibre) ~1400 kg/m3, k up to 0.24. RECORD the grade. Re-source the primary for a design number.
 \*-----------------------------------------------------------------------------*/
 
-identity
-{
-    name        PET;
-    formula     "C10H8O4 (-[OC-C6H4-CO-O-CH2CH2-O]-)";
-    MW          192.17;            // g/mol of the REPEAT UNIT (not the chain)
-}
+name        PET;
+formula     "C10H8O4 (-[OC-C6H4-CO-O-CH2CH2-O]-)";
+MW          192.17;            // g/mol of the REPEAT UNIT (not the chain)
 
-nonvolatile    true;             // a solid polymer: never in the vapour (K = 0)
+
+role        nonvolatile;             // a solid polymer: never in the vapour (K = 0)
 
 polymer        // polymer-specific reference properties (glass-box; not VLE data)
 {
@@ -35,16 +33,13 @@ polymer        // polymer-specific reference properties (glass-box; not VLE data
     }
 }
 
-solid          // the engine's solid slot (density feeds sizing / hold-up)
+// ---- solid the engine's solid slot (density feeds sizing / hold-up) ----
+rho_p       1335;           // kg/m3, bulk density (see grade note)
+provenance
 {
-    rho_p       1335;           // kg/m3, bulk density (see grade note)
-    provenance
-    {
-        rho_p { origin literature; method "Van Krevelen & Te Nijenhuis, Properties of Polymers, 4th ed. (Elsevier, 2009) (amorphous) + handbook bulk value for the named grade"; }
-    }
+    rho_p { origin literature; method "Van Krevelen & Te Nijenhuis, Properties of Polymers, 4th ed. (Elsevier, 2009) (amorphous) + handbook bulk value for the named grade"; }
 }
 
-transport
-{
-    // Solid polymer: no gas/liquid transport correlations apply (empty by design).
-}
+
+// Solid polymer: no gas/liquid transport correlations apply (empty by design).
+

@@ -11,7 +11,7 @@ formula        C21H37NO2;
 CAS            68473-31-4;
 InChIKey       CKCXTNZTRRWVSM-UHFFFAOYSA-N;
 MW             335.532;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: n,n-dimethyldodecan-1-amine benzoate(1:1)

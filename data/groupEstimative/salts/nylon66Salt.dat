@@ -11,7 +11,7 @@ formula        C12H26N2O4;
 CAS            3323-53-3;
 InChIKey       UFFRSDWQMJYQNE-UHFFFAOYSA-N;
 MW             262.35;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: nylon 66 salt

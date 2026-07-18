@@ -11,7 +11,7 @@ formula        C20H42N2O3;
 CAS            67801-62-1;
 InChIKey       LKQLASJZBZROKO-UHFFFAOYSA-N;
 MW             358.567;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: propanoic acid- n-[3-(dimethylamino)propyl]dodecanamide(1:1)

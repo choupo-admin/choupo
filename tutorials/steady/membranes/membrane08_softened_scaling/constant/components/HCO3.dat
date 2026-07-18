@@ -17,5 +17,5 @@ name           HCO3;
 formula        "HCO3-";
 
 MW             61.02;          // g/mol  (= kg/kmol), from ions.dat
-nonvolatile    true;
+role        nonvolatile;
 dissociation   1;              // already an ion: 1 particle/mol

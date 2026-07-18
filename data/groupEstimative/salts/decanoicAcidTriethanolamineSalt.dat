@@ -11,7 +11,7 @@ formula        C16H35NO5;
 CAS            58793-73-0;
 InChIKey       GKHDHUDIDOQOFX-UHFFFAOYSA-N;
 MW             321.458;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: decanoic acid triethanolamine salt

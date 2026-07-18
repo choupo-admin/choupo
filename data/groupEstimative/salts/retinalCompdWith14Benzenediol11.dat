@@ -11,7 +11,7 @@ formula        C26H34O3;
 CAS            3915-70-6;
 InChIKey       ZHKGDWZRSKMEEM-FUTAMACOSA-N;
 MW             394.555;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: retinal, compd. with 1,4-benzenediol (1:1)

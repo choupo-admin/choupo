@@ -11,6 +11,6 @@ formula        C30H55NO5;
 CAS            68797-42-2;
 InChIKey       WMOUOYWNLXOIOS-UHFFFAOYSA-N;
 MW             509.772;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { omega-phenylstearic acid 1; triethanolamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

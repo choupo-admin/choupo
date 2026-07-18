@@ -11,7 +11,7 @@ formula        C39H78N2O2;
 CAS            40027-38-1;
 InChIKey       XRMFYYDQOUSPSM-UHFFFAOYSA-N;
 MW             607.065;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 9-octadecenoic acid (9z)-, compd. with n-(9z)-9-octadecenyl-1,3-propanediamine

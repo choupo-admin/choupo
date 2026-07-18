@@ -11,7 +11,7 @@ formula        C44H81NO4;
 CAS            65150-86-9;
 InChIKey       PARXHLNSGGUEPJ-GRVYQHKQSA-N;
 MW             688.135;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: linoleic acid, dimer, n,n-dimethylcyclohexylamine salt (1:1)

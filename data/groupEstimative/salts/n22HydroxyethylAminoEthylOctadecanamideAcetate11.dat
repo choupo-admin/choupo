@@ -11,7 +11,7 @@ formula        C24H50N2O4;
 CAS            53585-52-7;
 InChIKey       FMPKQAWGNSGARV-UHFFFAOYSA-N;
 MW             430.674;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: n-{2-[(2-hydroxyethyl)amino]ethyl}octadecanamide acetate(1:1)

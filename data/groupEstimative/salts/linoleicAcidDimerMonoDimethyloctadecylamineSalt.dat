@@ -11,6 +11,6 @@ formula        C56H107NO4;
 CAS            71394-30-4;
 InChIKey       DLJWDNNNSMJVKO-BNIFLCCKSA-N;
 MW             858.475;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { linoleic acid dimer 1; mono(dimethyloctadecylamine) 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

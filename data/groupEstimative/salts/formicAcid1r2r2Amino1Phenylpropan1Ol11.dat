@@ -11,7 +11,7 @@ formula        C10H15NO3;
 CAS            68123-43-3;
 InChIKey       VTGFBOCZCVIDHO-JXLXBRSFSA-N;
 MW             197.234;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: formic acid-(1r,2r)-2-amino-1-phenylpropan-1-ol(1:1)

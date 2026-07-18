@@ -11,7 +11,7 @@ formula        C9H8F13NO2;
 CAS            68015-84-9;
 InChIKey       YSXXTTJIKUEKFH-UHFFFAOYSA-N;
 MW             409.142;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 2,2,3,3,4,4,5,6,6,6-decafluoro-5-(trifluoromethyl)hexanoic acid- ethanamine(1:1)

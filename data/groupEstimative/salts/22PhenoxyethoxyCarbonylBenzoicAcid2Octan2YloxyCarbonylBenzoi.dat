@@ -11,7 +11,7 @@ formula        C32H36O9;
 CAS            69043-96-5;
 InChIKey       BFQKMQSUZIZHSZ-UHFFFAOYSA-N;
 MW             564.631;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 2-[(2-phenoxyethoxy)carbonyl]benzoic acid- 2-[(octan-2-yloxy)carbonyl]benzoic acid(1:1)

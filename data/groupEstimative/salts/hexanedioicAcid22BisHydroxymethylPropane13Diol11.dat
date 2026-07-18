@@ -11,7 +11,7 @@ formula        C11H22O8;
 CAS            52627-55-1;
 InChIKey       NAEDWKNFXVUORY-UHFFFAOYSA-N;
 MW             282.289;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: hexanedioic acid- 2,2-bis(hydroxymethyl)propane-1,3-diol(1:1)

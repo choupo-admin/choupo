@@ -21,7 +21,7 @@ CAS         7778-18-9;
 
 MW          136.141;           // kg/kmol  (anhydrite)
 
-nonvolatile true;       // never goes to the vapour (K = 0)
+role        nonvolatile;       // never goes to the vapour (K = 0)
 
 solid
 {

@@ -69,67 +69,17 @@ const Component::CosmoSet& Component::cosmoSet(const std::string& name) const
 
 void Component::readFromDict(const DictPtr& d)
 {
-    // ---- Reference-state block layout: the DUAL-READER (forum 2026-06-11) --
-    // NEW component .dats group data by DECLARED REFERENCE STATE (identity /
-    // critical / gasIdeal / liquidPure / solid / aqueousInfDil / anchors /
-    // transport -- docs/thermo-hierarchy.md plane A); LEGACY flat files read
-    // forever, unchanged.  This pre-pass lifts each block datum onto the
-    // legacy key the reader below consumes: block-first, flat-fallback, and a
-    // LOUD refusal when ONE datum appears in both forms (no silent shadowing).
-    {
-        auto lift = [&](const char* block, const char* key, const char* legacy)
-        {
-            if (!d->found(block)) return;
-            auto b = d->subDict(block);
-            if (!b->found(key)) return;
-            if (d->found(legacy))
-            {
-                // The TIER MERGE (proposed < standards < case-local) can
-                // legitimately put the same datum in both forms (a flat legacy
-                // base under a block-form overlay).  Tolerate AGREEMENT; refuse
-                // only a real conflict.  Sub-dict entries can't be compared
-                // cheaply -- the block wins there (case-local overlay wins by
-                // the same precedence rule).
-                bool conflict = false;
-                try { conflict = (d->lookupWord(legacy) != b->lookupWord(key)); }
-                catch (const std::exception&)
-                {
-                    try { conflict = std::fabs(d->lookupScalar(legacy)
-                                             - b->lookupScalar(key)) > 1e-12; }
-                    catch (const std::exception&) { conflict = false; }
-                }
-                if (conflict)
-                    throw std::runtime_error("component .dat: '" + std::string(legacy)
-                        + "' is defined BOTH flat and inside " + block
-                        + "{} with DIFFERENT values -- keep exactly one.");
-            }
-            d->insert(legacy, b->entryValue(key));
-        };
-        lift("identity",   "name",    "name");
-        lift("identity",   "formula", "formula");
-        lift("identity",   "CAS",     "CAS");
-        lift("identity",   "MW",      "MW");
-        lift("critical",   "Tc",      "Tc");
-        lift("critical",   "Pc",      "Pc");
-        lift("critical",   "omega",   "omega");
-        lift("liquidPure", "Tb",      "Tb");
-        lift("liquidPure", "HvapTb",  "HvapTb");
-        lift("liquidPure", "Vliq",    "Vliq");
-        lift("liquidPure", "Psat",    "vaporPressure");      // Psat IS f°(T)
-        lift("liquidPure", "Cp",      "liquidHeatCapacity");
-        lift("gasIdeal",   "Cp",      "idealGasHeatCapacity");
-        lift("solid",      "Cp",      "solidHeatCapacity");
-        lift("transport",  "diffusionVolume",   "diffusionVolume");
-        lift("transport",  "associationFactor", "associationFactor");
-        lift("transport",  "liquidViscosity",   "liquidViscosity");
-        // UNIFIED substance file: the component-basis ion map (speciesMap) is authored
-        // as component.speciesMap; lift it onto the legacy `dissociatesTo` key so
-        // every reader below is unchanged (speciesMap renames dissociatesTo).
-        lift("component",  "speciesMap",        "dissociatesTo");
-        // (gasIdeal/solid Hf_298+S_298 -> the formation datum, and
-        //  anchors{K_b,K_f}, are handled at their read sites below;
-        //  aqueousInfDil{} is the electrolyte-enthalpy tier, parse-tolerated.)
-    }
+    // The component grammar is FLAT (name; MW; Tc; ...; the named model
+    // sub-blocks).  A reference-state block at top level is not part of it
+    // -- refuse loudly, never read it silently.
+    for (const char* blk : {"identity", "critical", "liquidPure", "gasIdeal",
+                             "component"})
+        if (d->found(blk))
+            throw std::runtime_error("component .dat: '" + std::string(blk)
+                + "{}' is not the component grammar -- the layout is FLAT"
+                " (bin/curate/migrate_component_blocks.py converts a"
+                " block-form file; component{speciesMap} is spelled"
+                " `dissociatesTo { ... }`).");
 
     name_    = d->lookupWordOrDefault("name", "");
     if (d->found("aliases")) aliases_ = d->lookupWordList("aliases");
@@ -163,9 +113,10 @@ void Component::readFromDict(const DictPtr& d)
     // ideal-dilute van't Hoff form is the pedagogical baseline.
     // DERIVED from the ion map, never stored twice: nu = Σ coefficients of
     // dissociatesTo (1 + 1 = 2 for NaCl/LiCl, 1 + 2 = 3 for CaCl2/Na2SO4).
-    // Only when there is no map do we read the legacy `dissociation` field
-    // (a non-electrolyte defaults to 1).  Two fields must never encode one
-    // fact -- the map is canonical.
+    // A LUMPED solute with no ion map declares `dissociation nu` directly
+    // (the colligative factor is its only speciation fact; a non-electrolyte
+    // defaults to 1).  Two fields must never encode one fact -- when the map
+    // exists, it is canonical and nu derives from it.
     if (d->found("dissociatesTo"))
     {
         nu_ = 0.0;
@@ -176,8 +127,10 @@ void Component::readFromDict(const DictPtr& d)
         nu_ = d->lookupScalarOrDefault("dissociation", 1.0);
 
     // Role / category ----------------------------------------------
-    // Explicit `role <word>;` wins; otherwise legacy `nonvolatile true;`
-    // maps to role = "nonvolatile"; otherwise default "volatile".
+    // `role <word>;` -- volatile (default) / solute / nonvolatile / radical.
+    if (d->found("nonvolatile"))
+        throw std::runtime_error("Component '" + name_ + "': `nonvolatile` is"
+            " not a component key -- the category is `role nonvolatile;`.");
     if (d->found("role"))
     {
         role_ = d->lookupWord("role");
@@ -186,10 +139,6 @@ void Component::readFromDict(const DictPtr& d)
             throw std::runtime_error("Component '" + name_ +
                 "': role '" + role_ + "' is not one of"
                 " volatile / solute / nonvolatile / radical");
-    }
-    else if (d->lookupWordOrDefault("nonvolatile", "false") == "true")
-    {
-        role_ = "nonvolatile";
     }
 
     const bool needsVP = (role_ == "volatile" || role_ == "solute");
@@ -361,31 +310,6 @@ void Component::readFromDict(const DictPtr& d)
         hasGibbsData_  = true;
     }
 
-    // NEW form (forum 2026-06-11): the formation datum lives INSIDE the block
-    // of its reference state -- gasIdeal{Hf_298; S_298;} or solid{Hf_298;
-    // S_298;} -- and the `phase` keyword dies because the block IS the phase.
-    {
-        auto blockHasFormation = [&](const char* block)
-        { return d->found(block) && d->subDict(block)->found("Hf_298"); };
-        const bool gi = blockHasFormation("gasIdeal");
-        const bool so = blockHasFormation("solid");
-        if ((gi || so) && hasGibbsData_)
-            throw std::runtime_error("Component '" + name_ + "': the formation "
-                "datum is defined BOTH in standardThermochemistry{} and in a reference-"
-                "state block -- keep exactly one.");
-        if (gi && so)
-            throw std::runtime_error("Component '" + name_ + "': Hf_298 in BOTH "
-                "gasIdeal{} and solid{} -- the engine carries ONE formation "
-                "datum today; keep the natural phase's.");
-        if (gi || so)
-        {
-            auto b = d->subDict(gi ? "gasIdeal" : "solid");
-            Hf298_        = b->lookupScalar("Hf_298");
-            S298_         = b->lookupScalar("S_298");
-            naturalPhase_ = gi ? "gas" : "solid";
-            hasGibbsData_ = true;
-        }
-    }
 
     // ---- Per-value provenance (the keystone; parse-if-present, never throws) -
     // Two grammars exist in the catalogue: a flat free-text form (acetone /

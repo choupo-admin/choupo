@@ -24,15 +24,7 @@ MW             184.40;         // g/mol
 // Stoichiometric balance/representation map from the apparent component
 // to aqueous species. General stoichiometry is legal here; only the
 // legacy single-salt adapter is restricted to one cation + one anion.
-component
-{
-    speciesMap
-    {
-        Ca   1;
-        Mg   1;
-        CO3  2;
-    }
-}
+dissociatesTo  { Ca 1; Mg 1; CO3 2; }   // ion stoichiometry (formula-like identity)
 
 // SOLID-PHASE VIEW
 solidPhases

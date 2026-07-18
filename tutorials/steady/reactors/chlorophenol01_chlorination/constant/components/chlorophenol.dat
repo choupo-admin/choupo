@@ -24,48 +24,43 @@
   studying the group-contribution error (the engine logs [backfill] if it fills a gap).
 \*---------------------------------------------------------------------------*/
 
-identity
+name        chlorophenol;
+// formula  ?;            // TODO: not derivable from groups
+// CAS      ?;            // TODO: look up + verify identity
+MW          128.558;        // g/mol (group sum)
+
+
+// ---- corresponding-states constants of the WHOLE fluid ----
+Tc      708.0;        // K     (Joback)
+Pc      49.4;        // bar   (Joback; catalogue convention)
+omega   0.72;        // [-]   Lee-Kesler from (Tb,Tc,Pc)
+
+
+// ---- ideal-gas reference -- the formation datum ----
+// GAP (Gibbs reactor): Choupo needs S_298 (third-law) and Joback
+// gives dGf_298, NOT S.  Joback estimates (ideal gas, 298 K):
+//   Hf_298 = -110080 J/mol   dGf_298 = -46330 J/mol
+// Supply S_298, then uncomment BOTH to enable the Gibbs reactor:
+Hf_298   -110080;      // J/mol (Joback estimate)
+S_298    350.0;         // J/(mol K) third-law -- ESTIMATE (heavier+Cl vs phenol 315)
+// S_298    ?;            // J/(mol K) third-law -- FILL
+idealGasHeatCapacity
 {
-    name        chlorophenol;
-    // formula  ?;            // TODO: not derivable from groups
-    // CAS      ?;            // TODO: look up + verify identity
-    MW          128.558;        // g/mol (group sum)
+    model         polynomial;
+    // Cp [J/(mol*K)] = a0 + a1*T + a2*T^2 + a3*T^3   -- Cp(298) = 96.6676
+    coefficients  (-3.99   0.4762   -3.176000e-04   7.960000e-08);
+    Trange        (200  1500);
 }
 
-critical    // corresponding-states constants of the WHOLE fluid
-{
-    Tc      708.0;        // K     (Joback)
-    Pc      49.4;        // bar   (Joback; catalogue convention)
-    omega   0.72;        // [-]   Lee-Kesler from (Tb,Tc,Pc)
-}
 
-gasIdeal    // ideal-gas reference state -- the formation datum
-{
-    // GAP (Gibbs reactor): Choupo needs S_298 (third-law) and Joback
-    // gives dGf_298, NOT S.  Joback estimates (ideal gas, 298 K):
-    //   Hf_298 = -110080 J/mol   dGf_298 = -46330 J/mol
-    // Supply S_298, then uncomment BOTH to enable the Gibbs reactor:
-    Hf_298   -110080;      // J/mol (Joback estimate)
-    S_298    350.0;         // J/(mol K) third-law -- ESTIMATE (heavier+Cl vs phenol 315)
-    // S_298    ?;            // J/(mol K) third-law -- FILL
-    Cp
-    {
-        model         polynomial;
-        // Cp [J/(mol*K)] = a0 + a1*T + a2*T^2 + a3*T^3   -- Cp(298) = 96.6676
-        coefficients  (-3.99   0.4762   -3.176000e-04   7.960000e-08);
-        Trange        (200  1500);
-    }
-}
+// ---- pure-liquid (Raoult) reference -- Psat IS f°(T) ----
+Tb         498.150000;        // K     normal boiling point (Joback)
+HvapTb     52950.000000;       // J/mol latent heat at Tb (Joback)
+Vliq       0.000090;      // m^3/mol Rackett/Yamada-Gunn, 298 K (estimate)
+// Ambrose-Walton corresponding states from critical{} -- FLASHABLE now;
+// an ESTIMATE: overlay vs measured Psat (or fit Antoine) before design.
+vaporPressure { model AmbroseWalton; }
 
-liquidPure  // pure-liquid (Raoult) reference -- Psat IS f°(T)
-{
-    Tb         498.150000;        // K     normal boiling point (Joback)
-    HvapTb     52950.000000;       // J/mol latent heat at Tb (Joback)
-    Vliq       0.000090;      // m^3/mol Rackett/Yamada-Gunn, 298 K (estimate)
-    // Ambrose-Walton corresponding states from critical{} -- FLASHABLE now;
-    // an ESTIMATE: overlay vs measured Psat (or fit Antoine) before design.
-    Psat { model AmbroseWalton; }
-}
 
 provenance
 {

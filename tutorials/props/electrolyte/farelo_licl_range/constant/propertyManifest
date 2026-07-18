@@ -43,9 +43,9 @@ propertyManifest
         "components/LiCl.dat"
         {
             type          imported;
-            sha256        "1bab6a4b3c2da3815745f96f97fe9035a1d1ecb40a3d508bf0e30894d716c2c9";
+            sha256        "8f75cffc43bc124781c49f08b1d83ae3270a114218dc82d8d201f70e941afe50";
             origin        "data/standards/components/LiCl.dat";
-            originSha256  "d1e84c6baf03d5970ed82b9058f4e9c042283327993811160630826fe3789b43";
+            originSha256  "b633e869a1f7018025fac9dcc502d54f6a2631342b10f8870ccfa3516c7bb004";
             release       Choupo-2607;
         }
         "components/lithiumChlorideH2O.dat"

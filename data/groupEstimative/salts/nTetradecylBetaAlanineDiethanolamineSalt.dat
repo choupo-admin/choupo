@@ -11,6 +11,6 @@ formula        C21H46N2O4;
 CAS            65104-54-3;
 InChIKey       DZLADQJYQHRVSM-UHFFFAOYSA-N;
 MW             390.609;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { n-tetradecyl-beta-alanine 1; diethanolamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

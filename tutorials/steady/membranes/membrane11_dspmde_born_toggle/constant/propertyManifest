@@ -32,9 +32,9 @@ propertyManifest
         "components/NaCl.dat"
         {
             type          imported;
-            sha256        "11eb12602e38af3ddc3c0668d0411bb181116a4b5ade1fa1cf3255c4508ee555";
+            sha256        "443cb05462b9f13c6f6fa3e074f208e7c8893d32a3f046f1b2acfcf95f72d9d0";
             origin        "data/standards/components/NaCl.dat";
-            originSha256  "4602d37208c6f6ef4637cf8a14b4936a9924b6d51d5cbfb5aeadda2f70936dde";
+            originSha256  "0f643a72c278b9e7b8736f7f7f0728ffa46648a11435b794f605e8530244e235";
             release       Choupo-2607;
         }
         "components/water.dat"

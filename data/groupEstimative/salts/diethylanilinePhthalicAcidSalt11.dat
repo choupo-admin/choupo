@@ -11,6 +11,6 @@ formula        C18H21NO4;
 CAS            69847-39-8;
 InChIKey       RJILSGJGSRJKDS-UHFFFAOYSA-N;
 MW             315.369;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { diethylaniline 1; phthalic acid 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

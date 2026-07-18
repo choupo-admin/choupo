@@ -12,7 +12,7 @@ formula        N2H4;
 CAS            302-01-2;
 
 MW             32.046;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( gasPhase combustion nox );
 
 standardThermochemistry

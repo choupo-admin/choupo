@@ -11,6 +11,6 @@ formula        C28H60N2O4;
 CAS            70750-10-6;
 InChIKey       BUIGCFWRKZJBQW-UHFFFAOYSA-N;
 MW             488.798;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { octadecanoic acid 1; 2-(diethylamino)ethanol and morpholine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

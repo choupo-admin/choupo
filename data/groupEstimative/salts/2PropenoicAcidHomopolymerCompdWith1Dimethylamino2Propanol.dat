@@ -11,7 +11,7 @@ formula        C8H17NO3;
 CAS            168255-30-9;
 InChIKey       BVLRGGKLIOFKJU-UHFFFAOYSA-N;
 MW             175.228;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 2-propenoic acid, homopolymer, compd. with 1-(dimethylamino)-2-propanol

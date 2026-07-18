@@ -11,6 +11,6 @@ formula        C17H29NO4;
 CAS            68213-81-0;
 InChIKey       XHEJMLGUSKEJHC-UHFFFAOYSA-N;
 MW             311.422;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { p-tert-butylbenzoic acid 1; diisopropanolamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

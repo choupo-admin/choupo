@@ -12,7 +12,7 @@ formula        C6H5;
 CAS            2396-01-2;
 
 MW             77.106;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion soot );
 
 standardThermochemistry

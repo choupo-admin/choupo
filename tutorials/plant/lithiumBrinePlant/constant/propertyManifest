@@ -59,7 +59,7 @@ propertyManifest
         "components/LiCl.dat"
         {
             type          imported;
-            sha256        "1bab6a4b3c2da3815745f96f97fe9035a1d1ecb40a3d508bf0e30894d716c2c9";
+            sha256        "8f75cffc43bc124781c49f08b1d83ae3270a114218dc82d8d201f70e941afe50";
             origin        "data/standards/components/LiCl.dat";
             originSha256  "d1e84c6baf03d5970ed82b9058f4e9c042283327993811160630826fe3789b43";
             release       Choupo-2607;
@@ -75,7 +75,7 @@ propertyManifest
         "components/NaCl.dat"
         {
             type          merged;
-            sha256        "396713ec7cc84bf7dc46d78ff4de6d281a0be9672fba0b9ebc7e68688420ad8b";
+            sha256        "75d795663ee1fd1921082ed660e99847f8c0717032e62f8633ad8ab1bbb2d8c2";
             origin        "data/standards/components/NaCl.dat";
             originSha256  "4602d37208c6f6ef4637cf8a14b4936a9924b6d51d5cbfb5aeadda2f70936dde";
             overlaySha256 "1d775eca86cea0656a39ce23fd42ccb68e59ad4d4ed9f5dd7cae1fa21589595f";

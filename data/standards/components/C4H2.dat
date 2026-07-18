@@ -12,7 +12,7 @@ formula        C4H2;
 CAS            460-12-8;
 
 MW             50.06;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( gasPhase combustion soot );
 
 standardThermochemistry

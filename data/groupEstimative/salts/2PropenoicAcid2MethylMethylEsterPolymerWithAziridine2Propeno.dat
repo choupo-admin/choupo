@@ -11,7 +11,7 @@ formula        C17H29NO6;
 CAS            73545-27-4;
 InChIKey       DSAVQQGBSGXBHH-UHFFFAOYSA-N;
 MW             343.42;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 2-propenoic acid, 2-methyl-, methyl ester, polymer with aziridine 2-propenoate (1:1) and butyl 2-propenoate

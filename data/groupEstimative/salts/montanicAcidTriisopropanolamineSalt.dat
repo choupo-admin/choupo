@@ -11,6 +11,6 @@ formula        C37H77NO5;
 CAS            67952-99-2;
 InChIKey       OQOLGRQQMXUQNR-UHFFFAOYSA-N;
 MW             616.025;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { montanic acid 1; triisopropanolamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

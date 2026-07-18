@@ -11,7 +11,7 @@ formula        C21H41NO2;
 CAS            124949-98-0;
 InChIKey       NNDZYYWBJVQCCA-KVVVOXFISA-N;
 MW             339.564;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 2-propenoic acid, homopolymer, compd. with (9z)-9-octadecen-1-amine

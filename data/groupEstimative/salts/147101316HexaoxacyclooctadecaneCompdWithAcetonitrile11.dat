@@ -11,7 +11,7 @@ formula        C14H27NO6;
 CAS            60336-83-6;
 InChIKey       NDINSWFIKBMLNU-UHFFFAOYSA-N;
 MW             305.371;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 1,4,7,10,13,16-hexaoxacyclooctadecane, compd. with acetonitrile (1:1)

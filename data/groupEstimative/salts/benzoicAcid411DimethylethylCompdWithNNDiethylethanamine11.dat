@@ -11,7 +11,7 @@ formula        C17H29NO2;
 CAS            68929-15-7;
 InChIKey       CUFVEFNSNXROKL-UHFFFAOYSA-N;
 MW             279.424;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: benzoic acid, 4-(1,1-dimethylethyl)-, compd. with n,n-diethylethanamine (1:1)

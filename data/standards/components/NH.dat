@@ -12,7 +12,7 @@ formula        NH;
 CAS            13774-92-0;
 
 MW             15.0146;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion );
 
 standardThermochemistry

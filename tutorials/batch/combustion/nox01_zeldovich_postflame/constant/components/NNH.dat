@@ -13,7 +13,7 @@ formula        NNH;
 CAS            n/a;        // radical registry number: pending curation
 
 MW             29.022;       // kg/kmol
-nonvolatile    true;
+role        nonvolatile;
 tags           ( radical gasPhase combustion );
 
 standardThermochemistry

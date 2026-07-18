@@ -11,7 +11,7 @@ formula        C6H13NO6;
 CAS            29868-01-7;
 InChIKey       VBDYEDRMGZAREE-UHFFFAOYSA-N;
 MW             195.171;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 2-hydroxybutanedioic acid- 2-aminoethanol(1:1)

@@ -11,7 +11,7 @@ formula        C17H21NO;
 CAS            118208-73-4;
 InChIKey       GSEKHBFWOIGCGV-UHFFFAOYSA-N;
 MW             255.361;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: phenol, 4-ethenyl-, homopolymer, compd. with n,n-dimethylbenzenemethanamine

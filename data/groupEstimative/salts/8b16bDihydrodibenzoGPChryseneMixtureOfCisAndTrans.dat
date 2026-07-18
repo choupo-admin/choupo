@@ -11,7 +11,7 @@ formula        C26H18;
 CAS            33741-19-4;
 InChIKey       BUBKFBKPMDZRIJ-UHFFFAOYSA-N;
 MW             330.43;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: 8b,16b-dihydrodibenzo[g,p]chrysene mixture of cis and trans

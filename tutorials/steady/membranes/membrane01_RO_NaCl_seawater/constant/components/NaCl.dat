@@ -6,7 +6,7 @@
   unified-mineral-record.md, ratified 2026-07-14).  ONE authoring file per
   chemical identity; the parser normalises it into coexisting TYPED views:
     - molecular constants (MW etc. -- the identity/critical/... plane);
-    - the apparent component's `component.speciesMap` (apparent -> ions,
+    - the apparent component's `dissociatesTo` (apparent -> ions,
       a BALANCE map, general stoichiometry);
     - one or more `solidPhases{}` (here: halite), each a concrete solid phase
       with its own dissolution reaction, equilibrium (Ksp), calorimetric
@@ -24,16 +24,13 @@ formula        NaCl;
 CAS            7647-14-5;
 
 MW             58.44;          // g/mol
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 
 // APPARENT COMPONENT view -- balance/representation map (apparent -> ions).
 // General stoichiometry; the 1-cation-1-anion limit is the single-salt ADAPTER's.
 // Distinct from solidPhase.dissolutionReaction (a thermodynamic reaction).
-component
-{
-    speciesMap { Na 1; Cl 1; }
-}
+dissociatesTo  { Na 1; Cl 1; }   // ion stoichiometry (formula-like identity)
 
 // SOLID PHASE view(s) -- 1..N concrete phases.  NaCl has one: halite.
 solidPhases

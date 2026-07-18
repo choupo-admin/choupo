@@ -10,51 +10,46 @@
   the measured K_D's container, and this file says so out loud.
 
   Field discipline follows the petCut_C7plus pseudo-component pattern:
-  identity{MW} + critical{} + gasIdeal Cp + liquidPure{} -- only what a
+  flat MW/Tc/Pc/omega + idealGasHeatCapacity{} + Tb/Vliq -- only what a
   lump can honestly own, no formation datum.  The critical constants are
   JOBACK-STYLE ESTIMATES for a ~C18 chelator skeleton (never measured for
   the commercial mixtures); the molecule is essentially NONVOLATILE at
   process T (Tb estimate 640 K) -- it stays in the organic, as it must.
 \*---------------------------------------------------------------------------*/
 
-identity
+name        LiX_extractant;
+// formula / CAS OMITTED -- a commercial-extractant LUMP, not a molecule.
+MW          322.0;            // g/mol  (~C18 organophosphorus chelator class)
+
+
+// ---- critical JOBACK-STYLE estimates (group contribution on the class skeleton) ----
+Tc      840.0;                // K     estimated (Joback-style)
+Pc      12.0;                 // bar   estimated
+omega   0.92;                 // [-]   Lee-Kesler from (Tb,Tc,Pc) estimates
+
+
+// ---- ideal-gas Cp ONLY -- NO formation datum (a lump has no reaction) ----
+idealGasHeatCapacity
 {
-    name        LiX_extractant;
-    // formula / CAS OMITTED -- a commercial-extractant LUMP, not a molecule.
-    MW          322.0;            // g/mol  (~C18 organophosphorus chelator class)
+    model         polynomial;
+    // Cp_ig [J/(mol K)] estimated, heavy-organic slope
+    coefficients  (30.0   1.60   -6.0e-04   0.0);
+    Trange        (250  1000);
 }
 
-critical    // JOBACK-STYLE estimates (group contribution on the class skeleton)
-{
-    Tc      840.0;                // K     estimated (Joback-style)
-    Pc      12.0;                 // bar   estimated
-    omega   0.92;                 // [-]   Lee-Kesler from (Tb,Tc,Pc) estimates
-}
 
-gasIdeal    // ideal-gas Cp ONLY -- NO formation datum (a lump has no reaction)
+// ---- liquidPure pure-liquid (Raoult) reference ----
+Tb         640.0;             // K      estimated -- effectively nonvolatile here
+Vliq       3.6e-4;            // m^3/mol  (~rho 900 kg/m^3 at 298 K)
+liquidHeatCapacity
 {
-    Cp
-    {
-        model         polynomial;
-        // Cp_ig [J/(mol K)] estimated, heavy-organic slope
-        coefficients  (30.0   1.60   -6.0e-04   0.0);
-        Trange        (250  1000);
-    }
+    model         polynomial;
+    // Cp_liq ~ 600 J/(mol K) at 298 K (heavy-organic estimate)
+    coefficients  (300.0   1.0   0.0   0.0);
+    Trange        (250  550);
 }
+vaporPressure { model AmbroseWalton; }     // from the estimated critical{}
 
-liquidPure  // pure-liquid (Raoult) reference
-{
-    Tb         640.0;             // K      estimated -- effectively nonvolatile here
-    Vliq       3.6e-4;            // m^3/mol  (~rho 900 kg/m^3 at 298 K)
-    Cp
-    {
-        model         polynomial;
-        // Cp_liq ~ 600 J/(mol K) at 298 K (heavy-organic estimate)
-        coefficients  (300.0   1.0   0.0   0.0);
-        Trange        (250  550);
-    }
-    Psat { model AmbroseWalton; }     // from the estimated critical{}
-}
 
 provenance
 {

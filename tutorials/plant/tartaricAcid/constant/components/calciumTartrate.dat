@@ -31,7 +31,7 @@ formula     CaC4H4O6;
 CAS         3164-34-9;
 MW          188.15;             // kg/kmol  (anhydrous)
 
-nonvolatile true;               // sparingly-soluble crystalline salt; never to the vapour (K = 0)
+role        nonvolatile;               // sparingly-soluble crystalline salt; never to the vapour (K = 0)
 
 solid
 {

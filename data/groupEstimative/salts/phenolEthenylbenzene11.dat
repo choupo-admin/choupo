@@ -11,7 +11,7 @@ formula        C14H14O;
 CAS            26062-78-2;
 InChIKey       UZRCGISJYYLJMA-UHFFFAOYSA-N;
 MW             198.265;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: phenol- ethenylbenzene(1:1)

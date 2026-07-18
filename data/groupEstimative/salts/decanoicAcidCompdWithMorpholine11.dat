@@ -11,6 +11,6 @@ formula        C14H29NO3;
 CAS            20599-77-3;
 InChIKey       NBSJLWVJXSBMPD-UHFFFAOYSA-N;
 MW             259.39;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { decanoic acid 1; morpholine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

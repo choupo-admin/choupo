@@ -297,53 +297,50 @@ int EstimateComponent::run(const DictPtr& dict,
               << "  studying the group-contribution error (the engine logs [backfill] if it fills a gap).\n"
               << "\\*---------------------------------------------------------------------------*/\n\n";
 
-            // The proposal is BORN in the reference-state layout (forum
-            // 2026-06-11): identity / critical / gasIdeal / liquidPure --
-            // the student's first .dat reads in the teaching sequence.
-            f << "identity\n{\n"
-              << "    name        " << comp << ";\n"
-              << "    // formula  ?;            // TODO: not derivable from groups\n"
-              << "    // CAS      ?;            // TODO: look up + verify identity\n"
-              << "    MW          " << MW << ";        // g/mol (group sum)\n"
-              << "}\n\n"
-              << "critical    // corresponding-states constants of the WHOLE fluid\n{\n"
-              << "    Tc      " << Tc     << ";        // K     (Joback)\n"
-              << "    Pc      " << Pc_bar << ";        // bar   (Joback; catalogue convention)\n"
-              << "    omega   " << omega  << ";        // [-]   Lee-Kesler from (Tb,Tc,Pc)\n"
-              << "}\n\n"
-              << "gasIdeal    // ideal-gas reference state -- the formation datum\n{\n"
-              << "    // GAP (Gibbs reactor): Choupo needs S_298 (third-law) and Joback\n"
-              << "    // gives dGf_298, NOT S.  Joback estimates (ideal gas, 298 K):\n"
-              << "    //   Hf_298 = " << (Hf * 1000.0) << " J/mol    dGf_298 = " << (Gf * 1000.0) << " J/mol\n"
-              << "    // Supply S_298, then uncomment BOTH to enable the Gibbs reactor:\n"
-              << "    // Hf_298   " << (Hf * 1000.0) << ";      // J/mol (Joback)\n"
-              << "    // S_298    ?;            // J/(mol K) third-law -- FILL\n"
-              << "    Cp\n    {\n"
-              << "        model         polynomial;\n"
-              << "        // Cp [J/(mol*K)] = a0 + a1*T + a2*T^2 + a3*T^3   -- Cp(298) = " << Cp(298.15) << "\n"
-              << "        coefficients  (" << cpa << "   " << cpb << "   "
+            // The proposal is written in the catalogue's own flat layout --
+            // the same form every curated component uses, grouped by comment
+            // headers in the teaching sequence (identity -> critical ->
+            // ideal-gas -> liquid).
+            f << "// ---- identity ----\n"
+              << "name        " << comp << ";\n"
+              << "// formula  ?;            // TODO: not derivable from groups\n"
+              << "// CAS      ?;            // TODO: look up + verify identity\n"
+              << "MW          " << MW << ";        // g/mol (group sum)\n\n"
+              << "// ---- corresponding-states constants of the WHOLE fluid ----\n"
+              << "Tc          " << Tc     << ";        // K     (Joback)\n"
+              << "Pc          " << Pc_bar << ";        // bar   (Joback; catalogue convention)\n"
+              << "omega       " << omega  << ";        // [-]   Lee-Kesler from (Tb,Tc,Pc)\n\n"
+              << "// ---- ideal-gas reference -- the formation datum ----\n"
+              << "// GAP (Gibbs reactor): Choupo needs S_298 (third-law) and Joback\n"
+              << "// gives dGf_298, NOT S.  Joback estimates (ideal gas, 298 K):\n"
+              << "//   Hf_298 = " << (Hf * 1000.0) << " J/mol    dGf_298 = " << (Gf * 1000.0) << " J/mol\n"
+              << "// Supply S_298, then declare standardThermochemistry { phase gas;\n"
+              << "//   Hf " << (Hf * 1000.0) << "; S " << "?; } to enable the Gibbs reactor.\n"
+              << "idealGasHeatCapacity\n{\n"
+              << "    model         polynomial;\n"
+              << "    // Cp [J/(mol*K)] = a0 + a1*T + a2*T^2 + a3*T^3   -- Cp(298) = " << Cp(298.15) << "\n"
+              << "    coefficients  (" << cpa << "   " << cpb << "   "
               << std::scientific << cpc << "   " << cpd << std::fixed << ");\n"
-              << "        Trange        (200  1500);\n"
-              << "    }\n"
+              << "    Trange        (200  1500);\n"
               << "}\n\n"
-              << "liquidPure  // pure-liquid (Raoult) reference -- Psat IS f\u00b0(T)\n{\n"
-              << "    Tb         " << Tb << ";        // K     normal boiling point (Joback)\n"
-              << "    HvapTb     " << (Hvap * 1000.0) << ";       // J/mol latent heat at Tb (Joback)\n";
+              << "// ---- pure-liquid (Raoult) reference -- Psat IS f\u00b0(T) ----\n"
+              << "Tb          " << Tb << ";        // K     normal boiling point (Joback)\n"
+              << "HvapTb      " << (Hvap * 1000.0) << ";       // J/mol latent heat at Tb (Joback)\n";
             if (fillVliq)
-                f << "    Vliq       " << Vliq298 << ";      // m^3/mol Rackett/Yamada-Gunn, 298 K (estimate)\n";
+                f << "Vliq        " << Vliq298 << ";      // m^3/mol Rackett/Yamada-Gunn, 298 K (estimate)\n";
             else
-                f << "    // GAP -- Vliq REFUSED (`derived { Vliq none; }`): supply a measured\n"
-                  << "    // liquid molar volume [m^3/mol] for pumps / density / mass<->mole.\n"
-                  << "    // Vliq    ?;\n";
+                f << "// GAP -- Vliq REFUSED (`derived { Vliq none; }`): supply a measured\n"
+                  << "// liquid molar volume [m^3/mol] for pumps / density / mass<->mole.\n"
+                  << "// Vliq    ?;\n";
             if (fillPsat)
-                f << "    // Ambrose-Walton corresponding states from critical{} -- FLASHABLE now;\n"
-                  << "    // an ESTIMATE: overlay vs measured Psat (or fit Antoine) before design.\n"
-                  << "    Psat { model AmbroseWalton; }\n";
+                f << "// Ambrose-Walton corresponding states from Tc/Pc/omega -- FLASHABLE now;\n"
+                  << "// an ESTIMATE: overlay vs measured Psat (or fit Antoine) before design.\n"
+                  << "vaporPressure { model AmbroseWalton; }\n";
             else
-                f << "    // GAP -- Psat REFUSED (`derived { Psat none; }`): NOT flashable until\n"
-                  << "    // a Psat model lands (fit an Antoine with choupoProps vaporPressureFit).\n"
-                  << "    // Psat { model ?; }\n";
-            f << "}\n\n";
+                f << "// GAP -- Psat REFUSED (`derived { Psat none; }`): NOT flashable until\n"
+                  << "// a Psat model lands (fit an Antoine with choupoProps vaporPressureFit).\n"
+                  << "// vaporPressure { model ?; }\n";
+            f << "\n";
 
             // The curated molecular record travels WITH the proposal (forum
             // #57: groups are the component's curated group decomposition --
@@ -598,41 +595,37 @@ int EstimateComponent::runScalar(const DictPtr& dict, const std::string& comp,
               << "  Case-local proposal; the data/standards/ catalogue is FROZEN.\n"
               << "\\*---------------------------------------------------------------------------*/\n\n";
 
-            f << "identity\n{\n"
-              << "    name        " << comp << ";\n"
-              << "    // formula / CAS OMITTED: a pseudo-component is a LUMP, not a molecule.\n"
-              << "    MW          " << MW << ";        // g/mol (Riazi-Daubert)\n"
-              << "}\n\n"
-              << "critical    // corresponding-states constants of the lumped cut\n{\n"
-              << "    Tc      " << Tc     << ";        // K     (Riazi-Daubert)\n"
-              << "    Pc      " << Pc_bar << ";        // bar   (Riazi-Daubert)\n"
-              << "    omega   " << omega  << ";        // [-]   Lee-Kesler from (Tb,Tc,Pc)\n"
-              << "}\n\n"
+            f << "// ---- identity ----\n"
+              << "name        " << comp << ";\n"
+              << "// formula / CAS OMITTED: a pseudo-component is a LUMP, not a molecule.\n"
+              << "MW          " << MW << ";        // g/mol (Riazi-Daubert)\n\n"
+              << "// ---- corresponding-states constants of the lumped cut ----\n"
+              << "Tc          " << Tc     << ";        // K     (Riazi-Daubert)\n"
+              << "Pc          " << Pc_bar << ";        // bar   (Riazi-Daubert)\n"
+              << "omega       " << omega  << ";        // [-]   Lee-Kesler from (Tb,Tc,Pc)\n\n"
               << "// A petroleum cut never goes to the vapour as a single species in a\n"
               << "// reactive sense, but it DOES flash; keep it volatile (default role).\n"
               << "// role nonvolatile;   // uncomment for a heavy residue lumped as non-volatile\n\n"
-              << "gasIdeal    // ideal-gas Cp ONLY -- no formation datum for a lump\n{\n"
-              << "    Cp\n    {\n"
-              << "        model         polynomial;\n"
-              << "        // Cp [J/(mol*K)] = a0 + a1*T + a2*T^2 + a3*T^3 (Kesler-Lee)  Cp(298)=" << Cp(298.15) << "\n"
-              << "        coefficients  (" << cpa << "   " << cpb << "   "
+              << "// ---- ideal-gas Cp ONLY -- no formation datum for a lump ----\n"
+              << "idealGasHeatCapacity\n{\n"
+              << "    model         polynomial;\n"
+              << "    // Cp [J/(mol*K)] = a0 + a1*T + a2*T^2 + a3*T^3 (Kesler-Lee)  Cp(298)=" << Cp(298.15) << "\n"
+              << "    coefficients  (" << cpa << "   " << cpb << "   "
               << std::scientific << cpc << "   " << cpd << std::fixed << ");\n"
-              << "        Trange        (250  1000);\n"
-              << "    }\n"
+              << "    Trange        (250  1000);\n"
               << "}\n\n"
-              << "liquidPure  // pure-liquid (Raoult) reference -- Psat IS f°(T)\n{\n"
-              << "    Tb         " << Tb << ";        // K     pseudo normal boiling point (anchor)\n"
-              << "    Vliq       " << Vliq298 << ";      // m^3/mol Rackett, 298 K (estimate)\n"
-              << "    // Cp_liq approximated from the ideal-gas Cp polynomial (lump estimate):\n"
-              << "    Cp\n    {\n"
-              << "        model         polynomial;\n"
-              << "        coefficients  (" << cpa << "   " << cpb << "   "
+              << "// ---- pure-liquid (Raoult) reference -- Psat IS f(T) ----\n"
+              << "Tb          " << Tb << ";        // K     pseudo normal boiling point (anchor)\n"
+              << "Vliq        " << Vliq298 << ";      // m^3/mol Rackett, 298 K (estimate)\n"
+              << "// Cp_liq approximated from the ideal-gas Cp polynomial (lump estimate):\n"
+              << "liquidHeatCapacity\n{\n"
+              << "    model         polynomial;\n"
+              << "    coefficients  (" << cpa << "   " << cpb << "   "
               << std::scientific << cpc << "   " << cpd << std::fixed << ");\n"
-              << "        Trange        (250  600);\n"
-              << "    }\n"
-              << "    // Ambrose-Walton corresponding states from critical{} -- FLASHABLE.\n"
-              << "    Psat { model AmbroseWalton; }\n"
-              << "}\n\n";
+              << "    Trange        (250  600);\n"
+              << "}\n\n"
+              << "// Ambrose-Walton corresponding states from Tc/Pc/omega -- FLASHABLE.\n"
+              << "vaporPressure { model AmbroseWalton; }\n\n";
             f << "provenance\n{\n"
               << "    status        \"ESTIMATE\";\n"
               << "    origin        estimated;\n"
@@ -783,10 +776,8 @@ int EstimateComponent::runPolymer(const DictPtr& dict, const std::string& comp,
               << "  Generated: " << isoDateUtc() << " by choupoProps estimateComponent\n"
               << "  Method:    " << estimator.method() << "\n"
               << "\\*---------------------------------------------------------------------------*/\n\n";
-            f << "identity\n{\n"
-              << "    name        " << comp << ";\n"
-              << "    M0          " << est.M0 << ";        // g/mol  repeat-unit molar mass\n"
-              << "}\n\n";
+            f << "name        " << comp << ";\n"
+              << "M0          " << est.M0 << ";        // g/mol  repeat-unit molar mass\n\n";
             f << "polymer\n{\n"
               << "    M0                  " << est.M0 << ";   // g/mol\n";
             if (est.hasVol)

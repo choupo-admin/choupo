@@ -11,6 +11,6 @@ formula        C42H88N2O4;
 CAS            102900-04-9;
 InChIKey       AWVLILUZOUWLLR-UHFFFAOYSA-N;
 MW             685.176;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   3;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { hexanedioic acid 1; 1-octadecanamine 2; }   // DRAFT constituents from the name -- verify & map to real components/ions

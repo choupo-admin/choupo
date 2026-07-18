@@ -17,5 +17,5 @@ name           Na;
 formula        "Na+";
 
 MW             22.99;          // g/mol  (= kg/kmol), from ions.dat
-nonvolatile    true;
+role        nonvolatile;
 dissociation   1;              // already an ion: 1 particle/mol

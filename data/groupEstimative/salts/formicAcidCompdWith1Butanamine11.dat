@@ -11,6 +11,6 @@ formula        C5H13NO2;
 CAS            18721-03-4;
 InChIKey       ZQAVAOYDHNUKHF-UHFFFAOYSA-N;
 MW             119.164;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { formic acid 1; 1-butanamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

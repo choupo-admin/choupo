@@ -11,7 +11,7 @@ formula        C19H38O10;
 CAS            112748-33-1;
 InChIKey       GKFRSRGHGLRUBB-UHFFFAOYSA-N;
 MW             426.503;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   5;              // van't Hoff factor for pi = nu R T c
 // dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
 //   constituents; identify them by hand from: polypropylene glycol alpha-methyl glucoside ether (4:1)

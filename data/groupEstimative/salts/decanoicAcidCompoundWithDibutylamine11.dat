@@ -11,6 +11,6 @@ formula        C18H39NO2;
 CAS            29425-97-6;
 InChIKey       KFGVBFAJGJHUFK-UHFFFAOYSA-N;
 MW             301.515;          // g/mol [origin=calculated method=formula-sum]
-nonvolatile    true;
+role        nonvolatile;
 dissociation   2;              // van't Hoff factor for pi = nu R T c
 dissociatesTo  { decanoic acid 1; dibutylamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

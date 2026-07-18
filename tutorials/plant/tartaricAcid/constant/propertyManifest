@@ -27,7 +27,7 @@ propertyManifest
         "components/CaSO4.dat"
         {
             type          imported;
-            sha256        "d7572a90c876ffe5b41b6c02af933b321f82320c8464d5cb6386eb386e99c44e";
+            sha256        "b9a5c29fe3ac7fe4afd33a54616a9e022087644000c8b225abee367f5901121a";
             origin        "data/standards/components/CaSO4.dat";
             originSha256  "bc804838119b08800cd450a3dfdbee1db6b06ed81ab13a13bb779f7930350697";
             release       Choupo-2607;
@@ -44,7 +44,7 @@ propertyManifest
         "components/KOH.dat"
         {
             type          imported;
-            sha256        "39fc58d95a50069191bcc16608e64c9dd98dceb40fe0fc0884640560a2d0d4b4";
+            sha256        "b425e9247960320a7f782a16f4b3becf736932954f375abf0c18321e0fc3e789";
             origin        "data/standards/components/KOH.dat";
             originSha256  "0a773d0a20ad36f84bdb89621e4cf8b331110ed273242b967be550d292742dc0";
             release       Choupo-2607;
@@ -52,7 +52,7 @@ propertyManifest
         "components/calciumHydroxide.dat"
         {
             type          imported;
-            sha256        "a172f91c73c996c2aa3c9ee724154badac5a7542bd840775e6bf9703d422de91";
+            sha256        "2b63c9e2c32a52defc5b992d330f287c9e62c32eae59829eaecdf228ccd93a0f";
             origin        "data/standards/components/calciumHydroxide.dat";
             originSha256  "b75612f4ad8df0fd27a086f2b6089efc770a2114d75bd193a4f8cfb79c45b56c";
             release       Choupo-2607;
@@ -60,7 +60,7 @@ propertyManifest
         "components/calciumTartrate.dat"
         {
             type          imported;
-            sha256        "bdbe9fd504c9fba09f42406d3e327d21a55e2e164f59b8b122ff593595571e1b";
+            sha256        "034a11f6ddc3be2e91b6b5aa0b88aa5573a708e8cdaf27813fbb700498c293ff";
             origin        "data/standards/components/calciumTartrate.dat";
             originSha256  "a7c0d2e064f895a89c26a29a0225bb863b30f3a6f99d9636f66237a3d76a4192";
             release       Choupo-2607;
@@ -68,7 +68,7 @@ propertyManifest
         "components/potassiumBitartrate.dat"
         {
             type          imported;
-            sha256        "a84286626577d66c0bbcf1cf942ab35bc0feec0472eebd28cc6501d6c58a871d";
+            sha256        "01fdd1a68072a2694faf4f94eb6d77c67636ef7f6bdef4f5d4085b5d85dac46f";
             origin        "data/standards/components/potassiumBitartrate.dat";
             originSha256  "29cb82b1fe649fe829eee028f5e915d28342830db061b48b2a9f14fed6665fc0";
             release       Choupo-2607;
@@ -76,7 +76,7 @@ propertyManifest
         "components/tartaricAcid.dat"
         {
             type          imported;
-            sha256        "3bdeb8bcd675f4f01d46b79028a70420824f91cf6048b21777cf30a831a5969a";
+            sha256        "39166d793e98542d9017356a529c6747f52b697b789ae153fb28f736c86e9450";
             origin        "data/standards/components/tartaricAcid.dat";
             originSha256  "14e7e4cdb1904bac5b10874524aba27ddb32484b4ce31bb7b0bd09dff37abfa2";
             release       Choupo-2607;
