@@ -153,6 +153,14 @@ public:
                              const std::vector<DictPtr>& phaseConfigs,
                              const Database& db);
 
+    // The dissolution wiring (Henry solvent + solutes), shared by
+    // readFromDict and the v2-native assemblies: validates every declared
+    // solute's pair file (fail-closed, never a silent Raoult fallback) and
+    // prints the LOUD per-pair Henry announcement.  Call AFTER the
+    // components are loaded (an assemble* call).
+    void applySolution(const std::string& solvent,
+                       const std::vector<std::string>& solutes);
+
     std::size_t n() const { return components_.size(); }
     const Component& comp(std::size_t i) const { return components_.at(i); }
     std::size_t indexOf(const std::string& name) const;

@@ -222,28 +222,17 @@ void ThermoPackage::assembleNamedPhases(const std::vector<std::string>& namesIn,
     pureFluid_.clear();
 }
 
-void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
+void ThermoPackage::applySolution(const std::string& solvent,
+                                  const std::vector<std::string>& solutes)
 {
-    auto names = dict->lookupWordList("components");
-    if (names.empty())
-        throw std::runtime_error("thermoPackage: 'components' list is empty");
-    names = loadComponentSet(names, db);
-
-    // Designated solvent -----------------------------------------
-    // Optional `solvent <name>;` keyword.  Used by the K-value selector
-    // to look up Henry's law constants for components flagged
-    // `role solute;` in their.dat.  Defaults to the component with the
-    // largest molar mass when not declared --- a usable but crude
-    // heuristic; the case author should set it explicitly when running
-    // an absorption / stripping case.
-    solventName_ = dict->lookupWordOrDefault("solvent", "");
-    vleWorld_    = dict->lookupWordOrDefault("vleWorld", "gammaPhi");
-    // Assembly-level Henry solutes (see header note): each MUST have a pair
-    // file for the declared solvent -- an explicit request with missing data
-    // is an ERROR, never a silent Raoult fallback.
-    if (dict->found("solutes"))
+    // Shared by readFromDict and the v2-native assemblies (the ONE home for
+    // the dissolution wiring).  Assembly-level Henry solutes: each MUST have
+    // a pair file for the declared solvent -- an explicit request with
+    // missing data is an ERROR, never a silent Raoult fallback.
+    solventName_    = solvent;
+    declaredSolutes_ = solutes;
+    if (!declaredSolutes_.empty())
     {
-        declaredSolutes_ = dict->lookupWordList("solutes");
         if (solventName_.empty())
             throw std::runtime_error("thermoPackage: `solutes (...)` declared"
                 " but no `solvent <name>;` -- name the solvent they dissolve in.");
@@ -289,6 +278,26 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
                       << solventName_ << ".dat\n";
         }
     }
+}
+
+void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
+{
+    auto names = dict->lookupWordList("components");
+    if (names.empty())
+        throw std::runtime_error("thermoPackage: 'components' list is empty");
+    names = loadComponentSet(names, db);
+
+    // Designated solvent -----------------------------------------
+    // Optional `solvent <name>;` keyword.  Used by the K-value selector
+    // to look up Henry's law constants for components flagged
+    // `role solute;` in their.dat.  Defaults to the component with the
+    // largest molar mass when not declared --- a usable but crude
+    // heuristic; the case author should set it explicitly when running
+    // an absorption / stripping case.
+    vleWorld_ = dict->lookupWordOrDefault("vleWorld", "gammaPhi");
+    applySolution(dict->lookupWordOrDefault("solvent", ""),
+                  dict->found("solutes") ? dict->lookupWordList("solutes")
+                                         : std::vector<std::string>{});
 
     // Transport models (viscosity; thermal conductivity &
     // diffusivity).  The `transport {... }` block carries the viscosity

@@ -1423,6 +1423,7 @@ bool ThermoPackageBuilder::v2NativeFormulation(const DictPtr& v2)
         return false;
     if (form == "phiPhi") return true;
     if (form == "gammaGamma") return true;   // both pair forms wired natively
+    if (form == "diluteSolution") return true;
     if (form == "gammaPhi")
     {
         // Wave A (2026-07-18): the ideal liquid and the source-declared-pairs
@@ -1575,6 +1576,74 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
         ThermoPackage out;
         out.assembleNamedPhases(v2->lookupWordList("components"),
                                 phaseConfigs, db);
+        return out;
+    }
+
+    if (form == "diluteSolution")
+    {
+        // T6: solvent on the Raoult rung, solutes on infinite-dilution Henry
+        // -- the rungs ARE the formulation; declaring others refuses.
+        auto liq = eq->subDict("liquid");
+        auto sol = liq->subDict("solvent");
+        auto sus = liq->subDict("solutes");
+        if (sol->found("standardState")
+            && sol->lookupWord("standardState") != "pureLiquid")
+            throw std::runtime_error("thermophysicalPropertySystem: the Henry"
+                " solvent sits on the pureLiquid (Raoult) rung.");
+        if (sus->found("standardState")
+            && sus->lookupWord("standardState") != "infiniteDilution")
+            throw std::runtime_error("thermophysicalPropertySystem: Henry"
+                " solutes sit on the infiniteDilution rung -- that is the"
+                " DEFINITION of the convention.");
+        if (sus->lookupWordOrDefault("solutionModel", "henryDilute") != "henryDilute")
+            throw std::runtime_error("thermophysicalPropertySystem: solutes"
+                " solutionModel implemented: henryDilute.");
+        const std::string solvent = sol->lookupWord("component");
+        const auto solutes = sus->lookupWordList("components");
+        if (solutes.empty())
+            throw std::runtime_error("thermophysicalPropertySystem:"
+                " diluteSolution declares no solutes.");
+
+        // A3: every declared solute pair -- declared record exists AND
+        // parses (fail-closed); the runtime registry re-reads it.
+        if (!sus->found("binaryParameters"))
+            throw std::runtime_error("thermophysicalPropertySystem:"
+                " diluteSolution solutes need binaryParameters { <solute>-"
+                + solvent + " { source \"...\"; } ... } -- the cited Henry"
+                " records.");
+        auto bp = sus->subDict("binaryParameters");
+        for (const auto& su : solutes)
+        {
+            const std::string key = su + "-" + solvent;
+            if (!bp->found(key))
+                throw std::runtime_error("thermophysicalPropertySystem: solute '"
+                    + su + "' declared but binaryParameters has no '" + key
+                    + "' entry -- declare the pair file.");
+            const std::string src = bp->subDict(key)->lookupWord("source");
+            (void)loadRec(resolveDeclared(repoRoot, src), "Henry pair " + key);
+            if (thermoAnnounce())
+                std::cout << "[builder] Henry pair " << key << "  --- " << src
+                          << "\n";
+        }
+
+        // G5: a REAL vapour phi rides the same EoS wiring as gammaPhi.
+        const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
+        auto eosDict = std::make_shared<Dictionary>("equationOfState");
+        eosDict->insert("model", vap);
+        auto idealAct = std::make_shared<Dictionary>("activityModel");
+        idealAct->insert("model", std::string("ideal"));   // the solvent's Raoult side
+
+        if (thermoAnnounce())
+            std::cout << "[v2 native] equilibrium diluteSolution: solvent on"
+                         " Raoult, solutes on infinite-dilution Henry"
+                         " (K = gamma* H(T) / phi P); vapour phi " << vap
+                      << "; pairs declared inside the solutes group."
+                         "  Assembled NATIVELY from the v2 grammar (no"
+                         " translated intermediate).\n";
+        ThermoPackage out;
+        out.assembleTwoPhase(v2->lookupWordList("components"), idealAct,
+                             eosDict, "gammaPhi", db);
+        out.applySolution(solvent, solutes);
         return out;
     }
 
