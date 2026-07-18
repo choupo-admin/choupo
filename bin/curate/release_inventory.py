@@ -43,7 +43,7 @@ def count_dat_recursive(rel: str) -> int:
 
 
 def count_catalogue_records(rel: str, block: str) -> int:
-    """Records in a single list-of-dicts catalogue file (e.g. species/aqueous.dat)."""
+    """Records in a single list-of-dicts catalogue file (e.g. a pair bank)."""
     f = STD / rel
     if not f.is_file():
         return 0
@@ -52,6 +52,16 @@ def count_catalogue_records(rel: str, block: str) -> int:
     body = m.group(1) if m else txt
     # each record carries exactly one `charge` field
     return len(re.findall(r"^\s*charge\b", body, re.M))
+
+
+def count_model_species() -> int:
+    """Flat model-species home: one recordType modelSpecies file per species
+    (the 2026-07-18 dismantling of the aqueous monolith)."""
+    d = STD / "species"
+    if not d.is_dir():
+        return 0
+    return sum(1 for f in d.glob("*.dat")
+               if re.search(r"\brecordType\s+modelSpecies\b", f.read_text()))
 
 
 def count_registered(cpp_rel: str) -> int:
@@ -96,7 +106,7 @@ def build() -> dict:
         "releasedAt": released_at(),
         "catalogue": {
             "components":        count_dat("components"),
-            "aqueousSpecies":    count_catalogue_records("species/aqueous.dat", "aqueousSpecies"),
+            "aqueousSpecies":    count_model_species(),
             "nrtlPairs":         count_dat("parameters/NRTL"),
             "wilsonPairs":       count_dat("parameters/Wilson"),
             "uniquacPairs":      count_dat("parameters/UNIQUAC"),

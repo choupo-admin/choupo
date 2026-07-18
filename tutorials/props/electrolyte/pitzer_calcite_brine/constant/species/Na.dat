@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Na;
-ion     "Na+";
+formula     "Na+";
 charge  +1;
 MW { value 22.99; unit g/mol;}
 aqueousThermo

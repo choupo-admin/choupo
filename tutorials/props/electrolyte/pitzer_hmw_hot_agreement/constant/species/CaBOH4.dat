@@ -20,5 +20,5 @@ by USGS PHREEQC pitzer.dat (public domain; databank provenance
 Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49).
 \*---------------------------------------------------------------------------*/
 name    CaBOH4;
-ion     "CaB(OH)4+";
+formula     "CaB(OH)4+";
 charge  +1;

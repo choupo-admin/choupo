@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Ca;
-ion     "Ca+2";
+formula     "Ca+2";
 charge  +2;
 MW { value 40.078; unit g/mol;}
 aqueousThermo

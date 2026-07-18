@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Cl;
-ion     "Cl-";
+formula     "Cl-";
 charge  -1;
 MW { value 35.453; unit g/mol;}
 aqueousThermo

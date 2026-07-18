@@ -20,5 +20,5 @@ by USGS PHREEQC pitzer.dat (public domain; databank provenance
 Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49).
 \*---------------------------------------------------------------------------*/
 name    B3O3OH4;
-ion     "B3O3(OH)4-";
+formula     "B3O3(OH)4-";
 charge  -1;

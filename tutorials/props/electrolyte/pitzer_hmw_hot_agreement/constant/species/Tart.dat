@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Tart;
-ion     "C4H4O6-2";
+formula     "C4H4O6-2";
 charge  -2;
 MW { value 148.07; unit g/mol;}
 aqueousThermo

@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Sr;
-ion     "Sr+2";
+formula     "Sr+2";
 charge  +2;
 MW { value 87.62; unit g/mol;}
 aqueousThermo

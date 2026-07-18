@@ -453,7 +453,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         for (std::size_t s = 0; s < Ns; ++s)
         {
             const std::string nm = thermo.comp(soluteIdx[s]).name();
-            if (!electrolyte::findIon(nm))
+            if (!electrolyte::findAqueousSpecies(nm))
                 throw std::runtime_error("spiralWoundModule scaling{}: "
                     "component '" + nm + "' has no row in ions.dat -- the "
                     "scaling audit needs an ionic water analysis: components "

@@ -32,7 +32,7 @@ License
   salt in water at 25 C, by the Pitzer ion-interaction model.
 
   Parameters are CURATED data read BY ION NAME from the frozen catalogue
-  data/standards/species/aqueous.dat (species + charge) + parameters/Pitzer/pairs/ (Pitzer
+  data/standards/species/<name>.dat (species + charge) + parameters/Pitzer/pairs/ (Pitzer
   beta0/beta1/beta2/Cphi per cation-anion pair), resolved via
   Database::currentRoot() -- visible + cited, never typed per case.  The salt
   stoichiometry is DERIVED from the charges by electroneutrality (Ca + Cl ->

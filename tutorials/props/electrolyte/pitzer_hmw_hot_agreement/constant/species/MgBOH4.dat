@@ -20,5 +20,5 @@ by USGS PHREEQC pitzer.dat (public domain; databank provenance
 Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49).
 \*---------------------------------------------------------------------------*/
 name    MgBOH4;
-ion     "MgB(OH)4+";
+formula     "MgB(OH)4+";
 charge  +1;

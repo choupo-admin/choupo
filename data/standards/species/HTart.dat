@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    HTart;
-ion     "HC4H4O6-";
+formula     "HC4H4O6-";
 charge  -1;
 MW { value 149.08; unit g/mol;}
 aqueousThermo

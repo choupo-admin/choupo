@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Fep3;
-ion     "Fe+3";
+formula     "Fe+3";
 charge  +3;
 MW { value 55.845; unit g/mol;}
 aqueousThermo

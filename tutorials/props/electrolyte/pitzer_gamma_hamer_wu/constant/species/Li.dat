@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Li;
-ion     "Li+";
+formula     "Li+";
 charge  +1;
 MW { value 6.941; unit g/mol;}
 aqueousThermo

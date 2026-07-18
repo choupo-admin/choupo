@@ -116,7 +116,7 @@ int IonExchanger::solve(const DictPtr& dict,
         if (i == iWater) continue;
         if (z_in[i] <= 0.0) continue;
         const std::string nm = thermo.comp(i).name();
-        if (!electrolyte::findIon(nm))
+        if (!electrolyte::findAqueousSpecies(nm))
             throw std::runtime_error("ionExchanger: component '" + nm + "' has "
                 "no row in ions.dat -- the softener needs an IONIC water "
                 "analysis (master ions Ca, Mg, Na, K, Cl, SO4, HCO3, ... + "

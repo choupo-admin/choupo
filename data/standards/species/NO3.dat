@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    NO3;
-ion     "NO3-";
+formula     "NO3-";
 charge  -1;
 MW { value 62.004; unit g/mol;}
 aqueousThermo

@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Mg;
-ion     "Mg+2";
+formula     "Mg+2";
 charge  +2;
 MW { value 24.305; unit g/mol;}
 aqueousThermo

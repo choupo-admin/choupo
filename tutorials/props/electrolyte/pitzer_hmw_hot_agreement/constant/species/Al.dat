@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Al;
-ion     "Al+3";
+formula     "Al+3";
 charge  +3;
 MW { value 26.982; unit g/mol;}
 aqueousThermo

@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Cd;
-ion     "Cd+2";
+formula     "Cd+2";
 charge  +2;
 MW { value 112.414; unit g/mol;}
 aqueousThermo

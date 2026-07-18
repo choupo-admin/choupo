@@ -48,7 +48,7 @@ Description
         "Electrochemical Systems", 3rd ed. (2004).
 
     The ion-transport DATA (limiting diffusivity D0, hydrated radius) the
-    electrodialysis unit needs lives in data/standards/species/aqueous.dat
+    electrodialysis unit needs lives in data/standards/species/<name>.dat
     (per-value provenance: Nightingale 1959 -- PROVENANCE.md).  This header
     adds the refuse-LOUDLY accessors ionRadius() / ionD0() for that tier:
     a run needing an ion without the transport tier errors clearly, never a
@@ -148,11 +148,11 @@ inline scalar butlerVolmer(scalar i0, scalar alpha_a, scalar alpha_c,
 // Effective (Stokes/hydrated) ion radius [m].
 inline scalar ionRadius(const std::string& species)
 {
-    auto row = electrolyte::findIon(species);
+    auto row = electrolyte::findAqueousSpecies(species);
     if (!row)
         throw std::runtime_error("electrochem: ion '" + species + "' has no row "
             "(case-local constant/electrolyte/ions.dat or "
-            "data/standards/species/aqueous/) -- an electrochemical run needs an "
+            "data/standards/species/) -- an electrochemical run needs an "
             "IONIC species (master ions Na, Cl, K, Ca, Mg, SO4, OH, H).");
     if (!row->found("radius"))
         throw std::runtime_error("electrochem: ion '" + species + "' has no "
@@ -167,11 +167,11 @@ inline scalar ionRadius(const std::string& species)
 // Infinite-dilution (Nernst) diffusion coefficient [m2/s], 25 C.
 inline scalar ionD0(const std::string& species)
 {
-    auto row = electrolyte::findIon(species);
+    auto row = electrolyte::findAqueousSpecies(species);
     if (!row)
         throw std::runtime_error("electrochem: ion '" + species + "' has no row "
             "(case-local constant/electrolyte/ions.dat or "
-            "data/standards/species/aqueous/) -- an electrochemical run needs an "
+            "data/standards/species/) -- an electrochemical run needs an "
             "IONIC species (master ions Na, Cl, K, Ca, Mg, SO4, OH, H).");
     if (!row->found("D0"))
         throw std::runtime_error("electrochem: ion '" + species + "' has no "

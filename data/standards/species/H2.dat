@@ -12,6 +12,6 @@ schemaVersion 1;
    the pinned master of an OPEN-system H2(g) Henry pin
    (chemistry/ (recordType gasLiquidEquilibrium) H2.dat). */
 name    H2;
-ion     "H2";
+formula     "H2";
 charge  0;
 MW { value 2.016; unit g/mol;}

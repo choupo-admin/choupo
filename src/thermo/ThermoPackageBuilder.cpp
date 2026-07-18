@@ -231,8 +231,8 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
         absent("a water solvent", "propertyPackage.components");
 
     // (c) cation/anion from the salt's `dissociatesTo`: classify by CHARGE SIGN
-    //     (charge via findIon: case ions.dat / snapshot species/aqueous/<ion>.dat /
-    //     standards species/aqueous.dat).  loadSalt recomputes charge +
+    //     (charge via findIon: case ions.dat overlay /
+    //     standards species/<ion>.dat).  loadSalt recomputes charge +
     //     stoichiometry from the catalogue, so this only needs the ion NAMES.
     std::string catName, anName;
     {

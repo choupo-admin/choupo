@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    OH;
-ion     "OH-";
+formula     "OH-";
 charge  -1;
 MW { value 17.007; unit g/mol;}
 aqueousThermo

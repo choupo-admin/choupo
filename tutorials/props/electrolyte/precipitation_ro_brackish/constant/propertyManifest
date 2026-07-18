@@ -739,97 +739,97 @@ propertyManifest
         "species/CO3.dat"
         {
             type          imported;
-            sha256        "581f8c061e30f21d262c34345325b7c9626416efe96350aca627df6722fe6d4c";
+            sha256        "22c12d5a838fc0b0c10fb8dbfbbbc3147bb68c06ba62ce799c138c8f939e7d90";
             origin        "data/standards/species/CO3.dat";
-            originSha256  "581f8c061e30f21d262c34345325b7c9626416efe96350aca627df6722fe6d4c";
+            originSha256  "22c12d5a838fc0b0c10fb8dbfbbbc3147bb68c06ba62ce799c138c8f939e7d90";
             release       Choupo-2607;
         }
         "species/Ca.dat"
         {
             type          imported;
-            sha256        "6d95b7ae442454949b520b55b04660e42d64120853c83c2fcfd6b006993f79fd";
+            sha256        "a0143701d19a8cd92f81e60d1eda6a84caf97d8e045969bbee5a75ddb9bd4cbd";
             origin        "data/standards/species/Ca.dat";
-            originSha256  "6d95b7ae442454949b520b55b04660e42d64120853c83c2fcfd6b006993f79fd";
+            originSha256  "a0143701d19a8cd92f81e60d1eda6a84caf97d8e045969bbee5a75ddb9bd4cbd";
             release       Choupo-2607;
         }
         "species/Cl.dat"
         {
             type          imported;
-            sha256        "10a413dda4bcc53d2f95100c02517235201535bcabad1a9dd41bf19e827a9ed7";
+            sha256        "b8f643e4616c36aa4ec1f6d5320da536d7b9100373476be8aba880d9dda5fb48";
             origin        "data/standards/species/Cl.dat";
-            originSha256  "10a413dda4bcc53d2f95100c02517235201535bcabad1a9dd41bf19e827a9ed7";
+            originSha256  "b8f643e4616c36aa4ec1f6d5320da536d7b9100373476be8aba880d9dda5fb48";
             release       Choupo-2607;
         }
         "species/H.dat"
         {
             type          imported;
-            sha256        "488c9a0164af67f755f94de14273594686862314609dbaf3034393de401d6201";
+            sha256        "5f7f840a1531361ef597c17d69da45c4688596c5f7e1b53b9cb4e6f9d452dac3";
             origin        "data/standards/species/H.dat";
-            originSha256  "488c9a0164af67f755f94de14273594686862314609dbaf3034393de401d6201";
+            originSha256  "5f7f840a1531361ef597c17d69da45c4688596c5f7e1b53b9cb4e6f9d452dac3";
             release       Choupo-2607;
         }
         "species/HCO3.dat"
         {
             type          imported;
-            sha256        "43df3197764aa7a430f70c40cef81a50042ed04411f3ec0153a379e06a926581";
+            sha256        "fa092d8333300568a4de38d72d9253bf46a677a9de05e3c08eede5c73990be23";
             origin        "data/standards/species/HCO3.dat";
-            originSha256  "43df3197764aa7a430f70c40cef81a50042ed04411f3ec0153a379e06a926581";
+            originSha256  "fa092d8333300568a4de38d72d9253bf46a677a9de05e3c08eede5c73990be23";
             release       Choupo-2607;
         }
         "species/HSO4.dat"
         {
             type          imported;
-            sha256        "8ce588a7de9607802f9e46bcfa984becad0c4b4a9777cb0ff8fa34f7d6f66912";
+            sha256        "993f78d4e4ce81284a1970aab8f6ae7ec6e74ba2e6963180683f19488ae555d9";
             origin        "data/standards/species/HSO4.dat";
-            originSha256  "8ce588a7de9607802f9e46bcfa984becad0c4b4a9777cb0ff8fa34f7d6f66912";
+            originSha256  "993f78d4e4ce81284a1970aab8f6ae7ec6e74ba2e6963180683f19488ae555d9";
             release       Choupo-2607;
         }
         "species/K.dat"
         {
             type          imported;
-            sha256        "72ecf3ba57ad5191efb81f89d5de0eff0395eaf3c867f9355f525cf818fe18b8";
+            sha256        "3c2a5ee755d8644c9a30a52016a67f8349f04069a3c6bcaed18127c13a6113b5";
             origin        "data/standards/species/K.dat";
-            originSha256  "72ecf3ba57ad5191efb81f89d5de0eff0395eaf3c867f9355f525cf818fe18b8";
+            originSha256  "3c2a5ee755d8644c9a30a52016a67f8349f04069a3c6bcaed18127c13a6113b5";
             release       Choupo-2607;
         }
         "species/Mg.dat"
         {
             type          imported;
-            sha256        "8969f8af4f8256382fa43213c3788292759f753b2370b7bde04e9a7fdda88645";
+            sha256        "75dd363416ac90f3e9fdeab183bd7cfae54e07b31b1c98dbbaae00ae1990690c";
             origin        "data/standards/species/Mg.dat";
-            originSha256  "8969f8af4f8256382fa43213c3788292759f753b2370b7bde04e9a7fdda88645";
+            originSha256  "75dd363416ac90f3e9fdeab183bd7cfae54e07b31b1c98dbbaae00ae1990690c";
             release       Choupo-2607;
         }
         "species/MgOH.dat"
         {
             type          imported;
-            sha256        "1e64763af123b0b66f25b1c509a28032676596b7643c8bc67da19d35575842a3";
+            sha256        "41fe7040620e8495bf2b9018d2c7856555c3b0adec9d55d09b4ef06506b00810";
             origin        "data/standards/species/MgOH.dat";
-            originSha256  "1e64763af123b0b66f25b1c509a28032676596b7643c8bc67da19d35575842a3";
+            originSha256  "41fe7040620e8495bf2b9018d2c7856555c3b0adec9d55d09b4ef06506b00810";
             release       Choupo-2607;
         }
         "species/Na.dat"
         {
             type          imported;
-            sha256        "027a6b62a92a8d247e976a9d59ea7a503af1e696e7025a2ceccc93d74e8155fe";
+            sha256        "93922ead854033587adbd91bfc71497fbecbfbd9ccba192f88b01f59ea4b524a";
             origin        "data/standards/species/Na.dat";
-            originSha256  "027a6b62a92a8d247e976a9d59ea7a503af1e696e7025a2ceccc93d74e8155fe";
+            originSha256  "93922ead854033587adbd91bfc71497fbecbfbd9ccba192f88b01f59ea4b524a";
             release       Choupo-2607;
         }
         "species/OH.dat"
         {
             type          imported;
-            sha256        "28d1fef2ca4130a24be9fd7f1021b1d69e4d3bd1cba90a64804a77e4a60ca3d9";
+            sha256        "28ff219ee9665fceed266e921d37f5e1603213f9fc69ed39b9135526c884ab85";
             origin        "data/standards/species/OH.dat";
-            originSha256  "28d1fef2ca4130a24be9fd7f1021b1d69e4d3bd1cba90a64804a77e4a60ca3d9";
+            originSha256  "28ff219ee9665fceed266e921d37f5e1603213f9fc69ed39b9135526c884ab85";
             release       Choupo-2607;
         }
         "species/SO4.dat"
         {
             type          imported;
-            sha256        "02257919b2723767f331f194894c7771f463f8de2e8ff052df0e5ea5a3538c0b";
+            sha256        "65f12512b65e5daa77b542f48ccb2a41f995861388631c22eaaf69ae11ae0953";
             origin        "data/standards/species/SO4.dat";
-            originSha256  "02257919b2723767f331f194894c7771f463f8de2e8ff052df0e5ea5a3538c0b";
+            originSha256  "65f12512b65e5daa77b542f48ccb2a41f995861388631c22eaaf69ae11ae0953";
             release       Choupo-2607;
         }
     }

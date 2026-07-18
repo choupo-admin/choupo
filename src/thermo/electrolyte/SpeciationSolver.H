@@ -339,7 +339,7 @@ class SpeciationSolver
 public:
     // Loads the speciation network + minerals (case overlay first, then the
     // curated tree: chemistry/ (recordType aqueousSpeciation) , components/ solidPhases) and the
-    // master ion charges from species/aqueous.dat.
+    // master ion charges from species/<name>.dat.
     // Throws with a how-to-obtain message when no catalogue exists.
     //
     // `activityModel` selects the aqueous per-ion gamma model (AqueousActivity);

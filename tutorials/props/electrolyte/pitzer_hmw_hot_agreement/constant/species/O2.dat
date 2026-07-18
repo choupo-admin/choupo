@@ -12,6 +12,6 @@ schemaVersion 1;
    the pinned master of an OPEN-system O2(g) Henry pin
    (chemistry/ (recordType gasLiquidEquilibrium) O2.dat) -- the DO-saturation master. */
 name    O2;
-ion     "O2";
+formula     "O2";
 charge  0;
 MW { value 31.999; unit g/mol;}

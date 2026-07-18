@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    HCO3;
-ion     "HCO3-";
+formula     "HCO3-";
 charge  -1;
 MW { value 61.02; unit g/mol;}
 aqueousThermo

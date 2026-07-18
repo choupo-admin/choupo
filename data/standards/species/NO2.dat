@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    NO2;
-ion     "NO2-";
+formula     "NO2-";
 charge  -1;
 MW { value 46.005; unit g/mol;}
 aqueousThermo

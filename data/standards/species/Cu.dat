@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Cu;
-ion     "Cu+2";
+formula     "Cu+2";
 charge  +2;
 MW { value 63.546; unit g/mol;}
 aqueousThermo

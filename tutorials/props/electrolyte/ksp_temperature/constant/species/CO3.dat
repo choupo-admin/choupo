@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    CO3;
-ion     "CO3-2";
+formula     "CO3-2";
 charge  -2;
 MW { value 60.01; unit g/mol;}
 aqueousThermo

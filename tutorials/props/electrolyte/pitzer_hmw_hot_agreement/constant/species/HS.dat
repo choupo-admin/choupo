@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    HS;
-ion     "HS-";
+formula     "HS-";
 charge  -1;
 MW { value 33.068; unit g/mol;}
 aqueousThermo

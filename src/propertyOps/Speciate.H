@@ -42,7 +42,7 @@ License
 
   Reactions/minerals are CURATED data (case constant/electrolyte/speciation.dat
   overlay, else chemistry/ (recordType aqueousSpeciation)  + components/ solidPhases), charges
-  from species/aqueous.dat.
+  from species/<name>.dat.
 
   Dictionary form:
 

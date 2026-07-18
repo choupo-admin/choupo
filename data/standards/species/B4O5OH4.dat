@@ -20,5 +20,5 @@ by USGS PHREEQC pitzer.dat (public domain; databank provenance
 Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49).
 \*---------------------------------------------------------------------------*/
 name    B4O5OH4;
-ion     "B4O5(OH)4-2";
+formula     "B4O5(OH)4-2";
 charge  -2;

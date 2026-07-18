@@ -82,21 +82,5 @@ propertyManifest
             originSha256  "c23887184e5369a9a0e0d4c7498d6ed4dc69374162018b4195e2e69bbb52fdbb";
             release       Choupo-2607;
         }
-        "species/H2.dat"
-        {
-            type          imported;
-            sha256        "d88c6ae99fef2a987e11ea25ee799c78a261c33a48f6d106ae7e2f3172cdad0a";
-            origin        "data/standards/species/H2.dat";
-            originSha256  "d88c6ae99fef2a987e11ea25ee799c78a261c33a48f6d106ae7e2f3172cdad0a";
-            release       Choupo-2607;
-        }
-        "species/N2.dat"
-        {
-            type          imported;
-            sha256        "9f8bbd72affa2762f4e97da6a2c2da020594427959356d800f482318b1615aab";
-            origin        "data/standards/species/N2.dat";
-            originSha256  "9f8bbd72affa2762f4e97da6a2c2da020594427959356d800f482318b1615aab";
-            release       Choupo-2607;
-        }
     }
 }

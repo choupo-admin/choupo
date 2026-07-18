@@ -143,7 +143,7 @@ inline DictPtr findPair(const std::string& file, const std::string& listKey,
     return nullptr;
 }
 
-// Bridge a NESTED species/aqueous/<species>.dat record to the FLAT inline keys every
+// Bridge a NESTED species/<name>.dat record to the FLAT inline keys every
 // ion accessor expects (z/MW/hfAq/sAq/cpAq/radius/D0).  CONDITIONAL emission
 // preserves found() semantics (so e.g. Electrochem's LOUD !found("radius") still
 // fires for ions without a transport tier, and ionAqReference returns false for
@@ -153,7 +153,11 @@ inline DictPtr bridgeTrueIon(const DictPtr& r, const std::string& species)
 {
     std::ostringstream os;  os << std::setprecision(17);
     os << "species " << species << "; ";
-    if (r->found("ion")) os << "ion \"" << r->lookupWord("ion") << "\"; ";
+    // P0 semantico (2026-07-18): the species' display identity is its
+    // FORMULA ("Na+", "O2") -- `ion` was ontologically wrong for the neutral
+    // dissolved gases (O2(aq) is NOT an ion).  The flat key keeps the old
+    // name for its consumers; the DATA key is `formula`.
+    if (r->found("formula")) os << "ion \"" << r->lookupWord("formula") << "\"; ";
     os << "z " << static_cast<int>(r->lookupScalar("charge")) << "; ";
     if (r->found("MW")) os << "MW " << r->subDict("MW")->lookupScalar("value") << "; ";
     if (r->found("aqueousThermo"))
@@ -172,28 +176,13 @@ inline DictPtr bridgeTrueIon(const DictPtr& r, const std::string& species)
     return Dictionary::fromString(os.str());
 }
 
-// Ion record by species name.  Source legs, case-first (the ion kind is now
-// stored ONLY as the species/aqueous.dat catalogue; the old monolithic
-// electrolyte/ions.dat is gone):
-//   (1) case-local constant/electrolyte/ions.dat -- OLD FLAT list, read EXACTLY
-//       as before, whole-row FIRST-FILE-WINS (do NOT merge fields with the
-//       standards leg: crystalliser05 ships {z,MW}-only Na with NO hfAq, and its
-//       golden depends on ionAqReference returning false there).
-//   (2) case-local constant/species/aqueous.dat -- the MIRRORED single
-//       catalogue (a sealed import writes it FILTERED to the case's closure;
-//       same grammar as the standards catalogue, never a per-file forest),
-//       matched by `name`, bridged to flat.  Case wins per-record; unsealed,
-//       the standards catalogue fills any name the case does not carry.
-//   (3) [legacy] snapshot species/aqueous/<species>.dat -- the retired v1
-//       per-file form (lithiumBrinePlant / Crystallizer09chatGPT only; see
-//       the RecordResolver TODO).
-//   (4) standards species/aqueous.dat -- ONE catalogue (aqueousSpecies list),
-//       FORBIDDEN when the case is sealed (loud refusal instead).
-// The RAW model-species record (species/<name>.dat, the 2026-07-18 flat-file
-// decision: ONE typed file per model species -- a sealed case copies exactly
-// the species it reaches).  Resolution: case-local constant/species/<name>.dat
-// (walk-up) -> standards species/<name>.dat -> [transitional, dies with the
-// monolith] the aqueous.dat catalogue.  nullptr when absent everywhere.
+// The RAW model-species record: ONE typed file per model species
+// (species/<name>.dat, the 2026-07-18 flat-file decision -- the aqueous
+// monolith dismantled; a sealed case copies exactly the species it reaches).
+// The case-local ions.dat overlay is a separate first-wins leg handled by the
+// callers (findAqueousSpecies); here the resolution is the standard record
+// ladder: case-local constant/species/<name>.dat (walk-up) -> standards
+// species/<name>.dat, sealed-forbidden past the case.  nullptr when absent.
 inline DictPtr rawSpeciesRecord(const std::string& species)
 {
     const fs::path f = records::resolveRecord("species/" + species + ".dat");
@@ -201,7 +190,10 @@ inline DictPtr rawSpeciesRecord(const std::string& species)
     return nullptr;
 }
 
-inline DictPtr findIon(const std::string& species)
+// The GENERIC aqueous model-species lookup (charged AND neutral -- O2(aq) is
+// a neutral molecular species, NOT an ion; P0 semantico 2026-07-18).  Bridged
+// flat record, or nullptr.
+inline DictPtr findAqueousSpecies(const std::string& species)
 {
     const fs::path cl = caseElectrolytePath("ions.dat");
     if (!cl.empty())
@@ -216,6 +208,19 @@ inline DictPtr findIon(const std::string& species)
         records::refuseSealed("species/" + species + ".dat",
                               "aqueous species record");
     return nullptr;
+}
+
+// The CHARGED wrapper: ion physics only (Pitzer pair legs, salt stoichiometry
+// from electroneutrality).  A charge-0 species here is a GRAMMAR error --
+// refuse loudly, never treat a neutral as a cation/anion.
+inline DictPtr findIon(const std::string& species)
+{
+    DictPtr r = findAqueousSpecies(species);
+    if (r && static_cast<int>(r->lookupScalar("z")) == 0)
+        throw std::runtime_error("electrolyte: species '" + species
+            + "' is NEUTRAL (charge 0) -- it is a dissolved molecular"
+              " species, not an ion; the ion-physics path refuses it.");
+    return r;
 }
 
 // Bridge a NESTED per-pair record (parameters{ beta0.. }) to the FLAT inline keys
@@ -360,7 +365,7 @@ inline int ionCharge(const std::string& species)
     auto i = findIon(species);
     if (!i)
         throw std::runtime_error("electrolyte: ion '" + species
-            + "' not in constant/electrolyte/ions.dat (case) or standards/species/aqueous/");
+            + "' not in constant/electrolyte/ions.dat (case) or standards species/<name>.dat");
     return static_cast<int>(i->lookupScalar("z"));
 }
 
@@ -475,7 +480,7 @@ inline bool ionCCNodes(const std::string& ion, double v[5])
 inline bool crissCobbleNodes(const std::string& cation, const std::string& anion,
                              double nu_c, double nu_a, double nodes[5])
 {
-    // The salt's neutral sum from EACH ion's own record (species/aqueous.dat
+    // The salt's neutral sum from EACH ion's own record (species/<name>.dat
     // aqueousThermo.cpAvg298 -- ONE home per ion, no parallel monolith).  The
     // single-ion CC "absolute" scale (Cp(H+)=28 cal) cancels in this sum.
     // Absence-TOLERANT: an ion without the block degrades the pair to the

@@ -18,6 +18,6 @@ MW 41.31 g/mol is summed from the IUPAC standard atomic weights
 needed.
 \*---------------------------------------------------------------------------*/
 name    MgOH;
-ion     "MgOH+";
+formula     "MgOH+";
 charge  +1;
 MW { value 41.31; unit g/mol;}

@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Zn;
-ion     "Zn+2";
+formula     "Zn+2";
 charge  +2;
 MW { value 65.38; unit g/mol;}
 aqueousThermo

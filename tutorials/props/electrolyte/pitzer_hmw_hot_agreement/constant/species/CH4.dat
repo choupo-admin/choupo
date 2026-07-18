@@ -12,6 +12,6 @@ schemaVersion 1;
    master of an OPEN-system CH4(g) Henry pin (chemistry/ (recordType gasLiquidEquilibrium) 
    CH4.dat); in a CLOSED system it is a conserved inert total. */
 name    CH4;
-ion     "CH4";
+formula     "CH4";
 charge  0;
 MW { value 16.043; unit g/mol;}

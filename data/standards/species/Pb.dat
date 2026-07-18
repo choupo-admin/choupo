@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Pb;
-ion     "Pb+2";
+formula     "Pb+2";
 charge  +2;
 MW { value 207.2; unit g/mol;}
 aqueousThermo

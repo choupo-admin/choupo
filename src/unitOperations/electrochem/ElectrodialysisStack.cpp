@@ -148,7 +148,7 @@ ChannelState buildChannel(const ThermoPackage& thermo, const sVector& z,
         if (i == iWater) continue;
         if (z[i] <= 0.0) continue;
         const std::string nm = thermo.comp(i).name();
-        if (!electrolyte::findIon(nm))
+        if (!electrolyte::findAqueousSpecies(nm))
             throw std::runtime_error("electrodialysisStack: component '" + nm
                 + "' has no row in ions.dat -- electrodialysis needs an IONIC "
                   "water analysis (Na, Cl, ... + water)");

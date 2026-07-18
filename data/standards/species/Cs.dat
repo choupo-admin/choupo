@@ -13,7 +13,7 @@ schemaVersion 1;
 // for that curation (the loud-absence doctrine), the CC heat-
 // capacity tier alone is served.
 name    Cs;
-ion     "Cs+";
+formula     "Cs+";
 charge  +1;
 MW { value 132.905; unit g/mol;}
 aqueousThermo

@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Br;
-ion     "Br-";
+formula     "Br-";
 charge  -1;
 MW { value 79.904; unit g/mol;}
 aqueousThermo

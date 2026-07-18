@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    Mn;
-ion     "Mn+2";
+formula     "Mn+2";
 charge  +2;
 MW { value 54.938; unit g/mol;}
 aqueousThermo

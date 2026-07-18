@@ -470,7 +470,7 @@ double SpeciationSolver::mineralMW(const std::string& mineral) const
         const double m = ionMW(ion);
         if (m <= 0.0)
             throw std::runtime_error("mineralMW: ion '" + ion + "' (in " + mineral
-                + ") has no MW in its ion record (species/aqueous/) -- add `MW <g/mol>;` to its entry");
+                + ") has no MW in its ion record (species/<name>.dat) -- add `MW <g/mol>;` to its entry");
         mw += nu * m;
     }
     return mw;
@@ -490,11 +490,11 @@ double SpeciationSolver::chargeOf(const std::string& master) const
 {
     auto it = masterCharge_.find(master);
     if (it != masterCharge_.end()) return it->second;
-    auto ion = findIon(master);
+    auto ion = findAqueousSpecies(master);
     if (!ion)
         throw std::runtime_error("speciation: master ion '" + master
-            + "' not in constant/electrolyte/ions.dat (case) or "
-              "data/standards/species/aqueous.dat");
+            + "' has no model-species record (case constant/species/<name>.dat"
+              " / ions.dat overlay / standards species/<name>.dat).");
     const double z = ion->lookupScalar("z");
     masterCharge_[master] = z;
     return z;
@@ -1827,7 +1827,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                          "  | driving force.\n"
                          "  +---------------------------------------------------------+\n";
             std::cout << "  [note] mineral MW derived as sum nu*MW(ion) + nuWater*MW(H2O)"
-                         " from species/aqueous/ (no minerals.dat MW field)\n";
+                         " from species/<name>.dat (no minerals.dat MW field)\n";
 
             std::cout << "  PRECIPITATION LEDGER:\n";
             for (const auto& al : allowed)

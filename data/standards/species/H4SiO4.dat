@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    H4SiO4;
-ion     "H4SiO4";
+formula     "H4SiO4";
 charge  0;
 MW { value 96.113; unit g/mol;}
 aqueousThermo

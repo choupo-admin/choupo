@@ -153,70 +153,6 @@ def parse_species_files(std):
     return out
 
 
-def parse_aqueous_catalogue(std):
-    """-> {name: (charge, verbatim '{...}' record text)} preserving order."""
-    out = {}
-    cat = std / "species" / "aqueous.dat"
-    if not cat.is_file():
-        return out
-    txt = cat.read_text()
-    m = re.search(r'aqueousSpecies\s*\(', txt)
-    if not m:
-        return out
-    i, depth = m.end(), 1
-    while i < len(txt):
-        c = txt[i]
-        if c == '{':
-            d, j = 0, i
-            while j < len(txt):
-                if txt[j] == '{':
-                    d += 1
-                elif txt[j] == '}':
-                    d -= 1
-                    if d == 0:
-                        break
-                j += 1
-            raw = txt[i:j + 1]                      # verbatim, braces included
-            clean = re.sub(r'/\*.*?\*/', '', raw, flags=re.S)
-            clean = re.sub(r'^\s*//.*$', '', clean, flags=re.M)
-            nm = re.search(r'\bname\s+([A-Za-z0-9_+\-]+)\s*;', clean)
-            zm = re.search(r'\bcharge\s+([+\-]?\d+)\s*;', clean)
-            if nm:
-                out[nm.group(1)] = (int(zm.group(1)) if zm else 0, raw)
-            i = j + 1
-            continue
-        elif c == '(':
-            depth += 1
-        elif c == ')':
-            depth -= 1
-            if depth == 0:
-                break
-        i += 1
-    return out
-
-
-def filtered_species_catalogue(AQ, names, release, total):
-    """The sealed constant/species/aqueous.dat: standards grammar, records
-    verbatim, filtered to `names` (catalogue order preserved)."""
-    picked = [n for n in AQ if n in names]
-    L = []
-    L.append("/*----------------------------------------------------------*\\")
-    L.append("  constant/species/aqueous.dat -- aqueous model species,")
-    L.append("  FILTERED to this case's closure (%d of %d catalogue records)."
-             % (len(picked), total))
-    L.append("  Same grammar as data/standards/species/aqueous.dat; imported")
-    L.append("  by bin/choupo-import from the %s release -- ownership and" % release)
-    L.append("  integrity are recorded in constant/propertyManifest.")
-    L.append("\\*----------------------------------------------------------*/")
-    L.append("")
-    L.append("aqueousSpecies")
-    L.append("(")
-    for n in picked:
-        L.append("    " + AQ[n][1])
-    L.append(");")
-    return "\n".join(L) + "\n"
-
-
 SPECIATION_KINDS = ("aqueousSpeciation", "gasLiquidEquilibrium",
                     "ionExchangeEquilibrium")
 
@@ -351,6 +287,7 @@ def closure_of(pp_path, caseDir, std, AQ):
     wantAllSpecies = False
     solute_comps = set()
     nonlocal_flags = {"speciates": False}
+    ion_candidates = set()          # flowsheet components whose NAME is a species
 
     def want(rel):
         src = std / rel
@@ -531,17 +468,24 @@ def closure_of(pp_path, caseDir, std, AQ):
         for ctext in (read(csrc) or "", (read(loc) or "") if loc else ""):
             d2t = block(ctext, "speciesMap") or block(ctext, "dissociatesTo")
             if d2t:
-                ions.update(w for w in words(d2t) if not w.isdigit())
+                # P0 (Codex audit): a salt's ion map only mobilises species
+                # records when the case runs aqueous/ionic physics -- a lumped
+                # NaCl evaporator never opens species/Na.dat.  Candidates,
+                # decided with the context below.
+                ion_candidates.update(w for w in words(d2t)
+                                      if not w.isdigit())
             # a `role solute;` component dissolves by Henry's law -- its
             # (solute, solvent) pair record must ride the closure (below).
             if re.search(r'\brole\s+solute\s*;', ctext):
                 solute_comps.add(c)
-        # flowsheet-ION basis: a component whose NAME is itself an aqueous
-        # species (Na, Cl, Ca, SO4, ... carried AS flowsheet components -- the
-        # multi-ion membrane / electrodialysis basis).  Its ion record + pairs
-        # ride the closure like any dissociated salt's ions.
+        # flowsheet-ION basis CANDIDATE (P0 fix, Codex audit 2026-07-18):
+        # a name being in the species home does NOT make a component an ion --
+        # N2/O2/CH4/H2 and the Cl radical prove a name is not a type.  The
+        # decision is made AFTER the aqueous-context scan below: the candidate
+        # promotes only when the case actually runs aqueous chemistry, or when
+        # the name does not resolve as a process component at all.
         if c in AQ:
-            ions.add(c)
+            ion_candidates.add(c)
     # ---- Henry's-law dilute-solution pairs -----------------------------------
     # parameters/Henry/<solute>-<solvent>.dat: the HenrysLawRegistry scans the
     # Henry home (case-local constant/parameters/Henry/ first).  A package that
@@ -630,6 +574,30 @@ def closure_of(pp_path, caseDir, std, AQ):
         if re.search(r'\bionExchanger\b|\bresin\s+[A-Za-z0-9_]+\s*;', ft):
             speciates = True
             nonlocal_flags["exchange"] = True
+        # an electrodialysis stack / ion-selective membrane runs on the
+        # flowsheet-ION basis -- its component names ARE solver species
+        if re.search(r'\belectrodialysisStack\b|\bdonnan\b', ft):
+            nonlocal_flags["ionBasis"] = True
+        # a DSPM-DE / charged-pore membrane resolves ion radius+charge from
+        # the species records -- ionic context even without scaling{}
+        if re.search(r'dspmde|DSPM', ft):
+            nonlocal_flags["ionBasis"] = True
+
+    # ---- promote the flowsheet-ION candidates (P0, fail-closed) ------------
+    uses_electrolyte_world_early = bool(
+        re.search(r'\belectrolyte\.[A-Za-z]+', t_nc)
+        or re.search(r'\bformulation\s+electrolyteGammaPhi\s*;', t_nc)
+        or re.search(r'\b(?:pitzerActivity|electrolyteActivity|enrtlMultiSalt|'
+                     r'enrtlMixedSolvent)\b', props_ops))
+    aqueous_context = (speciates or nonlocal_flags["speciates"]
+                       or nonlocal_flags.get("exchange", False)
+                       or nonlocal_flags.get("ionBasis", False)
+                       or uses_electrolyte_world_early)
+    for c in sorted(ion_candidates):
+        if aqueous_context:
+            ions.add(c)
+        # else: a gas-side process component that merely SHARES a species
+        # name (N2 in a Brayton) -- no aqueous chemistry, no species seal.
 
     if speciates or nonlocal_flags["speciates"]:
         # ---- SEEDS (Codex seal-audit): what the case actually introduces ----
@@ -1041,8 +1009,6 @@ def main():
                            + name + "/" + f.name)
 
     # ---- per-context install content --------------------------------------
-    cat_sha = sha_file(std / "species" / "aqueous.dat") \
-        if (std / "species" / "aqueous.dat").is_file() else ""
 
     def install_map(recs, ions, wantAll):
         """-> {rel: (content, origin, originSha)}"""

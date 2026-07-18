@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    F;
-ion     "F-";
+formula     "F-";
 charge  -1;
 MW { value 18.998; unit g/mol;}
 aqueousThermo

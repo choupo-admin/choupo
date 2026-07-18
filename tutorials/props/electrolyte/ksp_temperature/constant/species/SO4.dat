@@ -8,7 +8,7 @@ recordType modelSpecies;
 schemaVersion 1;
 
 name    SO4;
-ion     "SO4-2";
+formula     "SO4-2";
 charge  -2;
 MW { value 96.06; unit g/mol;}
 aqueousThermo

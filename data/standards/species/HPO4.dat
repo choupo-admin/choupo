@@ -13,7 +13,7 @@ schemaVersion 1;
 // for that curation (the loud-absence doctrine), the CC heat-
 // capacity tier alone is served.
 name    HPO4;
-ion     "HPO4-2";
+formula     "HPO4-2";
 charge  -2;
 MW { value 95.979; unit g/mol;}
 aqueousThermo
