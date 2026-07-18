@@ -176,6 +176,52 @@ void ThermoPackage::assembleTwoPhase(const std::vector<std::string>& namesIn,
     pureFluid_.clear();
 }
 
+void ThermoPackage::assembleNamedPhases(const std::vector<std::string>& namesIn,
+                                        const std::vector<DictPtr>& phaseConfigs,
+                                        const Database& db)
+{
+    // v2-NATIVE named-phase assembly (gammaGamma LLE/VLLE): the invariants of
+    // the flat `phases (...)` reader path, built from config dicts directly.
+    if (namesIn.empty())
+        throw std::runtime_error("thermophysicalPropertySystem: 'components'"
+            " list is empty");
+    if (phaseConfigs.empty())
+        throw std::runtime_error("thermophysicalPropertySystem: gammaGamma"
+            " declares no phases");
+    const auto names = loadComponentSet(namesIn, db);
+
+    solventName_.clear();
+    declaredSolutes_.clear();
+    vleWorld_ = "gammaPhi";      // the K path default; the LL split is the
+                                 // flash's direct Gibbs minimisation.
+
+    phases_.clear();
+    for (const auto& pd : phaseConfigs)
+        phases_.push_back(Phase::New(pd, names, components_));
+
+    // Legacy convenience pointers, same rule as the flat reader: the FIRST
+    // liquid's activity, the first declared eos.
+    DictPtr activityRef, eosRef;
+    for (const auto& pd : phaseConfigs)
+    {
+        if (!activityRef && pd->found("activity"))
+            activityRef = pd->subDict("activity");
+        if (!eosRef && pd->found("eos"))
+            eosRef = pd->subDict("eos");
+    }
+    if (activityRef)
+    {
+        activityRef = injectUnifacGroups(activityRef, names, components_);
+        injectUniquacRQ(activityRef, names, components_);
+        activity_ = ActivityModel::New(activityRef, components_);
+    }
+    if (eosRef) eos_ = EquationOfState::New(eosRef, components_);
+
+    auditFindings_ = collectAuditFindings(components_, activity_.get(), eos_.get());
+    auditPackage(components_, activity_.get(), eos_.get());
+    pureFluid_.clear();
+}
+
 void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
 {
     auto names = dict->lookupWordList("components");

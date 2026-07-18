@@ -92,3 +92,13 @@ traceable explanation.  Do not mix this migration with model growth
   explicit-phases shapes) plus gammaGamma, diluteSolution,
   electrolyteGammaPhi, aqueousProperties and the Flowsheet
   propertyContextBase chain.  Full suite 292/0; GUI 1778/1778.
+- 2026-07-18 (wave B): **gammaGamma assembles natively** —
+  `ThermoPackage::assembleNamedPhases` (each liquid phase from its own
+  config dict, shared activity model resolved once per phase — no cross-phase
+  mutation; optional vapour = VLLE), `resolveActivity` shared pair resolver
+  in buildV2 (source records loaded + cited; inline coefficients copied as
+  entry values, nested provenance blocks skipped).  A system carrying
+  `activeComponents`/`chemistry` (the lithiumBrinePlant EXTRACTION sector
+  context) stays on the scaffold by the standing guard.  Native now: the
+  LLE/VLLE family (vlle01/03, extraction01, extract01, the three props LLE
+  scans).  Full suite 292/0.

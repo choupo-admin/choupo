@@ -144,6 +144,15 @@ public:
                           const std::string& world,
                           const Database& db);
 
+    // v2-NATIVE assembly for NAMED phases (gammaGamma LLE/VLLE): each config
+    // dict is one phase ({name; type; activity{...}} or {name; type vapor;
+    // eos{...}}), prepared by buildV2.  Establishes the same invariants the
+    // flat `phases (...)` reader path does: every phase built, the legacy
+    // activity_/eos_ pointers from the first liquid/vapour, audits.
+    void assembleNamedPhases(const std::vector<std::string>& names,
+                             const std::vector<DictPtr>& phaseConfigs,
+                             const Database& db);
+
     std::size_t n() const { return components_.size(); }
     const Component& comp(std::size_t i) const { return components_.at(i); }
     std::size_t indexOf(const std::string& name) const;

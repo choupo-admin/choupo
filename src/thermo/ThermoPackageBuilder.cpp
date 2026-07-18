@@ -1422,6 +1422,7 @@ bool ThermoPackageBuilder::v2NativeFormulation(const DictPtr& v2)
         || v2->found("activeComponents") || v2->found("chemistry"))
         return false;
     if (form == "phiPhi") return true;
+    if (form == "gammaGamma") return true;   // both pair forms wired natively
     if (form == "gammaPhi")
     {
         // Wave A (2026-07-18): the ideal liquid and the source-declared-pairs
@@ -1476,6 +1477,106 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
                 + "' for this formulation -- a route declaration must state"
                 " what runs.");
     };
+
+    // Pair resolution shared by gammaPhi and gammaGamma: an activityModel
+    // block's binaryParameters entries -- `source "file"` loads the ONE
+    // curated record (citation announced); an inline coefficient block is
+    // copied verbatim (entry values, full precision; nested provenance
+    // sub-blocks skipped, as the scaffold does).
+    const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
+    auto resolveActivity = [&](const DictPtr& am) -> DictPtr
+    {
+        auto activityDict = std::make_shared<Dictionary>("activity");
+        activityDict->insert("model", am->lookupWord("model"));
+        if (!am->found("binaryParameters")) return activityDict;
+        auto bp = am->subDict("binaryParameters");
+        std::vector<DictPtr> pairDicts;
+        for (const auto& pr : bp->keys())
+        {
+            auto pd = bp->subDict(pr);
+            DictPtr coef = pd;
+            if (pd->found("source"))
+            {
+                const std::string src = pd->lookupWord("source");
+                coef = loadRec(resolveDeclared(repoRoot, src),
+                               "binary pair " + pr);
+                if (coef->found("parameters")) coef = coef->subDict("parameters");
+                if (thermoAnnounce())
+                    std::cout << "[builder] binary pair " << pr
+                              << "  --- " << src << "\n";
+            }
+            auto p = std::make_shared<Dictionary>(pr);
+            for (const auto& k : coef->keys())
+            {
+                const EntryValue& ev = coef->entryValue(k);
+                if (std::holds_alternative<scalar>(ev)
+                    || std::holds_alternative<std::string>(ev))
+                    p->insert(k, ev);        // verbatim; skip nested blocks
+            }
+            pairDicts.push_back(p);
+        }
+        if (!pairDicts.empty())
+            activityDict->insert("pairs", EntryValue(pairDicts));
+        return activityDict;
+    };
+
+    if (form == "gammaGamma")
+    {
+        if (!eq->found("liquidPhases"))
+            throw std::runtime_error("thermophysicalPropertySystem: required"
+                " key 'equilibrium.liquidPhases ( { name } ... )' is absent");
+        // ONE fact in ONE home: coexisting liquids share the activity model
+        // declared at equilibrium.liquid; a phase overrides only when its
+        // model is intentionally different.
+        DictPtr shared;
+        if (eq->found("liquid") && eq->subDict("liquid")->found("activityModel"))
+            shared = eq->subDict("liquid")->subDict("activityModel");
+        std::vector<DictPtr> phaseConfigs;
+        std::string phaseNames;
+        for (const auto& ph : eq->lookupDictList("liquidPhases"))
+        {
+            const std::string pname = ph->lookupWord("name");
+            phaseNames += (phaseNames.empty() ? "" : ", ") + pname;
+            DictPtr am = ph->found("activityModel") ? ph->subDict("activityModel")
+                                                    : shared;
+            if (!am)
+                throw std::runtime_error("thermophysicalPropertySystem:"
+                    " gammaGamma phase '" + pname + "' has no activityModel and"
+                    " equilibrium.liquid declares no shared one.");
+            auto pc = std::make_shared<Dictionary>(pname);
+            pc->insert("name", pname);
+            pc->insert("type", std::string("liquid"));
+            // Each phase OWNS its activity config (resolveActivity builds a
+            // fresh dict per call -- no shared mutation between phases).
+            pc->insert("activity", EntryValue(resolveActivity(am)));
+            phaseConfigs.push_back(pc);
+        }
+        if (eq->found("vapour"))
+        {
+            const std::string vap =
+                eq->subDict("vapour")->lookupWord("fugacityModel");
+            auto ed = std::make_shared<Dictionary>("eos");
+            ed->insert("model", vap);
+            auto pc = std::make_shared<Dictionary>("vapor");
+            pc->insert("name", std::string("vapor"));
+            pc->insert("type", std::string("vapor"));
+            pc->insert("eos",  EntryValue(ed));
+            phaseConfigs.push_back(pc);
+        }
+        if (thermoAnnounce())
+            std::cout << "[v2 native] equilibrium gammaGamma: named liquid"
+                         " phases (" << phaseNames << ") each on its own gamma"
+                         " surface"
+                      << (eq->found("vapour") ? ", vapour phi present (VLLE)"
+                                              : ", no vapour (LLE)")
+                      << " -- ONE Gibbs surface per phase, split by direct"
+                         " minimisation.  Assembled NATIVELY from the v2"
+                         " grammar (no translated intermediate).\n";
+        ThermoPackage out;
+        out.assembleNamedPhases(v2->lookupWordList("components"),
+                                phaseConfigs, db);
+        return out;
+    }
 
     if (form == "gammaPhi")
     {
