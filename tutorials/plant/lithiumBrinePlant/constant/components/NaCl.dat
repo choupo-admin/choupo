@@ -10,7 +10,7 @@
    ledger prices the dissolved NaCl's sensible enthalpy; the standards NaCl
    record carries no liquidHeatCapacity, so this delta asserts the case's
    constant-Cp closure proxy (50 J/mol.K -- an owned, announced assumption).
-   Everything else (MW, speciesMap, solidPhases Ksp...) merges from the
+   Everything else (MW, dissociatesTo, solidPhases Ksp...) merges from the
    standard NaCl.dat. */
 
 name  NaCl;

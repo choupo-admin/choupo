@@ -20,7 +20,7 @@
   thermo.Hliquid recovers 4.07 kJ/(kg·K) at x = 0.05, matching the
   4.19 - 2.35*0.05 = 4.07 of the correlation to three sig. figs.
 
-  No Antoine block (`nonvolatile true;`); the solute never enters
+  No Antoine block (`role nonvolatile;`); the solute never enters
   the vapour phase in flash or evaporator routines.
 \*---------------------------------------------------------------------------*/
 

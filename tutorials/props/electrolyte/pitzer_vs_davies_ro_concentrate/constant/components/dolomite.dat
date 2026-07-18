@@ -5,7 +5,7 @@
   UNIFIED substance file -- the MULTI-ION proof case (ratified 2026-07-14).
 
   Demonstrates general (>1 cation) stoichiometry. The apparent-component
-  speciesMap uses the Ca/Mg/CO3 basis and is distinct from the solid
+  dissociatesTo uses the Ca/Mg/CO3 basis and is distinct from the solid
   phase dissolutionReaction, which is written in the HCO3/H+ basis.
 
   This record currently supplies equilibrium data only. It carries no

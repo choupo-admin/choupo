@@ -23,7 +23,7 @@ propertyManifest
         "components/sucrose.dat"
         {
             type          imported;
-            sha256        "c348bc5d008e650aa772fe6a5cdde7d0441ac34b19a36bd3272870e53ae6f167";
+            sha256        "f5d1ffefb793f2652b6ca8c883ffcc51c075c1d7ecd6563af3c7e3745248757c";
             origin        "data/standards/components/sucrose.dat";
             originSha256  "7e4b8e52d0d4b59033ce2e90863b143361b0b9a3feffb9ceac74374941ff2453";
             release       Choupo-2607;

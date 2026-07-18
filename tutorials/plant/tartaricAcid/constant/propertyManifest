@@ -76,7 +76,7 @@ propertyManifest
         "components/tartaricAcid.dat"
         {
             type          imported;
-            sha256        "39166d793e98542d9017356a529c6747f52b697b789ae153fb28f736c86e9450";
+            sha256        "a38a8c3ae6d920cab8c88ebd2b3d83665944d23ff9c27d9702bde5f78e19fb1e";
             origin        "data/standards/components/tartaricAcid.dat";
             originSha256  "14e7e4cdb1904bac5b10874524aba27ddb32484b4ce31bb7b0bd09dff37abfa2";
             release       Choupo-2607;

@@ -331,7 +331,7 @@ propertyManifest
         "components/dolomite.dat"
         {
             type          imported;
-            sha256        "487f1249511f6e3244326c4ba6a78a4ff926ae1187eafaf85d76a6d9dc8951fd";
+            sha256        "dafa3396aa5a935c9294817aa2d0eea83082688a0fd678992238e61a83d3d486";
             origin        "data/standards/components/dolomite.dat";
             originSha256  "8592b115ffff7ad786f1c5d290085517e60bed6aeb56f1396ce9a5d174d2e5c1";
             release       Choupo-2607;

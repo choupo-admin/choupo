@@ -12,7 +12,7 @@
   predicts ~2330 K, the well-known too-high closed-system answer.
 
   No vapour pressure: OH is a transient gas-phase species and never
-  appears as a condensed liquid.  We tag it `nonvolatile true` to
+  appears as a condensed liquid.  We tag it `role nonvolatile;` to
   tell the rest of the package not to call Antoine on it (Antoine
   is left empty for schema compliance and never read).
   Sources: JANAF / NASA TM-4513 (McBride-Gordon-Reno 1993);

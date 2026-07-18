@@ -75,7 +75,7 @@ propertyManifest
         "components/NaCl.dat"
         {
             type          merged;
-            sha256        "75d795663ee1fd1921082ed660e99847f8c0717032e62f8633ad8ab1bbb2d8c2";
+            sha256        "9c1290a21c44c89a45dd6418aedf60d25001d48c228032d406567bec23986f3d";
             origin        "data/standards/components/NaCl.dat";
             originSha256  "4602d37208c6f6ef4637cf8a14b4936a9924b6d51d5cbfb5aeadda2f70936dde";
             overlaySha256 "1d775eca86cea0656a39ce23fd42ccb68e59ad4d4ed9f5dd7cae1fa21589595f";

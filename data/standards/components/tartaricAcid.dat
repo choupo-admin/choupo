@@ -54,7 +54,7 @@ solidHeatCapacity
 }
 
 // Liquid / dissolved Cp -- the SENSIBLE heat when the solute travels in an aqueous
-// (liquid) stream (the datum stays the solid line via `nonvolatile true`).  PROXY:
+// (liquid) stream (the datum stays the solid line via `role nonvolatile;`).  PROXY:
 // the solid Cp held constant -- FLAGGED; Apelblat & Manzurola 2001 carry the
 // aqueous apparent molar Cp to refit against before a Cp-sensitive duty.
 liquidHeatCapacity
