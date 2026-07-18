@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------*\
+  Evaluate the PC-SAFT equation of state at a single liquid state.  Z and the
+  molar volume are locked by the golden; the density follows (rho = MW / Vm).
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        liquid_298K_1bar;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { nHexane 1.0; } }
+        properties  ( Z  molarVolume );
+    }
+);

@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- phiPhi with the PC-SAFT equation of state.  The
+  molecule is a chain of m tangent segments (diameter sigma, energy
+  epsilon/k); a_res = hard-chain + dispersion (Gross & Sadowski 2001).  The
+  segment parameters live in n-hexane's OWN pcsaft{} block (one home).
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( nHexane );
+
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState { model PCSAFT; }
+}

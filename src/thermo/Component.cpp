@@ -480,6 +480,16 @@ void Component::readFromDict(const DictPtr& d)
         qUq_ = u->lookupScalarOrDefault("q", 0.0);
     }
 
+    // PC-SAFT segment parameters (intrinsic): `pcsaft { m; sigma; epsilonK; }`.
+    // Read by the PCSAFT EoS -- ONE home, never re-declared per case.
+    if (d->found("pcsaft"))
+    {
+        auto pc = d->subDict("pcsaft");
+        pcM_     = pc->lookupScalarOrDefault("m", 0.0);
+        pcSigma_ = pc->lookupScalarOrDefault("sigma", 0.0);
+        pcEpsK_  = pc->lookupScalarOrDefault("epsilonK", 0.0);
+    }
+
     // COSMO-SAC surface data (intrinsic): `cosmo { <setName> { variant; source;
     // area; volume; sigmaProfile ( ... ); } }`.  ONE or MORE named parameter sets
     // (VT2005, LVPP, ...) living ONCE in the component; the CosmoSac model picks a

@@ -1232,11 +1232,13 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
     {
         auto eos = eq->subDict("equationOfState");
         const std::string model = eos->lookupWord("model");
-        if (model != "SRK" && model != "PengRobinson")
+        if (model != "SRK" && model != "PengRobinson" && model != "PCSAFT")
             throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
                 " equationOfState '" + model + "' -- implemented: SRK |"
-                " PengRobinson (PC-SAFT is T5, not built).");
-        if (eos->found("mixingRule")
+                " PengRobinson | PCSAFT (the non-associating PC-SAFT core).");
+        // The vdW-one-fluid mixing rule is the CUBIC combining rule; PC-SAFT
+        // has its own (sigma arithmetic, epsilon geometric) -- do not impose it.
+        if (model != "PCSAFT" && eos->found("mixingRule")
             && eos->lookupWord("mixingRule") != "vanDerWaalsOneFluid")
             throw std::runtime_error("thermophysicalPropertySystem: the cubic"
                 " mixing rule implemented is vanDerWaalsOneFluid.");

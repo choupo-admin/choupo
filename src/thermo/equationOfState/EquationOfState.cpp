@@ -29,6 +29,7 @@ License
 #include "EquationOfState.H"
 #include "IdealGas.H"
 #include "SRK.H"
+#include "PCSAFT.H"
 #include "PR.H"
 #include "thermo/Component.H"
 
@@ -77,6 +78,11 @@ void EquationOfState::registerBuiltins()
         [](const DictPtr& dict, const std::vector<Component>& comps)
             -> std::unique_ptr<EquationOfState>
         { return PR::fromDict(dict, comps); });
+
+    registerModel("PCSAFT",
+        [](const DictPtr& dict, const std::vector<Component>& comps)
+            -> std::unique_ptr<EquationOfState>
+        { return std::make_unique<PCSAFT>(dict, comps); });
 }
 
 } // namespace Choupo

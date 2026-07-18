@@ -301,6 +301,15 @@ public:
     scalar qUniquac()  const { return qUq_; }
     bool   hasUniquac() const { return rUq_ > 0.0 && qUq_ > 0.0; }
 
+    // PC-SAFT segment parameters (intrinsic, glass-box): segment number m,
+    // segment diameter sigma [Angstrom], segment energy epsilon/k [K].  ONE
+    // home in the component's `pcsaft { m; sigma; epsilonK; }` block.
+    scalar pcsaftM()     const { return pcM_; }
+    scalar pcsaftSigma() const { return pcSigma_; }   // Angstrom
+    scalar pcsaftEpsK()  const { return pcEpsK_; }
+    bool   hasPcsaft()   const { return pcM_ > 0.0 && pcSigma_ > 0.0
+                                     && pcEpsK_ > 0.0; }
+
     // COSMO-SAC surface data (intrinsic).  A component may carry SEVERAL named
     // parameter SETS (unlike Joback's single set) -- one per source/variant --
     // in its `cosmo { <setName> { variant; source; area; volume; sigmaProfile (…); } }`
@@ -414,6 +423,7 @@ private:
     // 0 when absent -> the case must supply them, else UNIQUAC throws.
     scalar rUq_ = 0.0;
     scalar qUq_ = 0.0;
+    scalar pcM_ = 0.0, pcSigma_ = 0.0, pcEpsK_ = 0.0;   // PC-SAFT segment params
 
     // COSMO-SAC surface data (intrinsic): named parameter sets by set name.
     std::map<std::string, CosmoSet> cosmoSets_;

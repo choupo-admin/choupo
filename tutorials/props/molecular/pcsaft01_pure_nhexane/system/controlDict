@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  pcsaft01_pure_nhexane -- the NON-ASSOCIATING PC-SAFT core, validated on a
+  pure n-alkane.  n-hexane's segment parameters (m, sigma, epsilon/k) are the
+  Gross & Sadowski 2001 Table 1 fit; the case evaluates the compressibility
+  factor Z and the liquid molar volume at 298.15 K / 1 bar and locks them as a
+  golden.  The engine PROVES the model self-consistent on every run
+  (PCSAFT::verify: a_res -> 0 in the ideal limit, and the residual chemical
+  potentials reproduce the bulk residual Gibbs energy to ~1e-9).
+  Physical cross-check (see README): the PC-SAFT liquid density here is
+  ~650 kg/m3, within ~0.8 % of the ~655 kg/m3 experimental value.
+\*---------------------------------------------------------------------------*/
+application   choupoProps;
+description   "PC-SAFT pure n-hexane: Z + liquid molar volume at 298 K, 1 bar";
+verbosity     3;
