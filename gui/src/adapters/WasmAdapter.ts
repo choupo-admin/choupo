@@ -640,7 +640,6 @@ export function shapeStreams(payload: ResultPayload,
   // The Mass-balance plot depends on this classification: a stream marked
   // "intermediate" is excluded from the plant-boundary totals.
   const fs = caseFiles.flowsheet;
-  const feedStreams = (fs["streams"] ?? {}) as { [k: string]: unknown };
   const units = (fs["units"] ?? []) as Array<{
     in?: string | string[];
     inputs?: string[];
@@ -673,12 +672,10 @@ export function shapeStreams(payload: ResultPayload,
     if (!e.from && e.to) boundaryInlets.add(e.name);
     if (e.from && !e.to) boundaryOutlets.add(e.name);
   }
-  // Tear streams: declared in `tearStreams (...)` AND in `streams {}`
-  // (as initial guesses).  They are NOT feeds and NOT products even
-  // though they show up in the streams block, because they are
-  // INTERNAL recycle slots that get rewritten every outer-loop
-  // iteration.  Misclassifying them as feeds doubled the INPUTS bar
-  // of the Mass-balance plot for any sub-case containing a recycle.
+  // Tear streams (declared in `tearStreams (...)`) are NOT feeds and NOT
+  // products: they are INTERNAL recycle slots that get rewritten every
+  // outer-loop iteration.  Misclassifying them as feeds doubled the INPUTS
+  // bar of the Mass-balance plot for any sub-case containing a recycle.
   const tearStreams = new Set<string>(
     ((fs["tearStreams"] ?? []) as string[]),
   );
@@ -692,10 +689,9 @@ export function shapeStreams(payload: ResultPayload,
     const leaf = name.split(".").pop()!;
     const isTear = tearStreams.has(name) || tearLeafs.has(leaf);
     const isFeed = !isTear && (
-      Object.prototype.hasOwnProperty.call(feedStreams, name)
-      || boundaryInlets.has(name)
-      // Topology (a migrated flat case has no streams{} block): a stream a unit
-      // CONSUMES but no unit PRODUCES is a plant inlet -- symmetric to a product.
+      boundaryInlets.has(name)
+      // Topology: a stream a unit CONSUMES but no unit PRODUCES is a plant
+      // inlet -- symmetric to a product.
       || (consumed.has(name) && !produced.has(name))
     );
     const isProduct = !isTear && (

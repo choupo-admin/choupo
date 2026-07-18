@@ -52,7 +52,8 @@ License
 
 import type { RunResult, StreamResult } from "../adapters/SolverAdapter.js";
 import type { JsonDict } from "../dict/index.js";
-import { readEdges } from "./toGraph.js";
+import type { CaseFiles } from "./types.js";
+import { readEdges, zeroStateText } from "./toGraph.js";
 
 export interface SliceOptions {
   /** Stream names the sub-case's own dicts reference (feeds, boundary,
@@ -92,11 +93,11 @@ export function stripScope(name: string, prefix: string): string | null {
   return null;
 }
 
-/** Every stream name the sub-case's flowsheet dict references: declared
- *  `streams{}`, boundary inlets/outlets, tearStreams, flat units' in/inputs/
- *  outputs, and bare connection endpoints.  These are the names a parent
- *  stream may legitimately pass through under (the frozen inlets / boundary
- *  streams of the drilled scope). */
+/** Every stream name the sub-case's flowsheet dict references: boundary
+ *  inlets/outlets, tearStreams, flat units' in/inputs/outputs, and bare
+ *  connection endpoints.  These are the names a parent stream may
+ *  legitimately pass through under (the frozen inlets / boundary streams of
+ *  the drilled scope). */
 export function localStreamNames(flowsheet: JsonDict | undefined): string[] {
   if (!flowsheet) return [];
   const names = new Set<string>();
@@ -104,7 +105,6 @@ export function localStreamNames(flowsheet: JsonDict | undefined): string[] {
     if (typeof v === "string" && v.length > 0) names.add(v);
     else if (Array.isArray(v)) for (const x of v) add(x);
   };
-  for (const k of Object.keys((flowsheet["streams"] ?? {}) as JsonDict)) names.add(k);
   const boundary = (flowsheet["boundary"] ?? {}) as JsonDict;
   add(boundary["inlets"]);
   add(boundary["outlets"]);
@@ -127,28 +127,45 @@ export function inheritedNote(prefix: string): string {
   return `[inherit] '${prefix}': results inherited from the parent run — re-run to recompute.\n`;
 }
 
-/** Freeze a drilled sub-case's boundary INLETS as feed streams from a run's
- *  converged values, so pressing Run re-solves the sector with the parent's
- *  inputs instead of hitting unfed boundary inlets (which produce nothing).
+/** Render a frozen stream state as a per-stream `0/<name>` state file --
+ *  canonical componentMolarFlows grammar in SI, exactly what the engine
+ *  reads.  Values are canonical SI already (F kmol/s, T K, P Pa). */
+export function frozenStreamStateText(s: {
+  F: number; T: number; P: number;
+  composition?: { [component: string]: number };
+}): string {
+  const comp = s.composition ?? {};
+  const flows = Object.entries(comp)
+    .map(([c, x]) => `    ${c}    ${(s.F ?? 0) * x};`)
+    .join("\n");
+  return "// transient GUI projection -- never written to the case\n"
+    + `componentMolarFlows\n{\n${flows}\n}\nT    ${s.T} K;\nP    ${s.P} Pa;\n`;
+}
+
+/** Freeze a drilled sub-case's boundary INLETS as per-stream `0/<name>` state
+ *  files in the run payload (extraFiles), so pressing Run re-solves the
+ *  sector with the parent's inputs instead of hitting unfed boundary inlets
+ *  (which produce nothing).  Stream state NEVER enters the flowsheet dict --
+ *  the engine refuses a `streams{}` block; the projection is 0/ files only.
  *  Applied at RUN time (not just boot) so it works regardless of how the tab
- *  was opened.  A stream the flowsheet already defines for that name WINS.
+ *  was opened.  A 0/ state the sub-case already carries for that name WINS.
  *  No-op without a finished run or a boundary. */
-export function withFrozenBoundaryFeeds(flowsheet: JsonDict, run: RunResult | null): JsonDict {
-  if (!run || run.status !== "done") return flowsheet;
-  const inlets = (flowsheet["boundary"] as JsonDict | undefined)?.["inlets"];
+export function withFrozenBoundaryState(files: CaseFiles, run: RunResult | null): CaseFiles {
+  if (!run || run.status !== "done" || !files.flowsheet) return files;
+  const inlets = (files.flowsheet["boundary"] as JsonDict | undefined)?.["inlets"];
   const names = Array.isArray(inlets)
     ? inlets.filter((x): x is string => typeof x === "string") : [];
-  if (!names.length) return flowsheet;
-  const existing = (flowsheet["streams"] ?? {}) as JsonDict;
+  if (!names.length) return files;
+  const present = { ...(files.rawFiles ?? {}), ...(files.extraFiles ?? {}) };
   const byName = new Map(run.streams.map((s) => [s.name, s] as const));
-  const add: JsonDict = {};
+  const add: { [relPath: string]: string } = {};
   for (const nm of names) {
-    if (existing[nm]) continue;   // the sub-case's own feed def wins
+    if (zeroStateText(present, nm) !== undefined) continue;   // own state wins
     const s = byName.get(nm);
-    if (s) add[nm] = { F: s.F, T: s.T, P: s.P, molarComposition: s.composition ?? {} } as JsonDict[string];
+    if (s) add[`0/${nm}`] = frozenStreamStateText(s);
   }
-  if (!Object.keys(add).length) return flowsheet;
-  return { ...flowsheet, streams: { ...existing, ...add } };
+  if (!Object.keys(add).length) return files;
+  return { ...files, extraFiles: { ...(files.extraFiles ?? {}), ...add } };
 }
 
 /** Slice a parent RunResult down to the drill-in scope `prefix`, renaming

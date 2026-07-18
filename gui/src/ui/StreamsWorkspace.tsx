@@ -47,7 +47,7 @@ License
   default).  Workspaces don't duplicate each other's purpose.
 \*---------------------------------------------------------------------------*/
 
-import { compositeMembers } from "../case/toGraph.js";
+import { compositeMembers, topologyFeedNames } from "../case/toGraph.js";
 import { useMemo, useState } from "react";
 import {
   ActionIcon,
@@ -867,17 +867,9 @@ function addUnitsGroup(out: TreeNode[], label: string, units: JsonValue[], prefi
 }
 
 function collectFeedNames(fs: JsonDict): string[] {
-  const streamsBlock = (fs["streams"] ?? {}) as JsonDict;
-  const declared = Object.keys(streamsBlock);
-  // The set of feeds is the streams BLOCK keys MINUS any name that appears
-  // as a unit's output (which means it is internally produced).
-  const produced = new Set<string>();
-  for (const uv of (fs["units"] ?? []) as JsonValue[]) {
-    if (!uv || typeof uv !== "object" || Array.isArray(uv)) continue;
-    const u = uv as JsonDict;
-    for (const ov of (u["outputs"] ?? []) as JsonValue[]) produced.add(String(ov));
-  }
-  return declared.filter((n) => !produced.has(n));
+  // Stream role is inferred from TOPOLOGY (the stream-state architecture):
+  // a feed is consumed by a unit and produced by none.
+  return topologyFeedNames(fs);
 }
 
 function readChildFlowsheet(

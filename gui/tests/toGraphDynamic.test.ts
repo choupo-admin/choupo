@@ -1,10 +1,10 @@
 /*---------------------------------------------------------------------------*\
   toGraph dynamic-holdup synthesis tests.
 
-  A dynamicCSTR declares its feed in `inlet{}` + its jacket in `operation{}`
-  instead of the steady in/outputs keys, so without the synthesis branch it
-  renders as a LONE BOX.  readFlowsheet must grow:
-    - a `<unit>.feed` feed terminal (read from inlet{} F/T/molarComposition),
+  A dynamicCSTR declares its feed in the 0/streams inlet face + its jacket in
+  `operation{}` instead of the steady in/outputs keys, so without the
+  synthesis branch it renders as a LONE BOX.  readFlowsheet must grow:
+    - a `<unit>.feed` feed terminal (read from the 0/streams face),
     - a `<unit>.out` product terminal (the engine's stream key),
     - a jacket UTILITY stub (dutyPort:"jacket") when operation.UA > 0.
   These tests pin that down so the lone-box regression can't return.
@@ -16,9 +16,45 @@ import { parse, toJson } from "../src/dict/index.js";
 import type { JsonDict } from "../src/dict/index.js";
 import { flowsheetToGraph } from "../src/case/toGraph.js";
 
+// The authored dynamic state: 0/streams carries the inlet FACE (the engine's
+// grammar -- bc inlet, T, P, per-species molarFlows).
+const ZERO_STREAMS = `
+time 0;
+streams
+{
+    "reactor.feed"
+    {
+        bc          inlet;
+        T           330.0;
+        P           101325;
+        molarFlows  { compA 1.389e-8; compB 0.0; }
+    }
+}
+`;
+
+// The authored initial holdup (0/internalState): the jacket tier compares
+// T_jacket against this T.
+const ZERO_INTERNAL = `
+time 0;
+units
+{
+    "reactor"
+    {
+        type    dynamicCSTR;
+        T       320.0;
+        P       101325;
+        V       0.001;
+        holdupMolar { compA 0.012; compB 0.0; }
+    }
+}
+`;
+
 function graphFrom(text: string) {
   const fs = toJson(parse(text, { sourceName: "flowsheetDict" })) as JsonDict;
-  return flowsheetToGraph(fs);
+  return flowsheetToGraph(fs, {
+    "0/streams": ZERO_STREAMS,
+    "0/internalState": ZERO_INTERNAL,
+  });
 }
 
 // A jacket-bearing dynamicCSTR (UA > 0, jacket warmer than the cold start).
@@ -28,20 +64,6 @@ units
     {
         name        reactor;
         type        dynamicCSTR;
-        initial
-        {
-            T            320.0 K;
-            P            1.013 bar;
-            V            0.001;
-            totalMoles   0.012;
-            molarComposition  { compA 1.0;  compB 0.0; }
-        }
-        inlet
-        {
-            F            5.0e-5 kmol/h;
-            T            330.0 K;
-            molarComposition  { compA 1.0;  compB 0.0; }
-        }
         operation
         {
             UA           50.0;
@@ -56,7 +78,7 @@ describe("toGraph — dynamicCSTR grows feed/product/jacket from its sub-dicts",
   const g = graphFrom(CSTR_TEXT);
   const ids = new Set(g.nodes.map((n) => n.id));
 
-  it("synthesises a feed terminal from inlet{}", () => {
+  it("synthesises a feed terminal from the 0/streams inlet face", () => {
     expect(ids.has("stream:reactor.feed")).toBe(true);
     const feed = g.nodes.find((n) => n.id === "stream:reactor.feed")!;
     expect((feed.data as { role?: string }).role).toBe("feed");
@@ -121,11 +143,9 @@ units
         type   dynamicCSTR;
         in     myFeed;
         outputs ( myProduct );
-        inlet  { F 1.0; T 300.0 K; }
         operation { UA 50.0; T_jacket 360.0 K; }
     }
 );
-streams { myFeed { F 1.0; T 300; P 101325; } }
 `;
     const g = graphFrom(explicit);
     // The author's names win; no `reactor.feed`/`reactor.out` synthesised.

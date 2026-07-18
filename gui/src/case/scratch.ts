@@ -46,6 +46,9 @@ License
 
 import type { CaseFiles } from "./types.js";
 import type { JsonDict, JsonValue } from "../dict/json.js";
+import { scalarToSI } from "../dict/scalarSI.js";
+import { streamStateSpec, zeroStatePath } from "./toGraph.js";
+import { frozenStreamStateText } from "./resultSlice.js";
 
 /** One tinkered scalar.  `value`/`from` are in DISPLAY units (what the student
  *  typed / saw); `unit` is the display unit suffix the engine will read back
@@ -102,16 +105,45 @@ function setAtPath(root: JsonValue, segs: (string | number)[], value: JsonValue)
   return obj;
 }
 
-/** Apply every scratch edit to a fresh CaseFiles, returning a new object with
- *  only the flowsheet's touched paths cloned.  No edits -> the same object
- *  back (cheap identity), so callers can pass the result straight to the
- *  solver without a needless deep copy. */
+/** Apply every scratch edit to a fresh CaseFiles, returning a new object
+ *  with only the touched pieces cloned.  A `streams.<name>.<F|T|P>` edit
+ *  addresses the per-stream 0/ STATE PROJECTION (extraFiles) -- stream state
+ *  never enters the flowsheet dict (the engine refuses a streams{} block).
+ *  Every other path applies to the flowsheet JSON.  No edits -> the same
+ *  object back (cheap identity), so callers can pass the result straight to
+ *  the solver without a needless deep copy. */
 export function applyScratch(files: CaseFiles, edits: ScratchEdits): CaseFiles {
   const keys = Object.keys(edits);
-  if (keys.length === 0 || !files.flowsheet) return files;
-  let flowsheet = files.flowsheet as JsonValue;
+  if (keys.length === 0) return files;
+  let flowsheet = files.flowsheet as JsonValue | undefined;
+  let extra: { [relPath: string]: string } | null = null;
   for (const path of keys) {
-    flowsheet = setAtPath(flowsheet, parsePath(path), scratchToJsonValue(edits[path]!));
+    const segs = parsePath(path);
+    if (segs[0] === "streams" && segs.length === 3
+        && typeof segs[1] === "string" && typeof segs[2] === "string") {
+      const nm = segs[1];
+      const field = segs[2];
+      const merged = { ...(files.rawFiles ?? {}), ...(files.extraFiles ?? {}),
+                       ...(extra ?? {}) };
+      const rel = zeroStatePath(merged, nm);
+      const spec = streamStateSpec(rel !== undefined ? merged[rel] : undefined);
+      if (rel === undefined || !spec) continue;   // no authored 0/ state
+      const si = scalarToSI(scratchToJsonValue(edits[path]!));
+      if (!Number.isFinite(si)) continue;
+      if (field === "F") spec.F = si;
+      else if (field === "T") spec.T = si;
+      else if (field === "P") spec.P = si;
+      else continue;
+      extra = { ...(extra ?? files.extraFiles ?? {}) };
+      extra[rel] = frozenStreamStateText(spec);
+      continue;
+    }
+    if (flowsheet !== undefined)
+      flowsheet = setAtPath(flowsheet, segs, scratchToJsonValue(edits[path]!));
   }
-  return { ...files, flowsheet: flowsheet as JsonDict };
+  let out = files;
+  if (flowsheet !== undefined && flowsheet !== files.flowsheet)
+    out = { ...out, flowsheet: flowsheet as JsonDict };
+  if (extra !== null) out = { ...out, extraFiles: extra };
+  return out;
 }

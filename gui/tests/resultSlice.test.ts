@@ -13,7 +13,7 @@ import {
   sliceHasContent,
   sliceRunResult,
   stripScope,
-  withFrozenBoundaryFeeds,
+  withFrozenBoundaryState,
 } from "../src/case/resultSlice.js";
 import type { RunResult, StreamResult } from "../src/adapters/SolverAdapter.js";
 
@@ -241,7 +241,7 @@ describe("localStreamNames", () => {
   });
 });
 
-describe("withFrozenBoundaryFeeds", () => {
+describe("withFrozenBoundaryState", () => {
   const run: RunResult = {
     status: "done", log: "", streams: [
       stream("liquor", { role: "feed", F: 42, T: 305, P: 1e5, composition: { water: 0.9 } }),
@@ -250,22 +250,30 @@ describe("withFrozenBoundaryFeeds", () => {
     convergence: [], kpis: {}, profiles: [], utilityAllocation: [], advisories: [],
   } as unknown as RunResult;
 
-  it("injects boundary inlets as feeds from the run (own def wins)", () => {
-    const fs = {
-      boundary: { inlets: ["liquor", "organic"], outlets: ["raff"] },
-      streams: { organic: { F: 99 } }, // authored -> wins
-    };
-    const out = withFrozenBoundaryFeeds(fs, run);
-    const outStreams = out["streams"] as Record<string, Record<string, unknown> | undefined>;
-    // liquor pulled from the run
-    expect(outStreams["liquor"]?.["T"]).toBe(305);
-    // organic kept its authored def
-    expect(outStreams["organic"]?.["F"]).toBe(99);
+  it("materialises boundary inlets as 0/ state files -- NEVER a flowsheet streams{} block", () => {
+    const files = {
+      controlDict: {}, thermoPackage: {},
+      flowsheet: { boundary: { inlets: ["liquor", "organic"], outlets: ["raff"] } },
+      extraFiles: { "0/organic": "componentMolarFlows\n{\n    oil    40;\n}\nT    298 K;\nP    101325 Pa;\n" },
+    } as unknown as Parameters<typeof withFrozenBoundaryState>[0];
+    const out = withFrozenBoundaryState(files, run);
+    // The engine refuses a flowsheet streams{} block: the payload must not carry one.
+    expect((out.flowsheet as Record<string, unknown>)["streams"]).toBeUndefined();
+    // liquor synthesised from the run as a per-stream 0/ state file...
+    const liquor = out.extraFiles?.["0/liquor"];
+    expect(liquor).toContain("componentMolarFlows");
+    expect(liquor).toContain("T    305 K;");
+    // ...its per-species flow is F*x in SI...
+    expect(liquor).toContain("water");
+    // ...and the sub-case's own authored 0/ state wins untouched.
+    expect(out.extraFiles?.["0/organic"]).toContain("oil    40");
   });
 
   it("is a no-op without a run or a boundary", () => {
-    const fs = { streams: {}, units: [] };
-    expect(withFrozenBoundaryFeeds(fs, null)).toBe(fs);
-    expect(withFrozenBoundaryFeeds(fs, run)).toBe(fs); // no boundary
+    const files = {
+      controlDict: {}, thermoPackage: {}, flowsheet: { units: [] },
+    } as unknown as Parameters<typeof withFrozenBoundaryState>[0];
+    expect(withFrozenBoundaryState(files, null)).toBe(files);
+    expect(withFrozenBoundaryState(files, run)).toBe(files); // no boundary
   });
 });

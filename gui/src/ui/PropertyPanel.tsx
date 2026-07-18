@@ -73,7 +73,7 @@ import { theoryLink } from "../case/modelDocs.js";
 import { useMemo, useState } from "react";
 
 import { boundaryForStream } from "../case/modelBoundary.js";
-import { compositeMembers, unitFolderNames, streamStateSpec, zeroStateText } from "../case/toGraph.js";
+import { compositeMembers, unitFolderNames, streamStateSpec, zeroStateText, topologyFeedNames } from "../case/toGraph.js";
 import {
   operationSchemaFor,
   type OperationField,
@@ -211,19 +211,12 @@ export function PropertyPanel() {
     }
     if (selectedId.startsWith("stream:") && flowsheet) {
       const name = selectedId.slice(7);
-      const streams = (flowsheet["streams"] ?? {}) as { [k: string]: JsonDict };
-      // Normalise the raw dict the SAME way the canvas (toGraph) does: the
-      // author writes `molarComposition` / `massComposition` / `molarFlows`,
-      // but StreamDetails reads `.composition`.  Casting the raw dict straight
-      // to StreamSpec left composition undefined -> the panel showed an EMPTY
-      // composition for feeds (e.g. freshCO's `molarComposition { CO 1; }`).
-      // A stream NOT in the legacy `streams{}` block (an internal edge, or ANY
-      // stream once the case is migrated to 0/) reads its state from the 0/ file
-      // -- the same source the canvas uses -- so the panel shows values pre-run
-      // instead of a bogus "no values until a run completes".
-      const s = streams[name]
-        ? normaliseStreamSpec(streams[name]!)
-        : (streamStateSpec(zeroStateText(caseFiles.rawFiles, name)) ?? undefined);
+      // A stream's authored state lives in its 0/ file -- the same source the
+      // canvas uses -- so the panel shows values pre-run instead of a bogus
+      // "no values until a run completes".
+      const s = streamStateSpec(zeroStateText(
+        { ...(caseFiles.rawFiles ?? {}), ...(caseFiles.extraFiles ?? {}) },
+        name)) ?? undefined;
       return <StreamDetails name={name} stream={s} runName={name} />;
     }
     if (selectedId.startsWith("op:") && propsDict) {
@@ -467,14 +460,17 @@ function StreamDetails({
   const runStream = useStore((s) =>
     runName ? findRunStream(s.runResult?.streams, runName) : undefined,
   );
-  // The RAW declared stream dict (authored unit strings like "370 K"), if this
-  // is a top-level feed in flowsheet.streams.  Present => the feed's F/T/P are
-  // TINKERABLE (transient, never written); absent (an internal/computed stream)
-  // => read-only.  The path the scratch overlay addresses is streams.<name>.<k>.
+  // A stream is TINKERABLE (transient, never written) when it is a topology
+  // FEED with an authored 0/ state file: the scratch edit patches the 0/
+  // projection for the run.  Internal/computed streams are read-only.  The
+  // path the scratch overlay addresses stays streams.<name>.<k>.
   const rawStream = useStore((s) => {
-    const streams = s.caseFiles.flowsheet?.["streams"] as JsonDict | undefined;
-    const r = streams?.[name];
-    return r && typeof r === "object" && !Array.isArray(r) ? (r as JsonDict) : undefined;
+    const fs = s.caseFiles.flowsheet;
+    if (!fs || !topologyFeedNames(fs).includes(name)) return undefined;
+    const spec = streamStateSpec(zeroStateText(
+      { ...(s.caseFiles.rawFiles ?? {}), ...(s.caseFiles.extraFiles ?? {}) },
+      name));
+    return spec ? { F: spec.F, T: spec.T, P: spec.P } as JsonDict : undefined;
   });
   const prefs = useStore((s) => s.displayPrefs);
   // Model-boundary audit entry for this stream (producer/consumer on

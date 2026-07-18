@@ -39,6 +39,8 @@ import type { CaseFiles } from "../case/types.js";
 import type { ScratchEdit, ScratchEdits } from "../case/scratch.js";
 import type { JsonDict } from "../dict/json.js";
 import type { RunResult } from "../adapters/SolverAdapter.js";
+import { frozenStreamStateText } from "../case/resultSlice.js";
+import { zeroStateText } from "../case/toGraph.js";
 import {
   DEFAULT_PREFS,
   setDisplaySigFigs,
@@ -336,17 +338,28 @@ function bootCase(): {
       let t = tutorialByName(param);
       if (t) {
         // Make the drilled sub-case RUNNABLE: freeze its boundary inlets as
-        // feed streams so Run re-solves with the parent's inputs instead of
-        // hitting unfed boundary inlets and producing nothing.  A sub-case's
-        // OWN stream def for a name always wins.
+        // per-stream 0/ state files (extraFiles) so Run re-solves with the
+        // parent's inputs instead of hitting unfed boundary inlets and
+        // producing nothing.  Stream state never enters the flowsheet dict
+        // (the engine refuses a streams{} block); a 0/ state the sub-case
+        // already carries for a name always wins.
         const withFeeds = (files: CaseFiles, defs: Record<string, unknown>): CaseFiles => {
           if (!Object.keys(defs).length) return files;
-          const fs = { ...((files.flowsheet ?? {}) as JsonDict) };
-          const streams = { ...((fs["streams"] ?? {}) as JsonDict) };
-          for (const [nm, def] of Object.entries(defs))
-            if (!streams[nm]) streams[nm] = def as JsonDict[string];
-          fs["streams"] = streams;
-          return { ...files, flowsheet: fs };
+          const present = { ...(files.rawFiles ?? {}), ...(files.extraFiles ?? {}) };
+          const extra = { ...(files.extraFiles ?? {}) };
+          let added = false;
+          for (const [nm, def] of Object.entries(defs)) {
+            if (zeroStateText(present, nm) !== undefined) continue;
+            if (!def || typeof def !== "object" || Array.isArray(def)) continue;
+            const d = def as { F?: number; T?: number; P?: number;
+                               molarComposition?: Record<string, number> };
+            extra[`0/${nm}`] = frozenStreamStateText({
+              F: d.F ?? 0, T: d.T ?? 298.15, P: d.P ?? 101325,
+              composition: d.molarComposition ?? {},
+            });
+            added = true;
+          }
+          return added ? { ...files, extraFiles: extra } : files;
         };
         // (a) the explicit stash from the drill (STABLE key -> survives F5).
         const feedsKey = q.get("feeds");

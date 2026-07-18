@@ -36,14 +36,17 @@ describe("scratchToJsonValue", () => {
 });
 
 describe("applyScratch", () => {
+  const FEED_0 = "componentMolarFlows\n{\n    benzene    0.0138889;\n}\n"
+    + "T    370 K;\nP    100000 Pa;\n";
   const base = (): CaseFiles => ({
     flowsheet: {
-      streams: { feed: { F: "100 kmol/h", T: "370 K", P: "1 bar" } },
       units: [
-        { name: "col", type: "distillationColumn",
+        { name: "col", type: "distillationColumn", in: "feed",
+          outputs: ["distillate", "bottoms"],
           operation: { refluxRatio: 2.0, nStages: 15 } },
       ],
     },
+    extraFiles: { "0/feed": FEED_0 },
   } as unknown as CaseFiles);
 
   // Resolve a dotted/indexed path to its leaf value -- a tiny dynamic walk so
@@ -56,15 +59,20 @@ describe("applyScratch", () => {
     return cur;
   };
 
-  it("overlays a feed scalar as a unit-tagged string, leaving the rest intact", () => {
+  it("overlays a feed scalar onto the 0/ state projection -- never a flowsheet streams{} block", () => {
     const files = base();
     const edits: ScratchEdits = {
       "streams.feed.T": { value: 355, from: 370, unit: "K", label: "feed.T" },
     };
     const out = applyScratch(files, edits);
-    expect(at(out, "streams.feed.T")).toBe("355 K");
-    expect(at(out, "streams.feed.P")).toBe("1 bar");      // untouched survives
-    expect(at(files, "streams.feed.T")).toBe("370 K");    // disk not mutated
+    // The edit lands in the per-stream 0/ projection...
+    expect(out.extraFiles?.["0/feed"]).toContain("T    355 K;");
+    expect(out.extraFiles?.["0/feed"]).toContain("P    100000 Pa;");  // untouched survives
+    expect(out.extraFiles?.["0/feed"]).toContain("benzene");
+    // ...the flowsheet dict NEVER grows a streams{} block (the engine refuses it)...
+    expect((out.flowsheet as Record<string, unknown>)["streams"]).toBeUndefined();
+    // ...and the base files are not mutated.
+    expect(files.extraFiles?.["0/feed"]).toContain("T    370 K;");
   });
 
   it("overlays an operation scalar by units[idx] path", () => {

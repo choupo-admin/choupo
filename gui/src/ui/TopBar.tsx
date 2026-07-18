@@ -53,7 +53,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { resolveAdapter, type AdapterKind } from "../adapters/index.js";
 import { withDisplayPrefs } from "../case/applyPrefs.js";
-import { withFrozenBoundaryFeeds } from "../case/resultSlice.js";
+import { withFrozenBoundaryState } from "../case/resultSlice.js";
 import { applyScratch } from "../case/scratch.js";
 import { downloadFlowsheetDict } from "../case/saveCase.js";
 import { caseHasUserCode, USER_CODE_MSG } from "../case/userCode.js";
@@ -171,31 +171,30 @@ export function TopBar() {
       // Splice the active display preset into controlDict.units so
       // the solver log honours the same choice as the StreamsTable.
       let filesForRun = withDisplayPrefs(tinkered, displayPrefs);
-      // Drilled sector: freeze its boundary inlets as feeds from the inherited
-      // (or last) run, so Run re-solves with the parent's inputs instead of
-      // unfed boundary inlets.  Done HERE (run time) so it holds no matter how
-      // the tab was opened; the sub-case's own feed def still wins.
-      if (filesForRun.flowsheet)
-        filesForRun = { ...filesForRun, flowsheet: withFrozenBoundaryFeeds(filesForRun.flowsheet, runResult) };
+      // Drilled sector: freeze its boundary inlets as per-stream 0/ state
+      // files (extraFiles) from the inherited (or last) run, so Run re-solves
+      // with the parent's inputs instead of unfed boundary inlets.  Done HERE
+      // (run time) so it holds no matter how the tab was opened; a 0/ state
+      // the sub-case already carries still wins.  Stream state never enters
+      // the flowsheet dict -- the engine refuses a streams{} block.
+      filesForRun = withFrozenBoundaryState(filesForRun, runResult);
       // Visible diagnosis: a drilled sector with a boundary inlet that STILL has
       // no feed will solve to nothing.  Name them so the failure is obvious.
       {
         const fsr = filesForRun.flowsheet as Record<string, unknown> | undefined;
         const bnd = fsr?.["boundary"] as Record<string, unknown> | undefined;
         const inl = bnd?.["inlets"];
-        const strm = (fsr?.["streams"] ?? {}) as Record<string, unknown>;
         // An inlet is FED if it carries a 0/ state file -- at the root
         // (0/RawJuice) OR sector-owned (0/CONCENTRATION/PlantSteam), the
         // ownership layout the engine uses (a feed is owned by its consuming
-        // sector).  Resolved via the same zeroStateText helper the graph uses.
-        // Without this a fractal case whose inlets live in 0/ false-flags EVERY
-        // inlet as unfed (the streams{} block is empty in the stream-state
-        // architecture -- the values live on disk).
-        const raw = caseFiles.rawFiles;
+        // sector) -- authored (rawFiles) or projected for this run
+        // (extraFiles, incl. the frozen boundary state above).
+        const present = { ...(caseFiles.rawFiles ?? {}),
+                          ...(filesForRun.extraFiles ?? {}) };
         const unfed = Array.isArray(inl)
           ? inl.filter((x): x is string =>
-              typeof x === "string" && !strm[x]
-              && zeroStateText(raw, x) === undefined) : [];
+              typeof x === "string"
+              && zeroStateText(present, x) === undefined) : [];
         if (unfed.length) {
           notifications.show({
             color: "yellow", title: "Boundary inlet has no feed",

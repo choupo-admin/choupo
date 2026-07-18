@@ -45,6 +45,7 @@ License
 
 import type { RunResult, StreamResult, UnitProfile } from "../adapters/SolverAdapter.js";
 import type { CaseFiles } from "../case/types.js";
+import { frozenStreamStateText } from "../case/resultSlice.js";
 
 /** Everything a unit pop-out tab needs, synthesised from the parent case. */
 export interface UnitClone {
@@ -104,8 +105,8 @@ export function synthesizeUnitClone(
   const inNames = asList(u["in"] ?? u["inputs"]);
   const outNames = asList(u["outputs"]);
 
-  // 0/ stream state for the clone (the legacy `streams {}` block is RETIRED --
-  // the engine reads 0/ only).  Flowsheet COMPLETENESS requires the graph stream
+  // 0/ stream state for the clone (the engine reads stream state from 0/
+  // only).  Flowsheet COMPLETENESS requires the graph stream
   // IDs (this unit's ins + outs) to match the 0/ files EXACTLY.  A drilled
   // sub-unit's parent carries the WHOLE plant's 0/ tree; carrying it verbatim
   // would ORPHAN every foreign stream and fail the check.  So rebuild 0/ to
@@ -114,18 +115,11 @@ export function synthesizeUnitClone(
   const runStreams = (runResult?.streams ?? []) as StreamResult[];
   const findS = (nm: string) => runStreams.find((s) => s.name === nm);
   const parentExtra = caseFiles.extraFiles ?? {};
-  const stream0 = (s: StreamResult): string => {
-    const comp = (s.composition ?? {}) as Record<string, number>;
-    const flows = Object.entries(comp)
-      .map(([c, x]) => `    ${c}    ${(s.F ?? 0) * x};`)
-      .join("\n");
-    return `componentMolarFlows\n{\n${flows}\n}\nT    ${s.T} K;\nP    ${s.P} Pa;\n`;
-  };
   const cloneStreams = Array.from(new Set([...inNames, ...outNames]));
   const zeroFiles: Record<string, string> = {};
   for (const nm of cloneStreams) {
     const s = findS(nm);
-    if (s) { zeroFiles[`0/${nm}`] = stream0(s); continue; }
+    if (s) { zeroFiles[`0/${nm}`] = frozenStreamStateText(s); continue; }
     const parent0 = parentExtra[`0/${nm}`];
     if (parent0 !== undefined) zeroFiles[`0/${nm}`] = parent0;
   }

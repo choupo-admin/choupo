@@ -819,27 +819,25 @@ function readComposite(
     operation: {},
   }));
 
-  // Seed the streams map with boundary inlets.  An inlet is a plant INPUT: its
-  // state is authored, so read it from the streams{} block (F, T, P, composition)
-  // rather than seeding zeros -- the feed terminal then shows its real conditions
-  // pre-run AND after a reset (the run result clears, the authored input does not).
-  // Migrated cases carry that state in 0/ instead; feedSpecFromInlet(undefined)
-  // falls back to zeros there (until the 0/ reader feeds it).  Tear streams are
-  // NOT seeded here: they render invisible (the recycle back-edge carries the
-  // meaning), not as feed terminals.
-  const authored = (flowsheet["streams"] ?? {}) as JsonDict;
+  // Seed the streams map from the per-stream 0/ state (the only home of
+  // authored stream state) -- the feed terminal then shows its real
+  // conditions pre-run AND after a reset (the run result clears, the
+  // authored input does not).  Tear streams are NOT seeded here: they render
+  // invisible (the recycle back-edge carries the meaning), not as feed
+  // terminals.
   const streams: { [name: string]: StreamSpec } = {};
   // Read EVERY stream's state from `0/<stream>` (the plant run / drill projection
   // materialised it) -- inlets, internal edges AND outlets, so a drilled sector
   // shows real F/T/P/composition on all its streams, not just the feeds.  An
-  // inlet with no 0/ falls back to its authored `streams{}` block or ambient.
+  // inlet with no 0/ falls back to ambient (honestly empty).
   for (const e of edges) {
     if (!e.name || tears.has(e.name)) continue;
     const spec = streamStateSpec(zeroStateText(rawFiles, e.name));
     if (spec) streams[e.name] = spec;
   }
   for (const inl of inlets)
-    if (!streams[inl]) streams[inl] = feedSpecFromInlet(authored[inl]);
+    if (!streams[inl])
+      streams[inl] = { F: 0, T: AMBIENT_T, P: AMBIENT_P, composition: {} };
 
   return { streams, units, tearStreams: tears, origins };
 }
@@ -859,15 +857,46 @@ function readComposite(
  *  behaviour for flat cases); else accept a UNIQUE `0/.../<name>` match.  On an
  *  ambiguous base name (the same local name in two sectors) return undefined --
  *  never guess the wrong sector's file; the caller falls back to authored/ambient. */
-export function zeroStateText(
+export function zeroStatePath(
   rawFiles: { [relPath: string]: string } | undefined, name: string,
 ): string | undefined {
   if (!rawFiles) return undefined;
-  const top = rawFiles[`0/${name}`];
-  if (top !== undefined) return top;
+  if (rawFiles[`0/${name}`] !== undefined) return `0/${name}`;
   const hits = Object.keys(rawFiles).filter(
     (k) => k.startsWith("0/") && k.endsWith(`/${name}`));
-  return hits.length === 1 ? rawFiles[hits[0]!] : undefined;
+  return hits.length === 1 ? hits[0] : undefined;
+}
+
+export function zeroStateText(
+  rawFiles: { [relPath: string]: string } | undefined, name: string,
+): string | undefined {
+  const path = zeroStatePath(rawFiles, name);
+  return path === undefined ? undefined : rawFiles![path];
+}
+
+/** The flowsheet's FEED stream names, inferred from TOPOLOGY (consumed by a
+ *  unit, produced by none; or a to-only named edge; or a declared boundary
+ *  inlet) -- the stream-state architecture's role rule.  Works for flat,
+ *  composite and leaf dict shapes. */
+export function topologyFeedNames(fs: JsonDict | undefined): string[] {
+  if (!fs) return [];
+  const consumed = new Set<string>();
+  const produced = new Set<string>();
+  const asList = (v: unknown): string[] =>
+    Array.isArray(v) ? v.filter((x): x is string => typeof x === "string")
+    : typeof v === "string" && v.length > 0 ? [v] : [];
+  for (const uv of (fs["units"] ?? []) as JsonValue[]) {
+    if (!uv || typeof uv !== "object" || Array.isArray(uv)) continue;
+    const u = uv as JsonDict;
+    for (const n of asList(u["in"] ?? u["inputs"])) consumed.add(n);
+    for (const n of asList(u["outputs"])) produced.add(n);
+  }
+  const feeds = new Set<string>();
+  for (const n of consumed) if (!produced.has(n)) feeds.add(n);
+  for (const e of readEdges(fs)) if (!e.from && e.to) feeds.add(e.name);
+  const boundary = (fs["boundary"] ?? {}) as JsonDict;
+  for (const n of asList(boundary["inlets"])) feeds.add(n);
+  return [...feeds];
 }
 
 export function streamStateSpec(text: string | undefined): StreamSpec | null {
@@ -928,42 +957,16 @@ function readLeaf(flowsheet: JsonDict, rawFiles?: { [relPath: string]: string })
   };
 }
 
-// A dynamic continuous unit (dynamicCSTR) declares its feed in an `inlet{}`
-// sub-dict: F + T as unit-bearing scalars and a `molarComposition {...}`.
-// Project it to a display StreamSpec (SI numbers, normalised composition) so
-// the synthesised `<unit>.feed` terminal reads the real feed conditions
-// pre-run.  Scalars cross JSON as "<n> <unit>" strings; scalarToSI canonicalises.
 // Ambient reference state for a stream we have to seed WITHOUT an authored
-// value (a reset, an un-migrated 0/, a boundary with no streams{} entry): 25 C
-// and 1 atm -- a sensible physical default, NEVER 0 K / 0 Pa (which reads as a
+// value (a reset, or an inlet whose 0/ state is missing): 25 C and 1 atm --
+// a sensible physical default, NEVER 0 K / 0 Pa (which reads as a
 // non-physical blank).  Flow stays 0 (an unknown inlet flow is honestly empty).
 const AMBIENT_T = 298.15;      // K   (25 C)
 const AMBIENT_P = 101325;      // Pa  (1 atm)
 
-function feedSpecFromInlet(inlet: JsonValue | undefined): StreamSpec {
-  const spec: StreamSpec = { F: 0, T: AMBIENT_T, P: AMBIENT_P, composition: {} };
-  if (!inlet || typeof inlet !== "object" || Array.isArray(inlet)) return spec;
-  const blk = inlet as JsonDict;
-  const f = scalarToSI(blk["F"]);
-  if (Number.isFinite(f)) spec.F = f;
-  const t = scalarToSI(blk["T"]);
-  if (Number.isFinite(t)) spec.T = t;
-  const p = scalarToSI(blk["P"]);
-  if (Number.isFinite(p)) spec.P = p;
-  const comp = blk["molarComposition"] ?? blk["composition"];
-  if (comp && typeof comp === "object" && !Array.isArray(comp)) {
-    for (const [k, v] of Object.entries(comp as JsonDict)) {
-      const n = scalarToSI(v);
-      if (Number.isFinite(n)) spec.composition[k] = n;
-    }
-  }
-  return spec;
-}
-
-// A dynamicCSTR's feed now lives in 0/streams (the authored inlet face), not the
-// retired inline inlet{} block.  The face carries T, P and per-species
-// molarFlows{} (F is their sum, composition their normalisation) -- mirror
-// feedSpecFromInlet for that shape so the synthesised feed terminal still shows.
+// A dynamicCSTR's feed lives in 0/streams (the authored inlet face).  The
+// face carries T, P and per-species molarFlows{} (F is their sum,
+// composition their normalisation).
 function feedSpecFromFace(face: JsonValue | undefined): StreamSpec {
   const spec: StreamSpec = { F: 0, T: AMBIENT_T, P: AMBIENT_P, composition: {} };
   if (!face || typeof face !== "object" || Array.isArray(face)) return spec;
@@ -1040,44 +1043,12 @@ function readFlowsheet(
     return readComposite(flowsheet, rawFiles);
   if (flowsheet["type"] !== undefined) return readLeaf(flowsheet, rawFiles);
 
-  const streamsJson = (flowsheet["streams"] ?? {}) as JsonDict;
   const unitsJson = (flowsheet["units"] ?? []) as JsonValue[];
 
+  // Stream state lives in the per-stream 0/ files (the only authored home);
+  // read every referenced stream from there so feed terminals show real
+  // F/T/P/composition pre-run.  Names are collected from the unit pass below.
   const streams: { [name: string]: StreamSpec } = {};
-  for (const [name, val] of Object.entries(streamsJson)) {
-    const v = val as JsonDict;
-    // Composition: prefer the explicit forms; fall back to
-    // the legacy `composition` (which is molar by convention).
-    const explicitComp =
-      (v["molarComposition"] as { [k: string]: number } | undefined) ??
-      (v["massComposition"]  as { [k: string]: number } | undefined) ??
-      (v["composition"]      as { [k: string]: number } | undefined);
-    // Flow declarations from: `molarFlows {... }` or
-    // `massFlows {... }` carry per-species flows without a top-level
-    // `F`.  Derive F (sum) and the composition (normalised) here so
-    // the Property panel can show the stream regardless of which
-    // syntax the case author used.
-    const molarFlows = v["molarFlows"] as { [k: string]: number } | undefined;
-    const massFlows  = v["massFlows"]  as { [k: string]: number } | undefined;
-    let comp: { [k: string]: number } = explicitComp ?? {};
-    let F = 0;
-    if (typeof v["F"] === "number") {
-      F = v["F"] as number;
-    } else if (molarFlows || massFlows) {
-      const flows = (molarFlows ?? massFlows)!;
-      F = Object.values(flows).reduce((s, x) => s + x, 0);
-      if (F > 0 && Object.keys(comp).length === 0) {
-        comp = Object.fromEntries(Object.entries(flows).map(([k, x]) => [k, x / F]),
-        );
-      }
-    }
-    streams[name] = {
-      F,
-      T: typeof v["T"] === "number" ? (v["T"] as number) : 0,
-      P: typeof v["P"] === "number" ? (v["P"] as number) : 0,
-      composition: comp,
-    };
-  }
 
   // Synthesised feed terminals for dynamic-holdup units (collected here,
   // merged into `streams` after the unit pass).
@@ -1086,23 +1057,20 @@ function readFlowsheet(
 
   const units: UnitSpec[] = (unitsJson as JsonDict[]).map((u) => {
     // A DYNAMIC continuous holdup unit (dynamicCSTR) declares its feed in
-    // 0/streams (the authored inlet face) -- or, on legacy cases, the retired
-    // inline inlet{} block -- plus an `operation{}` jacket, instead of
-    // in/outputs.  Without a synthesis it renders as a lone box.  SYNTHESISE
-    // its feed + product streams: a `<name>.feed` terminal (read from the
-    // 0/streams face, or inlet{}) and a `<name>.out` product (the name the
+    // 0/streams (the authored inlet face) plus an `operation{}` jacket,
+    // instead of in/outputs.  Without a synthesis it renders as a lone box.
+    // SYNTHESISE its feed + product streams: a `<name>.feed` terminal (read
+    // from the 0/streams face) and a `<name>.out` product (the name the
     // engine writes in <t>/streams, so the live scrub overlay keys cleanly).
     // Additive: only when the unit declares no streams of its own.
     const uname = String(u["name"]);
     const utype = String(u["type"]);
     const feedFace = faces[`${uname}.feed`];
     if (DYNAMIC_HOLDUP_TYPES.has(utype)
-        && (u["inlet"] !== undefined || feedFace !== undefined)
+        && feedFace !== undefined
         && !hasExplicitStreams(u)) {
       const feedName = `${uname}.feed`;
-      synthFeeds[feedName] = u["inlet"] !== undefined
-        ? feedSpecFromInlet(u["inlet"])
-        : feedSpecFromFace(feedFace);
+      synthFeeds[feedName] = feedSpecFromFace(feedFace);
       return {
         name: uname,
         type: utype,
@@ -1146,8 +1114,20 @@ function readFlowsheet(
     };
   });
 
-  // Merge synthesised dynamic-holdup feed specs (don't clobber an explicit
-  // `streams{}` entry of the same name, should one exist).
+  // Every stream the units reference reads its state from 0/<stream>.
+  for (const u of units) {
+    const names = [
+      ...(Array.isArray(u.in) ? u.in : u.in ? [u.in] : []),
+      ...(Array.isArray(u.outputs) ? u.outputs : []),
+    ];
+    for (const nm of names) {
+      if (nm in streams) continue;
+      const spec = streamStateSpec(zeroStateText(rawFiles, nm));
+      if (spec) streams[nm] = spec;
+    }
+  }
+
+  // Merge synthesised dynamic-holdup feed specs (0/ state wins when present).
   for (const [name, spec] of Object.entries(synthFeeds)) {
     if (!(name in streams)) streams[name] = spec;
   }
