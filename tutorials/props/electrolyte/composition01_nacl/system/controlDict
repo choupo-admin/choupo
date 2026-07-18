@@ -7,5 +7,5 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoProps;
-description   "Apparent-salt input (roadmap Phase B): the analysis is given as composition { NaCl 2.0 mol/kg }, expanded to Na + Cl ion totals through NaCl's component.speciesMap, with electroneutrality validated (Sum nu*charge = 0). Byte-identical to writing totals { Na 2.0; Cl 2.0 } by hand.";
+description   "Apparent-salt input: the analysis is given as composition { NaCl 2.0 mol/kg }, expanded to Na + Cl ion totals through NaCl's component.speciesMap, with electroneutrality validated (Sum nu*charge = 0). Byte-identical to writing totals { Na 2.0; Cl 2.0 } by hand.";
 verbosity     2;

@@ -7,5 +7,5 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoProps;
-description   "EVALUATE pinned what-if + the leakage sentinel: a pinned run mutates NOTHING (forum #63-7)";
+description   "EVALUATE a pinned what-if: a pinned run scores the package but mutates NOTHING (the leakage sentinel)";
 verbosity     3;

@@ -7,5 +7,5 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoProps;
-description   "slice S4 GATE: Pitzer-HMW carbonate system on surface seawater -- pins SI_calcite / SI_gypsum against the published oceanographic saturation state, captures the neutral CO2 salting-out (gamma_CO2aq > 1 via lambda), and the Davies-vs-Pitzer SI divergence.";
+description   "Pitzer-HMW carbonate system on surface seawater -- pins SI_calcite / SI_gypsum against the published oceanographic saturation state, captures the neutral CO2 salting-out (gamma_CO2aq > 1 via lambda), and the Davies-vs-Pitzer SI divergence.";
 verbosity     3;

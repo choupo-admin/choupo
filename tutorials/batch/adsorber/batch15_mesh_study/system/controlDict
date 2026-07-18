@@ -18,7 +18,7 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoBatch;
-description   "Mesh-study member N = 25 of the batch13 breakthrough (gate G6): t_b(5%) converges monotonically 2732 -> 2839 -> 2891 -> 2916 s with observed order 1.03-1.05; full table in reports/meshStudy.md";
+description   "Mesh-study member N = 25 of the batch13 breakthrough: t_b(5%) converges monotonically 2732 -> 2839 -> 2891 -> 2916 s with observed order 1.03-1.05; full table in reports/meshStudy.md";
 
 verbosity     3;
 
