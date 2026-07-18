@@ -126,12 +126,20 @@ traceable explanation.  Do not mix this migration with model growth
   (Pitzer) + evaporator07 (eNRTL), then the whole electrolyte family
   (crystallisers, evaporators, thermoTest models, enthalpy_naoh,
   lithiumBrinePlant per-node) — 292/0, goldens intact.
+- 2026-07-18 (wave F): **aqueousProperties reads natively** — the speciation
+  surface is a TYPED reader (`propertyOps::caseAqueousSurface()`, one walker
+  replacing the two duplicated `caseDictionary()` implementations): the ops
+  (speciate / scalingScan / exchange) read the AUTHORED
+  `aqueousProperties { activityCoefficients { model } solvent }` block
+  directly, with the scaffold's refusals (Davies|PitzerHMW, aqueousMolality,
+  water-only solvent) moved into the reader/op; the op-level `activityModel`
+  override (the model-CONTRAST mechanism) is unchanged.  choupoProps builds
+  the ideal solvent BASIS via `assembleTwoPhase` (no synthesized text) and
+  never translates a speciation system.  15/15 family cases green.
 - ~~BOUNDARY: the electrolyte formulations stay on the scaffold~~ (resolved
-  by the chemistryDict ratification + wave E).  Still scaffold:
-  `aqueousProperties` (the speciation ops read the translated manifest —
-  next), the ~32 shaped gammaPhi cases (transport / pureFluids /
-  inline-pairs / cosmoSAC / explicit phases), the Flowsheet
-  propertyContextBase chain, fitParameters.
+  by the chemistryDict ratification + waves E/F).  Still scaffold: the ~32
+  shaped gammaPhi cases (transport / pureFluids / inline-pairs / cosmoSAC /
+  explicit phases), the Flowsheet propertyContextBase chain, fitParameters.
 - 2026-07-18 (wave B): **gammaGamma assembles natively** —
   `ThermoPackage::assembleNamedPhases` (each liquid phase from its own
   config dict, shared activity model resolved once per phase — no cross-phase

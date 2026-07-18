@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Speciate.H"
+#include "CasePackage.H"
 
 #include "core/Units.H"                             // atm_to_Pa
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // ionMW (ions.dat)
@@ -251,39 +252,6 @@ void readEquilibrate(const DictPtr& dict, electrolyte::SpeciationInput& in)
 
 } // namespace propertyOps
 
-namespace {
-// The case's OFFICIAL dictionary lives in constant/propertyDict (walk UP the
-// fractal cascade).  For the speciate path it is an electrolyte propertyPackage
-// declaring the SYSTEM (propertyMethods.aqueousActivity + inputBasis).  Returns
-// null if there is none up the tree.
-DictPtr caseDictionary()
-{
-    namespace fs = std::filesystem;
-    fs::path p = fs::current_path();
-    for (int up = 0; up < 6; ++up)
-    {
-        // v2 name FIRST (thermoPhysPropDict, 2026-07-17): translate before
-        // returning so every consumer sees the SAME v1-shaped manifest --
-        // without this the op silently fell to the davies default while the
-        // [v2 plan] announce claimed otherwise (a decorative declaration,
-        // the Codex-audit sin).
-        fs::path v2 = p / "constant" / "thermoPhysPropDict";
-        if (fs::exists(v2))
-        {
-            auto d = Dictionary::fromFile(v2.string());
-            if (d->lookupWordOrDefault("recordType", "")
-                == "thermophysicalPropertySystem")
-                return ThermoPackageBuilder::translateV2(d);
-            return d;
-        }
-        fs::path cand = p / "constant" / "propertyDict";
-        if (fs::exists(cand)) return Dictionary::fromFile(cand.string());
-        if (!p.has_parent_path()) break;
-        p = p.parent_path();
-    }
-    return nullptr;
-}
-} // namespace
 
 int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verbosity)
 {
@@ -293,63 +261,25 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     // propertyPackage -- it fixes the activity method + input basis, and the op then
     // carries only the ANALYSIS.  A flat/degenerate thermoPackage (or none) -> the
     // legacy per-op `activityModel` form (backward compatible).
-    DictPtr pkg = caseDictionary();
-    const bool isPackage = pkg && pkg->found("propertyMethods")
-        && pkg->subDict("propertyMethods")->found("aqueousActivity");
-    if (!isPackage) pkg = nullptr;
-
-    // Activity model: from the package's propertyMethods.aqueousActivity when a
-    // package is declared (model contrasts = DIFFERENT packages), else the per-op
-    // `activityModel`.  Default Davies (the only S1 builtin).  Resolved + the
-    // input basis VALIDATED before the analysis is read (so a bad key fails with a
-    // basis error, not an obscure downstream one).
-    // The op's own `activityModel` WINS -- it is an explicit override, the
-    // mechanism for a model-CONTRAST case (davies vs pitzerHMW on ONE feed).
-    // Only when the op is silent does the package's aqueousActivity govern.
+    // The case's aqueous surface (aqueousProperties, read NATIVELY from the
+    // authored v2 grammar -- wave F): it fixes the gamma model; the op's own
+    // `activityModel` WINS (the model-CONTRAST mechanism: davies vs pitzerHMW
+    // on ONE feed).  Solvent: the speciation stack computes on the WATER
+    // surface (molality basis, SolventProperties, Debye-Hueckel A(T)) -- a
+    // declared non-water solvent refuses loudly (a NAMED gap, never a silent
+    // substitution).
+    const propertyOps::AqueousSurface surface = propertyOps::caseAqueousSurface();
     std::string model = dict->lookupWordOrDefault("activityModel", "");
-    if (pkg)
+    if (surface.present)
     {
-        if (model.empty())
-        {
-            std::string m = pkg->subDict("propertyMethods")->lookupWord("aqueousActivity");
-            const auto dot = m.rfind('.');            // "electrolyte.pitzerHMW" -> "pitzerHMW"
-            model = (dot == std::string::npos) ? m : m.substr(dot + 1);
-        }
-        // Input-basis validation: composition keys subset of apparentComponents;
-        // analyticalTotals/totals keys subset of analyticalMasters.
-        if (pkg->found("inputBasis"))
-        {
-            auto ib = pkg->subDict("inputBasis");
-            auto subsetCheck = [&](const char* opKey, const char* basisKey)
-            {
-                if (!dict->found(opKey) || !ib->found(basisKey)) return;
-                const auto allowed = ib->lookupWordList(basisKey);
-                for (const auto& k : dict->subDict(opKey)->keys())
-                    if (std::find(allowed.begin(), allowed.end(), k) == allowed.end())
-                        throw std::runtime_error(std::string(opKey) + "." + k
-                            + " is not declared in the package inputBasis."
-                            + basisKey + ".");
-            };
-            subsetCheck("composition",      "apparentComponents");
-            subsetCheck("totals",           "analyticalMasters");
-            subsetCheck("analyticalTotals", "analyticalMasters");
-            // inputBasis.solvent is CONSUMED, not decorative (Codex audit,
-            // M6): the speciation stack computes on the WATER surface
-            // (molality basis, SolventProperties, Debye-Hueckel A(T)) -- a
-            // package declaring any other solvent would run silently wrong.
-            // Refuse loudly; mixed-/non-aqueous speciation is a NAMED GAP.
-            if (ib->found("solvent"))
-            {
-                const std::string sol = ib->lookupWord("solvent");
-                if (sol != "water")
-                    throw std::runtime_error("inputBasis.solvent '" + sol
-                        + "': the speciation stack is aqueous-only (molality"
-                        " basis + water Debye-Hueckel surface) -- a "
-                        + sol + "-solvent speciation is a named gap, not a"
-                        " silent substitution.  Declare `solvent water;` or"
-                        " remove the key.");
-            }
-        }
+        if (model.empty()) model = surface.model;
+        if (!surface.solvent.empty() && surface.solvent != "water")
+            throw std::runtime_error("aqueousProperties.solvent '"
+                + surface.solvent
+                + "': the speciation stack is aqueous-only (molality basis +"
+                " water Debye-Hueckel surface) -- a " + surface.solvent
+                + "-solvent speciation is a named gap, not a silent"
+                " substitution.  Declare `solvent water;` or remove the key.");
     }
 
     if (model.empty()) model = "davies";   // no package, no op override -> S1 default

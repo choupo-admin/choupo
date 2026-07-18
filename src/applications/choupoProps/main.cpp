@@ -317,11 +317,15 @@ try
         // and re-translates per iteration, so the fit varies the SOURCE
         // grammar, never a translated intermediate.
         bool v2Native = false;
+        bool aqNative = false;
         if (sel->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
         {
             v2Authored = sel;
             if (ThermoPackageBuilder::v2NativeFormulation(sel))
                 v2Native = true;    // authored dict -> buildV2 below, no translate
+            else if (sel->found("aqueousProperties"))
+                aqNative = true;    // wave F: the speciation ops read the
+                                    // AUTHORED surface (caseAqueousSurface)
             else
                 sel = ThermoPackageBuilder::translateV2(sel);
         }
@@ -332,7 +336,24 @@ try
         const bool speciationPkg = sel->found("propertyMethods")
             && sel->subDict("propertyMethods")->found("aqueousActivity")
             && !sel->subDict("propertyMethods")->found("liquid");
-        if (v2Native)
+        if (aqNative)
+        {
+            // NATIVE speciation surface (wave F): the ops read the authored
+            // aqueousProperties block themselves (caseAqueousSurface); the
+            // ThermoPackage here is just the ideal solvent BASIS over the
+            // declared components -- assembled natively, no synthesized text.
+            if (verbosity >= 2)
+                std::cout << "Property package:  " << pkgPath
+                          << "   (electrolyte speciation: aqueousProperties,"
+                             " NATIVE surface)\n";
+            auto idealAct = std::make_shared<Dictionary>("activityModel");
+            idealAct->insert("model", std::string("ideal"));
+            auto idealEos = std::make_shared<Dictionary>("equationOfState");
+            idealEos->insert("model", std::string("idealGas"));
+            thermo.assembleTwoPhase(sel->lookupWordList("components"),
+                                    idealAct, idealEos, "gammaPhi", db);
+        }
+        else if (v2Native)
         {
             // NATIVE path (migration step 1-2): build() dispatches the
             // authored v2 grammar to buildV2 -- no translated intermediate.
