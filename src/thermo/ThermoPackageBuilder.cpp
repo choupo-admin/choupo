@@ -1432,9 +1432,13 @@ bool ThermoPackageBuilder::v2NativeFormulation(const DictPtr& v2)
     if (!v2->found("equilibrium")) return false;
     auto eq = v2->subDict("equilibrium");
     const std::string form = eq->lookupWordOrDefault("formulation", "");
-    // Projections the native assembly does not wire yet keep the whole
-    // system on the scaffold (translateV2), which handles them itself.
-    if (v2->found("activeComponents") || v2->found("chemistry"))
+    // chemistry{} inline is RETIRED (refused by translateV2/build); the
+    // defensive guard keeps an unmigrated stray on the loud path.
+    if (v2->found("chemistry")) return false;
+    // The activeComponents pair-domain projection (forum M6) is wired
+    // natively for the gamma worlds; other formulations do not consume it.
+    if (v2->found("activeComponents")
+        && form != "gammaPhi" && form != "gammaGamma")
         return false;
     if (form == "gammaPhi")
     {
@@ -1562,7 +1566,14 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
             pc->insert("type", std::string("liquid"));
             // Each phase OWNS its activity config (resolveActivity builds a
             // fresh dict per call -- no shared mutation between phases).
-            pc->insert("activity", EntryValue(resolveActivity(am)));
+            auto act = resolveActivity(am);
+            if (v2->found("activeComponents"))
+                act->insert("activeComponents",
+                            v2->entryValue("activeComponents"));
+            if (v2->found("binaryPairsBase"))
+                act->insert("binaryPairsBase",
+                            v2->entryValue("binaryPairsBase"));
+            pc->insert("activity", EntryValue(act));
             phaseConfigs.push_back(pc);
         }
         if (eq->found("vapour"))
@@ -1787,6 +1798,17 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
             }
         }
         activityDict->insert("model", model);
+        // Active-set projection (forum M6): the declared pair domain rides
+        // into the activity config -- the NRTL restricts its pair matrix +
+        // announcement to it (components stay GLOBAL; doctrine untouched).
+        if (v2->found("activeComponents"))
+            activityDict->insert("activeComponents",
+                                 v2->entryValue("activeComponents"));
+        // Per-node pair home (Flowsheet-injected plumbing, not authored
+        // grammar): the NRTL searches the node's constant/parameters FIRST.
+        if (v2->found("binaryPairsBase"))
+            activityDict->insert("binaryPairsBase",
+                                 v2->entryValue("binaryPairsBase"));
 
         const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
         auto eosDict = std::make_shared<Dictionary>("equationOfState");

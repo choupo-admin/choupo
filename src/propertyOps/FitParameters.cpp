@@ -399,13 +399,13 @@ int FitParameters::run(const DictPtr& dict,
     {
         for (const auto& ps : current)
             work->setScalarAtPath(ps.path, ps.value);
-        DictPtr eff = v2Work ? ThermoPackageBuilder::translateV2(work) : work;
-        // the translation may resolve to the FLAT shape (inline pairs) or the
-        // MANIFEST shape (catalogue-declared pairs) -- route accordingly.
-        if (eff->found("propertyMethods"))
-            return ThermoPackageBuilder::build(eff, *database());
+        // wave H: the builder's ONE dispatch serves the mutated authored copy
+        // directly (native for every claimed formulation/shape -- the fit's
+        // inline pairs included); v1 flat dicts keep the exact old path.
+        if (v2Work)
+            return ThermoPackageBuilder::build(work, *database());
         ThermoPackage tp;
-        tp.readFromDict(eff, *database());
+        tp.readFromDict(work, *database());
         return tp;
     };
 

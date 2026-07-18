@@ -148,10 +148,22 @@ traceable explanation.  Do not mix this migration with model growth
   by-value package with a predefined mixture (`air`) lost its stream-token
   splice — bit only now because the flat path read in-place.  Fixed; the
   sprayDryer family caught it.
-- ~~BOUNDARY: the electrolyte formulations stay on the scaffold~~ (resolved
-  by the chemistryDict ratification + waves E/F).  Still scaffold: systems
-  carrying `activeComponents` (the EXTRACTION-sector projection), the
-  Flowsheet propertyContextBase chain, fitParameters.
+- 2026-07-18 (wave H): **the scaffold counter reaches ZERO.**  fitParameters
+  hands its mutated authored copy to the builder's ONE dispatch (native per
+  iteration); the `activeComponents` pair-domain projection rides natively
+  into the gamma worlds' activity configs; the Flowsheet
+  `propertyContextBase` chain builds a claimed v2 context via `build()`
+  directly — COMPONENTS STAY GLOBAL (the ctx list is replaced by the built
+  global's), the per-node auxiliaries (`binaryPairsBase`, the node's
+  chemistryDict) ride alongside.  Empirical: a fresh run of every previously
+  scaffold-flagged case prints ZERO `[v2 plan]` — the whole corpus assembles
+  `[v2 native]`.  translateV2 is now reachable only by an authored shape no
+  case uses; its deletion (step 5) is the next, separate commit — note the
+  per-unit INLINE `thermo{}` override language still uses the flat FORM as
+  its merge target (perUnitThermo01), so "todas as rotas flat" needs its own
+  scoping decision before step 5 executes.
+- ~~Still scaffold: activeComponents systems, the propertyContextBase chain,
+  fitParameters~~ (wave H).
 - 2026-07-18 (wave B): **gammaGamma assembles natively** —
   `ThermoPackage::assembleNamedPhases` (each liquid phase from its own
   config dict, shared activity model resolved once per phase — no cross-phase

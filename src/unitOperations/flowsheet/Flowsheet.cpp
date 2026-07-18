@@ -2438,6 +2438,36 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
         std::set<std::string> visited;
         DictPtr ctx = resolvePropertyContext(udict->lookupWord("propertyContextBase"),
                                              visited);
+        // NATIVE per-node context (wave H): a resolved v2 system the native
+        // path claims builds via the builder's ONE dispatch -- no translated
+        // intermediate, no F2 reshuffle.  COMPONENTS STAY GLOBAL (the
+        // doctrine): the ctx's own list is replaced by the built global's;
+        // the per-node auxiliaries (binaryPairsBase -- the nearest-owner
+        // pair home -- and the node's chemistryDict) ride alongside.
+        if (isV2System(ctx) && ThermoPackageBuilder::v2NativeFormulation(ctx))
+        {
+            auto pkg = ctx->deepCopy();
+            std::vector<std::string> gnames;
+            gnames.reserve(global.n());
+            for (std::size_t i = 0; i < global.n(); ++i)
+                gnames.push_back(global.comp(i).name());
+            pkg->insert("components", EntryValue(gnames));
+            const std::string pcb = udict->lookupWord("propertyContextBase");
+            const auto sfx = pcb.rfind("/constant");
+            if (sfx != std::string::npos && sfx + 9 == pcb.size())
+                pkg->insert("binaryPairsBase", pcb.substr(0, sfx));
+            ChemistrySystem nodeChem = resolveChemistryContext(pcb);
+            auto tpn = std::make_unique<ThermoPackage>(
+                ThermoPackageBuilder::build(pkg, *db_,
+                    nodeChem.present ? &nodeChem : nullptr));
+            const ThermoPackage& refn = *tpn;
+            unitThermo_[uname] = std::move(tpn);
+            if (thermoAnnounce())
+                std::cout << "  [context] " << uname
+                          << ": property context built NATIVELY from the"
+                             " authored v2 chain (components stay global)\n";
+            return refn;
+        }
         // G7: a v2 chain resolves in the AUTHORED grammar; translate ONCE on
         // the completed system so the F2 logic below reads the v1 shape.
         const bool wasV2 = isV2System(ctx);
