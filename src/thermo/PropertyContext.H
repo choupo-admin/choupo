@@ -53,7 +53,7 @@ namespace Choupo {
 // over BASE.  A sub-dict merges recursively; a scalar/word/list is REPLACED (never
 // appended).  A shadowed leaf is announced (glass-box, loud).
 //
-// G7 (Codex-ratified 2026-07-18): in a v2 chain the PHYSICAL blocks are
+// In a system chain the PHYSICAL blocks are
 // ATOMIC -- a child declaring `equilibrium` (or aqueousProperties / caloric /
 // transport / pureFluids) states a WHOLE formulation; recursively merging two
 // different formulations would interleave their phase blocks into non-physics
@@ -110,7 +110,7 @@ inline DictPtr mergePropertyDicts(const DictPtr& base, const DictPtr& over,
 // declaration overrides.  Linear chain, cycle-detected, no filesystem crawling
 // (the parent is named explicitly).  The returned dict carries NO `inherits` key.
 //
-// G7 (Codex-ratified 2026-07-18): each constant/ resolves thermoPhysPropDict
+// Each constant/ resolves thermoPhysPropDict
 // (v2) FIRST, then propertyDict (v1).  The merge runs on the AUTHORED form --
 // a v2 chain deep-merges v2 dicts (local contexts are deliberately PARTIAL,
 // so translation happens ONCE, at the caller, on the completed system, never
@@ -129,10 +129,9 @@ inline DictPtr resolvePropertyContext(const std::string&      constantDir,
     std::string path = constantDir + "/thermoPhysPropDict";
     if (!fs::exists(path) && fs::exists(constantDir + "/propertyDict"))
         throw std::runtime_error(
-            "the v1 `constant/propertyDict` grammar is RETIRED (the 2026-07-18"
-                " consolidation): this case still carries one.  Migrate it --"
-                " bin/curate/migrate_thermoPhysProp.py (mechanical, golden-safe)"
-                " -- then re-run.");
+            "this case carries a constant/propertyDict -- the case grammar is"
+                " constant/thermoPhysPropDict (bin/curate/migrate_thermoPhysProp.py"
+                " converts old cases).");
     const std::string canon = fs::weakly_canonical(path).string();
     if (!visited.insert(canon).second)
         throw std::runtime_error("Choupo: property-context `inherits` CYCLE at "
@@ -160,7 +159,7 @@ inline DictPtr resolvePropertyContext(const std::string&      constantDir,
 }
 
 // Resolve the case's ACTIVE-CHEMISTRY SELECTION (`constant/chemistryDict`,
-// ratified 2026-07-18) along the SAME `inherits` chain the property context
+// along the SAME `inherits` chain the property context
 // walks: the NEAREST owner wins, replace-whole (a local chemistryDict
 // eclipses the parent's -- no merge; chemistry selection is one fact).
 // Absent everywhere -> an empty (present = false) system: chemistry is

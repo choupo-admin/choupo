@@ -41,7 +41,7 @@ NEGATIVES = [
   "components ( water );\nequilibrium { formulation gammaPhi;"
   " liquid { activityModel { model NRTL; pairs ( { i water; j water; } ); } }"
   " vapour { fugacityModel idealGas; } }\n",
-  "RETIRED"),
+  "binaryParameters"),
  ("transport-mixingRule",
   "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
   "components ( water );\nequilibrium { formulation gammaPhi;"

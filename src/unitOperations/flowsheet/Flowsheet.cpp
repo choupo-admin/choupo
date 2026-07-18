@@ -2375,10 +2375,10 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
     const bool hasThermoBlock = udict->found("thermo");
     auto declaresWorld = [](const DictPtr& th)
     {
-        // v2 FRAGMENT blocks (wave I) -- a thermo{} carrying any system
-        // block IS a world/config override; the flat keys stay listed only
-        // to reach the mergeThermoOverride anti-flat REFUSAL (loud), never
-        // to be silently treated as auxiliaries.
+        // A thermo{} carrying any system block IS a world/config override;
+        // the non-grammar keys stay listed only to reach the
+        // mergeThermoOverride refusal (loud), never to be silently treated
+        // as auxiliaries.
         return th->found("equilibrium") || th->found("caloric")
             || th->found("volumetric") || th->found("transport")
             || th->found("pureFluids")
@@ -2395,19 +2395,11 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
     auto it = unitThermo_.find(uname);
     if (it != unitThermo_.end()) return *it->second;
 
-    // Merge: the unit's `thermo {}` override REPLACES the model sub-dicts it names
-    // (activityModel / equationOfState / transport); the COMPONENTS stay global.
-    // Two routes for "the global components":
-    //   - legacy thermoPackage: copy the global thermoDict_ (it carries `components`);
-    //   - propertyPackage (thermoDict_ null): synthesize `components ( ... )` from
-    //     the built global package, so a per-unit override (e.g. an NRTL recovery
-    //     column over an electrolyte global) builds on the SAME component set --
-    //     readFromDict re-loads them (case-local, full) exactly as the legacy merge.
-    // NATIVE per-unit override (wave I, Codex-ratified 2026-07-18): the
-    // thermo{} FRAGMENT (typed v2 grammar) merges onto the node's EFFECTIVE
-    // authored system -- the root's authored v2, or the node's resolved
-    // property context when it has one -- then builds via the ONE dispatch.
-    // COMPONENTS STAY GLOBAL; the per-node auxiliaries ride alongside.
+    // Per-unit override: the thermo{} FRAGMENT (typed system grammar)
+    // merges onto the node's EFFECTIVE authored system -- the root's, or
+    // the node's resolved property context when it has one -- then builds
+    // via the ONE dispatch.  COMPONENTS STAY GLOBAL; the per-node
+    // auxiliaries ride alongside.
     if (hasThermo)
     {
         DictPtr effBase;
@@ -2444,56 +2436,15 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
         }
     }
 
-    auto merged = std::make_shared<Dictionary>("thermoPackage");
-    if (thermoDict_)
+    // Per-node CONTEXT (no fragment): the resolved authored chain builds
+    // via the ONE dispatch -- COMPONENTS STAY GLOBAL; the per-node
+    // auxiliaries (binaryPairsBase, the node's chemistryDict) ride alongside.
+    if (hasContext)
     {
-        for (const auto& k : thermoDict_->keys())
-            merged->insert(k, thermoDict_->entryValue(k));
-    }
-    else
-    {
-        std::string clist = "components ( ";
-        for (std::size_t i = 0; i < global.n(); ++i)
-            clist += global.comp(i).name() + " ";
-        clist += ");\n";
-        // Gap 2 (perUnitThermo01): the GLOBAL's molecular gamma must survive
-        // an EoS-only unit override -- carry it into the base when the unit
-        // does not name its own liquid world and the global activity is
-        // name-constructible (an electrolyte surface cannot be rebuilt from
-        // its name; those units declare their own world, unchanged).
-        const bool unitNamesLiquid = hasThermo
-            && (udict->subDict("thermo")->found("activityModel")
-                || udict->subDict("thermo")->found("phases"));
-        if (!unitNamesLiquid && global.hasActivity()
-            && !global.activity().asElectrolyte())
-            clist += "activityModel { model "
-                   + global.activity().modelName() + "; }\n";
-        clist += "equationOfState { model idealGas; }\n";   // package EoS default;
-        // the unit override REPLACES it below if it declares its own.
-        auto cdict = Dictionary::fromString(clist, "thermoFor.components");
-        for (const auto& k : cdict->keys())
-            merged->insert(k, cdict->entryValue(k));
-    }
-    // The override sub-dicts come EITHER from an inline `thermo {}` (F1) OR from the
-    // unit's resolved property context (F2: constant/propertyDict + `inherits`),
-    // translated to the same override shape.  The SELECTED liquid method defines the
-    // ACTIVE world: `activity.*` -> a molecular activityModel (inherited electrolyte
-    // chemistry stays available but INACTIVE); `electrolyte.*` -> a manifest world.
-    DictPtr over;
-    if (hasThermo)
-        over = udict->subDict("thermo");
-    else
-    {
-        std::set<std::string> visited;
-        DictPtr ctx = resolvePropertyContext(udict->lookupWord("propertyContextBase"),
-                                             visited);
-        // NATIVE per-node context (wave H): a resolved v2 system the native
-        // path claims builds via the builder's ONE dispatch -- no translated
-        // intermediate, no F2 reshuffle.  COMPONENTS STAY GLOBAL (the
-        // doctrine): the ctx's own list is replaced by the built global's;
-        // the per-node auxiliaries (binaryPairsBase -- the nearest-owner
-        // pair home -- and the node's chemistryDict) ride alongside.
-        if (isV2System(ctx) && ThermoPackageBuilder::v2NativeFormulation(ctx))
+        std::set<std::string> vis;
+        DictPtr ctx = resolvePropertyContext(
+            udict->lookupWord("propertyContextBase"), vis);
+        if (ctx && isV2System(ctx))
         {
             auto pkg = ctx->deepCopy();
             std::vector<std::string> gnames;
@@ -2517,171 +2468,12 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
                              " authored v2 chain (components stay global)\n";
             return refn;
         }
-        // The scaffold is DEAD: a v2 context the native path does not claim
-        // gets its NAMED refusal from build()'s exhaustive dispatch -- reach
-        // it deliberately (never a silent fallback into the v1-shape logic).
-        const bool wasV2 = isV2System(ctx);
-        if (wasV2)
-        {
-            (void)ThermoPackageBuilder::build(ctx, *db_, nullptr);
-            throw std::runtime_error("Flowsheet::thermoFor: unreachable -- a"
-                " v2 context the native path does not claim must have been"
-                " refused by the builder dispatch above.");
-        }
-        // A v2 translation may resolve to the FLAT shape (gammaGamma phases,
-        // inline pairs) -- no propertyMethods to parse; the flat blocks ARE
-        // the override.  Copy them (+ the per-node auxiliaries) directly.
-        if (wasV2 && !ctx->found("propertyMethods"))
-        {
-            over = std::make_shared<Dictionary>("thermo");
-            for (const char* k : {"phases", "activityModel", "equationOfState",
-                                  "transport", "pureFluids", "activeComponents",
-                                  "chemistry"})
-                if (ctx->found(k)) over->insert(k, ctx->entryValue(k));
-            {
-                const std::string pcb = udict->lookupWord("propertyContextBase");
-                const auto s = pcb.rfind("/constant");
-                if (s != std::string::npos && s + 9 == pcb.size())
-                    over->insert("binaryPairsBase", pcb.substr(0, s));
-            }
-            if (hasThermoBlock)
-            {
-                auto aux = udict->subDict("thermo");
-                for (const auto& k : aux->keys())
-                    over->insert(k, aux->entryValue(k));
-            }
-            for (const auto& k : over->keys())
-                merged->insert(k, over->entryValue(k));
-            std::unique_ptr<ThermoPackage> tpf = std::make_unique<ThermoPackage>();
-            tpf->readFromDict(merged, *db_);
-            const ThermoPackage& reff = *tpf;
-            unitThermo_[uname] = std::move(tpf);
-            return reff;
-        }
-        over = std::make_shared<Dictionary>("thermo");
-        std::string liq;
-        if (ctx->found("propertyMethods")
-            && ctx->subDict("propertyMethods")->found("liquid"))
-            liq = ctx->subDict("propertyMethods")->lookupWord("liquid");
-        if (liq.rfind("activity.", 0) == 0)
-        {
-            const std::string model = liq.substr(std::string("activity.").size());
-            // MULTI-PHASE LLE: the property context may declare 2+ LIQUID phases
-            // (an NRTL gamma-gamma settler).  Translate the F2 `phases { <name> {
-            // type liquid; activityModel <M>; } }` into the internal phases list so
-            // readFromDict builds >= 2 liquid phases; else a single implicit liquid
-            // via activityModel.
-            if (ctx->found("phases"))
-            {
-                std::string pt = "phases (\n";
-                auto ph = ctx->subDict("phases");
-                for (const auto& pn : ph->keys())
-                {
-                    auto pd = ph->subDict(pn);
-                    const std::string ptype = pd->lookupWordOrDefault("type", "liquid");
-                    std::string pm = model;
-                    if (pd->found("activityModel")) pm = pd->lookupWord("activityModel");
-                    else if (pd->found("activity") && pd->subDict("activity")->found("model"))
-                        pm = pd->subDict("activity")->lookupWord("model");
-                    pt += "    { name " + pn + "; type " + ptype
-                        + "; activity { model " + pm + "; } }\n";
-                }
-                pt += "    { name vapour; type vapor; eos { model idealGas; } }\n);\n";
-                auto pdict = Dictionary::fromString(pt, "thermoFor.phases");
-                over->insert("phases", pdict->entryValue("phases"));
-            }
-            else
-            {
-                auto am = std::make_shared<Dictionary>("activityModel");
-                am->insert("model", std::string(model));
-                over->insert("activityModel", EntryValue(am));
-            }
-            // Point the F2 model-parameter resolver at THIS context's propertyData:
-            // an NRTL pair lives under <context>/constant/propertyData/parameters/,
-            // NOT the plant root that fs::current_path() resolves to.  Without this
-            // a nested unit's NRTL falls back to ideal (no pairs) -> a kerosene/water
-            // settler finds NO liquid-liquid split (the loaded organic comes out
-            // empty).  NRTL's per-node snapshot reads binaryPairsBase/constant/...
-            {
-                const std::string pcb = udict->lookupWord("propertyContextBase");
-                const auto s = pcb.rfind("/constant");
-                if (s != std::string::npos && s + 9 == pcb.size())
-                    over->insert("binaryPairsBase", pcb.substr(0, s));
-            }
-            // Active-set projection: forward the context's declared domain --
-            // ThermoPackage pushes it down into every activity block, the
-            // NRTL restricts its pair matrix + announcement to it (components
-            // stay GLOBAL; the doctrine is untouched).
-            if (ctx->found("activeComponents"))
-                over->insert("activeComponents", ctx->entryValue("activeComponents"));
-        }
-        else if (liq.rfind("electrolyte.", 0) == 0)
-        {
-            auto pm = std::make_shared<Dictionary>("propertyMethods");
-            pm->insert("liquid", std::string(liq));
-            over->insert("propertyMethods", EntryValue(pm));
-        }
-        else
-            return global;   // context does not change the liquid world -> global
-        // Fold the auxiliary-only thermo{} (binaryPairsBase / activeComponents
-        // from the wiring walk-up) OVER the context translation -- the nearest
-        // pair-owning node wins, exactly the Item-0b precedence.
-        if (hasThermoBlock)
-        {
-            auto aux = udict->subDict("thermo");
-            for (const auto& k : aux->keys())
-                over->insert(k, aux->entryValue(k));
-        }
-    }
-    for (const auto& k : over->keys())
-        merged->insert(k, over->entryValue(k));
-
-    // MANIFEST-WORLD override (general solver): a per-unit `thermo {}` may select
-    // a manifest world -- electrolyte.* etc. -- not only a flat activity/eos
-    // model.  Those are ASSEMBLED by the ThermoPackageBuilder (subset-aware on
-    // the global components), not readFromDict.  Detect an electrolyte liquid
-    // method and route through the builder; every other override stays on the
-    // flat readFromDict path exactly as before.
-    bool manifestWorld = false;
-    if (over->found("propertyMethods")
-        && over->subDict("propertyMethods")->found("liquid"))
-    {
-        const std::string liq = over->subDict("propertyMethods")->lookupWord("liquid");
-        if (liq.rfind("electrolyte.", 0) == 0) manifestWorld = true;
     }
 
-    std::unique_ptr<ThermoPackage> tp;
-    if (manifestWorld)
-    {
-        // Build a propertyPackage dict: the GLOBAL components + the override's
-        // manifest fields (propertyMethods / chemistry / parameters).
-        auto pkg = std::make_shared<Dictionary>("propertyPackage");
-        std::string clist = "components ( ";
-        for (std::size_t i = 0; i < global.n(); ++i)
-            clist += global.comp(i).name() + " ";
-        clist += ");";
-        auto cd = Dictionary::fromString(clist, "thermoFor.pkgComponents");
-        pkg->insert("components", cd->entryValue("components"));
-        for (const auto& k : over->keys())
-            if (k != "binaryPairsBase") pkg->insert(k, over->entryValue(k));
-        // The node's ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict,
-        // ratified 2026-07-18) resolves along the node's own context chain --
-        // nearest owner wins.
-        ChemistrySystem nodeChem;
-        if (hasContext)
-            nodeChem = resolveChemistryContext(
-                udict->lookupWord("propertyContextBase"));
-        tp = std::make_unique<ThermoPackage>(ThermoPackageBuilder::build(
-            pkg, *db_, nodeChem.present ? &nodeChem : nullptr));
-    }
-    else
-    {
-        tp = std::make_unique<ThermoPackage>();
-        tp->readFromDict(merged, *db_);
-    }
-    const ThermoPackage& ref = *tp;
-    unitThermo_[uname] = std::move(tp);
-    return ref;
+    throw std::runtime_error("Flowsheet::thermoFor: unit '" + uname
+        + "' declares a thermo{}/context override, but no authored"
+          " thermophysicalPropertySystem is available as its base -- an"
+          " override is a fragment of the case's system and needs one.");
 }
 
 // ===========================================================================
@@ -2737,7 +2529,7 @@ int Flowsheet::solve(const DictPtr& dict,
     if (dict->found("streams"))
         throw std::runtime_error(std::string("Flowsheet: this flowsheetDict "
             "carries a `streams {}` block -- the legacy steady stream-state "
-            "reader is RETIRED.  Stream state lives in per-stream 0/ files ")
+            "reader does not exist.  Stream state lives in per-stream 0/ files ")
             + (seededFrom0
                 ? "(this case HAS a 0/ tree; the block would silently shadow "
                   "it -- delete the block)."

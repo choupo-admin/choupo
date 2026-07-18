@@ -387,7 +387,7 @@ int FitParameters::run(const DictPtr& dict,
     // dict -- the fit contaminated the package for any operation after it in
     // the same propsDict.  The working tree is now genuinely private.
     DictPtr work = fitSource->deepCopy();
-    // G3 (Codex-ratified 2026-07-18): when the case is v2, `work` IS the
+    // When the case system is loaded, `work` IS the
     // authored thermophysicalPropertySystem -- the LM mutates it by the
     // NAMED v2 path (equilibrium.liquid.activityModel.binaryParameters.
     // <i>-<j>.<coef>, order-stable, never pairs[0]) and the copy passes
@@ -402,9 +402,8 @@ int FitParameters::run(const DictPtr& dict,
         // The builder's ONE dispatch serves the mutated authored copy
         // directly (native; the fit's inline pairs included).
         if (!v2Work)
-            throw std::runtime_error("fitParameters: the case system must be"
-                " the v2 grammar (recordType thermophysicalPropertySystem)"
-                " -- every v1/flat form is retired.");
+            throw std::runtime_error("fitParameters: the case system must"
+                " declare `recordType thermophysicalPropertySystem;`.");
         return ThermoPackageBuilder::build(work, *database());
     };
 

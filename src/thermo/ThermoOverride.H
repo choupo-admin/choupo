@@ -29,10 +29,9 @@ File
     src/thermo/ThermoOverride.H
 
 Description
-    The ONE typed merge for a per-unit / per-op `thermo {}` override
-    (Codex-ratified 2026-07-18): the fragment is a PARTIAL, TYPED piece of
-    the thermophysicalPropertySystem grammar, applied onto the node's
-    EFFECTIVE authored v2 system:
+    The ONE typed merge for a per-unit / per-op `thermo {}` override: the
+    fragment is a PARTIAL, TYPED piece of the thermophysicalPropertySystem
+    grammar, applied onto the node's EFFECTIVE authored system:
 
         root authored v2
           -> resolvePropertyContext (inherits + nearest owner)   [when a
@@ -48,9 +47,9 @@ Description
       - `components`, `chemistry`, `recordType`, `schemaVersion` are
         FORBIDDEN in a fragment (components stay global; chemistry lives in
         constant/chemistryDict).
-      - the FLAT v1 override keys (`activityModel`, `equationOfState`,
-        flat transport slots) are RETIRED -- refused with the migration
-        message, never silently accepted.
+      - a bare `activityModel` / `equationOfState` / flat transport key at
+        the fragment top is not part of the grammar -- refused with the
+        rewrite shown, never silently accepted.
       - equilibrium: if the fragment declares a DIFFERENT formulation, the
         whole block REPLACES the base's (a complete new world -- no hybrid
         remains of the previous formulation; incompleteness fails loudly in
@@ -77,14 +76,14 @@ inline DictPtr mergeThermoOverride(const DictPtr& effectiveAuthored,
                                    const DictPtr& fragment,
                                    const std::string& who)
 {
-    // ---- fragment validation (the anti-flat gate) -----------------------
+    // ---- fragment validation --------------------------------------------
     for (const auto& k : fragment->keys())
     {
         if (k == "activityModel" || k == "equationOfState")
-            throw std::runtime_error(who + ": the FLAT `thermo { " + k
-                + " {...} }` override form is RETIRED (2026-07-18) -- the"
-                " override is a typed v2 fragment.  Write it as `thermo {"
-                " equilibrium { "
+            throw std::runtime_error(who + ": `thermo { " + k
+                + " {...} }` is not the override grammar -- the override is"
+                " a typed fragment of the system grammar.  Write it as"
+                " `thermo { equilibrium { "
                 + std::string(k == "activityModel"
                     ? "liquid { activityModel {...} }"
                     : "vapour { fugacityModel <word>; } (gamma-phi) or"
@@ -110,9 +109,9 @@ inline DictPtr mergeThermoOverride(const DictPtr& effectiveAuthored,
         for (const auto& tk : fragment->subDict("transport")->keys())
             if (tk != "vapour" && tk != "liquid" && tk != "interface")
                 throw std::runtime_error(who + ": thermo{} transport override"
-                    " key '" + tk + "' is the FLAT hierarchy -- the fragment"
-                    " uses the authored phase-structured form: transport {"
-                    " vapour{...} liquid{...} interface{...} }.");
+                    " key '" + tk + "' -- the fragment uses the"
+                    " phase-structured form: transport { vapour{...}"
+                    " liquid{...} interface{...} }.");
 
     auto merged = effectiveAuthored->deepCopy();
     auto note = [&](const std::string& slot, const std::string& what)

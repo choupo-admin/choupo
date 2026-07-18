@@ -41,7 +41,7 @@ Description
             controlDict           -- verbosity, output formatting
             propsDict             -- list of property operations to run
           constant/
-            propertyDict          -- components + γ-φ + EoS models
+            thermoPhysPropDict    -- the thermophysical system
 
     Usage:   choupoProps [case_dir]
 \*---------------------------------------------------------------------------*/
@@ -294,28 +294,26 @@ try
     bool deprecatedName = false;
     if (!fs::exists(pkgPath) && fs::exists(resolveUp("constant/propertyDict")))
         throw std::runtime_error(
-            "the v1 `constant/propertyDict` grammar is RETIRED (the 2026-07-18"
-                " consolidation): this case still carries one.  Migrate it --"
-                " bin/curate/migrate_thermoPhysProp.py (mechanical, golden-safe)"
-                " -- then re-run.");
+            "this case carries a constant/propertyDict -- the case grammar is"
+                " constant/thermoPhysPropDict (bin/curate/migrate_thermoPhysProp.py"
+                " converts old cases).");
     ChemistrySystem chem;
     const ChemistrySystem* chemPtr = nullptr;
     if (fs::exists(pkgPath))
     {
         auto sel = Dictionary::fromFile(pkgPath);
-        // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict, ratified
-        // 2026-07-18): same context chain, nearest owner wins; optional.
+        // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict): the same
+        // context chain, nearest owner wins; optional.
         chem = resolveChemistryContext(fs::path(pkgPath).parent_path().string());
         if (chem.present) chemPtr = &chem;
         // v2 contract (thermophysicalPropertySystem): translate FIRST -- the
         // whole downstream (speciation detection, builder, op readers) then
         // consumes the verified v1-shaped manifest.  Strict validation + the
         // [v2 plan] announce happen inside the translator.
-        // G3 (Codex-ratified 2026-07-18): the AUTHORED v2 dict is preserved
-        // -- a fitParameters op mutates a COPY of it by the NAMED v2 path
-        // (equilibrium.liquid.activityModel.binaryParameters.<i>-<j>.<coef>)
-        // and re-translates per iteration, so the fit varies the SOURCE
-        // grammar, never a translated intermediate.
+        // The AUTHORED dict is preserved -- a fitParameters op mutates a
+        // COPY of it by the NAMED path (equilibrium.liquid.activityModel.
+        // binaryParameters.<i>-<j>.<coef>) and rebuilds per iteration, so
+        // the fit varies the SOURCE grammar itself.
         bool v2Native = false;
         bool aqNative = false;
         if (sel->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
@@ -323,7 +321,7 @@ try
             v2Authored = sel;
             if (sel->found("aqueousProperties"))
             {
-                aqNative = true;    // wave F: the speciation ops read the
+                aqNative = true;    // the speciation ops read the
                                     // AUTHORED surface (caseAqueousSurface)
                 // Validate the surface EAGERLY (negative-parity gate): a bad
                 // model/basis must refuse at LOAD, not only when a speciation
@@ -341,7 +339,7 @@ try
                          " more than thermo).\n";
         if (aqNative)
         {
-            // NATIVE speciation surface (wave F): the ops read the authored
+            // Speciation surface: the ops read the authored
             // aqueousProperties block themselves (caseAqueousSurface); the
             // ThermoPackage here is just the ideal solvent BASIS over the
             // declared components -- assembled natively, no synthesized text.

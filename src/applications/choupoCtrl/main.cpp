@@ -47,7 +47,7 @@ Description
         │   ├── controlDict      verbosity + time settings
         │   └── flowsheetDict    units list + controllers list
         └── constant/
-            ├── propertyDict     components + γ-φ models
+            ├── thermoPhysPropDict   the thermophysical system
             └── reactions        named-reaction library     [optional]
 
     Output: trajectory.csv with state variables of every unit plus the
@@ -104,7 +104,7 @@ namespace fs = std::filesystem;
 
 // Seed each dynamic unit's initial holdup + inlet from the case's 0/ state --
 // the SINGLE source of truth.  The inline initial{}/inlet{} blocks in
-// flowsheetDict are RETIRED (no legacy): 0/internalState carries the holdup and
+// flowsheetDict do not exist: 0/internalState carries the holdup and
 // 0/streams the inlet face, exactly as the engine writes them.  This translates
 // them into the initial{}/inlet{} dicts each unit's initialise() already reads
 // and injects them into the unit dict, so no unit code changes.  Must run with
@@ -122,7 +122,7 @@ static void seedDynamicUnitsFrom0(const std::vector<DictPtr>& unitList)
 
         if (uDict->found("initial") || uDict->found("inlet"))
             throw std::runtime_error("choupoCtrl: unit '" + uname + "' carries an "
-                "inline initial{}/inlet{} block -- RETIRED.  The initial holdup and"
+                "inline initial{}/inlet{} block -- the initial holdup and"
                 " inlet live in 0/internalState + 0/streams (bin/choupo-init0"
                 " materialises them).  Delete the inline block from flowsheetDict.");
 
@@ -223,17 +223,16 @@ try
     auto controlDict   = Dictionary::fromFile("system/controlDict");
     auto flowsheetDict = Dictionary::fromFile("system/flowsheetDict");
     // ONE property-package file, TWO names: constant/thermoPhysPropDict (the
-    // v2 contract, resolved FIRST -- 2026-07-17) or constant/propertyDict
+    // the case system) or constant/propertyDict
     // (the v1 home).  Mirrors choupoSolve/choupoProps; translation + content
     // routing happen at the build site below, after verbosity gates the
     // announce chorus.
     if (!fs::exists("constant/thermoPhysPropDict")
         && fs::exists("constant/propertyDict"))
         throw std::runtime_error(
-            "the v1 `constant/propertyDict` grammar is RETIRED (the 2026-07-18"
-                " consolidation): this case still carries one.  Migrate it --"
-                " bin/curate/migrate_thermoPhysProp.py (mechanical, golden-safe)"
-                " -- then re-run.");
+            "this case carries a constant/propertyDict -- the case grammar is"
+                " constant/thermoPhysPropDict (bin/curate/migrate_thermoPhysProp.py"
+                " converts old cases).");
     const std::string pkgFile = "constant/thermoPhysPropDict";
     auto thermoDict    = Dictionary::fromFile(pkgFile);
 
@@ -322,19 +321,19 @@ try
     }
 
     // v2 contract (thermophysicalPropertySystem): the BUILDER owns the ONE
-    // exhaustive dispatch -- native for a claimed formulation, a NAMED
-    // refusal for everything else (the scaffold is dead); the main never
-    // decides.  Routed by content: manifest
+    // exhaustive dispatch -- an implemented formulation assembles, any
+    // other shape gets a NAMED refusal; the main never decides.  Routed by
+    // content: manifest
     // (components + propertyMethods) -> builder; flat form -> legacy reader.
-    // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict, ratified
-    // 2026-07-18): same context chain, nearest owner wins; optional.
+    // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict): the same
+    // context chain, nearest owner wins; optional.
     ChemistrySystem chem = resolveChemistryContext("constant");
     const ChemistrySystem* chemPtr = chem.present ? &chem : nullptr;
     if (thermoDict->lookupWordOrDefault("recordType", "")
         != "thermophysicalPropertySystem")
         throw std::runtime_error("constant/thermoPhysPropDict must declare"
             " `recordType thermophysicalPropertySystem;` (the ONE case"
-            " grammar -- every v1/flat/manifest form is retired).");
+            " grammar).");
     ThermoPackage thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);
 
     // ---- Build dynamic units -----------------------------------------
@@ -348,7 +347,7 @@ try
     unitNames.reserve(unitList.size());
 
     // Seed initial holdup + inlet from 0/ (single source of truth; inline
-    // initial{}/inlet{} is retired) BEFORE each unit initialises itself.
+    // initial{}/inlet{} does not exist) BEFORE each unit initialises itself.
     seedDynamicUnitsFrom0(unitList);
 
     for (const auto& uDict : unitList)

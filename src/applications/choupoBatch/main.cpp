@@ -97,7 +97,7 @@ namespace fs = std::filesystem;
 // Seed each batch vessel's initial holdup from the case's 0/internalState -- the
 // SINGLE source of truth.  A closed batch vessel has no continuous inlet, so the
 // holdup is ALL of its authored state and there is no 0/streams.  The inline
-// initial{} block in flowsheetDict is RETIRED (no legacy): 0/internalState
+// initial{} block does not live in flowsheetDict: 0/internalState
 // carries each holdup unit's block VERBATIM (T, P, V, totalMoles,
 // molarComposition, ...), re-inserted here as the initial{} dict the unit's
 // initialise() already reads.  Units whose initial state is NOT a unit-level
@@ -117,7 +117,7 @@ static void seedBatchUnitsFrom0(const std::vector<DictPtr>& unitList)
 
         if (uDict->found("initial"))
             throw std::runtime_error("choupoBatch: unit '" + uname + "' carries an "
-                "inline initial{} block -- RETIRED (no legacy).  The initial holdup "
+                "inline initial{} block -- the initial holdup "
                 "lives in 0/internalState (the single source of truth); move the "
                 "block there and delete it from flowsheetDict.");
 
@@ -186,10 +186,9 @@ try
     if (!fs::exists("constant/thermoPhysPropDict")
         && fs::exists("constant/propertyDict"))
         throw std::runtime_error(
-            "the v1 `constant/propertyDict` grammar is RETIRED (the 2026-07-18"
-                " consolidation): this case still carries one.  Migrate it --"
-                " bin/curate/migrate_thermoPhysProp.py (mechanical, golden-safe)"
-                " -- then re-run.");
+            "this case carries a constant/propertyDict -- the case grammar is"
+                " constant/thermoPhysPropDict (bin/curate/migrate_thermoPhysProp.py"
+                " converts old cases).");
     const std::string pkgFile = "constant/thermoPhysPropDict";
     auto thermoDict    = Dictionary::fromFile(pkgFile);
 
@@ -279,19 +278,19 @@ try
 
     // ---- Build thermo package ----------------------------------------
     // v2 contract (thermophysicalPropertySystem): the BUILDER owns the ONE
-    // exhaustive dispatch -- native for a claimed formulation, a NAMED
-    // refusal for everything else (the scaffold is dead); the main never
-    // decides.  Routed by content: manifest
+    // exhaustive dispatch -- an implemented formulation assembles, any
+    // other shape gets a NAMED refusal; the main never decides.  Routed by
+    // content: manifest
     // (components + propertyMethods) -> builder; flat form -> legacy reader.
-    // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict, ratified
-    // 2026-07-18): same context chain, nearest owner wins; optional.
+    // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict): the same
+    // context chain, nearest owner wins; optional.
     ChemistrySystem chem = resolveChemistryContext("constant");
     const ChemistrySystem* chemPtr = chem.present ? &chem : nullptr;
     if (thermoDict->lookupWordOrDefault("recordType", "")
         != "thermophysicalPropertySystem")
         throw std::runtime_error("constant/thermoPhysPropDict must declare"
             " `recordType thermophysicalPropertySystem;` (the ONE case"
-            " grammar -- every v1/flat/manifest form is retired).");
+            " grammar).");
     ThermoPackage thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);
 
     // ---- Build batch units from flowsheetDict ------------------------

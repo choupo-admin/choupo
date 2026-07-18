@@ -39,7 +39,7 @@ Description
             outerDict      -- outer driver (sweep / optim / fit / PE)  [opt]
             postDict       -- post-processing chain (sizing, costing)  [opt]
           constant/
-            propertyDict  -- components + γ-φ models
+            thermoPhysPropDict  -- the thermophysical system
             reactions      -- named-reaction library                  [opt]
 
     Layer 1 (always):   one simulator pass via Flowsheet
@@ -501,20 +501,15 @@ try
         //   - has `components`, no `propertyMethods` -> the FLAT form
         //     (activityModel / equationOfState), read by the legacy reader;
         //   - no `components`                        -> a SELECTOR (`package <name>;`).
-        // The old thermoPackage/propertyPackage names were retired with NO
-        // backward compatibility (0da8bcba) -- the engine reads only
-        // constant/propertyDict (matching the *Dict convention:
-        // flowsheetDict / solverDict / controlDict).
-        // v2 name first (thermoPhysPropDict, the architect's choice
-        // 2026-07-17); constant/propertyDict stays the v1 home.
+        // The case system lives in constant/thermoPhysPropDict (the *Dict
+        // convention: flowsheetDict / solverDict / controlDict).
         std::string pkgPath = resolveUp("constant/thermoPhysPropDict");
         bool deprecatedName = false;
         if (!fs::exists(pkgPath) && fs::exists(resolveUp("constant/propertyDict")))
             throw std::runtime_error(
-                "the v1 `constant/propertyDict` grammar is RETIRED (the 2026-07-18"
-                " consolidation): this case still carries one.  Migrate it --"
-                " bin/curate/migrate_thermoPhysProp.py (mechanical, golden-safe)"
-                " -- then re-run.");
+                "this case carries a constant/propertyDict -- the case grammar is"
+                " constant/thermoPhysPropDict (bin/curate/migrate_thermoPhysProp.py"
+                " converts old cases).");
         if (fs::exists(pkgPath))
         {
             auto sel = Dictionary::fromFile(pkgPath);
@@ -522,9 +517,8 @@ try
                 std::cout << "  [deprecated] constant/propertyDict -- rename it"
                              " to constant/propertyDict (the property package"
                              " is more than thermo).\n";
-            // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict, ratified
-            // 2026-07-18): resolved along the same context chain, nearest
-            // owner wins; absent -> no chemistry (optional).
+            // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict): the same
+            // context chain, nearest owner wins; optional.
             chem = resolveChemistryContext(
                 fs::path(pkgPath).parent_path().string());
             if (chem.present) chemPtr = &chem;
@@ -541,8 +535,7 @@ try
                     != "thermophysicalPropertySystem")
                 throw std::runtime_error("constant/thermoPhysPropDict must"
                     " declare `recordType thermophysicalPropertySystem;`"
-                    " (the ONE case grammar -- every v1/flat/manifest form"
-                    " is retired).");
+                    " -- the ONE case grammar.");
             // The AUTHORED v2 dict IS the package source -- build()'s ONE
             // dispatch assembles a claimed formulation natively and gives
             // every other shape a NAMED refusal.

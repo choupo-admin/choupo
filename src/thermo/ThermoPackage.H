@@ -120,25 +120,21 @@ public:
         return *this;
     }
 
-    void readFromDict(const DictPtr& dict, const Database& db);
-
     // ThermoPackageBuilder seam: adopt an already-assembled electrolyte
-    // package (components + activity + EoS), mirroring what readFromDict sets,
-    // without re-reading any data file.  Used only by ThermoPackageBuilder.
+    // package (components + activity + EoS) without re-reading any data
+    // file.  Used only by ThermoPackageBuilder.
     void adoptElectrolytePackage(std::vector<Component> comps,
                                  std::unique_ptr<ActivityModel> act,
                                  std::unique_ptr<EquationOfState> eos);
 
-    // v2-NATIVE assembly, migration step 2 (the plan:
-    // docs/architecture/v2-native-migration.md).  Consumes MODEL CONFIG dicts
-    // DIRECTLY (the factory-input form -- activity model + pairs, EoS model +
-    // kij -- prepared by ThermoPackageBuilder::buildV2 from the authored v2
-    // sub-blocks) and establishes the SAME invariants readFromDict does for a
-    // two-phase (liquid, vapour) world: loaded/canonicalised components,
-    // UNIFAC-group / UNIQUAC-r,q injection, the two phases, the phiPhi
-    // coherence check + world announcement, audits.  No v1-shaped package
-    // dict, no synthesized text, no reparse.  `world` is "gammaPhi" or
-    // "phiPhi"; for phiPhi pass the ideal-activity placeholder as activityDict.
+    // Two-phase (liquid, vapour) assembly.  Consumes MODEL CONFIG dicts
+    // (the factory-input form -- activity model + pairs, EoS model + kij --
+    // prepared by ThermoPackageBuilder::buildV2 from the authored
+    // sub-blocks): loads/canonicalises the components, injects the
+    // component-intrinsic UNIFAC groups / UNIQUAC r,q, builds the two
+    // phases, runs the phiPhi coherence check + world announcement and the
+    // audits.  `world` is "gammaPhi" or "phiPhi"; for phiPhi pass the
+    // ideal-activity placeholder as activityDict.
     void assembleTwoPhase(const std::vector<std::string>& names,
                           const DictPtr& activityDict,
                           const DictPtr& eosDict,
@@ -147,17 +143,16 @@ public:
                           const DictPtr& transportDict = nullptr,
                           const DictPtr& pureFluidsDict = nullptr);
 
-    // v2-NATIVE assembly for NAMED phases (gammaGamma LLE/VLLE): each config
-    // dict is one phase ({name; type; activity{...}} or {name; type vapor;
-    // eos{...}}), prepared by buildV2.  Establishes the same invariants the
-    // flat `phases (...)` reader path does: every phase built, the legacy
-    // activity_/eos_ pointers from the first liquid/vapour, audits.
+    // NAMED-phase assembly (gammaGamma LLE/VLLE): each config dict is one
+    // phase ({name; type; activity{...}} or {name; type vapor; eos{...}}),
+    // prepared by buildV2.  Every phase is built; the convenience
+    // activity_/eos_ pointers come from the first liquid/vapour; audits run.
     void assembleNamedPhases(const std::vector<std::string>& names,
                              const std::vector<DictPtr>& phaseConfigs,
                              const Database& db);
 
-    // The dissolution wiring (Henry solvent + solutes), shared by
-    // readFromDict and the v2-native assemblies: validates every declared
+    // The dissolution wiring (Henry solvent + solutes): validates every
+    // declared
     // solute's pair file (fail-closed, never a silent Raoult fallback) and
     // prints the LOUD per-pair Henry announcement.  Call AFTER the
     // components are loaded (an assemble* call).

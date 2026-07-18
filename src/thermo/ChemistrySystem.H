@@ -30,7 +30,7 @@ Class
 
 Description
     The case's ACTIVE-CHEMISTRY SELECTION -- `constant/chemistryDict`
-    (recordType chemistrySystem), ratified 2026-07-18 as the ONE home for
+    (recordType chemistrySystem) -- the ONE home for
     "which chemical equilibria/phases belong to this system".  Separation
     without overlap:
 
@@ -48,9 +48,8 @@ Description
     stay in the phase/component records (arity-1); the OPERATION asks for
     SI, equilibrium or crystallisation.
 
-    The grammar is deliberately MINIMAL (only the semantics the 17
-    transitional inline chemistry{} blocks carried); it grows only against a
-    concrete physical case, never speculatively.
+    The grammar is deliberately MINIMAL; it grows only against a concrete
+    physical case, never speculatively.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -80,7 +79,7 @@ struct ChemistrySystem
         for (const auto& k : d->keys())
             if (k != "recordType" && k != "schemaVersion" && k != "equilibria")
                 throw std::runtime_error("chemistryDict: unknown key '" + k
-                    + "'.  The ratified minimal grammar is `equilibria {"
+                    + "'.  The grammar is `equilibria {"
                       " solidPhases ( ... ); }` -- it grows only against a"
                       " concrete physical case.");
         if (d->found("equilibria"))
@@ -89,9 +88,9 @@ struct ChemistrySystem
             for (const auto& k : eq->keys())
                 if (k != "solidPhases")
                     throw std::runtime_error("chemistryDict: equilibria key '"
-                        + k + "' is not ratified -- have: solidPhases ( ... )."
-                        "  Do not invent aqueous/gasLiquid/ionExchange blocks"
-                        " here; extend the grammar against a concrete case.");
+                        + k + "' -- have: solidPhases ( ... ).  Extend the"
+                        " grammar against a concrete physical case, never"
+                        " speculatively.");
             if (eq->found("solidPhases"))
                 out.solidPhases = eq->lookupWordList("solidPhases");
         }

@@ -261,8 +261,8 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     // propertyPackage -- it fixes the activity method + input basis, and the op then
     // carries only the ANALYSIS.  A flat/degenerate thermoPackage (or none) -> the
     // legacy per-op `activityModel` form (backward compatible).
-    // The case's aqueous surface (aqueousProperties, read NATIVELY from the
-    // authored v2 grammar -- wave F): it fixes the gamma model; the op's own
+    // The case's aqueous surface (aqueousProperties): it fixes the gamma
+    // model; the op's own
     // `activityModel` WINS (the model-CONTRAST mechanism: davies vs pitzerHMW
     // on ONE feed).  Solvent: the speciation stack computes on the WATER
     // surface (molality basis, SolventProperties, Debye-Hueckel A(T)) -- a
@@ -287,7 +287,7 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     auto in = propertyOps::readAnalysis(dict);
     propertyOps::readEquilibrate(dict, in);
 
-    // verifyGlobal (Codex seal-audit 2026-07-18): the FULL-catalogue Pitzer
+    // verifyGlobal: the FULL-catalogue Pitzer
     // single-salt oracle -- every binary in the pairs home vs the closed
     // PitzerSingleSalt kernel.  Declared by the DEDICATED validation case
     // only (its seal deliberately carries the whole family); a normal run's

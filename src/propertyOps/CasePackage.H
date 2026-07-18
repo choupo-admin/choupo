@@ -2,9 +2,8 @@
   CasePackage -- shared resolution of the case's AQUEOUS-SPECIATION surface
   for the speciation-family ops (speciate / scalingScan / exchange).  The
   surface is read NATIVELY from the authored v2 grammar (aqueousProperties {
-  activityCoefficients { model ... } solvent ...; }) -- migration wave F,
-  2026-07-18: no translated intermediate, one typed reader shared by every
-  consumer (the duplicate walkers are gone).
+  activityCoefficients { model ... } solvent ...; }): one typed reader
+  shared by every consumer.
   SPDX-License-Identifier: GPL-3.0-or-later
 \*---------------------------------------------------------------------------*/
 #pragma once
@@ -30,7 +29,7 @@ struct AqueousSurface
 // cascade from the cwd (the T8 grammar):
 //   aqueousProperties { activityCoefficients { model Davies|PitzerHMW;
 //                       [referenceBasis aqueousMolality;] } [solvent water;] }
-// The refusals the scaffold applied live HERE now -- unknown model and any
+// The surface refusals live HERE -- unknown model and any
 // non-molality basis refuse loudly (declared+verified, never decorative).
 inline AqueousSurface caseAqueousSurface()
 {
@@ -67,10 +66,9 @@ inline AqueousSurface caseAqueousSurface()
         }
         if (fs::exists(p / "constant" / "propertyDict"))
             throw std::runtime_error(
-                "the v1 `constant/propertyDict` grammar is RETIRED (the"
-                " 2026-07-18 consolidation): this case still carries one."
-                "  Migrate it -- bin/curate/migrate_thermoPhysProp.py"
-                " (mechanical, golden-safe) -- then re-run.");
+                "this case carries a constant/propertyDict -- the case"
+                " grammar is constant/thermoPhysPropDict"
+                " (bin/curate/migrate_thermoPhysProp.py converts old cases).");
         if (!p.has_parent_path()) break;
         p = p.parent_path();
     }

@@ -109,7 +109,7 @@ PropertyOperation::thermoForOp(const DictPtr& opDict) const
             " builder-form and no authored v2 grammar is available to merge"
             " into -- the override cannot apply (and silently ignoring it"
             " would be a lie).");
-    // The ONE typed merge (Codex-ratified 2026-07-18): the fragment applies
+    // The ONE typed merge: the fragment applies
     // onto the case's authored system; the anti-flat gate lives inside.
     auto v2 = mergeThermoOverride(authoredV2_, over, "op thermo{} override");
 

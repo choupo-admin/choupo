@@ -54,7 +54,7 @@ public:
     // Assemble a ThermoPackage from a parsed propertyPackage record.
     // `chem` (optional) is the case's ACTIVE-CHEMISTRY SELECTION, resolved
     // from constant/chemistryDict by the caller via resolveChemistryContext
-    // (ratified 2026-07-18); a chemistry{} block inside the package dict is
+    // ; a chemistry{} block inside the system dict is
     // REFUSED with the migration message.
     static ThermoPackage build(const DictPtr& pkg, const Database& db,
                                const ChemistrySystem* chem = nullptr);
@@ -63,8 +63,8 @@ public:
     // docs/architecture/v2-native-migration.md) ---------------------------
     // v2NativeFormulation: does the authored v2 dict declare a formulation
     // the NATIVE path serves?  (Pilot: phiPhi.)  The caller uses it to pick
-    // buildV2 (native; the scaffold is DEAD -- an unclaimed shape gets a
-    // scaffold) -- announced either way, never a silent switch.
+    // buildV2; an unimplemented shape gets a NAMED refusal from the
+    // dispatch -- never a silent switch.
     static bool v2NativeFormulation(const DictPtr& v2);
 
     // buildV2: authored v2 grammar -> assembled ThermoPackage, directly.
