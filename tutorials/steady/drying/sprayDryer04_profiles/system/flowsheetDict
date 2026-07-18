@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  sprayDryer01_sugar  --  flowsheet (one unit, two feeds, two products).
+  sprayDryer04_profiles  --  spray dryer: axial profiles of moisture, droplet size and T along the chamber.
 
   feed:        100 kg/h of a 40 wt% sucrose solution at 25 °C.
                  40 kg/h sucrose / 342.30 = 0.11686 kmol/h

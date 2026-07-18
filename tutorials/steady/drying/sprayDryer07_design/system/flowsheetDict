@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  sprayDryer01_sugar  --  flowsheet (one unit, two feeds, two products).
+  sprayDryer07_design  --  spray dryer: DESIGN mode -- targets in, the sizing pass inverts to geometry.
 
   feed:        100 kg/h of a 40 wt% sucrose solution at 25 °C.
                  40 kg/h sucrose / 342.30 = 0.11686 kmol/h
