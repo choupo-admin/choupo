@@ -75,6 +75,25 @@ int PropertyPoint::run(const DictPtr& dict,
     const scalar H_real = H_ig + H_R;
     const scalar S_real = S_ig + S_R;
 
+    // LIQUID root, when the EoS resolves one at this state (cubics, SAFT):
+    // explicitly labelled -- the block above is ALL vapour-root (the EoS
+    // family contract), never a silent mix of roots.
+    bool   hasLiq = false;
+    scalar vLiq = 0.0, ZLiq = 0.0;
+    if (thermo.eos().hasLiquidRoot())
+    {
+        try
+        {
+            vLiq = thermo.eos().molarVolumeLiquid(T, P_Pa, z);
+            ZLiq = P_Pa * vLiq / (constant::R * T);
+            // publish only a GENUINELY distinct liquid root -- at a single-root
+            // state both branches collapse to the same density, and labelling
+            // that "liquid" would invent a phase that is not there.
+            hasLiq = std::isfinite(vLiq) && vLiq > 0.0 && vLiq < 0.98 * vmol;
+        }
+        catch (const std::exception&) { hasLiq = false; }   // no liquid root here
+    }
+
     if (verbosity >= 2)
     {
         std::cout << "\n==========================  PropertyPoint  ==========================\n"
@@ -111,8 +130,15 @@ int PropertyPoint::run(const DictPtr& dict,
                   << "    H_real       = " << std::scientific << std::setprecision(6)
                   << H_real << "  J/mol\n"
                   << "    S_real       = " << std::fixed << std::setprecision(4)
-                  << S_real << "  J/(mol*K)\n"
-                  << "=====================================================================\n\n";
+                  << S_real << "  J/(mol*K)\n";
+        if (hasLiq)
+            std::cout << "\n  EoS = " << thermo.eos().modelName()
+                      << "  (LIQUID root at the same state, labelled):\n"
+                      << "    Z_liquid     = " << std::fixed << std::setprecision(6)
+                      << ZLiq << "\n"
+                      << "    v_molar_liq  = " << std::scientific << std::setprecision(5)
+                      << vLiq << "  m3/mol\n";
+        std::cout << "=====================================================================\n\n";
     }
 
     diag_.clear();
@@ -128,6 +154,11 @@ int PropertyPoint::run(const DictPtr& dict,
     diag_["S_R"]     = S_R;
     diag_["H_real"]  = H_real;
     diag_["S_real"]  = S_real;
+    if (hasLiq)
+    {
+        diag_["Z_liquid"]     = ZLiq;
+        diag_["v_molar_liq"]  = vLiq;
+    }
 
     // Transport properties: added to the diagnostics ONLY when the package
     // can supply them (a pure-fluid IAPWS route, or a generic transport

@@ -92,19 +92,25 @@ Description
     classified by Gibbs energy, and a requested root that does not exist is
     REFUSED (never a silent clamp -- the no-silent-crutch credo).
 
-    ln φ_i is the analytic composition derivative of GS Eq. A.3-A.11 (the
-    residual chemical potential), cross-checked at construction against a
-    CENTRAL numeric derivative of a_res and against Gibbs-Duhem -- the two gates
-    Codex mandated, because a sign error can respect one and not the other.
+    ln φ_i = μ_res_i/RT − ln Z is computed as a CENTRAL NUMERIC mole-number
+    derivative of the ANALYTIC a_res at fixed (T, V) -- a deliberate, declared
+    choice (the analytic GS Appendix A.3-A.11 derivative is a staged follow-up):
+    the physics lives ONCE in a_res, and the derivative cannot disagree with it
+    by a transcription error.  The step is h_rel = 1e-6 on each mole number;
+    verify() MEASURES the step convergence at construction (lnφ recomputed at
+    h/10 and 10h must agree -- the central-difference plateau, observed
+    1e-8..4e-8 across the curated alkane mixes) alongside the ideal-gas limit and the
+    Σx·lnφ = g_res/RT (Gibbs-Duhem integral) identity, and the constructor
+    REFUSES a parameter set that fails any of the three.
 
     Per-component parameters live in the component's OWN record, one home:
 
         pcsaft
         {
-            m        1.6069;      // segment number [-]
-            sigma    3.5206;      // segment diameter [Angstrom]
-            epsilonK 191.42;      // segment energy epsilon/k [K]
-            source   "Gross & Sadowski 2001, Table ...";
+            m        1.6069;      // segment number [-]          (this example:
+            sigma    3.5206;      // segment diameter [Angstrom]  ETHANE, GS
+            epsilonK 191.42;      // segment energy eps/k [K]     2001 Table 1)
+            source   "Gross & Sadowski, Ind. Eng. Chem. Res. 40 (2001) 1244, Table 1";
         }
 
     Binary k_ij (optional, default 0 -- announced as `assumedZero`) lives in
@@ -137,6 +143,8 @@ public:
     sVector phi       (scalar T_K, scalar P_Pa, const sVector& y) const override;
     sVector phiLiquid (scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  molarVolume(scalar T_K, scalar P_Pa, const sVector& y) const override;
+    bool    hasLiquidRoot() const override { return true; }
+    scalar  molarVolumeLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  Z         (scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  H_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  S_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
@@ -175,8 +183,11 @@ private:
     // eta; liquid: high eta).  Refuses (throws) outside the physical domain.
     scalar solveDensity(scalar T, scalar P, const sVector& x, bool liquidRoot) const;
 
-    // ln phi_i at a resolved density (analytic, GS appendix).
-    sVector lnPhiAt(scalar T, scalar P, scalar rho, const sVector& x) const;
+    // ln phi_i at a resolved density: central numeric d(n*aRes)/dn_i at fixed
+    // (T,V).  hRel is the relative mole-number step (default the production
+    // 1e-6; verify() sweeps it to measure the convergence plateau).
+    sVector lnPhiAt(scalar T, scalar P, scalar rho, const sVector& x,
+                    scalar hRel = 1.0e-6) const;
 };
 
 } // namespace Choupo

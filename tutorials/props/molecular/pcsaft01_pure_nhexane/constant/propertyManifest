@@ -1,0 +1,36 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-07-18";
+    importerVersion    "2";
+    records
+    {
+        "components/nHexane.dat"
+        {
+            type          imported;
+            sha256        "9a688efb8432a80830daf7436007db07154d3f735aaaed86e0272b649f166a37";
+            origin        "data/standards/components/nHexane.dat";
+            originSha256  "ebc11cf9e63b85a2742daf6126aed3ed226982d4f816e4d36b91ea052721a706";
+            release       Choupo-2607;
+        }
+    }
+}

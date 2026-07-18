@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  PC-SAFT across states + an independent-model cross-check (all goldened).
+
+   1. CH4_vapour_pcsaft   CH4 at 300 K / 50 bar, PC-SAFT vapour root.
+   2. CH4_vapour_srk      the SAME state through SRK (per-op thermo{}
+                          override): two independently-published models,
+                          fitted to different data, agreeing on Z for a
+                          simple near-spherical vapour is real evidence --
+                          the student compares the two printed numbers.
+   3. propane_liquid      298.15 K / 15 bar (above Psat ~ 9.5 bar, so the
+                          stable phase is liquid): v_molar_liq -> rho_liq,
+                          vs the 0.493 g/mL saturated-liquid handbook value
+                          at 25 degC (CRC).  PREDICTED, not fitted.
+   4. nButane_liquid      298.15 K / 5 bar (Psat ~ 2.4 bar): rho_liq vs
+                          0.573 g/mL at 25 degC (CRC).
+
+  Measured here (goldened): CH4 Z 0.9121 (PC-SAFT) vs 0.9243 (SRK) -- 1.3 %
+  apart, two independent models; rho_liq(propane) = 494.2 kg/m3 (+0.24 % vs
+  0.493 g/mL), rho_liq(nButane) = 571.4 kg/m3 (-0.28 % vs 0.573 g/mL) --
+  inside the 1-2 % liquid-density AAD Gross & Sadowski 2001 (Table 2) report
+  for the n-alkane series.  No kij anywhere: pure states.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        CH4_vapour_pcsaft;
+        type        propertyPoint;
+        state       { T 300 K;  P 50 bar;  composition { CH4 1.0; } }
+        properties  ( Z  molarVolume );
+    }
+    {
+        name        CH4_vapour_srk;
+        type        propertyPoint;
+        state       { T 300 K;  P 50 bar;  composition { CH4 1.0; } }
+        thermo      { equationOfState { model SRK; } }
+        properties  ( Z  molarVolume );
+    }
+    {
+        name        propane_liquid;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 15 bar;  composition { propane 1.0; } }
+        properties  ( Z  molarVolume );
+    }
+    {
+        name        nButane_liquid;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 5 bar;  composition { nButane 1.0; } }
+        properties  ( Z  molarVolume );
+    }
+);

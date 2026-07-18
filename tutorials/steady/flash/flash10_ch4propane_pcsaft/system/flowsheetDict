@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash10_ch4propane_pcsaft -- the PC-SAFT phi-phi world on a BINARY, kij = 0
+  ===========================================================================
+  Methane/propane, 273.15 K, 20 bar, z = 0.50/0.50.  CH4 is supercritical
+  (Tc = 190.6 K) -- no Raoult route exists for it; the phi-phi K comes from
+  the SAME PC-SAFT a_res at the liquid and vapour density roots.  With NO
+  binary correction (kij = 0, announced by the EoS), everything is PREDICTED
+  from the two components' (m, sigma, epsilon/k) alone (Gross & Sadowski
+  2001, Table 1; CH4 and propane parameters independently cross-checked
+  against the NIST teqp reference implementation's test values).
+\*---------------------------------------------------------------------------*/
+type isothermalFlash;
+operation { T 273.15 K;  P 20 bar; }
+boundary  { inlets ( feed );  outlets ( liq  vap ); }
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

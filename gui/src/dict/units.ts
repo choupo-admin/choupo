@@ -151,6 +151,11 @@ const TABLE: Record<string, UnitSpec> = {
   "eq/kg": { factor: 1.0e-3, affine: false },
   "meq/kg": { factor: 1.0e-6, affine: false },
 
+  // specific volume → m³/kg (a resin dose: bed litres per kg of water)
+  "m3/kg": { factor: 1.0, affine: false },
+  "L/kg": { factor: 1.0e-3, affine: false },
+  "mL/g": { factor: 1.0e-3, affine: false },
+
   // density / mass concentration → kg/m³
   // (`ppm` is the w/v water-analysis convention: 1 ppm = 1 mg/L)
   "kg/m3": { factor: 1.0, affine: false },
@@ -207,6 +212,8 @@ const TABLE: Record<string, UnitSpec> = {
   // dimensionless / percent
   "-": { factor: 1.0, affine: false },
   "%": { factor: 1.0e-2, affine: false },
+  // mass ratio (e.g. dry resin per kg water)
+  "kg/kg": { factor: 1.0, affine: false },
 };
 
 export function lookupUnit(suffix: string): UnitSpec | null {

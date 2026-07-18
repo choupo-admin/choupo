@@ -223,7 +223,17 @@ scalar PCSAFT::solveDensity(scalar T, scalar P, const sVector& x,
     return 0.5*(lo+hi) * rhoOfEta;
 }
 
+// CONTRACT: the Z/molarVolume/H_residual/S_residual family reports ONE
+// coherent state -- the VAPOUR root (same as the cubics; ThermoPackage feeds
+// H_residual to the VAPOUR enthalpy).  The liquid root is the explicitly
+// labelled molarVolumeLiquid below -- never a silent root swap.
 scalar PCSAFT::molarVolume(scalar T_K, scalar P_Pa, const sVector& y) const
+{
+    const scalar rho = solveDensity(T_K, P_Pa, y, /*liquidRoot*/false);
+    return constant::Na / rho;                            // m^3 / mol
+}
+
+scalar PCSAFT::molarVolumeLiquid(scalar T_K, scalar P_Pa, const sVector& y) const
 {
     const scalar rho = solveDensity(T_K, P_Pa, y, /*liquidRoot*/true);
     return constant::Na / rho;                            // m^3 / mol
@@ -231,8 +241,12 @@ scalar PCSAFT::molarVolume(scalar T_K, scalar P_Pa, const sVector& y) const
 
 // ln phi_i = mu_res_i/RT - ln Z, with mu_res_i/RT = [d(n ã)/d n_i]_{T,V} got by
 // a central numeric derivative in mole number at FIXED total volume (so rho and
-// x both move) -- exact-consistent with the analytic a_res.
-sVector PCSAFT::lnPhiAt(scalar T, scalar P, scalar rho, const sVector& x) const
+// x both move) -- exact-consistent with the analytic a_res.  The step hRel is
+// the production 1e-6 by default; verify() sweeps hRel/10 and 10*hRel to
+// confirm the value sits on the central-difference plateau (O(h^2) truncation
+// vs O(eps/h) round-off balance).
+sVector PCSAFT::lnPhiAt(scalar T, scalar P, scalar rho, const sVector& x,
+                        scalar hRel) const
 {
     const scalar Zc = 1.0 + rho * daRes_dRho(T, rho, x);
     // total moles N and volume V held: pick N=1 => V = N/rho_molar; rho here is
@@ -248,7 +262,7 @@ sVector PCSAFT::lnPhiAt(scalar T, scalar P, scalar rho, const sVector& x) const
     sVector out(n_);
     for (std::size_t i = 0; i < n_; ++i)
     {
-        const scalar h = 1.0e-6 * (n0[i] > 1.0e-9 ? n0[i] : 1.0e-9);
+        const scalar h = hRel * (n0[i] > 1.0e-9 ? n0[i] : 1.0e-9);
         sVector np(n0), nm(n0); np[i]+=h; nm[i]-=h;
         const scalar mu_res = (nAtilde(np) - nAtilde(nm)) / (2.0*h);
         out[i] = mu_res - std::log(Zc);
@@ -276,7 +290,8 @@ scalar PCSAFT::H_residual(scalar T_K, scalar P_Pa, const sVector& y) const
 {
     // H^res = -R T^2 (d(a_res/RT)/dT)_{rho,x} * ... plus (Z-1) RT.  Use the
     // total-T derivative of a_res at fixed rho: H^res/RT = -T (dã/dT)_rho + (Z-1)
-    const scalar rho = solveDensity(T_K, P_Pa, y, true);
+    // VAPOUR root (the family contract -- ThermoPackage's vapour enthalpy).
+    const scalar rho = solveDensity(T_K, P_Pa, y, false);
     const scalar hT = T_K * 1.0e-6;
     const scalar dadT = (aRes(T_K+hT, rho, y) - aRes(T_K-hT, rho, y)) / (2.0*hT);
     const scalar Zc = 1.0 + rho * daRes_dRho(T_K, rho, y);
@@ -285,7 +300,7 @@ scalar PCSAFT::H_residual(scalar T_K, scalar P_Pa, const sVector& y) const
 
 scalar PCSAFT::S_residual(scalar T_K, scalar P_Pa, const sVector& y) const
 {
-    const scalar rho = solveDensity(T_K, P_Pa, y, true);
+    const scalar rho = solveDensity(T_K, P_Pa, y, false);   // vapour root (contract)
     const scalar hT = T_K * 1.0e-6;
     const scalar aR = aRes(T_K, rho, y);
     const scalar dadT = (aRes(T_K+hT, rho, y) - aRes(T_K-hT, rho, y)) / (2.0*hT);
@@ -319,9 +334,25 @@ scalar PCSAFT::verify(int verbosity) const
         const scalar dev = std::abs(sum - gRes)
                          / (std::abs(gRes) + 1.0e-12);
         maxDev = std::max(maxDev, dev);
+
+        // (3) STEP CONVERGENCE of the numeric lnphi derivative (Codex gate):
+        //     the production step h_rel = 1e-6 must sit on the central-
+        //     difference plateau -- lnphi recomputed at h/10 and 10h must
+        //     agree with it.  A parameter set for which the derivative has
+        //     not converged at the production step is refused.
+        const sVector lpFine   = lnPhiAt(T, P, rho, x, 1.0e-7);
+        const sVector lpCoarse = lnPhiAt(T, P, rho, x, 1.0e-5);
+        scalar stepDev = 0.0;
+        for (std::size_t i = 0; i < n_; ++i)
+            stepDev = std::max(stepDev,
+                std::max(std::abs(lp[i] - lpFine[i]),
+                         std::abs(lp[i] - lpCoarse[i])));
+        maxDev = std::max(maxDev, stepDev);
         if (verbosity >= 3)
             std::cout << "  [PCSAFT verify] ideal-limit a_res=" << aIdeal
-                      << "; Sum x_i lnphi vs g_res/RT rel dev " << dev << "\n";
+                      << "; Sum x_i lnphi vs g_res/RT rel dev " << dev
+                      << "; lnphi step-convergence (h_rel 1e-7..1e-5) max |dlnphi| "
+                      << stepDev << "\n";
     } catch (const std::exception& e) {
         if (verbosity >= 3)
             std::cout << "  [PCSAFT verify] state solve skipped: "

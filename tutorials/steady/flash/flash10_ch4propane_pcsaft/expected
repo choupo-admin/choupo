@@ -1,0 +1,15 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.000277777777778  1e-4
+stream  liq                    F                9.97838549688e-05  1e-4
+stream  vap                    F                0.000177993922809  1e-4
+kpi     node                   F_alpha          9.97838549688e-05  1e-4
+kpi     node                   F_beta           0.000177993922809  1e-4
+kpi     node                   F_in             0.000277777777778  1e-4
+kpi     node                   P                2000000            1e-4
+kpi     node                   Q                632.243350571      1e-4
+kpi     node                   Q_kW             0.632243350571     1e-4
+kpi     node                   T                273.15             1e-4
+kpi     node                   V_over_F         0.640778122112     1e-4
+kpi     node                   phaseSet         0                  1e-4

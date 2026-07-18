@@ -1,6 +1,25 @@
-/*---------------------------------------------------------------------------*\
-  Evaluate the PC-SAFT equation of state at a single liquid state.  Z and the
-  molar volume are locked by the golden; the density follows (rho = MW / Vm).
+/*--------------------------------*- Choupo -*-----------------------*\
+  PC-SAFT (Gross & Sadowski 2001, non-associating) -- pure n-hexane at
+  298.15 K, 1 bar: BOTH density roots of the SAME a_res, labelled.
+
+  The stable phase here is LIQUID (Psat(298 K) ~ 0.2 bar < 1 bar), and the
+  point publishes one coherent VAPOUR-root family (Z, v_molar, H_R, S_R --
+  the EoS-interface contract shared with the cubics) PLUS the explicitly
+  labelled liquid root:
+
+    v_molar_liq  = 1.3265e-4 m3/mol  ->  rho_liq = MW/v = 649.6 kg/m3
+                   vs the experimental 654.8 kg/m3 at 25 degC (CRC Handbook
+                   of Chemistry and Physics, d25 = 0.6548 g/mL): -0.8%,
+                   the magnitude of the liquid-density AAD Gross & Sadowski
+                   2001 (Table 2) report across the n-alkane series --
+                   PREDICTED here from (m, sigma, epsilon/k) alone.
+    Z_liquid     = P v_liq / RT = 0.00535   (a liquid: Pv << RT)
+    Z (vapour)   = 0.9425                   (the metastable vapour root)
+
+  What the student sees (verbosity 3): the construction-time verify() gate --
+  ideal-gas limit, Sum x lnphi = g_res/RT (Gibbs-Duhem integral), and the
+  lnphi numeric-derivative STEP-CONVERGENCE sweep (h_rel 1e-7..1e-5,
+  plateau ~1e-8) -- the declared price of the numeric mu_res derivative.
 \*---------------------------------------------------------------------------*/
 operations
 (

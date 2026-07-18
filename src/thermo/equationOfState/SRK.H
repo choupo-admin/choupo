@@ -121,6 +121,8 @@ public:
     sVector phi(scalar T_K, scalar P_Pa, const sVector& y) const override;
     sVector phiLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  molarVolume(scalar T_K, scalar P_Pa, const sVector& y) const override;
+    bool    hasLiquidRoot() const override { return true; }
+    scalar  molarVolumeLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  Z(scalar T_K, scalar P_Pa, const sVector& y) const override;
 
     scalar  H_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;

@@ -1,0 +1,20 @@
+/*---------------------------------------------------------------------------*\
+  pcsaft02_states_crosscheck -- PC-SAFT validated ACROSS STATES and AGAINST AN
+  INDEPENDENT MODEL, before the model is trusted in a flowsheet.
+
+  Three probes, all goldened:
+    (1) CH4 vapour Z at 300 K / 50 bar -- PC-SAFT vs SRK at the SAME state
+        (the per-op `thermo {}` override): two independently-validated models
+        must agree closely for a simple near-spherical vapour, and the run
+        prints both so the student SEES the agreement (not told to assume it).
+    (2) propane compressed liquid at 298.15 K / 15 bar -- rho_liq vs the
+        saturated-liquid handbook value (0.493 g/mL at 25 degC).
+    (3) n-butane compressed liquid at 298.15 K / 5 bar -- rho_liq vs
+        0.573 g/mL at 25 degC.
+  Deviations sit at the 1-2 % liquid-density AAD Gross & Sadowski 2001
+  (Table 2) report for the n-alkane series -- these parameters PREDICT the
+  density; it was never refitted here.
+\*---------------------------------------------------------------------------*/
+application   choupoProps;
+description   "PC-SAFT across states: CH4 Z vs SRK cross-check + propane/n-butane liquid density vs handbook";
+verbosity     3;

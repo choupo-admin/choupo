@@ -1,0 +1,17 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- phiPhi with PC-SAFT on the light-alkane set.
+  Each component carries its own pcsaft{} block (Gross & Sadowski 2001,
+  Table 1); no binary kij is declared, so every pair runs at kij = 0
+  (announced) -- these probes are PURE-component states and a cross-model
+  Z check, not a mixture fit.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( CH4 propane nButane );
+
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState { model PCSAFT; }
+}

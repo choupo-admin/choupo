@@ -232,8 +232,8 @@ Component Database::loadComponent(const std::string& name) const
                      " and promote it to data/standards/ before the result is trusted.\n";
     if (hasStd && hasProposed)
         if (caseLocal.empty() && announceOnce("shadowed:" + name)) std::cerr << "[shadowed] component '" << name
-                  << "': a data/proposed/ proposal exists but the verified data/standards/"
-                     " entry is used instead.\n";
+                  << "': a data/local/ record exists but the verified data/standards/"
+                     " entry is used instead (standards beats local; local fills gaps).\n";
 
     DictPtr dict;
     if (hasBase && hasCase)

@@ -237,6 +237,17 @@ scalar SRK::molarVolume(scalar T, scalar P, const sVector& y) const
     return Z(T, P, y) * constant::R * T / P;
 }
 
+// Labelled liquid-root access (the vapour-root family above never swaps root).
+scalar SRK::molarVolumeLiquid(scalar T, scalar P, const sVector& y) const
+{
+    scalar a_mix, dadT_mix, b_mix;
+    buildMix(T, y, a_mix, dadT_mix, b_mix);
+    const scalar RT = constant::R * T;
+    const scalar A = a_mix * P / (RT * RT);
+    const scalar B = b_mix * P / RT;
+    return cardano_root(A, B, /*liquid*/true) * RT / P;
+}
+
 sVector SRK::phi(scalar T, scalar P, const sVector& y) const
 {
     scalar a_mix, dadT_mix, b_mix;

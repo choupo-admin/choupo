@@ -1,0 +1,144 @@
+// [imported] origin "data/standards/components/propane.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Propane  (C3H8, CAS 74-98-6)
+  Sources:   vaporPressure  -- Rips 1963 (primary measured set)
+             constants  -- cross-checked vs CoolProp 7.2.0 reference EOS;
+                           Cp -- individual literature value, primary
+                           re-citation pending (IST review)
+             standardThermochemistry  -- NASA TM-4513 (McBride-Gordon-Reno 1993),
+                                ideal-gas, 298 K
+\*---------------------------------------------------------------------------*/
+
+name        propane;
+formula     C3H8;
+CAS         74-98-6;
+
+MW          44.096;        // kg/kmol
+Tc          369.83;        // K
+Pc          42.48;         // bar
+omega       0.1520;        // [-]
+Tb          231.02;        // K     normal boiling point
+HvapTb      19040;         // J/mol latent heat at Tb
+Vliq        8.42e-5;       // m³/mol saturated-liquid molar volume (84.2 cm³/mol)
+
+standardThermochemistry
+{
+    dHf_298   -104700.0;      // J/mol  -- ideal-gas reference
+    s_298     270.30;         // J/(mol·K)
+}
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- Psat(Tb) ~ 1.04 bar (3% at the
+    // lower range edge; the Rips set covers the practical 231-321 K window)
+    coefficients  (3.98292   819.296   -24.417);
+    Trange        (230.6  320.7);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3   -- Cp(298) = 73.8
+    coefficients  (-4.224   0.3063   -1.586e-4   3.215e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // approximate constant ~100 J/(mol·K); a real liquid only below ~231 K (1 atm)
+    // or under pressure (refrigerant duty)
+    coefficients  (100.0);
+    Trange        (170  300);
+}
+
+provenance
+{
+    vaporPressure  "Rips 1963 (primary measured set)";
+    constants      "cross-checked vs CoolProp 7.2.0 reference EOS";
+    standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), ideal-gas, 298 K";
+}
+
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } );
+    joback ( { group CH3; count 2; } { group CH2; count 1; } );
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0003-PROF.txt bundled in usnistgov/COSMOSAC; CAS 74-98-6";
+        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
+        area        97.62585;
+        volume      80.70296;
+        sigmaProfile
+        (
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.553394481501168
+            9.49494217575356
+            14.1121567601163
+            19.2641540193319
+            13.0603307833766
+            15.9882698465905
+            16.8106711927957
+            7.99005757305194
+            0.351873167482263
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+            0.000000000000000E+000
+        );
+    }
+}
+
+// PC-SAFT non-associating segment parameters (Gross & Sadowski, IECR 40
+// (2001) 1244, Table 1 -- the pure n-alkane fit to vapour pressure + liquid
+// density).  m segments, sigma [Angstrom], epsilon/k [K].
+pcsaft
+{
+    m        2.0020;
+    sigma    3.6184;
+    epsilonK 208.11;
+    source   "Gross & Sadowski, Ind. Eng. Chem. Res. 40 (2001) 1244, Table 1";
+}

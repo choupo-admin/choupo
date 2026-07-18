@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoSolve;
+description  "PC-SAFT phi-phi binary flash, CH4/propane at 273.15 K / 20 bar, kij = 0 (announced): the PREDICTIVE baseline of the SAFT world -- K = phi_L/phi_V from ONE a_res surface at its two density roots. Sanity anchor carried by the case itself: propane's curated Antoine gives Psat(273.15 K) = 4.7 bar, so the Raoult-magnitude K_propane ~ 0.24 -- the PC-SAFT K_propane = 0.32 sits near it (the deviation IS the fugacity correction of a liquid holding ~11% dissolved CH4, visible); K_CH4 >> 1 (supercritical light key). The published-kij refinement is a NAMED follow-up: it needs the cited pair record (data/standards/parameters/PCSAFT/), never an invented number.";
+verbosity    3;

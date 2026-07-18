@@ -103,9 +103,24 @@ public:
     // Compressibility Z = P·v / (R·T) at the vapour root.  Default ~ 1
     // for ideal gas; cubic EoS override.  Useful as a diagnostic and
     // as a single number callers can read instead of v.
+    // CONTRACT: Z, molarVolume, H_residual, S_residual all report the SAME
+    // (vapour) root -- one coherent state, never a silent mix of roots.
     virtual scalar Z(scalar T_K, scalar P_Pa, const sVector& y) const
     {
         return P_Pa * molarVolume(T_K, P_Pa, y) / (constant::R * T_K);
+    }
+
+    // LIQUID-root molar volume [m³/mol], for EoS whose density solve
+    // distinguishes a liquid root at (T,P,y) (cubics, SAFT).  Explicitly
+    // labelled access -- the vapour-root family above never silently swaps
+    // root.  Guard with hasLiquidRoot(); the default REFUSES loudly.
+    virtual bool hasLiquidRoot() const { return false; }
+    virtual scalar molarVolumeLiquid(scalar /*T_K*/, scalar /*P_Pa*/,
+                                     const sVector&) const
+    {
+        throw std::runtime_error("EquationOfState '" + modelName()
+            + "': molarVolumeLiquid not available -- this model does not"
+              " resolve a distinct liquid density root.");
     }
 
     virtual const std::string& modelName() const = 0;

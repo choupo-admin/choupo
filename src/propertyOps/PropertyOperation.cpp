@@ -55,6 +55,7 @@ License
 #include "VleConsistency.H"
 #include "thermo/Database.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/ThermoPackageBuilder.H"
 
 #include <stdexcept>
 
@@ -96,24 +97,59 @@ std::vector<std::string> PropertyOperation::availableTypes()
 std::unique_ptr<ThermoPackage>
 PropertyOperation::thermoForOp(const DictPtr& opDict) const
 {
-    if (!opDict->found("thermo") || !database_ || !thermoDict_)
+    if (!opDict->found("thermo") || !database_)
         return nullptr;
-
-    // Merge: start from the global thermoPackage; the op's `thermo {}`
-    // block REPLACES the model sub-dicts it names (activityModel,
-    // equationOfState, vaporPressure, transport, etc.).  Components
-    // stay global — comparing 2 models for the same components is the
-    // whole point.
-    auto merged = std::make_shared<Dictionary>("thermoPackage");
-    for (const auto& k : thermoDict_->keys())
-        merged->insert(k, thermoDict_->entryValue(k));
     auto over = opDict->subDict("thermo");
-    for (const auto& k : over->keys())
-        merged->insert(k, over->entryValue(k));
 
-    auto tp = std::make_unique<ThermoPackage>();
-    tp->readFromDict(merged, *database_);
-    return tp;
+    if (thermoDict_)
+    {
+        // FLAT world: merge — start from the global thermoPackage; the op's
+        // `thermo {}` block REPLACES the model sub-dicts it names
+        // (activityModel, equationOfState, vaporPressure, transport, etc.).
+        // Components stay global — comparing 2 models for the same
+        // components is the whole point.
+        auto merged = std::make_shared<Dictionary>("thermoPackage");
+        for (const auto& k : thermoDict_->keys())
+            merged->insert(k, thermoDict_->entryValue(k));
+        for (const auto& k : over->keys())
+            merged->insert(k, over->entryValue(k));
+
+        auto tp = std::make_unique<ThermoPackage>();
+        tp->readFromDict(merged, *database_);
+        return tp;
+    }
+
+    // BUILDER world (the translated manifest has propertyMethods; the flat
+    // thermoDict_ is never set): a flat key merge would be silently ignored
+    // -- the one honest route is the AUTHORED v2 grammar: replace the
+    // formulation's own slot in a COPY of the source dict and re-translate
+    // (merge in authored form, translate once -- the consolidation
+    // principle).  Implemented: phiPhi `equationOfState {}` (the model
+    // cross-check use).  Anything else REFUSES loudly -- never an
+    // override that silently does nothing.
+    if (!authoredV2_)
+        throw std::runtime_error("per-op thermo{} override: this world is"
+            " builder-form and no authored v2 grammar is available to merge"
+            " into -- the override cannot apply (and silently ignoring it"
+            " would be a lie).");
+    auto v2 = authoredV2_->deepCopy();
+    auto eq = v2->subDict("equilibrium");
+    const std::string form = eq->lookupWordOrDefault("formulation", "");
+    for (const auto& k : over->keys())
+    {
+        if (form == "phiPhi" && k == "equationOfState")
+        {
+            eq->insert(k, over->entryValue(k));
+            continue;
+        }
+        throw std::runtime_error("per-op thermo{} override of '" + k
+            + "' is not supported in the '" + form + "' builder world yet --"
+              " supported: phiPhi equationOfState{} (model cross-checks)."
+              "  Refusing rather than silently ignoring the override.");
+    }
+    auto sel = ThermoPackageBuilder::translateV2(v2);
+    return std::make_unique<ThermoPackage>(
+        ThermoPackageBuilder::build(sel, *database_));
 }
 
 void PropertyOperation::registerBuiltins()

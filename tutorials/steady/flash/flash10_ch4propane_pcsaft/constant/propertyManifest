@@ -1,0 +1,44 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-07-18";
+    importerVersion    "2";
+    records
+    {
+        "components/CH4.dat"
+        {
+            type          imported;
+            sha256        "113df466dc73d7959fcdba4be1c94b0a826aea46542138315308da49816e781f";
+            origin        "data/standards/components/CH4.dat";
+            originSha256  "79c606f476136886a3a6ce703d0fdcd1824e4d1d9f68b4ea3ba9799c5b1cb222";
+            release       Choupo-2607;
+        }
+        "components/propane.dat"
+        {
+            type          imported;
+            sha256        "68cc2725ed82f671e099134cc85df5e2204dfe22df5f527b59758bf48d726040";
+            origin        "data/standards/components/propane.dat";
+            originSha256  "83ed398c59981bd6b08bfa3c9279304df9a019441661328621f7ff1ecf093a66";
+            release       Choupo-2607;
+        }
+    }
+}
