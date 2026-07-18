@@ -278,10 +278,10 @@ try
     }
 
     // ---- Build thermo package ----------------------------------------
-    // v2 contract (thermophysicalPropertySystem): the BUILDER owns the
-    // dispatch (native buildV2 for the formulations it serves; the
-    // translateV2 scaffold for the rest) -- the main never decides to
-    // translate.  Routed by content, exactly like choupoSolve: manifest
+    // v2 contract (thermophysicalPropertySystem): the BUILDER owns the ONE
+    // exhaustive dispatch -- native for a claimed formulation, a NAMED
+    // refusal for everything else (the scaffold is dead); the main never
+    // decides.  Routed by content: manifest
     // (components + propertyMethods) -> builder; flat form -> legacy reader.
     // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict, ratified
     // 2026-07-18): same context chain, nearest owner wins; optional.
@@ -290,19 +290,7 @@ try
     ThermoPackage thermo;
     if (thermoDict->lookupWordOrDefault("recordType", "")
         == "thermophysicalPropertySystem")
-    {
-        if (ThermoPackageBuilder::v2NativeFormulation(thermoDict))
-            thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);   // native
-        else
-        {
-            thermoDict = ThermoPackageBuilder::translateV2(thermoDict);
-            if (thermoDict->found("components")
-                && thermoDict->found("propertyMethods"))
-                thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);
-            else
-                thermo.readFromDict(thermoDict, db);
-        }
-    }
+        thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);  // ONE dispatch
     else if (thermoDict->found("components")
              && thermoDict->found("propertyMethods"))
         thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);

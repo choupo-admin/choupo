@@ -1,0 +1,30 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  acidFeed               F                0.943266666667     1e-4
+stream  bitartrate             F                0.583333333333     1e-4
+stream  lime                   F                0.166666666667     1e-4
+stream  precipOut              F                0.7766             1e-4
+stream  product                F                0.943266666667     1e-4
+stream  slurry                 F                0.75               1e-4
+stream  sulfuric               F                0.166666666667     1e-4
+kpi     M1                     F_out            0.75               1e-4
+kpi     M1                     P_out            100000             1e-4
+kpi     M1                     T_out            333                1e-4
+kpi     M1                     n_in             2                  1e-4
+kpi     M1                     vf               0                  1e-4
+kpi     M2                     F_out            0.943266666667     1e-4
+kpi     M2                     P_out            100000             1e-4
+kpi     M2                     T_out            329.254033574      1e-4
+kpi     M2                     n_in             2                  1e-4
+kpi     M2                     vf               0                  1e-4
+kpi     R1                     F_in_kmol_h      2700               1e-4
+kpi     R1                     F_out_kmol_h     2795.76            1e-4
+kpi     R1                     T                333                1e-4
+kpi     R1                     conversion       0.95               1e-4
+kpi     R1                     extent_kmol_h    95.76              1e-4
+kpi     R2                     F_in_kmol_h      3395.76            1e-4
+kpi     R2                     F_out_kmol_h     3395.76            1e-4
+kpi     R2                     T                329.254033574      1e-4
+kpi     R2                     conversion       0.97               1e-4
+kpi     R2                     extent_kmol_h    92.8872            1e-4

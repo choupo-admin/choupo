@@ -52,6 +52,7 @@ Description
 #include "core/ResultEmitter.H"
 #include "core/ThermoResolution.H"
 #include "core/Units.H"
+#include "propertyOps/CasePackage.H"
 #include "propertyOps/PropertyOperation.H"
 #include "propertyOps/ConstantEstimator.H"
 #include "thermo/Database.H"
@@ -321,13 +322,19 @@ try
         if (sel->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
         {
             v2Authored = sel;
-            if (ThermoPackageBuilder::v2NativeFormulation(sel))
-                v2Native = true;    // authored dict -> buildV2 below, no translate
-            else if (sel->found("aqueousProperties"))
+            if (sel->found("aqueousProperties"))
+            {
                 aqNative = true;    // wave F: the speciation ops read the
                                     // AUTHORED surface (caseAqueousSurface)
+                // Validate the surface EAGERLY (negative-parity gate): a bad
+                // model/basis must refuse at LOAD, not only when a speciation
+                // op happens to read it -- a declaration nothing checks is
+                // the decorative sin.
+                (void)propertyOps::caseAqueousSurface();
+            }
             else
-                sel = ThermoPackageBuilder::translateV2(sel);
+                v2Native = true;    // build()'s ONE dispatch: native for a
+                                    // claimed formulation, NAMED refusal else
         }
         if (deprecatedName)
             std::cout << "  [deprecated] legacy package name -- rename it to"

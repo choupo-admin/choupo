@@ -417,6 +417,19 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/retgate.$$
 
+    # v2 negative-parity gate (Codex 2026-07-18, the translateV2 retirement):
+    # every refusal the retired scaffold enforced must survive in the NATIVE
+    # reader/dispatch -- a bad system silently ACCEPTED fails the release.
+    if "$ROOT/bin/curate/check_v2_refusals.py" > /tmp/neggate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "v2-negative-parity-gate" "$(head -1 /tmp/neggate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_v2_refusals.py)\n" "v2-negative-parity-gate"
+        cat /tmp/neggate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/neggate.$$
+
     # Asset-home gate (Codex assets-audit, 2026-07-18): a physical asset lives
     # in ONE home (constant/assets/) -- the legacy membranes/ overlay let a
     # sealed case open input its manifest never claimed.

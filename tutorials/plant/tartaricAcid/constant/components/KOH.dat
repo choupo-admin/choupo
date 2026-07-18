@@ -1,0 +1,55 @@
+// [imported] origin "data/standards/components/KOH.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Potassium hydroxide (KOH), CAUSTIC POTASH.  CAS 1310-58-3.
+
+  A NON-VOLATILE strong base (the potassium analogue of NaOH): never enters
+  the vapour (K = 0).  Strong-base neutralisation, saponification and CO2
+  scrubbing exercises.  Carries the solid-phase formation datum and a real
+  solid heat capacity.
+
+  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
+  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
+\*---------------------------------------------------------------------------*/
+
+name        KOH;
+formula     KOH;
+CAS         1310-58-3;
+
+MW          56.105;            // kg/kmol
+
+nonvolatile true;       // never goes to the vapour (K = 0)
+
+solid
+{
+    rho_p   2044.0;            // crystal density [kg/m^3]
+}
+
+standardThermochemistry
+{
+    dHf_298   -424764;         // J/mol  [Wagman et al. NBS Tables 1982]
+    s_298     78.9;            // J/(mol*K) [Wagman 1982]
+    referenceState     pureSolid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 64.9 );            // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  500 );        // constant-Cp validity flag (near ambient)
+}
+
+// liquid/dissolved Cp -- the solid Cp as a FLAGGED proxy, so the slurried/
+// dissolved solid carries sensible heat in an aqueous process stream.
+liquidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 64.9 );            // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  500 );        // constant-Cp validity flag (near ambient)
+}
+
+provenance
+{
+    standardThermochemistry { origin literature; method "Wagman et al. NBS Tables 1982"; }
+    solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    rho_p { origin literature; method "KOH crystal density ~2.04 g/cm3"; }
+}

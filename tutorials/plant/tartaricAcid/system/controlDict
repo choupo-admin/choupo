@@ -7,5 +7,5 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
-description   "Tartaric-acid plant (wine route): lime precipitation of calcium tartrate, then sulfuric acidulation to tartaric acid + gypsum. Molecular reactors; the solution chemistry sub-study is tutorials/props/electrolyte/tartaricAcid_acidulation.";
+description   "Tartaric-acid plant (wine route): lime precipitation of calcium tartrate, then sulfuric acidulation to tartaric acid + gypsum. Molecular reactors; the solution chemistry sub-study is tutorials/props/electrolyte/tartaricAcid_acidulation. HONEST LIMITS: H2SO4 declared nonvolatile by case overlay (Psat ~1e-5 Pa at process T); precipitates ride as nonvolatile solutes with NO rigorous solid-liquid separation; reactor duties honestly UNAVAILABLE (species without ideal-gas Cp -- a named gap, never a fake zero).";
 verbosity     2;

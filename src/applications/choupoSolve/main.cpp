@@ -546,18 +546,13 @@ try
             }
             if (sel->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
             {
-                if (ThermoPackageBuilder::v2NativeFormulation(sel))
-                {
-                    // NATIVE path (migration step 1-2): the AUTHORED v2 dict
-                    // itself is the package source -- build() assembles it
-                    // via buildV2, no translated intermediate.
-                    packageDict = sel;
-                    if (verbosity >= 2)
-                        std::cout << "Property package:  INLINE in the case"
-                                     "   (v2 grammar, NATIVE assembly)\n";
-                }
-                else
-                    sel = ThermoPackageBuilder::translateV2(sel);   // scaffold -> manifesto verificado
+                // The AUTHORED v2 dict IS the package source -- build()'s
+                // ONE dispatch assembles a claimed formulation natively and
+                // gives every other shape a NAMED refusal (scaffold dead).
+                packageDict = sel;
+                if (verbosity >= 2)
+                    std::cout << "Property package:  INLINE in the case"
+                                 "   (v2 grammar, NATIVE assembly)\n";
             }
             if (packageDict)
             { /* native: already set above */ }

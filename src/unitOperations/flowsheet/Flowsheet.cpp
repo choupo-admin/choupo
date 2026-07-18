@@ -2517,11 +2517,17 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
                              " authored v2 chain (components stay global)\n";
             return refn;
         }
-        // G7: a v2 chain resolves in the AUTHORED grammar; translate ONCE on
-        // the completed system so the F2 logic below reads the v1 shape.
+        // The scaffold is DEAD: a v2 context the native path does not claim
+        // gets its NAMED refusal from build()'s exhaustive dispatch -- reach
+        // it deliberately (never a silent fallback into the v1-shape logic).
         const bool wasV2 = isV2System(ctx);
         if (wasV2)
-            ctx = ThermoPackageBuilder::translateV2(ctx);
+        {
+            (void)ThermoPackageBuilder::build(ctx, *db_, nullptr);
+            throw std::runtime_error("Flowsheet::thermoFor: unreachable -- a"
+                " v2 context the native path does not claim must have been"
+                " refused by the builder dispatch above.");
+        }
         // A v2 translation may resolve to the FLAT shape (gammaGamma phases,
         // inline pairs) -- no propertyMethods to parse; the flat blocks ARE
         // the override.  Copy them (+ the per-node auxiliaries) directly.

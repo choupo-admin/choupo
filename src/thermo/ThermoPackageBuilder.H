@@ -51,20 +51,6 @@ class Database;
 class ThermoPackageBuilder
 {
 public:
-    // The v2 ADAPTER (consolidated 2026-07-18: the v1 propertyDict grammar is
-    // RETIRED -- thermophysicalPropertySystem is the ONE case grammar).  Reads
-    // the physically-decomposed blocks (equilibrium / aqueousProperties /
-    // caloric / transport / pureFluids) into the v1-SHAPED in-memory forms:
-    // the FLAT dict for plain worlds (readFromDict), the manifest for the
-    // worlds that need the builder (declared pair files, electrolyte, Henry).
-    // STRICT: declared routes are verified against the implemented ones;
-    // unknown formulations/routes refuse loudly.  Prints the resolved plan
-    // ([v2 plan]).  HONESTY: this is a SCAFFOLD, not the end state -- the
-    // engine does not yet read v2 natively; the ratified migration (one
-    // shared buildV2, block-native assembly, then delete this function) is
-    // docs/architecture/v2-native-migration.md.
-    static DictPtr translateV2(const DictPtr& v2);
-
     // Assemble a ThermoPackage from a parsed propertyPackage record.
     // `chem` (optional) is the case's ACTIVE-CHEMISTRY SELECTION, resolved
     // from constant/chemistryDict by the caller via resolveChemistryContext
@@ -77,7 +63,7 @@ public:
     // docs/architecture/v2-native-migration.md) ---------------------------
     // v2NativeFormulation: does the authored v2 dict declare a formulation
     // the NATIVE path serves?  (Pilot: phiPhi.)  The caller uses it to pick
-    // buildV2 (native, no v1-shaped intermediate) over translateV2 (the
+    // buildV2 (native; the scaffold is DEAD -- an unclaimed shape gets a
     // scaffold) -- announced either way, never a silent switch.
     static bool v2NativeFormulation(const DictPtr& v2);
 

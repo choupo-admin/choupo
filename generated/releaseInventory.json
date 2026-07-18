@@ -22,7 +22,7 @@
   },
   "tutorials": {
     "runnableCases": 288,
-    "regressionChecks": 254
+    "regressionChecks": 255
   },
   "totals": {
     "mixtureParameterRecords": 268

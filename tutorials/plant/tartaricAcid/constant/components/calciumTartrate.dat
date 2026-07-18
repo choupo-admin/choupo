@@ -1,0 +1,57 @@
+// [imported] origin "data/standards/components/calciumTartrate.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Component: Calcium tartrate (CaC4H4O6).  CAS 3164-34-9.  MW 188.15 g/mol.
+
+  The SPARINGLY-SOLUBLE calcium salt of the natural (wine) route to tartaric
+  acid: bitartrate paste + milk of lime + CaCl2 precipitate it, then sulfuric
+  acid acidulates it back to tartaric acid + gypsum.  A non-volatile solid.
+
+  ENTHALPY -- the DISSOLVED salt derives its formation enthalpy from its IONS
+  (Ca2+ and tartrate C4H4O6-2, both in data/standards/species/aqueous/ with
+  hfAq), via the electrolyte{} block below -- so an aqueous tartrate balance
+  closes on the elements datum without a molecular dHf.
+
+  The SOLID datum is OMITTED on purpose: deriving dHf(CaC4H4O6, s) needs a
+  measured DISSOLUTION enthalpy (dHf_s = hfAq(Ca2+) + hfAq(Tart2-) - dH_diss),
+  and no defensible dH_diss / calorimetric value is curated yet (the solubility
+  papers give Ksp, i.e. dG_diss, not dH_diss without solubility-vs-T).  So a
+  PRECIPITATED solid calcium tartrate will make an energy balance REFUSE (by
+  design, honestly) until a dissolution enthalpy is curated -- the dissolved
+  form via the ions is unaffected.
+  Sources: ion hfAq (Ca2+, tartrate C4H4O6-2) from Kochergina et al. 2006
+           via the data/standards/species/aqueous/ files (cited there);
+           rho_p ~1900 kg/m^3 approximate (VERIFY flag) and the ~210
+           J/(mol K) liquid-Cp estimate -- primary re-citation pending
+           (IST review).  Solid formation datum omitted ON PURPOSE (needs
+           a measured dH_diss; the solubility literature gives only Ksp).
+\*---------------------------------------------------------------------------*/
+
+name        calciumTartrate;
+formula     CaC4H4O6;
+CAS         3164-34-9;
+MW          188.15;             // kg/kmol  (anhydrous)
+
+nonvolatile true;               // sparingly-soluble crystalline salt; never to the vapour (K = 0)
+
+solid
+{
+    rho_p   1900.0;             // crystal density [kg/m^3] (anhydrous, approximate -- VERIFY)
+}
+
+// Dissolved form: a 1:1 strong-electrolyte salt -> the aqueous enthalpy comes
+// from the ions (ionAqReference), both carrying hfAq from Kochergina et al. 2006.
+dissociatesTo  { Ca 1; Tart 1; }   // ion stoichiometry (formula-like identity)
+
+// standardThermochemistry OMITTED on purpose (see header): the SOLID datum needs a
+// measured dissolution enthalpy.  Until then, the dissolved salt works via the
+// ion tier; a precipitated solid honestly REFUSES the energy balance.
+
+// liquid/dissolved heat capacity -- ESTIMATE (~210 J/mol/K, organic-salt class),
+// FLAGGED; lets the precipitated/slurried solid carry sensible heat in a stream.
+// (Its FORMATION datum stays omitted -> an energy balance refuses on the solid.)
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  ( 210.0  0.0  0.0 );
+    Trange        ( 298  400 );
+}
