@@ -1259,9 +1259,9 @@ propertyManifest
         "species/aqueous.dat"
         {
             type          imported;
-            sha256        "c4d11491b15a4a866cf8d7c6e586ed9f0ea5dbf080b081bd324e3117df6e86b6";
+            sha256        "84111ed0dfc2abccf8cdc4120dad847949fc26a18185719e65894a1463b9ee93";
             origin        "data/standards/species/aqueous.dat (filtered)";
-            originSha256  "e2c69cb55ecbefeab05d8522177a71db35d196ac299a90f1f0c7e3e5f1bcd46e";
+            originSha256  "898ea196b9533e6b0dcad265328cf1bb4803a139fbcdb6a859b4f5c5a377b0e3";
             release       Choupo-2607;
         }
     }

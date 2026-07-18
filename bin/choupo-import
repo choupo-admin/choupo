@@ -708,13 +708,9 @@ def closure_of(pp_path, caseDir, std, AQ):
     # of an electrolyte WORLD (buildElectrolyte ion Cp), never by the
     # speciation ops -- seal it only when a flowsheet/single-salt electrolyte
     # world named its ions (Codex seal-audit: no consumer, no record).
-    uses_electrolyte_world = bool(
-        re.search(r'\belectrolyte\.[A-Za-z]+', t_nc)
-        or re.search(r'\bformulation\s+electrolyteGammaPhi\s*;', t_nc)
-        or re.search(r'\b(?:pitzerActivity|electrolyteActivity|enrtlMultiSalt|'
-                     r'enrtlMixedSolvent)\b', props_ops))
-    if ions and uses_electrolyte_world:
-        want("parameters/electrolyte/crissCobble.dat")
+    # (Criss-Cobble migration 2026-07-18, Vitor's arity-1 call) the CC nodes
+    # live in EACH ion's own aqueous-species record now -- the filtered
+    # species catalogue carries them; there is no separate record to seal.
     return recs, ions, wantAllSpecies
 
 

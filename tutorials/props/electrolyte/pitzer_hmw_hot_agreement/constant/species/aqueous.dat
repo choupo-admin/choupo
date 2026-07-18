@@ -1,6 +1,6 @@
 /*----------------------------------------------------------*\
   constant/species/aqueous.dat -- aqueous model species,
-  FILTERED to this case's closure (45 of 45 catalogue records).
+  FILTERED to this case's closure (50 of 50 catalogue records).
   Same grammar as data/standards/species/aqueous.dat; imported
   by bin/choupo-import from the Choupo-2607 release -- ownership and
   integrity are recorded in constant/propertyManifest.
@@ -73,7 +73,27 @@ aqueousSpecies
         {
         hfAq { value -537640; unit J/mol;}
         sAq  { value 9.6;  unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value 44; }
+                { T 333.15; value 38; }
+                { T 373.15; value 50; }
+                { T 423.15; value 50; }
+                { T 473.15; value 55; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
     }
     {
         name    Br;
@@ -85,7 +105,27 @@ aqueousSpecies
         hfAq { value -121550; unit J/mol;}
         sAq  { value 82.4;  unit J/mol/K;}
         cpAq { value -141.8; unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -61; }
+                { T 333.15; value -53; }
+                { T 373.15; value -58; }
+                { T 423.15; value -61; }
+                { T 473.15; value -65; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
     }
     {
         /* Dissolved methane CH4(aq) -- inert neutral, identity + MW only (no
@@ -106,7 +146,27 @@ aqueousSpecies
         {
         hfAq { value -677140; unit J/mol;}
         sAq  { value -56.9;  unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -139; }
+                { T 333.15; value -121; }
+                { T 373.15; value -132; }
+                { T 423.15; value -127; }
+                { T 473.15; value -138; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
     }
     {
         name    Ca;
@@ -117,7 +177,27 @@ aqueousSpecies
         {
         hfAq { value -542830; unit J/mol;}
         sAq  { value -53.1;  unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value 54; }
+                { T 333.15; value 45; }
+                { T 373.15; value 59; }
+                { T 423.15; value 60; }
+                { T 473.15; value 66; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
         transport
         {
         radius { value 4.12e-10; unit m;}
@@ -162,7 +242,27 @@ aqueousSpecies
         hfAq { value -167160; unit J/mol;}
         sAq  { value 56.5;  unit J/mol/K;}
         cpAq { value -136.4; unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -59; }
+                { T 333.15; value -51; }
+                { T 373.15; value -58; }
+                { T 423.15; value -62; }
+                { T 473.15; value -66; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
         transport
         {
         radius { value 3.32e-10; unit m;}
@@ -201,7 +301,27 @@ aqueousSpecies
         hfAq { value -332630; unit J/mol;}
         sAq  { value -13.8;  unit J/mol/K;}
         cpAq { value -106.7; unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -57; }
+                { T 333.15; value -47; }
+                { T 373.15; value -58; }
+                { T 423.15; value -61; }
+                { T 473.15; value -65; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
     }
     {
         name    Fe;
@@ -235,7 +355,27 @@ aqueousSpecies
         hfAq { value 0; unit J/mol;}
         sAq  { value 0;  unit J/mol/K;}
         cpAq { value 0; unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value 28; }
+                { T 333.15; value 23; }
+                { T 373.15; value 31; }
+                { T 423.15; value 33; }
+                { T 473.15; value 35; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
         transport
         {
         radius { value 2.82e-10; unit m;}
@@ -283,7 +423,28 @@ aqueousSpecies
         {
         hfAq { value -691990; unit J/mol;}
         sAq  { value 91.2;  unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -48; }
+                { T 333.15; value -27; }
+                { T 373.15; value -25; }
+                { T 423.15; value -34; }
+                { T 473.15; value -35; }
+            );
+            potentiometric true;   // CC note b (cell-potential dT, larger errors)
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
     }
     {
         name    HS;
@@ -306,7 +467,28 @@ aqueousSpecies
         hfAq { value -887340; unit J/mol;}
         sAq  { value 131.8;  unit J/mol/K;}
         cpAq { value -84.0; unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -35; }
+                { T 333.15; value -13; }
+                { T 373.15; value -10; }
+                { T 423.15; value -18; }
+                { T 473.15; value -18; }
+            );
+            potentiometric true;   // CC note b (cell-potential dT, larger errors)
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
     }
     {
         name    HTart;
@@ -328,7 +510,27 @@ aqueousSpecies
         hfAq { value -252380; unit J/mol;}
         sAq  { value 102.5;  unit J/mol/K;}
         cpAq { value 21.8; unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value 28; }
+                { T 333.15; value 27; }
+                { T 373.15; value 35; }
+                { T 423.15; value 35; }
+                { T 473.15; value 39; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
         transport
         {
         radius { value 3.31e-10; unit m;}
@@ -344,7 +546,27 @@ aqueousSpecies
         {
         hfAq { value -278490; unit J/mol;}
         sAq  { value 13.4;  unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value 41; }
+                { T 333.15; value 36; }
+                { T 373.15; value 47; }
+                { T 423.15; value 47; }
+                { T 473.15; value 52; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
     }
     {
         name    Mg;
@@ -355,7 +577,27 @@ aqueousSpecies
         {
         hfAq { value -466850; unit J/mol;}
         sAq  { value -138.1;  unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value 62; }
+                { T 333.15; value 51; }
+                { T 373.15; value 67; }
+                { T 423.15; value 69; }
+                { T 473.15; value 75; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
         transport
         {
         radius { value 4.28e-10; unit m;}
@@ -464,7 +706,27 @@ aqueousSpecies
         {
         hfAq { value -207360; unit J/mol;}
         sAq  { value 146.4;  unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -56; }
+                { T 333.15; value -49; }
+                { T 373.15; value -63; }
+                { T 423.15; value -55; }
+                { T 473.15; value -57; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
     }
     {
         name    Na;
@@ -476,7 +738,27 @@ aqueousSpecies
         hfAq { value -240120; unit J/mol;}
         sAq  { value 59.0;  unit J/mol/K;}
         cpAq { value 46.4; unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value 37; }
+                { T 333.15; value 35; }
+                { T 373.15; value 41; }
+                { T 423.15; value 41; }
+                { T 473.15; value 45; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
         transport
         {
         radius { value 3.58e-10; unit m;}
@@ -503,7 +785,27 @@ aqueousSpecies
         hfAq { value -229990; unit J/mol;}
         sAq  { value -10.75;  unit J/mol/K;}
         cpAq { value -148.5; unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -57; }
+                { T 333.15; value -47; }
+                { T 373.15; value -58; }
+                { T 423.15; value -61; }
+                { T 473.15; value -65; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
         transport
         {
         radius { value 3.00e-10; unit m;}
@@ -519,7 +821,27 @@ aqueousSpecies
         {
         hfAq { value -1277400; unit J/mol;}
         sAq  { value -222.0;  unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -226; }
+                { T 333.15; value -200; }
+                { T 373.15; value -216; }
+                { T 423.15; value -205; }
+                { T 473.15; value -227; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
     }
     {
         name    Pb;
@@ -541,7 +863,27 @@ aqueousSpecies
         {
         hfAq { value -909270; unit J/mol;}
         sAq  { value 20.1;  unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -115; }
+                { T 333.15; value -99; }
+                { T 373.15; value -108; }
+                { T 423.15; value -105; }
+                { T 473.15; value -114; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
         transport
         {
         radius { value 3.79e-10; unit m;}
@@ -557,7 +899,27 @@ aqueousSpecies
         {
         hfAq { value -545800; unit J/mol;}
         sAq  { value -32.6;  unit J/mol/K;}
+                // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+        // 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+        // only thing the engine consumes).
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value 52; }
+                { T 333.15; value 43; }
+                { T 373.15; value 57; }
+                { T 423.15; value 57; }
+                { T 473.15; value 63; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
         }
+}
     }
     {
         name    Tart;
@@ -579,6 +941,167 @@ aqueousSpecies
         hfAq { value -153890; unit J/mol;}
         sAq  { value -112.1;  unit J/mol/K;}
         cpAq { value 46.0; unit J/mol/K;}
+        }
+    }
+    {
+        // CURATION STUB (Criss-Cobble migration 2026-07-18): the ion's
+        // T-averaged Cp is PRIMARY-cited below; hfAq/sAq are NOT curated
+        // yet -- a package consuming this ion's formation data must wait
+        // for that curation (the loud-absence doctrine), the CC heat-
+        // capacity tier alone is served.
+        name    Rb;
+        ion     "Rb+";
+        charge  +1;
+        MW { value 85.468; unit g/mol;}
+        aqueousThermo
+        {
+        // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale.
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value 30; }
+                { T 333.15; value 25; }
+                { T 373.15; value 32; }
+                { T 423.15; value 31; }
+                { T 473.15; value 35; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
+        }
+        }
+    }
+    {
+        // CURATION STUB (Criss-Cobble migration 2026-07-18): the ion's
+        // T-averaged Cp is PRIMARY-cited below; hfAq/sAq are NOT curated
+        // yet -- a package consuming this ion's formation data must wait
+        // for that curation (the loud-absence doctrine), the CC heat-
+        // capacity tier alone is served.
+        name    Cs;
+        ion     "Cs+";
+        charge  +1;
+        MW { value 132.905; unit g/mol;}
+        aqueousThermo
+        {
+        // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale.
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value 26; }
+                { T 333.15; value 24; }
+                { T 373.15; value 31; }
+                { T 423.15; value 30; }
+                { T 473.15; value 34; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
+        }
+        }
+    }
+    {
+        // CURATION STUB (Criss-Cobble migration 2026-07-18): the ion's
+        // T-averaged Cp is PRIMARY-cited below; hfAq/sAq are NOT curated
+        // yet -- a package consuming this ion's formation data must wait
+        // for that curation (the loud-absence doctrine), the CC heat-
+        // capacity tier alone is served.
+        name    I;
+        ion     "I-";
+        charge  -1;
+        MW { value 126.904; unit g/mol;}
+        aqueousThermo
+        {
+        // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale.
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -62; }
+                { T 333.15; value -55; }
+                { T 373.15; value -58; }
+                { T 423.15; value -61; }
+                { T 473.15; value -64; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
+        }
+        }
+    }
+    {
+        // CURATION STUB (Criss-Cobble migration 2026-07-18): the ion's
+        // T-averaged Cp is PRIMARY-cited below; hfAq/sAq are NOT curated
+        // yet -- a package consuming this ion's formation data must wait
+        // for that curation (the loud-absence doctrine), the CC heat-
+        // capacity tier alone is served.
+        name    HPO4;
+        ion     "HPO4-2";
+        charge  -2;
+        MW { value 95.979; unit g/mol;}
+        aqueousThermo
+        {
+        // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale.
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -132; }
+                { T 333.15; value -118; }
+                { T 373.15; value -129; }
+                { T 423.15; value -138; }
+                { T 473.15; value -146; }
+            );
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
+        }
+        }
+    }
+    {
+        // CURATION STUB (Criss-Cobble migration 2026-07-18): the ion's
+        // T-averaged Cp is PRIMARY-cited below; hfAq/sAq are NOT curated
+        // yet -- a package consuming this ion's formation data must wait
+        // for that curation (the loud-absence doctrine), the CC heat-
+        // capacity tier alone is served.
+        name    H2PO4;
+        ion     "H2PO4-";
+        charge  -1;
+        MW { value 96.987; unit g/mol;}
+        aqueousThermo
+        {
+        // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+        // T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+        // cal/mol/K on the CC ABSOLUTE single-ion scale.
+        cpAvg298
+        {
+            model  crissCobble1964;
+            scale  crissCobbleAbsolute;
+            units  "cal/mol/K";
+            averageFrom298
+            (
+                { T 298.15; value -55; }
+                { T 333.15; value -31; }
+                { T 373.15; value -23; }
+                { T 423.15; value -39; }
+                { T 473.15; value -41; }
+            );
+            potentiometric true;   // CC note b (cell-potential dT, larger errors)
+            source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
+        }
         }
     }
 );

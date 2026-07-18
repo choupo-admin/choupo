@@ -85,20 +85,12 @@ propertyManifest
             type          adopted;
             adoptedAt     "2026-07-17";
         }
-        "parameters/electrolyte/crissCobble.dat"
-        {
-            type          imported;
-            sha256        "b26d227b4b7bcf1d093f586ad0ea430569aa4002061c0a6c3cbb8271861c55dc";
-            origin        "data/standards/parameters/electrolyte/crissCobble.dat";
-            originSha256  "82b7b4137e008f1fc81dbd8a7e6ec1ec4b1f62af91dc06962c5057ee0ffbd0f7";
-            release       Choupo-2607;
-        }
         "species/aqueous.dat"
         {
             type          imported;
-            sha256        "fb7ed6fd3f3b8973dc1f588e5e6f5f5d5c1692b81209815dbc6f1428dbab4f09";
+            sha256        "5bfd236e439cbb25bc3b3b666d64b90db362e7179e1d2979eca3fa4e23af59d4";
             origin        "data/standards/species/aqueous.dat (filtered)";
-            originSha256  "e2c69cb55ecbefeab05d8522177a71db35d196ac299a90f1f0c7e3e5f1bcd46e";
+            originSha256  "898ea196b9533e6b0dcad265328cf1bb4803a139fbcdb6a859b4f5c5a377b0e3";
             release       Choupo-2607;
         }
     }

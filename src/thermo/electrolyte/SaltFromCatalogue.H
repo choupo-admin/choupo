@@ -454,27 +454,55 @@ inline bool ionAqReference(const std::string& cation, const std::string& anion,
 // this function returns.  false when either ion lacks a CC entry (caller
 // falls back to the constant cpAq tier).  Read at BUILD time only (the
 // builder preloads the five nodes; the hot path interpolates in memory).
+// One ion's five CC nodes from ITS OWN aqueous-species record (the arity-1
+// home, migrated 2026-07-18: aqueousThermo.cpAvg298.averageFrom298, cal/mol/K
+// on the CC absolute scale).  Reads the RAW catalogue record (same resolution
+// legs as findIon -- case-local first, sealed refusal, standards) because the
+// bridged flat form deliberately carries only the constant tier.  false when
+// the ion carries no cpAvg298 block (caller falls to the cpAq tier).
+inline bool ionCCNodes(const std::string& ion, double v[5])
+{
+    DictPtr rec;
+    const fs::path localCat = records::localRecord("species/aqueous.dat");
+    if (!localCat.empty())
+    {
+        auto c = parsedOnce(localCat);
+        for (const auto& r : c->lookupDictList("aqueousSpecies"))
+            if (r->lookupWord("name") == ion) { rec = r; break; }
+    }
+    if (!rec && !records::sealed())
+    {
+        const fs::path cat = records::standardsRecord("species/aqueous.dat");
+        if (fs::exists(cat))
+        {
+            auto c = parsedOnce(cat);
+            for (const auto& r : c->lookupDictList("aqueousSpecies"))
+                if (r->lookupWord("name") == ion) { rec = r; break; }
+        }
+    }
+    if (!rec || !rec->found("aqueousThermo")) return false;
+    auto at = rec->subDict("aqueousThermo");
+    if (!at->found("cpAvg298")) return false;
+    auto cc = at->subDict("cpAvg298");
+    const auto pts = cc->lookupDictList("averageFrom298");
+    if (pts.size() != 5) return false;              // the published node grid
+    for (int k = 0; k < 5; ++k)
+        v[k] = pts[static_cast<std::size_t>(k)]->lookupScalar("value");
+    return true;
+}
+
 inline bool crissCobbleNodes(const std::string& cation, const std::string& anion,
                              double nu_c, double nu_a, double nodes[5])
 {
-    // ONE resolver (sealing redesign): case-local mirrored home -> legacy
-    // snapshot -> standards.  Absence-TOLERANT: a strictly sealed case whose
-    // closure carries no crissCobble.dat degrades to the constant-cpAq tier
-    // (the builder announces which tier runs), never a silent catalogue read.
-    fs::path f = records::resolveRecord("parameters/electrolyte/crissCobble.dat");
-    if (f.empty() || !fs::exists(f)) return false;
-    auto d = parsedOnce(f);
-    DictPtr ec = nullptr, ea = nullptr;
-    for (const auto& e : d->lookupDictList("ions"))
-    {
-        if (e->lookupWord("ion") == cation) ec = e;
-        if (e->lookupWord("ion") == anion)  ea = e;
-    }
-    if (!ec || !ea) return false;
-    const char* keys[5] = {"cp25", "t60", "t100", "t150", "t200"};
+    // The salt's neutral sum from EACH ion's own record (species/aqueous.dat
+    // aqueousThermo.cpAvg298 -- ONE home per ion, no parallel monolith).  The
+    // single-ion CC "absolute" scale (Cp(H+)=28 cal) cancels in this sum.
+    // Absence-TOLERANT: an ion without the block degrades the pair to the
+    // constant-cpAq tier (the builder announces which tier runs).
+    double vc[5], va[5];
+    if (!ionCCNodes(cation, vc) || !ionCCNodes(anion, va)) return false;
     for (int k = 0; k < 5; ++k)
-        nodes[k] = 4.184 * (nu_c * ec->lookupScalar(keys[k])
-                          + nu_a * ea->lookupScalar(keys[k]));
+        nodes[k] = 4.184 * (nu_c * vc[k] + nu_a * va[k]);
     return true;
 }
 

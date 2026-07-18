@@ -1032,20 +1032,12 @@ propertyManifest
             originSha256  "01a4a53b24edc2098d2b91303d22216daf7b5ea71ca39ef8a1f42a720dadfc92";
             release       Choupo-2607;
         }
-        "parameters/electrolyte/crissCobble.dat"
-        {
-            type          imported;
-            sha256        "b26d227b4b7bcf1d093f586ad0ea430569aa4002061c0a6c3cbb8271861c55dc";
-            origin        "data/standards/parameters/electrolyte/crissCobble.dat";
-            originSha256  "82b7b4137e008f1fc81dbd8a7e6ec1ec4b1f62af91dc06962c5057ee0ffbd0f7";
-            release       Choupo-2607;
-        }
         "species/aqueous.dat"
         {
             type          imported;
-            sha256        "99cb1be6f79ade27ff9fb1d73080ee42ee4ef06cab27ec59fd9646a03a86f048";
+            sha256        "1983e003a27b2a759b1a021bfd7c852f89637eaa9bbdd675809752bcf5a12f6e";
             origin        "data/standards/species/aqueous.dat (filtered)";
-            originSha256  "e2c69cb55ecbefeab05d8522177a71db35d196ac299a90f1f0c7e3e5f1bcd46e";
+            originSha256  "898ea196b9533e6b0dcad265328cf1bb4803a139fbcdb6a859b4f5c5a377b0e3";
             release       Choupo-2607;
         }
     }
