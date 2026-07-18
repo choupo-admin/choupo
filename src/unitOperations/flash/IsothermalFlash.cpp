@@ -1024,6 +1024,7 @@ int IsothermalFlash::solve(const DictPtr& dict,
     //   naturally when the operation does not move the stream's state.
     scalar Q_W = 0.0;
     bool   Q_valid = false;
+    std::string Q_gap;                    // why the duty is unavailable
     try
     {
         const scalar T_feed  = feedDict->lookupScalar("T", Dims::temperature);
@@ -1104,8 +1105,9 @@ int IsothermalFlash::solve(const DictPtr& dict,
         }
         Q_W = in.F * 1000.0 * (H_out - H_in);                // kmol/s -> mol/s; J/mol -> W
         Q_valid = std::isfinite(Q_W);
+        if (!Q_valid) Q_gap = "enthalpy evaluated non-finite";
     }
-    catch (const std::exception&) { Q_valid = false; }
+    catch (const std::exception& e) { Q_valid = false; Q_gap = e.what(); }
 
     // ---- Produced streams ----------------------------------------------
     //   VL:    (liquid, vapor)                  — vf = 0, vf = 1
@@ -1234,6 +1236,11 @@ int IsothermalFlash::solve(const DictPtr& dict,
                      " enthalpy carries no excess-of-mixing term coherent"
                      " with the activity model, so a numeric Q would be a"
                      " non-conclusion (not published).\n";
+    else if (!Q_valid && opts.verbosity >= 1)
+        // The caloric contract: a missing enthalpy route is a NAMED gap,
+        // never a silent absence (and never a fake Q = 0).
+        std::cout << "  [duty] duty UNAVAILABLE -- " << Q_gap
+                  << " (Q not published).\n";
     kpis_["F_alpha"]   = in.F * (1.0 - sol.V_over_F);
     kpis_["F_beta"]    = in.F * sol.V_over_F;
     if (sol.threePhase)
