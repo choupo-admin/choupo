@@ -507,8 +507,12 @@ try
         // 2026-07-17); constant/propertyDict stays the v1 home.
         std::string pkgPath = resolveUp("constant/thermoPhysPropDict");
         bool deprecatedName = false;
-        if (!fs::exists(pkgPath))
-            pkgPath = resolveUp("constant/propertyDict");
+        if (!fs::exists(pkgPath) && fs::exists(resolveUp("constant/propertyDict")))
+            throw std::runtime_error(
+                "the v1 `constant/propertyDict` grammar is RETIRED (the 2026-07-18"
+                " consolidation): this case still carries one.  Migrate it --"
+                " bin/curate/migrate_thermoPhysProp.py (mechanical, golden-safe)"
+                " -- then re-run.");
         if (fs::exists(pkgPath))
         {
             auto sel = Dictionary::fromFile(pkgPath);

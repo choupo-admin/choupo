@@ -369,22 +369,12 @@ def classify(dict_path):
         ps = strip_comments(props.read_text(errors="replace"))
         if re.search(r'activityModel\.pairs\[', ps):
             has_fit_paths = True
-    # propsDict ops carrying their OWN thermo{} override (pureFluids /
-    # transport routes per op -- compare_transport_water) merge against the
-    # FLAT thermoDict; the builder/manifest path does not carry that per-op
-    # merge, so the case must stay v1 (proven: 46 op failures on conversion).
-    if props.exists():
-        ps2 = strip_comments(props.read_text(errors="replace"))
-        if re.search(r'(?<![\w.])thermo\s*\{', ps2):
-            return ('skip', "propsDict op carries an inline thermo{} override"
-                            " (per-op merge exists on the flat path only --"
-                            " no builder/manifest equivalent)")
+    # (consolidation endgame) per-op thermo{} overrides now merge against the
+    # FLAT translation of a plain gamma-phi v2 system -- gate lifted.
     if (case / "constant" / "thermoPhysPropDict").exists():
         return ('skip', "constant/thermoPhysPropDict already exists")
-    if incomplete_thermo_override(case):
-        return ('skip', "inline thermo{} override without activityModel "
-                        "(inherits it from the flat global; the builder "
-                        "path would throw 'missing entry activityModel')")
+    # (consolidation endgame) a partial per-unit thermo{} inherits from the
+    # FLAT translation exactly as it inherited from the v1 flat -- gate lifted.
 
     # ---- content gate: EXACTLY one of the mapped cohort forms -------------
     original = dict_path.read_text(errors="replace")

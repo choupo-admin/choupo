@@ -423,7 +423,8 @@ function subNodesFor(rootName: string,
       if (r.startsWith(dir + "/")) sub[r.slice(dir.length + 1)] = body;
 
     // Cascade the single-file required dicts from the nearest ancestor.
-    for (const need of ["constant/propertyDict", "system/controlDict"]) {
+    for (const need of ["constant/thermoPhysPropDict", "constant/propertyDict",
+                        "system/controlDict"]) {
       if (sub[need]) continue;
       let p = dir;
       while (p !== "") {
@@ -460,10 +461,11 @@ function subNodesFor(rootName: string,
     // propertyData/, so the effective config is fully materialised here -- drop
     // the now-dangling inherits.  This is the "standalone export" step (resolve
     // includes, materialise the effective property configuration).
-    if (sub["constant/propertyDict"] && /^\s*inherits\s/m.test(sub["constant/propertyDict"]))
-      sub["constant/propertyDict"] = sub["constant/propertyDict"].replace(
-        /^\s*inherits\s+.*$/m,
-        "// inherits flattened for the standalone drilled sub-case (effective config materialised)");
+    for (const pd of ["constant/thermoPhysPropDict", "constant/propertyDict"])
+      if (sub[pd] && /^\s*inherits\s/m.test(sub[pd]!))
+        sub[pd] = sub[pd]!.replace(
+          /^\s*inherits\s+.*$/m,
+          "// inherits flattened for the standalone drilled sub-case (effective config materialised)");
 
     // Project the plant's 0/ stream state into the drilled sub-case (the root
     // stores streams sector-OWNED under 0/<SECTOR>/; a re-rooted sector/unit
@@ -525,20 +527,16 @@ export function filesToCaseFiles(name: string,
       `Tutorial '${name}' has neither system/flowsheetDict nor system/propsDict`,
     );
 
-  // The thermo source is EITHER the classic constant/propertyDict OR a
-  // constant/propertyDict selection (the engine reads propertyPackage
-  // first -- choupoSolve/main.cpp).  Requiring only thermoPackage silently
-  // hid all 17 propertyPackage tutorials from the GUI.
-  // The thermo source is constant/propertyDict (preferred), else the classic
-  // constant/propertyDict, else a constant/propertyDict selection -- the same
-  // order the engine reads (choupoSolve/main.cpp).
+  // The thermo source is constant/thermoPhysPropDict -- THE case grammar
+  // since the 2026-07-18 consolidation (the v1 constant/propertyDict was
+  // retired; the engine refuses it with a migration pointer).  The v1 name
+  // is still read here as a courtesy for user cases mid-migration.
+  const v2Text = optional("constant/thermoPhysPropDict");
   const pdictText = optional("constant/propertyDict");
-  const tpText = optional("constant/propertyDict");
-  const ppText = optional("constant/propertyDict");
-  const thermoText = pdictText ?? tpText ?? ppText;
+  const thermoText = v2Text ?? pdictText;
   if (!thermoText)
     throw new Error(
-      `Tutorial '${name}' is missing required file 'constant/propertyDict' (or thermoPackage / propertyPackage)`,
+      `Tutorial '${name}' is missing required file 'constant/thermoPhysPropDict'`,
     );
   const cf: CaseFiles = {
     controlDict: toJson(parse(required("system/controlDict"), { sourceName: "controlDict" })),
@@ -546,7 +544,7 @@ export function filesToCaseFiles(name: string,
     // `components ( ... )`; without this a propertyDict/propertyPackage plant
     // would show "Components (none)".
     thermoPackage: toJson(parse(thermoText, {
-      sourceName: pdictText ? "propertyDict" : tpText ? "thermoPackage" : "propertyPackage" })),
+      sourceName: v2Text ? "thermoPhysPropDict" : "propertyDict" })),
   };
   if (fsText) cf.flowsheet = toJson(parse(fsText, { sourceName: "flowsheetDict" }));
   if (psText) cf.propsDict = toJson(parse(psText, { sourceName: "propsDict" }));

@@ -36,15 +36,12 @@ License
   Ownership/provenance is the job of `constant/propertyManifest` (written by
   `bin/choupo-import`), never of a separate directory.
 
-  RESOLUTION POLICY (every consumer goes through here -- this replaced the six
-  scattered propertyData-specific snapshot legs of the phase-1 import):
+  RESOLUTION POLICY (every consumer goes through here):
 
       nearest constant/<sub>              (walking UP the fractal cascade)
-   -> [legacy] nearest constant/propertyData/<sub>      (retired v1 snapshot)
    -> data/standards/<sub>,  UNLESS the case is SEALED.
 
-  SEALED = the nearest constant/propertyManifest declares `sealed true;`
-  (legacy: constant/propertyData/manifest.dat, propertyDataManifest.sealed).
+  SEALED = the nearest constant/propertyManifest declares `sealed true;`.
   A sealed case FORBIDS the installation catalogue: a record missing from the
   case is refused loudly (re-run `bin/choupo-import`), never a silent
   catalogue read -- resolveRecord() returns an EMPTY path so absence-tolerant

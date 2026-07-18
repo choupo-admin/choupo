@@ -518,7 +518,17 @@ def closure_of(pp_path, caseDir, std, AQ):
     # tables, not per-pair records: the model reads them through the case-local
     # resolver (UNIFAC.cpp), so any package selecting UNIFAC -- v2 `activityModel
     # { model UNIFAC; }` or v1 `activity.UNIFAC` -- must carry BOTH in its closure.
-    if re.search(r'\bmodel\s+UNIFAC\s*;', t_nc) or re.search(r'\bactivity\.UNIFAC\b', t_nc):
+    unifac_texts = [t_nc]
+    # per-op thermo{} overrides in the propsDict select models the PACKAGE
+    # never names (compare_vle's txy_unifac) -- their closure needs rides too.
+    props_dict = Path(caseDir) / "system" / "propsDict"
+    if props_dict.exists():
+        pt = props_dict.read_text()
+        pt = re.sub(r'/\*.*?\*/', '', pt, flags=re.S)
+        pt = re.sub(r'(^|\s)//.*$', '', pt, flags=re.M)
+        unifac_texts.append(pt)
+    if any(re.search(r'\bmodel\s+UNIFAC\s*;', x)
+           or re.search(r'\bactivity\.UNIFAC\b', x) for x in unifac_texts):
         want("parameters/UNIFAC/groups.dat")
         want("parameters/UNIFAC/interactions.dat")
 

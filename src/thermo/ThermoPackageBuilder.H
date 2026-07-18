@@ -50,11 +50,15 @@ class Database;
 class ThermoPackageBuilder
 {
 public:
-    // v2 contract (spike 2026-07-17): translate a thermophysicalPropertySystem
-    // dict (physically-decomposed blocks) into the v1 in-memory manifest the
-    // assembly consumes.  STRICT: declared routes are verified against the
-    // implemented ones; unknown formulations/routes refuse loudly.  Prints the
-    // resolved plan ([v2 plan]).
+    // THE v2 reader (consolidated 2026-07-18: the v1 propertyDict grammar is
+    // RETIRED -- thermophysicalPropertySystem is the ONE case grammar).  Reads
+    // the physically-decomposed blocks (equilibrium / aqueousProperties /
+    // caloric / transport / pureFluids) into the in-memory assembly forms:
+    // the FLAT dict for plain worlds (readFromDict), the manifest for the
+    // worlds that need the builder (declared pair files, electrolyte, Henry).
+    // STRICT: declared routes are verified against the implemented ones;
+    // unknown formulations/routes refuse loudly.  Prints the resolved plan
+    // ([v2 plan]).  The name keeps its history; the role is permanent.
     static DictPtr translateV2(const DictPtr& v2);
 
     // Assemble a ThermoPackage from a parsed propertyPackage record.

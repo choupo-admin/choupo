@@ -226,9 +226,14 @@ try
     // (the v1 home).  Mirrors choupoSolve/choupoProps; translation + content
     // routing happen at the build site below, after verbosity gates the
     // announce chorus.
-    const std::string pkgFile =
-        fs::exists("constant/thermoPhysPropDict")
-            ? "constant/thermoPhysPropDict" : "constant/propertyDict";
+    if (!fs::exists("constant/thermoPhysPropDict")
+        && fs::exists("constant/propertyDict"))
+        throw std::runtime_error(
+            "the v1 `constant/propertyDict` grammar is RETIRED (the 2026-07-18"
+                " consolidation): this case still carries one.  Migrate it --"
+                " bin/curate/migrate_thermoPhysProp.py (mechanical, golden-safe)"
+                " -- then re-run.");
+    const std::string pkgFile = "constant/thermoPhysPropDict";
     auto thermoDict    = Dictionary::fromFile(pkgFile);
 
     DictPtr reactionsDict;

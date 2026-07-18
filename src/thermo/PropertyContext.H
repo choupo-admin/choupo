@@ -126,7 +126,12 @@ inline DictPtr resolvePropertyContext(const std::string&      constantDir,
 {
     namespace fs = std::filesystem;
     std::string path = constantDir + "/thermoPhysPropDict";
-    if (!fs::exists(path)) path = constantDir + "/propertyDict";
+    if (!fs::exists(path) && fs::exists(constantDir + "/propertyDict"))
+        throw std::runtime_error(
+            "the v1 `constant/propertyDict` grammar is RETIRED (the 2026-07-18"
+                " consolidation): this case still carries one.  Migrate it --"
+                " bin/curate/migrate_thermoPhysProp.py (mechanical, golden-safe)"
+                " -- then re-run.");
     const std::string canon = fs::weakly_canonical(path).string();
     if (!visited.insert(canon).second)
         throw std::runtime_error("Choupo: property-context `inherits` CYCLE at "

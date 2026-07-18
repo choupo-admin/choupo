@@ -36,8 +36,12 @@ inline DictPtr caseDictionary()
                 return ThermoPackageBuilder::translateV2(d);
             return d;
         }
-        fs::path cand = p / "constant" / "propertyDict";
-        if (fs::exists(cand)) return Dictionary::fromFile(cand.string());
+        if (fs::exists(p / "constant" / "propertyDict"))
+            throw std::runtime_error(
+                "the v1 `constant/propertyDict` grammar is RETIRED (the"
+                " 2026-07-18 consolidation): this case still carries one."
+                "  Migrate it -- bin/curate/migrate_thermoPhysProp.py"
+                " (mechanical, golden-safe) -- then re-run.");
         if (!p.has_parent_path()) break;
         p = p.parent_path();
     }

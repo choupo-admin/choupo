@@ -1064,6 +1064,26 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
                      + "; vapour " + vap + ".");
             return carry(flat);
         }
+        // CONSOLIDATION (the ratified endgame): a plain gamma-phi system with
+        // NO file-declared pairs resolves to the FLAT shape -- the SAME dict
+        // the v1 reader consumed, so the thermoDict channel stays populated
+        // and every per-op / per-unit thermo{} merge works identically.  The
+        // manifest/builder path is reserved for what actually NEEDS it
+        // (declared pair files, electrolyte worlds, Henry solutions).
+        if (!pairsOut)
+        {
+            std::ostringstream ft;
+            ft << "components ( ";
+            for (const auto& c : v2->lookupWordList("components"))
+                ft << c << " ";
+            ft << ");\nactivityModel { model " << model << "; }\n"
+               << "equationOfState { model " << vap << "; }\n";
+            auto flat = Dictionary::fromString(ft.str(),
+                                               "translateV2.flatGammaPhi");
+            announce("equilibrium gammaPhi: liquid activity." + model
+                     + "; vapour " + vap + " (flat assembly).");
+            return carry(flat);
+        }
         pm->insert("liquid", "activity." + model);
         pm->insert("vapour", vap == "idealGas" ? std::string("builtin.idealGas")
                                                : "eos." + vap);

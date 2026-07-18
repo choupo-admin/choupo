@@ -1343,8 +1343,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                     // G7: both grammar names anchor a property context (v2
                     // first is resolvePropertyContext's job; HERE either name
                     // marks the owning node).
-                    if (std::filesystem::exists(base + "/constant/propertyDict")
-                        || std::filesystem::exists(base + "/constant/thermoPhysPropDict"))
+                    if (std::filesystem::exists(base + "/constant/thermoPhysPropDict"))
                     { u->insert("propertyContextBase", std::string(base + "/constant")); break; }
                     const auto slash = base.rfind('/');
                     if (slash == std::string::npos) break;

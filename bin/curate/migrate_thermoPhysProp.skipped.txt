@@ -1,14 +1,2 @@
 # migrate_thermoPhysProp.py -- skipped cases (STRICT T1+T2+diluteSolution cohorts, 2026-07-17)
-# converted 1, skipped 12
-tutorials/plant/lithiumBrinePlant/constant/propertyDict	case contains nested constant/propertyDict files (inherits/walk-up chains read the v1 name)
-tutorials/plant/lithiumBrinePlant/sectors/BRINE/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
-tutorials/plant/lithiumBrinePlant/sectors/CARBONATION/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
-tutorials/plant/lithiumBrinePlant/sectors/EXTRACTION/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
-tutorials/plant/lithiumBrinePlant/sectors/FINISHING/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
-tutorials/plant/lithiumBrinePlant/sectors/HOTAIR/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
-tutorials/props/compare/compare_transport_water/constant/propertyDict	propsDict op carries an inline thermo{} override (per-op merge exists on the flat path only -- no builder/manifest equivalent)
-tutorials/props/scan/binary01_lle_water_nbutanol/constant/propertyDict	constant/thermoPhysPropDict already exists
-tutorials/steady/crystallisation/Crystallizer09chatGPT/constant/propertyDict	case contains nested constant/propertyDict files (inherits/walk-up chains read the v1 name)
-tutorials/steady/crystallisation/Crystallizer09chatGPT/unitOperations/recovery/constant/propertyDict	no sibling system/controlDict (nested unit dict; the Flowsheet walk-up reads the v1 name)
-tutorials/steady/flash/bubbleT02_uniquac_ethanol_water/constant/propertyDict	constant/thermoPhysPropDict already exists
-tutorials/steady/thermo/perUnitThermo01_srk_nrtl/constant/propertyDict	inline thermo{} override without activityModel (inherits it from the flat global; the builder path would throw 'missing entry activityModel')
+# converted 2, skipped 0
