@@ -1211,15 +1211,29 @@ int IsothermalFlash::solve(const DictPtr& dict,
 
     // ---- KPIs ----------------------------------------------------------
     kpis_.clear();
+    const bool isLL = (opts.phaseSet == PhaseSet::LL);
     kpis_["T"]         = in.T;
     kpis_["P"]         = in.P;
     kpis_["F_in"]      = in.F;
-    kpis_["V_over_F"]  = sol.V_over_F;
-    if (Q_valid)                          // duty: + heating, - cooling [W]
+    // LL vocabulary (Codex tutorial-audit P0.2): the second LIQUID is not a
+    // vapour -- V_over_F is reserved for a real vapour fraction; an LL split
+    // publishes betaFraction (= L_beta/F).  Same number, honest name.
+    if (isLL) kpis_["betaFraction"] = sol.V_over_F;
+    else      kpis_["V_over_F"]     = sol.V_over_F;
+    if (Q_valid && !isLL)                 // duty: + heating, - cooling [W]
     {
+        // LL: two Hliquid calls WITHOUT an excess-enthalpy route coherent
+        // with the activity model make Q=0 a non-conclusion -- the duty is
+        // UNAVAILABLE for an LL split until that route exists (announced),
+        // never a fake zero.
         kpis_["Q"]    = Q_W;
         kpis_["Q_kW"] = Q_W / 1000.0;
     }
+    else if (isLL && opts.verbosity >= 2)
+        std::cout << "  [duty] LL split: duty UNAVAILABLE -- the liquid"
+                     " enthalpy carries no excess-of-mixing term coherent"
+                     " with the activity model, so a numeric Q would be a"
+                     " non-conclusion (not published).\n";
     kpis_["F_alpha"]   = in.F * (1.0 - sol.V_over_F);
     kpis_["F_beta"]    = in.F * sol.V_over_F;
     if (sol.threePhase)
@@ -1246,12 +1260,29 @@ void printFlashResult(const FlashSolution& sol,
               << "   (CUMULATIVE Rachford-Rice Newton steps across ALL composition-outer passes; only the [outer 0] table prints at verbosity 3)\n";
     std::cout << "  Final |g(V)|:  " << std::scientific << std::setprecision(3)
               << sol.residual << "\n";
-    std::cout << "  V/F:           " << std::fixed << std::setprecision(6)
-              << sol.V_over_F << "\n";
-    std::cout << "  L/F:           " << (1.0 - sol.V_over_F) << "\n";
-    std::cout << "  Vapor flow V:  " << (in.F * sol.V_over_F * 3600.0) << " kmol/h\n";
-    std::cout << "  Liquid flow L: " << (in.F * (1.0 - sol.V_over_F) * 3600.0)
-              << " kmol/h\n";
+    // LL split: the beta phase is a LIQUID -- never print it as "Vapor"
+    // (Codex P0.2: V/F is reserved for a real vapour fraction).
+    const bool llSplit = sol.regime.find("liquid (LL") != std::string::npos
+                      || sol.regime.find("two-phase liquid") != std::string::npos;
+    if (llSplit)
+    {
+        std::cout << "  beta (Lb/F):   " << std::fixed << std::setprecision(6)
+                  << sol.V_over_F << "\n";
+        std::cout << "  alpha (La/F):  " << (1.0 - sol.V_over_F) << "\n";
+        std::cout << "  L_beta flow:   " << (in.F * sol.V_over_F * 3600.0)
+                  << " kmol/h\n";
+        std::cout << "  L_alpha flow:  " << (in.F * (1.0 - sol.V_over_F) * 3600.0)
+                  << " kmol/h\n";
+    }
+    else
+    {
+        std::cout << "  V/F:           " << std::fixed << std::setprecision(6)
+                  << sol.V_over_F << "\n";
+        std::cout << "  L/F:           " << (1.0 - sol.V_over_F) << "\n";
+        std::cout << "  Vapor flow V:  " << (in.F * sol.V_over_F * 3600.0) << " kmol/h\n";
+        std::cout << "  Liquid flow L: " << (in.F * (1.0 - sol.V_over_F) * 3600.0)
+                  << " kmol/h\n";
+    }
 
     std::cout << "\n  Component         z          x          y          K\n";
     std::cout <<   "  -----------------------------------------------------------\n";

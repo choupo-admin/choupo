@@ -8,5 +8,5 @@ kpi     decanter01             F_beta           0.0114431411907    1e-4
 kpi     decanter01             F_in             0.0277777777778    1e-4
 kpi     decanter01             P                101300             1e-4
 kpi     decanter01             T                320                1e-4
-kpi     decanter01             V_over_F         0.411953082867     1e-4
+kpi     decanter01             betaFraction         0.411953082867     1e-4
 kpi     decanter01             phaseSet         1                  1e-4
