@@ -32,8 +32,9 @@ esterification_etac_exo
     kinetics
     {
         type   Arrhenius;
-        A      1.0e8;
-        Ea     7.0e4;
+        A      1.0e8;        // 1/s -- ILLUSTRATIVE pseudo-first-order Arrhenius
+                               // (a mass-conserving TEST reaction, not a fitted esterification rate)
+        Ea     7.0e4;        // J/mol (70 kJ/mol)
     }
 
     // Heat of reaction: from the species' standardThermochemistry (elements datum) --
