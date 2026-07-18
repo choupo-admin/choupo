@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
-description   "Multi-stream heat exchanger (MHeatX): 2 hot + 1 cold, balance closes";
+description   "Multi-stream heat exchanger: 2 hot + 1 cold, balance closes";
 
 verbosity     3;
 

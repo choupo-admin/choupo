@@ -10,7 +10,7 @@
   mheatx01_two_hot_one_cold
   =========================
 
-  Multi-stream heat exchanger (the commercial detailed-rating tools MHeatX analogue): TWO hot water
+  Multi-stream heat exchanger (the commercial multi-stream detailed-rating analogue): TWO hot water
   streams are cooled by ONE cold water stream inside a single adiabatic
   shell --- the canonical multi-stream heat-recovery problem.
 
