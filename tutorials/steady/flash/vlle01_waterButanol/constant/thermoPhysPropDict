@@ -23,50 +23,29 @@ components       ( water  nButanol );
 equilibrium
 {
     formulation gammaGamma;         // 2+ liquid phases, one gamma surface each
+    liquid
+    {
+        activityModel
+        {
+            model UNIQUAC;
+            binaryParameters {
+                nButanol-water {
+                    i nButanol;
+                    j water;
+                    a_ij 155.31;
+                    b_ij 1.0822;
+                    c_ij -43.711e-4;
+                    a_ji -579.36;
+                    b_ji 2.7517;
+                    c_ji -6.7700e-4;
+                }
+            }
+        }
+    }
 
     liquidPhases
     (
-        {
-            name waterRich;
-            activityModel
-            {
-                model UNIQUAC;
-                binaryParameters
-                {
-                nButanol-water
-                {
-                    i nButanol;
-                    j water;
-                    a_ij 155.31;
-                    b_ij 1.0822;
-                    c_ij -43.711e-4;
-                    a_ji -579.36;
-                    b_ji 2.7517;
-                    c_ji -6.7700e-4;
-                }
-                }
-            }
-        }
-        {
-            name butanolRich;
-            activityModel
-            {
-                model UNIQUAC;
-                binaryParameters
-                {
-                nButanol-water
-                {
-                    i nButanol;
-                    j water;
-                    a_ij 155.31;
-                    b_ij 1.0822;
-                    c_ij -43.711e-4;
-                    a_ji -579.36;
-                    b_ji 2.7517;
-                    c_ji -6.7700e-4;
-                }
-                }
-            }
-        }
+        { name waterRich; }
+        { name butanolRich; }
     );
 }

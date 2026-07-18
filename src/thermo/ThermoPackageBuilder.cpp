@@ -1099,8 +1099,60 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
     if (form == "gammaGamma")
     {
         if (!eq->found("liquidPhases"))
-            absent("equilibrium.liquidPhases ( { name; activityModel{} } ... )",
-                   "v2 gammaGamma");
+            absent("equilibrium.liquidPhases ( { name } ... )", "v2 gammaGamma");
+        // A SINGLE fact in a SINGLE home (Codex gammaGamma-audit 2026-07-18):
+        // coexisting liquid phases share ONE activity model + pair set, declared
+        // at equilibrium.liquid; a phase overrides only when its model is
+        // intentionally different.  A pair is `source "file"` (curated, ONE
+        // constant/parameters/<MODEL>/<pair>.dat) XOR inline coefficients
+        // (artificial audit / fitting cases, which must say so).
+        const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
+        auto emitPairs = [&](const DictPtr& am, std::ostringstream& ft)
+        {
+            ft << "            model " << am->lookupWord("model") << ";\n";
+            if (!am->found("binaryParameters")) return;
+            ft << "            pairs\n            (\n";
+            auto bp = am->subDict("binaryParameters");
+            for (const auto& pr : bp->keys())
+            {
+                auto pd = bp->subDict(pr);
+                DictPtr coef = pd;
+                if (pd->found("source"))
+                {
+                    // resolve the ONE curated pair file, emit its coefficients
+                    // inline into the flat form (byte-identical to the numbers,
+                    // authored ONCE in the pair .dat with its provenance).
+                    auto rec = loadRec(resolveDeclared(repoRoot,
+                                       pd->lookupWord("source")),
+                                       "gammaGamma pair " + pr);
+                    coef = rec->found("parameters") ? rec->subDict("parameters")
+                                                    : rec;
+                }
+                ft << "                {\n";
+                for (const auto& k : coef->keys())
+                {
+                    const EntryValue& ev = coef->entryValue(k);
+                    if (!std::holds_alternative<scalar>(ev)
+                        && !std::holds_alternative<std::string>(ev))
+                        continue;             // skip nested provenance blocks
+                    ft << "                    " << k << " ";
+                    if (std::holds_alternative<scalar>(ev))
+                    {
+                        std::ostringstream v;
+                        v << std::setprecision(17) << std::get<scalar>(ev);
+                        ft << v.str();
+                    }
+                    else ft << std::get<std::string>(ev);
+                    ft << ";\n";
+                }
+                ft << "                }\n";
+            }
+            ft << "            );\n";
+        };
+        DictPtr shared;
+        if (eq->found("liquid") && eq->subDict("liquid")->found("activityModel"))
+            shared = eq->subDict("liquid")->subDict("activityModel");
+
         std::ostringstream ft;
         ft << "components ( ";
         for (const auto& c : v2->lookupWordList("components")) ft << c << " ";
@@ -1111,51 +1163,16 @@ DictPtr ThermoPackageBuilder::translateV2(const DictPtr& v2)
         {
             const std::string pname = ph->lookupWord("name");
             phaseNames += (phaseNames.empty() ? "" : ", ") + pname;
-            auto am = ph->subDict("activityModel");
-            const std::string model = am->lookupWord("model");
+            DictPtr am = ph->found("activityModel") ? ph->subDict("activityModel")
+                                                     : shared;
+            if (!am)
+                throw std::runtime_error("thermophysicalPropertySystem:"
+                    " gammaGamma phase '" + pname + "' has no activityModel and"
+                    " equilibrium.liquid declares no shared one.");
             ft << "    {\n        name " << pname << ";\n"
                << "        type liquid;\n"
-               << "        activity\n        {\n"
-               << "            model " << model << ";\n";
-            if (am->found("binaryParameters"))
-            {
-                ft << "            pairs\n            (\n";
-                auto bp = am->subDict("binaryParameters");
-                for (const auto& pr : bp->keys())
-                {
-                    auto pd = bp->subDict(pr);
-                    if (pd->found("source"))
-                        throw std::runtime_error("thermophysicalPropertySystem:"
-                            " gammaGamma phase '" + pname + "' pair '" + pr
-                            + "' declares `source` -- file-declared pairs"
-                            " inside gammaGamma phases are not wired yet;"
-                            " declare the coefficients inline (or leave the"
-                            " case v1 and name the gap).");
-                    ft << "                {\n";
-                    for (const auto& k : pd->keys())
-                    {
-                        const EntryValue& ev = pd->entryValue(k);
-                        ft << "                    " << k << " ";
-                        if (std::holds_alternative<scalar>(ev))
-                        {
-                            std::ostringstream v;
-                            v << std::setprecision(17)
-                              << std::get<scalar>(ev);
-                            ft << v.str();
-                        }
-                        else if (std::holds_alternative<std::string>(ev))
-                            ft << std::get<std::string>(ev);
-                        else
-                            throw std::runtime_error(
-                                "thermophysicalPropertySystem: gammaGamma"
-                                " inline pair '" + pr + "' key '" + k
-                                + "' is neither scalar nor word.");
-                        ft << ";\n";
-                    }
-                    ft << "                }\n";
-                }
-                ft << "            );\n";
-            }
+               << "        activity\n        {\n";
+            emitPairs(am, ft);
             ft << "        }\n    }\n";
         }
         if (eq->found("vapour"))

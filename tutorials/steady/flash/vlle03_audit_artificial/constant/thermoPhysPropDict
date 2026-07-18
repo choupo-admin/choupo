@@ -23,89 +23,49 @@ components       ( compA  compB  compC );
 equilibrium
 {
     formulation gammaGamma;         // 2+ liquid phases, one gamma surface each
+    liquid
+    {
+        activityModel
+        {
+            // ARTIFICIAL audit parameters (illustrative miscibility,
+            // not a real fitted system) -- see the header.
+            model NRTL;
+            binaryParameters {
+                compA-compB {
+                    i compA;
+                    j compB;
+                    a_ij 0.0;
+                    b_ij 1750.0;
+                    a_ji 0.0;
+                    b_ji 1750.0;
+                    alpha 0.20;
+                }
+                compA-compC {
+                    i compA;
+                    j compC;
+                    a_ij 0.0;
+                    b_ij 0.0;
+                    a_ji 0.0;
+                    b_ji 0.0;
+                    alpha 0.30;
+                }
+                compB-compC {
+                    i compB;
+                    j compC;
+                    a_ij 0.0;
+                    b_ij 0.0;
+                    a_ji 0.0;
+                    b_ji 0.0;
+                    alpha 0.30;
+                }
+            }
+        }
+    }
 
     liquidPhases
     (
-        {
-            name aqueous;
-            activityModel
-            {
-                model NRTL;
-                binaryParameters
-                {
-                compA-compB
-                {
-                    i compA;
-                    j compB;
-                    a_ij 0.0;
-                    b_ij 1750.0;
-                    a_ji 0.0;
-                    b_ji 1750.0;
-                    alpha 0.20;
-                }
-                compA-compC
-                {
-                    i compA;
-                    j compC;
-                    a_ij 0.0;
-                    b_ij 0.0;
-                    a_ji 0.0;
-                    b_ji 0.0;
-                    alpha 0.30;
-                }
-                compB-compC
-                {
-                    i compB;
-                    j compC;
-                    a_ij 0.0;
-                    b_ij 0.0;
-                    a_ji 0.0;
-                    b_ji 0.0;
-                    alpha 0.30;
-                }
-                }
-            }
-        }
-        {
-            name organic;
-            activityModel
-            {
-                model NRTL;
-                binaryParameters
-                {
-                compA-compB
-                {
-                    i compA;
-                    j compB;
-                    a_ij 0.0;
-                    b_ij 1750.0;
-                    a_ji 0.0;
-                    b_ji 1750.0;
-                    alpha 0.20;
-                }
-                compA-compC
-                {
-                    i compA;
-                    j compC;
-                    a_ij 0.0;
-                    b_ij 0.0;
-                    a_ji 0.0;
-                    b_ji 0.0;
-                    alpha 0.30;
-                }
-                compB-compC
-                {
-                    i compB;
-                    j compC;
-                    a_ij 0.0;
-                    b_ij 0.0;
-                    a_ji 0.0;
-                    b_ji 0.0;
-                    alpha 0.30;
-                }
-                }
-            }
-        }
+        { name aqueous; }
+        { name organic; }
     );
 
     vapour
