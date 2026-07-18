@@ -1,7 +1,0 @@
-// [imported] origin "data/standards/chemistry/FeHSO4p.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species FeHSO4p; ion "FeHSO4+"; z +1; masters ( { ion Fe; nu 1; } { ion H; nu 1; } { ion SO4; nu 1; } );
-      logK25 3.068; source "USGS PHREEQC phreeqc.dat (public domain)";
-

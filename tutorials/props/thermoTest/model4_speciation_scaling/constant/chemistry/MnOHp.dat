@@ -1,7 +1,0 @@
-// [imported] origin "data/standards/chemistry/MnOHp.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species MnOHp; ion "MnOH+"; z +1; masters ( { ion Mn; nu 1; } { ion H; nu -1; } ); nuWater 1;
-      logK25 -10.59; dH 60249.6; source "USGS PHREEQC phreeqc.dat (public domain)";
-

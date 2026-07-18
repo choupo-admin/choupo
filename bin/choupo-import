@@ -331,6 +331,7 @@ def closure_of(pp_path, caseDir, std, AQ):
     ions = set()
     wantAllSpecies = False
     solute_comps = set()
+    nonlocal_flags = {"speciates": False}
 
     def want(rel):
         src = std / rel
@@ -340,32 +341,73 @@ def closure_of(pp_path, caseDir, std, AQ):
             # conflict machinery's job (rule 1), never a silent skip.
             recs[rel] = src
 
-    def want_speciation_closure():
-        # T8 (aqueousProperties): the SpeciationSolver scans the WHOLE
-        # chemistry/ home (recordType-filtered) and resolves master ions by
-        # name -- the sealed copy carries the full family sets (byte-identical
-        # network) + the full species catalogue.
-        nonlocal wantAllSpecies
+    def reachable_speciation_closure(seed_ions, has_exchange):
+        # (Codex seal-audit 2026-07-18) the closure is the REACHABLE physical
+        # subgraph, never the whole databank: fixed-point over the chemistry
+        # network -- a reaction activates when every master it needs is
+        # already reachable, and its species then extends the frontier.  The
+        # runtime scans DIRECTORIES, so a sealed case whose chemistry/ carries
+        # exactly the reachable records resolves the identical network (the
+        # solver's own masters-present filter would have skipped the rest
+        # after opening them).  Returns the reachable name set.
         chem = std / "chemistry"
+        entries = []                  # (fname, kind, product, masters, sites)
         if chem.is_dir():
             for f in sorted(chem.glob("*.dat")):
-                m = re.search(r'\brecordType\s+([A-Za-z]+)\s*;', f.read_text())
-                if m and m.group(1) in SPECIATION_KINDS:
-                    want("chemistry/" + f.name)
-        wantAllSpecies = True
+                txt = f.read_text()
+                m = re.search(r'\brecordType\s+([A-Za-z]+)\s*;', txt)
+                if not m or m.group(1) not in SPECIATION_KINDS:
+                    continue
+                kind = m.group(1)
+                if kind == "gasLiquidEquilibrium":
+                    g = re.search(r'\bgas\s+([A-Za-z0-9_]+)\s*;', txt)
+                    d = re.search(r'\bdissolved\s+"?([A-Za-z0-9_]+)"?\s*;', txt)
+                    entries.append((f.name, kind,
+                                    d.group(1) if d else None,
+                                    {g.group(1)} if g else set(), set()))
+                    continue
+                sp = re.search(r'\bspecies\s+([A-Za-z0-9_]+)\s*;', txt)
+                masters = set(re.findall(r'\{\s*ion\s+([A-Za-z0-9_]+)\s*;', txt))
+                sites = set(re.findall(r'\{\s*site\s+([A-Za-z0-9_]+)\s*;', txt))
+                entries.append((f.name, kind, sp.group(1) if sp else None,
+                                masters, sites))
+        reach = set(seed_ions) | {"H", "OH"}   # the solver always carries both
+        activated = {}                          # fname -> kind
+        changed = True
+        while changed:
+            changed = False
+            for fname, kind, product, masters, sites in entries:
+                if fname in activated:
+                    continue
+                if kind == "gasLiquidEquilibrium":
+                    ok = bool(masters & reach)          # the GAS name seeded
+                elif kind == "ionExchangeEquilibrium":
+                    ok = has_exchange and masters <= reach
+                else:
+                    ok = masters <= reach and (not sites or has_exchange)
+                if ok:
+                    activated[fname] = kind
+                    if product:
+                        if product not in reach:
+                            reach.add(product); changed = True
+        for fname in sorted(activated):
+            want("chemistry/" + fname)
+        return reach
 
-    def want_all_minerals():
-        # The SpeciationSolver's saturation-index sweep scans EVERY component
-        # for a solidPhases{} block and reports SI only for the minerals whose
-        # ions are all present in the solved solution (self-filtering).  A
-        # sealed case reads that set from constant/components/, so the seal must
-        # carry every mineral-bearing component -- the extra ones self-filter to
-        # nothing, so the report is byte-identical to the catalogue sweep.
+    def want_reachable_minerals(reach):
+        # SI sweep: only the minerals whose DISSOLUTION masters are all
+        # reachable can ever report -- the rest self-filtered to nothing
+        # after being opened; now they are simply not sealed.
         comps = std / "components"
-        if comps.is_dir():
-            for f in sorted(comps.glob("*.dat")):
-                if "solidPhases" in f.read_text():
-                    want("components/" + f.name)
+        if not comps.is_dir():
+            return
+        for f in sorted(comps.glob("*.dat")):
+            txt = f.read_text()
+            if "solidPhases" not in txt:
+                continue
+            need = set(re.findall(r'\{\s*ion\s+([A-Za-z0-9_]+)\s*;', txt))
+            if need and need <= reach:
+                want("components/" + f.name)
 
     def harvest_v2(text):
         # (1) every declared parameter record: `source "data/standards/<rel>";`
@@ -396,9 +438,10 @@ def closure_of(pp_path, caseDir, std, AQ):
             for salt in (words(sb) if sb else []):
                 want("chemistry/salts/" + salt + ".dat")
                 want("phases/solid/" + salt + ".dat")
-        # (4) T8: the aqueous-speciation surface (speciate/scalingScan ops)
+        # (4) T8: the aqueous-speciation surface -- mark it; the REACHABLE
+        #     closure is computed once, with the propsDict seeds (below).
         if block(text, "aqueousProperties") is not None:
-            want_speciation_closure()
+            nonlocal_flags["speciates"] = True
 
     def harvest_v1(text):
         # Method / chemistry / parameter records declared by a v1 block --
@@ -564,11 +607,56 @@ def closure_of(pp_path, caseDir, std, AQ):
         ft = re.sub(r'(^|\s)//.*$', '', ft, flags=re.M)
         if re.search(r'\bscaling\s*\{', ft):
             speciates = True
-            break
+        # an ionExchanger unit runs the exchange network on the module bulk
+        if re.search(r'\bionExchanger\b|\bresin\s+[A-Za-z0-9_]+\s*;', ft):
+            speciates = True
+            nonlocal_flags["exchange"] = True
 
-    if speciates:
-        want_speciation_closure()          # chemistry/ whole + wantAllSpecies
-        want_all_minerals()                # mineral-bearing components (self-filter)
+    if speciates or nonlocal_flags["speciates"]:
+        # ---- SEEDS (Codex seal-audit): what the case actually introduces ----
+        seeds = set(ions)                          # flowsheet/single-salt ions
+        has_exchange = "exchange" in op_types \
+                       or nonlocal_flags.get("exchange", False)
+        # composition { NaCl 2.0 mol/kg; } -> the component's ion map
+        for bname in ("composition", "totals", "analyticalTotals"):
+            for bm in re.finditer(r'\b%s\s*\{' % bname, props_ops):
+                body = block(props_ops[bm.start():], bname) or ""
+                # every `<name> <number>` entry -- multi-entry lines included
+                for key in re.findall(r'\b([A-Za-z][A-Za-z0-9_+\-]*)\s+'
+                                      r'[-+]?[0-9.]', body):
+                    if key in AQ:
+                        seeds.add(key)
+                    else:
+                        csrc = std / "components" / (key + ".dat")
+                        loc = walk_up_local("components/" + key + ".dat")
+                        for ct in (read(csrc) or "",
+                                   (read(loc) or "") if loc else ""):
+                            d2 = block(ct, "speciesMap") \
+                                 or block(ct, "dissociatesTo")
+                            if d2:
+                                seeds.update(w for w in words(d2)
+                                             if not w.isdigit())
+        # atmosphere { pCO2 ...; O2 ...; } -> gas names (pX -> X)
+        for am in re.finditer(r'\batmosphere\s*\{', props_ops):
+            body = block(props_ops[am.start():], "atmosphere") or ""
+            for key in re.findall(r'\bp?([A-Za-z][A-Za-z0-9_]*)\s+'
+                                  r'[-+]?[0-9.]', body):
+                seeds.add(key)
+        # diagSpecies ( ... ) may name computed species directly
+        for dm in re.finditer(r'\bdiagSpecies\s*\(', props_ops):
+            body = block(props_ops[dm.start():], "diagSpecies") or ""
+            seeds.update(words(body))
+        # exchange resin: the site + the resin's form ion enter the network
+        for xm in re.finditer(r'\bresin\s+([A-Za-z0-9_]+)\s*;', props_ops):
+            has_exchange = True
+        if has_exchange:
+            seeds.add("X")                       # the exchange site
+        # a flowsheet scaling{} audit runs on the module bulk: the package's
+        # ion basis is the seed set (already in `ions` via speciesMap union)
+        reach = reachable_speciation_closure(seeds, has_exchange)
+        ions |= {r for r in reach if r in AQ}   # species catalogue = reachable
+        want_reachable_minerals(reach)
+        nonlocal_flags["reach"] = reach
 
     # cation-anion pair records by CHARGE (the aqueous catalogue is the
     # authority); existence-guarded, so only real pair records are sealed.
@@ -589,20 +677,43 @@ def closure_of(pp_path, caseDir, std, AQ):
     # aqueousSpecies list -- they are chemistry-network species -- so an ion-set
     # enumeration would silently drop their lambda / zeta terms.  The runtime
     # resolves each term through the sealed tier; an unused term self-filters.
-    if wantAllSpecies:
+    # Pitzer interaction records: ONLY the selected model's family and ONLY
+    # records whose EVERY participant is reachable (theta/psi/lambda/zeta by
+    # filename tokens -- the neutral participants CO2aq/CaSO4aq are network
+    # species, present in `reach` when their reactions activated).  Davies
+    # seals NO interaction family at all (Codex seal-audit).
+    reach = nonlocal_flags.get("reach", set())
+    models_txt = props_ops + " " + t_nc
+    uses_hmw = bool(re.search(r'\bpitzerHMW\b', models_txt)) \
+               or bool(re.search(r'\bPitzerHMW\b', models_txt))
+    # verifyGlobal (the DEDICATED validation case): its declared job is the
+    # FULL-catalogue single-salt sweep, so its seal deliberately carries the
+    # whole Pitzer family -- the one case where "all pairs" is the physics.
+    verify_global = bool(re.search(r'\bverifyGlobal\s+true\s*;', props_ops))
+    if reach and uses_hmw:
         for sub in ("pairs", "theta", "psi", "lambda", "zeta"):
             dpath = std / "parameters" / "Pitzer" / sub
-            if dpath.is_dir():
-                for f in sorted(dpath.glob("*.dat")):
+            if not dpath.is_dir():
+                continue
+            for f in sorted(dpath.glob("*.dat")):
+                toks = set(re.findall(r'[A-Za-z0-9]+', f.stem))
+                if verify_global or toks <= reach:
                     want("parameters/Pitzer/" + sub + "/" + f.name)
-        enrtl_dir = std / "parameters" / "eNRTL"
-        if enrtl_dir.is_dir():
-            for f in sorted(enrtl_dir.glob("*.dat")):
-                want("parameters/eNRTL/" + f.name)
+        if verify_global:
+            # the sweep resolves every pair's ion charges from the species
+            # catalogue -- the dedicated case seals it whole
+            ions.update(AQ.keys())
 
-    # the ion Cp(T) tier (Criss-Cobble nodes) rides with any electrolyte
-    # closure -- a hidden catalogue must not silently degrade Cp(T).
-    if ions or wantAllSpecies:
+    # the ion Cp(T) tier (Criss-Cobble nodes): consumed by the ENTHALPY route
+    # of an electrolyte WORLD (buildElectrolyte ion Cp), never by the
+    # speciation ops -- seal it only when a flowsheet/single-salt electrolyte
+    # world named its ions (Codex seal-audit: no consumer, no record).
+    uses_electrolyte_world = bool(
+        re.search(r'\belectrolyte\.[A-Za-z]+', t_nc)
+        or re.search(r'\bformulation\s+electrolyteGammaPhi\s*;', t_nc)
+        or re.search(r'\b(?:pitzerActivity|electrolyteActivity|enrtlMultiSalt|'
+                     r'enrtlMixedSolvent)\b', props_ops))
+    if ions and uses_electrolyte_world:
         want("parameters/electrolyte/crissCobble.dat")
     return recs, ions, wantAllSpecies
 

@@ -1,7 +1,0 @@
-// [imported] origin "data/standards/chemistry/CO2aq.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species CO2aq; ion "CO2"; z 0; masters ( { ion H; nu 1; } { ion HCO3; nu 1; } ); nuWater -1;
-      logK25 6.352; dH -9108.6; analytic ( 356.3094 0.06091964 -21834.37 -126.8339 1684915 ); source "USGS PHREEQC phreeqc.dat (public domain)";
-

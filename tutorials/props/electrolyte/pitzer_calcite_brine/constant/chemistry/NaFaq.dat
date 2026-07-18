@@ -1,7 +1,0 @@
-// [imported] origin "data/standards/chemistry/NaFaq.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species NaFaq; ion "NaF"; z 0; masters ( { ion Na; nu 1; } { ion F; nu 1; } );
-      logK25 -2.38; dH 24500; analytic ( -5 0.01159 -250 ); source "USGS PHREEQC phreeqc.dat (public domain)";
-

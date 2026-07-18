@@ -1,7 +1,0 @@
-// [imported] origin "data/standards/chemistry/MnOH3m.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species MnOH3m; ion "Mn(OH)3-"; z -1; masters ( { ion Mn; nu 1; } { ion H; nu -3; } ); nuWater 3;
-      logK25 -34.8; source "USGS PHREEQC phreeqc.dat (public domain)";
-

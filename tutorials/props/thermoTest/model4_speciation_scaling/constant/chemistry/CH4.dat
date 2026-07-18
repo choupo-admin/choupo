@@ -1,7 +1,0 @@
-// [imported] origin "data/standards/chemistry/CH4.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
-recordType gasLiquidEquilibrium;
-schemaVersion 1;
-
-gas CH4; reaction "CH4(g) = CH4"; dissolved "CH4";
-      logK25 -2.8; analytic ( 10.44 -0.00765 -6669 0 1014000 ); Tc 190.6; Pc 45.4; omega 0.008; source "USGS PHREEQC phreeqc.dat (public domain); lit: CH4 solubilities 25 - 100 C";
-

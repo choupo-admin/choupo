@@ -1,7 +1,0 @@
-// [imported] origin "data/standards/chemistry/CaX2.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
-recordType ionExchangeEquilibrium;
-schemaVersion 1;
-
-species CaX2; masters ( { ion Ca; nu 1; } { site X; nu 2; } );
-      logK25 0.8; dH 7200; source "USGS PHREEQC phreeqc.dat (public domain); lit: Van Bladel & Gheyl, 1980";
-

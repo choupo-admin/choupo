@@ -1,6 +1,0 @@
-// [imported] origin "data/standards/chemistry/H2PO4.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species H2PO4; ion "H2PO4-"; z -1; masters ( { ion PO4; nu 1; } { ion H; nu 2; } );
-      logK25 19.553; dH -18911.7; source "USGS PHREEQC phreeqc.dat (public domain); phosphate 1st+2nd protonation";

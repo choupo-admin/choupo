@@ -817,7 +817,8 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
     //    a handful of pairs).  REFUSE on failure -- never loosen.
     std::set<std::string> stateIons(mast.begin(), mast.end());
     stateIons.insert("H"); stateIons.insert("OH");
-    for (const auto& a : act) stateIons.insert(a.rxn->species);
+    for (const auto& a : act)
+        stateIons.insert(a.isExch ? a.exchName : a.rxn->species);
     if (activityName_ == "pitzerHMW")
     {
         const double dev = PitzerHMW::verify(0, &stateIons);
