@@ -32,6 +32,7 @@ License
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // ionMW (ions.dat)
 #include "thermo/ThermoPackageBuilder.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
+#include "thermo/electrolyte/PitzerHMW.H"
 
 #include <fstream>
 #include <iomanip>
@@ -355,6 +356,24 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
 
     auto in = propertyOps::readAnalysis(dict);
     propertyOps::readEquilibrate(dict, in);
+
+    // verifyGlobal (Codex seal-audit 2026-07-18): the FULL-catalogue Pitzer
+    // single-salt oracle -- every binary in the pairs home vs the closed
+    // PitzerSingleSalt kernel.  Declared by the DEDICATED validation case
+    // only (its seal deliberately carries the whole family); a normal run's
+    // oracle covers just its own ions inside solve().
+    if (dict->lookupWordOrDefault("verifyGlobal", "false") == "true")
+    {
+        const double dev = electrolyte::PitzerHMW::verify(verbosity);
+        if (!(dev < 1.0e-9))
+            throw std::runtime_error("speciate verifyGlobal: PitzerHMW"
+                " full-catalogue self-check FAILED (max rel deviation "
+                + std::to_string(dev) + " > 1e-9)");
+        if (verbosity >= 2)
+            std::cout << "  [verifyGlobal] PitzerHMW single-salt oracle:"
+                         " FULL catalogue swept, max rel dev "
+                      << dev << " (< 1e-9)\n";
+    }
 
     electrolyte::SpeciationSolver solver(model);
     const auto res = solver.solve(in, verbosity);

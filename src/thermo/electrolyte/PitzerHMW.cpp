@@ -836,7 +836,7 @@ static std::vector<std::pair<std::string, std::string>> enumeratePitzerPairs()
 // TIER-1 oracle: the multi-ion model reduced to a single salt MUST equal the
 // closed single-salt kernel to floating point (catches summation/index bugs),
 // and must reduce to the Debye-Huckel limiting law as I -> 0.
-double PitzerHMW::verify(int verbosity)
+double PitzerHMW::verify(int verbosity, const std::set<std::string>* onlyIons)
 {
     double maxDev = 0.0;
     double maxDevPhi = 0.0;            // osmotic-coefficient oracle (phi)
@@ -844,15 +844,19 @@ double PitzerHMW::verify(int verbosity)
     PitzerHMW hmw;
     const double T = 298.15;
 
-    // ---- single-salt reduction across EVERY binary in pairs.dat -------------
+    // ---- single-salt reduction across the binaries in pairs.dat --------------
     // Enumerate the pairs straight from the catalogue (case-local overlay or
-    // standard, same resolution the model uses).
+    // standard, same resolution the model uses).  With `onlyIons`, restrict to
+    // the pairs the CASE can actually form -- the per-run gate; the FULL sweep
+    // is the dedicated validation case's job.
     int nPairs = 0;
     std::string worstPair;
     for (const auto& ca : enumeratePitzerPairs())
     {
             const std::string& cation = ca.first;
             const std::string& anion  = ca.second;
+            if (onlyIons && (!onlyIons->count(cation) || !onlyIons->count(anion)))
+                continue;
 
             // Charges from ions.dat; skip a pair whose ions are not catalogued
             // (a few exotic complex ions in pairs.dat have no ions.dat row).
@@ -904,8 +908,15 @@ double PitzerHMW::verify(int verbosity)
     }
 
     if (nPairs == 0)
+    {
+        // Subset gate with no formable pair (a case whose ions have no
+        // catalogued Pitzer binary -- HMW contributes 0 for them): nothing to
+        // oracle, legitimately.  The FULL sweep (onlyIons == nullptr) with an
+        // empty catalogue is still a hard error.
+        if (onlyIons) return 0.0;
         throw std::runtime_error("PitzerHMW::verify: no binary pairs found in the "
             "pitzer pairs catalogue -- the single-salt oracle has nothing to test");
+    }
 
     // ---- Debye-Huckel limiting law (the dilute anchor) -----------------------
     // As I -> 0 the Pitzer F-bracket [sqrt I/(1+b sqrt I) + (2/b) ln(1+b sqrt I)]

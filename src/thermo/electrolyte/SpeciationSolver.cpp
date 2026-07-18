@@ -31,6 +31,7 @@ License
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "core/Dictionary.H"
+#include <set>
 #include "solver/NewtonND.H"
 #include "thermo/RecordResolver.H"
 #include "thermo/ThermoAnnounce.H"
@@ -122,15 +123,11 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
     // pairs.dat, plus the I -> 0 Debye-Huckel limiting law.  A Pitzer built on a
     // wrong summation is worse than no Pitzer: REFUSE the run on a failed check
     // (do not loosen the tolerance).
-    if (activityName_ == "pitzerHMW")
-    {
-        const double dev = PitzerHMW::verify(0);   // silent gate; verbose echo in solve()
-        if (!(dev < 1.0e-9))
-            throw std::runtime_error("speciation: PitzerHMW self-check FAILED "
-                "(single-salt reduction vs PitzerSingleSalt max rel deviation "
-                + std::to_string(dev) + " > 1e-9) -- the multi-ion summation has "
-                "a bug; fix the index/sum, do not loosen the tolerance");
-    }
+    // (Codex seal-audit 2026-07-18) the PitzerHMW single-salt oracle moved
+    // from HERE (a construction-time sweep of EVERY catalogue pair -- it made
+    // all 55 binaries a runtime dependency of any Pitzer case) into solve(),
+    // restricted to the CASE's own ions.  The FULL catalogue sweep lives in
+    // the dedicated validation case (verifyGlobal in its speciate op).
 
     // Speciation network -- per-file under standards/chemistry/ (recordType aqueousSpeciation) .
     // A case-local constant/electrolyte/speciation.dat carries the case DELTA and
@@ -811,6 +808,26 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         }
     }
 
+    // -- PitzerHMW per-run oracle (Codex seal-audit 2026-07-18): the single-
+    //    salt reduction MUST equal the closed PitzerSingleSalt kernel -- but
+    //    only for the pairs THIS state can form (masters + active computed
+    //    species + H/OH).  An NaCl run depends on Na-Cl, never on the other
+    //    54 catalogue binaries; the FULL sweep is the dedicated validation
+    //    case's job (verifyGlobal).  Run ONCE per solver (static-free: cheap,
+    //    a handful of pairs).  REFUSE on failure -- never loosen.
+    std::set<std::string> stateIons(mast.begin(), mast.end());
+    stateIons.insert("H"); stateIons.insert("OH");
+    for (const auto& a : act) stateIons.insert(a.rxn->species);
+    if (activityName_ == "pitzerHMW")
+    {
+        const double dev = PitzerHMW::verify(0, &stateIons);
+        if (!(dev < 1.0e-9))
+            throw std::runtime_error("speciation: PitzerHMW self-check FAILED "
+                "(single-salt reduction vs PitzerSingleSalt max rel deviation "
+                + std::to_string(dev) + " > 1e-9) -- the multi-ion summation has "
+                "a bug; fix the index/sum, do not loosen the tolerance");
+    }
+
     // -- OPEN-system gas pins: per listed gas, resolve the GasEntry, the pinned
     //    dissolved species, and the master row whose mole balance the pin
     //    REPLACES.  Two shapes: (a) computed species with exactly one non-H
@@ -1013,9 +1030,10 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                       << " at T) -- per-ion specific-interaction gamma; "
                          "a_w from the HMW osmotic coefficient phi(I) "
                          "(NOT phi = 1)\n" << std::defaultfloat;
-            // The glass-box self-check: single-salt reduction vs the closed
-            // kernel + the I -> 0 Debye-Huckel limiting law (verbosity >= 3).
-            if (verbosity >= 3) PitzerHMW::verify(3);
+            // The glass-box self-check echo: single-salt reduction vs the
+            // closed kernel + the I -> 0 limiting law -- the CASE's pairs
+            // only (the full-catalogue sweep is verifyGlobal's job).
+            if (verbosity >= 3) PitzerHMW::verify(3, &stateIons);
         }
         else
             std::cout << "  aqueous activity: " << actDisp << " (A = "

@@ -32,6 +32,9 @@ operations
     {
         name        hmw_nacl_100C;
         type        speciate;
+        verifyGlobal true;   // THE dedicated full-catalogue Pitzer oracle: every
+                             // binary in the pairs home vs the closed single-salt
+                             // kernel (normal runs check only their OWN ions)
         temperature 373.15;
         analyticalTotals      { Na 4.0 mol/kg;  Cl 4.0 mol/kg; }
         pH          7.0;               // neutral brine (no acid-base chemistry)

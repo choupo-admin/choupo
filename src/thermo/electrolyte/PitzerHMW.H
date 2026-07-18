@@ -92,6 +92,8 @@ Description
 
 #include "thermo/electrolyte/AqueousActivity.H"
 
+#include <set>
+
 #include <string>
 
 namespace Choupo {
@@ -120,7 +122,13 @@ public:
     // I -> 0 Debye-Huckel limiting law.  Returns the max single-salt deviation
     // across all binaries (0 in exact arithmetic; ~1e-13 from FP reassociation).
     // Prints the limiting-law anchor at verbosity >= 3.  Mirrors IF97::verify().
-    static double verify(int verbosity = 0);
+    // `onlyIons` (Codex seal-audit, 2026-07-18): restrict the single-salt
+    // oracle to the pairs whose cation AND anion are in the set -- the
+    // per-run gate checks the CASE's ions only (an NaCl run must not depend
+    // on the other 54 catalogue pairs); the FULL sweep lives in the dedicated
+    // validation case (pitzer_hmw_hot_agreement, verifyGlobal).
+    static double verify(int verbosity = 0,
+                         const std::set<std::string>* onlyIons = nullptr);
 };
 
 } // namespace electrolyte
