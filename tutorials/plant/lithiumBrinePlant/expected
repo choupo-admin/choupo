@@ -1,5 +1,21 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+#
+# RE-RECORDED 2026-07-18 (the chemistryDict wave, commit 1a3a1089e) -- ONE
+# physical fix: the per-node electrolyte context never delivered the BRINE
+# sector's `salts (halite)` selection to crystNaCl, which therefore ran with
+# NO active salt (m_sat = 1e-9 mol/kg, Ksp_activity = 0, yield ~ 100% -- a
+# degenerate "total crystalliser" the previous golden had pinned).  With the
+# selection resolved along the node's context chain, crystNaCl computes the
+# REAL Pitzer halite saturation -- Ksp_activity 38.4846, m_sat 6.144 mol/kg,
+# gamma_pm 1.0097, bit-identical to crystalliser05_nacl_pitzer standalone --
+# so only the supersaturated excess crystallises (yield 20.7%, halite
+# 3.78 -> 0.646 kmol/h) and the dissolved NaCl (9.456 kmol/h) rides the
+# liquor into EXTRACTION.  Causal gate (Codex 2026-07-18): NaCl closes at
+# the unit to 3e-17 and globally to machine precision (12.000 kmol/h in =
+# 2.481 halite + 0.063 cake moisture + 9.456 liquor; emulsion = liquor +
+# organic and = loadedOrganic + raffinate exactly, both states); the
+# downstream ripple is EXACTLY the dissolved NaCl now travelling.
 # kind   name      key         expected        reltol
 stream  carbLiquor             F                0.0277777777778  1e-4
 stream  cleanAir               F                0.0320991487231  1e-4
