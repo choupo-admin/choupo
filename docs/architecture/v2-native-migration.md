@@ -116,18 +116,22 @@ traceable explanation.  Do not mix this migration with model growth
   halite 3.78 → 0.646 kmol/h, downstream ripple; golden re-recorded with this
   explanation (the ONE physical change of the wave; everything else 292/0
   byte-intact).
-- 2026-07-18 — **BOUNDARY (deliberate stop): the electrolyte formulations
-  (electrolyteGammaPhi, aqueousProperties) stay on the scaffold.**  Their
-  translate step is already a thin OBJECT-dict key-mapping (no text
-  synthesis) into `buildElectrolyte`, which assembles via the
-  `adoptElectrolytePackage` seam — but making them native means rewiring
-  buildElectrolyte's input layer, and that is entangled with the
-  TRANSITIONAL inline `chemistry{}` blocks whose permanent home is NOT yet
-  ratified (Codex 2026-07-18: "ratificar primeiro uma única casa para a
-  química ativa do caso e só então migrar" — do not improvise it here).
-  Next native wave AFTER that ratification; also still scaffold: the ~32
-  shaped gammaPhi cases (transport / pureFluids / inline-pairs / cosmoSAC /
-  explicit phases), the Flowsheet propertyContextBase chain, fitParameters.
+- 2026-07-18 (wave E, after the chemistryDict ratification unlocked it):
+  **electrolyteGammaPhi assembles natively** — `buildElectrolyte`'s input
+  layer refactored to TYPED inputs (component names + isENRTL + the
+  ChemistrySystem object; the propertyMethods vapour/transport refusals
+  moved to the two callers — one contract, two assemblies), and buildV2
+  applies the scaffold's refusals (Pitzer|eNRTL, molality basis, idealGas
+  vapour, caloric routes) on the authored grammar directly.  Pilots: pitzer02
+  (Pitzer) + evaporator07 (eNRTL), then the whole electrolyte family
+  (crystallisers, evaporators, thermoTest models, enthalpy_naoh,
+  lithiumBrinePlant per-node) — 292/0, goldens intact.
+- ~~BOUNDARY: the electrolyte formulations stay on the scaffold~~ (resolved
+  by the chemistryDict ratification + wave E).  Still scaffold:
+  `aqueousProperties` (the speciation ops read the translated manifest —
+  next), the ~32 shaped gammaPhi cases (transport / pureFluids /
+  inline-pairs / cosmoSAC / explicit phases), the Flowsheet
+  propertyContextBase chain, fitParameters.
 - 2026-07-18 (wave B): **gammaGamma assembles natively** —
   `ThermoPackage::assembleNamedPhases` (each liquid phase from its own
   config dict, shared activity model resolved once per phase — no cross-phase

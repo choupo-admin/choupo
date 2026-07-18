@@ -95,27 +95,11 @@ bool hasSpeciesMap(const DictPtr& rec) { return speciesMapOf(rec) != nullptr; }
 
 // ---- ELECTROLYTE path: assemble a PitzerSingleSalt directly from the unified
 //      substance records (no readFromDict, no loadSalt, no old catalogue) ----
-static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
+static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
+                                      const Database& db,
                                       bool isENRTL,
                                       const ChemistrySystem* chem)
 {
-    // Round-4 (professor): this path serves ONLY the ideal-gas vapour; a
-    // package declaring another vapour method was silently overridden.  A3:
-    // refuse instead.
-    if (pkg->found("propertyMethods") && pkg->subDict("propertyMethods")->found("vapour"))
-    {
-        const std::string v = pkg->subDict("propertyMethods")->lookupWord("vapour");
-        if (v != "builtin.idealGas")
-            throw std::runtime_error("propertyPackage: the electrolyte liquid"
-                " path serves vapour builtin.idealGas only; got '" + v +
-                "'. Declare builtin.idealGas (or ask for the eos-vapour"
-                " extension).");
-    }
-    if (pkg->found("propertyMethods") && pkg->subDict("propertyMethods")->found("transport"))
-        throw std::runtime_error("propertyPackage: the electrolyte liquid path"
-            " does not yet wire a transport method -- remove the transport slot"
-            " (or ask for the extension); silently ignoring it would be a"
-            " declared-and-dropped lie (A3).");
     // Repo root = parent of the data/ dir (Database::currentRoot() is data/).
     const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
     // ONE resolver (sealing redesign): a "data/standards/<sub>" rel resolves
@@ -146,8 +130,7 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
     }
 
     // (a) component list -----------------------------------------------------
-    if (!pkg->found("components")) absent("components", "propertyPackage");
-    const std::vector<std::string> compNames = pkg->lookupWordList("components");
+    if (compNames.empty()) absent("components", "propertyPackage");
 
     // (b) identify the salt: the ONE component whose STANDARDS record carries a
     //     `dissociatesTo` block (formula-like ion stoichiometry).  Its identity
@@ -1379,10 +1362,28 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
         absent("propertyMethods.liquid", "propertyPackage");
     const std::string liquid = pkg->subDict("propertyMethods")->lookupWord("liquid");
 
-    if (liquid == "electrolyte.pitzer")
-        return buildElectrolyte(pkg, db, /*isENRTL=*/false, chem);
-    if (liquid == "electrolyte.eNRTL")
-        return buildElectrolyte(pkg, db, /*isENRTL=*/true, chem);
+    if (liquid == "electrolyte.pitzer" || liquid == "electrolyte.eNRTL")
+    {
+        const auto pm = pkg->subDict("propertyMethods");
+        // Round-4 (professor): this path serves ONLY the ideal-gas vapour; a
+        // package declaring another vapour method was silently overridden.
+        // A3: refuse instead.  (buildV2 applies the same refusals on the
+        // authored grammar -- one contract, two assemblies.)
+        const std::string v = pm->found("vapour") ? pm->lookupWord("vapour")
+                                                  : std::string("builtin.idealGas");
+        if (v != "builtin.idealGas")
+            throw std::runtime_error("propertyPackage: the electrolyte liquid"
+                " path serves vapour builtin.idealGas only; got '" + v +
+                "'. Declare builtin.idealGas (or ask for the eos-vapour"
+                " extension).");
+        if (pm->found("transport"))
+            throw std::runtime_error("propertyPackage: the electrolyte liquid path"
+                " does not yet wire a transport method -- remove the transport slot"
+                " (or ask for the extension); silently ignoring it would be a"
+                " declared-and-dropped lie (A3).");
+        return buildElectrolyte(pkg->lookupWordList("components"), db,
+                                /*isENRTL=*/liquid == "electrolyte.eNRTL", chem);
+    }
     if (liquid.rfind("eos.", 0) == 0)
     {
         // World 2 opt-in (forum: the liquid slot IS the world).  The SAME
@@ -1439,6 +1440,7 @@ bool ThermoPackageBuilder::v2NativeFormulation(const DictPtr& v2)
     if (form == "phiPhi") return true;
     if (form == "gammaGamma") return true;   // both pair forms wired natively
     if (form == "diluteSolution") return true;
+    if (form == "electrolyteGammaPhi") return true;
     if (form == "gammaPhi")
     {
         // Wave A (2026-07-18): the ideal liquid and the source-declared-pairs
@@ -1595,6 +1597,40 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
         out.assembleNamedPhases(v2->lookupWordList("components"),
                                 phaseConfigs, db);
         return out;
+    }
+
+    if (form == "electrolyteGammaPhi")
+    {
+        // The electrolyte world: aqueous Pitzer/eNRTL on the molality basis,
+        // idealGas vapour (Raoult solvent VLE) -- the same refusals the
+        // scaffold applies, then straight into the record-driven electrolyte
+        // assembly (which consumes the chem OBJECT for its active salt).
+        auto aq = eq->subDict("aqueous");
+        auto am = aq->subDict("activityModel");
+        const std::string model = am->lookupWord("model");
+        if (model != "Pitzer" && model != "eNRTL")
+            throw std::runtime_error("thermophysicalPropertySystem: "
+                "electrolyteGammaPhi activityModel '" + model
+                + "' -- implemented: Pitzer | eNRTL.");
+        if (aq->found("compositionBasis")
+            && aq->lookupWord("compositionBasis") != "molality")
+            throw std::runtime_error("thermophysicalPropertySystem: the"
+                " electrolyte surface is molality-based.");
+        const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
+        if (vap != "idealGas")
+            throw std::runtime_error("thermophysicalPropertySystem: the"
+                " electrolyte path serves vapour idealGas only (as today).");
+        verifyCal("aqueous", "enthalpyRoute", "ionicReferencePlusExcess");
+        verifyCal("vapour", "enthalpyRoute", "idealGasCp");
+        if (thermoAnnounce())
+            std::cout << "[v2 native] equilibrium electrolyteGammaPhi: aqueous "
+                      << model << " (molality); vapour idealGas.  caloric:"
+                         " aqueous ionicReferencePlusExcess (aqueous"
+                         " inf-dilution ion datum + L_phi), vapour idealGasCp"
+                         " (elements datum).  Assembled NATIVELY from the v2"
+                         " grammar (no translated intermediate).\n";
+        return buildElectrolyte(v2->lookupWordList("components"), db,
+                                /*isENRTL=*/model == "eNRTL", chem);
     }
 
     if (form == "diluteSolution")
