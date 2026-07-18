@@ -145,6 +145,8 @@ Literature/
 site/_dist/
 tutorials/**/code/.build/
 tutorials/**/log.choupo*
+# transient mid-write snapshot dirs the dynamic writer stages before renaming
+tutorials/**/.tmp_*/
 
 # Theory guide -- now published with the other guides (Vítor 2026-06-25).
 # Keep the LaTeX build auxiliaries ignored; publish only the source + the PDF.
