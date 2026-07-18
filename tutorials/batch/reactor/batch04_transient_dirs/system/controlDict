@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoBatch;
 description   "Adiabatic batch esterification with OpenFOAM-style REAL-TIME instant dirs: watch conversion climb 0 -> 1 and T runaway 320 -> ~428 K by scrubbing 0/ 30/ 60/ ... s";
 

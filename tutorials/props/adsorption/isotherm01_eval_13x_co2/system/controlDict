@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 /*  isotherm01_eval_13x_co2 -- the A1b EVALUATION bench for one curated
     adsorption-equilibrium record: CO2 on zeolite 13X (the standards pair
     catalogue, data/standards/parameters/adsorption/equilibria/zeolite13X/).

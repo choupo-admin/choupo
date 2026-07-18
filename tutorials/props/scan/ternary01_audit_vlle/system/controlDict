@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 /*  Ternary VLLE phase map — synthetic audit (compA/compB/compC).
     Reuses IsothermalFlash::solveCore per simplex node (no reimplemented
     physics).  Run-only smoke (the CSV is a phase-region map, not pinned

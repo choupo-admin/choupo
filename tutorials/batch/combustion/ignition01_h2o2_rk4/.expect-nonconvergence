@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 This case integrates the stiff H2/O2 ignition with EXPLICIT RK4 at the same
 deltaT the Rosenbrock23 sibling uses.  It is SUPPOSED to blow up to NaN within a
 few steps -- that is the lesson (explicit methods are stability-limited on stiff

@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoSolve;
 description   "PART 1 of 2 -- DESIGN: the DUTY TARGET is given (cool the hot shell 330->315 K) and the exchanger GEOMETRY is SOLVED for (model design;). Glass-box Kern sizing: fix the tube choices, then find the tube count (and the shell diameter it implies, Kern/Sinnott bundle) so U*A = Q_req/LMTD; U/dP then rated with Gnielinski (tube) + Kern (shell). The detailed-design (sizing) step, glass-box. Part 2 (hxWorkflow2_rate_designed) rates the bundle this case produces.";
 verbosity     3;

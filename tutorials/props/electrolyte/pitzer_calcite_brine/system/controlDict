@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoProps;
 description   "slice S4 GATE: Pitzer-HMW carbonate system on surface seawater -- pins SI_calcite / SI_gypsum against the published oceanographic saturation state, captures the neutral CO2 salting-out (gamma_CO2aq > 1 via lambda), and the Davies-vs-Pitzer SI divergence.";
 verbosity     3;

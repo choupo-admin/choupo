@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoProps;
 description   "Heat-transfer correlation bench -- each convective correlation (Dittus-Boelter, Gnielinski, Kern) verified against its published Nusselt anchor. Dittus-Boelter and Gnielinski are pinned to Incropera & DeWitt 6th ed. Example 8.4; Kern's closed j_H form is self-consistency-checked (its original pin is a chart). AAD tolerance 5% honours textbook rounding + the correlations' own scatter.";
 verbosity     2;

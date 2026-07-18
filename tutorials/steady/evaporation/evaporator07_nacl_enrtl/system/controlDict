@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoSolve;
 description   "Single-effect NaCl evaporator with the boiling-point elevation from the eNRTL water activity (electrolyte-NRTL) -- the same slot as model pitzer, one word changed. eNRTL is the model for salt in a non-ideal molecular solvent.";
 verbosity     3;

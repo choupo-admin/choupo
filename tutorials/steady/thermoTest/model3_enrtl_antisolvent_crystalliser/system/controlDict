@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoSolve;
 description   "Antisolvent (drowning-out) crystallisation of NaCl: a SATURATED aqueous brine is mixed with ethanol; the eNRTL mixed-solvent term lowers the dielectric, raises gamma_pm, and DROPS the saturation molality m_sat -- so NaCl precipitates with NO cooling and NO evaporation. Saturation from the SAME ion-activity product Ksp anchored in pure water, solved with the mixed-solvent gamma_pm.";
 verbosity     3;

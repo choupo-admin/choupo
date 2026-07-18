@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoProps;
 description   "WATER OPEN TO AIR: the generic multi-gas Henry pin.  Pure water equilibrated with the atmosphere (pCO2 4.2e-4, pO2 0.2095, pN2 0.7808 atm) at 25 C and at 10 C.  Each listed gas PINS its dissolved species by Henry's law and that master's mole balance is REPLACED by the pin -- three pins at once: CO2 chains through the carbonate family (CO2aq is a computed species, the HCO3 row is swapped), while O2 and N2 are inert neutral masters pinned directly.  TWO CLASSIC NUMBERS FALL OUT: (1) unpolluted RAINWATER pH ~ 5.6 -- carbonic acid from 420 ppm CO2 alone, no pollutant needed; (2) DISSOLVED-OXYGEN saturation ~ 8.5 mg/L at 25 C rising to ~ 11 mg/L at 10 C -- gas solubility is RETROGRADE with temperature (K_H analytic from USGS PHREEQC PHASES, public domain), which is why cold streams hold more oxygen than warm ones.  The `totals` entries for HCO3 / O2 / N2 are initial guesses only (announced): in an OPEN system each pinned total is a SOLVED OUTCOME of gas-liquid equilibrium.";
 verbosity     2;

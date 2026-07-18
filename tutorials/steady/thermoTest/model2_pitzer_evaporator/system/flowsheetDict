@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 /* BPE NOTE (2026-07-02, a story in three acts): (1) frozen 25 C surface ->
    BPE 5.07 K; (2) LINEAR calorimetric T-slots (Parker fit) -> 5.58 K -- the
    25 C derivative extrapolated straight to the boil; (3) the FULL

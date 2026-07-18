@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoProps;
 description   "PARTIAL deep-merge overlay (roadmap Phase A): a case recalibrates ONLY the halite equilibrium logK25 via a case-local overlayOf NaCl; every other datum (dH, dissolutionReaction, calorimetric, crystal) still comes from the standard components/NaCl.dat record. The [overlay] line names exactly which leaf came from the case tier.";
 verbosity     2;

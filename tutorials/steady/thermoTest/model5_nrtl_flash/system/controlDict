@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoSolve;
 description   "thermoTest model 5 -- water + ethanol as MOLECULAR components (no ions): an isothermal VLE flash on the NRTL activity model. This is the antisolvent (ethanol) and the solvent (water) in their own role -- the same substances that dissolve/precipitate NaCl in models 2-4, here separated by distillation.";
 verbosity     3;

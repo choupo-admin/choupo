@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoProps;
 description   "K(T) MATTERS: a temperature scan of mineral saturation for ONE fixed water (a hard, carbonate-bearing groundwater at pH 7.6), speciated at 10, 25, 40, 60 and 80 C.  The point is the SIGN of dK/dT.  CALCITE dissolution is EXOTHERMIC, so its equilibrium constant FALLS as temperature rises and its saturation index SI_calcite RISES -- RETROGRADE SOLUBILITY: calcite is LESS soluble hot.  This is why hot heat-exchanger surfaces and warm RO concentrate scale with calcium carbonate even when the cold feed looks safe.  Contrast HALITE (NaCl): no analytic K(T) in the database, so it falls back to constant-dH van't Hoff with a small POSITIVE dH (endothermic) -- normal solubility, SI_halite drifts gently DOWN with T.  At 25 C nothing in the K(T) machinery moves (every form returns logK25 exactly, byte-stable); off 25 C the run announces which K(T) form each entry uses (analytic / van't Hoff / flat) and warns if any analytic is used beyond its fitted validity range.  K(T): analytic = PHREEQC -analytical_expression anchored on logK25 (logK(T)=logK25+[ana(T)-ana(298.15)]); USGS PHREEQC, public domain.";
 verbosity     2;

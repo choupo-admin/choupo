@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoSolve;
 description   "Two crystallisers in series separating KCl from potassium bitartrate (KHT, cream of tartar) by manipulating T and adding ethanol. CRYST1 COOLS the hot feed to 5 C -> KHT (sparingly soluble, steep solubility curve) crystallises while KCl stays dissolved. CRYST2 doses ETHANOL into the KCl-rich mother liquor -> KCl drops out by drowning-out (eNRTL mixed-solvent). Two salts, two saturation routes (curve vs ion-activity), one declarative property configuration -- a stress test of the property system.";
 verbosity     3;

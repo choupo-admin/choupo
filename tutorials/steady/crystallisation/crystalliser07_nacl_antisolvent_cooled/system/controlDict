@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoSolve;
 description   "Antisolvent + COOLING crystallisation of NaCl: the same drowning-out brine + ethanol as crystalliser06, but the crystalliser is COOLED to 5 C. The eNRTL is now temperature-dependent (tau(T)=tau_25*298.15/T, A_DH(T) via eps_w(T)/rho_w(T), Born at T) and Ksp(T) shifts by van't Hoff with NaCl's enthalpy of solution -- so cooling adds to the antisolvent's effect (yield 61% -> 70%). Exercises the T-dependent electrolyte path.";
 verbosity     3;

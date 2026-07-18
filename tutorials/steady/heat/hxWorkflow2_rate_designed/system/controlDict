@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoSolve;
 description   "Shell-and-tube heat exchanger sized from GEOMETRY: the overall U and area are COMPUTED from the tube bundle + per-side convective correlations (Gnielinski tube-side, Kern shell-side), not specified. Water-water clean service. The computed U lands in the textbook clean water-water band (~2000-3000 W/(m2.K), Kern / Sinnott). Tube-side h_i via Gnielinski (Incropera & DeWitt 6th ed.); shell-side h_o via the Kern method (Process Heat Transfer, 1950). U and area are RESULTS that then feed the unchanged eps-NTU duty.";
 verbosity     3;

@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 /*--- A student's OWN property-estimation op (linearTbEstimate), defined in
       code/ and linked into choupoProps by bin/buildCode. Tb = base + sum(count*incr).
       Here: 198.2 + 2*23.58 + 1*76.75 = 322.11 K (the Joback CH3,CH3,ketone sum). ---*/

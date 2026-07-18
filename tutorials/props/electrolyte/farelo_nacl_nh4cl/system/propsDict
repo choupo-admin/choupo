@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 operations (
   { name farelo_NaCl_pure;    type speciate;analyticalTotals { Na 6.15 mol/kg; Cl 6.15 mol/kg; } pH solve; diagSpecies ( Na Cl ); output { file f_nacl.csv; } }
   { name farelo_NaCl_nh4_093; type speciate;analyticalTotals { Na 5.50 mol/kg; NH4 0.93 mol/kg; Cl 6.43 mol/kg; } pH solve; diagSpecies ( Na NH4 ); output { file f_093.csv; } }

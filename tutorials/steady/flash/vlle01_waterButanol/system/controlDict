@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoSolve;
 description   "Liquid-liquid flash of water + 1-butanol at 320 K, 1.013 bar -- the real miscibility gap from the cited Winkelman et al. (2009) UNIQUAC LLE fit: water-rich ~98.3 mol% water, butanol-rich ~46 mol% butanol (their Figs 1-2). See README.";
 

@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 /*  Two ADVERSARIAL fitParameters(kind isotherm) operations -- see the
     controlDict header.  Synthetic data generated EXACTLY from the known
     surface (q_max 4.6 mol/kg, b_298 3.0e-4 1/Pa, dH_ads -38000 J/mol,

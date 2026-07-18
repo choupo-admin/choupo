@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoProps;
 description   "ESTIMATE the glass-transition Tg of poly(vinyl chloride) (PVC) by the Yang 2020 modified group-contribution scheme (CC-BY) -- the repeat unit -CH2-CHCl- gives Tg(inf)=351 K, EXACT vs the paper (Fig 6)";
 

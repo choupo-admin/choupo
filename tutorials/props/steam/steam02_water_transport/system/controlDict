@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoProps;
 description   "IAPWS water transport properties -- viscosity (R12-08), thermal conductivity (R15-11) and surface tension (R1-76). Water flagged as a pure fluid (method IF97) routes the transport accessors to the matching IAPWS releases: the density comes from the IF97 thermodynamic kernel at the saturation state, fed to the (rho,T) transport kernels; surface tension is the R1-76 saturation-line form. A coarse 4-point scan (25/50/75/100 degC) pinned against the published IAPWS values, plus a fine sweep for the plot.";
 verbosity     2;

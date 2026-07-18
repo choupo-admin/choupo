@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 application   choupoProps;
 description   "ESTIMATE the glass-transition Tg of polystyrene by the Yang 2020 modified group-contribution scheme (CC-BY) -- the repeat unit -CH2-CH(phenyl)- gives Tg(inf)=444 K, an HONEST +19% over-estimate of the measured ~373 K (a teaching point about group-contribution limits)";
 

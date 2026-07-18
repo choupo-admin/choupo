@@ -1,3 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
 /*--- 5 curated reactions for the demo two-sector plant (synthetic) ---*/
 rxn1 { limitingReactant compA; stoichiometry ( {component compA; nu -1; order 1;} {component compB; nu -1; order 0;} {component compC; nu 1; order 0;} ); kinetics { type Arrhenius; A 1.0e8; Ea 6.5e4; } }
 rxn2 { limitingReactant compC; stoichiometry ( {component compC; nu -1; order 1;} {component compD; nu 1; order 0;} ); kinetics { type Arrhenius; A 5.0e7; Ea 6.0e4; } }
