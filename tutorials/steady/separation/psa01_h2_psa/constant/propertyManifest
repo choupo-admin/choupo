@@ -35,9 +35,9 @@ propertyManifest
         "components/CH4.dat"
         {
             type          imported;
-            sha256        "b75e30c0797d6675119bd06113a93e71e55d9242c3ebddee57616e6dcac94bf1";
+            sha256        "113df466dc73d7959fcdba4be1c94b0a826aea46542138315308da49816e781f";
             origin        "data/standards/components/CH4.dat";
-            originSha256  "e2784144d3a2bbd5a5a559fb48d0a77f4d5a39b86a5c07f066d13ffe364fe2a8";
+            originSha256  "79c606f476136886a3a6ce703d0fdcd1824e4d1d9f68b4ea3ba9799c5b1cb222";
             release       Choupo-2607;
         }
         "components/CO.dat"

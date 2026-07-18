@@ -800,30 +800,6 @@ propertyManifest
             originSha256  "e548b4981cf43b3fce64d0b1c0af996b173f03f159300a806daca6603c1a5d53";
             release       Choupo-2607;
         }
-        "parameters/eNRTL/K-Cl.dat"
-        {
-            type          imported;
-            sha256        "ca1dc77ace54c5233b9800fa6d6b4fc046c88b41a4a877734b6520ad76dee5e6";
-            origin        "data/standards/parameters/eNRTL/K-Cl.dat";
-            originSha256  "05de383c6e4b3aaec7f1623872c6dd621c1887f296eafbc4ac3804a59661f8e4";
-            release       Choupo-2607;
-        }
-        "parameters/eNRTL/Na-Cl.dat"
-        {
-            type          imported;
-            sha256        "2dbd301cdb40bb9b3e21ce3af4bcd58fb1df9d91baf08012ca6c6f83a5d8e280";
-            origin        "data/standards/parameters/eNRTL/Na-Cl.dat";
-            originSha256  "129a062cf834d94c00264c82361dac287d130528cd55c7daccdbbb9328180525";
-            release       Choupo-2607;
-        }
-        "parameters/eNRTL/Na-OH.dat"
-        {
-            type          imported;
-            sha256        "42db23f83a2788ecc6e6d5f30cc87aad1a1c169eb596bb86fe31b24e9f13eaea";
-            origin        "data/standards/parameters/eNRTL/Na-OH.dat";
-            originSha256  "01a4a53b24edc2098d2b91303d22216daf7b5ea71ca39ef8a1f42a720dadfc92";
-            release       Choupo-2607;
-        }
         "species/Ca.dat"
         {
             type          imported;

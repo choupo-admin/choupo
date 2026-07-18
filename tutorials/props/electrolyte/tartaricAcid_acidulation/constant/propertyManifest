@@ -368,14 +368,6 @@ propertyManifest
             originSha256  "e548b4981cf43b3fce64d0b1c0af996b173f03f159300a806daca6603c1a5d53";
             release       Choupo-2607;
         }
-        "parameters/eNRTL/K-Cl.dat"
-        {
-            type          imported;
-            sha256        "ca1dc77ace54c5233b9800fa6d6b4fc046c88b41a4a877734b6520ad76dee5e6";
-            origin        "data/standards/parameters/eNRTL/K-Cl.dat";
-            originSha256  "05de383c6e4b3aaec7f1623872c6dd621c1887f296eafbc4ac3804a59661f8e4";
-            release       Choupo-2607;
-        }
         "species/Ca.dat"
         {
             type          imported;

@@ -630,14 +630,26 @@ def closure_of(pp_path, caseDir, std, AQ):
         want_reachable_minerals(reach)
         nonlocal_flags["reach"] = reach
 
-    # cation-anion pair records by CHARGE (the aqueous catalogue is the
-    # authority); existence-guarded, so only real pair records are sealed.
-    cats = sorted({i for i in ions if AQ.get(i, (0,))[0] > 0})
-    ans = sorted({i for i in ions if AQ.get(i, (0,))[0] < 0})
-    for ca in cats:
-        for an in ans:
-            want("parameters/Pitzer/pairs/" + ca + "-" + an + ".dat")
-            want("parameters/eNRTL/" + ca + "-" + an + ".dat")
+    # cation-anion pair records by CHARGE, ONLY for the model that CONSUMES
+    # them (Codex invariant 3: no spectator record).  A Davies case pulls NO
+    # interaction pairs (Davies is parameter-free: charge + ionic strength);
+    # a single-salt/flowsheet electrolyte world pulls its own family only.
+    uses_pitzer = bool(re.search(r'\belectrolyte\.pitzer\b', t_nc)
+                       or re.search(r'\bmodel\s+Pitzer\s*;', t_nc)
+                       or re.search(r'\bpitzerActivity\b', props_ops))
+    uses_enrtl  = bool(re.search(r'\belectrolyte\.eNRTL\b', t_nc)
+                       or re.search(r'\bmodel\s+eNRTL\s*;', t_nc)
+                       or re.search(r'\b(?:enrtlMultiSalt|enrtlMixedSolvent)\b',
+                                    props_ops))
+    if uses_pitzer or uses_enrtl:
+        cats = sorted({i for i in ions if AQ.get(i, (0,))[0] > 0})
+        ans = sorted({i for i in ions if AQ.get(i, (0,))[0] < 0})
+        for ca in cats:
+            for an in ans:
+                if uses_pitzer:
+                    want("parameters/Pitzer/pairs/" + ca + "-" + an + ".dat")
+                if uses_enrtl:
+                    want("parameters/eNRTL/" + ca + "-" + an + ".dat")
 
     # A full-speciation closure (speciate / scalingScan / exchange) reasons over
     # the WHOLE aqueous catalogue -- any ion the network derives (OH, CO3, the

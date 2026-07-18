@@ -56,14 +56,6 @@ propertyManifest
             originSha256  "58fd0be3d81822788156fe593270b2e9900fa2b533fa3f88b33415fc18320ac5";
             release       Choupo-2607;
         }
-        "parameters/Pitzer/pairs/Na-OH.dat"
-        {
-            type          imported;
-            sha256        "9d81457f2682b0d08979678307f1294f15b7329559977dc19fd5d6a64f319368";
-            origin        "data/standards/parameters/Pitzer/pairs/Na-OH.dat";
-            originSha256  "1e3d9848129147d6f208abaeed35958c709a6b5a5ec48cb7cd3438120a0eedd9";
-            release       Choupo-2607;
-        }
         "parameters/eNRTL/Na-OH.dat"
         {
             type          imported;

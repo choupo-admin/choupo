@@ -9,31 +9,35 @@
   claim types:  imported = installed + hash-verified copy;
                 adopted  = authored record explicitly adopted at
                            import time (never installed, never
-                           hash-enforced, never removed).
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
 \*----------------------------------------------------------*/
 
 propertyManifest
 {
     sealed             true;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-17";
+    importedAt         "2026-07-18";
     importerVersion    "2";
     records
     {
         "components/nButane.dat"
         {
             type          imported;
-            sha256        "f32c0fdf4c07c8777ac5b5059e610bd23e33cf190a318752cad9305c764f75ac";
+            sha256        "dad54766edff74e39d07d5095e879bfb840b781566998390072b00744f52372d";
             origin        "data/standards/components/nButane.dat";
-            originSha256  "dbfc169a74cb619fa1a24a770e8e2d6fac0fef745d902f72ef6c12b687337e84";
+            originSha256  "5b7a497ce4149a00fe9bf3b69cb7ffc5f6b8677478aa5f8269ad54dec9cc8716";
             release       Choupo-2607;
         }
         "components/nHexane.dat"
         {
             type          imported;
-            sha256        "d791e19486165e8ea0a01cf245a4269d7fa4677ffc12da95f3c507ecb58a18ee";
+            sha256        "9a688efb8432a80830daf7436007db07154d3f735aaaed86e0272b649f166a37";
             origin        "data/standards/components/nHexane.dat";
-            originSha256  "54bf1e8a4ffd8b89e626434f81d081a851e2a020e3b73135194071818065c02d";
+            originSha256  "ebc11cf9e63b85a2742daf6126aed3ed226982d4f816e4d36b91ea052721a706";
             release       Choupo-2607;
         }
         "components/nPentane.dat"
@@ -47,9 +51,9 @@ propertyManifest
         "components/propane.dat"
         {
             type          imported;
-            sha256        "1539786e5d36727c3dc6a9e5e18ad1348707202b96ae07c3d127df63000ca0d5";
+            sha256        "68cc2725ed82f671e099134cc85df5e2204dfe22df5f527b59758bf48d726040";
             origin        "data/standards/components/propane.dat";
-            originSha256  "9691658d9b7a7d9188dc1259d8a26850b7699e9694a2abb31e3b4fc2dbf6a073";
+            originSha256  "83ed398c59981bd6b08bfa3c9279304df9a019441661328621f7ff1ecf093a66";
             release       Choupo-2607;
         }
     }

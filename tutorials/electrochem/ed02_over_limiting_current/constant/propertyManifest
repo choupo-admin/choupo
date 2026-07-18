@@ -42,22 +42,6 @@ propertyManifest
             originSha256  "7d1996853ccc57b14e5dccf6febb031bf4b6683db7c18ef5622a80da3317a421";
             release       Choupo-2607;
         }
-        "parameters/Pitzer/pairs/Na-Cl.dat"
-        {
-            type          imported;
-            sha256        "8efa88331d512d87057bd5b9766bb0a18fdfdc36abba6244c59531e16f9caa69";
-            origin        "data/standards/parameters/Pitzer/pairs/Na-Cl.dat";
-            originSha256  "dc44b0259620150a5a96e7783fd285fc378126d8b6f5ff3750243fd3f31d3a89";
-            release       Choupo-2607;
-        }
-        "parameters/eNRTL/Na-Cl.dat"
-        {
-            type          imported;
-            sha256        "2dbd301cdb40bb9b3e21ce3af4bcd58fb1df9d91baf08012ca6c6f83a5d8e280";
-            origin        "data/standards/parameters/eNRTL/Na-Cl.dat";
-            originSha256  "129a062cf834d94c00264c82361dac287d130528cd55c7daccdbbb9328180525";
-            release       Choupo-2607;
-        }
         "species/Cl.dat"
         {
             type          imported;

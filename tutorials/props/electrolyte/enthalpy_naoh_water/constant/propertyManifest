@@ -48,14 +48,6 @@ propertyManifest
             originSha256  "1e3d9848129147d6f208abaeed35958c709a6b5a5ec48cb7cd3438120a0eedd9";
             release       Choupo-2607;
         }
-        "parameters/eNRTL/Na-OH.dat"
-        {
-            type          imported;
-            sha256        "42db23f83a2788ecc6e6d5f30cc87aad1a1c169eb596bb86fe31b24e9f13eaea";
-            origin        "data/standards/parameters/eNRTL/Na-OH.dat";
-            originSha256  "01a4a53b24edc2098d2b91303d22216daf7b5ea71ca39ef8a1f42a720dadfc92";
-            release       Choupo-2607;
-        }
         "species/Na.dat"
         {
             type          imported;

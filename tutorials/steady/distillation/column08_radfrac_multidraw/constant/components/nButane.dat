@@ -128,3 +128,14 @@ cosmo
         );
     }
 }
+
+// PC-SAFT non-associating segment parameters (Gross & Sadowski, IECR 40
+// (2001) 1244, Table 1 -- the pure n-alkane fit to vapour pressure + liquid
+// density).  m segments, sigma [Angstrom], epsilon/k [K].
+pcsaft
+{
+    m        2.3316;
+    sigma    3.7086;
+    epsilonK 222.88;
+    source   "Gross & Sadowski, Ind. Eng. Chem. Res. 40 (2001) 1244, Table 1";
+}
