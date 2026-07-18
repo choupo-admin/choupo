@@ -70,7 +70,10 @@ operations
         analyticalTotals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
                       Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
         pH          solve;
-        exchange    { resin SAC_Na; CEC 2.0 eq/L; }   // heavily dosed: limiting effluent
+        // resinDose = bed litres contacted per kg water: X_total = CEC x dose
+        //             = 2.0 eq/L x 1.0 L/kg = 2.0 eq/kg water (heavy dose ->
+        //             the LIMITING effluent; the announce shows the arithmetic)
+        exchange    { resin SAC_Na; resinDose 1.0 L/kg; }
         diagSpecies ( CaX2 MgX2 NaX );
         output      { file softened.csv; }
     }

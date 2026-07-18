@@ -153,6 +153,13 @@ const std::map<std::string, UnitSpec>& table()
         { "eq/kg",   UnitSpec{ 1.0e-3,      Dims::molality } },
         { "meq/kg",  UnitSpec{ 1.0e-6,      Dims::molality } },
 
+        // ----- specific volume → m³/kg -----------------------------------
+        //   A resin DOSE (litres of settled bed contacted per kg of water)
+        //   is dimensionally a specific volume; canonical is m³/kg.
+        { "m3/kg",   UnitSpec{ 1.0,         Dims::specificVolume } },
+        { "L/kg",    UnitSpec{ 1.0e-3,      Dims::specificVolume } },
+        { "mL/g",    UnitSpec{ 1.0e-3,      Dims::specificVolume } },
+
         // ----- density → kg/m³ ------------------------------------------
         { "kg/m3",   UnitSpec{ 1.0,         Dims::density } },
         { "g/cm3",   UnitSpec{ 1.0e3,       Dims::density } },
@@ -227,6 +234,7 @@ const std::map<std::string, UnitSpec>& table()
         // ----- dimensionless / percent ----------------------------------
         { "-",       UnitSpec{ 1.0,         Dims::dimensionless } },
         { "%",       UnitSpec{ 1.0e-2,      Dims::dimensionless } },
+        { "kg/kg",   UnitSpec{ 1.0,         Dims::dimensionless } },   // mass ratio (e.g. dry resin per kg water)
     };
     return t;
 }

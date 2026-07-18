@@ -1223,11 +1223,15 @@ operation { stages 5;  solvent benzene;  temperature 298.15 K; }
 Example: `extract01_ethanol_water_benzene`.
 
 ### `ionExchanger`
-Fixed-bed ion exchange on a declared RESIN record (case-local
-`constant/electrolyte/resins/`): softening/polishing to the resin's
-selectivity and capacity, hardware announced.
+Fixed-bed ion exchange on a declared RESIN record (resolved by exact name in
+case-local `constant/assets/`): softening/polishing to the resin's selectivity
+and capacity, hardware announced.  The capacity NAMEPLATE (`CEC` eq/L bed,
+`CEC_dry` eq/kg dry) lives in the resin `.dat`; the operation declares the
+CONTACT via `resinDose` (`L/kg` = bed litres per kg water, or `kg/kg` = dry
+resin per kg water) and the engine derives + announces
+`X_total = CEC × resinDose` in eq/kg water — no hidden ρ≈1 shortcut.
 ```
-operation { resin SAC_Na;  CEC 2.0 eq/L;  bedVolume 1.5 m3;  pH 7.0; }
+operation { resin SAC_Na;  resinDose 1.0 L/kg;  bedVolume 1.5 m3;  pH 7.0; }
 ```
 Example: `membrane08_softened_scaling` (the softening pre-treatment).
 

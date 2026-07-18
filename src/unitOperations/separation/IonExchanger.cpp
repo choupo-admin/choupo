@@ -95,15 +95,22 @@ int IonExchanger::solve(const DictPtr& dict,
         if (k == "removal" || k == "fraction" || k == "hardness"
          || k == "targetHardness" || k == "leakage" || k == "removalTarget")
             throw std::runtime_error("ionExchanger operation{}: '" + k + "' is "
-                "a RESULT, not a hardware spec -- a softener takes resin + CEC "
-                "(+ optional bedVolume); the effluent hardness / removal is what "
+                "a RESULT, not a hardware spec -- a softener takes resin + "
+                "resinDose (+ optional bedVolume); the effluent hardness / removal is what "
                 "it COMPUTES.  To hit a target hardness, vary the hardware with "
                 "an outer driver (sweep / optimisation), don't name the output.");
-        if (k != "resin" && k != "CEC" && k != "bedVolume" && k != "pH")
+        if (k == "CEC")
+            throw std::runtime_error("ionExchanger operation{}: 'CEC' is the "
+                "resin's NAMEPLATE capacity -- it lives in the resin .dat "
+                "(data/standards/assets/), not in the operation.  The operation "
+                "declares the CONTACT: `resinDose <value> <L/kg|kg/kg>;` (resin "
+                "per kg of water treated); the solver derives X_total = CEC x "
+                "dose and announces the arithmetic.");
+        if (k != "resin" && k != "resinDose" && k != "bedVolume" && k != "pH")
             throw std::runtime_error("ionExchanger operation{}: unknown key '" + k
-                + "'.  Grammar: resin <name>; (required) CEC <value> "
-                  "<eq/L|eq/kg|mol/kg|mol/L>; (optional, defaults from the resin "
-                  ".dat) bedVolume <value> m3; (optional) pH <number|solve>;");
+                + "'.  Grammar: resin <name>; (required) resinDose <value> "
+                  "<L/kg|kg/kg>; (required -- resin contacted per kg water) "
+                  "bedVolume <value> m3; (optional, KPI only) pH <number|solve>;");
     }
 
     // ---- Build the SpeciationInput from the INLET stream ---------------
@@ -145,22 +152,22 @@ int IonExchanger::solve(const DictPtr& dict,
     in.T       = T_in;
 
     // ---- Exchange spec : reuse the SAME reader as the beaker op ---------
-    // readExchange wants an `exchange { resin ...; [CEC ...;] }` sub-dict; map
-    // the operation{} hardware keys onto it so the resin resolution, CEC basis
-    // conversion, network load and refusals are NOT duplicated here.
+    // readExchange wants an `exchange { resin ...; resinDose ...; }` sub-dict;
+    // map the operation{} hardware keys onto it so the resin resolution, the
+    // dose->X_total arithmetic, network load and refusals are NOT duplicated here.
     auto exDict = std::make_shared<Dictionary>("exchange");
     if (!opDict->found("resin"))
         throw std::runtime_error("ionExchanger operation{}: needs `resin "
             "<name>;` (resolved by exact name in constant/electrolyte/resins/ "
             "or data/standards/assets/)");
     exDict->insert("resin", opDict->entryValue("resin"));
-    if (opDict->found("CEC"))
+    if (opDict->found("resinDose"))
     {
-        exDict->insert("CEC", opDict->entryValue("CEC"));
+        exDict->insert("resinDose", opDict->entryValue("resinDose"));
         // carry the dimension metadata across (it lives per-key on the Dictionary,
         // not on the EntryValue) so readExchange's basis check sees the unit.
-        if (opDict->hasDimensions("CEC"))
-            exDict->setDimensions("CEC", opDict->dimensionsOf("CEC"));
+        if (opDict->hasDimensions("resinDose"))
+            exDict->setDimensions("resinDose", opDict->dimensionsOf("resinDose"));
     }
     auto wrap = std::make_shared<Dictionary>(dict->name());
     wrap->insert("exchange", exDict);

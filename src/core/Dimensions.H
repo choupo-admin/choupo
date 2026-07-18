@@ -172,6 +172,7 @@ inline constexpr Dimensions molarEntropy   = molarHeatCap;            // same as
 inline constexpr Dimensions molarMass      = {  1,  0,  0,  0, -1 };  // kg/kmol
 inline constexpr Dimensions concentration  = {  0, -3,  0,  0,  1 };  // kmol/m³
 inline constexpr Dimensions molality       = { -1,  0,  0,  0,  1 };  // kmol/kg (solvent) -- water-analysis totals
+inline constexpr Dimensions specificVolume = { -1,  3,  0,  0,  0 };  // m³/kg -- e.g. a resin dose (L bed / kg water)
 inline constexpr Dimensions molarFlow      = {  0,  0, -1,  0,  1 };  // kmol/s
 inline constexpr Dimensions massFlow       = {  1,  0, -1,  0,  0 };  // kg/s
 inline constexpr Dimensions volumetricFlow = {  0,  3, -1,  0,  0 };  // m³/s

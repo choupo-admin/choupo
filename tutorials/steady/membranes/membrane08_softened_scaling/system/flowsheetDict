@@ -63,9 +63,9 @@ units
 
         operation
         {
-            resin       SAC_Na;           // case-local constant/electrolyte/resins/
-            CEC         2.0 eq/L;          // heavily dosed: the limiting effluent
-            bedVolume   1.5 m3;            // resin in service (hardware -- announced)
+            resin       SAC_Na;           // nameplate (CEC 2.0 eq/L) in the resin .dat
+            resinDose   1.0 L/kg;          // bed L per kg water: X = 2.0 x 1.0 = 2.0 eq/kg
+            bedVolume   1.5 m3;            // resin in service (hardware KPI -- announced)
             pH          7.0;               // acid-dosed + controlled feed (as membrane07)
         }
     }

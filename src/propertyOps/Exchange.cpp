@@ -70,31 +70,77 @@ fs::path resinPath(const std::string& name)
     return {};
 }
 
-// Read CEC [eq / kg water] off a dimensioned entry (eq/kg | mol/kg = direct;
-// eq/L | mol/L = at rho ~ 1 kg/L, the dilute closure shared with totals).  The
-// basis note is returned for the announce.
-double cecAsEqPerKgWater(const DictPtr& d, const std::string& key,
-                         std::string& basisNote)
+// The resin loading the SOLVER consumes is X_total [eq / kg WATER] -- and a
+// vendor CEC is quoted per litre of BED (or per kg of DRY resin), NEVER per
+// litre of solution: converting eq/L_bed to eq/kg_water through rho(water)~1
+// was dimensionally invalid (the Codex membrane08 audit, P0).  The honest
+// contract (2026-07-18):
+//     nameplate  (the ASSET's):  CEC [eq/L bed]  and/or  CEC_dry [eq/kg dry]
+//     contact    (the OP's)   :  resinDose [L bed / kg water]  XOR
+//                                resinDose [kg dry / kg water]
+//     derived (announced)     :  X_total = CEC * resinDose   [eq/kg water]
+// A bed-basis capacity WITHOUT a declared dose REFUSES -- the dose is the
+// author's owned assumption, visible, never a hidden rho~1 shortcut.
+double resinLoadingEqPerKgWater(const DictPtr& op, const DictPtr& resinRec,
+                                const std::string& resinName,
+                                std::string& basisNote)
 {
-    if (!d->hasDimensions(key))
-        throw std::runtime_error("exchange: " + key + " needs a unit: "
-            + key + " 2.0 eq/L | 4.4 eq/kg | 2.0 mol/kg | 2.0 mol/L ...  "
-            "Bare numbers are refused -- a capacity must declare its basis.");
-    const Dimensions dims = d->dimensionsOf(key);
-    const double v = d->lookupScalar(key);             // canonical SI
-    if (dims == Dims::molality)        // amount/mass: kmol/kg -> mol/kg = eq/kg w
+    if (op->found("CEC"))
+        throw std::runtime_error("exchange: `CEC` does not belong in the"
+            " operation -- the capacity NAMEPLATE lives in the resin asset ("
+            + resinName + ".dat: CEC [eq/L bed], CEC_dry [eq/kg dry]); the"
+            " operation declares the CONTACT: `resinDose <v> L/kg;` (bed"
+            " volume per kg water) or `resinDose <v> kg/kg;` (dry resin per"
+            " kg water).");
+    if (!op->found("resinDose"))
+        throw std::runtime_error("exchange: a bed-basis capacity needs the"
+            " contact loading -- declare `resinDose <v> L/kg;` (litres of"
+            " settled bed per kg of water) or `resinDose <v> kg/kg;` (kg dry"
+            " resin per kg water).  eq/L of RESIN BED is not eq/L of solution;"
+            " no rho~1 shortcut is taken for you.");
+    if (!op->hasDimensions("resinDose"))
+        throw std::runtime_error("exchange: resinDose needs its unit --"
+            " `resinDose 1.0 L/kg;` or `resinDose 0.5 kg/kg;` (bare numbers"
+            " refused: the dose must declare its basis).");
+
+    const Dimensions doseDims = op->dimensionsOf("resinDose");
+    const double dose = op->lookupScalar("resinDose");     // canonical SI
+
+    if (doseDims == Dims::specificVolume)                  // m^3 bed / kg water
     {
-        basisNote = "eq/kg basis, taken as eq/kg water";
-        return v * 1.0e3;
+        if (!resinRec->found("CEC"))
+            throw std::runtime_error("exchange: resinDose is volumetric"
+                " (L bed/kg water) but resin " + resinName + ".dat carries no"
+                " volumetric nameplate `CEC <v> eq/L;` -- curate it, or use a"
+                " mass dose against CEC_dry.");
+        const double cec = resinRec->lookupScalar("CEC");  // kmol/m^3 (== eq/L)
+        const double x = cec * dose * 1.0e3;               // -> eq/kg water
+        std::ostringstream os;
+        os << "X_total = CEC (" << cec << " eq/L bed, " << resinName
+           << ".dat nameplate) x resinDose (" << dose * 1.0e3
+           << " L bed/kg water) = " << x << " eq/kg water";
+        basisNote = os.str();
+        return x;
     }
-    if (dims == Dims::concentration)   // amount/vol: kmol/m^3 = mol/L -> eq/kg w
+    if (doseDims == Dims::dimensionless)                   // kg dry / kg water
     {
-        basisNote = "eq/L basis -> eq/kg water at rho ~ 1 kg/L (dilute closure)";
-        return v;                       // mol/L -> mol/kg at rho ~ 1
+        if (!resinRec->found("CEC_dry"))
+            throw std::runtime_error("exchange: resinDose is a mass ratio"
+                " (kg dry/kg water) but resin " + resinName + ".dat carries no"
+                " `CEC_dry <v> eq/kg;` nameplate -- curate it, or use a"
+                " volumetric dose against CEC.");
+        const double cecDry = resinRec->lookupScalar("CEC_dry"); // kmol/kg
+        const double x = cecDry * 1.0e3 * dose;                  // eq/kg water
+        std::ostringstream os;
+        os << "X_total = CEC_dry (" << cecDry * 1.0e3 << " eq/kg dry, "
+           << resinName << ".dat nameplate) x resinDose (" << dose
+           << " kg dry/kg water) = " << x << " eq/kg water";
+        basisNote = os.str();
+        return x;
     }
-    throw std::runtime_error("exchange: " + key + " declared unit is "
-        + dims.toPretty() + ", expected a capacity per mass (eq/kg | mol/kg) "
-        "or per volume (eq/L | mol/L)");
+    throw std::runtime_error("exchange: resinDose unit is "
+        + doseDims.toPretty() + " -- expected L/kg (bed volume per kg water)"
+        " or kg/kg (dry resin per kg water).");
 }
 
 } // anonymous namespace
@@ -104,14 +150,14 @@ void readExchange(const DictPtr& dict, electrolyte::SpeciationInput& in,
 {
     if (!dict->found("exchange"))
         throw std::runtime_error("exchange: the `exchange { resin <name>; "
-            "[CEC ...;] }` block is required for an exchange op");
+            "resinDose ...; }` block is required for an exchange op");
     auto ex = dict->subDict("exchange");
     for (const auto& k : ex->keys())
-        if (k != "resin" && k != "CEC")
+        if (k != "resin" && k != "resinDose" && k != "CEC")
             throw std::runtime_error("exchange{}: unknown key '" + k
-                + "'.  Grammar: `resin <name>;` (required) and `CEC <value> "
-                  "<eq/L|eq/kg|mol/kg|mol/L>;` (optional, defaults from the "
-                  "resin .dat).");
+                + "'.  Grammar: `resin <name>;` (required) and `resinDose "
+                  "<value> <L/kg|kg/kg>;` (required -- the contact loading;"
+                  " the capacity nameplate lives in the resin .dat).");
     if (!ex->found("resin"))
         throw std::runtime_error("exchange{}: needs `resin <name>;` (the resin "
             "is resolved by exact name in constant/electrolyte/resins/ or "
@@ -139,21 +185,11 @@ void readExchange(const DictPtr& dict, electrolyte::SpeciationInput& in,
     in.exchange.exchanger = rd->lookupWordOrDefault("exchanger", "X");
     in.exchange.form      = rd->lookupWordOrDefault("form", "");   // e.g. Na
 
-    // CEC: the dict CEC overrides the resin .dat default; announce which.
+    // The solver's X_total [eq/kg water] is DERIVED: the asset's nameplate
+    // capacity x the operation's declared contact dose -- the whole
+    // arithmetic rides in the announce (no hidden rho~1 shortcut).
     std::string basisNote;
-    if (ex->found("CEC"))
-    {
-        in.exchange.CEC = cecAsEqPerKgWater(ex, "CEC", basisNote);
-        basisNote = "from exchange{}: " + basisNote;
-    }
-    else if (rd->found("CEC"))
-    {
-        in.exchange.CEC = cecAsEqPerKgWater(rd, "CEC", basisNote);
-        basisNote = "from resin " + resin + ".dat: " + basisNote;
-    }
-    else
-        throw std::runtime_error("exchange: no CEC in exchange{} and none in "
-            "resin " + resin + ".dat -- give `CEC <value> <eq/L|eq/kg>;`");
+    in.exchange.CEC = resinLoadingEqPerKgWater(ex, rd, resin, basisNote);
     in.exchange.cecBasisNote = basisNote;
 
     // load the half-reaction network (case overlay first, then standards)
