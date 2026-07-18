@@ -223,7 +223,7 @@ std::set<std::string> SolutionWriter::sectorsTouching(
 //  Render one stream as a parser-valid Choupo dict sub-block.
 //
 //  Composition is written as per-species `molarFlows { name kmol/s; }` so
-//  that F and z reconstruct LOSSLESSLY on read (readSourceStream sums the
+//  that F and z reconstruct LOSSLESSLY on read (the reader sums the
 //  per-species flows to F and divides for z --- no Sigma z = 1 renormalise,
 //  no information lost).  T/P/vf/H are SI-canonical scalars; H is labelled
 //  informational (H is the conserved truth, T the model-dependent readout).

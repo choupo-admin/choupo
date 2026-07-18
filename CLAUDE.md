@@ -422,11 +422,10 @@ material blocks are **`componentMolarFlows`** or `componentMassFlows`
 alias; process-unit ≠ physical-equipment (`designDict` maps → `design/`);
 economics aggregates over DESIGNED equipment.  This RETIRES
 the volatile in-memory drill-in feed injection (inherited-result/`&feeds=`) —
-those were band-aids for the missing persisted-state model.  Migration: a strict
-dual reader (`0/` present → read `0/` ONLY, never merge legacy `streams{}`).
-Build order: (1) `0/` reader+completeness validator, (2) `choupo-init0`, (3)
-migrate `lithiumBrinePlant` first, (4) `converged/` writer, (5) topological
-drill-in, (6) corpus migration, (7) design/economics.  Full contract:
+those were band-aids for the missing persisted-state model.  Migration is
+COMPLETE (2026-07-10): `0/` is the ONLY steady state home; a `streams {}`
+block in any flowsheetDict (root or nested) is REFUSED loudly — no dual
+reader, no fallback.  Full contract:
 [`docs/architecture/stream-state-architecture.md`](docs/architecture/stream-state-architecture.md).
 
 **Three-axiom property layout** (referenced by `docs/ai/overview.md`):

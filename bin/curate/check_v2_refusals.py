@@ -109,6 +109,19 @@ GRAMMAR_NEGATIVES = [
    "constant/thermoPhysPropDict": None,
    "constant/propertyDict": V2_SYSTEM},
   "props", "constant/thermoPhysPropDict"),
+ ("flowsheet-streams-nested",
+  {"system/controlDict": 'application   choupoSolve;\n'
+                         'description   "negative gate";\nverbosity 1;\n',
+   "system/flowsheetDict":
+       "sectors ( sub );\nconnections\n{\n    feed { to sub/feed; }\n"
+       "    hot  { from sub/hot; }\n}\n",
+   "sub/flowsheetDict":
+       "name sub;\ntype heater;\n"
+       "boundary { inlets ( feed ); outlets ( hot ); }\n"
+       "operation { T_out 350 K; }\n"
+       "streams { x { T 300; } }\n",
+   "constant/thermoPhysPropDict": V2_SYSTEM.replace("badcomp", "water")},
+  "solve", "the sub-flowsheet 'sub'"),
  ("flowsheet-streams-block",
   {"system/controlDict": 'application   choupoSolve;\n'
                          'description   "negative gate";\nverbosity 1;\n',

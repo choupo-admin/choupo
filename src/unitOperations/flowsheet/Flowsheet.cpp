@@ -151,486 +151,6 @@ scalar solveStateForVf(const ThermoPackage& thermo, sVector z,
     return 0.5 * (a + b);
 }
 
-ProcessStream readSourceStream(const std::string& name,
-                               const DictPtr& sd,
-                               const ThermoPackage& thermo)
-{
-    ProcessStream s;
-    s.name     = name;
-    s.category = sd->lookupWordOrDefault("category", "");
-
-    // -----------------------------------------------------------------
-    // Step 0 -- utility expansion (optional sugar)
-    //
-    //   A stream block may say `utility steamMP;`.  In that case we
-    //   look the name up in UtilityCatalogue and use it to fill the
-    //   per-stream defaults (P, T, state, composition) when the user
-    //   does NOT explicitly declare them.  Explicit user keys always
-    //   win — the catalogue is a default-pulling convenience, not an
-    //   override.  The `category` field is set to the utility name so
-    //   the consumption report can aggregate by utility type.
-    // -----------------------------------------------------------------
-    const Utility* util = nullptr;
-    if (sd->found("utility"))
-    {
-        const std::string utilName = sd->lookupWord("utility");
-        if (!UtilityCatalogue::has(utilName))
-            throw std::runtime_error("Stream '" + name +
-                "': unknown utility '" + utilName + "' --- check"
-                " data/standards/utilities/ for available names");
-        util = &UtilityCatalogue::byName(utilName);
-        if (s.category.empty()) s.category = util->name;
-    }
-
-    // -----------------------------------------------------------------
-    // Step 1 -- composition  (need it before T/P inversion so we can
-    //                          pick the dominant component for T_sat)
-    // -----------------------------------------------------------------
-    s.z.assign(thermo.n(), 0.0);
-    const bool hasMolFlows  = sd->found("molarFlows");
-    const bool hasMassFlows = sd->found("massFlows");
-    const bool fromFlows    = hasMolFlows || hasMassFlows;
-
-    if (hasMolFlows && hasMassFlows)
-        throw std::runtime_error("Stream '" + name +
-            "': specify exactly ONE of `molarFlows` / `massFlows`");
-    if (fromFlows && sd->found("F"))
-        throw std::runtime_error("Stream '" + name +
-            "': total `F` cannot coexist with `molarFlows`/`massFlows`"
-            " --- per-species flows already imply the total");
-
-    scalar Ftot_from_perspecies = 0.0;     // populated when fromFlows
-
-    if (fromFlows)
-    {
-        auto cd = sd->subDict(hasMolFlows ? "molarFlows" : "massFlows");
-        sVector Fmol(thermo.n(), 0.0);
-
-        if (hasMolFlows)
-        {
-            for (const auto& key : cd->keys())
-            {
-                std::size_t i = thermo.indexOf(key);
-                Fmol[i] = cd->lookupScalar(key, Dims::molarFlow);
-                Ftot_from_perspecies += Fmol[i];
-            }
-            if (Ftot_from_perspecies <= 0.0)
-                throw std::runtime_error("Stream '" + name +
-                    "': molarFlows sums to zero");
-        }
-        else
-        {
-            sVector m(thermo.n(), 0.0);
-            for (const auto& key : cd->keys())
-            {
-                std::size_t i = thermo.indexOf(key);
-                m[i] = cd->lookupScalar(key, Dims::massFlow);
-            }
-            for (std::size_t i = 0; i < thermo.n(); ++i)
-            {
-                const scalar mw = thermo.comp(i).MW();
-                if (m[i] > 0.0 && mw <= 0.0)
-                    throw std::runtime_error("Stream '" + name +
-                        "': component '" + thermo.comp(i).name() +
-                        "' has no MW --- needed to convert mass to molar"
-                        " flow");
-                Fmol[i] = (mw > 0.0) ? m[i] / mw : 0.0;
-                Ftot_from_perspecies += Fmol[i];
-            }
-            if (Ftot_from_perspecies <= 0.0)
-                throw std::runtime_error("Stream '" + name +
-                    "': massFlows sums to zero");
-        }
-        for (std::size_t i = 0; i < thermo.n(); ++i)
-            s.z[i] = Fmol[i] / Ftot_from_perspecies;
-    }
-    else if (sd->found("molarComposition")
-          || sd->found("massComposition")
-          || sd->found("composition"))
-    {
-        s.z = readComposition(sd, thermo, "Stream '" + name + "'");
-    }
-    else if (util != nullptr)
-    {
-        // Utility default: composition derived from the catalogue entry.
-        // Single-component utilities (water steam, water cooling, oils,
-        // salts, brines) give a clean x_i = 1 on the named species.
-        // Mixture utilities are not supported as defaults — declare
-        // the composition explicitly if you ever need one.
-        if (util->componentsList.size() != 1)
-            throw std::runtime_error("Stream '" + name +
-                "': utility '" + util->name + "' has " +
-                std::to_string(util->componentsList.size()) +
-                " components in the catalogue — declare `molarComposition`"
-                " explicitly when using a mixed-utility default");
-        const std::string& comp = util->componentsList[0];
-        const std::size_t i = thermo.indexOf(comp);
-        s.z[i] = 1.0;
-    }
-    else
-    {
-        throw std::runtime_error("Stream '" + name +
-            "': missing composition --- declare `molarComposition {... }`,"
-            " `massComposition {... }`, `molarFlows {... }`,"
-            " `massFlows {... }`, or `utility <name>;`");
-    }
-
-    // -----------------------------------------------------------------
-    // Step 2 -- T, P, state-based completion
-    //
-    //   The user can declare `state <name>;` and omit one of T / P;
-    //   the simulator computes the missing variable from the saturation
-    //   curve of the dominant pure component.  Supported states:
-    //
-    //     saturatedVapour   -> vf = 1.0,  T = T_sat(P)  or P = P_sat(T)
-    //     saturatedLiquid   -> vf = 0.0,  T = T_sat(P)  or P = P_sat(T)
-    //     subcooledLiquid   -> vf = 0.0   (T, P both required)
-    //     superheatedVapour -> vf = 1.0   (T, P both required)
-    //
-    //   Mixtures via `state` are NOT supported yet --- specify T and P
-    //   explicitly until adds bubble-T / dew-T from state.
-    // -----------------------------------------------------------------
-    const bool hasState = sd->found("state");
-    const bool hasT     = sd->found("T");
-    const bool hasP     = sd->found("P");
-    const bool hasVf    = sd->found("vaporFraction") || sd->found("vf");
-    std::string state;
-    if (hasState)
-        state = sd->lookupWord("state");
-    else if (util != nullptr && !util->state.empty())
-        state = util->state;
-
-    const bool effState = hasState || (util != nullptr && !util->state.empty());
-    const bool effHasT  = hasT     || (util != nullptr && util->T_in  > 0.0);
-    const bool effHasP  = hasP     || (util != nullptr && util->P     > 0.0);
-
-    // A complete thermal state needs TWO independent specs: (T and P), OR a
-    // `state` keyword, OR a `vaporFraction` with ONE of {T, P} (the engine then
-    // solves the other -- bubble/dew/flash-at-vf).  vaporFraction is ESSENTIAL
-    // for a saturated/two-phase feed, where T and P are NOT independent.
-    if (!effState && !(effHasT && effHasP) && !(hasVf && (effHasT || effHasP)))
-        throw std::runtime_error("Stream '" + name +
-            "': under-specified thermal state.  Give TWO of {T, P, vaporFraction}"
-            " --- (T and P), or `vaporFraction` with one of {T, P} (the engine"
-            " solves the other; vaporFraction is essential for a saturated or"
-            " two-phase feed, where T and P are not independent on the phase"
-            " boundary), or a `state` keyword, or `utility <name>;`.");
-
-    if (effState && state != "saturatedVapour" && state != "saturatedLiquid"
-                 && state != "subcooledLiquid" && state != "superheatedVapour")
-        throw std::runtime_error("Stream '" + name + "': unknown state '"
-            + state + "' (supported: saturatedVapour, saturatedLiquid,"
-            " subcooledLiquid, superheatedVapour)");
-
-    s.T = hasT ? sd->lookupScalar("T", Dims::temperature)
-               : (util != nullptr ? util->T_in : 0.0);
-    s.P = hasP ? sd->lookupScalar("P", Dims::pressure)
-               : (util != nullptr ? util->P    : 0.0);
-
-    if (effState && (state == "saturatedVapour" || state == "saturatedLiquid"))
-    {
-        // Find the dominant component (x_i >= 0.999).  Mixtures fall
-        // through to "specify T and P explicitly".
-        std::size_t dom = thermo.n();
-        for (std::size_t i = 0; i < thermo.n(); ++i)
-            if (s.z[i] > 0.999) { dom = i; break; }
-        if (dom == thermo.n())
-            throw std::runtime_error("Stream '" + name + "': state '" + state
-                + "' currently supports only pure-component streams (x_i"
-                  " >= 0.999 on one species); for mixtures specify T and P"
-                  " explicitly");
-        const Component& c = thermo.comp(dom);
-
-        if (effHasP && !effHasT)        s.T = invertPsat(c, s.P);
-        else if (effHasT && !effHasP)   s.P = c.vp().Psat_Pa(s.T);
-        else if (effHasT && effHasP)
-        {
-            const scalar P_sat = c.vp().Psat_Pa(s.T);
-            const scalar tol = 0.05 * std::max(s.P, P_sat);
-            if (std::abs(P_sat - s.P) > tol)
-                throw std::runtime_error("Stream '" + name + "': state '"
-                    + state + "' is inconsistent: T = "
-                    + std::to_string(s.T) + " K and P = "
-                    + std::to_string(s.P) + " Pa, but Psat(T) = "
-                    + std::to_string(P_sat) + " Pa for "
-                    + c.name() + " (mismatch > 5 %)");
-        }
-
-        s.vf = (state == "saturatedVapour") ? 1.0 : 0.0;
-    }
-    else if (effState && state == "subcooledLiquid")  s.vf = 0.0;
-    else if (effState && state == "superheatedVapour") s.vf = 1.0;
-
-    // -----------------------------------------------------------------
-    // vaporFraction (alias vf) as a COMPLETE thermal-state spec, mixture-aware.
-    // With ONE of {T, P} the engine solves the OTHER so the flash returns the
-    // declared vf (the pure `state` path above does vf=0/1 via Psat; this is
-    // general -- any mixture, any vf).  T, P AND vf all given is OVER-specified:
-    // verify against the flash and REFUSE a contradiction (no silent crutch).
-    // An explicit `state` already pinned vf -> skip.
-    // -----------------------------------------------------------------
-    if (hasVf && !effState)
-    {
-        const scalar vfDecl = sd->found("vaporFraction")
-            ? sd->lookupScalar("vaporFraction") : sd->lookupScalar("vf");
-        if (vfDecl < 0.0 || vfDecl > 1.0)
-            throw std::runtime_error("Stream '" + name + "': vaporFraction = "
-                + std::to_string(vfDecl) + " is outside [0, 1].");
-
-        if (effHasT && effHasP)
-        {
-            // OVER-specified (T, P AND vf): the flash at (T, P) already fixes vf.
-            sVector zf = s.z; scalar zs = 0.0; for (scalar zi : zf) zs += zi;
-            if (zs > 0.0) for (auto& zi : zf) zi /= zs;
-            FlashInput fin; fin.F = 1.0; fin.T = s.T; fin.P = s.P; fin.z = zf;
-            FlashOptions fo; fo.verbosity = 0;
-            const FlashSolution fs = IsothermalFlash::solveCore(fin, thermo, fo);
-            const scalar vfFl = (fs.converged && std::isfinite(fs.V_over_F))
-                ? std::min(1.0, std::max(0.0, fs.V_over_F)) : vfDecl;
-            if (std::abs(vfFl - vfDecl) > 0.02)
-                throw std::runtime_error("Stream '" + name + "': over-specified"
-                    " and inconsistent --- (T, P) flash to vaporFraction "
-                    + std::to_string(vfFl) + ", but vaporFraction "
-                    + std::to_string(vfDecl) + " was also declared.  Give only"
-                    " TWO of {T, P, vaporFraction}.");
-            s.vf = vfDecl;
-        }
-        else if (effHasP)   // P + vaporFraction -> solve T (bubble/dew/flash-at-vf)
-        {
-            s.T  = solveStateForVf(thermo, s.z, true, s.P, vfDecl, name);
-            s.vf = vfDecl;
-        }
-        else                // T + vaporFraction -> solve P
-        {
-            s.P  = solveStateForVf(thermo, s.z, false, s.T, vfDecl, name);
-            s.vf = vfDecl;
-        }
-
-        // LOUD: announce the resolved thermal state -- the spec the student reads.
-        const auto& du = DisplayUnits::instance();
-        const auto [Td, Tl] = du.convert(s.T, Dims::temperature);
-        const auto [Pd, Pl] = du.convert(s.P, Dims::pressure);
-        const char* ph = (s.vf <= 1.0e-6) ? "saturated liquid"
-                       : (s.vf >= 1.0 - 1.0e-6) ? "saturated vapour" : "two-phase (VL)";
-        char buf[160];
-        std::snprintf(buf, sizeof(buf),
-            "vaporFraction %.4g -> T = %.2f %s, P = %.4g %s  (%s)",
-            static_cast<double>(vfDecl), static_cast<double>(Td), Tl.c_str(),
-            static_cast<double>(Pd), Pl.c_str(), ph);
-        const std::string locus = "stream '" + name + "'";
-        if (AdvisoryLog::instance().add("phase", "info", locus, buf))
-            std::cout << "  [phase] " << locus << ": " << buf << "\n";
-    }
-
-    // -----------------------------------------------------------------
-    // Step 2b -- phase is a CONSEQUENCE of (T, P, z), and the engine must
-    //            ANNOUNCE the consequence it inferred --- never bury it.
-    //
-    //   When the user declares NEITHER `state` NOR `vf`, do NOT silently
-    //   assume the feed is liquid (vf = 0).  Two distinct silent traps once
-    //   lived here:
-    //
-    //   (1) PHANTOM LATENT HEAT.  Stamping a two-phase feed LIQUID made the
-    //       downstream flash "pay" steam to boil what was already boiled
-    //       (flash01: feed at 370 K / 1 bar is ~30 % vapour).  Cured by
-    //       flashing the feed at its OWN (T, P, z) --- Duhem fixes the state.
-    //
-    //   (2) "LIQUID NITROGEN" / "LIQUID STEAM" (QA T3).  A carrier gas declared
-    //       by (T, P) only (sprayDryer drying air = N2 at 200 C; utility02
-    //       water at 499 C / 40 bar) flashed to vf = 0 because the pure-
-    //       component Psat is extrapolated FAR outside its Antoine range above
-    //       Tc, so the VL split is physically meaningless --- yet the stream
-    //       silently became a cold liquid.  A species at T > Tc CANNOT be
-    //       liquid, so a liquid verdict there is a numerical artefact.
-    //
-    //   The credo (no silent crutch): the engine either INFERS the phase and
-    //   says so, or WARNS when the inference is untrustworthy.  An explicit
-    //   `state`/`vf` above is the author's deliberate override and is left
-    //   untouched (and unannounced).  vf is intensive, so F is irrelevant.
-    // -----------------------------------------------------------------
-    //   Only meaningful when the package can actually do VLE: an LL-only
-    //   package (a decanter's two-liquid thermo, no vapour phase / EoS)
-    //   has nothing to flash against, so the feed is liquid (vf = 0) by
-    //   construction --- skip it (and avoid a VL flash with no EoS).
-    const bool phaseDeclared = effState || hasVf;
-    const bool canVLE        = !thermo.phasesOfType("vapor").empty();
-    scalar zsum_phase = 0.0;
-    for (const scalar zi : s.z) zsum_phase += zi;
-    if (!phaseDeclared && canVLE && zsum_phase > 1.0e-9 && s.T > 0.0 && s.P > 0.0)
-    {
-        // Is the stream supercritical in its dominant species?  A component
-        // with a finite Tc below the stream T cannot condense; if such species
-        // make up the majority of the stream, any "liquid" flash verdict is a
-        // Psat-extrapolation artefact, not a phase.  (Tc <= 0 = unknown -> not
-        // counted; we never override on missing data.)
-        scalar      z_supercrit = 0.0;
-        std::string scWorst;            // worst offender, for the message
-        scalar      scWorstZ = 0.0;
-        for (std::size_t i = 0; i < thermo.n() && i < s.z.size(); ++i)
-        {
-            const scalar zi = s.z[i] / zsum_phase;
-            const scalar Tc = thermo.comp(i).Tc();
-            if (zi > 1.0e-9 && Tc > 0.0 && s.T > Tc)
-            {
-                z_supercrit += zi;
-                if (zi > scWorstZ) { scWorstZ = zi; scWorst = thermo.comp(i).name(); }
-            }
-        }
-        const bool supercriticalFeed = z_supercrit > 0.5;   // majority cannot condense
-        // ALL components supercritical: the stream is unambiguously a GAS --
-        // above Tc there is no vapour/liquid distinction to warn about, and
-        // demanding a `state` declaration for pure N2 at 300 K is nonsense
-        // (round-4: the engine must know what it can know; no busywork).
-        const bool allSupercritical = z_supercrit > 1.0 - 1.0e-9;
-
-        FlashInput fin;
-        fin.F = 1.0;                       // intensive: vf is F-independent
-        fin.T = s.T;
-        fin.P = s.P;
-        fin.z = s.z;
-        for (auto& zi : fin.z) zi /= zsum_phase;   // normalise defensively
-        FlashOptions fopts;
-        fopts.verbosity = 0;               // silent: we only want the vf
-        const FlashSolution fs = IsothermalFlash::solveCore(fin, thermo, fopts);
-        const bool   flashOK  = fs.converged && std::isfinite(fs.V_over_F);
-        const scalar vfFlash  = flashOK
-            ? std::min(1.0, std::max(0.0, fs.V_over_F)) : 0.0;
-
-        // Display-unit temperature for the human-readable advisory.
-        const auto& du = DisplayUnits::instance();
-        const auto [T_disp, T_lbl] = du.convert(s.T, Dims::temperature);
-        char tbuf[24];
-        std::snprintf(tbuf, sizeof(tbuf), "%.1f", static_cast<double>(T_disp));
-        const std::string Tstr  = std::string(tbuf) + " " + T_lbl;
-        const std::string locus = "stream '" + name + "'";
-
-        if (allSupercritical)
-        {
-            // Unambiguous: a wholly supercritical composition is a gas.
-            s.vf = 1.0;
-            if (thermoAnnounce(3))
-                std::cout << "  [phase] stream '" << s.name << "': every"
-                             " FLUID component is above its Tc -> gas"
-                             " (vf = 1; any solids ride their own channel).\n";
-        }
-        else if (supercriticalFeed && vfFlash < 0.5)
-        {
-            // The VL flash says liquid, but the stream is supercritical in its
-            // dominant species -- a liquid here is a Psat-extrapolation ghost.
-            // Override to vapour and WARN: this is the "liquid N2" trap (QA T3).
-            s.vf = 1.0;
-            const std::string msg =
-                "vf/state unspecified and the feed-flash returned liquid, but '"
-                + scWorst + "' is supercritical at " + Tstr
-                + " (T > Tc) -- a liquid verdict is a vapour-pressure"
-                  " extrapolation artefact, not physics.  Treating the stream"
-                  " as VAPOUR (vf = 1).  Declare `state superheatedVapour;`"
-                  " (or an explicit `vf`) to silence this.";
-            if (AdvisoryLog::instance().add("phase", "warning", locus, msg))
-                std::cout << "  [phase] WARNING: " << locus << ": " << msg << "\n";
-        }
-        else if (flashOK)
-        {
-            s.vf = vfFlash;
-            // Announce the NON-trivial inferences (two-phase or all-vapour).
-            // A plain vf = 0 (subcooled liquid) is the unsurprising case and is
-            // left unannounced so every liquid-feed tutorial is not flooded.
-            if (s.vf > 1.0e-6)
-            {
-                char vbuf[16];
-                // 3 significant digits below 0.01: "%.3f" would print a
-                // tiny-but-real vf = 4e-4 as "0.000" and contradict the
-                // two-phase verdict on the same line.
-                std::snprintf(vbuf, sizeof(vbuf),
-                              (s.vf < 0.01) ? "%.3g" : "%.3f",
-                              static_cast<double>(s.vf));
-                const std::string phaseWord =
-                    (s.vf > 1.0 - 1.0e-6) ? "VAPOUR" : "two-phase (VL)";
-                const std::string msg =
-                    "vf/state unspecified; feed-flash at " + Tstr
-                    + " gives vf = " + vbuf + " -> " + phaseWord
-                    + ".  (Declare `state`/`vf` to fix the phase explicitly.)";
-                if (AdvisoryLog::instance().add("phase", "info", locus, msg))
-                    std::cout << "  [phase] " << locus << ": " << msg << "\n";
-            }
-        }
-        else if (supercriticalFeed)
-        {
-            // Flash did not even converge AND the feed is supercritical: the
-            // package cannot represent a phase split here.  Honest vapour.
-            s.vf = 1.0;
-            const std::string msg =
-                "vf/state unspecified, the feed-flash did not converge, and '"
-                + scWorst + "' is supercritical at " + Tstr
-                + " -- treating the stream as VAPOUR (vf = 1) rather than"
-                  " silently liquid.  Declare `state superheatedVapour;` to be"
-                  " explicit.";
-            if (AdvisoryLog::instance().add("phase", "warning", locus, msg))
-                std::cout << "  [phase] WARNING: " << locus << ": " << msg << "\n";
-        }
-        // else: flash failed and the feed is not supercritical -> leave the
-        // vf = 0 default (no basis to infer otherwise; a genuine cold liquid).
-    }
-
-    // -----------------------------------------------------------------
-    // Step 3 -- F (total molar flow)
-    //
-    //   * fromFlows: F = sum of per-species flows (already computed)
-    //   * has(F)   : explicit value
-    //   * else     : default to 0 IF state implies the stream is
-    //                  utility-like (saturatedVapour heating chest of
-    //                  evaporators / heat exchangers); the consuming
-    //                  unit op writes the actual demand back into the
-    //                  stream registry after solve.
-    // -----------------------------------------------------------------
-    if (fromFlows)
-    {
-        s.F = Ftot_from_perspecies;
-    }
-    else if (sd->found("F"))
-    {
-        s.F = sd->lookupScalar("F", Dims::molarFlow);
-    }
-    else
-    {
-        throw std::runtime_error("Stream '" + name +
-            "': missing total flow `F` --- every stream needs a real F "
-            "(or per-species molarFlows / massFlows).  For heating "
-            "utilities, provide an initial estimate; an outer DesignSpec "
-            "can then iterate it to satisfy the cascade.");
-    }
-
-    // ---- Solid phase ------------------------------------------
-    //  solids { solidFlows { dust 50 kg/h;... }
-    //           diameters ( 1e-6 5e-6... );  massFractions ( 0.1 0.3... ); }
-    //  solidFlows are read as mass flows and converted to molar (s[i]) via
-    //  MW, keeping s[] parallel to z[].  The PSD is two parallel lists.
-    if (sd->found("solids"))
-    {
-        auto sol = sd->subDict("solids");
-        s.s.assign(thermo.n(), 0.0);
-        if (sol->found("solidFlows"))
-        {
-            auto sf = sol->subDict("solidFlows");
-            for (const auto& key : sf->keys())
-            {
-                const std::size_t i = thermo.indexOf(key);
-                const scalar mflow = sf->lookupScalar(key, Dims::massFlow); // kg/s
-                const scalar mw    = thermo.comp(i).MW();
-                s.s[i] = (mw > 0.0) ? mflow / mw : 0.0;                     // kmol/s
-            }
-        }
-        if (sol->found("diameters"))
-        {
-            s.psd.diameter = sol->lookupList("diameters");
-            s.psd.massFrac = sol->lookupList("massFractions");
-            scalar sm = 0.0; for (auto v : s.psd.massFrac) sm += v;
-            if (sm > 0.0) for (auto& v : s.psd.massFrac) v /= sm;
-        }
-    }
-
-    return s;
-}
 
 void printStream(const ProcessStream& s, const ThermoPackage& thermo)
 {
@@ -758,7 +278,7 @@ DictPtr streamToDict(const ProcessStream& s, const ThermoPackage& thermo)
 struct CompositeTear
 {
     std::string   qualifiedName;       // e.g. "FERMENTATION.Recycle"
-    ProcessStream initial;              // initial guess from this composite's streams{}
+    ProcessStream initial;              // initial guess from the 0/ state
     bool          hasInitial = true;    // false: resolve AFTER the manifest-based
                                         // 0/ seeding (topology-first reader,
                                         // forum #83 -- flatten no longer requires
@@ -779,10 +299,10 @@ struct CompositeTear
 //                 [cwd is the case dir], "concentration/" one level down).
 //    inletMap : this node's boundary-inlet name -> the global stream feeding it.
 //    outTears : OUT.  Each composite (root + recursive members) appends its
-//                 own `tearStreams` here with the initial guess read from its
-//                 `streams {}` block.  Internal recycle within a sector
-//                 becomes a flat-case-style tear after flattening.
-//    thermo   : needed by readSourceStream to interpret tear initial guesses.
+//                 own `tearStreams` here, seeded from the 0/ state when it is
+//                 already readable at flatten time.  Internal recycle within a
+//                 sector becomes a flat-case-style tear after flattening.
+//    thermo   : needed to interpret stream state (units, composition).
 // ---------------------------------------------------------------------------
 // Resolve a flowsheet MEMBER's DIRECTORY (with trailing '/').  A member is a
 // UNIT operation or a SECTOR -- never a generic "member": a dignified unit lives
@@ -813,6 +333,21 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
     const ThermoPackage&                            thermo,
     const std::map<std::string, ProcessStream>&     streamReg)
 {
+    // Stream state never lives in a flowsheetDict -- at ANY level of the
+    // fractal tree.  The root reader refuses its own block in solve(); a
+    // nested sub-flowsheet must refuse just as loudly, naming the node.
+    if (dict->found("streams"))
+        throw std::runtime_error("Flowsheet: the sub-flowsheet '"
+            + (nsPrefix.empty() ? std::string("<root>")
+                                : nsPrefix.substr(0, nsPrefix.size() - 1))
+            + "' (" + (folderPath.empty() ? std::string("case root")
+                                          : folderPath)
+            + ") carries a `streams {}` block -- stream state lives in "
+              "per-stream 0/ files, never in a flowsheetDict.  Author the "
+              "state as 0/<stream> files (bin/choupo-init0 materialises the "
+              "rest) and delete the block.  "
+              "See docs/architecture/stream-state-architecture.md.");
+
     // A composite lists its MEMBERS by folder name under `sectors` (UPPERCASE
     // composite sub-flowsheets) and/or `units` (lowercase dignified unit ops --
     // a leaf folder with a `type`).  Both are folder references flattened here;
@@ -967,6 +502,17 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
         else throw std::runtime_error("Flowsheet: member '" + member
             + "' has neither a folder (" + leanDict + " or " + systemDict
             + ") nor an inline block");
+
+        // Stream state never lives in a flowsheetDict -- refuse a member's
+        // `streams {}` block just as loudly as the root's, naming the node.
+        if (cd->found("streams"))
+            throw std::runtime_error("Flowsheet: the sub-flowsheet '"
+                + nsPrefix + member + "' (" + memberBase + ") carries a "
+                "`streams {}` block -- stream state lives in per-stream 0/ "
+                "files, never in a flowsheetDict.  Author the state as "
+                "0/<stream> files (bin/choupo-init0 materialises the rest) "
+                "and delete the block.  "
+                "See docs/architecture/stream-state-architecture.md.");
 
         // The member's INTERFACE PORTS.  With named edges there is NO boundary{}:
         // a port `member/p` referenced as a connection `to` is an inlet, as a
@@ -2500,12 +2046,11 @@ int Flowsheet::solve(const DictPtr& dict,
     //  parent's persisted state instead.
     std::map<std::string,StreamBounds> streamBounds;   // optional author cages
 
-    // ---- Stream-state precedence (R2 dual reader, 2026-07-06) -----------
-    //  If a `0/` directory exists, the COMPLETE initial state lives there --
-    //  one file per stream in canonical componentFlows grammar
-    //  (docs/architecture/stream-state-architecture.md).  Read it and IGNORE
-    //  any legacy streams{} block: never a mixed source of truth.  This is the
-    //  disk truth a topological drill-in materialises a member 0/ from.
+    // ---- Stream state ---------------------------------------------------
+    //  The COMPLETE initial state lives in `0/` -- one file per stream in
+    //  canonical componentFlows grammar
+    //  (docs/architecture/stream-state-architecture.md).  This is the disk
+    //  truth a topological drill-in materialises a member 0/ from.
     // Topology-first reader (forum #83): read the raw 0/ tree ONCE, keyed by
     // its dotted RELATIVE PATH (the file's identity) -- no basename step, no
     // seeding yet.  The actual seeding happens AFTER flattening, when the
@@ -2521,11 +2066,9 @@ int Flowsheet::solve(const DictPtr& dict,
         seededFrom0 = !rawState.empty();
     }
 
-    // The legacy `streams {}` reader is REMOVED (forum #91-3 / #97-2: the
-    // corpus debt reached zero, the doctrine gate blocks regression, and the
-    // reader's continued existence was itself the shadow risk).  A steady
-    // flowsheetDict carrying stream STATE refuses loudly -- never a silent
-    // fallback, never a second source of truth beside 0/.
+    // A flowsheetDict declares TOPOLOGY only -- one carrying stream STATE
+    // refuses loudly, never a silent fallback, never a second source of
+    // truth beside 0/.
     if (dict->found("streams"))
         throw std::runtime_error(std::string("Flowsheet: this flowsheetDict "
             "carries a `streams {}` block -- the legacy steady stream-state "
@@ -2723,8 +2266,7 @@ int Flowsheet::solve(const DictPtr& dict,
         }
         if (verbosity >= 2)
             std::cout << "[state] seeded " << claimed.size()
-                      << " stream(s) from 0/ via the canonical manifest; "
-                         "legacy streams{} ignored\n";
+                      << " stream(s) from 0/ via the canonical manifest\n";
     }
 
     // ---- Phase resolution, layer 1: the Tc screen -----------------------
@@ -2754,9 +2296,9 @@ int Flowsheet::solve(const DictPtr& dict,
             s.vf = 1.0;                               // above every Tc: no liquid possible
     }
 
-    // Snapshot the AUTHORED state names (whatever 0/ or the legacy streams{}
-    // supplied) BEFORE any tear auto-seeding -- choupo-init0 must distinguish
-    // what the author wrote from what the engine estimated.
+    // Snapshot the AUTHORED state names (what 0/ supplied) BEFORE any tear
+    // auto-seeding -- choupo-init0 must distinguish what the author wrote
+    // from what the engine estimated.
     std::set<std::string> authoredStates;
     for (const auto& [nm0, s0] : streams_) { (void) s0; authoredStates.insert(nm0); }
 
@@ -2773,15 +2315,15 @@ int Flowsheet::solve(const DictPtr& dict,
     // recycle in a sector iterates exactly like flat-case recycle.
     for (auto& ct : compositeTears)
     {
-        // Deferred tear (topology-first reader): flattenNode found neither a
-        // legacy streams{} guess nor a pre-seeded state.  The manifest-based
-        // seeding above has run by now -- if the tear is STILL absent from
-        // the registry, the case genuinely lacks an initial guess.
+        // Deferred tear (topology-first reader): flattenNode found no
+        // pre-seeded state.  The manifest-based seeding above has run by now
+        // -- if the tear is STILL absent from the registry, the case
+        // genuinely lacks an initial guess.
         if (!ct.hasInitial && !streams_.count(ct.qualifiedName))
             throw std::runtime_error("Flowsheet: tear stream '"
-                + ct.qualifiedName + "' has no initial guess -- neither in "
-                "`streams { " + ct.qualifiedName + " { ... } }` nor as a 0/ "
-                "state file");
+                + ct.qualifiedName + "' has no initial guess -- no 0/ state "
+                "file supplies it (author 0/" + ct.qualifiedName + " or run "
+                "bin/choupo-init0)");
         if (ct.hasInitial && !streams_.count(ct.qualifiedName))
             streams_[ct.qualifiedName] = std::move(ct.initial);
         // Dedupe: a recycle the author ALSO named in `tearStreams` (a named-edge
@@ -2795,7 +2337,7 @@ int Flowsheet::solve(const DictPtr& dict,
 
     // ---- Auto-seed unguessed tears (honest feed propagation) -----------
     //  A tear named in `tearStreams` normally carries its own initial guess
-    //  in the `streams {}` block (process03_recycle does).  If the author
+    //  as a 0/ state file (process03_recycle does).  If the author
     //  OMITTED it, seed it from the FEED AGGREGATE -- a physically-defensible
     //  guess derived from the actual feeds (the fresh material entering the
     //  loop), never a magic universal constant (the "1 kg/s"
@@ -2821,7 +2363,7 @@ int Flowsheet::solve(const DictPtr& dict,
             if (!tmpl || Ftot <= 0.0)
                 throw std::runtime_error("Flowsheet: tear stream '" + t +
                     "' has no initial guess and no feed to propagate from --"
-                    " declare it (its initial guess) in the `streams {}` block.");
+                    " author its initial guess as a 0/" + t + " state file.");
             ProcessStream seed = *tmpl;     // inherit P, vf, vector sizes, sane fields
             seed.name = t;
             seed.F = Ftot;
@@ -3420,7 +2962,11 @@ int Flowsheet::solve(const DictPtr& dict,
         // an alias (else the state writer would skip its file).  Only a genuine
         // rename (legacy anonymous: BRINE.halite -> halite) is a boundary alias.
         if (streams_.count(src) && src != alias)
-        { streams_[alias] = streams_.at(src); boundaryAliases_.insert(alias); }
+        {
+            streams_[alias] = streams_.at(src);
+            boundaryAliases_.insert(alias);
+            boundaryAliasOf_[alias] = src;
+        }
 
     // ---- Reconcile named-edge LABELS with the streams that carry them ----
     //  The 0/ reader seeds every state file under its BARE name (`liquor`), but a
@@ -3438,8 +2984,7 @@ int Flowsheet::solve(const DictPtr& dict,
     {
         // Candidate bare labels: every base that exactly ONE qualified stream
         // carries.  Two kinds are (re)pointed at the stream they name:
-        //   * an EXISTING bare entry (a legacy fossil of the old byBase
-        //     seeding, or a legacy streams{} seed) -- refreshed in place;
+        //   * an EXISTING bare entry -- refreshed in place;
         //   * an ABSENT one -- CREATED, because the author's connection KEY is
         //     the bare edge name (`reactorOut`, not `REACTION.reactorOut`) and
         //     the report + goldens speak the author's vocabulary.  The
@@ -3474,6 +3019,7 @@ int Flowsheet::solve(const DictPtr& dict,
             streams_[bare] = streams_.at(m.first);
             streams_[bare].name = bare;
             boundaryAliases_.insert(bare);       // a label, not a second state file
+            boundaryAliasOf_[bare] = m.first;
         }
     }
 
@@ -3801,24 +3347,10 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
         }
         if (verbosity >= 1)
             std::cout << "  [init0] wrote     " << f.generic_string()
-                      << "  (" << (isInlet ? "inlet, from legacy streams{}"
+                      << "  (" << (isInlet ? "inlet"
                                  : producerOf.count(nm) && !firstConsumerOf.count(nm)
                                    ? "outlet estimate" : "internal estimate")
                       << ")\n";
-        ++nWritten;
-    }
-
-    // Legacy-migration path: an authored LEGACY inlet (streams{} block, no 0/
-    // yet) must be materialised too, or 0/ stays incomplete.
-    for (const auto& nm : graphStreams)
-    {
-        const fs::path f = pathOf(nm);
-        if (fs::exists(f) || !streams_.count(nm)) continue;
-        fs::create_directories(f.parent_path());
-        StreamStateIO::writeStreamState(streams_.at(nm), thermo, f);
-        if (verbosity >= 1)
-            std::cout << "  [init0] wrote     " << f.generic_string()
-                      << "  (migrated from legacy streams{})\n";
         ++nWritten;
     }
 

@@ -293,16 +293,15 @@ material block = UNSPECIFIED = error.**
 
 ---
 
-## 4. Migration — the strict dual reader (R2, transitional only)
+## 4. Migration — COMPLETE (the dual reader is history)
 
-The existing tutorial corpus still stores streams inside `flowsheetDict`. The
-transition rule is ABSOLUTE — never a mixed source of truth:
-```
-if 0/ exists:   read 0/ ONLY   (do NOT merge with legacy streams{})
-else:           read legacy streams{}   +   emit migration warning
-```
-A one-shot migrator moves the corpus incrementally behind this reader; the
-legacy reader is removed LAST, only after migration is complete.
+The corpus migration finished 2026-07-10 and the transitional dual reader was
+then removed.  Today the rule is simpler and absolute: `0/` is the ONLY home
+of steady stream state.  A `streams {}` block authored in any flowsheetDict —
+root or nested sub-flowsheet — is REFUSED loudly with a pointer to the `0/`
+grammar and `bin/choupo-init0`; there is no fallback and no merge.  The
+negative-parity gate (`bin/curate/check_v2_refusals.py`) keeps both refusals
+executable.
 
 ---
 
