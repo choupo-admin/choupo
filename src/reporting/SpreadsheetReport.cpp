@@ -50,7 +50,7 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
     const scalar closureTol = dict->lookupScalarOrDefault("closureTol", 0.5);
     const scalar Tref       = dict->lookupScalarOrDefault("Tref", 298.15);
 
-    const auto topo   = reporting::readTopology(ctx.flowsheetDict);
+    const auto topo   = reporting::readTopology(ctx.flowsheetDict, ctx.result);
     const auto units  = reporting::resolveUnits(topo, ctx.result);  // flattened (plant-aware)
     const auto& comps = ctx.result.componentNames;
     const std::size_t n = comps.size();

@@ -29,10 +29,16 @@ File
     src/reporting/Topology.H
 
 Description
-    Helper that reads the flowsheet topology (each unit's inlet and
+    Helper that derives the flowsheet topology (each unit's inlet and
     outlet stream names, and which streams are system feeds vs products)
-    from a flowsheetDict.  Shared by the mass- and energy-balance
-    reports, which need to bucket streams per unit and globally.
+    for the reports.  The PRIMARY source is the FLATTENED topology the
+    solver recorded in SimulationResult::topology -- it is the truth for
+    every case shape (flat, leaf, composite with named edges), already
+    namespaced.  The flowsheetDict is consulted only for the root
+    boundary{} declaration (boundary stream names) and as a fallback when
+    no solved topology exists.  Shared by the stream-table and the mass-
+    and energy-balance reports, which need to bucket streams per unit and
+    globally.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -60,28 +66,32 @@ struct Topology
     std::vector<UnitIO>    units;
     std::set<std::string>  consumed;   // any stream that is some unit's input
     std::set<std::string>  produced;   // any stream that is some unit's output
-    std::set<std::string>  feeds;      // consumed AND not produced (or legacy-declared)
+    std::set<std::string>  feeds;      // consumed AND not produced (or boundary-declared)
     std::set<std::string>  products;   // produced AND not consumed
 };
 
-// Parse the flowsheetDict.  Handles both `in <name>;` (single) and
-// `inputs (a b );` (list) forms, mirroring Flowsheet's own reader.
-inline Topology readTopology(const DictPtr& flowsheetDict)
+// Derive the topology for the reports.  The flattened solver topology
+// (SimulationResult::topology) is the primary source -- one FlatUnit per real
+// piece of equipment with its namespaced stream names, valid for flat, leaf
+// and composite/named-edge cases alike.  The flowsheetDict fallback parses
+// inline `units` / leaf nodes only (both forms mirror Flowsheet's reader),
+// for the rare context with no solved topology.
+inline Topology readTopology(const DictPtr& flowsheetDict,
+                             const SimulationResult& result)
 {
     Topology topo;
 
-    // Declared source streams (the `streams {... }` block).
-    std::set<std::string> declared;
-    if (flowsheetDict->found("streams"))
+    if (!result.topology.empty())
     {
-        auto streamsDict = flowsheetDict->subDict("streams");
-        for (const auto& k : streamsDict->keys()) declared.insert(k);
+        for (const auto& fu : result.topology)
+        {
+            UnitIO io{ fu.name, fu.type, fu.ins, fu.outs };
+            for (const auto& s : io.ins)  topo.consumed.insert(s);
+            for (const auto& s : io.outs) topo.produced.insert(s);
+            topo.units.push_back(std::move(io));
+        }
     }
-
-    // INLINE units only (a flat case).  A composite lists folder members under
-    // `units`/`sectors` as WORDS -- skip that here (the flattened topology is
-    // reported elsewhere), exactly as an absent `units` was skipped.
-    if (flowsheetDict->hasDictList("units"))
+    else if (flowsheetDict->hasDictList("units"))
     {
         for (const auto& u : flowsheetDict->lookupDictList("units"))
         {
@@ -117,35 +127,38 @@ inline Topology readTopology(const DictPtr& flowsheetDict)
         for (const auto& s : io.outs) topo.produced.insert(s);
         topo.units.push_back(std::move(io));
     }
-    else if (flowsheetDict->found("sectors"))
-    {
-        // Composite node (fractal step 2): the system boundary IS the node's
-        // `boundary` --- feeds = inlets, products = outlets.  The global mass
-        // balance only needs that (per-child detail would re-flatten the
-        // children, which the solver already did).
-        if (flowsheetDict->found("boundary"))
-        {
-            auto b = flowsheetDict->subDict("boundary");
-            if (b->found("inlets"))
-                for (const auto& s : b->lookupWordList("inlets")) topo.feeds.insert(s);
-            if (b->found("outlets"))
-                for (const auto& s : b->lookupWordList("outlets")) topo.products.insert(s);
-        }
-        return topo;   // skip the generic derivation below
-    }
 
-    // Feeds: graph inputs that nobody produces (true system inlets).  Current
-    // cases keep source state in 0/, not in a legacy flowsheetDict streams{}
-    // block, so consumed-minus-produced is the canonical topology rule.
+    // Feeds: graph inputs nobody produces; products: outputs nobody consumes.
+    // Stream role is inferred from TOPOLOGY (the stream-state architecture).
+    // ONE physical stream, ONE boundary entry: a stream copied onto a
+    // boundary alias/label (BRINE.halite -> halite, or a root rename) is
+    // listed under its BOUNDARY name -- the author's vocabulary -- never
+    // under both names (that would double-count every global balance).
+    std::map<std::string,std::string> aliasFor;   // identity -> boundary name
+    for (const auto& [alias, src] : result.boundaryAliasOf)
+        aliasFor[src] = alias;
     for (const auto& s : topo.consumed)
         if (!topo.produced.count(s)) topo.feeds.insert(s);
-    // Preserve legacy declared sources, including an intentionally unconsumed
-    // boundary feed used by a report-only case.
-    for (const auto& s : declared)
-        if (!topo.produced.count(s)) topo.feeds.insert(s);
-    // Products: produced but consumed by nobody (true system outlets).
     for (const auto& s : topo.produced)
-        if (!topo.consumed.count(s)) topo.products.insert(s);
+    {
+        if (topo.consumed.count(s)) continue;
+        const auto a = aliasFor.find(s);
+        topo.products.insert(a == aliasFor.end() ? s : a->second);
+    }
+
+    // Root boundary{} declaration (fallback shapes only): with a solved
+    // topology the boundary streams are already present under their real
+    // or aliased names.
+    if (result.topology.empty() && flowsheetDict->found("boundary"))
+    {
+        auto b = flowsheetDict->subDict("boundary");
+        if (b->found("inlets"))
+            for (const auto& s : b->lookupWordList("inlets"))
+                topo.feeds.insert(s);
+        if (b->found("outlets"))
+            for (const auto& s : b->lookupWordList("outlets"))
+                topo.products.insert(s);
+    }
 
     return topo;
 }

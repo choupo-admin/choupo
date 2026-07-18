@@ -45,7 +45,7 @@ namespace Choupo {
 void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
 {
     const scalar Tref = dict->lookupScalarOrDefault("Tref", 298.15);
-    const auto topo = reporting::readTopology(ctx.flowsheetDict);
+    const auto topo = reporting::readTopology(ctx.flowsheetDict, ctx.result);
 
     const std::filesystem::path dir = ctx.outDir("energyBalance", "balances");
     std::filesystem::create_directories(dir);

@@ -40,7 +40,7 @@ namespace Choupo {
 
 void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
 {
-    const auto topo = reporting::readTopology(ctx.flowsheetDict);
+    const auto topo = reporting::readTopology(ctx.flowsheetDict, ctx.result);
 
     auto roleOf = [&](const std::string& name) -> std::string {
         if (topo.feeds.count(name))    return "feed";

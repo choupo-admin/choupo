@@ -43,7 +43,7 @@ using reporting::closurePct;
 
 void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
 {
-    const auto topo = reporting::readTopology(ctx.flowsheetDict);
+    const auto topo = reporting::readTopology(ctx.flowsheetDict, ctx.result);
     const auto& comps = ctx.result.componentNames;
     const std::size_t n = comps.size();
 

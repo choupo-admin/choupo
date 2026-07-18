@@ -430,6 +430,19 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/neggate.$$
 
+    # Composite-report gate: a composite/named-edge case's reports must carry
+    # the REAL boundary and a non-empty global balance (roles derive from the
+    # flattened solver topology, never from walking the raw flowsheetDict).
+    if "$ROOT/bin/curate/check_composite_reports.py" > /tmp/comprep.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "composite-report-gate" "$(head -1 /tmp/comprep.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_composite_reports.py)\n" "composite-report-gate"
+        cat /tmp/comprep.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/comprep.$$
+
     # Asset-home gate (Codex assets-audit, 2026-07-18): a physical asset lives
     # in ONE home (constant/assets/) -- the legacy membranes/ overlay let a
     # sealed case open input its manifest never claimed.

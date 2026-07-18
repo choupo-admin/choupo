@@ -227,6 +227,9 @@ struct SimulationResult
     // holds both.  The stream-state writer skips these -- the state model stores
     // each stream ONCE, owned by its producing sector (arch doc 8.4).
     std::set<std::string>                                         boundaryAliases;
+    // alias/label -> the stream identity it copies (one physical stream,
+    // two names; reports count the identity once, under the alias name)
+    std::map<std::string,std::string>                              boundaryAliasOf;
     std::map<std::string, std::map<std::string, scalar>>           kpis;
     std::vector<FlatUnit>                                          topology;
     std::map<std::string, std::vector<scalar>>                     convergence;

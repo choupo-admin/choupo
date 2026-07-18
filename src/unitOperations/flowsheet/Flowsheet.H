@@ -75,7 +75,7 @@ Dictionary form:
         }
 
     The Flowsheet:
-      1. seeds its stream registry from the `streams {... }` block;
+      1. seeds its stream registry from the per-stream `0/` state files;
       2. iterates through `units (...)` in order;
       3. for each unit, builds an *augmented* dict that grafts the
          input stream's F/T/P into a synthetic `feed` sub-dict and the
@@ -197,6 +197,10 @@ public:
     // Accessors used by the outer-driver / post-processor layers to
     // harvest the simulation result without re-parsing the log.
     const std::set<std::string>& boundaryAliases() const { return boundaryAliases_; }
+    // alias/label -> the stream IDENTITY it copies (reports count the
+    // identity ONCE, displayed under its boundary name)
+    const std::map<std::string,std::string>& boundaryAliasOf() const
+    { return boundaryAliasOf_; }
     const std::map<std::string, ProcessStream>& streams() const
     { return streams_; }
 
@@ -268,6 +272,7 @@ private:
 
     std::map<std::string, ProcessStream>                   streams_;
     std::set<std::string>                                  boundaryAliases_;  // plant-boundary outlet aliases (state writer skips)
+    std::map<std::string,std::string>                      boundaryAliasOf_;  // alias -> source identity
     std::vector<ModelBoundaryFinding>                      modelBoundaries_;
     std::vector<FlatUnit>                                  topology_;
     std::vector<EnergyWire>                                energyWires_;

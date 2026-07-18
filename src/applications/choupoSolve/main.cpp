@@ -34,7 +34,7 @@ Description
         case/
           system/
             controlDict    -- meta-control (verbosity)
-            flowsheetDict  -- topology: streams + units + connections
+            flowsheetDict  -- topology: units + connections (state in 0/)
             solverDict     -- per-unit-op solver options              [opt]
             outerDict      -- outer driver (sweep / optim / fit / PE)  [opt]
             postDict       -- post-processing chain (sizing, costing)  [opt]
@@ -223,6 +223,7 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     SimulationResult r;
     r.streams     = flowsheet.streams();
     r.boundaryAliases = flowsheet.boundaryAliases();
+    r.boundaryAliasOf  = flowsheet.boundaryAliasOf();
     r.kpis        = flowsheet.unitKpis();
     r.topology    = flowsheet.topology();
     r.energyWires = flowsheet.energyWires();
