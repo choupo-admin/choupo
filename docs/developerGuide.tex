@@ -43,6 +43,20 @@ This guide is opinionated on purpose. Read \S\ref{sec:phil} carefully
 --- those three principles override everything else --- and treat
 \S\ref{sec:donts} as the project's only blunt list of don'ts.
 
+\paragraph{Independence and provenance.}  Choupo is an independent
+project.  Its file-based case organization (\code{controlDict}-style
+dictionaries, \code{constant/} and time directories such as \code{0/})
+was inspired in part by the conventions popularised by OpenFOAM.  Choupo
+is not affiliated with, endorsed by, or sponsored by OpenCFD Ltd or the
+OpenFOAM Foundation.  The modules closest in spirit are independent
+implementations, not adaptations: the dictionary parser is Choupo's own
+component-aware tokenizer; model selection uses explicit factory
+registrations (deliberately \emph{not} runtime-selection macros,
+\S\ref{sec:factory}); the \code{Rosenbrock23} integrator implements the
+published Shampine \& Reichelt (SIAM J.\ Sci.\ Comput.\ 18, 1997)
+formulas; and the time-directory writer implements the layout convention
+from scratch.  No OpenFOAM source code was adapted or reused.
+
 
 % =====================================================================
 \section{Philosophy --- the contract we promise}\label{sec:phil}

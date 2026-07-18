@@ -87,3 +87,17 @@ This product also bundles, with their respective licences honoured:
 PubChem identifiers (U.S. public domain) and Wikidata facts (CC0).
 Excluded by policy (not bundled): NIST SRD/WebBook, DIPPR, Yaws, CRC, DECHEMA/
 DDBST, and any NonCommercial (e.g. CC-BY-NC) source.
+
+* Independence from OpenFOAM
+  Choupo is an independent project.  Its file-based case organization
+  (controlDict-style dictionaries, constant/ and time directories such as
+  0/) was inspired in part by the conventions popularised by OpenFOAM.
+  Choupo is not affiliated with, endorsed by, or sponsored by OpenCFD Ltd
+  or the OpenFOAM Foundation; OPENFOAM is a registered trade mark of
+  OpenCFD Ltd.  A provenance review of the closest modules (the dictionary
+  parser, the explicit model factories, the Rosenbrock23 ODE integrator,
+  and the time-directory writer) confirms they are independent
+  implementations: no OpenFOAM source code was adapted or reused.  The
+  Rosenbrock23 integrator implements the published Shampine & Reichelt
+  (SIAM J. Sci. Comput. 18, 1997) formulas; the model factories are
+  deliberately explicit registrations, not runtime-selection macros.
