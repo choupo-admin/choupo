@@ -68,6 +68,7 @@ import { EnergyBalancePlot } from "./plotting/EnergyBalancePlot.js";
 import { MassBalancePlot } from "./plotting/MassBalancePlot.js";
 import { unitEnergy } from "../case/balances.js";
 import { CampaignBalancePlot } from "./plotting/CampaignBalancePlot.js";
+import { DynamicBalancePlot } from "./plotting/DynamicBalancePlot.js";
 import { ProfilePlot } from "./plotting/ProfilePlot.js";
 import { TrajectoryPlot } from "./plotting/TrajectoryPlot.js";
 import { TxyPlot } from "./plotting/TxyPlot.js";
@@ -78,6 +79,7 @@ type PlotKey =
   | "trajectory"
   | "gantt"
   | "campaignBalance"
+  | "dynamicBalance"
   | "massBalance"
   | "energyBalance"
   | "txy"
@@ -109,7 +111,8 @@ export function PlotsWorkspace() {
   const scanCsvs = useMemo(() => {
     const all = result?.csvFiles ?? {};
     return Object.keys(all)
-      .filter((n) => !n.startsWith("reports/") && n !== "trajectory.csv")
+      .filter((n) => !n.startsWith("reports/") && n !== "trajectory.csv"
+        && n !== "balanceTrajectory.csv" && n !== "balanceTrajectory.meta")
       .sort();
   }, [result]);
 
@@ -123,12 +126,15 @@ export function PlotsWorkspace() {
     const hasTrajectory = Boolean(result?.trajectory);
     const hasTimeline = (result?.timeline?.length ?? 0) > 0;
     const hasCampaign = Boolean(result?.kpis?.["campaign"]);
+    const hasDynBalance = Boolean(result?.csvFiles?.["balanceTrajectory.csv"]);
     return [
       {
         label: "Balance",
         items: [
           { key: "campaignBalance", label: "Campaign balance", available: hasCampaign,
             hint: "The batch campaign's global mass / element / energy balances, drawn from the engine's own ledger KPIs.  UNAVAILABLE states are shown honestly, never as zeros." },
+          { key: "dynamicBalance", label: "Dynamic balance", available: hasDynBalance,
+            hint: "The choupoCtrl balance ledger over time (mass inventory + conservation residuals per element), integrated on accepted steps in the engine.  Withheld claims render as named states." },
           { key: "massBalance",   label: "Mass balance",   available: hasStreams,
             hint: "Plant-boundary INPUTS vs OUTPUTS in mass basis (kg/h), stacked by component.  Title shows the closure error." },
           { key: "energyBalance", label: "Energy balance", available: hasStreams,
@@ -223,6 +229,14 @@ export function PlotsWorkspace() {
       case "campaignBalance": {
         const c = result.kpis?.["campaign"];
         return c ? <CampaignBalancePlot campaign={c} /> : null;
+      }
+      case "dynamicBalance": {
+        const traj = result.csvFiles?.["balanceTrajectory.csv"];
+        const meta = result.csvFiles?.["balanceTrajectory.meta"];
+        return traj !== undefined || meta !== undefined
+          ? <DynamicBalancePlot {...(traj !== undefined ? { trajectoryCsv: traj } : {})}
+              {...(meta !== undefined ? { metaCsv: meta } : {})} />
+          : null;
       }
       case "massBalance": return (
         <MassBalancePlot
