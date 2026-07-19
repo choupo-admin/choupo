@@ -26,7 +26,7 @@ describe("campaignBalanceView", () => {
     expect(v.mass?.externalOutKg).toBe(0);
     expect(v.elements?.map((e) => e.symbol)).toEqual(["C", "H", "O"]);
     expect(v.worstElementClosureRel).toBeCloseTo(1.1e-15, 20);
-    expect(v.energyAvailable).toBe(true);
+    expect(v.energyState).toBe("available");
     // The engine's first-law identity carries through verbatim:
     // dH(vessels) = Q(ledger) - H(external out).
     expect(v.energy!.dHVesselsKJ)
@@ -49,11 +49,33 @@ describe("campaignBalanceView", () => {
       // no element_* keys: the engine withheld the elemental claim
     });
     expect(v.elements).toBeUndefined();       // UNAVAILABLE, not []
-    expect(v.energyAvailable).toBe(false);
+    expect(v.energyState).toBe("refused");
     expect(v.energy).toBeUndefined();         // no numbers to draw
   });
 
   it("no campaign block at all (a steady run)", () => {
     expect(campaignBalanceView(undefined).present).toBe(false);
+  });
+
+  it("CAUSAL: available flag with a missing energy term is MALFORMED, not zeros", () => {
+    const v = campaignBalanceView({
+      mass_kg_initial: 1.0, mass_kg_final: 1.0, mass_kg_external_out: 0,
+      energy_balance_available: 1,
+      energy_dH_vessels_kJ: 5839.9, energy_Q_ledger_kJ: -149.26,
+      // energy_H_external_kJ ABSENT -- a truncated payload
+    });
+    expect(v.energyState).toBe("malformed");
+    expect(v.energy).toBeUndefined();          // no false identity to draw
+    expect(v.malformed).toContain("energy_H_external_kJ");
+  });
+
+  it("CAUSAL: a missing mass_kg_external_out is MALFORMED, never a closed campaign", () => {
+    const v = campaignBalanceView({
+      mass_kg_initial: 2.0, mass_kg_final: 1.25,
+      // mass_kg_external_out ABSENT: the C++ contract always emits it
+    });
+    expect(v.present).toBe(true);
+    expect(v.mass).toBeUndefined();
+    expect(v.malformed).toContain("mass_kg_external_out");
   });
 });

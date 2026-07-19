@@ -33,9 +33,16 @@ License
   never a fabricated zero.
 \*---------------------------------------------------------------------------*/
 
+export type EnergyState = "available" | "refused" | "malformed";
+
 export interface CampaignBalanceView {
   /** kpis.campaign present at all (a batch/campaign run). */
   present: boolean;
+  /** Required keys that are missing/non-finite in a payload that claims
+   *  them (truncated payload, stale WASM, engine regression).  A malformed
+   *  claim is NEVER completed with fabricated zeros -- the affected panel
+   *  refuses and names the field. */
+  malformed?: string[];
   mass?: {
     initialKg: number;
     finalKg: number;
@@ -47,9 +54,10 @@ export interface CampaignBalanceView {
    *  the elemental claim (an unparseable formula) -- UNAVAILABLE state. */
   elements?: { symbol: string; closureRel: number }[];
   worstElementClosureRel?: number;
-  /** energy_balance_available === 1; when false the engine refused the
-   *  claim (named gaps in the log) and no energy numbers are shown. */
-  energyAvailable: boolean;
+  /** "available" = engine claimed AND every term is finite;
+   *  "refused"   = energy_balance_available = 0 (named gaps in the log);
+   *  "malformed" = the flag says 1 but a required term is missing. */
+  energyState: EnergyState;
   energy?: {
     dHVesselsKJ: number;
     qLedgerKJ: number;
@@ -61,23 +69,35 @@ export interface CampaignBalanceView {
 export function campaignBalanceView(
   campaign: { [k: string]: number } | undefined,
 ): CampaignBalanceView {
-  if (!campaign || campaign["mass_kg_initial"] === undefined
-      || campaign["mass_kg_final"] === undefined)
-    return { present: false, energyAvailable: false };
+  const fin = (k: string): boolean =>
+    campaign !== undefined && Number.isFinite(campaign[k]);
+  if (!campaign || (!fin("mass_kg_initial") && !fin("mass_kg_final")))
+    return { present: false, energyState: "refused" };
 
-  const view: CampaignBalanceView = {
-    present: true,
-    mass: {
+  const view: CampaignBalanceView = { present: true, energyState: "refused" };
+  const malformed: string[] = [];
+
+  // The C++ contract emits ALL THREE mass terms; a missing one is a
+  // malformed payload, never a silently-closed campaign.
+  if (fin("mass_kg_initial") && fin("mass_kg_final")
+      && fin("mass_kg_external_out"))
+  {
+    view.mass = {
       initialKg: campaign["mass_kg_initial"]!,
       finalKg: campaign["mass_kg_final"]!,
-      externalOutKg: campaign["mass_kg_external_out"] ?? 0,
-      ...(campaign["mass_residual_kg"] !== undefined
+      externalOutKg: campaign["mass_kg_external_out"]!,
+      ...(fin("mass_residual_kg")
         ? { residualKg: campaign["mass_residual_kg"] } : {}),
-      ...(campaign["mass_closure_rel"] !== undefined
+      ...(fin("mass_closure_rel")
         ? { closureRel: campaign["mass_closure_rel"] } : {}),
-    },
-    energyAvailable: campaign["energy_balance_available"] === 1,
-  };
+    };
+  }
+  else
+  {
+    for (const k of ["mass_kg_initial", "mass_kg_final",
+                     "mass_kg_external_out"])
+      if (!fin(k)) malformed.push(k);
+  }
 
   const elements = Object.keys(campaign)
     .map((k) => /^element_([A-Za-z]+)_closure_rel$/.exec(k))
@@ -89,14 +109,29 @@ export function campaignBalanceView(
       view.worstElementClosureRel = campaign["element_worst_closure_rel"];
   }
 
-  if (view.energyAvailable) {
-    view.energy = {
-      dHVesselsKJ: campaign["energy_dH_vessels_kJ"] ?? 0,
-      qLedgerKJ: campaign["energy_Q_ledger_kJ"] ?? 0,
-      hExternalKJ: campaign["energy_H_external_kJ"] ?? 0,
-      ...(campaign["energy_closure_rel"] !== undefined
-        ? { closureRel: campaign["energy_closure_rel"] } : {}),
-    };
+  if (campaign["energy_balance_available"] === 1) {
+    // Availability claims the FULL, finite term set -- a truncated payload
+    // must not draw a false first-law identity out of fabricated zeros.
+    if (fin("energy_dH_vessels_kJ") && fin("energy_Q_ledger_kJ")
+        && fin("energy_H_external_kJ"))
+    {
+      view.energyState = "available";
+      view.energy = {
+        dHVesselsKJ: campaign["energy_dH_vessels_kJ"]!,
+        qLedgerKJ: campaign["energy_Q_ledger_kJ"]!,
+        hExternalKJ: campaign["energy_H_external_kJ"]!,
+        ...(fin("energy_closure_rel")
+          ? { closureRel: campaign["energy_closure_rel"] } : {}),
+      };
+    }
+    else
+    {
+      view.energyState = "malformed";
+      for (const k of ["energy_dH_vessels_kJ", "energy_Q_ledger_kJ",
+                       "energy_H_external_kJ"])
+        if (!fin(k)) malformed.push(k);
+    }
   }
+  if (malformed.length > 0) view.malformed = malformed;
   return view;
 }

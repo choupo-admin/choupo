@@ -69,16 +69,31 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
   const elementsAvailable = view.elements !== undefined;
   const worstElement = view.worstElementClosureRel;
 
-  const energyAvailable = view.energyAvailable;
+  const energyAvailable = view.energyState === "available";
   const dH = view.energy?.dHVesselsKJ;
   const qLedger = view.energy?.qLedgerKJ;
   const hExternal = view.energy?.hExternalKJ;
   const energyClosure = view.energy?.closureRel;
 
-  if (!view.present || m0 === undefined || mF === undefined) {
+  if (!view.present) {
     return (
       <Stack align="center" justify="center" h="100%">
         <Text c="dimmed">This run carries no campaign balance KPIs.</Text>
+      </Stack>
+    );
+  }
+  if (view.mass === undefined || m0 === undefined || mF === undefined
+      || mOut === undefined) {
+    // A payload that names the campaign but misses a REQUIRED mass term is
+    // MALFORMED -- never drawn as a silently-closed campaign.
+    return (
+      <Stack align="center" justify="center" h="100%">
+        <Text c="orange" fw={600}>Campaign payload MALFORMED</Text>
+        <Text c="dimmed" size="sm" ta="center" maw={420}>
+          Required field(s) missing: {(view.malformed ?? []).join(", ")}.
+          A stale WASM build or a truncated result block — re-run; nothing
+          is drawn from fabricated zeros.
+        </Text>
       </Stack>
     );
   }
@@ -100,8 +115,8 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
       type: "bar" as const,
       name: "external out",
       x: ["INITIAL", "FINAL + OUT"],
-      y: [null, mOut ?? 0] as (number | null)[],
-      text: ["", (mOut ?? 0) > 1e-12 ? `out<br>${fmtKg(mOut!)} kg` : ""],
+      y: [null, mOut] as (number | null)[],
+      text: ["", mOut > 1e-12 ? `out<br>${fmtKg(mOut)} kg` : ""],
       textposition: "inside" as const,
       textfont: { size: 11, color: "#10242b" },
       marker: { color: PLOT_COLORS.series[1] },
@@ -139,7 +154,7 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
           type: "bar" as const,
           name: "ΔH vessels",
           x: ["ΔH vessels", "Q − H_out"],
-          y: [dH ?? 0, null] as (number | null)[],
+          y: [dH!, null] as (number | null)[],
           marker: { color: PLOT_COLORS.series[4] },
           hovertemplate: "ΔH vessels = %{y:.6g} kJ<extra></extra>",
         },
@@ -147,7 +162,7 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
           type: "bar" as const,
           name: "Q − H_out",
           x: ["ΔH vessels", "Q − H_out"],
-          y: [null, (qLedger ?? 0) - (hExternal ?? 0)] as (number | null)[],
+          y: [null, qLedger! - hExternal!] as (number | null)[],
           marker: { color: PLOT_COLORS.series[5] },
           hovertemplate: "Q − H_out = %{y:.6g} kJ<extra></extra>",
         },
@@ -199,6 +214,10 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
           <Badge variant="light" color={energyClosure !== undefined && energyClosure < 1e-6 ? "teal" : "yellow"}>
             energy closure {energyClosure !== undefined ? fmtSci(energyClosure) : "?"}
           </Badge>
+        ) : view.energyState === "malformed" ? (
+          <Badge variant="light" color="orange">
+            energy MALFORMED — claimed available but missing: {(view.malformed ?? []).join(", ")}
+          </Badge>
         ) : (
           <Badge variant="light" color="gray">
             energy UNAVAILABLE — the engine refused the claim (named gaps in the log)
@@ -222,8 +241,13 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
           : (
             <Stack align="center" justify="center">
               <Text c="dimmed" size="sm" ta="center" maw={260}>
-                Energy balance UNAVAILABLE — the campaign ledger has missing
-                pieces; the log lists each gap verbatim.  Mass stays valid.
+                {view.energyState === "malformed"
+                  ? "Energy claim MALFORMED — a required term is missing"
+                    + " from the payload; nothing is drawn from fabricated"
+                    + " zeros."
+                  : "Energy balance UNAVAILABLE — the campaign ledger has"
+                    + " missing pieces; the log lists each gap verbatim."
+                    + "  Mass stays valid."}
               </Text>
             </Stack>
           )}
