@@ -221,7 +221,7 @@ caseName/
 |   |-- outerDict            optional  sweep / designSpec / optimisation
 |   `-- postDict             optional  sizing + costing chain
 |-- constant/
-|   |-- propertyDict         REQUIRED  components + thermodynamic models
+|   |-- thermoPhysPropDict   REQUIRED  the thermophysical system
 |   |-- reactions            optional  named-reaction library
 |   |-- crystallisation      optional  crystallisation-kinetics library
 |   |-- dryingKinetics       optional  drying-curve library
@@ -363,7 +363,7 @@ iteration counts.
 \paragraph{Sectors --- the fractal flowsheet.}  A big plant is
 organised as \emph{sectors} (composite sub-flowsheets), each a folder
 with its own \file{system/flowsheetDict} and, when it needs one, its own
-\file{constant/propertyDict} (a sector may run a different
+\file{constant/thermoPhysPropDict} (a sector may run a different
 thermodynamic world --- e.g.\ an electrolyte model in a brine section
 and NRTL in a solvent-recovery section).  The root dict then assembles
 members and named connections:
@@ -602,7 +602,7 @@ The internals stay in SI; only the printed output changes.
 \end{itemize}
 
 % =====================================================================
-\section{The thermodynamic foundation: \file{constant/propertyDict}}\label{sec:thermo}
+\section{The thermodynamic foundation: \file{constant/thermoPhysPropDict}}\label{sec:thermo}
 
 \begin{whatyoulllearn}
 How a case declares its components and selects the models that turn
@@ -610,15 +610,37 @@ $(T,P,z)$ into $K$-values, enthalpies, and transport properties --- and
 how the run log announces every choice it makes.
 \end{whatyoulllearn}
 
-Every case carries a \file{constant/propertyDict} declaring the
-component list and the thermodynamic models.  The minimum viable file:
+Every case carries a \file{constant/thermoPhysPropDict} declaring its
+whole thermophysical system: the components, the equilibrium
+\emph{formulation} (which $K$-value structure the VLE runs on), and the
+model in each phase slot.  The minimum viable file:
 
 \begin{lstlisting}[language=dict]
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
 components       ( benzene  toluene );
 
-activityModel    { model ideal; }        // gamma_i = 1  (Raoult)
-equationOfState  { model idealGas; }     // phi_i = 1
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;        // gamma_i = 1  (Raoult)
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;     // phi_i = 1
+    }
+}
 \end{lstlisting}
+
+Everything is declared --- the formulation, the standard state, the
+vapour route --- even when the choice is the obvious one; a shape the
+builder does not recognise gets a named refusal, never a guess.
 
 Components are resolved \emph{by name}, with an explicit evidence order:
 \textbf{case-local overlay $>$ standard $>$ local}.  There are exactly two
@@ -672,27 +694,31 @@ still needs).
 NRTL/Wilson/UNIQUAC pairs are supplied inline or resolved by name from
 the pair catalogues.  Resolution is \textbf{inline/case-local $>$ standard
 $>$ local $>$ ideal default} (the same two-tier model as components: the
-public curated \file{data/standards/\allowbreak binaryPairs/\allowbreak <model>/}
+public curated \file{data/standards/\allowbreak parameters/\allowbreak <model>/}
 bank, then your private \file{data/local/} bank, which the repository ships
 empty).  A pair absent from every tier is the announced ideal default
 ($\tau=0$), never a silent one:
 
 \begin{lstlisting}[language=dict]
+// inside equilibrium.liquid:
 activityModel
 {
-    model  NRTL;
-    pairs
-    (
-        { i ethanol;  j water;
-          a_ij -0.8009;  b_ij  246.18;      // tau_ij = a_ij + b_ij/T
-          a_ji  3.4578;  b_ji -586.0809;
-          alpha 0.30; }
-    );
+    model NRTL;
+    binaryParameters                       // the dict OWNS the numbers,
+    {                                      //   or points at a catalogue
+        ethanol-water                      //   file via `source "...";`
+        {
+            i ethanol;  j water;
+            a_ij -0.8009;  b_ij  246.18;   // tau_ij = a_ij + b_ij/T
+            a_ji  3.4578;  b_ji -586.0809;
+            alpha 0.30;
+        }
+    }
 }
 \end{lstlisting}
 
 A local pair never shadows a standard pair.  Staged ChemSep pairs live in
-the private \file{data/local/binaryPairs/} tier (not redistributed); they
+the private \file{data/local/parameters/} tier (not redistributed); they
 have passed identity, unit-conversion and provenance audits, but have not all
 been independently validated against experimental data; the log therefore
 marks their use \code{[local] UNVERIFIED}.  A pair with no parameters
@@ -736,21 +762,29 @@ reactor requires it (\S\ref{sec:reactors}).
 
 \subsection{Multiple liquid phases (LLE / VLLE)}
 
-For liquid--liquid work, declare the phases explicitly:
+For liquid--liquid work, select the \code{gammaGamma} formulation and
+declare the liquid phases explicitly:
 
 \begin{lstlisting}[language=dict]
 components ( water  nButanol );
-phases
-(
-    { name vapour;   type vapor;   eos      { model idealGas; } }
-    { name aqueous;  type liquid;  activity { model NRTL; pairs (...); } }
-    { name organic;  type liquid;  activity { model NRTL; pairs (...); } }
-);
+
+equilibrium
+{
+    formulation gammaGamma;         // 2+ liquid phases, one gamma surface each
+
+    liquidPhases
+    (
+        { name aqueous;  activityModel { model NRTL; binaryParameters {...} } }
+        { name organic;  activityModel { model NRTL; binaryParameters {...} } }
+    );
+
+    vapour { fugacityModel idealGas; }
+}
 \end{lstlisting}
 
 The flash then searches for the liquid split by direct Gibbs-energy
-minimisation (\S\ref{sec:flash-family}) --- the legacy single-liquid
-form builds only one liquid and will not split.
+minimisation (\S\ref{sec:flash-family}) --- a single-liquid
+\code{gammaPhi} system builds only one liquid and will not split.
 
 \subsection{Transport properties}
 
@@ -761,13 +795,22 @@ from a \code{transport} block of selectable sub-models:
 \begin{lstlisting}[language=dict]
 transport
 {
-    viscosity            { model Chung; }        // gas mu, from Tc/Pc/omega/MW
-    thermalConductivity  { model Eucken; }
-    diffusivity          { model Fuller; }       // needs diffusionVolume
-    liquidViscosity      { model Vogel; }        // or Andrade
-    liquidConductivity   { model SatoRiedel; }   // or Latini
-    liquidDiffusivity    { model WilkeChang; }   // or Scheibel
-    surfaceTension       { model BrockBird; }
+    vapour
+    {
+        viscosity           { model Chung; }      // gas mu, from Tc/Pc/omega/MW
+        thermalConductivity { model Eucken; }
+        diffusivity         { model Fuller; }     // needs diffusionVolume
+    }
+    liquid
+    {
+        viscosity           { model Vogel; }      // or Andrade
+        thermalConductivity { model SatoRiedel; } // or Latini
+        diffusivity         { model WilkeChang; } // or Scheibel
+    }
+    interface
+    {
+        surfaceTension { model BrockBird; }
+    }
 }
 \end{lstlisting}
 
@@ -778,58 +821,67 @@ a value.
 \subsection{Dissolved gases: Henry's law}
 
 A gas solute (CO$_2$, NH$_3$, O$_2$, H$_2$S, SO$_2$,~\dots\ in water)
-takes the infinite-dilution Henry reference: declare
-\code{solvent water;} and the engine consults the Henry-pair catalogue
-(\file{data/standards/parameters/Henry/<solute>-<solvent>.dat}, van~'t~Hoff
-temperature dependence).  The absorber/stripper and the dilute-solution
-flash world run on this.  Each engaged pair is announced with its
-constants and source (\code{[henry]} log lines).
+takes the infinite-dilution Henry reference.  WHO dissolves in WHAT is
+declared structurally, by the \code{diluteSolution} formulation's
+\code{solvent \{\}} and \code{solutes \{\}} groups (next subsection); the
+solutes' \code{binaryParameters} declare the Henry-pair files
+(\file{data/standards/parameters/Henry/<solute>-<solvent>.dat},
+van~'t~Hoff temperature dependence).  The absorber/stripper and the
+dilute-solution flash world run on this.  Each engaged pair is announced
+with its constants and source (\code{[henry]} log lines).
 
-\subsection{The \code{propertyPackage} manifest and the four VLE worlds}\label{sec:vle-worlds}
+\subsection{The \code{formulation} keyword and the four VLE worlds}\label{sec:vle-worlds}
 
-The flat \file{propertyDict} above is the everyday form.  Cases that
-need a declared, verifiable assembly --- Henry worlds, $\varphi$--$\varphi$
-high-pressure work, electrolytes --- write the same file as a typed
-manifest: \code{recordType propertyPackage;} plus a
-\code{propertyMethods} block whose \emph{liquid slot selects the whole
-VLE structure}:
+The \code{equilibrium.formulation} keyword selects the whole $K$-value
+structure the VLE runs on:
 
 \begin{center}\small
 \begin{tabularx}{\linewidth}{@{}llX@{}}
 \toprule
-\code{propertyMethods.liquid} & \textbf{World} & \textbf{K-value} \\
+\code{formulation} & \textbf{World} & \textbf{K-value} \\
 \midrule
-\code{activity.<Model>}   & $\gamma$--$\varphi$ & $K_i = \gamma_i P_i^{\mathrm{sat}} / (\varphi_i P)$ \\
-\code{solution.henryDilute} & dilute solution & solvent on Raoult; each solute on the Henry form $y\varphi P = x\gamma^* H(T)\,e^{v_\infty (P-P_s)/RT}$ \\
-\code{eos.<Model>}        & $\varphi$--$\varphi$ & $K_i = \varphi_i^L/\varphi_i^V$ --- the same cubic's two roots \\
-\code{electrolyte.pitzer} / \code{electrolyte.eNRTL} & speciation & ionic activity + osmotic coefficients on the aqueous-ion reference \\
+\code{gammaPhi}   & $\gamma$--$\varphi$ & $K_i = \gamma_i P_i^{\mathrm{sat}} / (\varphi_i P)$ \\
+\code{diluteSolution} & dilute solution & solvent on Raoult; each solute on the Henry form $y\varphi P = x\gamma^* H(T)\,e^{v_\infty (P-P_s)/RT}$ \\
+\code{phiPhi}     & $\varphi$--$\varphi$ & $K_i = \varphi_i^L/\varphi_i^V$ --- the same cubic's two roots \\
+\code{electrolyteGammaPhi} & aqueous electrolyte & ionic activity + osmotic coefficients on the aqueous-ion reference \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
+The dilute-solution world, from
+\file{flash08\_co2\_water\_package}:
+
 \begin{lstlisting}[language=dict]
-recordType     propertyPackage;
-schemaVersion  1;
-name           flash08_co2Water;
-components     ( water CO2 );
-propertyMethods
+equilibrium
 {
-    liquid  solution.henryDilute;
-    vapour  builtin.idealGas;
-}
-solution   { solvent water;  solutes ( CO2 ); }
-parameters
-{
-    henryPairs { CO2-water "data/standards/parameters/Henry/CO2-water.dat"; }
+    formulation diluteSolution;
+
+    liquid
+    {
+        solvent { component water;    standardState pureLiquid; }
+        solutes
+        {
+            components    ( CO2 );
+            standardState infiniteDilution;
+            solutionModel henryDilute;
+            binaryParameters
+            {
+                CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; }
+            }
+        }
+    }
+
+    vapour { fugacityModel idealGas; }
 }
 \end{lstlisting}
 
 Declared parameter files are \emph{verified at assembly} --- a
 declared-but-missing pair refuses loudly, naming the entry to add ---
-and the run announces the selected world
-(\code{[builder] VLE world: phi-phi (SRK both phases)}).  Mixing two
-different cubics across the two phases is refused: one Gibbs surface
-per phase, never two.  Reference tutorials:
+and the run announces the assembled world in its \code{[builder]}
+lines.  In \code{phiPhi} both phase slots route through the ONE
+declared \code{equationOfState} (\code{fugacityRoute equationOfState;
+root liquid|vapour;}); two different cubics across the phases are
+refused: one Gibbs surface per phase, never two.  Reference tutorials:
 \file{flash08\_co2\_water\_package} (Henry) and
 \file{flash09\_n2ch4\_stryjek} ($\varphi$--$\varphi$ with a declared
 $k_{ij}$).
@@ -877,14 +929,18 @@ A case can be sealed so it runs with \emph{no} installation catalogue:
 
 \begin{lstlisting}
 bin/choupo-import <case>     # materialise the dependency closure into
-                             # constant/propertyData/ + a sha256 manifest
+                             # constant/ (components/, parameters/, ...)
+                             # + the sha256 propertyManifest
 \end{lstlisting}
 
-When \file{constant/propertyData/} is present the runtime reads the
-frozen snapshot only (the log states ``installation catalogue NOT
-consulted'') --- the definitive test is moving the case out of the repo
-and watching it still run.  Research cases and anything you archive
-with a thesis should be sealed.
+The importer copies every record the case needs into the case's own
+\file{constant/} tree and writes \file{constant/propertyManifest} --- the
+record-ownership registry (one sha256 per imported file;
+\code{sealed true;} forbids the runtime every catalogue fallback).  A
+file the manifest does not claim is yours and untouchable.  The
+definitive test is moving the case out of the repo and watching it still
+run.  Every shipped tutorial is sealed this way; research cases and
+anything you archive with a thesis should be too.
 
 % =====================================================================
 \section{Built-in unit operations}\label{sec:units}
@@ -1657,7 +1713,7 @@ Entrainment is a contest between the vapour's drag on a droplet and the
 surface tension holding it together, so the Souders--Brown flooding
 velocity cannot be evaluated without $\sigma$.  Add
 \code{transport \{ surfaceTension \{ model BrockBird; \} \}} to the
-\file{propertyDict}, or declare a constant \code{sigma <N/m>;} inside
+\file{thermoPhysPropDict}, or declare a constant \code{sigma <N/m>;} inside
 the hydraulics block.  The column refuses to guess; it will stop and
 say so.
 
@@ -1961,7 +2017,7 @@ older cases are unchanged.  The families and their hardware:
 with surface tension ($\sigma^{0.1}$--$\sigma^{0.6}$) and viscosity
 ($\mu_L^{0.2}$), so a concentrated, viscous feed sprays coarser.
 Choupo pulls $\sigma$ and $\mu_L$ from the property layer when the
-\file{propertyDict} declares the models (\code{surfaceTension},
+\file{thermoPhysPropDict} declares the models (\code{surfaceTension},
 \code{liquidViscosity}), with an announced fallback otherwise --- the
 $\sigma$ source is printed in the report.
 
@@ -2153,6 +2209,7 @@ into the case's \file{reports/} directory and announces the file:
 \midrule
 \code{streamTable}   & one row per stream: role, $F$, $F_{\mathrm{mass}}$, $T$, $P$, $vf$, compositions \\
 \code{massBalance}   & per-component in/out/net + global closure \%, and a per-unit table \\
+\code{elementBalance} & plant-boundary \emph{atom} conservation, one row per element (kmol-atom/h in, out, residual, closure \%) + a status sidecar (\S\ref{sec:element-balance}) \\
 \code{energyBalance} & per-unit $H_{\mathrm{in}}$ / $H_{\mathrm{out}}$ / $\Delta H$ (the implied duty) + the plant boundary \\
 \code{utilities}     & consumption aggregated by stream \code{category} (kg/h, MW, cost) \\
 \code{utilityAllocation} & each duty sized to a catalogue utility by temperature level (\S\ref{sec:energy-utilities}) \\
@@ -2164,6 +2221,26 @@ into the case's \file{reports/} directory and announces the file:
 \bottomrule
 \end{tabularx}
 \end{center}
+
+\paragraph{The element balance is a default diagnostic.}\label{sec:element-balance}
+Species moles may change legally through reactions; the invariant of a
+reacting flowsheet is the \emph{atoms}.  Every converged
+\code{choupoSolve} run therefore writes
+\file{reports/balances/elementBalance.csv} (one row per element:
+kmol-atom/h in, out, residual, closure \%) and its
+\file{elementBalance.meta} status sidecar \emph{without being asked} ---
+a declared \code{elementBalance \{\}} block keeps full control, and any
+report block can opt out with \code{enabled false;} inside it.  The
+claim is honest by construction: a component whose formula cannot be
+parsed and that declares no \code{elementalComposition\{\}} block makes
+the status \code{UNAVAILABLE} \emph{naming the species and the reason};
+a declared-composition component with unaccounted mass makes it
+\code{PARTIAL}.  The GUI's \emph{Element balance} view draws exactly
+this artefact: total atoms in vs out, sealed only when \emph{every}
+element closes (a signed total could cancel a $+$C error against a
+$-$O error), with the per-element decomposition one click away.  The
+theory and the parser contract are derived in the Theory Guide
+(\emph{Balances: mass, elements, energy}).
 
 \paragraph{Computed variables.}  For post-processing arithmetic,
 declare \code{compute} expressions in the \code{variables} block of
@@ -3045,7 +3122,7 @@ Then the loop is always the same:
 
 \begin{enumerate}[leftmargin=*,nosep,topsep=2pt]
   \item edit \file{system/flowsheetDict} (topology) and
-        \file{constant/propertyDict} (components + models);
+        \file{constant/thermoPhysPropDict} (components + models);
   \item author the \emph{inlet} files in \file{0/} (and a seed for any
         tear);
   \item \code{bin/choupo-init0 <case>} to materialise the remaining

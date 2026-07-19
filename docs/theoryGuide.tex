@@ -3161,7 +3161,7 @@ descending order of trust:
   \item \textbf{Literature pair coefficients.} NRTL
         $(a_{ij}, b_{ij}, a_{ji}, b_{ji}, \alpha_{ij})$ and Wilson
         $\Lambda_{ij}$ live in
-        \file{data/standards/binaryPairs/<model>/<c1>-<c2>.dat},
+        \file{data/standards/parameters/<model>/<c1>-<c2>.dat},
         also with provenance. The same DECHEMA / RPP sources apply.
   \item \textbf{In-simulator regression.} For binary
         interaction parameters \emph{only}, the simulator can refit
@@ -3704,9 +3704,9 @@ Equilibrium Data Collection or regressed from data; the tutorials carry
 literature values from Reid--Prausnitz--Poling \cite{RPP}. The
 simulator resolves each pair in a fixed precedence
 (\code{locatePairFile}): an inline \code{pairs(...)} block in the
-\code{thermoPackage}, then a per-node
-\file{constant/binaryPairs/NRTL/<a>-<b>.dat}, then the case root, then
-\file{data/standards/binaryPairs/NRTL/}. For an $N_c$-component mixture
+the case's declared system, then a per-node
+\file{constant/parameters/NRTL/<a>-<b>.dat}, then the case root, then
+\file{data/standards/parameters/NRTL/}. For an $N_c$-component mixture
 there are $N_c(N_c-1)/2$ binaries; NRTL is a strictly \emph{pairwise}
 model with \emph{no} ternary parameters, so a multicomponent
 prediction is only as good as its constituent binaries.
@@ -3912,8 +3912,8 @@ falls back to NRTL or UNIQUAC, which carry the extra freedom needed for a
 double-well $\Gex$.
 
 \paragraph{Parameter sources.} Binary $(A_{ij},A_{ji})$ sets live in
-\file{data/standards/binaryPairs/Wilson/<i>-<j>.dat} (or a case-local
-\file{constant/binaryPairs/Wilson/}); a pair with no file anywhere
+\file{data/standards/parameters/Wilson/<i>-<j>.dat} (or a case-local
+\file{constant/parameters/Wilson/}); a pair with no file anywhere
 \emph{defaults to ideal} for that binary ($\Lambda=1$, no contribution)
 and the run announces it aloud rather than aborting --- the same
 no-silent-crutch hybrid used by NRTL. Literature values are tabulated in
@@ -4106,7 +4106,7 @@ what \file{src/thermo/activityCoefficient/UNIQUAC.cpp} evaluates in
 $(a_{ij}, a_{ji})$ per binary come from VLE regression (DECHEMA, or the
 parameter-estimation driver of Chapter~\ref{ch:lm}), supplied inline as
 \code{pairs (\dots)} or from a UNIQUAC pair catalogue
-(\file{constant/binaryPairs/UNIQUAC/<a>-<b>.dat}, the same precedence
+(\file{constant/parameters/UNIQUAC/<a>-<b>.dat}, the same precedence
 NRTL and Wilson use). A binary with no parameters anywhere defaults to
 $a_{ij}=a_{ji}=0$, i.e.\ $\tau=1$ (ideal residual contribution), and the
 run \emph{announces} the defaulted pairs aloud --- the same
@@ -4157,7 +4157,7 @@ $\ln\gamma_1^{R}=1.972\,[\,1-\ln 0.653 - 0.247\,]=0.501$.
 \gamma_1\approx 2.46$ (and $\gamma_2\approx 1.12$). Driving $x_1\to 0$
 gives the infinite-dilution value $\gamma_1^{\infty}\approx 7.7$ --- the
 strongly-non-ideal range that makes ethanol/water a minimum-boiling
-azeotrope, and the very value the tutorial's \file{thermoPackage} energies
+azeotrope, and the very value the tutorial's declared system energies
 were fitted to reproduce.
 \end{example}
 
@@ -4172,7 +4172,7 @@ three-way model comparison on identical components.
 
 \begin{example}[NRTL $\gamma$ for ethanol/water at 350\,K, $x_1 = 0.20$]
 Components $1=$ethanol, $2=$water. Literature parameters (the same set
-carried in \file{data/standards/binaryPairs/NRTL/ethanol-water.dat},
+carried in \file{data/standards/parameters/NRTL/ethanol-water.dat},
 from \cite{RPP}):
 $a_{12} = -0.8009,\ b_{12} = 246.18\,\mathrm{K},\ a_{21} = 3.4578,\
 b_{21} = -586.0809\,\mathrm{K},\ \alpha = 0.30$.
@@ -6830,14 +6830,15 @@ robustness, at the price of an outer convergence that needs Wegstein
 to be fast.
 
 \begin{tutoriallink}
-In any tutorial's \file{constant/propertyDict} you will find:
+In any tutorial's \file{constant/thermoPhysPropDict} you will find,
+inside the \code{equilibrium} block:
 \begin{lstlisting}
-equationOfState  { model  idealGas; }
+vapour { fugacityModel idealGas; }
 \end{lstlisting}
 That single line is the assumption $\varphi_i = 1$.  Switching to a
-real-gas vapour is a one-word edit --- the line becomes \code{model
-SRK;} or \code{model PR;} --- and nothing else in the case file
-changes.  Forward compatibility by design.
+real-gas vapour is a one-word edit --- the line becomes
+\code{fugacityModel SRK;} or \code{fugacityModel PR;} --- and nothing
+else in the case file changes.  Forward compatibility by design.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
@@ -7152,15 +7153,28 @@ earn their keep precisely where the ideal gas stops being so and
 association has not yet taken over.
 
 \begin{tutoriallink}
-Select the cubic EoS in any case's \file{constant/propertyDict}:
+Select the cubic in any case's \file{constant/thermoPhysPropDict}:
+a real-gas vapour inside \code{gammaPhi} is
+\code{vapour \{ fugacityModel SRK; \}} (or \code{PR}), and the full
+$\varphi$--$\varphi$ world declares the ONE equation of state both
+phase slots route through:
 \begin{lstlisting}
-equationOfState
+equilibrium
 {
-    model  SRK;            // or  PR;
-    binaryInteractions     // optional; k_ij = 0 by default
-    (
-        { i  CO2;   j  CH4;   kij  0.0919; }
-    );
+    formulation phiPhi;
+
+    equationOfState
+    {
+        model      SRK;                 // or  PR;
+        mixingRule vanDerWaalsOneFluid;
+        binaryInteractions              // optional; k_ij = 0 announced
+        {
+            CO2-CH4 { source "data/standards/parameters/SRK/CO2-CH4.dat"; }
+        }
+    }
+
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
 }
 \end{lstlisting}
 The components must carry \code{Tc}, \code{Pc} and \code{omega} in
@@ -8777,7 +8791,7 @@ Jacobian: a deliberate constraint for pedagogical visibility.
 \begin{tutoriallink}
 \code{runCase tutorials/fitNRTL01\_ethanol\_water} produces the full
 LM trace, the per-point residual breakdown, and writes the proposal
-file \code{constant/binaryPairs/NRTL/ethanol-water.fit-<date>.dat}.
+file \code{constant/parameters/NRTL/ethanol-water.fit-<date>.dat}.
 See the case's \file{README.md} for the promote-by-\code{mv} step.
 \end{tutoriallink}
 
@@ -11021,7 +11035,7 @@ here --- the factor does not capture strong dipoles, so Chung degrades for
 polar species).  For a simple non-polar gas the accuracy is excellent: at
 298~K it returns $\mu_{\mathrm{N_2}} = 1.78\times10^{-5}$~Pa$\cdot$s, within
 $\sim$0.3\% of the measured value.  The model is DECLARED
-(\code{transport \{ model Chung; \}} in the thermoPackage) and the engine
+(the \code{transport} block of \file{thermoPhysPropDict}) and the engine
 REFUSES to guess a viscosity without it --- no silent default.  (Water and
 steam take the higher-accuracy IAPWS transport formulation instead.)
 
@@ -11209,7 +11223,7 @@ v1.x of the simulator.
 
 Single-component files carry no diffusivity entries (diffusion is a
 pair property).  Binary pairs get their own files alongside
-\file{constant/binaryPairs/}:
+\file{constant/parameters/}:
 \begin{lstlisting}
 data/standards/diffusionVolumes/ethanol.dat  // for Fuller
 { sumV  50.36; }                              // atomic-volume sum
@@ -11761,6 +11775,127 @@ above its critical point, or with an Antoine block whose Trange
 does not cover the given $P$) throws a runtime\_error with a
 message that names the stream, the dominant component, and the
 out-of-range value.
+
+% ---------------------------------------------------------------------
+\section{Balances: mass, elements, energy}\label{ch:balances}
+
+\begin{whatyoulllearn}
+Three conservation statements judge every solved flowsheet, and they are
+not the same statement.  Total \emph{mass} is conserved always;
+\emph{moles} are not (a reaction changes them legally); the invariant of
+a reacting system is the \emph{atoms of each element}.  This chapter
+derives the plant-boundary element balance the engine writes for every
+converged steady run, explains why the closure seal must test every
+element separately, and states the honesty rules (\code{FULL} /
+\code{PARTIAL} / \code{UNAVAILABLE}) that keep a diagnostic from ever
+lying.  The implementation is \file{src/reporting/BalanceMath.H} +
+\file{src/reporting/ElementBalanceReport.cpp}; the shared formula parser
+is \file{src/thermo/ElementComposition.cpp}.
+\end{whatyoulllearn}
+
+\subsection{Why moles are not conserved, and atoms are}
+
+Let stream $s$ carry component molar flows $\dot n_{i,s}$
+[kmol\,s$^{-1}$].  A reaction with stoichiometry $\boldsymbol\nu$
+changes the total molar flow by $\dot\xi\sum_i\nu_i$ --- for
+$\mathrm{A}\to 2\mathrm{B}$ the moles \emph{double} at full conversion,
+and nothing is wrong.  What a closed reaction cannot change is the count
+of each element's atoms: if $a_{ie}$ is the number of atoms of element
+$e$ in one molecule of species $i$ (the \emph{atom matrix}, parsed once
+from each component's formula), then stoichiometric consistency means
+$\sum_i \nu_i\,a_{ie} = 0$ for every $e$ --- the same condition the
+Gibbs reactor imposes as its element-abundance constraint
+(\S\ref{ch:gibbs-reactor}).
+
+The plant-boundary element balance follows by summing over the boundary
+streams (feeds $\mathcal F$, products $\mathcal P$ --- roles inferred
+from the topology, never declared):
+\begin{equation}
+  \dot N_e^{\mathrm{in}} \;=\; \sum_{s\in\mathcal F}\sum_i
+      \dot n_{i,s}\,a_{ie},
+  \qquad
+  \dot N_e^{\mathrm{out}} \;=\; \sum_{s\in\mathcal P}\sum_i
+      \dot n_{i,s}\,a_{ie},
+\end{equation}
+in kmol-atom per unit time, with the particulate (solid-phase) flows
+included alongside the fluid flows.  At a converged steady state
+$\dot N_e^{\mathrm{in}} = \dot N_e^{\mathrm{out}}$ for \emph{every}
+element --- reacting or not.  The report prints one row per element:
+in, out, residual, and the closure percentage
+$100\,\dot N_e^{\mathrm{out}}/\dot N_e^{\mathrm{in}}$.  Total mass
+conservation is the molar-mass-weighted consequence
+($M_i = \sum_e a_{ie}\,A_e$ with $A_e$ the standard atomic weights), so
+a passing element balance implies a passing mass balance --- but not
+conversely: a stoichiometry error that conserves mass by accident
+(isomer bookkeeping, lumped species) still shows up in the atoms.
+
+\subsection{The seal tests every element, not the total}
+
+It is tempting to compress the table into one number --- total atoms in
+vs total atoms out.  That number is shown (it is the headline bar chart
+in the GUI), but it can \emph{lie}: a $+10$ kmol-atom/h error in carbon
+cancels a $-10$ kmol-atom/h error in oxygen and the signed total closes
+exactly.  The conservation claim (``all elements conserved'') is
+therefore granted only when \emph{every} element's closure is within
+tolerance; the compact indicator is the \emph{worst} per-element
+deviation.  This is the same anti-cancellation discipline as the
+per-component mass balance: aggregates are displays, never proofs.
+
+\subsection{Honesty states: FULL, PARTIAL, UNAVAILABLE}
+
+An element balance is only as good as the atom matrix.  Three states,
+written into the report's metadata sidecar, keep the claim honest:
+
+\begin{itemize}
+  \item \textbf{FULL} --- every species on the boundary resolved its
+    composition (formula, or a declared composition; see below), and
+    every declared boundary stream is present in the result.
+  \item \textbf{PARTIAL} --- every species resolved, but at least one
+    only through a \emph{declared} composition with an unaccounted mass
+    fraction (a petroleum cut whose assay covers, say, 99.5\% of its
+    mass).  The declared elements are still usable; a \emph{complete}
+    closure is not stamped, and the sidecar names each partial species
+    with its unaccounted fraction.
+  \item \textbf{UNAVAILABLE} --- some species could not resolve at all
+    (a pseudo-component with no parseable formula and no declaration),
+    or a boundary stream is missing.  The claim is \emph{withheld},
+    naming the species or stream and the reason --- never a silent zero,
+    never a fabricated row.
+\end{itemize}
+
+The composition resolves formula-first: the shared parser reads the
+component's \code{formula} (nested groups, hydrates, isotopes, charges).
+A substance with no meaningful formula --- a petroleum cut, a lumped
+biomass, an ash --- may instead carry a declared
+\code{elementalComposition\{\}} block in its \file{.dat} (mass-fraction
+basis with a mandatory \code{unaccountedMassFraction}, or a
+formula-unit basis whose atom counts must reproduce the molar mass);
+the declaration is validated at component read, and its provenance is
+required --- an invented composition cannot wear a trustworthy badge.
+
+\subsection{The three regimes}
+
+\begin{itemize}
+  \item \textbf{Steady} (\code{choupoSolve}): the element balance is a
+    \emph{default} diagnostic of every converged run --- the report
+    writes \file{reports/balances/elementBalance.csv} + \file{.meta}
+    without being asked (opt out per report block with
+    \code{enabled false;}).
+  \item \textbf{Batch} (\code{choupoBatch}): the campaign ledgers carry
+    the same laws as exact state differences --- every transfer record
+    prices its elements, and the campaign verdict is granted only when
+    every piece is accounted.
+  \item \textbf{Dynamic} (\code{choupoCtrl}): the ledger integrates
+    \emph{accepted} integrator states --- mass inventory and per-element
+    conservation residuals over time.  The \emph{physical} energy
+    closure for the dynamic CSTR honestly refuses: its energy equation
+    is a $c_p$/convective model, not the exact derivative of a stored
+    $U(n,T)$, and claiming a first-law closure over it would be a lie
+    (\S\ref{ch:dyn-cstr}).
+\end{itemize}
+
+The GUI draws these artefacts and never recomputes them: the engine
+owns the physics; the browser owns the pixels.
 
 % ---------------------------------------------------------------------
 \section{Isothermal flash, vapour--liquid}\label{ch:flash}
@@ -13942,7 +14077,7 @@ the same fallback the absorber and stripper take when $c_p$ data are
 absent. Stages are \emph{theoretical} (Murphree-style stage efficiency
 and the HETP/mass-transfer rate that fix a real packed-column height are
 not modelled). The two products are taken to be the two declared
-\code{liquid} phases, so the thermoPackage must carry $\ge 2$ liquid
+\code{liquid} phases, so the declared system must carry $\ge 2$ liquid
 phases or the unit refuses to run. There is no entrainer/decanter
 solvent-recovery loop --- the extract leaves with its solvent, and
 recovering it (e.g.\ by distillation) is a downstream unit in the
@@ -17349,7 +17484,7 @@ velocity, area and Reynolds number follow from the feed and the bore,
    \mathrm{Re} = \frac{\rho\,u\,D}{\mu},
 \end{equation}
 with $\dot n$ the molar flow, $M_w$ the mixture molar mass, and $\mu$ the
-liquid viscosity (from the \code{thermoPackage} transport model of
+liquid viscosity (from the \code{transport} block of
 Chapter~\ref{ch:viscosity}, or an explicit \code{operation} override).
 The only unknown left in Eq.~\eqref{eq:darcy} is $f$, and \emph{all} of
 pipe hydraulics is the one question: \emph{what is $f$?}

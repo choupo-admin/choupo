@@ -489,7 +489,7 @@ complete map, stated once; every later chapter is a room in this house.
 \subsection{The flow}
 
 \begin{quote}
-\texttt{constant/propertyPackage} \emph{declares} $\;\rightarrow\;$ the builder
+\texttt{constant/thermoPhysPropDict} \emph{declares} $\;\rightarrow\;$ the builder
 \emph{loads, verifies and announces} (it never estimates) $\;\rightarrow\;$ the
 engine \emph{computes} $\;\rightarrow\;$ the run log \emph{confesses}.
 \end{quote}
@@ -510,7 +510,7 @@ reference rung of every group, and every pair parameter with its source file.
 \midrule
 components & \texttt{components ( ... )} & identity; a salt's \texttt{dissociatesTo} names its ions\\
 phases & \texttt{phases}, \texttt{phases/solid} data & which phases exist; $\rho_p$, $k_v$ for solids\\
-model per PHASE & \texttt{propertyMethods \{ liquid ...; vapour ...; \}} & ONE Gibbs surface per phase --- the liquid slot selects the VLE world\\
+model per PHASE & \texttt{equilibrium \{ formulation ...; liquid \{...\} vapour \{...\} \}} & ONE Gibbs surface per phase --- the \texttt{formulation} selects the VLE world\\
 convention per GROUP & reference rungs (\texttt{referenceBasis}) & renormalisations of one surface: solvent on Raoult, solutes on Henry, ions on aqueous infinite dilution\\
 correlation per COMPONENT & the component \texttt{.dat} (+ overrides) & pure-species data; legal for transport and pure correlations, never for the equilibrium surface\\
 parameter per PAIR & \texttt{parameters \{ ...Pairs \{...\} \}} & declared FILE, verified at assembly, cited to its source\\
@@ -708,7 +708,7 @@ convention, never an Antoine curve extrapolated above $T_c$.
 Gibbs--Duhem, $\sum_i x_i\,d\ln\gamma_i = 0$ at constant $T,P$, ties every
 component's $\gamma$ in a phase to every other's: they must all derive from
 ONE $G^E$ (or one EoS) surface.  Hence the rule that governs Choupo's
-\code{propertyPackage} grammar: \emph{models per phase; conventions per
+\code{thermoPhysPropDict} grammar: \emph{models per phase; conventions per
 component-group within the phase; correlations per component; parameters per
 pair}.  Mixing two $\gamma$-models (or two cubics) in one phase violates
 Gibbs--Duhem and is refused.  Mixing CONVENTIONS in one phase is legal ---
@@ -732,9 +732,9 @@ guide uses:
  & \multicolumn{3}{l}{\text{full speciation (mass action + charge balance) where the case demands it}}
 \end{array}
 \]
-Each row is one \code{propertyMethods.liquid} family
-(\code{activity.*}, \code{solution.henryDilute}, \code{eos.*},
-\code{electrolyte.*}); the run log announces which world is live.  All four
+Each row is one \code{equilibrium.formulation}
+(\code{gammaPhi}, \code{diluteSolution}, \code{phiPhi},
+\code{electrolyteGammaPhi}); the run log announces which world is live.  All four
 are validated in the tutorials against measured data --- van~Ness-consistent
 VLE sets ($\gamma$-$\varphi$), Wiebe/Larson solubilities (Henry, $\sim$2\%),
 the Stryjek N$_2$--CH$_4$ isotherm ($\varphi$-$\varphi$, $\sim$2\%), and the
@@ -804,8 +804,8 @@ data/standards/
   chemistry/.../<name>.dat         an equilibrium: dissolution, speciation
   parameters/.../<i>-<j>.dat       a pair: NRTL, Pitzer, eNRTL
   methods/<name>.dat           a model declaration (+ its reference basis)
-  (the package is the manifest INLINE in the case's constant/propertyDict --
-   THE CENTRE; there is no shared propertyPackages/ catalogue)
+  (the system is declared INLINE in the case's constant/thermoPhysPropDict
+   -- THE CENTRE; there is no shared package catalogue)
 \end{lstlisting}
 
 The arity rule decides \emph{which} file: a number that ``stands alone with the
@@ -814,30 +814,42 @@ two names (an NRTL pair) cannot, and goes to \code{parameters/}.  The Developer
 Guide (\emph{the thermophysical property architecture}) gives the full layout
 and the eight data kinds.
 
-\paragraph{Selecting a package.}  A case does not list loose models and
-parameters.  It \emph{selects} a \code{propertyPackage} --- one record that
-names the components, the methods, and the parameter banks the run needs:
+\paragraph{Declaring the system.}  A case does not list loose models and
+parameters.  It \emph{declares} its thermophysical system --- one record that
+names the components, the formulation, and the parameter files the run needs
+(active chemistry lives beside it in \file{constant/chemistryDict}):
 
 \begin{lstlisting}
-recordType propertyPackage;   name aqueousNaCl_pitzer;
-components        ( water NaCl );   // NaCl's dissociatesTo names the ions
-chemistry         { salts ( halite ); }   // the builder reads salts; the
-                                           // solubility anchor comes from the
-                                           // salt record itself
-propertyMethods   { liquid electrolyte.pitzer; vapour builtin.idealGas; }
-parameters        { pitzerPairs { Na-Cl ".../pitzer/pairs/Na-Cl.dat"; } }
-% NOTE: pitzerPairs is today a CITATION of where the pair lives; the loader
-% resolves the pair by (cation,anion) name. kijPairs/henryPairs/binaryPairs
-% are loaded from their declared paths and refuse when missing.
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water NaCl );          // NaCl's dissociatesTo names the ions
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+
+    aqueous
+    {
+        solvent            water;
+        apparentComponents ( NaCl );  // stream carries the salt; the model
+        activityModel { model Pitzer; }        //   activates its ions
+        compositionBasis molality;
+    }
+
+    vapour { fugacityModel idealGas; }
+}
+% Pitzer pairs resolve by (cation,anion) name from parameters/; declared
+% binaryParameters/binaryInteractions files load from their `source` paths
+% and refuse when missing.
 \end{lstlisting}
 
-The flow is one sentence: \textbf{\code{propertyPackage} declares,
+The flow is one sentence: \textbf{\code{thermoPhysPropDict} declares,
 \code{ThermoPackageBuilder} assembles, \code{ThermoPackage} computes.}  The
-package is the recipe; the builder loads what it names and mounts the runtime
-object the unit operations consume.  An ordinary molecular case is the same
-record degenerate --- no dissociation, no chemistry, an NRTL or EoS model,
-optional binary pairs; the old flat \code{thermoPackage} dict you already
-write \emph{is} that degenerate package.
+declaration is the recipe; the builder loads what it names and mounts the
+runtime object the unit operations consume.  An ordinary molecular case is
+the same record degenerate --- no dissociation, no chemistry, a
+\code{gammaPhi} block with an NRTL or an EoS slot.
 
 \begin{intuition}
 The boundary you must respect: \emph{curation estimates, runtime does not}.  You

@@ -50,12 +50,14 @@
     "pinch":     { "guide": "theory", "anchor": "ch:heat",             "title": "Pinch / heat integration" },
     "streams":   { "guide": "theory", "anchor": "ch:stream-as-state",  "title": "Streams (the process stream as state)" },
     "variables": { "guide": "user",   "anchor": "sec:outer",           "title": "Variables / outer drivers (sweep, optimise, fit)" },
+    "control":   { "guide": "theory", "anchor": "ch:pid",              "title": "Feedback control (PID tuning bench)" },
     "plots":     { "guide": "user",   "anchor": "sec:gui",             "title": "Plots" },
     "log":       { "guide": "user",   "anchor": "sec:troubleshoot",    "title": "Log / troubleshooting" },
     "case":      { "guide": "user",   "anchor": "sec:gui",             "title": "Case files" },
-    "reports":   { "guide": "user",   "anchor": "sec:post",            "title": "Reports (sizing / costing)" }
+    "reports":   { "guide": "user",   "anchor": "sec:reports",         "title": "Reports (balances, utilities, spreadsheet)" }
   },
   "algorithms": {
+    "elementBalance": { "guide": "theory", "anchor": "ch:balances",  "title": "Balances: mass, elements, energy" },
     "newton1d":     { "guide": "theory", "anchor": "ch:nr1d",        "title": "Newton-Raphson, one dimension" },
     "newtonND":     { "guide": "theory", "anchor": "ch:nrND",        "title": "Newton-Raphson, n dimensions (residual -> Jacobian -> step)" },
     "recycleTear":  { "guide": "theory", "anchor": "ch:newton-tears","title": "Closing a recycle: Newton on the tear stream" },

@@ -822,7 +822,7 @@ void UnitOperation::registerBuiltins() {
 
 Create \file{tutorials/myOp01\_quick\_smoke/} with
 \file{system/controlDict}, \file{system/flowsheetDict}, and
-\file{constant/thermoPackage}. Keep the case trivial so it doubles as a
+\file{constant/thermoPhysPropDict}. Keep the case trivial so it doubles as a
 regression test.
 
 \subsection{Step 5 --- Build, WASM, regression}
@@ -904,9 +904,10 @@ void ActivityModel::registerBuiltins() {
         { return std::make_unique<UNIQUAC>(d, n); });
 }
 \end{lstlisting}
-  \item Use it in a tutorial's \file{thermoPackage}:
+  \item Use it in a tutorial's \file{thermoPhysPropDict}
+        (inside \code{equilibrium.liquid}):
 \begin{lstlisting}[language=dict]
-activityModel { model UNIQUAC; pairs (... ); }
+activityModel { model UNIQUAC; binaryParameters {... } }
 \end{lstlisting}
 \end{enumerate}
 
@@ -960,14 +961,16 @@ WASM (\code{make wasm-gui}) or the browser will not see the new op.
 % =====================================================================
 \section{The thermophysical property architecture}\label{sec:property-architecture}
 
-Property data in Choupo is \emph{declarative packages with OpenFOAM-like
+Property data in Choupo is \emph{declarative systems with OpenFOAM-like
 explicit files}.  A case does not hand the solver a bag of numbers; it
-\emph{selects} a \code{propertyPackage} --- a curated record that names the
-components, the models, and the parameter banks the run needs.  The
-one-sentence contract:
+\emph{declares} its thermophysical system --- \file{constant/thermoPhysPropDict}
+(\code{recordType thermophysicalPropertySystem; schemaVersion 2;}), one
+record naming the components, the equilibrium formulation, the model in
+each phase slot, and the parameter files the run needs.  The one-sentence
+contract:
 
 \begin{quote}\itshape
-\code{propertyPackage} declares, \code{ThermoPackageBuilder} assembles,
+\code{thermoPhysPropDict} declares, \code{ThermoPackageBuilder} assembles,
 \code{ThermoPackage} computes; curation produces \code{.dat}, runtime does not
 estimate.
 \end{quote}
@@ -975,7 +978,7 @@ estimate.
 \subsection{The flow}
 
 \begin{lstlisting}
-propertyPackage.dat       a case SELECTS this (declarative)
+thermoPhysPropDict        the case DECLARES this (declarative)
      |
 ThermoPackageBuilder      runtime ASSEMBLY: loads + assembles, never estimates
      |                    (src/thermo/ThermoPackageBuilder.cpp)
@@ -1024,13 +1027,12 @@ data/standards/
     mineralSolubility/           PHREEQC mineral logK/dH (speciation engine)
     aqueousSpeciation/  gasLiquid/  ionExchange/
   parameters/
-    electrolyte/pitzer/pairs/<c>-<a>.dat      Pitzer binary pairs
-    electrolyte/pitzer/mixing/<kind>/...      Pitzer ternary theta/psi/...
-    electrolyte/eNRTL/<c>-<a>.dat             eNRTL tau pairs
-    binary/NRTL/<i>-<j>.dat                   molecular binary parameters
-  methods/ (kind electrolyteModel) {pitzer,eNRTL}.dat   .../activity/NRTL.dat
-  (the package is the manifest INLINE in constant/propertyDict -- THE CENTRE;
-   no shared propertyPackages/ catalogue)
+    Pitzer/{pairs,lambda,psi}/...             Pitzer binaries + ternaries
+    eNRTL/<c>-<a>.dat                         eNRTL tau pairs
+    NRTL/ UNIQUAC/ Wilson/ Henry/ SRK/ ...    molecular pair catalogues
+  (the system is declared INLINE in constant/thermoPhysPropDict -- THE
+   CENTRE; there is no shared package catalogue, and the old per-model
+   methods/<name>.dat ceremony records were retired)
 \end{lstlisting}
 
 \code{components/} stays \emph{flat} (the loader resolves \code{<name>.dat} by
@@ -1039,23 +1041,35 @@ per salt (no \code{apparent/} twin --- one component, one file), no
 user-facing ``true species'' vocabulary (an ion is not \emph{more real} than
 the salt; it is the speciation a model postulates --- so: \emph{model
 species}), and no \code{propertySets/} kind (it had zero readers and was
-removed rather than kept as ceremony).  A minimal package:
+removed rather than kept as ceremony).  A minimal electrolyte system
+(active chemistry beside it in \file{constant/chemistryDict}):
 
 \begin{lstlisting}
-recordType propertyPackage;   name aqueousNaCl_pitzer;
-components        ( water NaCl );
-chemistry         { salts ( halite ); }
-propertyMethods   { liquid electrolyte.pitzer; vapour builtin.idealGas; }
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+components ( water NaCl );
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+    aqueous
+    {
+        solvent            water;
+        apparentComponents ( NaCl );
+        activityModel { model Pitzer; }
+        compositionBasis molality;
+    }
+    vapour { fugacityModel idealGas; }
+}
 \end{lstlisting}
 
-The solid equilibrium activates through \code{chemistry.salts} (the
+The solid equilibrium activates through the chemistry selection (the
 \(K_{sp}\) anchor comes from the component's \code{solidPhases}); the Pitzer
 pair is resolved by cation--anion name from the parameter catalogue.
 
 \subsection{The builder contract}
 
-\code{ThermoPackageBuilder::build} dispatches on the package's
-\code{propertyMethods.liquid}.  For an electrolyte method it (1)~reads the
+\code{ThermoPackageBuilder::build} dispatches on the declared
+\code{equilibrium.formulation}.  For an electrolyte formulation it (1)~reads the
 component list; (2)~identifies the ONE salt as the component whose standards
 record carries \code{dissociatesTo}, and takes its identity (MW, role) from
 \code{components/<salt>.dat}; (3)~classifies the ions by charge sign from
@@ -1068,21 +1082,17 @@ construction; (6)~mounts the \code{ThermoPackage}.  \textbf{It loads and
 assembles; it does not estimate} --- a missing record fails clear:
 
 \begin{lstlisting}
-FATAL: propertyPackage aqueousNaCl_pitzer selected propertyMethod pitzer,
+FATAL: electrolyteGammaPhi selected the Pitzer activity model,
        but required parameter pair Na-Cl was not found.
 \end{lstlisting}
 
-For a molecular method (\code{activity.NRTL}) the same entry point reads the
-binary pair from \code{parameters/NRTL/} and mounts the classical NRTL
-package --- one stack, electrolyte and molecular alike.
-
-\emph{Declared vs.\ load-bearing --- stated honestly.}  The
-\code{methods/*.dat} records are today \emph{declarations}: the
-builder loads them, asserts their \code{requires} block, and echoes the
-declared per-phase \code{referenceBasis}; the dispatch itself keys on the
-package's method \emph{name}, and the reference rung is not yet mechanically
-consumed by the $\gamma$/enthalpy math.  Making the rung load-bearing is
-roadmap; the declaration documents intent without pretending mechanism.
+For a molecular formulation (\code{gammaPhi} with NRTL) the same entry
+point reads the binary pair from \code{parameters/NRTL/} and mounts the
+classical NRTL package --- one stack, electrolyte and molecular alike.  The
+reference conventions are the \code{standardState} keys on the phase/group
+blocks (\code{pureLiquid}, \code{infiniteDilution}); the old per-model
+\code{methods/<name>.dat} ceremony records were retired once the dispatch
+became fully native.
 
 \subsection{Status}
 
@@ -1091,9 +1101,9 @@ The legacy salt-level electrolyte front-end is fully retired: the
 (ion identity now derives from \code{dissociatesTo}; dissolution data live in
 \code{chemistry/salts/}), \code{ElectrolyteActivity::configure()} and the
 \code{model pitzer;}/\code{model eNRTL;} factory registrations are deleted,
-and the twelve electrolyte tutorials select property packages.  The classic
-\code{thermoPackage} dict remains the \emph{legitimate degenerate} package for
-molecular cases ($\sim$195 tutorials) --- lightweight is not legacy.  Two
+and the electrolyte tutorials declare \code{electrolyteGammaPhi} systems.
+A molecular case is the same record degenerate --- a \code{gammaPhi} block,
+no dissociation, no chemistry; lightweight is not legacy.  Two
 electrolyte front-ends remain deliberately separate: \emph{multi-ion
 speciation} (\code{pitzerHMW}/\code{davies} via a \code{propsDict}
 \code{speciate} op) and the flat membrane/DSPM-DE data path.  The
@@ -1236,7 +1246,8 @@ wrong closure.  Curate the eleven historical gaps (or the new component's
 datum) before relying on the balance.
 \end{pitfall}
 
-Add the new component name to the case's \code{thermoPackage.components
+Add the new component name to the case's \code{thermoPhysPropDict}
+\code{components
 (...)} list (or to a per-case \file{constant/components/<name>.dat}
 overlay if the data is sample-specific) and the new entry is picked up
 automatically --- no recompile needed.
@@ -1321,7 +1332,8 @@ Referenced from a CSTR / PFR by name
 (\code{reaction ethanol\_to\_water\_test;}).
 
 \begin{keyidea}
-\textbf{The reactions library cascades UP, like \code{thermoPackage}.}  When a
+\textbf{The reactions library cascades UP, like the thermophysical
+system.}  When a
 branch of a fractal plant (\S\ref{sec:fractal}) is run \emph{standalone}, its
 named-reaction library resolves by walking up the parent-folder chain (capped
 at six levels) exactly as the thermo package does, and \textbf{announces its
@@ -1354,7 +1366,7 @@ The simulator functor and dict templates are injected by \file{main.cpp}:
 auto driver = OuterDriver::New(outerDict);
 driver->setSimulator     (simulate);          // SimulationResult(DictPtr)
 driver->setFlowsheetDict (flowsheetDict);     // mutable flowsheet template
-driver->setThermoDict    (thermoDict);        // mutable thermoPackage
+driver->setThermoDict    (thermoDict);        // mutable thermoPhysPropDict
 driver->run();
 \end{lstlisting}
 
@@ -1699,7 +1711,8 @@ A \textbf{dual-reader} keeps both loading: the child loader reads
 same at the case root.  Existing fractal cases (esterification, twoSectorDemo)
 load byte-identically through the fallback --- \textbf{no forced mass-migration}.
 
-\paragraph{A branch runs alone.}  Because both \code{thermoPackage} and the
+\paragraph{A branch runs alone.}  Because both \code{thermoPhysPropDict}
+and the
 reactions library cascade UP the parent chain (\S\ref{sec:add-data}), pointing
 \code{choupoSolve} at a sub-sector folder runs that branch as a complete case,
 inheriting the parent's thermo and reactions and announcing what it inherited.
@@ -2088,7 +2101,7 @@ splitter01_isothermal/
     controlDict                  # application choupoSolve; verbosity 3;
     flowsheetDict                # the topology below
   constant/
-    thermoPackage                # components ( benzene toluene ); ideal
+    thermoPhysPropDict           # v2 record: components + gammaPhi ideal
 \end{lstlisting}
 
 \noindent The \file{system/flowsheetDict} (one feed boundary, one unit, two
