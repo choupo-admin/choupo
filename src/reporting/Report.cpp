@@ -32,6 +32,7 @@ License
 #include "EconomicsReport.H"
 #include "EnergyBalanceReport.H"
 #include "EnergyStreamsReport.H"
+#include "ElementBalanceReport.H"
 #include "MassBalanceReport.H"
 #include "ProfilesReport.H"
 #include "SpreadsheetReport.H"
@@ -71,6 +72,7 @@ void Report::registerBuiltins()
 {
     registerType("streamTable",   []{ return std::make_unique<StreamTableReport>();   });
     registerType("massBalance",   []{ return std::make_unique<MassBalanceReport>();   });
+    registerType("elementBalance",[]{ return std::make_unique<ElementBalanceReport>();});
     registerType("energyBalance", []{ return std::make_unique<EnergyBalanceReport>(); });
     registerType("utilities",     []{ return std::make_unique<UtilitiesReport>();     });
     registerType("utilityAllocation", []{ return std::make_unique<UtilityAllocationReport>(); });

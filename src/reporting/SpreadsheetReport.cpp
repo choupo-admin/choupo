@@ -28,6 +28,7 @@ License
 
 #include "SpreadsheetReport.H"
 #include "BalanceMath.H"
+#include "thermo/ElementComposition.H"
 #include "OdsWriter.H"
 #include "Topology.H"
 #include "streams/StreamMass.H"
@@ -156,6 +157,59 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
     ods.newRow();
     ods.textCell("closure [%]", OdsWriter::Bold);
     ods.numberCell(gClosure, 4, closeSt);
+
+    // ======================== Element Balance ============================
+    //  ELEMENTS, not components -- a different domain, its own sheet beside
+    //  the mass balance.  ONE shared routine (elementBoundaryBalance):
+    //  union of in/out elements, refusals as states.
+    {
+        ods.beginSheet("Element Balance");
+        ods.newRow();
+        ods.textCell("Element conservation (plant boundary, kmol-atom/h)",
+                     OdsWriter::Title);
+        const auto eb = reporting::elementBoundaryBalance(
+            topo.feeds, topo.products, ctx.result, ctx.thermo);
+        if (!eb.available)
+        {
+            ods.newRow();
+            ods.textCell("UNAVAILABLE -- the elemental claim is withheld:",
+                         OdsWriter::Bad);
+            for (const auto& [nm2, why] : eb.refusedSpecies)
+            {
+                ods.newRow();
+                ods.textCell(nm2);
+                ods.textCell(why);
+            }
+            for (const auto& nm2 : eb.missingStreams)
+            {
+                ods.newRow();
+                ods.textCell(nm2);
+                ods.textCell("declared boundary stream has no state in the"
+                             " result");
+            }
+        }
+        else
+        {
+            ods.newRow();
+            ods.textCell("element",              OdsWriter::Header);
+            ods.textCell("in [kmol-atom/h]",     OdsWriter::Header);
+            ods.textCell("out [kmol-atom/h]",    OdsWriter::Header);
+            ods.textCell("closure [%]",          OdsWriter::Header);
+            for (const auto& [sym, ain] : eb.elemIn)
+            {
+                const scalar aInH = ain * 3600.0;
+                const scalar aOutH = eb.elemOut.at(sym) * 3600.0;
+                const scalar cl = closurePct(aInH, aOutH);
+                ods.newRow();
+                ods.textCell(sym);
+                ods.numberCell(aInH, 6);
+                ods.numberCell(aOutH, 6);
+                ods.numberCell(cl, 4,
+                    std::abs(cl - 100.0) <= closureTol ? OdsWriter::Good
+                                                       : OdsWriter::Bad);
+            }
+        }
+    }
 
     // ====================== Mass Balance (per unit) ======================
     ods.beginSheet("Mass Balance by Unit");

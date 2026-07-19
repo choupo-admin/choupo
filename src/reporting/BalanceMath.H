@@ -36,12 +36,15 @@ Description
 
 #pragma once
 
+#include "core/SimulationResult.H"
 #include "core/Types.H"
+#include "thermo/ElementComposition.H"
 #include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/flash/IsothermalFlash.H"   // solveCore: two-phase split enthalpy
 
 #include <cmath>
+#include <map>
 #include <optional>
 #include <set>
 #include <string>
@@ -66,6 +69,88 @@ inline std::vector<scalar> componentMassFlow(const ProcessStream& s,
             m[i] += s.s[i] * thermo.comp(i).MW() * 3600.0;
     }
     return m;
+}
+
+// The plant-boundary ELEMENT aggregation -- ONE routine shared by the
+// elementBalance report and the spreadsheet sheet (never duplicated).
+// Feeds/products come from the caller's topology; per-component boundary
+// flow is fluid F*z + particulate s[] (both kmol/s); atoms come from THE
+// shared parser.  Refusals are STATES: a species whose formula refuses,
+// or a declared boundary stream missing from the result, withholds the
+// claim naming itself -- never a silent zero.
+struct ElementBoundaryBalance
+{
+    bool                                             available = false;
+    std::vector<std::pair<std::string, std::string>> refusedSpecies;
+    std::vector<std::string>                         missingStreams;
+    std::map<std::string, scalar>                    elemIn;    // kmol-atom/s
+    std::map<std::string, scalar>                    elemOut;   // kmol-atom/s
+};
+
+inline ElementBoundaryBalance elementBoundaryBalance(
+    const std::set<std::string>& feeds,
+    const std::set<std::string>& products,
+    const SimulationResult&      result,
+    const ThermoPackage&         thermo)
+{
+    ElementBoundaryBalance out;
+    const std::size_t n = thermo.n();
+    auto molarFlow = [&](const ProcessStream& s)
+    {
+        std::vector<scalar> v(n, 0.0);
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            v[i] = s.F * ((i < s.z.size()) ? s.z[i] : 0.0);
+            if (i < s.s.size()) v[i] += s.s[i];
+        }
+        return v;
+    };
+    std::vector<scalar> molIn(n, 0.0), molOut(n, 0.0);
+    auto accumulate = [&](const std::set<std::string>& names,
+                          std::vector<scalar>& acc)
+    {
+        for (const auto& nm : names)
+        {
+            auto it = result.streams.find(nm);
+            if (it == result.streams.end())
+            {
+                // A declared boundary stream with no state is a WITHHELD
+                // claim, never a silent zero in a conservation diagnostic.
+                out.missingStreams.push_back(nm);
+                continue;
+            }
+            const auto v = molarFlow(it->second);
+            for (std::size_t i = 0; i < n; ++i) acc[i] += v[i];
+        }
+    };
+    accumulate(feeds, molIn);
+    accumulate(products, molOut);
+
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        if (molIn[i] == 0.0 && molOut[i] == 0.0) continue;   // not present
+        const auto ec = parseElementalFormula(thermo.comp(i).formula());
+        if (!ec.available)
+        {
+            out.refusedSpecies.emplace_back(thermo.comp(i).name(), ec.reason);
+            continue;
+        }
+        for (const auto& [sym, na] : ec.atoms)
+        {
+            out.elemIn[sym]  += na * molIn[i];
+            out.elemOut[sym] += na * molOut[i];
+        }
+    }
+    // The row set is the UNION of in/out elements: an element CREATED only
+    // on the product side (a chemically wrong operation -- the gravest
+    // error this diagnostic exists to catch) must appear, with in = 0.
+    for (const auto& [sym, v] : out.elemOut)
+    { (void) v; if (!out.elemIn.count(sym)) out.elemIn[sym] = 0.0; }
+    for (const auto& [sym, v] : out.elemIn)
+    { (void) v; if (!out.elemOut.count(sym)) out.elemOut[sym] = 0.0; }
+
+    out.available = out.refusedSpecies.empty() && out.missingStreams.empty();
+    return out;
 }
 
 // closure % = 100 * out / in   (deviation from 100 is the closure error).
