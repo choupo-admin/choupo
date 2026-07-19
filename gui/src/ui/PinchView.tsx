@@ -135,9 +135,15 @@ export function PinchView() {
               <Text size="sm" ff="monospace">—</Text>
             )}
           </Box>
-          {recov > 0.5 && (
+          {recov > 0.5 ? (
             <Badge color="teal" variant="light" size="lg" styles={{ root: { textTransform: "none" } }}>
               ↓ {recov.toFixed(0)} kW recoverable each side
+            </Badge>
+          ) : (
+            /* THE one no-recovery statement (causal) -- the stats above
+               already show Current = Target; nothing below repeats it. */
+            <Badge color="gray" variant="light" size="lg" styles={{ root: { textTransform: "none" } }}>
+              no composite overlap at ΔTmin = {dTmin} K — utilities cover every duty
             </Badge>
           )}
         </Group>
@@ -211,10 +217,9 @@ export function PinchView() {
       )}
       <Text size="xs" c="dimmed">
         {pinch.streams.length} thermal streams · heating duties are cold streams (need heat),
-        cooling duties are hot streams.{" "}
-        {recov > 0.5
-          ? `The composite overlap (${recov.toFixed(0)} kW) is recoverable by heat integration; the tails are the minimum utilities.`
-          : "The composites do not overlap — nothing is recoverable here; the utilities cover every duty."}
+        cooling duties are hot streams.
+        {recov > 0.5 &&
+          ` The composite overlap (${recov.toFixed(0)} kW) is recoverable by heat integration; the tails are the minimum utilities.`}
       </Text>
     </Stack>
   );

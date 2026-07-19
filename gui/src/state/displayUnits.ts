@@ -91,7 +91,7 @@ export const DEFAULT_PREFS: DisplayPrefs = {
   colorMode: "phase",
   colorMap: "turbo",
   sigFigs: 3,
-  pinchParetoPct: 5,
+  pinchParetoPct: 0,   // draw EVERY stream by default; the cutoff is opt-in
 };
 
 // Named presets the menu exposes as one-click options.  The student

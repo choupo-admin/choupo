@@ -116,10 +116,8 @@ export function PinchGridPlot({
   const noMatchExplanation = noMatches
     ? recovKW <= 0.5
       ? `the hottest hot stream (${hotMaxT.toFixed(0)} K) is colder than the coldest cold ` +
-        `stream (${coldMinT.toFixed(0)} K) once ΔTmin is applied — nothing is recoverable, ` +
-        `so the targets equal today's duties ` +
-        `(hot Current ${pinch.QhNow.toFixed(0)} = Target ${pinch.QhMin.toFixed(0)} kW, ` +
-        `cold Current ${pinch.QcNow.toFixed(0)} = Target ${pinch.QcMin.toFixed(0)} kW)`
+        `stream (${coldMinT.toFixed(0)} K) once ΔTmin is applied — no process-process ` +
+        `exchange is possible (the header badge and the Current = Target stats say the rest)`
       : `the candidate screening is a HEURISTIC (it only pairs streams whose shifted-T ` +
         `intervals overlap directly) and found none here — yet the targets say ` +
         `${recovKW.toFixed(0)} kW IS recoverable, so feasible counter-current pairings the ` +
