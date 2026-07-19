@@ -94,6 +94,7 @@ tutorials/**/postProcessing/
 # datasets that ship with a case (rare) live under constant/experimental/
 # and are whitelisted below.
 tutorials/**/*.csv
+tutorials/**/balanceTrajectory.meta
 !tutorials/**/constant/experimental/*.csv
 # Generated fit / estimate proposals (any nesting depth -- cases live under a
 # sub-class folder since 2026-06-03, e.g. steady/optimisation/<case>/).
