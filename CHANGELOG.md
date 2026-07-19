@@ -7,10 +7,54 @@ version.
 
 ## [Unreleased]
 
-## [Choupo-2607] — 2026-07-14
+## [Choupo-2607] — 2026-07-14, consolidated 2026-07-19
 
-Two threads under one stabilisation tag: a large **open compound-library
-expansion** with release hygiene, plus the **pristine-electrolyte architecture**.
+Three threads under one stabilisation tag: a large **open compound-library
+expansion** with release hygiene, the **pristine-electrolyte architecture**,
+and the **2026-07-19 consolidation wave** below.
+
+### Consolidation wave (2026-07-15 → 2026-07-19)
+
+- **v2-native case grammar.**  `constant/thermoPhysPropDict`
+  (`recordType thermophysicalPropertySystem; schemaVersion 2;`) is THE case
+  grammar: the builder assembles every `equilibrium.formulation` natively
+  (`gammaPhi` / `gammaGamma` / `diluteSolution` / `phiPhi` /
+  `electrolyteGammaPhi`), the v1 `propertyDict` reader and the `translateV2`
+  scaffold are deleted, and a v1 case gets a named refusal pointing at the
+  migrator.  Active chemistry selection lives in `constant/chemistryDict`.
+- **Sealed, self-contained tutorials.**  `bin/choupo-import` mirrors each
+  case's dependency closure into its own `constant/` under a sha256
+  `propertyManifest` (`sealed true;` forbids catalogue fallback); the corpus
+  runs with `data/standards/` hidden.  A seal-drift gate audits sealed copies
+  against the live catalogue.
+- **Balance diagnostics, three levels — mass, per-element atoms, energy.**
+  One shared formula parser (`ElementComposition`, IUPAC/CIAAW 2021 atomic
+  weights); the steady `elementBalance` report is a DEFAULT diagnostic of
+  every converged run (opt-out `enabled false;`), with
+  FULL/PARTIAL/UNAVAILABLE honesty states and named refusals; batch carries
+  material+energy campaign ledgers (exact state differences on the elements
+  datum); choupoCtrl integrates an accepted-state ledger
+  (`balanceTrajectory.csv` + sidecar) for mass + per-element laws, and the
+  dynamicCSTR physical-energy claim honestly refuses pending its
+  reformulation.  `elementalComposition{}` gives formula-less substances a
+  declared, provenance-gated composition.
+- **Stream-face closure.**  The aggregated snapshot is `streamFaces/` on
+  disk and `faces{}` in dicts; a `streams {}` block is refused at every node.
+- **PC-SAFT non-associating core** (Gross & Sadowski 2001) validated ~1 %
+  against literature; **COSMO-SAC 2002** with named multi-set profiles.
+- **GUI.**  Global balances are the landing surface; ONE "Element balance"
+  view (total atoms in/out + per-element detail, sealed only when every
+  element closes); the plots sidebar shows only the open result's views;
+  pinch no-recovery states conclude once with every stream drawn; the
+  landing is capability-aware and phone-safe; the Explore bench synthesizes
+  v2 natively.  Incremental WASM build (clean 13 min → ~1 min; correct
+  invalidation on sources, flags and standards content).
+- **Docs from a blank slate.**  Every LLM surface (`docs/ai/`, AGENTS.md,
+  README, CLAUDE.md) and all seven guides teach only the v2 grammar; the
+  theory guide gains "Balances: mass, elements, energy"; F1 deep-links cover
+  the Control workspace and the balance family; the retired-name gate scans
+  every doc surface for v1 tokens.  `docs/architecture/2608-handoff.md`
+  records the state, debts and deferrals.
 
 ### Added (open compound library)
 - **~28.8k group-estimated compounds** under `data/groupEstimative/` — identity +
