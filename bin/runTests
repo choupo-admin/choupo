@@ -456,6 +456,19 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/sfgate.$$
 
+    # Element-composition gate: THE shared formula parser decomposes the
+    # ratified grammar (groups, hydrates, charges, isotopes) and refuses the
+    # rest loudly -- every balance (batch/steady/ctrl) rides on it.
+    if "$ROOT/bin/curate/check_element_composition.py" > /tmp/elgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "element-composition-gate" "$(head -1 /tmp/elgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_element_composition.py)\n" "element-composition-gate"
+        cat /tmp/elgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/elgate.$$
+
     # Asset-home gate (Codex assets-audit, 2026-07-18): a physical asset lives
     # in ONE home (constant/assets/) -- the legacy membranes/ overlay let a
     # sealed case open input its manifest never claimed.

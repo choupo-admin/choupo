@@ -53,6 +53,7 @@ Description
 #include "core/Dictionary.H"
 #include "core/DisplayUnits.H"
 #include "materials/MaterialRegistry.H"
+#include "thermo/ElementComposition.H"
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
 #include "thermo/solution/SolutionRegistry.H"
 #include "thermo/utility/UtilityCatalogue.H"
@@ -1101,35 +1102,19 @@ try
             // total mass can close over a chemically WRONG stoichiometry).
             // Formulas parse as Element[count] runs; an unparseable formula
             // names itself and withholds the elemental claim (never silent).
-            //  Symbols validate against the REAL periodic table: a lumped
-            //  toy species whose "formula" is A/B/X is NOT an element and
-            //  must not fabricate an elemental claim (found live: the A->B->C
-            //  teaching chain read as "element A becoming element B").
-            static const std::set<std::string> kElements = {
-                "H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al",
-                "Si","P","S","Cl","Ar","K","Ca","Sc","Ti","V","Cr","Mn","Fe",
-                "Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr","Rb","Sr",
-                "Y","Zr","Nb","Mo","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb",
-                "Te","I","Xe","Cs","Ba","La","Ce","W","Pt","Au","Hg","Pb","Bi","U" };
-            auto parseFormula = [](const std::string& f)
+            //  THE shared parser (src/thermo/ElementComposition) validates
+            //  against the real periodic table and reads the full grammar
+            //  (groups, hydrates, ionic charge, D/T isotopes): a lumped toy
+            //  species whose "formula" is A/B/X is NOT an element and must
+            //  not fabricate an elemental claim.
+            std::map<std::string, std::string> parseReason;
+            auto parseFormula = [&parseReason](const std::string& f)
                 -> std::map<std::string, scalar>
             {
-                std::map<std::string, scalar> el;
-                std::size_t i = 0;
-                while (i < f.size())
-                {
-                    if (!std::isupper(static_cast<unsigned char>(f[i])))
-                        return {};                    // unparseable
-                    std::string sym(1, f[i++]);
-                    if (i < f.size() && std::islower(static_cast<unsigned char>(f[i])))
-                        sym += f[i++];
-                    if (!kElements.count(sym)) return {};   // not a real element
-                    std::string num;
-                    while (i < f.size() && std::isdigit(static_cast<unsigned char>(f[i])))
-                        num += f[i++];
-                    el[sym] += num.empty() ? 1.0 : std::stod(num);
-                }
-                return el;
+                const auto ec = parseElementalFormula(f);
+                if (!ec.available) parseReason[f] = ec.reason;
+                return ec.available ? ec.atoms
+                                    : std::map<std::string, scalar>{};
             };
             std::vector<std::string> unparsed;
             std::map<std::string, scalar> elem0, elemF;
@@ -1159,7 +1144,14 @@ try
                     + (i < externalOut.size() ? externalOut[i] : 0.0);
                 if (present == 0.0) continue;
                 const auto el = parseFormula(thermo.comp(i).formula());
-                if (el.empty()) { unparsed.push_back(thermo.comp(i).name()); continue; }
+                if (el.empty())
+                {
+                    const auto& fr = thermo.comp(i).formula();
+                    unparsed.push_back(thermo.comp(i).name()
+                        + (parseReason.count(fr)
+                            ? " (" + parseReason.at(fr) + ")" : ""));
+                    continue;
+                }
                 for (const auto& [sym, na] : el)
                 {
                     elem0[sym] += na * inventory0[i];

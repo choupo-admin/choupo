@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PropertyOperation.H"
+#include "ElementCompositionOp.H"
 #include "EstimateComponent.H"
 #include "Exchange.H"
 #include "FitParameters.H"
@@ -158,6 +159,7 @@ void PropertyOperation::registerBuiltins()
     reg("heatCapacityFit", []{ return std::make_unique<HeatCapacityFit>(); });
     reg("heatTransferBench", []{ return std::make_unique<HeatTransferBench>(); });
     reg("estimateComponent", []{ return std::make_unique<EstimateComponent>(); });
+    reg("elementalComposition", []{ return std::make_unique<ElementCompositionOp>(); });
 }
 
 } // namespace Choupo
