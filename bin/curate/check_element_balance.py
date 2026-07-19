@@ -196,5 +196,90 @@ def main():
     return 0
 
 
+# ---------------------------------------------------------------------------
+#  BATCH relevance (Codex post-commit blocker): a PARTIAL-declared component
+#  that is ABSENT from the whole campaign (zero moles everywhere) must NOT
+#  withdraw the elemental seal; present, it must.
+# ---------------------------------------------------------------------------
+BATCH = ROOT / "build" / "linux64Gcc" / "choupoBatch"
+BATCH_CASE = ROOT / "tutorials" / "batch" / "reactor" / "batch01_first_order"
+
+GHOST = ("name ghostCut;\nformula pseudo;\nMW 100.0;\nrole nonvolatile;\n"
+         "liquidHeatCapacity\n{\n    model polynomial;\n"
+         "    coefficients (150.0);\n    Trange (270 500);\n}\n"
+         "elementalComposition\n{\n    basis massFraction;\n"
+         "    massFractions { C 0.84; H 0.155; }\n"
+         "    unaccountedMassFraction 0.005;\n}\n"
+         "provenance\n{\n    elementalComposition\n    {\n"
+         "        origin  measured;\n"
+         "        method  \"gate fixture ultimate analysis\";\n    }\n}\n")
+
+
+def batch_case(tmp, name, *, present):
+    import shutil as _sh
+    case = Path(tmp) / name
+
+    def ignore(_d, names):
+        return [nm for nm in names
+                if nm.startswith("log.choupo") or nm in ("reports",)
+                or nm.endswith(".csv")
+                or (nm != "0" and nm.replace(".", "", 1).isdigit())]
+
+    _sh.copytree(BATCH_CASE, case, ignore=ignore)
+    tp = case / "constant" / "thermoPhysPropDict"
+    tp.write_text(tp.read_text().replace(
+        "components       ( ethanol  water  aceticAcid  ethylAcetate );",
+        "components       ( ethanol  water  aceticAcid  ethylAcetate"
+        "  ghostCut );"))
+    d = case / "constant" / "components"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "ghostCut.dat").write_text(GHOST)
+    if present:
+        st = case / "0" / "internalState"
+        st.write_text(st.read_text().replace(
+            "molarComposition  { ethanol 0.5;  aceticAcid 0.5;"
+            "  ethylAcetate 0.0;  water 0.0; }",
+            "molarComposition  { ethanol 0.45;  aceticAcid 0.45;"
+            "  ethylAcetate 0.0;  water 0.0;  ghostCut 0.1; }"))
+    r = subprocess.run([str(BATCH), str(case)], capture_output=True,
+                       text=True, cwd=ROOT)
+    return r
+
+
+def batch_relevance_gate(bad):
+    import json as _json
+    with tempfile.TemporaryDirectory(prefix="choupo-batchrel-") as tmp:
+        for name, present, wantPartial in (("ghost-absent", False, False),
+                                           ("ghost-present", True, True)):
+            r = batch_case(tmp, name, present=present)
+            out = r.stdout + r.stderr
+            if r.returncode != 0:
+                bad.append(f"{name}: failed to run: {out[-300:]}")
+                continue
+            m = _re_result.search(out)
+            if not m:
+                bad.append(f"{name}: no result block")
+                continue
+            ck = _json.loads(m.group(1))["kpis"].get("campaign", {})
+            gotPartial = ck.get("element_balance_partial") == 1
+            if gotPartial != wantPartial:
+                bad.append(f"{name}: element_balance_partial ="
+                           f" {gotPartial} (want {wantPartial}) -- an"
+                           " absent component must never contaminate the"
+                           " seal; a present one must withdraw it")
+
+
+import re as _re_mod
+_re_result = _re_mod.compile(
+    r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>", _re_mod.S)
+
 if __name__ == "__main__":
+    _bad = []
+    batch_relevance_gate(_bad)
+    if _bad:
+        print("ELEMENT-BALANCE GATE FAILED (batch relevance, %d):"
+              % len(_bad))
+        for b in _bad:
+            print("  " + b)
+        sys.exit(1)
     sys.exit(main())

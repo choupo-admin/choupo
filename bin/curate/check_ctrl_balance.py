@@ -32,8 +32,28 @@ BASE = ROOT / "tutorials" / "ctrl" / "ctrl01_cstr_temp_control"
 ADAPT = ROOT / "tutorials" / "ctrl" / "ctrl03_adaptive_disturbance"
 
 
+GHOST = ("name ghostCut;\nformula pseudo;\nMW 100.0;\nrole nonvolatile;\n"
+         "liquidHeatCapacity\n{\n    model polynomial;\n"
+         "    coefficients (150.0);\n    Trange (270 500);\n}\n"
+         "elementalComposition\n{\n    basis massFraction;\n"
+         "    massFractions { C 0.84; H 0.155; }\n"
+         "    unaccountedMassFraction 0.005;\n}\n"
+         "provenance\n{\n    elementalComposition\n    {\n"
+         "        origin  measured;\n"
+         "        method  \"gate fixture ultimate analysis\";\n    }\n}\n")
+
+PARTIAL_B = ("elementalComposition\n{\n    basis massFraction;\n"
+             "    massFractions { C 0.48; H 0.081; O 0.437; }\n"
+             "    unaccountedMassFraction 0.002;\n}\n"
+             "provenance\n{\n    elementalComposition\n    {\n"
+             "        origin  measured;\n"
+             "        method  \"gate fixture ultimate analysis\";\n"
+             "    }\n}\n")
+
+
 def make_case(tmp, name, src, *, real_formulas=False, no_reaction=False,
-              a_to_2b=False, rtol=None):
+              a_to_2b=False, rtol=None, add_ghost=False,
+              partial_late_B=False):
     case = Path(tmp) / name
 
     def ignore(_dir, names):
@@ -75,6 +95,21 @@ def make_case(tmp, name, src, *, real_formulas=False, no_reaction=False,
         cd = case / "system" / "controlDict"
         cd.write_text(re.sub(r"(?m)^(\s*rtol\s+)[^;]+;",
                              rf"\g<1>{rtol};", cd.read_text()))
+    if add_ghost:
+        tp = case / "constant" / "thermoPhysPropDict"
+        tp.write_text(re.sub(r"components\s*\(([^)]*)\)",
+                             lambda m: "components ({} ghostCut )".format(
+                                 m.group(1).rstrip()),
+                             tp.read_text(), count=1))
+        (case / "constant" / "components" / "ghostCut.dat").write_text(GHOST)
+    if partial_late_B:
+        # compB starts at zero inventory with zero feed and only APPEARS as
+        # the reaction produces it: the promotion path.  It loses its toy
+        # formula and declares a PARTIAL composition.
+        b = case / "constant" / "components" / "compB.dat"
+        b.write_text(re.sub(r"(?m)^formula\s+[^;]+;",
+                            "formula     pseudoB;", b.read_text())
+                     + PARTIAL_B)
     r = subprocess.run([str(CTRL), str(case)], capture_output=True,
                        text=True, cwd=ROOT)
     return case, r
@@ -177,6 +212,34 @@ def main():
             if "elements_available,0" not in meta or "compA" not in meta:
                 bad.append("toy: metadata sidecar does not name the withheld"
                            " elemental claim")
+
+        # ---- 7+8. relevance: an absent PARTIAL component never
+        #      contaminates; a late-entering one promotes the state --------
+        case, r = make_case(tmp, "ghostAbsent", BASE, real_formulas=True,
+                            add_ghost=True)
+        if r.returncode != 0:
+            bad.append("ghostAbsent: failed to run: "
+                       + (r.stdout + r.stderr)[-300:])
+        else:
+            meta = (case / "balanceTrajectory.meta").read_text()
+            if "elements_partial,0" not in meta:
+                bad.append("ghostAbsent: an always-absent PARTIAL component"
+                           " contaminated the ledger")
+            if "elements_available,1" not in meta:
+                bad.append("ghostAbsent: elements must stay available")
+
+        case, r = make_case(tmp, "lateEntry", BASE, real_formulas=True,
+                            partial_late_B=True)
+        if r.returncode != 0:
+            bad.append("lateEntry: failed to run: "
+                       + (r.stdout + r.stderr)[-300:])
+        else:
+            meta = (case / "balanceTrajectory.meta").read_text()
+            if "elements_partial,1" not in meta:
+                bad.append("lateEntry: a component entering at t > 0 must"
+                           " promote the PARTIAL state (final meta)")
+            if "compB" not in meta:
+                bad.append("lateEntry: the promoted species is not named")
 
     if bad:
         print("CTRL-BALANCE GATE FAILED (%d):" % len(bad))

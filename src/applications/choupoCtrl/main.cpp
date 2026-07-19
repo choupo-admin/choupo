@@ -572,6 +572,35 @@ try
     bool ledgerElemsAvailable = true;
     bool ledgerElemsPartial = false;
     std::string ledgerElemsReason;
+    std::vector<ElementalResolution> ledgerElemRes;
+    std::vector<char> ledgerElemRelevant;
+    // Promote the elemental state for a component that has become part of
+    // the accounted set (at init, or at the first accepted snapshot where
+    // it carries inventory/flow).  The FINAL meta rewrite carries the
+    // promoted truth; the GUI's metadata sovereignty keeps contradictory
+    // columns undrawn.
+    std::function<void(std::size_t)> markElemRelevant =
+        [&](std::size_t i)
+    {
+        if (i >= ledgerElemRelevant.size() || ledgerElemRelevant[i]) return;
+        ledgerElemRelevant[i] = 1;
+        const auto& er = ledgerElemRes[i];
+        if (er.completeness
+            == ElementalResolution::Completeness::unavailable)
+        {
+            ledgerElemsAvailable = false;
+            if (!ledgerElemsReason.empty()) ledgerElemsReason += "; ";
+            ledgerElemsReason += ledger.comps[i] + " (" + er.reason + ")";
+        }
+        else if (er.completeness
+                 == ElementalResolution::Completeness::partial)
+        {
+            ledgerElemsPartial = true;
+            if (!ledgerElemsReason.empty()) ledgerElemsReason += "; ";
+            ledgerElemsReason += ledger.comps[i] + " (PARTIAL, unaccounted "
+                + std::to_string(er.unaccountedMassFraction) + " kg/kg)";
+        }
+    };
     auto gatherRates = [&](sVector& in, sVector& out, sVector& inv) -> bool
     {
         in.assign(ledger.comps.size(), 0.0);
@@ -649,6 +678,13 @@ try
                 ledger.cumOut[i] += 0.5 * (ledger.prevOut[i] + out[i]) * dt2;
             }
         }
+        // Promotion: a component entering the accounted set at t > 0
+        // (inventory or boundary flow becomes nonzero) promotes its
+        // elemental state from this accepted snapshot on.
+        for (std::size_t i = 0; i < ledger.comps.size(); ++i)
+            if (!ledgerElemRelevant.empty() && !ledgerElemRelevant[i]
+                && (inv[i] != 0.0 || in[i] != 0.0 || out[i] != 0.0))
+                markElemRelevant(i);
         ledger.prevIn = std::move(in);
         ledger.prevOut = std::move(out);
         ledger.prevT = tNow;
@@ -713,33 +749,26 @@ try
             // the whole component set decomposes.
             compAtoms.resize(ledger.comps.size());
             std::set<std::string> symbols;
+            // The elemental claim is a property of the ACCOUNTED set: a
+            //  component whose inventory and faces are zero cannot withdraw
+            //  or dilute the seal.  Relevance is decided from the INITIAL
+            //  snapshot here; a component that ENTERS later promotes the
+            //  state at its first accepted snapshot (never eternal absence).
+            ledgerElemRes.resize(ledger.comps.size());
+            ledgerElemRelevant.assign(ledger.comps.size(), false);
             for (std::size_t i = 0; i < ledger.comps.size(); ++i)
             {
-                const auto er = elementalCompositionOf(thermo.comp(i));
-                if (er.completeness
-                    == ElementalResolution::Completeness::unavailable)
+                ledgerElemRes[i] = elementalCompositionOf(thermo.comp(i));
+                const bool relevant = ledger.N0[i] != 0.0
+                    || in[i] != 0.0 || out[i] != 0.0;
+                if (relevant) markElemRelevant(i);
+                if (ledgerElemRes[i].completeness
+                    != ElementalResolution::Completeness::unavailable)
                 {
-                    ledgerElemsAvailable = false;
-                    if (!ledgerElemsReason.empty())
-                        ledgerElemsReason += "; ";
-                    ledgerElemsReason += ledger.comps[i] + " ("
-                                       + er.reason + ")";
-                    continue;
+                    compAtoms[i] = ledgerElemRes[i].atoms;
+                    for (const auto& [sym, na] : ledgerElemRes[i].atoms)
+                    { (void) na; symbols.insert(sym); }
                 }
-                if (er.completeness
-                    == ElementalResolution::Completeness::partial)
-                {
-                    ledgerElemsPartial = true;
-                    if (!ledgerElemsReason.empty())
-                        ledgerElemsReason += "; ";
-                    ledgerElemsReason += ledger.comps[i]
-                        + " (PARTIAL, unaccounted "
-                        + std::to_string(er.unaccountedMassFraction)
-                        + " kg/kg)";
-                }
-                compAtoms[i] = er.atoms;
-                for (const auto& [sym, na] : er.atoms)
-                { (void) na; symbols.insert(sym); }
             }
             if (ledgerElemsAvailable)
                 ledgerElems.assign(symbols.begin(), symbols.end());

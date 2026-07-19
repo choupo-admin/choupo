@@ -1115,8 +1115,14 @@ try
             std::map<std::string, std::string> parseReason;
             std::vector<std::pair<std::string, scalar>> partialSpecies;
             // ONE resolution per component, cached -- residual and inventory
-            // consume the same truth, and PARTIAL is listed once per name.
+            // consume the same truth.  PARTIAL is a property of the
+            // ACCOUNTED set only: it is collected below from the components
+            // that actually participate (inventory / external-out /
+            // declared residual), exactly like the UNAVAILABLE filter -- an
+            // absent component can never withdraw the seal of a balance
+            // that does not contain it.
             std::vector<ElementalResolution> elemRes(thermo.n());
+            std::set<std::size_t> partialRelevant;
             for (std::size_t ci = 0; ci < thermo.n(); ++ci)
             {
                 elemRes[ci] = elementalCompositionOf(thermo.comp(ci));
@@ -1124,11 +1130,13 @@ try
                     == ElementalResolution::Completeness::unavailable)
                     parseReason[thermo.comp(ci).formula()] =
                         elemRes[ci].reason;
-                else if (elemRes[ci].completeness
-                         == ElementalResolution::Completeness::partial)
-                    partialSpecies.emplace_back(thermo.comp(ci).name(),
-                        elemRes[ci].unaccountedMassFraction);
             }
+            auto markPartial = [&](std::size_t ci)
+            {
+                if (elemRes[ci].completeness
+                    == ElementalResolution::Completeness::partial)
+                    partialRelevant.insert(ci);
+            };
             auto atomsOf = [&](std::size_t ci)
                 -> const std::map<std::string, scalar>&
             {
@@ -1155,6 +1163,7 @@ try
                         {
                             anyDeclared = true;
                             declared_kg += kmol * thermo.comp(i).MW();
+                            if (kmol != 0.0) markPartial(i);
                             for (const auto& [sym, na] : atomsOf(i))
                                 elemDeclared[sym] += na * kmol;
                         }
@@ -1163,6 +1172,7 @@ try
                 const scalar present = inventory0[i] + inventoryF[i]
                     + (i < externalOut.size() ? externalOut[i] : 0.0);
                 if (present == 0.0) continue;
+                markPartial(i);
                 const auto el = atomsOf(i);
                 if (el.empty())
                 {
@@ -1202,6 +1212,9 @@ try
                 ck["element_worst_closure_rel"] = elemWorst;
                 if (anyDeclared)
                     ck["element_worst_closure_vs_declared_rel"] = elemWorstAdj;
+                for (const auto ci : partialRelevant)
+                    partialSpecies.emplace_back(thermo.comp(ci).name(),
+                        elemRes[ci].unaccountedMassFraction);
                 if (!partialSpecies.empty())
                 {
                     ck["element_balance_partial"] = 1.0;
