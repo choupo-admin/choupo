@@ -1227,7 +1227,8 @@ try
                             std::cout << " " << nm3 << " (" << un
                                       << " kg/kg)";
                         std::cout << "  -- no complete elemental closure is"
-                                     " stamped; the verdict uses mass.\n";
+                                     " stamped; the verdict rides the"
+                                     " DECLARED elements only.\n";
                     }
                 }
             }
@@ -1257,7 +1258,14 @@ try
             const scalar relAdjMass = anyDeclared
                 ? std::abs(mF + mOut - m0 - declared_kg) / scale_kg
                 : rel;
-            const bool leak = (unparsed.empty() && partialSpecies.empty())
+            //  PARTIAL keeps the ELEMENTAL verdict on the declared atoms:
+            //  they are real conservation constraints, and falling back to
+            //  raw mass at 1e-6 would flag the documented catalogue MW
+            //  drift (~1e-5) as a leak in the same breath as the printed
+            //  "curation note, not a leak".  The unaccounted fraction is
+            //  DECLARED unverifiable -- that is exactly what the PARTIAL
+            //  stamp communicates.
+            const bool leak = unparsed.empty()
                 ? ((anyDeclared ? elemWorstAdj : elemWorst) > tolClosure)
                 : (relAdjMass > tolClosure);
             if (anyDeclared && !leak && verbosity >= 1

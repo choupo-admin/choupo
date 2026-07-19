@@ -1047,33 +1047,32 @@ try
                           << (mIn - mOut) << " kg, closure "
                           << bk["mass_closure_rel"] << "\n";
 
-                // Elements via THE shared parser: a refusing formula
-                // withholds ONLY the elemental claim, naming itself.
-                std::map<std::string, scalar> e0, eF, eIn, eOut;
-                std::vector<std::string> unparsed;
-                for (std::size_t i = 0; i < ledger.comps.size(); ++i)
+                // Elements: the SAME resolver truth the ledger promoted --
+                // compAtoms (resolver atoms) + the relevance-gated
+                // availability/partial flags, so the JSON, the log and the
+                // .meta can never diverge (a declared-block component is
+                // available; a formula-vs-block DISAGREE stays refused).
+                if (!ledgerElemsAvailable)
                 {
-                    const scalar present = ledger.N0[i] + ledger.Ncur[i]
-                        + ledger.cumIn[i] + ledger.cumOut[i];
-                    if (present == 0.0) continue;
-                    const auto ec = parseElementalFormula(
-                        thermo.comp(i).formula());
-                    if (!ec.available)
-                    {
-                        unparsed.push_back(ledger.comps[i]
-                            + " (" + ec.reason + ")");
-                        continue;
-                    }
-                    for (const auto& [sym, na] : ec.atoms)
-                    {
-                        e0[sym]  += na * ledger.N0[i];
-                        eF[sym]  += na * ledger.Ncur[i];
-                        eIn[sym] += na * ledger.cumIn[i];
-                        eOut[sym]+= na * ledger.cumOut[i];
-                    }
+                    std::cout << "[balance] elemental UNAVAILABLE -- "
+                              << ledgerElemsReason << "\n";
                 }
-                if (unparsed.empty())
+                else
                 {
+                    std::map<std::string, scalar> e0, eF, eIn, eOut;
+                    for (std::size_t i = 0; i < ledger.comps.size(); ++i)
+                    {
+                        const scalar present = ledger.N0[i] + ledger.Ncur[i]
+                            + ledger.cumIn[i] + ledger.cumOut[i];
+                        if (present == 0.0) continue;
+                        for (const auto& [sym, na] : compAtoms[i])
+                        {
+                            e0[sym]  += na * ledger.N0[i];
+                            eF[sym]  += na * ledger.Ncur[i];
+                            eIn[sym] += na * ledger.cumIn[i];
+                            eOut[sym]+= na * ledger.cumOut[i];
+                        }
+                    }
                     scalar worst = 0.0;
                     for (const auto& [sym, a0] : e0)
                     {
@@ -1085,15 +1084,13 @@ try
                         worst = std::max(worst, r);
                     }
                     bk["element_worst_closure_rel"] = worst;
+                    if (ledgerElemsPartial)
+                        bk["element_balance_partial"] = 1.0;
                     std::cout << "[balance] elements: worst closure "
-                              << std::scientific << worst << "\n";
-                }
-                else
-                {
-                    std::cout << "[balance] elemental UNAVAILABLE -- "
-                                 "unparseable formula on: ";
-                    for (const auto& nm : unparsed) std::cout << nm << " ";
-                    std::cout << "\n";
+                              << std::scientific << worst
+                              << (ledgerElemsPartial
+                                  ? "  (PARTIAL -- " + ledgerElemsReason + ")"
+                                  : std::string()) << "\n";
                 }
                 std::cout << "[balance] energy: UNAVAILABLE -- "
                           << (ledger.energyReason.empty()
