@@ -126,7 +126,12 @@ export function PlotsWorkspace() {
     const hasTrajectory = Boolean(result?.trajectory);
     const hasTimeline = (result?.timeline?.length ?? 0) > 0;
     const hasCampaign = Boolean(result?.kpis?.["campaign"]);
-    const hasDynBalance = Boolean(result?.csvFiles?.["balanceTrajectory.csv"]);
+    // PRESENCE of either artefact, never truthiness of the body: an
+    // init-time refusal can leave an empty CSV while the .meta is exactly
+    // the artefact carrying the reason the view exists to show.
+    const hasDynBalance =
+      result?.csvFiles?.["balanceTrajectory.csv"] !== undefined
+      || result?.csvFiles?.["balanceTrajectory.meta"] !== undefined;
     return [
       {
         label: "Balance",

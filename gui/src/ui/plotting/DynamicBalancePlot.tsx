@@ -50,15 +50,16 @@ export function DynamicBalancePlot({ trajectoryCsv, metaCsv }: DynamicBalancePlo
   const v = dynamicBalanceView(trajectoryCsv, metaCsv);
 
   if (!v.present) {
+    const reason = v.malformedReason ?? v.materialReason;
     return (
       <Stack align="center" justify="center" h="100%">
-        <Text c="dimmed" fw={600}>
-          {v.materialAvailable === false && v.materialReason
+        <Text c={reason ? "orange" : "dimmed"} fw={600}>
+          {reason
             ? "Balance ledger UNAVAILABLE"
             : "No dynamic balance trajectory in this run"}
         </Text>
-        {v.materialReason && (
-          <Text c="dimmed" size="sm" ta="center" maw={420}>{v.materialReason}</Text>
+        {reason && (
+          <Text c="dimmed" size="sm" ta="center" maw={420}>{reason}</Text>
         )}
       </Stack>
     );
@@ -108,19 +109,23 @@ export function DynamicBalancePlot({ trajectoryCsv, metaCsv }: DynamicBalancePlo
 
   return (
     <Stack gap="xs" h="100%" style={{ minHeight: 0 }}>
-      <Group gap="xs" wrap="wrap">
-        <Badge variant="light" color={v.materialAvailable ? "teal" : "orange"}>
-          material {v.materialAvailable ? "available" : "UNAVAILABLE"}
-        </Badge>
-        <Badge variant="light" color={v.elementsAvailable ? "teal" : "gray"}>
-          {v.elementsAvailable
-            ? "elements available"
-            : "elements UNAVAILABLE — " + (v.elementsReason ?? "withheld")}
-        </Badge>
-        <Badge variant="light" color="gray">
-          energy UNAVAILABLE — {v.energyReason ?? "no functional declared"}
-        </Badge>
-      </Group>
+      <Stack gap={2}>
+        <Group gap="xs" wrap="wrap">
+          <Badge variant="light" color={v.materialAvailable ? "teal" : "orange"}>
+            material {v.materialAvailable ? "available" : "UNAVAILABLE"}
+          </Badge>
+          <Badge variant="light" color={v.elementsAvailable ? "teal" : "gray"}>
+            elements {v.elementsAvailable ? "available" : "UNAVAILABLE"}
+          </Badge>
+          <Badge variant="light" color="gray">energy UNAVAILABLE</Badge>
+        </Group>
+        {!v.elementsAvailable && v.elementsReason && (
+          <Text c="dimmed" size="xs">elements: {v.elementsReason}</Text>
+        )}
+        <Text c="dimmed" size="xs">
+          energy: {v.energyReason ?? "no functional declared"}
+        </Text>
+      </Stack>
       <Group grow align="stretch" style={{ flex: 1, minHeight: 0 }}>
         {panel(inventory, "Mass inventory M(t)", "mass (kg)")}
         {panel(residuals,

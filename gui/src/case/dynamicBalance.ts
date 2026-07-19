@@ -35,6 +35,10 @@ export interface DynamicBalanceView {
   present: boolean;
   materialAvailable: boolean;
   materialReason?: string;
+  /** Set when the trajectory itself is unusable (a malformed numeric row):
+   *  the material claim is withdrawn with this reason -- never a silent
+   *  skip that keeps an AVAILABLE badge over traced NaNs. */
+  malformedReason?: string;
   elementsAvailable: boolean;
   elementsReason?: string;
   energyAvailable: boolean;
@@ -85,12 +89,16 @@ export function dynamicBalanceView(
   const iRes = col("mass_residual_kg");
   if (it < 0 || iInv < 0 || iRes < 0) return view;
 
+  // The metadata is SOVEREIGN: when the engine withheld the elemental
+  // claim, elem_* columns in a contradictory CSV are never drawn.
   const elemCols: { symbol: string; idx: number }[] = [];
-  header.forEach((h, i) => {
-    const m = /^elem_([A-Za-z]+)_residual_kmolatom$/.exec(h);
-    if (m) elemCols.push({ symbol: m[1]!, idx: i });
-  });
-  for (const { symbol } of elemCols) view.elementResiduals[symbol] = [];
+  if (view.elementsAvailable) {
+    header.forEach((h, i) => {
+      const m = /^elem_([A-Za-z]+)_residual_kmolatom$/.exec(h);
+      if (m) elemCols.push({ symbol: m[1]!, idx: i });
+    });
+    for (const { symbol } of elemCols) view.elementResiduals[symbol] = [];
+  }
 
   for (let li = 1; li < lines.length; ++li) {
     const cells = lines[li]!.split(",");
@@ -98,13 +106,30 @@ export function dynamicBalanceView(
     const inv = Number(cells[iInv]);
     const res = Number(cells[iRes]);
     if (!Number.isFinite(tv) || !Number.isFinite(inv)
-        || !Number.isFinite(res)) continue;
+        || !Number.isFinite(res)) {
+      // A malformed numeric row WITHDRAWS the claim -- never a silent skip.
+      view.materialAvailable = false;
+      view.malformedReason = `malformed trajectory (row ${li + 1})`;
+      view.t = []; view.massInventoryKg = []; view.massResidualKg = [];
+      view.elementResiduals = {};
+      view.present = false;
+      return view;
+    }
     view.t.push(tv);
     view.massInventoryKg.push(inv);
     view.massResidualKg.push(res);
     for (const { symbol, idx } of elemCols) {
       const v = Number(cells[idx]);
-      view.elementResiduals[symbol]!.push(Number.isFinite(v) ? v : NaN);
+      if (!Number.isFinite(v)) {
+        view.materialAvailable = false;
+        view.malformedReason = `malformed trajectory (row ${li + 1},`
+          + ` element ${symbol})`;
+        view.t = []; view.massInventoryKg = []; view.massResidualKg = [];
+        view.elementResiduals = {};
+        view.present = false;
+        return view;
+      }
+      view.elementResiduals[symbol]!.push(v);
     }
   }
   view.present = view.t.length > 0;

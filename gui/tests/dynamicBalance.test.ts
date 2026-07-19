@@ -61,4 +61,33 @@ describe("dynamicBalanceView", () => {
     expect(v.present).toBe(false);
     expect(v.t).toEqual([]);
   });
+
+  it("CAUSAL: meta-only init refusal carries the reason (empty/missing CSV)", () => {
+    const meta = 'key,value\nmaterial_available,0\n'
+      + 'material_reason,"reactor: the unit does not expose a balance'
+      + ' snapshot"\nelements_available,0\nenergy_available,0\n';
+    for (const traj of [undefined, ""]) {
+      const v = dynamicBalanceView(traj, meta);
+      expect(v.present).toBe(false);
+      expect(v.materialAvailable).toBe(false);
+      expect(v.materialReason).toContain("does not expose");
+    }
+  });
+
+  it("CAUSAL: the metadata is sovereign -- withheld elements are never drawn"
+     + " from a contradictory CSV", () => {
+    const v = dynamicBalanceView(TRAJ, META_WITHHELD);   // FULL trajectory
+    expect(v.elementsAvailable).toBe(false);
+    expect(Object.keys(v.elementResiduals)).toEqual([]);  // columns ignored
+    expect(v.present).toBe(true);                         // mass still drawn
+  });
+
+  it("CAUSAL: a malformed numeric row withdraws the claim, never a silent"
+     + " skip", () => {
+    const badRow = TRAJ + "2.0,not-a-number,1e-3,1e-3,0,1e-2,0,2e-2,0\n";
+    const v = dynamicBalanceView(badRow, META);
+    expect(v.present).toBe(false);
+    expect(v.materialAvailable).toBe(false);
+    expect(v.malformedReason).toContain("malformed trajectory");
+  });
 });
