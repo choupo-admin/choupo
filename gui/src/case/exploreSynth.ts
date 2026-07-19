@@ -206,9 +206,14 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
       ],
     };
     const thermoPackage: JsonDict = {
+      recordType: "thermophysicalPropertySystem",
+      schemaVersion: 2,
       components: ["water"], // placeholder; the estimate reads its groups from the op
-      activityModel: { model: "ideal" },
-      equationOfState: { model: "idealGas" },
+      equilibrium: {
+        formulation: "gammaPhi",
+        liquid: { activityModel: { model: "ideal" }, standardState: "pureLiquid" },
+        vapour: { fugacityModel: "idealGas" },
+      },
     };
     const controlDict: JsonDict = {
       application: "choupoProps",
@@ -365,40 +370,71 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
   const liquidActivity = (): JsonDict => {
     const lleView = spec.binaryLle !== undefined || spec.ternary?.mode === "lle";
     if (lleView || spec.activityModel?.["model"] === "UNIFAC")
-      return { model: "UNIFAC", groups: JSON.parse(JSON.stringify(spec.unifacGroups ?? {})) as JsonDict };
+      return { model: "UNIFAC" };   // groups inject from the component .dats
     return spec.activityModel ?? { model: "ideal" };
   };
-  // Transport model selection (a sibling of the EOS) — only emitted when a
-  // transport property is being scanned, so an EOS-only scan stays EOS-only.
+  // Transport model selection — only emitted when a transport property is
+  // being scanned.  v2 grammar: models live under their PHASE block.
   const transportBlock = ((): JsonDict | null => {
     const t = spec.transport;
     if (!t) return null;
+    const vap: JsonDict = {};
+    if (t.model) vap.viscosity = { model: t.model };
+    if (t.thermalConductivity) vap.thermalConductivity = { model: t.thermalConductivity };
+    if (t.diffusivity) vap.diffusivity = { model: t.diffusivity };
+    const liq: JsonDict = {};
+    if (t.liquidViscosity) liq.viscosity = { model: t.liquidViscosity };
+    if (t.liquidConductivity) liq.thermalConductivity = { model: t.liquidConductivity };
     const b: JsonDict = {};
-    if (t.model) b.model = t.model;
-    if (t.liquidViscosity) b.liquidViscosity = { model: t.liquidViscosity };
-    if (t.liquidConductivity) b.liquidConductivity = { model: t.liquidConductivity };
-    if (t.thermalConductivity) b.thermalConductivity = { model: t.thermalConductivity };
-    if (t.diffusivity) b.diffusivity = { model: t.diffusivity };
+    if (Object.keys(vap).length) b.vapour = vap;
+    if (Object.keys(liq).length) b.liquid = liq;
     return Object.keys(b).length ? b : null;
   })();
 
+  // v2 thermophysicalPropertySystem (the ONE case grammar).  UNIFAC group
+  // decompositions are NOT inlined: the builder injects them from each
+  // component's own .dat (one home; a component without groups refuses with
+  // the remedy).
   const thermoPackage: JsonDict = (spec.ternary?.mode === "lle" || spec.binaryLle || spec.vleTwoLiquid)
     ? {
+        recordType: "thermophysicalPropertySystem",
+        schemaVersion: 2,
         components: [...spec.components],
-        phases: [
-          { name: "vapor", type: "vapor", eos: { model: "idealGas" } },
-          { name: "liquid1", type: "liquid", activity: liquidActivity() },
-          { name: "liquid2", type: "liquid", activity: liquidActivity() },
-        ],
+        equilibrium: {
+          formulation: "gammaGamma",
+          liquidPhases: [
+            { name: "liquid1", activityModel: liquidActivity() },
+            { name: "liquid2", activityModel: liquidActivity() },
+          ],
+          vapour: { fugacityModel: "idealGas" },
+        },
+      }
+    : spec.scaling
+    ? {
+        // The speciate family reads the aqueous surface as physics; the op's
+        // own activityModel knob (davies | pitzer) selects the engine.
+        recordType: "thermophysicalPropertySystem",
+        schemaVersion: 2,
+        components: [...spec.components],
+        aqueousProperties: {
+          solvent: "water",
+          activityCoefficients: { model: "Davies", referenceBasis: "aqueousMolality" },
+        },
       }
     : {
+        recordType: "thermophysicalPropertySystem",
+        schemaVersion: 2,
         components: [...spec.components],
-        // UNIFAC is predictive: it needs the per-component group decomposition
-        // attached to the activityModel (same shape as the LLE phases above).
-        activityModel: spec.activityModel?.["model"] === "UNIFAC"
-          ? { model: "UNIFAC", groups: JSON.parse(JSON.stringify(spec.unifacGroups ?? {})) as JsonDict }
-          : (spec.activityModel ?? { model: "ideal" }),
-        equationOfState: spec.equationOfState ?? { model: "idealGas" },
+        equilibrium: {
+          formulation: "gammaPhi",
+          liquid: {
+            activityModel: spec.activityModel ?? { model: "ideal" },
+            standardState: "pureLiquid",
+          },
+          vapour: {
+            fugacityModel: String((spec.equationOfState ?? { model: "idealGas" })["model"]),
+          },
+        },
         ...(transportBlock ? { transport: transportBlock } : {}),
       };
 

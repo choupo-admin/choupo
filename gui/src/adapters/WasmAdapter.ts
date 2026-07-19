@@ -242,15 +242,20 @@ export class WasmAdapter implements SolverAdapter {
   }
 }
 
-function serialiseCase(caseFiles: CaseFiles): { [path: string]: string } {
+// Exported for the regression gate: the EXACT file map the worker receives
+// (the incident class this guards: a synthesizer emitting a retired path).
+export function serialiseCase(caseFiles: CaseFiles): { [path: string]: string } {
   const files: { [path: string]: string } = {
     "system/controlDict": dictToText(caseFiles.controlDict, "controlDict"),
   };
-  // propertyPackage cases carry an EMPTY thermoPackage ({}); the real thermo
-  // source travels in extraFiles as constant/propertyDict.  Never write an
-  // empty thermoPackage file over it.
+  // Real cases travel their authored dict text verbatim in extraFiles
+  // (round-trip invariant); the STRUCTURED field is only populated by the
+  // synthesizers (Explore / focus-tab), and it is a v2
+  // thermophysicalPropertySystem -- the GUI never emits the retired
+  // constant/propertyDict name.
   if (Object.keys(caseFiles.thermoPackage).length > 0)
-    files["constant/propertyDict"] = dictToText(caseFiles.thermoPackage, "thermoPackage");
+    files["constant/thermoPhysPropDict"] =
+      dictToText(caseFiles.thermoPackage, "thermoPhysPropDict");
   // Either flowsheetDict (solve/batch/ctrl) or propsDict (props).
   if (caseFiles.flowsheet) {
     files["system/flowsheetDict"] =

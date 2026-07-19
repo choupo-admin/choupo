@@ -31,11 +31,25 @@ describe("Property Explorer synthesizer", () => {
     expect(dictEquals(round, ast)).toBe(true);
   });
 
-  it("defaults to ideal / idealGas, honours model overrides", () => {
-    const def = synthesizeExploreCase(spec);
-    expect((def.thermoPackage as Record<string, unknown>).activityModel).toEqual({ model: "ideal" });
-    const over = synthesizeExploreCase({ ...spec, activityModel: { model: "NRTL" } });
-    expect((over.thermoPackage as Record<string, unknown>).activityModel).toEqual({ model: "NRTL" });
+  it("emits the v2 system: gammaPhi defaults, model overrides honoured,"
+     + " never the retired v1 shape", () => {
+    const tp = (f: ReturnType<typeof synthesizeExploreCase>) =>
+      f.thermoPackage as Record<string, unknown>;
+    const def = tp(synthesizeExploreCase(spec));
+    expect(def["recordType"]).toBe("thermophysicalPropertySystem");
+    expect(def["schemaVersion"]).toBe(2);
+    const eq = def["equilibrium"] as Record<string, Record<string, unknown> | string>;
+    expect(eq["formulation"]).toBe("gammaPhi");
+    expect((eq["liquid"] as Record<string, unknown>)["activityModel"])
+      .toEqual({ model: "ideal" });
+    expect((eq["vapour"] as Record<string, unknown>)["fugacityModel"])
+      .toBe("idealGas");
+    expect("activityModel" in def).toBe(false);       // the v1 keys are gone
+    expect("equationOfState" in def).toBe(false);
+    const over = tp(synthesizeExploreCase({ ...spec, activityModel: { model: "NRTL" } }));
+    const oeq = over["equilibrium"] as Record<string, Record<string, unknown>>;
+    expect((oeq["liquid"] as Record<string, unknown>)["activityModel"])
+      .toEqual({ model: "NRTL" });
   });
 
   it("self-documents the scan mode: pure marks 'composition has no effect'", () => {
@@ -49,6 +63,18 @@ describe("Property Explorer synthesizer", () => {
     const mix = synthesizeExploreCase({ ...spec, mode: "mixture" });
     const desc = (mix.controlDict as Record<string, unknown>).description as string;
     expect(desc).toContain("mixture property");
+  });
+
+  it("the worker file map speaks v2: constant/thermoPhysPropDict, never the"
+     + " retired constant/propertyDict", async () => {
+    const { serialiseCase } = await import("../src/adapters/WasmAdapter.js");
+    const files = serialiseCase(synthesizeExploreCase(spec));
+    expect(Object.keys(files)).toContain("constant/thermoPhysPropDict");
+    expect(Object.keys(files)).not.toContain("constant/propertyDict");
+    expect(files["constant/thermoPhysPropDict"])
+      .toContain("recordType");
+    expect(files["constant/thermoPhysPropDict"])
+      .toContain("thermophysicalPropertySystem");
   });
 
   it("carries non-standard component .dat bodies as extraFiles", () => {
