@@ -18,8 +18,8 @@
   Stage 2 (t = 400 → 1200 s):
       The recipe TRANSFERs the reactor contents to an initially empty
       batch still.  The still then runs a Rayleigh distillation at
-      F_vap = 1.5e-6 kmol/s for 800 s, vaporising 1.2e-3 kmol of
-      liquid.  Starting from the converted mix (ethyl acetate + water +
+      F_vap = 2.0e-5 kmol/s for 800 s, vaporising 0.016 kmol
+      (~85 % of the charge).  Starting from the converted mix (ethyl acetate + water +
       unreacted ethanol/acid), the still progressively strips the more
       volatile ethyl acetate + ethanol; pot composition follows the
       Raoult y-x curve.  (The thermoPackage here uses ideal Raoult for
