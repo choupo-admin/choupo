@@ -92,9 +92,9 @@ export function MolarBalancePlot({
         {/* ALWAYS a net change -- whether the case reacts cannot be
             inferred here, and a PARTIAL sum never earns a seal. */}
         <Badge variant="light" color="blue">
-          net molar change (OUT − IN){partial ? ", known part only" : ""}:
-          {" "}{fmt(net)} {yUnit} — moles need not be conserved through
-          reactions; the chemical invariant is the ELEMENT balance
+          species molar flows{partial ? " (known part only)" : ""} — net
+          change {fmt(net)} {yUnit}.  The conserved molar quantity is the
+          Global atomic balance.
         </Badge>
         {partial && (
           <Badge variant="light" color="orange">
@@ -107,7 +107,7 @@ export function MolarBalancePlot({
         data={data as never}
         layout={{
           ...darkLayout,
-          title: { text: `Molar balance — plant boundary (${yUnit})`,
+          title: { text: `Boundary molar flows — species totals (${yUnit})`,
                    font: { ...darkLayout.font, size: 13 } },
           bargap: 0.45,
           showlegend: false,

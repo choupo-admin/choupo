@@ -52,6 +52,39 @@ export interface ElementBalanceSurface {
   rows: ElementBalanceRow[];
 }
 
+/** The GLOBAL ATOMIC view of an element-balance surface: total kmol-atom/h
+ *  in and out, sealed ONLY when EVERY element closes (a signed total can
+ *  cancel a +C error against a -O error, so the per-element detail decides
+ *  the seal; the compact indicator is the worst per-element deviation). */
+export interface AtomicBalanceView {
+  totalInKmolAtomH: number;
+  totalOutKmolAtomH: number;
+  residualKmolAtomH: number;
+  /** worst per-element |closure - 100| in percent */
+  worstElementOffPct: number;
+  /** EVERY element within tolerance -- never the signed total alone */
+  allElementsClose: boolean;
+}
+
+export function atomicBalanceView(
+  surface: ElementBalanceSurface,
+  tolPct = 0.01,
+): AtomicBalanceView {
+  let tin = 0, tout = 0, worst = 0;
+  for (const r of surface.rows) {
+    tin += r.inKmolAtomH;
+    tout += r.outKmolAtomH;
+    worst = Math.max(worst, Math.abs(r.closurePct - 100.0));
+  }
+  return {
+    totalInKmolAtomH: tin,
+    totalOutKmolAtomH: tout,
+    residualKmolAtomH: tout - tin,
+    worstElementOffPct: worst,
+    allElementsClose: surface.rows.length > 0 && worst <= tolPct,
+  };
+}
+
 export function elementBalanceSurface(
   csv: string | undefined,
   meta: string | undefined,

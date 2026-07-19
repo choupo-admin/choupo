@@ -68,6 +68,7 @@ import { EnergyBalancePlot } from "./plotting/EnergyBalancePlot.js";
 import { MassBalancePlot } from "./plotting/MassBalancePlot.js";
 import { unitEnergy } from "../case/balances.js";
 import { CampaignBalancePlot } from "./plotting/CampaignBalancePlot.js";
+import { AtomicBalancePlot } from "./plotting/AtomicBalancePlot.js";
 import { DynamicBalancePlot } from "./plotting/DynamicBalancePlot.js";
 import { ElementBalancePlot } from "./plotting/ElementBalancePlot.js";
 import { MolarBalancePlot } from "./plotting/MolarBalancePlot.js";
@@ -82,6 +83,7 @@ type PlotKey =
   | "gantt"
   | "campaignBalance"
   | "dynamicBalance"
+  | "atomicBalance"
   | "molarBalance"
   | "elementBalance"
   | "massBalance"
@@ -146,10 +148,12 @@ export function PlotsWorkspace() {
             hint: "The batch campaign's GLOBAL mass / element / energy balances, drawn from the engine's own ledger KPIs.  Molar totals are informative (moles are not conserved through reactions); UNAVAILABLE states are shown honestly, never as zeros." },
           { key: "dynamicBalance", label: "Global balances (Ctrl)", available: hasDynBalance,
             hint: "The choupoCtrl GLOBAL balance ledger over time (mass inventory + conservation residuals per element), integrated on accepted steps in the engine.  Withheld claims render as named states." },
-          { key: "molarBalance",  label: "Molar balance",  available: hasStreams,
-            hint: "Two plant-boundary totals: molar IN and molar OUT (fluid + solids via MW).  The difference is ALWAYS shown as a net change, never a closure -- moles need not be conserved through reactions; the chemical invariant is the element balance." },
-          { key: "elementBalance", label: "Element balance", available: hasElemBalance,
-            hint: "The engine's plant-boundary ELEMENT conservation report (kmol-atom/h), with its FULL / PARTIAL / UNAVAILABLE status.  Add elementBalance { } to controlDict.reports to produce it." },
+          { key: "atomicBalance", label: "Global atomic balance", available: hasElemBalance,
+            hint: "THE conservative molar balance of a reacting plant: total kmol-atom/h in vs out.  Species moles may change legally; the atoms close.  The seal demands EVERY element closes (a signed total could cancel +C against -O).  From the engine's elementBalance report." },
+          { key: "elementBalance", label: "Global elemental balance", available: hasElemBalance,
+            hint: "The per-element decomposition (C/H/O/N... in kmol-atom/h) of the atomic balance, with its FULL / PARTIAL / UNAVAILABLE status.  Add elementBalance { } to controlDict.reports to produce it." },
+          { key: "molarBalance",  label: "Boundary molar flows", available: hasStreams,
+            hint: "Secondary diagnostic: total SPECIES molar flow in vs out (fluid + solids via MW).  Not a balance -- species moles change legally through reactions; the conserved quantity is the Global atomic balance." },
           { key: "massBalance",   label: "Mass balance",   available: hasStreams,
             hint: "Plant-boundary INPUTS vs OUTPUTS in mass basis (kg/h), stacked by component.  Title shows the closure error." },
           { key: "energyBalance", label: "Energy balance", available: hasStreams,
@@ -259,6 +263,19 @@ export function PlotsWorkspace() {
           ? <DynamicBalancePlot {...(traj !== undefined ? { trajectoryCsv: traj } : {})}
               {...(meta !== undefined ? { metaCsv: meta } : {})} />
           : null;
+      }
+      case "atomicBalance": {
+        const files = result.csvFiles ?? {};
+        const csvKey = Object.keys(files).find(
+          (k) => k.endsWith("elementBalance.csv"));
+        const metaKey = Object.keys(files).find(
+          (k) => k.endsWith("elementBalance.meta"));
+        return (
+          <AtomicBalancePlot
+            {...(csvKey !== undefined ? { csv: files[csvKey] } : {})}
+            {...(metaKey !== undefined ? { meta: files[metaKey] } : {})}
+          />
+        );
       }
       case "molarBalance": return (
         <MolarBalancePlot

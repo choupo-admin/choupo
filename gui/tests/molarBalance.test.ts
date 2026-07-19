@@ -9,7 +9,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { StreamResult } from "../src/adapters/SolverAdapter.js";
-import { elementBalanceSurface } from "../src/case/elementBalanceSurface.js";
+import { atomicBalanceView, elementBalanceSurface } from "../src/case/elementBalanceSurface.js";
 import { molarBalanceView } from "../src/case/molarBalance.js";
 
 const s = (name: string, role: StreamResult["role"], F: number,
@@ -115,5 +115,39 @@ describe("elementBalanceSurface", () => {
     const v = elementBalanceSurface(CSV, meta);
     expect(v.status).toBe("UNAVAILABLE");
     expect(v.malformedReason).toContain("partialSpecies");
+  });
+});
+
+describe("atomicBalanceView", () => {
+  it("the plant shape: species moles change, ATOMS close, seal FULL", () => {
+    // ChemicalPlantTutorial: C/H/O/N each close ~100% while species moles
+    // go 660 -> 677.8 kmol/h -- the atomic totals are the conserved view.
+    const csv = "element,in_kmol_atom_h,out_kmol_atom_h,"
+      + "residual_kmol_atom_h,closure_pct\n"
+      + "C,108,108.0003,2.7e-04,100.0003\n"
+      + "H,619.5,619.5009,8.6e-04,100.0001\n"
+      + "N,880.5,880.5,0,100.0000\n"
+      + "O,309.75,309.75,-2.1e-05,100.0000\n";
+    const v = atomicBalanceView(elementBalanceSurface(csv, META_FULL));
+    expect(v.totalInKmolAtomH).toBeCloseTo(1917.75, 2);
+    expect(v.allElementsClose).toBe(true);
+    expect(v.worstElementOffPct).toBeLessThan(0.01);
+  });
+
+  it("CAUSAL: a +C error cancelling a -O error in the signed TOTAL never"
+     + " earns the seal -- every element must close", () => {
+    const csv = "element,in_kmol_atom_h,out_kmol_atom_h,"
+      + "residual_kmol_atom_h,closure_pct\n"
+      + "C,100,110,10,110.0\n"        // +10 atoms fabricated
+      + "O,100,90,-10,90.0\n";        // -10 atoms lost
+    const v = atomicBalanceView(elementBalanceSurface(csv, META_FULL));
+    expect(v.residualKmolAtomH).toBeCloseTo(0, 12);   // the total LIES
+    expect(v.allElementsClose).toBe(false);           // the seal does not
+    expect(v.worstElementOffPct).toBeCloseTo(10, 6);
+  });
+
+  it("no rows -> never sealed", () => {
+    const v = atomicBalanceView(elementBalanceSurface(undefined, META_FULL));
+    expect(v.allElementsClose).toBe(false);
   });
 });

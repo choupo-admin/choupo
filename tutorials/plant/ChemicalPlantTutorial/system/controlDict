@@ -23,7 +23,7 @@ verbosity     3;
 // stream table, mass balance and energy balance close over the whole factory
 // at once -- per-unit too, with the namespaced equipment (concentration.evap1,
 // drying.SD, ...).
-reports { streamTable {}  massBalance {}  energyBalance {}  utilities {}  spreadsheet {} }
+reports { streamTable {}  massBalance {}  elementBalance {}  energyBalance {}  utilities {}  spreadsheet {} }
 
 // Report-output layout: the CHT-faithful `postProcessing/<report>/<instant>/`
 // tree (OpenFOAM functionObject convention) instead of the legacy `reports/`.

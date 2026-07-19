@@ -186,6 +186,47 @@ def main():
                                f" {rows_p.get(e)} (the known elements must"
                                " still close)")
 
+        # ---- 5. the PLANT: species moles change; the ATOMS close ----------
+        #  ChemicalPlantTutorial (postProcessing layout): every element must
+        #  close ~100% with a FULL sidecar -- the Global atomic balance the
+        #  GUI promotes as THE conservative molar view.
+        import shutil as _sh2
+        plant_src = ROOT / "tutorials" / "plant" / "ChemicalPlantTutorial"
+        plant = Path(tmp) / "plant"
+
+        def _ign(_d, names):
+            return [nm for nm in names
+                    if nm.startswith("log.choupo")
+                    or nm in ("reports", "postProcessing", "converged",
+                              "iterations", "latest")
+                    or nm.endswith(".csv")
+                    or (nm != "0" and nm.replace(".", "", 1).isdigit())]
+
+        _sh2.copytree(plant_src, plant, ignore=_ign)
+        r = subprocess.run([str(SOLVE), str(plant)], capture_output=True,
+                           text=True, cwd=ROOT)
+        if r.returncode != 0:
+            bad.append("plant: failed to run: " + (r.stdout + r.stderr)[-300:])
+        else:
+            ebs = sorted((plant / "postProcessing").rglob(
+                "elementBalance.csv"))
+            if not ebs:
+                bad.append("plant: elementBalance.csv not harvested under"
+                           " postProcessing/")
+            else:
+                rows2 = {}
+                with open(ebs[-1]) as f:
+                    for row in csv.DictReader(f):
+                        rows2[row["element"]] = float(row["closure_pct"])
+                for e, cl in rows2.items():
+                    if abs(cl - 100.0) > 0.01:
+                        bad.append(f"plant: element {e} closure {cl}")
+                if not rows2:
+                    bad.append("plant: no element rows")
+                meta2 = (ebs[-1].parent / "elementBalance.meta").read_text()
+                if "status,FULL" not in meta2:
+                    bad.append("plant: sidecar status is not FULL")
+
     if bad:
         print("ELEMENT-BALANCE GATE FAILED (%d):" % len(bad))
         for b in bad:
