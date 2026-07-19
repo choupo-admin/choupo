@@ -287,7 +287,5 @@ bin/choupo-init0 <caseDir> --force    # regenerates existing internal/outlet est
 ```
 
 Rules: an inlet file is never touched; an unseeded recycle is a hard error
-naming the file to author; `incomplete 0/ + choupoSolve` stays FATAL — this tool
-is the sanctioned way out.  A legacy `streams{}` case migrates in one shot,
-unless its streams carry `$variable` references (an outer driver's handle —
-migration would sever it; the tool refuses and says so).
+naming the file to author; `incomplete 0/ + choupoSolve` stays FATAL — this
+tool is the sanctioned way out.

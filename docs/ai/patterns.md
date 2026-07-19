@@ -388,9 +388,8 @@ choupoSolve tutorials/plant/myPlant/sectors/REACTION  # one sector, standalone
 A child runs standalone because `constant/thermoPhysPropDict`, `controlDict` and
 `constant/reactions` **CASCADE UP** the folder tree, and its `0/` is
 materialised from the parent's persisted state (`converged/` by default —
-never a silent "latest").  The few drill-in sub-dicts still carrying a
-legacy `streams {}` block are the LAST counted debt of the retired reader
-and are on the migration list.
+never a silent "latest").  A `streams {}` block is refused at every node —
+state lives in `0/`, nowhere else.
 
 ### Recycle inside a sector
 
@@ -490,15 +489,9 @@ cautionary tale is ASCEND, demoed as a mystical solver while a hidden
 `1 kg/s` guess kept it from breaking).
 
 **Initial guesses live on the stream.**  A tear's `0/` state file IS its
-guess (`process03_recycle`).  In the steady `0/` contract a MISSING tear
-file is FATAL before the solve (completeness) and `bin/choupo-init0`
-refuses to invent it — the seed is yours.  (The feed-aggregate auto-seed
-below is the legacy `streams {}` reader's behaviour only:)
-
-```
-[init] tear 'recycle': no guess supplied -- seeded from the feed aggregate
-       (F=1.000 kmol/h, T=350.0 K).  An explicit guess ... will converge faster.
-```
+guess (`process03_recycle`).  A MISSING tear file is FATAL before the solve
+(completeness) and `bin/choupo-init0` refuses to invent it — the seed is
+yours, authored and visible like every other stream state.
 
 **Bounds cage the iterate (optional).**  Add a `bounds {}` to the tear
 stream (syntax: `docs/ai/dict-syntax.md`).  Flow uses a fraction of a

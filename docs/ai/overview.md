@@ -131,8 +131,7 @@ them in answers to users.
       `binaryInteractions` entries with a `source`, homes under
       `data/standards/parameters/`) and the builder VERIFIES them at assembly: a
       declared-but-missing file REFUSES loudly, naming the entry to
-      add (never an ideal-default).  Method records live in
-      `data/standards/methods/`; the thermophysical system is declared
+      add (never an ideal-default).  The thermophysical system is declared
       inline in the case's `constant/thermoPhysPropDict` (see `thermo.md`).
 
    When you write a case, intrinsic data come from existing

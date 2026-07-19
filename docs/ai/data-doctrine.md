@@ -26,10 +26,10 @@ Read the quantity's definition, not its frequency of use.
 - The instant the definition must name a **partner** (a solvent, a
   counter-ion, an interaction species) — **even if that partner is water** —
   it is PAIR/SET data and lives in a **catalogue**
-  (`binaryPairs/`, `henrysLaw/`, `electrolyte/`, the `solution/` tier, the
-  declarative `parameters/{binary,electrolyte,eos}/` tree — e.g.
-  `parameters/SRK/<i>-<j>.dat`, …), keyed by the pair, **cited per
-  value**, referenced **by name** from the component.  The number is **never
+  (the `parameters/<MODEL>/` tree — `parameters/NRTL/`, `parameters/Henry/`,
+  `parameters/electrolyte/`, `parameters/solution/`, `parameters/SRK/<i>-<j>.dat`,
+  …), keyed by the pair, **cited per value**, referenced **by name** from the
+  component.  The number is **never
   copied into the `.dat`**.
 
 **(2) SCOPE — at what level is the number TRUE?**
@@ -170,27 +170,21 @@ GEOMETRY; that is never component data.*
 sector < unit` (the `Database` walk-up already gives unit→sector→case; pairs
 resolve `standard < caseRoot < perNode`).
 
-### The declarative layer — `methods/` + the inline package manifest (2026-07-04 grammar)
+### The declarative layer — the inline system declaration
 
-One further standards home, plus the case-inline package manifest, carries
-the DECLARATIVE layer the 2026-07-04 grammar reads from:
+The DECLARATIVE layer is the case-inline `constant/thermoPhysPropDict`:
+one record declaring components, the equilibrium formulation, the model in
+each phase slot with its `standardState` reference conventions, and the
+parameter files each model consumes — there is no shared package catalogue;
+every case is self-contained.
 
-* **`data/standards/methods/<name>.dat`** — one record per
-  method (`activity/NRTL`, `solution/henryDilute`, `eos/{SRK,PengRobinson}`,
-  `electrolyte/{pitzer,eNRTL}`, `transport/chung`), each carrying its
-  per-GROUP `referenceBasis` rungs (amendment A1) and its `requires{}` /
-  `provides{}` contract.
-* The property package is the manifest INLINE in the case's
-  `constant/thermoPhysPropDict` — there is no shared catalogue
-  (the `package <name>;` selector was retired; every case is self-contained).
-
-The contract is **declare → verify → refuse**: the package DECLARES its
-parameter files (`parameters { henryPairs {…} kijPairs {…} }`, pointing into
-`henrysLaw/` and `parameters/{binary,electrolyte,eos}/`), and the
-`ThermoPackageBuilder` VERIFIES every declared file at assembly — a
-declared-but-missing/unparseable entry REFUSES loudly, naming the entry to
-add, and each loaded pair is announced with its source (`[builder]` /
-`[henry]` lines).  The builder loads and assembles; it NEVER estimates.
+The contract is **declare → verify → refuse**: the dict DECLARES its
+parameter files (`binaryParameters` / `binaryInteractions` entries whose
+`source` points into `parameters/<MODEL>/`), and the `ThermoPackageBuilder`
+VERIFIES every declared file at assembly — a declared-but-missing or
+unparseable entry REFUSES loudly, naming the entry to add, and each loaded
+pair is announced with its source (`[builder]` / `[henry]` lines).  The
+builder loads and assembles; it NEVER estimates.
 
 ### THE MERGE SEMANTICS — block-by-block, NOT field-by-field
 
