@@ -226,6 +226,14 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
           </Badge>
         )}
       </Group>
+      {view.moles && (
+        <Text c="dimmed" size="xs">
+          molar totals (informative — moles are not conserved through
+          reactions): initial {view.moles.initialKmol.toPrecision(5)} kmol,
+          final {view.moles.finalKmol.toPrecision(5)} kmol, external out{" "}
+          {view.moles.externalOutKmol.toPrecision(5)} kmol
+        </Text>
+      )}
       <Group grow align="stretch" style={{ flex: 1, minHeight: 0 }}>
         {smallPlot(massData, "Mass — initial vs final + out", "mass (kg)")}
         {elementsAvailable

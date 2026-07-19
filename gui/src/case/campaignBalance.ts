@@ -50,6 +50,9 @@ export interface CampaignBalanceView {
     residualKg?: number;
     closureRel?: number;
   };
+  /** INFORMATIVE molar totals (engine-emitted): total moles are NOT a
+   *  conserved quantity in a reacting campaign -- no closure is claimed. */
+  moles?: { initialKmol: number; finalKmol: number; externalOutKmol: number };
   /** Per-element relative closure; absent entirely = the engine WITHHELD
    *  the elemental claim (an unparseable formula) -- UNAVAILABLE state. */
   elements?: { symbol: string; closureRel: number }[];
@@ -101,6 +104,15 @@ export function campaignBalanceView(
     for (const k of ["mass_kg_initial", "mass_kg_final",
                      "mass_kg_external_out"])
       if (!fin(k)) malformed.push(k);
+  }
+
+  if (fin("moles_kmol_initial") && fin("moles_kmol_final")
+      && fin("moles_kmol_external_out")) {
+    view.moles = {
+      initialKmol: campaign["moles_kmol_initial"]!,
+      finalKmol: campaign["moles_kmol_final"]!,
+      externalOutKmol: campaign["moles_kmol_external_out"]!,
+    };
   }
 
   const elements = Object.keys(campaign)

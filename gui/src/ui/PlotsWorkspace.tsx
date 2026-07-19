@@ -69,6 +69,8 @@ import { MassBalancePlot } from "./plotting/MassBalancePlot.js";
 import { unitEnergy } from "../case/balances.js";
 import { CampaignBalancePlot } from "./plotting/CampaignBalancePlot.js";
 import { DynamicBalancePlot } from "./plotting/DynamicBalancePlot.js";
+import { ElementBalancePlot } from "./plotting/ElementBalancePlot.js";
+import { MolarBalancePlot } from "./plotting/MolarBalancePlot.js";
 import { ProfilePlot } from "./plotting/ProfilePlot.js";
 import { TrajectoryPlot } from "./plotting/TrajectoryPlot.js";
 import { TxyPlot } from "./plotting/TxyPlot.js";
@@ -80,6 +82,8 @@ type PlotKey =
   | "gantt"
   | "campaignBalance"
   | "dynamicBalance"
+  | "molarBalance"
+  | "elementBalance"
   | "massBalance"
   | "energyBalance"
   | "txy"
@@ -132,14 +136,20 @@ export function PlotsWorkspace() {
     const hasDynBalance =
       result?.csvFiles?.["balanceTrajectory.csv"] !== undefined
       || result?.csvFiles?.["balanceTrajectory.meta"] !== undefined;
+    const hasElemBalance = Object.keys(result?.csvFiles ?? {}).some(
+      (k) => k.endsWith("elementBalance.csv") || k.endsWith("elementBalance.meta"));
     return [
       {
         label: "Balance",
         items: [
-          { key: "campaignBalance", label: "Campaign balance", available: hasCampaign,
-            hint: "The batch campaign's global mass / element / energy balances, drawn from the engine's own ledger KPIs.  UNAVAILABLE states are shown honestly, never as zeros." },
-          { key: "dynamicBalance", label: "Dynamic balance", available: hasDynBalance,
-            hint: "The choupoCtrl balance ledger over time (mass inventory + conservation residuals per element), integrated on accepted steps in the engine.  Withheld claims render as named states." },
+          { key: "campaignBalance", label: "Global balances (Batch)", available: hasCampaign,
+            hint: "The batch campaign's GLOBAL mass / element / energy balances, drawn from the engine's own ledger KPIs.  Molar totals are informative (moles are not conserved through reactions); UNAVAILABLE states are shown honestly, never as zeros." },
+          { key: "dynamicBalance", label: "Global balances (Ctrl)", available: hasDynBalance,
+            hint: "The choupoCtrl GLOBAL balance ledger over time (mass inventory + conservation residuals per element), integrated on accepted steps in the engine.  Withheld claims render as named states." },
+          { key: "molarBalance",  label: "Molar balance",  available: hasStreams,
+            hint: "Two plant-boundary totals: molar IN and molar OUT (fluid + solids via MW).  In a reacting flowsheet the difference is a NET CHANGE, not a closure -- the chemical invariant is the element balance." },
+          { key: "elementBalance", label: "Element balance", available: hasElemBalance,
+            hint: "The engine's plant-boundary ELEMENT conservation report (kmol-atom/h), with its FULL / PARTIAL / UNAVAILABLE status.  Add elementBalance { } to controlDict.reports to produce it." },
           { key: "massBalance",   label: "Mass balance",   available: hasStreams,
             hint: "Plant-boundary INPUTS vs OUTPUTS in mass basis (kg/h), stacked by component.  Title shows the closure error." },
           { key: "energyBalance", label: "Energy balance", available: hasStreams,
@@ -193,7 +203,14 @@ export function PlotsWorkspace() {
       setView("scanCsv");
       return;
     }
-    if (result.trajectory) setView("trajectory");
+    // GLOBAL balances are the landing surface for a batch / ctrl run --
+    // the trajectory stays one click away (Vitor 2026-07-19: the balances
+    // were real but hidden behind the trajectory).
+    if (result.kpis?.["campaign"]) setView("campaignBalance");
+    else if (result.csvFiles?.["balanceTrajectory.csv"] !== undefined
+             || result.csvFiles?.["balanceTrajectory.meta"] !== undefined)
+      setView("dynamicBalance");
+    else if (result.trajectory) setView("trajectory");
     else if ((result.profiles?.length ?? 0) > 0) setView("profile");
     else if (result.txy) setView("txy");
     else if (scanCsvs.length > 0) setView("scanCsv");
@@ -242,6 +259,28 @@ export function PlotsWorkspace() {
           ? <DynamicBalancePlot {...(traj !== undefined ? { trajectoryCsv: traj } : {})}
               {...(meta !== undefined ? { metaCsv: meta } : {})} />
           : null;
+      }
+      case "molarBalance": return (
+        <MolarBalancePlot
+          streams={result.streams}
+          {...(result.componentMolarMass !== undefined
+            ? { componentMolarMass: result.componentMolarMass } : {})}
+          reactive={Boolean(useStore.getState().caseFiles.reactions)}
+          flowUnit={prefs.flow}
+        />
+      );
+      case "elementBalance": {
+        const files = result.csvFiles ?? {};
+        const csvKey = Object.keys(files).find(
+          (k) => k.endsWith("elementBalance.csv"));
+        const metaKey = Object.keys(files).find(
+          (k) => k.endsWith("elementBalance.meta"));
+        return (
+          <ElementBalancePlot
+            {...(csvKey !== undefined ? { csv: files[csvKey] } : {})}
+            {...(metaKey !== undefined ? { meta: files[metaKey] } : {})}
+          />
+        );
       }
       case "massBalance": return (
         <MassBalancePlot

@@ -1085,6 +1085,21 @@ try
             ck["mass_kg_initial"]      = m0;
             ck["mass_kg_final"]        = mF;
             ck["mass_kg_external_out"] = mOut;
+            // Molar totals are INFORMATIVE only: total moles are NOT a
+            // conserved quantity in a reacting campaign (the laws are mass
+            // and elements) -- the GUI shows them without a closure claim.
+            {
+                scalar n0 = 0.0, nF = 0.0, nOut = 0.0;
+                for (std::size_t i = 0; i < thermo.n(); ++i)
+                {
+                    n0 += inventory0[i];
+                    nF += inventoryF[i];
+                    if (i < externalOut.size()) nOut += externalOut[i];
+                }
+                ck["moles_kmol_initial"]      = n0;
+                ck["moles_kmol_final"]        = nF;
+                ck["moles_kmol_external_out"] = nOut;
+            }
             ck["mass_residual_kg"]     = residual_kg;
             ck["mass_closure_rel"]     = rel;
             ck["transfers_logged"]     = static_cast<scalar>(transfers.size());

@@ -213,13 +213,13 @@ self.addEventListener("message", async (e) => {
                   try { st = Module.FS.stat(path); } catch (_) { continue; }
                   if (Module.FS.isDir(st.mode)) {
                     walk(path, name);
-                  } else if (name.endsWith(".csv") || name === "balanceTrajectory.meta" || /\.(estimate-.*|estimated)\.dat$/.test(name)) {
+                  } else if (name.endsWith(".csv") || name === "balanceTrajectory.meta" || name === "elementBalance.meta" || /\.(estimate-.*|estimated)\.dat$/.test(name)) {
                     try {
                       const body = Module.FS.readFile(path, { encoding: "utf8" });
                       const rel = path.startsWith("/case/")
                         ? path.substring("/case/".length)
                         : path;
-                      if (name.endsWith(".csv") || name === "balanceTrajectory.meta") csvFiles[rel] = body;
+                      if (name.endsWith(".csv") || name === "balanceTrajectory.meta" || name === "elementBalance.meta") csvFiles[rel] = body;
                       else proposals[rel] = body;
                     } catch (_) {
                       /* ignore individual file failures */
