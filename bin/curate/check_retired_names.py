@@ -119,6 +119,50 @@ for f in (ROOT / "src").rglob("*"):
 # aggregated name.  Word-boundary regexes: `0/streamFaces` does NOT match.
 AGG = re.compile(r"0/streams\b|<t>/streams\b|<n>/streams\b"
                  r"|latest/streams\b|\.\./streams\b")
+
+
+def tutorial_snapshot_scan_files(tutorials_root):
+    """The tutorial files the aggregated-snapshot scan covers.  The AUTHORED
+    `0/` directory is IN scope (0/internalState, 0/streamFaces headers teach
+    students); numbered TRANSIENT instants (50/, 0.01/, iterations/NNNNNN)
+    and other run outputs are not."""
+    out = []
+    for f in tutorials_root.rglob("*"):
+        if not f.is_file():
+            continue
+        sf = str(f)
+        if any(x in sf for x in ("/reports/", "/converged/", "/iterations/",
+                                 "/postProcessing/", "/.build/", "/code/")):
+            continue                  # run output may carry old artefacts
+        if f.name.startswith("log.choupo") or f.suffix in (".csv", ".ods"):
+            continue
+        rel = f.relative_to(tutorials_root).parts[:-1]
+        if any((seg.isdigit() or seg.replace(".", "", 1).isdigit())
+               and seg != "0" for seg in rel):
+            continue                  # non-zero numbered instant dirs only
+        out.append(f)
+    return out
+
+
+# CAUSAL self-test of the scope: a fixture 0/internalState carrying the
+# retired spelling MUST be selected (the authored 0/ is in scope) and a
+# numbered transient instant must NOT be.  Without this the gate can claim
+# coverage its own filter silently skips.
+import tempfile
+with tempfile.TemporaryDirectory(prefix="choupo-retgate-") as _tmp:
+    _t = Path(_tmp) / "tutorials"
+    (_t / "case" / "0").mkdir(parents=True)
+    (_t / "case" / "0" / "internalState").write_text("// see 0/streams\n")
+    (_t / "case" / "100").mkdir()
+    (_t / "case" / "100" / "internalState").write_text("// see 0/streams\n")
+    _sel = {f.relative_to(_t).as_posix()
+            for f in tutorial_snapshot_scan_files(_t)}
+    if "case/0/internalState" not in _sel or "case/100/internalState" in _sel:
+        print("RETIRED-NAME GATE SELF-TEST FAILED: the snapshot scan scope"
+              " is wrong (authored 0/ must be IN, numbered instants OUT);"
+              f" selected = {sorted(_sel)}")
+        sys.exit(1)
+
 agg_files = []
 for d, exts in ((ROOT / "bin" / "curate", (".py",)),
                 (ROOT / "docs" / "ai", (".md",)),
@@ -127,20 +171,7 @@ for d, exts in ((ROOT / "bin" / "curate", (".py",)),
     for f in d.rglob("*"):
         if f.suffix in exts:
             agg_files.append(f)
-for f in (ROOT / "tutorials").rglob("*"):
-    if not f.is_file():
-        continue
-    sf = str(f)
-    if any(x in sf for x in ("/reports/", "/converged/", "/iterations/",
-                             "/postProcessing/", "/.build/", "/code/")):
-        continue                      # run output may carry old artefacts
-    if f.name.startswith("log.choupo") or f.suffix in (".csv", ".ods"):
-        continue
-    parts = f.parts
-    if any(seg.isdigit() or seg.replace(".", "").isdigit()
-           for seg in parts[parts.index("tutorials") + 1:-1]):
-        continue                      # numbered instant dirs are run output
-    agg_files.append(f)
+agg_files += tutorial_snapshot_scan_files(ROOT / "tutorials")
 for f in agg_files:
     if f.name in ("check_retired_names.py", "check_stream_faces.py"):
         continue                      # the gates name the pattern they hunt
