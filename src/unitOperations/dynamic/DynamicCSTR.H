@@ -101,6 +101,8 @@ public:
     bool             hasInlet()    const override { return true; }
     ContinuousStream inletStream() const override;
 
+    BalanceSnapshot balanceSnapshot() const override;
+
     void   setMV(const std::string& key, scalar value) override;
     scalar getCV(const std::string& key) const override;
 

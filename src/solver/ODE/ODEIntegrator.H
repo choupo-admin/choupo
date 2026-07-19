@@ -92,6 +92,13 @@ struct ODEControls
     // choupoCtrl print the adaptive step history so the student SEES h adapt.
     // Empty by default => no per-step reporting (the ignition path unchanged).
     std::function<void(scalar tEnd, scalar hTaken)> onAccept;
+
+    // STATE-AWARE accepted-step hook: fires with the ACCEPTED state vector at
+    // tEnd, BEFORE integration continues.  The balance ledger integrates its
+    // trapezoids on exactly the accepted states (a plain onAccept observer
+    // would see the units' stale, pre-commit state).  Empty by default.
+    std::function<void(scalar tEnd, scalar hTaken, const sVector& yAccepted)>
+        onAcceptState;
 };
 
 struct ODEStats

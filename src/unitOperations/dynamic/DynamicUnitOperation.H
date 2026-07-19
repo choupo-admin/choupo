@@ -53,6 +53,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
+#include "unitOperations/dynamic/BalanceSnapshot.H"
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
 
@@ -109,6 +110,12 @@ public:
     virtual sVector odeDerivative(const sVector& /*y*/) const { return {}; }
     // Number of leading rows of Y that must stay >= 0 (species moles; T free).
     virtual std::size_t odeNPositive() const     { return 0; }
+
+    // ---- Balance contract (read-only) ---------------------------------
+    //  The instantaneous BalanceSnapshot the choupoCtrl ledger integrates.
+    //  The DEFAULT refuses (claims nothing, names why) -- a unit only
+    //  carries a balance claim by implementing this deliberately.
+    virtual BalanceSnapshot balanceSnapshot() const { return {}; }
 
     // ---- Inspection ---------------------------------------------------
     //   Mole-number-like state.  Exposing it as a sVector keeps the

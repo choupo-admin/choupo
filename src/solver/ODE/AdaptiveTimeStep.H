@@ -109,7 +109,8 @@ public:
     // step at the END of this interval is carried into the next call.
     ODEStats advance(const std::vector<OdeUnit>& units,
                      scalar t0, scalar t1,
-                     const StepCallback& onStep = {})
+                     const StepCallback& onStep = {},
+                     const StepCallback& onAcceptedState = {})
     {
         ODEStats st;
         if (t1 <= t0 || units.empty()) return st;
@@ -160,6 +161,20 @@ public:
         // each unit's setOdeState() clamp + the integrator's finiteness guard.
         ctrl.nPositive = (units.size() == 1) ? units[0].nPositive : 0;
         if (onStep) ctrl.onAccept = onStep;
+        // State-aware ledger hook: commit the ACCEPTED state into the units
+        // FIRST, so the ledger's snapshots read the accepted state, then let
+        // the ledger integrate over the step just taken.
+        if (onAcceptedState)
+            ctrl.onAcceptState =
+                [&](scalar tEnd, scalar hTaken, const sVector& yg)
+            {
+                for (std::size_t u = 0; u < units.size(); ++u)
+                {
+                    sVector yu(yg.begin() + off[u], yg.begin() + off[u + 1]);
+                    units[u].commit(yu);
+                }
+                onAcceptedState(tEnd, hTaken);
+            };
 
         st = integ_->integrate(y, t0, t1, f, ctrl);
 

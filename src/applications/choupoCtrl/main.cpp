@@ -86,6 +86,7 @@ Description
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "unitOperations/dynamic/DynamicUnitOperation.H"
+#include "thermo/ElementComposition.H"
 #include "io/SolutionWriter.H"
 #include "solver/ODE/AdaptiveTimeStep.H"
 #include "core/ResultEmitter.H"
@@ -539,6 +540,256 @@ try
         std::cout << "\n";
     };
 
+    // ---- Balance ledger (material + elements; energy claims honestly) ----
+    //  Integrated IN the time loop on ACCEPTED states: fixed-step samples the
+    //  post-controller rate on the left and the stepped state on the right of
+    //  every dt; adaptive accepts through the state-aware integrator hook.
+    //  Availability is a claim: any unit whose snapshot refuses, or a mixed
+    //  ODE/non-ODE adaptive interval, withholds the WHOLE ledger naming why.
+    struct CtrlBalanceLedger
+    {
+        bool                     available = true;
+        std::string              reason;
+        std::vector<std::string> comps;
+        sVector N0, Ncur;                 // inventory kmol
+        sVector cumIn, cumOut;            // kmol
+        sVector prevIn, prevOut;          // kmol/s at the previous sample
+        scalar  prevT = 0.0;
+        bool    havePrev = false;
+        std::string energyReason;         // first refusing energy claim
+        std::ofstream csv;
+
+        void refuse(const std::string& why)
+        { if (available) { available = false; reason = why; } }
+    };
+    CtrlBalanceLedger ledger;
+    ledger.csv.open("balanceTrajectory.csv");
+    // Element columns are decided AT INIT: if every loaded formula parses,
+    // the trajectory carries per-element series; otherwise the elemental
+    // claim is withheld (named in the metadata sidecar, never a zero).
+    std::vector<std::string> ledgerElems;      // wide-format element columns
+    std::vector<std::map<std::string, scalar>> compAtoms;  // per component
+    bool ledgerElemsAvailable = true;
+    std::string ledgerElemsReason;
+    auto gatherRates = [&](sVector& in, sVector& out, sVector& inv) -> bool
+    {
+        in.assign(ledger.comps.size(), 0.0);
+        out.assign(ledger.comps.size(), 0.0);
+        inv.assign(ledger.comps.size(), 0.0);
+        for (const auto& u : units)
+        {
+            const auto bs = u->balanceSnapshot();
+            if (!bs.materialAvailable)
+            { ledger.refuse(u->name() + ": " + bs.materialReason); return false; }
+            if (bs.componentNames != ledger.comps)
+            { ledger.refuse(u->name() + ": component set differs from the"
+                            " ledger's -- no common basis"); return false; }
+            if (bs.inventory.size() != ledger.comps.size())
+            { ledger.refuse(u->name() + ": inventory dimension "
+                            + std::to_string(bs.inventory.size())
+                            + " != component set "
+                            + std::to_string(ledger.comps.size()));
+              return false; }
+            for (auto v : bs.inventory)
+                if (!std::isfinite(v))
+                { ledger.refuse(u->name() + ": non-finite inventory");
+                  return false; }
+            for (std::size_t i = 0; i < inv.size(); ++i)
+                inv[i] += bs.inventory[i];
+            for (const auto& fc : bs.faces)
+            {
+                if (fc.role == BalanceFace::Role::internal_) continue;
+                if (fc.molarFlows.size() != ledger.comps.size())
+                { ledger.refuse(u->name() + ": face '" + fc.id
+                                + "' dimension "
+                                + std::to_string(fc.molarFlows.size())
+                                + " != component set");
+                  return false; }
+                for (auto v : fc.molarFlows)
+                    if (!std::isfinite(v))
+                    { ledger.refuse(u->name() + ": non-finite flow on face '"
+                                    + fc.id + "'");
+                      return false; }
+                auto& acc = (fc.direction == BalanceFace::Direction::in)
+                            ? in : out;
+                for (std::size_t i = 0; i < acc.size(); ++i)
+                    acc[i] += fc.molarFlows[i];
+            }
+            if (!bs.physicalEnergyAvailable && ledger.energyReason.empty())
+                ledger.energyReason = u->name() + ": " + bs.energyReason;
+        }
+        return true;
+    };
+    // Left sample: (re)base the trapezoid AT the current state -- called
+    // after every controller fire so no area ever spans an MV discontinuity.
+    auto ledgerRebase = [&](scalar tNow)
+    {
+        if (!ledger.available) return;
+        sVector in, out, inv;
+        if (!gatherRates(in, out, inv)) return;
+        ledger.prevIn = std::move(in);
+        ledger.prevOut = std::move(out);
+        ledger.prevT = tNow;
+        ledger.havePrev = true;
+    };
+    // Accepted step: trapezoid from the previous sample to the ACCEPTED
+    // state at tNow, then advance the base.
+    auto ledgerAccept = [&](scalar tNow)
+    {
+        if (!ledger.available || !ledger.havePrev) return;
+        sVector in, out, inv;
+        if (!gatherRates(in, out, inv)) return;
+        const scalar dt2 = tNow - ledger.prevT;
+        if (dt2 > 0.0)
+        {
+            for (std::size_t i = 0; i < ledger.comps.size(); ++i)
+            {
+                ledger.cumIn[i]  += 0.5 * (ledger.prevIn[i]  + in[i])  * dt2;
+                ledger.cumOut[i] += 0.5 * (ledger.prevOut[i] + out[i]) * dt2;
+            }
+        }
+        ledger.prevIn = std::move(in);
+        ledger.prevOut = std::move(out);
+        ledger.prevT = tNow;
+        ledger.Ncur = inv;
+        if (ledger.csv.is_open())
+        {
+            // MASS and ELEMENTS are the conservation laws; total moles are
+            // not (a reaction changes them without violating either).
+            scalar mInv = 0, mIn = 0, mOut = 0;
+            for (std::size_t i = 0; i < ledger.comps.size(); ++i)
+            {
+                const scalar MW = thermo.comp(i).MW();
+                mInv += inv[i] * MW;
+                mIn  += ledger.cumIn[i] * MW;
+                mOut += ledger.cumOut[i] * MW;
+            }
+            scalar m0 = 0;
+            for (std::size_t i = 0; i < ledger.comps.size(); ++i)
+                m0 += ledger.N0[i] * thermo.comp(i).MW();
+            ledger.csv << std::scientific << std::setprecision(9)
+                       << tNow << "," << mInv << "," << mIn << ","
+                       << mOut << ","
+                       << ((mInv - m0) - (mIn - mOut));
+            for (const auto& e : ledgerElems)
+            {
+                scalar aInv = 0, a0 = 0, aIn = 0, aOut = 0;
+                for (std::size_t i = 0; i < ledger.comps.size(); ++i)
+                {
+                    auto it2 = compAtoms[i].find(e);
+                    if (it2 == compAtoms[i].end()) continue;
+                    const scalar na = it2->second;
+                    aInv += na * inv[i];
+                    a0   += na * ledger.N0[i];
+                    aIn  += na * ledger.cumIn[i];
+                    aOut += na * ledger.cumOut[i];
+                }
+                ledger.csv << "," << aInv << ","
+                           << ((aInv - a0) - (aIn - aOut));
+            }
+            ledger.csv << "\n";
+        }
+    };
+    {
+        // Initialise from the units' first snapshots.
+        bool first = true;
+        for (const auto& u : units)
+        {
+            const auto bs = u->balanceSnapshot();
+            if (!bs.materialAvailable)
+            { ledger.refuse(u->name() + ": " + bs.materialReason); break; }
+            if (first) { ledger.comps = bs.componentNames; first = false; }
+        }
+        if (ledger.available && !ledger.comps.empty())
+        {
+            ledger.N0.assign(ledger.comps.size(), 0.0);
+            ledger.cumIn.assign(ledger.comps.size(), 0.0);
+            ledger.cumOut.assign(ledger.comps.size(), 0.0);
+            sVector in, out, inv;
+            if (gatherRates(in, out, inv)) ledger.N0 = inv;
+            ledger.Ncur = ledger.N0;
+            // Parse every formula ONCE: the element columns exist only when
+            // the whole component set decomposes.
+            compAtoms.resize(ledger.comps.size());
+            std::set<std::string> symbols;
+            for (std::size_t i = 0; i < ledger.comps.size(); ++i)
+            {
+                const auto ec =
+                    parseElementalFormula(thermo.comp(i).formula());
+                if (!ec.available)
+                {
+                    ledgerElemsAvailable = false;
+                    if (!ledgerElemsReason.empty())
+                        ledgerElemsReason += "; ";
+                    ledgerElemsReason += ledger.comps[i] + " ("
+                                       + ec.reason + ")";
+                    continue;
+                }
+                compAtoms[i] = ec.atoms;
+                for (const auto& [sym, na] : ec.atoms)
+                { (void) na; symbols.insert(sym); }
+            }
+            if (ledgerElemsAvailable)
+                ledgerElems.assign(symbols.begin(), symbols.end());
+            if (ledger.csv.is_open())
+            {
+                ledger.csv << "t,mass_inventory_kg,mass_in_cum_kg,"
+                              "mass_out_cum_kg,mass_residual_kg";
+                for (const auto& e : ledgerElems)
+                    ledger.csv << ",elem_" << e << "_inventory_kmolatom"
+                               << ",elem_" << e << "_residual_kmolatom";
+                ledger.csv << "\n";
+            }
+        }
+    }
+    // ONE metadata emission -- written at init and REWRITTEN at the end from
+    // the ledger's FINAL state, so a mid-run refusal (dimension, NaN, mixed
+    // stepping) can never leave a sidecar claiming what the KPIs withdrew.
+    auto writeLedgerMeta = [&]()
+    {
+        std::ofstream meta("balanceTrajectory.meta");
+        meta << "key,value\n"
+             << "material_available," << (ledger.available ? 1 : 0)
+             << "\n";
+        if (!ledger.available)
+            meta << "material_reason,\"" << ledger.reason << "\"\n"
+                 << "trajectory_partial,1\n";
+        meta << "elements_available,"
+             << ((ledger.available && ledgerElemsAvailable) ? 1 : 0)
+             << "\n";
+        if (!ledgerElemsAvailable)
+            meta << "elements_reason,\"" << ledgerElemsReason << "\"\n";
+        meta << "energy_available,0\n"
+             << "energy_reason,\""
+             << (ledger.energyReason.empty()
+                 ? std::string("no dynamic units expose an energy"
+                               " functional")
+                 : ledger.energyReason) << "\"\n";
+    };
+    writeLedgerMeta();
+    // The t = startTime row: inventory at the initial state, zero
+    // accumulations and zero residual -- the plot starts at the start.
+    if (ledger.available && ledger.csv.is_open() && !ledger.comps.empty())
+    {
+        scalar m0 = 0;
+        for (std::size_t i = 0; i < ledger.comps.size(); ++i)
+            m0 += ledger.N0[i] * thermo.comp(i).MW();
+        ledger.csv << std::scientific << std::setprecision(9)
+                   << startTime << "," << m0 << ",0,0,0";
+        for (const auto& e : ledgerElems)
+        {
+            scalar a0 = 0;
+            for (std::size_t i = 0; i < ledger.comps.size(); ++i)
+            {
+                auto it2 = compAtoms[i].find(e);
+                if (it2 != compAtoms[i].end())
+                    a0 += it2->second * ledger.N0[i];
+            }
+            ledger.csv << "," << a0 << ",0";
+        }
+        ledger.csv << "\n";
+    }
+
     scalar t         = startTime;
     scalar nextWrite = startTime;
     writeSnapshot(t);
@@ -557,12 +808,17 @@ try
             // (Causality choice: MV at time t acts on dY/dt in [t, t+dt].)
             for (auto& c : controllers) c->update(t, dt);
 
+            // Ledger LEFT sample AFTER the controller fired: no trapezoid
+            // area ever crosses an MV discontinuity with the old rate.
+            ledgerRebase(t);
+
             // Advance each unit by dt with the current MV held constant
             // across the RK4 stages (zero-order hold).  Acceptable for
             // typical dt much smaller than the closed-loop time constant.
             for (auto& u : units) u->step(t, dt);
 
             t += dt;
+            ledgerAccept(t);
 
             if (t >= nextWrite - 1.0e-9 || t >= endTime - 1.0e-12)
             {
@@ -617,7 +873,12 @@ try
             if (tNext <= t + 1.0e-12)
                 tNext = std::min(t + deltaT, endTime);
 
+            // Ledger LEFT sample BEFORE any unit advances (post-controller,
+            // pre-step): a snapshot taken after a step is not a left edge.
+            ledgerRebase(t);
+
             std::vector<solver::OdeUnit> odeUnits;
+            bool anyNonOde = false;
             for (auto& u : units)
             {
                 if (u->hasOdeForm())
@@ -630,10 +891,22 @@ try
                         up->odeNPositive() });
                 }
                 else
+                {
+                    anyNonOde = true;
                     u->step(t, tNext - t);   // non-ODE unit: one fixed step
+                }
             }
+            if (anyNonOde && !odeUnits.empty())
+                // No common accepted-step grid exists across the two kinds:
+                // the global ledger refuses rather than fabricate a closure.
+                ledger.refuse("mixed ODE and non-ODE units under adaptive"
+                              " stepping: no common accepted-step grid");
             if (!odeUnits.empty())
-                stepper.advance(odeUnits, t, tNext, onStep);
+                stepper.advance(odeUnits, t, tNext, onStep,
+                    [&](scalar tEnd, scalar /*hTaken*/)
+                    { ledgerAccept(tEnd); });
+            else
+                ledgerAccept(tNext);
 
             t = tNext;
 
@@ -690,6 +963,99 @@ try
             k["SP_final"] = c->setpoint();
             k["PV_final"] = c->lastCV();
             k["MV_final"] = c->lastMV();
+        }
+
+        // ---- Balance-ledger KPIs (engine-owned; the GUI only draws) -----
+        writeLedgerMeta();   // FINAL state: a mid-run refusal reaches the sidecar
+        {
+            auto& bk = result.kpis["balance"];
+            bk["material_available"] = ledger.available ? 1.0 : 0.0;
+            bk["energy_balance_available"] = 0.0;   // honest: see energyReason
+            if (!ledger.available)
+            {
+                std::cout << "\n[balance] ledger UNAVAILABLE -- "
+                          << ledger.reason << "\n";
+            }
+            else
+            {
+                scalar m0 = 0, mF = 0, mIn = 0, mOut = 0;
+                for (std::size_t i = 0; i < ledger.comps.size(); ++i)
+                {
+                    const scalar MW = thermo.comp(i).MW();
+                    m0  += ledger.N0[i]     * MW;
+                    mF  += ledger.Ncur[i]   * MW;
+                    mIn += ledger.cumIn[i]  * MW;
+                    mOut+= ledger.cumOut[i] * MW;
+                }
+                const scalar residual = (mF - m0) - (mIn - mOut);
+                const scalar scale = std::max({ std::abs(m0), std::abs(mF),
+                                                mIn, mOut, 1.0e-30 });
+                bk["mass_kg_initial"]   = m0;
+                bk["mass_kg_final"]     = mF;
+                bk["mass_kg_in_cum"]    = mIn;
+                bk["mass_kg_out_cum"]   = mOut;
+                bk["mass_residual_kg"]  = residual;
+                bk["mass_closure_rel"]  = std::abs(residual) / scale;
+                std::cout << "\n[balance] material: M(t)-M(0) = "
+                          << std::scientific << std::setprecision(4)
+                          << (mF - m0) << " kg vs integral(in-out) = "
+                          << (mIn - mOut) << " kg, closure "
+                          << bk["mass_closure_rel"] << "\n";
+
+                // Elements via THE shared parser: a refusing formula
+                // withholds ONLY the elemental claim, naming itself.
+                std::map<std::string, scalar> e0, eF, eIn, eOut;
+                std::vector<std::string> unparsed;
+                for (std::size_t i = 0; i < ledger.comps.size(); ++i)
+                {
+                    const scalar present = ledger.N0[i] + ledger.Ncur[i]
+                        + ledger.cumIn[i] + ledger.cumOut[i];
+                    if (present == 0.0) continue;
+                    const auto ec = parseElementalFormula(
+                        thermo.comp(i).formula());
+                    if (!ec.available)
+                    {
+                        unparsed.push_back(ledger.comps[i]
+                            + " (" + ec.reason + ")");
+                        continue;
+                    }
+                    for (const auto& [sym, na] : ec.atoms)
+                    {
+                        e0[sym]  += na * ledger.N0[i];
+                        eF[sym]  += na * ledger.Ncur[i];
+                        eIn[sym] += na * ledger.cumIn[i];
+                        eOut[sym]+= na * ledger.cumOut[i];
+                    }
+                }
+                if (unparsed.empty())
+                {
+                    scalar worst = 0.0;
+                    for (const auto& [sym, a0] : e0)
+                    {
+                        const scalar r = std::abs((eF[sym] - a0)
+                                        - (eIn[sym] - eOut[sym]))
+                            / std::max({ std::abs(a0), std::abs(eF[sym]),
+                                         eIn[sym], eOut[sym], 1.0e-30 });
+                        bk["element_" + sym + "_closure_rel"] = r;
+                        worst = std::max(worst, r);
+                    }
+                    bk["element_worst_closure_rel"] = worst;
+                    std::cout << "[balance] elements: worst closure "
+                              << std::scientific << worst << "\n";
+                }
+                else
+                {
+                    std::cout << "[balance] elemental UNAVAILABLE -- "
+                                 "unparseable formula on: ";
+                    for (const auto& nm : unparsed) std::cout << nm << " ";
+                    std::cout << "\n";
+                }
+                std::cout << "[balance] energy: UNAVAILABLE -- "
+                          << (ledger.energyReason.empty()
+                              ? std::string("no dynamic units expose an"
+                                            " energy functional")
+                              : ledger.energyReason) << "\n";
+            }
         }
         emitResultJson(std::cout, result);
     }

@@ -453,6 +453,59 @@ ContinuousStream DynamicCSTR::inletStream() const
     return s;
 }
 
+BalanceSnapshot DynamicCSTR::balanceSnapshot() const
+{
+    BalanceSnapshot bs;
+    if (!thermo_)
+    {
+        bs.materialReason = "dynamicCSTR '" + name_
+            + "': not initialised (no thermo package)";
+        return bs;
+    }
+    const std::size_t N = n_.size();
+    bs.componentNames.reserve(N);
+    for (std::size_t i = 0; i < N; ++i)
+        bs.componentNames.push_back(thermo_->comp(i).name());
+    bs.inventory.assign(n_.begin(), n_.end());
+
+    // Feed face: the AUTHORITATIVE per-component inlet flows (a composition
+    // disturbance never hides inside a renormalised z).
+    BalanceFace in;
+    in.id = name_ + ".feed";
+    in.direction = BalanceFace::Direction::in;
+    in.role = BalanceFace::Role::boundary;
+    in.molarFlows.assign(nDotIn_.begin(), nDotIn_.end());
+    bs.faces.push_back(std::move(in));
+
+    // Outlet face: constant volume => F_out = F_in at the tank composition.
+    BalanceFace outF;
+    outF.id = name_ + ".out";
+    outF.direction = BalanceFace::Direction::out;
+    outF.role = BalanceFace::Role::boundary;
+    outF.molarFlows.assign(N, 0.0);
+    scalar nTot = 0.0;
+    for (auto v : n_) nTot += v;
+    if (nTot > 0.0)
+        for (std::size_t i = 0; i < N; ++i)
+            outF.molarFlows[i] = F_in_ * n_[i] / nTot;
+    bs.faces.push_back(std::move(outF));
+
+    bs.materialAvailable = true;
+    bs.materialReason.clear();
+
+    // Energy: the ODE Sum(n Cp) dT/dt = F Cp_in (Tin - T) + UA (Tj - T)
+    // - r V dH is not, by construction, the exact derivative of a canonical
+    // stored U(n,T) or H(n,T) with the same enthalpy fluxes -- a physical
+    // first law is not representable until the model is reformulated on one
+    // consistent functional and datum.  The claim honestly refuses.
+    bs.functional = BalanceSnapshot::EnergyFunctional::none;
+    bs.physicalEnergyAvailable = false;
+    bs.energyReason = "the dynamicCSTR energy equation is a Cp/convective"
+        " model, not the exact derivative of a stored U(n,T) or H(n,T);"
+        " a physical first-law closure requires the model reformulation";
+    return bs;
+}
+
 void DynamicCSTR::applyInletFlows_()
 {
     scalar F = 0.0;

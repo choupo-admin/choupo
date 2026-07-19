@@ -197,6 +197,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             if (h > hMax) h = hMax;
             // Glass-box: report the step we just took at the time we reached.
             if (ctrl.onAccept) ctrl.onAccept(t, hAccepted);
+            if (ctrl.onAcceptState) ctrl.onAcceptState(t, hAccepted, y);
         }
         else
         {
