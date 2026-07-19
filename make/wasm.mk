@@ -87,38 +87,71 @@ WASM_BATCH_JS := $(WASM_DIR)/choupoBatch.js
 WASM_CTRL_JS  := $(WASM_DIR)/choupoCtrl.js
 WASM_PROPS_JS := $(WASM_DIR)/choupoProps.js
 
-wasm: $(WASM_SOLVE_JS) $(WASM_BATCH_JS) $(WASM_CTRL_JS) $(WASM_PROPS_JS)
+# Aggregate targets ask for BOTH group members explicitly: GNU make only
+# examines the member it is asked to build, so a deleted .wasm beside a
+# fresh .js would otherwise never be noticed.
+WASM_ALL_OUT := $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) \
+                $(WASM_BATCH_JS) $(WASM_BATCH_JS:.js=.wasm) \
+                $(WASM_CTRL_JS)  $(WASM_CTRL_JS:.js=.wasm) \
+                $(WASM_PROPS_JS) $(WASM_PROPS_JS:.js=.wasm)
+
+wasm: $(WASM_ALL_OUT)
 
 # The GUI's FOUR binaries: the GUI dispatches by controlDict.application,
 # so all four must be present in gui/public/wasm/ for a transient case
 # (ctrl03 / batch04) to run in-browser and offer the time scrubber.  Same
 # set as `wasm`; the alias is kept because the bin/ scripts + docs refer
 # to it as THE GUI rebuild.
-wasm-gui: $(WASM_SOLVE_JS) $(WASM_PROPS_JS) $(WASM_BATCH_JS) $(WASM_CTRL_JS)
+wasm-gui: $(WASM_ALL_OUT)
 
 # The steady + props pair alone -- the fast relink when the dynamic
 # binaries are already current in gui/public/wasm/.
-wasm-steady-props: $(WASM_SOLVE_JS) $(WASM_PROPS_JS)
+wasm-steady-props: $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) $(WASM_PROPS_JS) $(WASM_PROPS_JS:.js=.wasm)
 
 # Steady-state binary alone (choupoSolve only).
-wasm-solve: $(WASM_SOLVE_JS)
+wasm-solve: $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm)
+
+# ---- content stamps: the fingerprint lives in the FILENAME ------------------
+#  A prerequisite LIST captured at parse time misses DELETIONS (the removed
+#  file simply leaves the list and the old stamp stays fresh), and nothing
+#  invalidated objects/links when the FLAGS changed.  Each stamp's name
+#  embeds a deterministic hash of what it fingerprints -- any change (edit,
+#  add, DELETE, flag edit) yields a NEW filename, the stamp is missing, the
+#  rule fires, stale twins are purged, and every dependent rebuilds.
+#
+#  standards: path + mtime + size of EVERY file under data/standards, so the
+#  embedded MEMFS can never keep a removed or edited record.
+WASM_STANDARDS_HASH := $(shell find data/standards -type f -printf '%p %T@ %s\n' 2>/dev/null | LC_ALL=C sort | md5sum | cut -c1-32)
+WASM_STANDARDS_STAMP := $(WASM_BUILD)/standards-$(WASM_STANDARDS_HASH).stamp
+
+$(WASM_STANDARDS_STAMP):
+	@mkdir -p $(dir $@)
+	@rm -f $(WASM_BUILD)/standards-*.stamp
+	@touch $@
+
+#  flags: objects depend on the effective COMPILE flags, links on the LINK
+#  flags -- editing WASM_OPT/exports/includes can never reuse stale output.
+WASM_CXX_HASH := $(shell printf '%s' "$(WASM_CXXFLAGS)" | md5sum | cut -c1-32)
+WASM_LD_HASH  := $(shell printf '%s' "$(WASM_LDFLAGS)" | md5sum | cut -c1-32)
+WASM_CXX_STAMP := $(WASM_BUILD)/cxxflags-$(WASM_CXX_HASH).stamp
+WASM_LD_STAMP  := $(WASM_BUILD)/ldflags-$(WASM_LD_HASH).stamp
+
+$(WASM_CXX_STAMP):
+	@mkdir -p $(dir $@)
+	@rm -f $(WASM_BUILD)/cxxflags-*.stamp
+	@touch $@
+
+$(WASM_LD_STAMP):
+	@mkdir -p $(dir $@)
+	@rm -f $(WASM_BUILD)/ldflags-*.stamp
+	@touch $@
 
 # ---- per-object compilation (the incremental core) -------------------------
-$(WASM_OBJ)/%.o: %.cpp
+$(WASM_OBJ)/%.o: %.cpp $(WASM_CXX_STAMP)
 	@mkdir -p $(dir $@)
 	@printf "  EMXX  %s\n" $<
 	@$(EMXX) $(WASM_CXXFLAGS) -c $< -o $@
 
-# ---- data/standards stamp: any FILE change relinks + re-embeds -------------
-#  A directory prerequisite misses in-place .dat edits (the dir mtime does
-#  not change); the stamp depends on every file, so the embedded MEMFS can
-#  never go stale behind an unchanged directory timestamp.
-WASM_STANDARDS_FILES := $(shell find data/standards -type f 2>/dev/null)
-WASM_STANDARDS_STAMP := $(WASM_BUILD)/standards.stamp
-
-$(WASM_STANDARDS_STAMP): $(WASM_STANDARDS_FILES)
-	@mkdir -p $(dir $@)
-	@touch $@
 
 # ---- link rules: common objects + the app's own, unique EXPORT_NAME --------
 #  Each binary's factory gets a UNIQUE name via -sEXPORT_NAME so loading
@@ -130,16 +163,19 @@ define WASM_LINK
 	@printf "  -->   wasm: %s\n" $(@:.js=.wasm)
 endef
 
-$(WASM_SOLVE_JS): $(WASM_LIB_OBJS) $(WASM_SOLVE_OBJS) $(WASM_STANDARDS_STAMP) | $(WASM_DIR)
+#  Grouped targets (GNU Make 4.3 `&:`): the .js AND the .wasm are ONE link
+#  result -- a missing/corrupted .wasm beside a fresh .js re-runs the link
+#  instead of declaring everything current.
+$(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_SOLVE_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoSolve)
 
-$(WASM_BATCH_JS): $(WASM_LIB_OBJS) $(WASM_BATCH_OBJS) $(WASM_STANDARDS_STAMP) | $(WASM_DIR)
+$(WASM_BATCH_JS) $(WASM_BATCH_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_BATCH_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoBatch)
 
-$(WASM_CTRL_JS): $(WASM_LIB_OBJS) $(WASM_CTRL_OBJS) $(WASM_STANDARDS_STAMP) | $(WASM_DIR)
+$(WASM_CTRL_JS) $(WASM_CTRL_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_CTRL_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoCtrl)
 
-$(WASM_PROPS_JS): $(WASM_LIB_OBJS) $(WASM_PROPS_OBJS) $(WASM_STANDARDS_STAMP) | $(WASM_DIR)
+$(WASM_PROPS_JS) $(WASM_PROPS_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_PROPS_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoProps)
 
 $(WASM_DIR):
