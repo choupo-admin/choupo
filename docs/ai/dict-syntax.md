@@ -541,45 +541,49 @@ Transfer*, Ch. 10 (Table 10.1 `C_sf`, the nucleate worked example, the CHF
 anchor). Tutorial: `steady/heat/reboiler_water_copper`. **Not in v1:** film
 boiling (Bromley), flow boiling (Chen), any `C_sf` default or catalogue.
 
-## The `propertyPackage` record grammar (the MANIFEST form of constant/propertyDict)
+## The `thermoPhysPropDict` record grammar
 
-The modern alternative to the flat `thermoPackage` is a typed RECORD.  The
-file IS the full manifest — it carries a `components (…)` list — the inline,
-self-contained form, the ONLY form (the `package <name>;` selector into a
-shared `data/standards/propertyPackages/` catalogue was retired; each case
-carries its own manifest, never a reference to a shared registry).  The
-record keys:
+`constant/thermoPhysPropDict` is a typed RECORD — the file IS the case's
+whole thermophysical system, inline and self-contained (there is no selector
+into a shared catalogue; each case carries its own declaration).  The record
+keys:
 
 ```
-recordType     propertyPackage;              // typed record marker
-schemaVersion  1;
-name           flash08_co2Water;
-components     ( water CO2 );                // inline form only — its presence
-                                             //   makes the file the manifest
-propertyMethods
+recordType     thermophysicalPropertySystem;   // typed record marker
+schemaVersion  2;
+
+components     ( water CO2 );
+
+equilibrium
 {
-    liquid  solution.henryDilute;   // the VLE world: activity.<Model> |
-    vapour  builtin.idealGas;       //   solution.henryDilute | eos.<Model>
-                                    //   (same cubic BOTH phases = phi-phi) |
-                                    //   electrolyte.pitzer | electrolyte.eNRTL
-    // transport <method>;          // optional transport slot
+    formulation diluteSolution;     // the VLE world: gammaPhi |
+                                    //   diluteSolution | phiPhi |
+                                    //   electrolyteGammaPhi
+    liquid
+    {
+        solvent { component water;   standardState pureLiquid; }
+        solutes { components ( CO2 ); standardState infiniteDilution;
+                  solutionModel henryDilute;
+                  binaryParameters                     // DECLARED files,
+                  {                                    //   verified at
+                      CO2-water                        //   assembly (refuse
+                      { source "data/standards/parameters/Henry/CO2-water.dat"; }
+                  } }                                  //   if missing)
+    }
+    vapour { fugacityModel idealGas; }
 }
-solution   { solvent water;  solutes ( CO2 ); }   // henryDilute world only
-parameters                                        // DECLARED files, verified
-{                                                 //   at assembly (refuse if
-    henryPairs { CO2-water "data/standards/parameters/Henry/CO2-water.dat"; }
-    kijPairs   { N2-CH4    "data/standards/parameters/SRK/N2-CH4.dat"; }
-}
+
+// caloric {} (energy routes) and transport {} (mu/k/D/sigma) are the other
+// top-level slots — see thermo.md for every formulation's shape.
 ```
 
-Semantics, worked examples and the four-VLE-worlds table:
-[`thermo.md`](thermo.md) → "propertyPackage — the declarative manifest".
+Semantics, worked examples and the four-formulations table:
+[`thermo.md`](thermo.md) → "The formulations".
 
 ## Per-unit `thermo {}` override
 
 A unit may carry an optional `thermo {... }` block that REPLACES the
-global thermoPackage's models for that unit only (components stay
-global):
+global system's models for that unit only (components stay global):
 
 ```
 { name turbine; type turbine;  in feed;  outputs (expanded );

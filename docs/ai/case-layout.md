@@ -7,7 +7,7 @@ are the source of truth.
 
 ```
 <caseName>/
-├── <caseName>.cho           empty marker file -- the "openable" entity
+├── <caseName>.cho           GUI marker -- empty or GUI layout metadata
 ├── system/
 │   ├── controlDict          REQUIRED   meta-control (which binary,
 │   │                                   verbosity, reports{}, time)
@@ -19,11 +19,14 @@ are the source of truth.
 │   └── outerDict            OPTIONAL  outer driver (sweep /
 │                                       optimization / DesignSpec)
 ├── constant/
-│   ├── propertyDict         REQUIRED; the ONE property-package file.
-│   │                          Either a flat model declaration OR an inline
-│   │                          `recordType propertyPackage` manifest (the
-│   │                          selector `package <name>;` into a shared
-│   │                          catalogue was retired — every case is inline)
+│   ├── thermoPhysPropDict   REQUIRED; the thermophysical system (v2
+│   │                          grammar).  Declares `recordType
+│   │                          thermophysicalPropertySystem;`, the component
+│   │                          list, and the equilibrium formulation with its
+│   │                          model slots (see thermo.md)
+│   ├── propertyManifest     record-ownership registry (bin/choupo-import);
+│   │                          `sealed true;` = self-contained, no catalogue
+│   │                          fallback at runtime
 │   ├── reactions            OPTIONAL  named-reaction library
 │   ├── crystallisation      OPTIONAL  per-kinetic-pair library
 │   ├── dryingKinetics       OPTIONAL  drying-curve library
@@ -51,19 +54,19 @@ are the source of truth.
 
 ## The `.cho` marker
 
-An **empty file** named `<caseName>.cho` inside the case folder.  It
-is the GUI's "openable entity" (mirrors ParaView's `.foam` file, where
-the extension is the project's name -- here `.cho`, short for Choupo).
-Always there.  If you scaffold a case for a user, create the empty
-file:
+A file named `<caseName>.cho` inside the case folder.  It is the GUI's
+"openable entity" (mirrors ParaView's `.foam` file, where the extension is
+the project's name -- here `.cho`, short for Choupo).  Always there.  If you
+scaffold a case for a user, create it empty:
 
 ```sh
 touch <caseName>/<caseName>.cho
 ```
 
-Today the file is intentionally empty.  Future GUI metadata (default
-plot, favourite layout) would live here without polluting the dicts
-the C++ solver reads.
+The solver never reads it.  It starts empty; when the student arranges the
+flowsheet in the GUI, the GUI stores its layout metadata here (a
+`choupoLayout` JSON with node positions) -- GUI state lives in the marker,
+never in the dicts the C++ solver reads.
 
 ## The four standard `controlDict` keys
 
@@ -257,8 +260,10 @@ case/
 ├── system/
 │   ├── controlDict
 │   └── flowsheetDict     (or propsDict)
-└── constant/
-    └── propertyDict      (flat declaration OR inline propertyPackage manifest)
+├── constant/
+│   ├── thermoPhysPropDict   (the declared thermophysical system)
+│   ├── propertyManifest     (sealed record registry, bin/choupo-import)
+│   └── components/          (the case's own property records)
 └── 0/
     └── <stream>          (one complete state file per graph stream)
 ```
@@ -266,9 +271,9 @@ case/
 Don't add `solverDict` / `outerDict` / `reactions` unless you need
 them.  Don't write empty stubs — and, more generally, **no juice-less
 files**: every file must carry its own explanatory content.  The
-`propertyDict` must be the inline manifest itself (the `package <name>;`
-selector into a shared catalogue is retired); a content-free placeholder
-or an empty role overlay is forbidden the same way.
+`thermoPhysPropDict` declares the whole thermophysical system inline (there
+is no selector into a shared catalogue); a content-free placeholder or an
+empty role overlay is forbidden the same way.
 
 ## Materialising `0/` — `bin/choupo-init0`
 

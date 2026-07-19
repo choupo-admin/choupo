@@ -81,16 +81,20 @@ or set `CHOUPO_HOME` to override the lookup.
 caseDir/
 ├── system/
 │   ├── controlDict          required   verbosity + application + description
-│   ├── flowsheetDict        required   topology: streams + units + connections
+│   ├── flowsheetDict        required   topology: units + connections
 │   ├── solverDict           optional   per-unit-op solver options
-│   ├── outerDict            optional   outer driver (sweep / fitBinaryPair / …)
+│   ├── outerDict            optional   outer driver (sweep / optimization / …)
 │   └── postDict             optional   post-processing chain (sizing / costing)
-└── constant/
-    ├── thermoPackage        required   components + γ-φ models / phases
-    ├── reactions            optional   named-reaction library
-    ├── binaryPairs/         optional   case-local interaction parameters
-    │   └── <model>/<c1>-<c2>.dat
-    └── experiments/         optional   experimental datasets (for fitting)
+├── constant/
+│   ├── thermoPhysPropDict   required   the thermophysical system (components,
+│   │                                   formulation, models, parameters)
+│   ├── propertyManifest     sealed record registry (bin/choupo-import)
+│   ├── components/          the case's own property records (.dat)
+│   ├── reactions            optional   named-reaction library
+│   └── parameters/          optional   case-local interaction parameters
+│       └── <model>/<c1>-<c2>.dat
+└── 0/                       required   complete initial state, one file
+                                        per stream
 ```
 
 A single isolated unit is just a `flowsheetDict` of length 1 — there is

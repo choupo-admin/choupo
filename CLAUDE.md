@@ -102,7 +102,7 @@ case/
 │   ├── outerDict           outer driver (sweep / optim / PE)   [optional]
 │   └── postDict            post-processing chain (sizing, cost)[optional]
 ├── constant/
-│   ├── propertyDict        components + γ-φ models / phases
+│   ├── thermoPhysPropDict  the thermophysical system (v2 grammar)
 │   └── reactions           named-reaction library             [optional]
 └── 0/                      complete state, one file per graph stream
 ```
@@ -117,7 +117,7 @@ case/
   `ctrl/` → choupoCtrl.  `bin/runCase` reads `controlDict.application` and
   dispatches automatically.
 * Optional dicts are truly optional.  A minimal steady case has
-  `controlDict`, `flowsheetDict`, `constant/propertyDict`, and a complete `0/`
+  `controlDict`, `flowsheetDict`, `constant/thermoPhysPropDict`, and a complete `0/`
   directory.  `flowsheetDict` contains topology only; stream values live in
   `0/<stream>`.
 
@@ -327,7 +327,7 @@ another method, no special case.  **7 homes:** `components/` (identity **+
 `chemistry/` (REAL equilibria w/ K+ΔH: dissolution, association) · `parameters/` ·
 `methods/` (declares model + reference rung) · the property PACKAGE
 (the manifest that SELECTS all — components, methods, chemistry — lives INLINE in
-each case's `constant/propertyDict`; the shared `data/standards/propertyPackages/`
+each case's `constant/thermoPhysPropDict`; the shared `data/standards/propertyPackages/`
 catalogue + `package <name>;` selector were retired 2026-07-15, every case is
 self-contained).  (`propertySets/` was deleted 2026-07-01 — zero readers.)  **ONE component = ONE file:
 `components/apparent/*` is DELETED** (the builder reads salt identity+`dissociatesTo`
@@ -496,7 +496,7 @@ Layer-1 data detail in
 **[`docs/architecture/electrolyte-data-architecture.md`](docs/architecture/electrolyte-data-architecture.md)**
 (design record + implementation addendum; earlier iterations in
 `docs/architecture/archive/`).  **THE FLOW: the case's INLINE
-`constant/propertyDict` manifest declares → `ThermoPackageBuilder`
+`constant/thermoPhysPropDict` declaration → `ThermoPackageBuilder`
 assembles → `ThermoPackage` computes → unit ops.**  The runtime
 assembly step is the BUILDER (loads + assembles, NEVER estimates); "resolver" is
 reserved for CURATION-time estimation.  The reference basis (the `ReferenceRung`)

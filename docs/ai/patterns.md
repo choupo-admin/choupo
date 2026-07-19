@@ -131,7 +131,7 @@ until every target is within `tol`.  Reports run on the final pass
 (the canonical fit engine, runs under **choupoProps**)
 
 `fitParameters` is a `propsDict` operation under **choupoProps** (NOT an
-outerDict, NOT a flowsheet).  It regresses any dotted thermoPackage
+outerDict, NOT a flowsheet).  It regresses any dotted thermophysical-system
 parameters by Levenberg–Marquardt against a dataset and is the one engine
 the GUI runs and visualises.  `system/propsDict`:
 
@@ -326,7 +326,7 @@ tutorials/plant/myPlant/
 │   ├── controlDict                 application choupoSolve; ...
 │   └── flowsheetDict               PLANT: sectors (...) + named-edge connections
 ├── constant/
-│   └── propertyDict                GLOBAL property package -- CASCADES DOWN
+│   └── thermoPhysPropDict          GLOBAL thermophysical system -- CASCADES DOWN
 ├── 0/                              THE STREAM STATE (one file per stream)
 │   ├── REACTION/tolueneIn          inlet: owned by its consuming sector
 │   ├── REACTION/reactorOut         internal: owned by its producer
@@ -385,7 +385,7 @@ runCase tutorials/plant/myPlant                     # the whole plant
 choupoSolve tutorials/plant/myPlant/sectors/REACTION  # one sector, standalone
 ```
 
-A child runs standalone because `constant/propertyDict`, `controlDict` and
+A child runs standalone because `constant/thermoPhysPropDict`, `controlDict` and
 `constant/reactions` **CASCADE UP** the folder tree, and its `0/` is
 materialised from the parent's persisted state (`converged/` by default —
 never a silent "latest").  The few drill-in sub-dicts still carrying a

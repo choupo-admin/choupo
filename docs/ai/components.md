@@ -2,7 +2,7 @@
 
 <!-- BEGIN-PROSE -->
 Inventory snapshot, regenerated from `data/standards/components/`.
-When composing a property package (`constant/propertyDict`), pick component names from this list
+When declaring the thermophysical system (`constant/thermoPhysPropDict`), pick component names from this list
 (case-sensitive).  Adding a new component is a project-level act, not
 a per-case one --- case-local overlays (axiom 4) can refine
 sample-specific **blocks** but NOT MW / Tc / Pc.
@@ -18,20 +18,19 @@ the catalogue's `k_v`).  See [`data-doctrine.md`](data-doctrine.md) §3.
 **Dissolved-solute / solution thermo is PAIR data, not a component field.**
 A property whose definition names a **solvent** — an "in-water" ΔH_soln, an
 aqueous Hf°, a solubility curve — is arity-2 and lives in a **catalogue**
-(`data/standards/solution/<solute>-<solvent>.dat` for molecular solutes;
+(`data/standards/parameters/solution/<solute>-<solvent>.dat` for molecular solutes;
 `data/standards/species/<name>.dat` for the ∞-dilution ion tier — one
 `recordType modelSpecies` file per aqueous species), referenced
 by name, never copied into `<name>.dat`.  The solvent is always **named**, not
 implied (`data-doctrine.md` §2).
 
-**Henry behaviour: the ROLE is selected by the package, not stored on the
-substance.**  The `role solute;` flag in a `.dat` (the "Soluble gas" table
-below) is the legacy flat-`thermoPackage` trigger.  The modern route is the
-`propertyPackage` `solution { solvent water; solutes ( CO2 ); }` block (the
-`solution.henryDilute` world) — the PACKAGE declares WHO dissolves in WHAT,
-the pair files are declared in `parameters.henryPairs` (the Henry's-law
-pairs table below names the shipped files), and a declared-but-missing pair
-REFUSES at assembly.  See `thermo.md` → "propertyPackage".
+**Henry behaviour: the ROLE is selected by the system declaration, not
+stored on the substance.**  WHO dissolves in WHAT is structural: the
+`formulation diluteSolution` `liquid { solvent {…} solutes {…} }` blocks of
+`thermoPhysPropDict` declare it, the pair files are declared by `source` in
+the solutes' `binaryParameters` (the Henry's-law pairs table below names the
+shipped files), and a declared-but-missing pair REFUSES at assembly.  See
+`thermo.md` → "diluteSolution".
 
 *56 components currently shipped.*
 <!-- END-PROSE -->

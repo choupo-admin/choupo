@@ -46,7 +46,7 @@ If the number describes the molecule inside a piece of equipment — a **RATE**
 all.  It lives in the **operation's `constant/`**
 (`constant/crystallisation`, `constant/dryingKinetics`, `constant/reactions`),
 keyed to the equipment.  PSD is a **stream** attribute.  A component `.dat`
-at *any* level never carries a rate, a PSD, or a `thermoPackage` placeholder.
+at *any* level never carries a rate, a PSD, or a `thermoPhysPropDict` placeholder.
 
 ### The one test that runs all three
 
@@ -65,11 +65,11 @@ and the level are always **named in the file**.
 The explicitness rule has a file-level corollary: **a content-free file is
 forbidden**.  An empty role overlay, any stub that tells the reader nothing —
 all the same disease.  The `package <name>;` shared-catalogue selector — the
-classic juice-less one-liner — is now retired outright: `constant/propertyDict`
+classic juice-less one-liner — is now retired outright: `constant/thermoPhysPropDict`
 is ALWAYS the inline manifest (components, methods, parameter sources all IN the
 case, each explaining itself; a case never reaches out to a shared registry for
 its thermo).  (Sibling rule already below: a unit `constant/` never carries a
-`thermoPackage` placeholder — §3.)
+`thermoPhysPropDict` placeholder — §3.)
 
 ### Derivatives are NEVER stored — the salt-formation rule (settled 2026-06-29, forum)
 
@@ -124,7 +124,7 @@ dilution, H⁺(aq)=0 convention, Wagman/NBS 1982; `NaOH.dat` points at it by
 name).  The privilege is: **water alone gets a dedicated reference tier
 referenced by name — that tier is a catalogue file, never a component slot.**
 
-For *molecular* solutes the sibling tier is **`data/standards/solution/`**
+For *molecular* solutes the sibling tier is **`data/standards/parameters/solution/`**
 (`solution/<solute>-<solvent>.dat`) — the molecular-solute counterpart of the
 ionic `ions.dat`.
 
@@ -164,7 +164,7 @@ GEOMETRY; that is never component data.*
 | **catalogue** `data/standards/<feature>/<pair>.dat` (binaryPairs, henrysLaw, electrolyte, **solution**, unifac, `parameters/{binary,electrolyte,eos}/` — e.g. `parameters/SRK/<i>-<j>.dat`) | PAIR/SET/ion-tier data with no single owning molecule (NRTL τ, Henry, Pitzer β, k_ij, ΔH_soln-in-water) | anything ownable by one molecule alone | — (base, per pair) |
 | **case** `<case>/constant/components/<name>.dat`, `constant/<feature>/<pair>.dat` | sample-refined molecular **blocks**; case-local pairs/ions the case uses (self-containment) | a NEW molecule's identity (MW/Tc/Pc are born only at standard); equipment rates/PSD | **top-level BLOCK** |
 | **sector** `<case>/<sector>/constant/…` | the SAME, scoped to the sector (a sector = a thermo region) | re-hosting the whole molecule; equipment physics | top-level BLOCK |
-| **unit** `<case>/<sector>/<unit>/constant/…` | the SAME molecular-refinement overlay; **AND** the unit's EQUIPMENT files (`constant/crystallisation`, `constant/dryingKinetics`, `constant/reactions`) | re-hosting the molecule; a `thermoPackage` placeholder (shadows the case default, breaks the run) | top-level BLOCK |
+| **unit** `<case>/<sector>/<unit>/constant/…` | the SAME molecular-refinement overlay; **AND** the unit's EQUIPMENT files (`constant/crystallisation`, `constant/dryingKinetics`, `constant/reactions`) | re-hosting the molecule; a `thermoPhysPropDict` placeholder (shadows the case default, breaks the run) | top-level BLOCK |
 
 **Resolution precedence, lowest → highest:** `local < standard < case <
 sector < unit` (the `Database` walk-up already gives unit→sector→case; pairs
@@ -181,7 +181,7 @@ the DECLARATIVE layer the 2026-07-04 grammar reads from:
   per-GROUP `referenceBasis` rungs (amendment A1) and its `requires{}` /
   `provides{}` contract.
 * The property package is the manifest INLINE in the case's
-  `constant/propertyDict` — there is no shared `propertyPackages/` catalogue
+  `constant/thermoPhysPropDict` — there is no shared catalogue
   (the `package <name>;` selector was retired; every case is self-contained).
 
 The contract is **declare → verify → refuse**: the package DECLARES its
@@ -255,8 +255,9 @@ name the model?*
 3. **PAIR parameters (k_ij and friends) → the declarative parameter
    catalogue**, `data/standards/parameters/SRK/<i>-<j>.dat` (siblings:
    `parameters/<MODEL>/` for activity pairs, `parameters/electrolyte/` for
-   Pitzer/eNRTL), mirroring `binaryPairs/NRTL/<i>-<j>.dat`, declared in the
-   propertyPackage (`parameters { kijPairs { N2-CH4 "…"; } }`) and announced
+   Pitzer/eNRTL), mirroring `parameters/NRTL/<i>-<j>.dat`, declared in the
+   thermoPhysPropDict (a `binaryInteractions { N2-CH4 { source "…"; } }`
+   entry) and announced
    at assembly (`[builder] kij(N2,CH4) = 0.0289 --- <file>`), with the
    always-permitted inline override in the package.
 

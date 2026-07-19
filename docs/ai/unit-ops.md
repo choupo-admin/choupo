@@ -488,7 +488,7 @@ number it does not believe.  Pressure drop / weir crest / residual head / downco
 backup / weep point follow Sinnott (mm of clear liquid).  Kister & Haas (1990) is
 deliberately NOT implemented — two of its constants are unverified against a primary
 source.  **σ is required**: add `transport { surfaceTension { model BrockBird; } }` to the
-propertyDict or declare `sigma`.  KPIs: `diameter`, `floodApproach_max`, `floodStage`,
+thermoPhysPropDict or declare `sigma`.  KPIs: `diameter`, `floodApproach_max`, `floodStage`,
 `dP_column_kPa`, `downcomerBackup_max_mm`, `downcomerFloodStages`, `weepingStages`;
 profile gains `floodApproach`, `dP_Pa`, `h_backup_mm`.
 Examples: `column09_tray_hydraulics` (design → D = 1.322 m) · `column10_flooding`

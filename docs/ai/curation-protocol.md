@@ -32,7 +32,7 @@ doesn't reproduce — so a hand-typed number cannot even wear a trustworthy badg
 
 ---
 
-## 2. The workflow (every time you assemble a property package -- constant/propertyDict, flat or manifest form)
+## 2. The workflow (every time you declare a thermophysical system -- constant/thermoPhysPropDict)
 
 1. **Read the gap report FIRST — never infer gaps from your own chemistry
    knowledge.** Run:
@@ -44,15 +44,15 @@ doesn't reproduce — so a hand-typed number cannot even wear a trustworthy badg
    and a `verdict` (`clean` | `has-gaps`). This is the authoritative gap list.
 
 2. **For each gap, ADVISE in plain language** — name the consequence, and
-   note that the consequence DIFFERS by form.  In a flat `propertyDict`,
-   e.g. *"`aniline` has no NRTL/Henry pair and no formation data — a VLE run
-   will use ideal γ (announced loudly, never silently) and an energy/Gibbs
-   run will FAIL as-is."*  In a `propertyPackage`, a pair the manifest
-   DECLARES in `parameters { henryPairs {…} kijPairs {…} }` is VERIFIED at
-   assembly: a declared file that is missing does not ideal-default or
-   merely warn — the builder **REFUSES**, naming the entry to add.  Teach
-   the author to declare the pair files and to expect (and welcome) that
-   refusal.
+   note that the consequence DIFFERS by kind.  An UNDECLARED activity pair
+   ideal-defaults loudly, never silently — e.g. *"`aniline` has no NRTL
+   pair: a VLE run will use ideal γ for that binary (announced), and an
+   energy/Gibbs run will FAIL as-is on the missing formation data."*  A pair
+   the dict DECLARES by `source` in a `binaryParameters` /
+   `binaryInteractions` block is VERIFIED at assembly: a declared file that
+   is missing does not ideal-default or merely warn — the builder
+   **REFUSES**, naming the entry to add.  Teach the author to declare the
+   pair files and to expect (and welcome) that refusal.
 
 3. **OFFER the bounded choice set** (§3) and let the student pick. Do not decide
    silently; do not over-persuade ("I'll just use Joback" without offering the

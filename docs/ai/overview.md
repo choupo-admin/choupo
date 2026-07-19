@@ -58,21 +58,28 @@ pick the right binary.
 
 ```
 case/
-├── <shortName>.cho        empty marker -- the GUI's "openable" entity
+├── <shortName>.cho        GUI marker -- empty, or GUI layout metadata
+│                          (node positions); the solver never reads it
 ├── system/
 │   ├── controlDict        meta-control: application, verbosity, reports{}
 │   ├── flowsheetDict      topology (or propsDict for choupoProps)
 │   ├── solverDict         (opt) per-unit-op solver options
 │   └── outerDict          (opt) outer driver (sweep / optim / DesignSpec / fit)
-└── constant/
-    ├── propertyDict       REQUIRED -- the ONE property-package file, in
-    │                      either form by content: FLAT (components +
-    │                      activity / EoS / transport) or the declarative
-    │                      MANIFEST (full inline record — the only package
-    │                      form; the shared-catalogue selector was retired)
-    ├── reactions          (opt) named-reaction library
-    ├── crystallisation    (opt) per-kinetic-pair library
-    └── dryingKinetics     (opt) drying-curve library
+├── constant/
+│   ├── thermoPhysPropDict REQUIRED -- the thermophysical system (v2 grammar,
+│   │                      `recordType thermophysicalPropertySystem;`):
+│   │                      components + the equilibrium formulation
+│   │                      (gammaPhi / phiPhi / henryDilute / electrolyte)
+│   │                      + correlation and parameter declarations
+│   ├── propertyManifest   record-ownership registry written by
+│   │                      bin/choupo-import; `sealed true;` forbids any
+│   │                      catalogue fallback (the case is self-contained)
+│   ├── components/        the case's own property records (one .dat per
+│   │                      component, sha256-verified by the manifest)
+│   ├── reactions          (opt) named-reaction library
+│   ├── crystallisation    (opt) per-kinetic-pair library
+│   └── dryingKinetics     (opt) drying-curve library
+└── 0/                     complete initial state, one file per stream
 ```
 
 Full details in `case-layout.md`.
@@ -119,14 +126,14 @@ them in answers to users.
       OVERLAYS the standard catalogue entry **block-by-block** (you
       copy the whole reference-state block you refine, never a lone
       scalar — `data-doctrine.md` §3).
-   5. **Package-declared parameter files** — a `propertyPackage`
-      DECLARES the pair files it consumes (`parameters { henryPairs
-      {…} kijPairs {…} }`, homes under `data/standards/parameters/`
-      + `parameters/Henry/`) and the builder VERIFIES them at assembly: a
+   5. **Declared parameter files** — the thermophysical system
+      DECLARES the pair files it consumes (`binaryParameters` /
+      `binaryInteractions` entries with a `source`, homes under
+      `data/standards/parameters/`) and the builder VERIFIES them at assembly: a
       declared-but-missing file REFUSES loudly, naming the entry to
       add (never an ideal-default).  Method records live in
-      `data/standards/methods/`; the package manifest is inline in
-      the case's `constant/propertyDict` (see `thermo.md`).
+      `data/standards/methods/`; the thermophysical system is declared
+      inline in the case's `constant/thermoPhysPropDict` (see `thermo.md`).
 
    When you write a case, intrinsic data come from existing
    `data/standards/components/` entries (see `components.md`); only
@@ -155,9 +162,11 @@ Three shapes of question dominate.  Use this rough decision tree:
 1. **Pick the right binary** (set `application` in controlDict
    accordingly).  Steady is the default; batch/ctrl needs time
    settings; props needs a propsDict.
-2. **Compose the property package** (`constant/propertyDict`) explicitly.  Don't assume defaults
-   — write `activityModel { model ideal; }` and
-   `equationOfState { model idealGas; }` even when they are.
+2. **Declare the thermophysical system** (`constant/thermoPhysPropDict`)
+   explicitly.  Don't assume defaults — declare the formulation and its
+   slots (`equilibrium { formulation gammaPhi; liquid { activityModel
+   ideal; standardState pureLiquid; } vapour { fugacityModel idealGas; } }`)
+   even when they are the obvious choice.
 3. **Use named units** in every scalar (`P 1 bar;`, `F 100 kmol/h;`,
    `T 350 K;`).  Choupo's parser tracks dimensions and will catch
    mismatches if you slip.  Bare numbers are interpreted as raw SI.
@@ -174,14 +183,14 @@ more than 300 openable `.cho` markers (including nested plant sectors and
 validation cases), 255 golden-master cases, and 194 standard component files.
 Big changes, recent first:
 
-- The `propertyPackage` grammar consolidation (2026-07-04): the
-  declarative manifest inline in the case (the shared-catalogue
-  `package <name>;` selector was retired — every case is self-contained),
-  the four VLE worlds selected by the liquid method slot (γ-φ /
-  `solution.henryDilute` / φ-φ `eos.<Model>` both phases /
-  `electrolyte.*`), per-group reference rungs in each
-  `methods/` record, and declared→verified→refused parameter
-  files (`henryPairs`, `kijPairs`).  See `thermo.md`.
+- The v2 case grammar (2026-07-17): `constant/thermoPhysPropDict`
+  (`recordType thermophysicalPropertySystem; schemaVersion 2;`) declares
+  the whole system inline — the four VLE worlds selected by
+  `equilibrium.formulation` (`gammaPhi` / `diluteSolution` / `phiPhi` /
+  `electrolyteGammaPhi`), per-group standard states, caloric routes, and
+  declared→verified→refused parameter files.  Cases are sealed
+  self-contained by `constant/propertyManifest` (bin/choupo-import).
+  See `thermo.md`.
 - Forward heat-links + `utilityAllocation` report — a column's
   condenser/reboiler heat can drive another unit (heat integration),
   credo-accounted (see `energy.md`).

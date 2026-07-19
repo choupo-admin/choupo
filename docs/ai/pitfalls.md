@@ -170,33 +170,34 @@ defaulted to IDEAL` log line, an advisory the GUI shows as an amber
 toast, and the pair-coverage matrix colouring the pair as
 ideal-default.  The pitfall is IGNORING the announcement, not the
 absence of one.  Always verify the file exists for your component
-pair, or inline the parameters.  (Contrast the `propertyPackage`
-world: there a DECLARED pair file that is missing does not default at
-all — the builder REFUSES at assembly, naming the entry.)
+pair, or inline the parameters.  (Contrast a DECLARED pair: a
+`binaryParameters` entry whose `source` file is missing does not
+default at all — the builder REFUSES at assembly, naming the entry.)
 
 ### `model ideal` for a strongly non-ideal mixture
 Common mistake.  Ethanol/water at 1 atm has a 12% offset from Raoult
 near the azeotrope; using ideal there gives wrong K-values.  Switch
 to NRTL.
 
-## propertyPackage (the declarative manifest)
+## The declared system (thermoPhysPropDict)
 
-Reference cases: `flash08_co2_water_package` (inline manifest, Henry
-world) and `flash09_n2ch4_stryjek` (φ-φ world + kijPairs).
+Reference cases: `flash08_co2_water_package` (diluteSolution / Henry
+world) and `flash09_n2ch4_stryjek` (φ-φ world + declared kij).
 
 ### Mixed cubics in one VLE → REFUSED
-`liquid eos.SRK;` with a DIFFERENT vapour cubic (or `builtin.idealGas`)
-is two Gibbs surfaces pretending to be one VLE.  The builder refuses at
-assembly: the φ-φ world needs the SAME cubic on both phases
-(`liquid eos.SRK; vapour eos.SRK;` — one Gibbs surface per phase,
-`K = φ_L/φ_V` from the one cubic's two roots).
+A `phiPhi` system routes BOTH phase slots through the ONE declared
+`equationOfState` (`fugacityRoute equationOfState; root liquid|vapour;`).
+Two different cubics — or a cubic liquid against an ideal-gas vapour —
+are two Gibbs surfaces pretending to be one VLE; the builder refuses at
+assembly (one Gibbs surface per phase, `K = φ_L/φ_V` from the one
+cubic's two roots).
 
 ### A declared parameter file that is missing → REFUSED, not defaulted
-Unlike the legacy NRTL ideal-default (announced but tolerated), a
-`parameters.henryPairs` / `parameters.kijPairs` entry whose file is
-absent or unparseable REFUSES at assembly, naming the entry to add
-(amendment A3: declare → verify → refuse).  So does a `solution{}`
-solute with no matching `henryPairs` entry.
+Unlike the NRTL ideal-default for an UNDECLARED pair (announced but
+tolerated), a `binaryParameters` / `binaryInteractions` entry whose
+`source` file is absent or unparseable REFUSES at assembly, naming the
+entry to add (declare → verify → refuse).  So does a `solutes{}` group
+with no matching pair entry.
 
 ### Omitting `kijPairs` on an EoS package → kij = 0 (announced)
 No `kijPairs` block is legal — the cubic runs predictive with
@@ -205,11 +206,12 @@ N2-CH4 split needs its DECHEMA kij 0.0289).  Declare the pair file
 (`data/standards/parameters/SRK/<i>-<j>.dat`) and watch for the
 `[builder] kij(...)` line confirming it loaded.
 
-### The `package <name>;` selector is retired → write the manifest inline
-There is no shared `data/standards/propertyPackages/` catalogue any more:
-`constant/propertyDict` must BE the inline `recordType propertyPackage`
-manifest (components, methods, pairs + sources, all in the case).  A stray
-`package <name>;` now fails LOUD.  See `thermo.md`.
+### The system is declared inline — there is no shared package catalogue
+`constant/thermoPhysPropDict` IS the case's thermophysical system
+(`recordType thermophysicalPropertySystem;` — components, formulation,
+model slots, pairs + sources, all in the case).  A selector into a shared
+catalogue does not exist; a dict without the recordType line fails LOUD.
+See `thermo.md`.
 
 ## Reactions
 
@@ -380,8 +382,8 @@ T-treatment).
 ### Pitzer in a mixed brine: ternary mixing + E_theta higher-order electrostatics
 `activityModel pitzerHMW;` (the propsDict `speciate` selector — NOT
 `pitzer`, which since the 2026-06-29 key split names the salt-level
-single-salt VLE adapter selected inside a propertyDict /
-propertyPackage) uses the multi-ion Pitzer-HMW model — binary
+single-salt VLE adapter selected inside a thermoPhysPropDict /
+thermoPhysPropDict) uses the multi-ion Pitzer-HMW model — binary
 virials (`pairs.dat`) **plus** the ternary cation-cation / anion-anion
 mixing (`theta`) and triplet (`psi`) terms (`mixing.dat`). This matters
 for **mixed brines** (seawater, RO concentrate): the mixing terms are the

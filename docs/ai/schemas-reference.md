@@ -164,11 +164,11 @@ Single-effect evaporator modelled as PHYSICAL EQUIPMENT.  Two inlets (feed liqui
 
 ## `fitParameters`  (fitParameters operation)
 
-Levenberg-Marquardt regression of property-package parameters against experimental data.  Each parameter is identified by a dot-path into the loaded propertyDict with `initial` / `min` / `max`; the residual block selects what to fit against (e.g. T_bubble vs x at a given P) and supplies the experimental points.  Outputs two CSVs: a fit log (chi^2 + parameter trajectory per iteration) and a parity CSV (model vs experiment at the optimum).  The PropsView renders the fit log as a chi^2 + parameter-trajectory plot, and the parity CSV as a scatter against the y=x line.
+Levenberg-Marquardt regression of property-package parameters against experimental data.  Each parameter is identified by a dot-path into the loaded thermoPhysPropDict with `initial` / `min` / `max`; the residual block selects what to fit against (e.g. T_bubble vs x at a given P) and supplies the experimental points.  Outputs two CSVs: a fit log (chi^2 + parameter trajectory per iteration) and a parity CSV (model vs experiment at the optimum).  The PropsView renders the fit log as a chi^2 + parameter-trajectory plot, and the parity CSV as a scatter against the y=x line.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `parameters` | ✓ | array[object] | — | Each entry identifies a scalar in the loaded propertyDict to vary, with bounds and an initial guess.  `path` is dot-separated (e.g. `activityMo… |
+| `parameters` | ✓ | array[object] | — | Each entry identifies a scalar in the loaded thermoPhysPropDict to vary, with bounds and an initial guess.  `path` is dot-separated (e.g. `activityMo… |
 | `residual` | ✓ | object | — | What to fit against (e.g. T_bubble at a fixed P) + the experimental data points. |
 | `options` |   | object | — | Tuning knobs for the Levenberg-Marquardt loop (lambda, tolerance, maxIter).  Defaults are fine for most cases. |
 
@@ -308,7 +308,7 @@ Stream splitter: divides one inlet into several outlets by the user-supplied spl
 
 ## `sprayDryer`  (sprayDryer operation)
 
-Single-stage rotary-atomiser spray dryer (PHASE 1).  Two inlets (feed liquid + drying air) and two outlets (powder + exhaust air).  The operation block carries only atomiser HARDWARE; the exhaust temperature, droplet/particle sizes, drying coefficients (h, k_c) and the constant-rate drying time are RESULTS computed from the energy balance, the Friedman rotary-disc correlation and Ranz-Marshall transfer.  Needs a transport block (viscosity + thermalConductivity + diffusivity) in the propertyDict for the drying kinetics.
+Single-stage rotary-atomiser spray dryer (PHASE 1).  Two inlets (feed liquid + drying air) and two outlets (powder + exhaust air).  The operation block carries only atomiser HARDWARE; the exhaust temperature, droplet/particle sizes, drying coefficients (h, k_c) and the constant-rate drying time are RESULTS computed from the energy balance, the Friedman rotary-disc correlation and Ranz-Marshall transfer.  Needs a transport block (viscosity + thermalConductivity + diffusivity) in the thermoPhysPropDict for the drying kinetics.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|

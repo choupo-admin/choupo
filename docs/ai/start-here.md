@@ -26,17 +26,28 @@ adiabaticFlash01_benzene_toluene/
 │   ├── controlDict       selects choupoSolve and reporting
 │   └── flowsheetDict     topology and unit operation settings
 ├── constant/
-│   └── propertyDict      components and property models
+│   ├── thermoPhysPropDict   the thermophysical system (components + models)
+│   ├── propertyManifest     sealed record registry (written by bin/choupo-import)
+│   └── components/          the case's own property records, one .dat per component
 └── 0/
     ├── feed              authored inlet state
     ├── liquid            complete initial state for this graph stream
     └── vapor             complete initial state for this graph stream
 ```
 
-There are two governing rules:
+There are three governing rules:
 
 1. `flowsheetDict` contains **topology**, never stream values.
 2. Every graph stream has exactly one complete state file under `0/`.
+3. The case is **self-contained**: `constant/components/` carries every
+   property record the run needs, and `constant/propertyManifest` seals the
+   set (the runtime never falls back to the installation catalogue in a
+   sealed case).  `constant/thermoPhysPropDict` declares the thermophysical
+   system — components and the model selection — with
+   `recordType thermophysicalPropertySystem;`.
+
+The `.cho` file is the GUI's openable marker; it may be empty or carry GUI
+layout metadata (node positions).  The solver never reads it.
 
 The solver writes the steady solution to `converged/`.  Do not edit
 `converged/` to change the next run; edit the authored inputs in `0/`.

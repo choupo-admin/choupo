@@ -505,7 +505,6 @@ try
         // The case system lives in constant/thermoPhysPropDict (the *Dict
         // convention: flowsheetDict / solverDict / controlDict).
         std::string pkgPath = resolveUp("constant/thermoPhysPropDict");
-        bool deprecatedName = false;
         if (!fs::exists(pkgPath) && fs::exists(resolveUp("constant/propertyDict")))
             throw std::runtime_error(
                 "this case carries a constant/propertyDict -- the case grammar is"
@@ -514,16 +513,13 @@ try
         if (fs::exists(pkgPath))
         {
             auto sel = Dictionary::fromFile(pkgPath);
-            if (deprecatedName)
-                std::cout << "  [deprecated] constant/propertyDict -- rename it"
-                             " to constant/propertyDict (the property package"
-                             " is more than thermo).\n";
             // ACTIVE-CHEMISTRY SELECTION (constant/chemistryDict): the same
             // context chain, nearest owner wins; optional.
             chem = resolveChemistryContext(
                 fs::path(pkgPath).parent_path().string());
             if (chem.present) chemPtr = &chem;
-            // A case-level propertyDict may itself `inherit` a parent context: a
+            // A case-level thermoPhysPropDict may itself `inherit` a parent
+            // context: a
             // projected local unit run (choupo-project) points at the plant
             // context this way, copying no property data.
             if (sel->found("inherits"))

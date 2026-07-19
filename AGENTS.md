@@ -19,7 +19,7 @@ when one or two focused files answer the question.
 | `overview.md`     | What Choupo is, the 4 binaries, and the governing contracts. |
 | `dict-syntax.md`  | Before writing any dict.  Dict syntax, units, `$variables`. |
 | `case-layout.md`  | When organising the directory tree (`system/`, `constant/`, `.cho`). |
-| `thermo.md`       | When composing `constant/propertyDict` (components + γ-φ models). |
+| `thermo.md`       | When composing `constant/thermoPhysPropDict` (components + γ-φ models). |
 | `unit-ops.md`     | The catalogue.  Per unit op: required + optional fields, an example. |
 | `components.md`   | The shipped component / material / membrane / Henry inventory. |
 | `curation-protocol.md` | When a compound LACKS data a model needs.  Build the case WITH the student: read the gap report, advise, offer bounded choices, invoke deterministic estimators, NEVER invent numbers. |
