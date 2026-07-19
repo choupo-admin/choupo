@@ -10,7 +10,12 @@
   ctrl01_cstr_temp_control  --  the canonical first choupoCtrl test.
 
   Process:
-      Continuous CSTR with first-order reaction compA → compB.  Feed
+      Continuous CSTR with first-order reaction compA → compB -- an
+      ISOMERISATION: both stand-ins carry MW 30, so the pseudo-reaction
+      conserves mass exactly and the run-end material ledger closes to
+      machine precision.  (The element balance stays honestly UNAVAILABLE:
+      compA/compB are numerical stand-ins with no real formula, and the
+      ledger says so by name instead of fabricating atoms.)  Feed
       is pure compA at 320 K, 5×10⁻⁵ kmol/s; reactor volume 1 L; mild
       exotherm (ΔH_rxn = −50 kJ/mol).  Without control the reactor
       settles a few K above the inlet temperature (small reaction

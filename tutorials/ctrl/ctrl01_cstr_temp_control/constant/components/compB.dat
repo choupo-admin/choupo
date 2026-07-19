@@ -17,7 +17,7 @@ name        compB;
 formula     B;
 CAS         00-00-0;
 
-MW          50.0;
+MW          30.0;
 Tc          550.0;
 Pc          40.0;
 omega       0.20;
