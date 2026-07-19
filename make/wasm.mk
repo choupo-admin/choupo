@@ -1,13 +1,26 @@
 # =============================================================================
-#  Choupo  --  WebAssembly build (v0.25+)
+#  Choupo  --  WebAssembly build (v0.25+; incremental objects 2026-07-19)
 #
 #  Compiles the four Choupo binaries to WebAssembly via Emscripten,
 #  one .wasm per binary so each can be loaded independently by the
 #  worker based on the case's `application` field.
 #
-#  The curated `data/standards/` tree (components, materials,
-#  binaryPairs) is embedded into every .wasm; case dicts are written
-#  into MEMFS by JS at runtime.
+#  INCREMENTAL: every source compiles ONCE into a per-mode object tree
+#  (build/wasm/<mode>/obj/**.o with -MMD -MP dependency files, separate
+#  from the native GCC objects); the four targets LINK the same common
+#  objects plus their own application objects.  The common core is never
+#  compiled four times, a touched header recompiles only its dependents,
+#  and an application-only edit relinks only that target.  The four
+#  binaries stay separate modules with their own EXPORT_NAME -- nothing
+#  is merged, and although no static-init registration exists to be
+#  discarded (Choupo registers builtins EXPLICITLY), the link still uses
+#  the explicit object list, never an archive.
+#
+#  The curated `data/standards/` tree (components, materials, pairs) is
+#  embedded into every .wasm at LINK time; a stamp file depends on every
+#  FILE under data/standards, so editing a .dat relinks all four and
+#  refreshes the embedded MEMFS (the directory-mtime gap is closed).
+#  Case dicts are written into MEMFS by JS at runtime.
 #
 #  Outputs (gui/public/wasm/):
 #      choupoSolve.{js,wasm}    steady-state solver
@@ -23,6 +36,8 @@
 EMXX       ?= em++
 WASM_MODE  ?= release
 WASM_DIR   := gui/public/wasm
+WASM_BUILD := build/wasm/$(WASM_MODE)
+WASM_OBJ   := $(WASM_BUILD)/obj
 
 ifeq ($(WASM_MODE),debug)
     WASM_OPT := -O0 -g3 -gsource-map -sASSERTIONS=1 -sSAFE_HEAP=1
@@ -30,10 +45,13 @@ else
     WASM_OPT := -O2
 endif
 
-# Shared Emscripten flags.  See CLAUDE.md §13 for the load-bearing
-# rationale of each flag (Emscripten 3.1.6 quirks documented there).
-WASM_FLAGS_BASE := \
-	-std=c++17 -fexceptions $(WASM_OPT) -Isrc \
+# Compile-time flags (per-object).  Exceptions MUST match the link.
+WASM_CXXFLAGS := -std=c++17 -fexceptions $(WASM_OPT) -Isrc -MMD -MP
+
+# Link-time flags.  See CLAUDE.md §13 for the load-bearing rationale of
+# each flag (Emscripten 3.1.6 quirks documented there).
+WASM_LDFLAGS := \
+	-std=c++17 -fexceptions $(WASM_OPT) \
 	-sWASM=1 \
 	-sALLOW_MEMORY_GROWTH=1 \
 	-sMODULARIZE=1 \
@@ -46,18 +64,23 @@ WASM_FLAGS_BASE := \
 
 .PHONY: wasm wasm-gui wasm-steady-props wasm-solve wasm-clean
 
-# Deferred (`=`, not `:=`) because wasm.mk is included BEFORE the
-# top-level Makefile defines SRCS.  Each binary's source list is:
-#     LIB_SRCS + that binary's own src/applications/<binary>/* sources
-# We compute that on-demand.
-WASM_LIB_SRCS = $(filter-out src/applications/%, $(SRCS))
+# Immediate (`:=`) and SELF-CONTAINED: wasm.mk is included BEFORE the
+# top-level Makefile defines SRCS, and rule PREREQUISITES expand at parse
+# time -- the old deferred variables silently expanded EMPTY there, so the
+# outputs never depended on the sources at all (the "wasm-clean && make
+# wasm" folklore).  Finding the sources here makes the dependency real.
+WASM_SRCS     := $(shell find src -name '*.cpp')
+WASM_LIB_SRCS := $(filter-out src/applications/%, $(WASM_SRCS))
+WASM_APP_SRCS = $(filter src/applications/$(1)/%, $(WASM_SRCS))
 
-WASM_APP_SRCS = $(filter src/applications/$(1)/%, $(SRCS))
+# Source -> per-mode object path (src/a/b.cpp -> $(WASM_OBJ)/src/a/b.o).
+WASM_OBJ_OF = $(patsubst %.cpp,$(WASM_OBJ)/%.o,$(1))
 
-WASM_SOLVE_SRCS = $(WASM_LIB_SRCS) $(call WASM_APP_SRCS,choupoSolve)
-WASM_BATCH_SRCS = $(WASM_LIB_SRCS) $(call WASM_APP_SRCS,choupoBatch)
-WASM_CTRL_SRCS  = $(WASM_LIB_SRCS) $(call WASM_APP_SRCS,choupoCtrl)
-WASM_PROPS_SRCS = $(WASM_LIB_SRCS) $(call WASM_APP_SRCS,choupoProps)
+WASM_LIB_OBJS   := $(call WASM_OBJ_OF,$(WASM_LIB_SRCS))
+WASM_SOLVE_OBJS := $(call WASM_OBJ_OF,$(call WASM_APP_SRCS,choupoSolve))
+WASM_BATCH_OBJS := $(call WASM_OBJ_OF,$(call WASM_APP_SRCS,choupoBatch))
+WASM_CTRL_OBJS  := $(call WASM_OBJ_OF,$(call WASM_APP_SRCS,choupoCtrl))
+WASM_PROPS_OBJS := $(call WASM_OBJ_OF,$(call WASM_APP_SRCS,choupoProps))
 
 WASM_SOLVE_JS := $(WASM_DIR)/choupoSolve.js
 WASM_BATCH_JS := $(WASM_DIR)/choupoBatch.js
@@ -66,53 +89,66 @@ WASM_PROPS_JS := $(WASM_DIR)/choupoProps.js
 
 wasm: $(WASM_SOLVE_JS) $(WASM_BATCH_JS) $(WASM_CTRL_JS) $(WASM_PROPS_JS)
 
-# The GUI's FOUR binaries: choupoSolve (steady flowsheets) + choupoProps (the
-# PropsView) + choupoBatch (batch + recipes) + choupoCtrl (dynamic + control).
-# The GUI dispatches by controlDict.application, so all four must be present in
-# gui/public/wasm/ for a transient case (ctrl03 / batch04) to run in-browser
-# and offer the time scrubber.  Same set as `wasm`; the alias is kept because
-# the bin/ scripts + docs refer to it as THE GUI rebuild.
+# The GUI's FOUR binaries: the GUI dispatches by controlDict.application,
+# so all four must be present in gui/public/wasm/ for a transient case
+# (ctrl03 / batch04) to run in-browser and offer the time scrubber.  Same
+# set as `wasm`; the alias is kept because the bin/ scripts + docs refer
+# to it as THE GUI rebuild.
 wasm-gui: $(WASM_SOLVE_JS) $(WASM_PROPS_JS) $(WASM_BATCH_JS) $(WASM_CTRL_JS)
 
-# The steady + props pair alone -- the fast rebuild when only choupoSolve /
-# choupoProps changed (the common src/ edit) and the dynamic binaries are
-# already current in gui/public/wasm/.
+# The steady + props pair alone -- the fast relink when the dynamic
+# binaries are already current in gui/public/wasm/.
 wasm-steady-props: $(WASM_SOLVE_JS) $(WASM_PROPS_JS)
 
 # Steady-state binary alone (choupoSolve only).
 wasm-solve: $(WASM_SOLVE_JS)
 
-# Each binary's factory function gets a UNIQUE name via -sEXPORT_NAME
-# so that loading multiple .wasm files into the same worker scope
-# does not clobber the global.  The worker picks the right factory
-# by name based on which .wasm it just fetched.
-$(WASM_SOLVE_JS): $(WASM_SOLVE_SRCS) data/standards | $(WASM_DIR)
-	@printf "  EMXX  %s  (%d sources, %s)\n" $@ $(words $(WASM_SOLVE_SRCS)) $(WASM_MODE)
-	@$(EMXX) $(WASM_FLAGS_BASE) -sEXPORT_NAME=createChoupoSolve \
-		-o $@ $(WASM_SOLVE_SRCS)
-	@printf "  -->   wasm: %s\n" $(@:.js=.wasm)
+# ---- per-object compilation (the incremental core) -------------------------
+$(WASM_OBJ)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	@printf "  EMXX  %s\n" $<
+	@$(EMXX) $(WASM_CXXFLAGS) -c $< -o $@
 
-$(WASM_BATCH_JS): $(WASM_BATCH_SRCS) data/standards | $(WASM_DIR)
-	@printf "  EMXX  %s  (%d sources, %s)\n" $@ $(words $(WASM_BATCH_SRCS)) $(WASM_MODE)
-	@$(EMXX) $(WASM_FLAGS_BASE) -sEXPORT_NAME=createChoupoBatch \
-		-o $@ $(WASM_BATCH_SRCS)
-	@printf "  -->   wasm: %s\n" $(@:.js=.wasm)
+# ---- data/standards stamp: any FILE change relinks + re-embeds -------------
+#  A directory prerequisite misses in-place .dat edits (the dir mtime does
+#  not change); the stamp depends on every file, so the embedded MEMFS can
+#  never go stale behind an unchanged directory timestamp.
+WASM_STANDARDS_FILES := $(shell find data/standards -type f 2>/dev/null)
+WASM_STANDARDS_STAMP := $(WASM_BUILD)/standards.stamp
 
-$(WASM_CTRL_JS): $(WASM_CTRL_SRCS) data/standards | $(WASM_DIR)
-	@printf "  EMXX  %s  (%d sources, %s)\n" $@ $(words $(WASM_CTRL_SRCS)) $(WASM_MODE)
-	@$(EMXX) $(WASM_FLAGS_BASE) -sEXPORT_NAME=createChoupoCtrl \
-		-o $@ $(WASM_CTRL_SRCS)
-	@printf "  -->   wasm: %s\n" $(@:.js=.wasm)
+$(WASM_STANDARDS_STAMP): $(WASM_STANDARDS_FILES)
+	@mkdir -p $(dir $@)
+	@touch $@
 
-$(WASM_PROPS_JS): $(WASM_PROPS_SRCS) data/standards | $(WASM_DIR)
-	@printf "  EMXX  %s  (%d sources, %s)\n" $@ $(words $(WASM_PROPS_SRCS)) $(WASM_MODE)
-	@$(EMXX) $(WASM_FLAGS_BASE) -sEXPORT_NAME=createChoupoProps \
-		-o $@ $(WASM_PROPS_SRCS)
+# ---- link rules: common objects + the app's own, unique EXPORT_NAME --------
+#  Each binary's factory gets a UNIQUE name via -sEXPORT_NAME so loading
+#  multiple .wasm files into one worker scope does not clobber the global.
+define WASM_LINK
+	@printf "  EMLD  %s  (%d objects, %s)\n" $@ $(words $(filter %.o,$^)) $(WASM_MODE)
+	@$(EMXX) $(WASM_LDFLAGS) -sEXPORT_NAME=$(1) -o $@ \
+		$(filter %.o,$^)
 	@printf "  -->   wasm: %s\n" $(@:.js=.wasm)
+endef
+
+$(WASM_SOLVE_JS): $(WASM_LIB_OBJS) $(WASM_SOLVE_OBJS) $(WASM_STANDARDS_STAMP) | $(WASM_DIR)
+	$(call WASM_LINK,createChoupoSolve)
+
+$(WASM_BATCH_JS): $(WASM_LIB_OBJS) $(WASM_BATCH_OBJS) $(WASM_STANDARDS_STAMP) | $(WASM_DIR)
+	$(call WASM_LINK,createChoupoBatch)
+
+$(WASM_CTRL_JS): $(WASM_LIB_OBJS) $(WASM_CTRL_OBJS) $(WASM_STANDARDS_STAMP) | $(WASM_DIR)
+	$(call WASM_LINK,createChoupoCtrl)
+
+$(WASM_PROPS_JS): $(WASM_LIB_OBJS) $(WASM_PROPS_OBJS) $(WASM_STANDARDS_STAMP) | $(WASM_DIR)
+	$(call WASM_LINK,createChoupoProps)
 
 $(WASM_DIR):
 	@mkdir -p $@
 
+# ---- header dependencies (generated by -MMD -MP) ---------------------------
+-include $(shell find $(WASM_OBJ) -name '*.d' 2>/dev/null)
+
 wasm-clean:
 	@rm -f $(WASM_DIR)/choupo*.js $(WASM_DIR)/choupo*.wasm \
 	       $(WASM_DIR)/choupo*.js.map
+	@rm -rf build/wasm
