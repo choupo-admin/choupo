@@ -277,3 +277,15 @@ model.  Reach for a per-unit override only when the physics demands it (a real
 gas in one compressor; the ethanol-water azeotrope in a recovery column whose
 plant otherwise runs an electrolyte model).  When you do, expect the printed
 `H` to step at the boundary — that step is information, not a bug.
+
+## Balance diagnostics (2607)
+
+Three levels, engine-owned: total MASS, per-ELEMENT atoms (the true
+invariant of a reacting system), and energy.  Steady: the `elementBalance`
+report (plant boundary, kmol-atom/h; `spreadsheet` carries the sheet).
+Batch: `kpis.campaign` (mass/elements/energy with availability).  Dynamic
+(choupoCtrl): the accepted-step ledger writes `balanceTrajectory.csv` +
+`.meta`; the dynamicCSTR's physical-energy claim honestly refuses (its ODE
+is not the derivative of a canonical U/H).  All three ride ONE formula
+parser (`elementalComposition` props op is its glass-box surface); an
+unparseable formula withholds only the elemental claim, naming itself.

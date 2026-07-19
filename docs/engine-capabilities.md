@@ -162,10 +162,39 @@ flowsheet.
 ## 6. Reports chain
 
 `controlDict.reports {... }` block ships `streamTable` / `massBalance` /
-`energyBalance` / `utilities` / `utilityAllocation` / `profiles` / `computed` /
-`design` / `economics` / `energyStreams` / `spreadsheet` (consolidated coloured
-`.ods`), all selectable per case.  `utilityAllocation` sizes each duty to a
-utility by T-level; its result is also emitted in the run JSON (the GUI reads it).
+`elementBalance` / `energyBalance` / `utilities` / `utilityAllocation` /
+`profiles` / `computed` / `design` / `economics` / `energyStreams` /
+`spreadsheet` (consolidated coloured `.ods`), all selectable per case.
+`utilityAllocation` sizes each duty to a utility by T-level; its result is
+also emitted in the run JSON (the GUI reads it).
+
+**Element balance (steady)** — `elementBalance` is the plant-boundary ATOM
+conservation diagnostic, its own artefact beside the mass balance (rows are
+ELEMENTS in kmol-atom/h; the mass balance's rows are components — different
+domains).  In a reacting flowsheet the species change across the boundary but
+the atoms cannot: this catches a chemically wrong stoichiometry a total-mass
+balance would bless.  Atoms come from THE shared formula parser
+(`src/thermo/ElementComposition` — nested groups, hydrates `:`/`·`, ionic
+charge, D/T isotopes; the `elementalComposition` choupoProps op is its
+glass-box surface).  A species whose formula refuses withholds ONLY the
+elemental claim, naming itself; the mass balance stays available.  The
+`spreadsheet` report carries the matching "Element Balance" sheet.
+
+**Dynamic balance ledger (choupoCtrl)** — the open-system laws
+`M(t)−M(0) = ∫(ṁ_in−ṁ_out)dt` and, per element, `N_e(t)−N_e(0) = ∫(...)dt`,
+integrated IN the engine's time loop by trapezoids on ACCEPTED states (the
+adaptive integrator commits each accepted step before the ledger sees it; the
+fixed-step order is controller → left sample → step → right sample, so no
+area crosses an MV discontinuity).  Artefacts: `balanceTrajectory.csv` (wide:
+mass + one residual series per element, starting at t = startTime) + the
+`balanceTrajectory.meta` sidecar with per-claim availability and reasons;
+KPIs under `kpis.balance`.  Claims are honest: toy formulas withhold the
+elemental claim; the current `dynamicCSTR` energy equation is a
+Cp/convective model, not the exact derivative of a stored U(n,T) or H(n,T),
+so the physical first law stays UNAVAILABLE with that named reason until the
+model is reformulated.  The GUI's "Dynamic balance" and batch "Campaign
+balance" plots draw these engine-owned numbers verbatim — no physics in the
+front-end.
 
 ---
 

@@ -360,6 +360,16 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   `choupoCtrl` (dynamic + control loops), `choupoProps` (property eval + the
   PROPS BENCH).
 
+**Balance diagnostics, three levels (2026-07-19): total mass · per-element
+atoms · energy — engine-owned, GUI only draws.**  ONE shared formula parser
+(`src/thermo/ElementComposition`; `elementalComposition` props op = its
+glass-box surface); steady `elementBalance` report (boundary atoms, its own
+artefact beside massBalance); choupoCtrl accepted-step ledger
+(`BalanceSnapshot` contract, `balanceTrajectory.csv` + `.meta`); the
+dynamicCSTR physical-energy claim honestly refuses (Cp/convective ODE ≠
+derivative of canonical U/H) until the model is reformulated.  Gates:
+check_element_composition / check_element_balance / check_ctrl_balance.
+
 **Batch campaign LEDGERS — material + energy (built 2026-07-11, forum
 #99/#101/#102).**  choupoBatch carries two structured ledgers: the MATERIAL
 ledger (one `TransferRecord` per material edge, per-package enthalpy at each
