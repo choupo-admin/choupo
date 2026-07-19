@@ -31,9 +31,24 @@ export function proposedCataloguePlugin(): Plugin {
     resolveId(id) {
       return id === PROPOSED_CATALOGUE_ID ? RESOLVED_ID : null;
     },
+    // Watch the DIRECTORY through the dev server's chokidar watcher, never
+    // through addWatchFile: a directory registered as a module dependency
+    // makes Vite's dev import-analysis try to RESOLVE it as an absolute
+    // import and the virtual module 500s -- the Explore chunk then fails to
+    // load in the browser (production builds were unaffected; dev only).
+    configureServer(server) {
+      server.watcher.add(directory);
+      const invalidate = (path: string) => {
+        if (!path.startsWith(directory)) return;
+        const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
+        if (mod) server.moduleGraph.invalidateModule(mod);
+      };
+      server.watcher.on("add", invalidate);
+      server.watcher.on("unlink", invalidate);
+      server.watcher.on("change", invalidate);
+    },
     load(id) {
       if (id !== RESOLVED_ID) return null;
-      this.addWatchFile(directory);
       const bodies = existsSync(directory)
         ? readdirSync(directory)
             .filter((name) => name.endsWith(".dat"))

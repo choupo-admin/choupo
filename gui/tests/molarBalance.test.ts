@@ -18,41 +18,44 @@ const s = (name: string, role: StreamResult["role"], F: number,
      ...(solids ? { solids } : {}) }) as StreamResult;
 
 describe("molarBalanceView", () => {
-  it("non-reactive: IN = OUT closes", () => {
+  it("non-reactive boundary: net = 0 (the number speaks; no seal exists)", () => {
     const v = molarBalanceView(
       [s("feed", "feed", 0.02778), s("vap", "product", 0.02122),
        s("liq", "product", 0.00656), s("mid", "intermediate", 99)],
-      {}, false);
-    expect(v.reactive).toBe(false);
+      {});
     expect(v.inKmolS).toBeCloseTo(0.02778, 9);
     expect(v.netKmolS).toBeCloseTo(0, 9);
   });
 
-  it("reactive: IN != OUT is a NET CHANGE, never an alarm state", () => {
-    // toluene + H2 -> benzene + CH4 keeps moles here, but a generic
-    // reacting case may not: A -> 2B doubles them.
+  it("reacting boundary: IN != OUT is a NET CHANGE, never an alarm state"
+     + " -- the view carries no reactive/closure boolean at all", () => {
+    // A -> 2B doubles the moles legally.
     const v = molarBalanceView(
-      [s("A", "feed", 1.0), s("B", "product", 2.0)], {}, true);
-    expect(v.reactive).toBe(true);
+      [s("A", "feed", 1.0), s("B", "product", 2.0)], {});
     expect(v.netKmolS).toBeCloseTo(1.0, 12);   // exposed as net, not closure
+    expect("reactive" in v).toBe(false);
+    expect("closed" in v).toBe(false);
   });
 
   it("solids convert kg/s -> kmol/s via MW", () => {
     const v = molarBalanceView(
       [s("brine", "feed", 0.01),
        s("cake", "product", 0.002, { halite: 0.05844 })],  // 1e-3 kmol/s
-      { halite: 58.44 }, false);
+      { halite: 58.44 });
     expect(v.outKmolS).toBeCloseTo(0.002 + 0.001, 9);
   });
 
   it("a solid with a missing MW is PARTIAL naming the component -- never a"
-     + " silent omission", () => {
+     + " silent omission, and a zero net earns no seal", () => {
     const v = molarBalanceView(
-      [s("feed", "feed", 0.01),
+      [s("feed", "feed", 0.002),
        s("cake", "product", 0.002, { mysterySolid: 0.05 })],
-      {}, false);
+      {});
     expect(v.partialMissingMW).toEqual(["mysterySolid"]);
     expect(v.outKmolS).toBeCloseTo(0.002, 12);   // the known part only
+    // net of the KNOWN part is zero, yet the view exposes PARTIAL -- the
+    // renderer never shows a closure seal while partialMissingMW is set.
+    expect(v.netKmolS).toBeCloseTo(0, 12);
   });
 });
 
@@ -89,5 +92,28 @@ describe("elementBalanceSurface", () => {
 
   it("absent artefacts -> not present", () => {
     expect(elementBalanceSurface(undefined, undefined).present).toBe(false);
+  });
+
+  it("CAUSAL: a malformed numeric row withdraws the claim -- never a FULL"
+     + " badge over skipped rows", () => {
+    const bad = CSV + "N,not-a-number,3,0,100.0\n";
+    const v = elementBalanceSurface(bad, META_FULL);
+    expect(v.status).toBe("UNAVAILABLE");
+    expect(v.rows).toEqual([]);
+    expect(v.malformedReason).toContain("row");
+  });
+
+  it("CAUSAL: a table without the canonical header is malformed WITH a"
+     + " reason", () => {
+    const v = elementBalanceSurface("foo,bar\n1,2\n", META_FULL);
+    expect(v.status).toBe("UNAVAILABLE");
+    expect(v.malformedReason).toContain("header");
+  });
+
+  it("CAUSAL: a non-finite partialSpecies fraction withdraws the claim", () => {
+    const meta = 'key,value\nstatus,PARTIAL\npartialSpecies.petCut,NaN\n';
+    const v = elementBalanceSurface(CSV, meta);
+    expect(v.status).toBe("UNAVAILABLE");
+    expect(v.malformedReason).toContain("partialSpecies");
   });
 });

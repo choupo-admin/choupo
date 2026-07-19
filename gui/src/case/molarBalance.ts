@@ -28,10 +28,11 @@ License
   molarBalance -- the PLANT-BOUNDARY total molar flows, two numbers: molar
   IN and molar OUT (fluid F plus particulate solids converted kg/s -> kmol/s
   by MW).  NO physical lie: total moles are NOT a universal invariant in a
-  reacting flowsheet, so the view exposes OUT - IN as a NET CHANGE; the word
-  "closure" applies only to a non-reactive case.  A solid whose MW is
-  missing makes the claim PARTIAL naming the component -- never a silent
-  omission.
+  reacting flowsheet, and whether a case reacts cannot be inferred from the
+  presence of a reactions file (reactive columns and yield ops declare
+  chemistry elsewhere) -- so the view ALWAYS exposes OUT - IN as a NET
+  CHANGE and never claims a closure.  A solid whose MW is missing makes the
+  claim PARTIAL naming the component -- never a silent omission.
 \*---------------------------------------------------------------------------*/
 
 import type { StreamResult } from "../adapters/SolverAdapter.js";
@@ -41,9 +42,6 @@ export interface MolarBalanceView {
   inKmolS: number;
   outKmolS: number;
   netKmolS: number;               // OUT - IN: a net change, not a residual
-  /** The case declares reactions: total moles are not conserved, so the
-   *  view must speak of "net molar change", never "closure". */
-  reactive: boolean;
   /** Solid-carrying components whose MW is missing: their solid moles are
    *  NOT included and the claim is PARTIAL naming them. */
   partialMissingMW: string[];
@@ -52,11 +50,10 @@ export interface MolarBalanceView {
 export function molarBalanceView(
   streams: StreamResult[],
   componentMolarMass: { [component: string]: number } | undefined,
-  reactive: boolean,
 ): MolarBalanceView {
   const view: MolarBalanceView = {
     present: false, inKmolS: 0, outKmolS: 0, netKmolS: 0,
-    reactive, partialMissingMW: [],
+    partialMissingMW: [],
   };
   const missing = new Set<string>();
   const totalOf = (s: StreamResult): number => {

@@ -147,7 +147,7 @@ export function PlotsWorkspace() {
           { key: "dynamicBalance", label: "Global balances (Ctrl)", available: hasDynBalance,
             hint: "The choupoCtrl GLOBAL balance ledger over time (mass inventory + conservation residuals per element), integrated on accepted steps in the engine.  Withheld claims render as named states." },
           { key: "molarBalance",  label: "Molar balance",  available: hasStreams,
-            hint: "Two plant-boundary totals: molar IN and molar OUT (fluid + solids via MW).  In a reacting flowsheet the difference is a NET CHANGE, not a closure -- the chemical invariant is the element balance." },
+            hint: "Two plant-boundary totals: molar IN and molar OUT (fluid + solids via MW).  The difference is ALWAYS shown as a net change, never a closure -- moles need not be conserved through reactions; the chemical invariant is the element balance." },
           { key: "elementBalance", label: "Element balance", available: hasElemBalance,
             hint: "The engine's plant-boundary ELEMENT conservation report (kmol-atom/h), with its FULL / PARTIAL / UNAVAILABLE status.  Add elementBalance { } to controlDict.reports to produce it." },
           { key: "massBalance",   label: "Mass balance",   available: hasStreams,
@@ -265,7 +265,6 @@ export function PlotsWorkspace() {
           streams={result.streams}
           {...(result.componentMolarMass !== undefined
             ? { componentMolarMass: result.componentMolarMass } : {})}
-          reactive={Boolean(useStore.getState().caseFiles.reactions)}
           flowUnit={prefs.flow}
         />
       );

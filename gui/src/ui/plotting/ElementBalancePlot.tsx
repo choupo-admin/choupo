@@ -62,6 +62,9 @@ export function ElementBalancePlot({ csv, meta }: ElementBalancePlotProps) {
     return (
       <Stack align="center" justify="center" h="100%" gap="xs">
         <Text c="orange" fw={600}>Element balance UNAVAILABLE</Text>
+        {v.malformedReason && (
+          <Text c="dimmed" size="sm">{v.malformedReason}</Text>
+        )}
         {v.refused.map((r) => (
           <Text key={r.species} c="dimmed" size="sm" ta="center" maw={480}>
             {r.species}: {r.reason}

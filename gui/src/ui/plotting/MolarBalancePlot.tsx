@@ -29,10 +29,11 @@ License
 /*---------------------------------------------------------------------------*\
   MolarBalancePlot -- TWO plant-boundary totals: molar IN and molar OUT
   (fluid + solids via MW).  No species stacking (that lives in the stream
-  tables) and NO physical lie: in a reacting flowsheet total moles are not
-  conserved, so the difference reads "net molar change (OUT − IN)"; the
-  word "closure" appears only for a non-reactive case.  A solid with a
-  missing MW makes the claim PARTIAL naming the component.
+  tables) and NO physical lie: the difference is ALWAYS "net molar change
+  (OUT − IN)" -- whether a case reacts cannot be inferred here, and moles
+  need not be conserved through reactions; the chemical invariant is the
+  element balance.  A solid with a missing MW makes the claim PARTIAL
+  naming the component, and a partial sum never earns any seal.
 \*---------------------------------------------------------------------------*/
 
 import { Badge, Group, Stack, Text } from "@mantine/core";
@@ -45,14 +46,13 @@ import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
 interface MolarBalancePlotProps {
   streams: StreamResult[];
   componentMolarMass?: { [component: string]: number };
-  reactive: boolean;
   flowUnit: FlowUnit;
 }
 
 export function MolarBalancePlot({
-  streams, componentMolarMass, reactive, flowUnit,
+  streams, componentMolarMass, flowUnit,
 }: MolarBalancePlotProps) {
-  const v = molarBalanceView(streams, componentMolarMass, reactive);
+  const v = molarBalanceView(streams, componentMolarMass);
 
   if (!v.present) {
     return (
@@ -84,24 +84,19 @@ export function MolarBalancePlot({
   }];
 
   const net = v.netKmolS * f;
-  const nonReactiveClosed = !v.reactive
-    && Math.abs(v.netKmolS) <= 1e-9 * Math.max(v.inKmolS, v.outKmolS, 1e-30);
+  const partial = v.partialMissingMW.length > 0;
 
   return (
     <Stack gap="xs" h="100%" style={{ minHeight: 0 }}>
       <Group gap="xs" wrap="wrap">
-        {v.reactive ? (
-          <Badge variant="light" color="blue">
-            net molar change (OUT − IN) {fmt(net)} {yUnit} — moles are NOT
-            conserved through reactions; the chemical invariant is the
-            ELEMENT balance
-          </Badge>
-        ) : (
-          <Badge variant="light" color={nonReactiveClosed ? "teal" : "yellow"}>
-            non-reactive closure: OUT − IN = {fmt(net)} {yUnit}
-          </Badge>
-        )}
-        {v.partialMissingMW.length > 0 && (
+        {/* ALWAYS a net change -- whether the case reacts cannot be
+            inferred here, and a PARTIAL sum never earns a seal. */}
+        <Badge variant="light" color="blue">
+          net molar change (OUT − IN){partial ? ", known part only" : ""}:
+          {" "}{fmt(net)} {yUnit} — moles need not be conserved through
+          reactions; the chemical invariant is the ELEMENT balance
+        </Badge>
+        {partial && (
           <Badge variant="light" color="orange">
             PARTIAL — solids without MW excluded:{" "}
             {v.partialMissingMW.join(", ")}

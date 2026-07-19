@@ -41,6 +41,10 @@ export interface ElementBalanceRow {
 export interface ElementBalanceSurface {
   present: boolean;
   status: "FULL" | "PARTIAL" | "UNAVAILABLE";
+  /** A malformed artefact (bad numeric row, bad header, non-finite partial
+   *  fraction) WITHDRAWS the claim with this named reason -- the same
+   *  contract as the ctrl trajectory parser; never a silent skip. */
+  malformedReason?: string;
   /** qualified-key detail rows from the .meta sidecar */
   refused: { species: string; reason: string }[];
   partial: { species: string; unaccounted: number }[];
@@ -71,9 +75,17 @@ export function elementBalanceSurface(
         out.status = val;
       else if (key.startsWith("refusedSpecies."))
         out.refused.push({ species: key.slice(15), reason: val });
-      else if (key.startsWith("partialSpecies."))
-        out.partial.push({ species: key.slice(15),
-                           unaccounted: Number(val) });
+      else if (key.startsWith("partialSpecies.")) {
+        const un = Number(val);
+        if (!Number.isFinite(un) || un < 0) {
+          out.status = "UNAVAILABLE";
+          out.malformedReason = `malformed sidecar (partialSpecies.`
+            + `${key.slice(15)} = ${val})`;
+          out.rows = [];
+          return out;
+        }
+        out.partial.push({ species: key.slice(15), unaccounted: un });
+      }
       else if (key.startsWith("missingStream."))
         out.missingStreams.push(key.slice(14));
     }
@@ -90,17 +102,32 @@ export function elementBalanceSurface(
       const iIn = header.indexOf("in_kmol_atom_h");
       const iOut = header.indexOf("out_kmol_atom_h");
       const iC = header.indexOf("closure_pct");
-      if (iE >= 0 && iIn >= 0 && iOut >= 0 && iC >= 0) {
-        for (let li = 1; li < lines.length; ++li) {
-          const c = lines[li]!.split(",");
-          const inV = Number(c[iIn]);
-          const outV = Number(c[iOut]);
-          const cl = Number(c[iC]);
-          if (!Number.isFinite(inV) || !Number.isFinite(outV)
-              || !Number.isFinite(cl)) continue;
-          out.rows.push({ element: c[iE]!, inKmolAtomH: inV,
-                          outKmolAtomH: outV, closurePct: cl });
+      if (iE < 0 || iIn < 0 || iOut < 0 || iC < 0) {
+        // A table without the canonical header is MALFORMED with a reason,
+        // never a silent not-drawn.
+        out.status = "UNAVAILABLE";
+        out.malformedReason =
+          "malformed elementBalance.csv (missing canonical header)";
+        return out;
+      }
+      for (let li = 1; li < lines.length; ++li) {
+        const c = lines[li]!.split(",");
+        const inV = Number(c[iIn]);
+        const outV = Number(c[iOut]);
+        const cl = Number(c[iC]);
+        if (!Number.isFinite(inV) || !Number.isFinite(outV)
+            || !Number.isFinite(cl)) {
+          // A malformed numeric row WITHDRAWS the claim -- a FULL badge
+          // over silently-skipped rows is exactly the lie this surface
+          // exists to prevent.
+          out.status = "UNAVAILABLE";
+          out.malformedReason =
+            `malformed elementBalance.csv (row ${li + 1})`;
+          out.rows = [];
+          return out;
         }
+        out.rows.push({ element: c[iE]!, inKmolAtomH: inV,
+                        outKmolAtomH: outV, closurePct: cl });
       }
     }
   }
