@@ -82,6 +82,28 @@ describe("dynamicBalanceView", () => {
     expect(v.present).toBe(true);                         // mass still drawn
   });
 
+  it("CAUSAL: a malformed ELEMENT cell withdraws only the elemental claim"
+     + " -- mass stays drawn", () => {
+    const bad = TRAJ + "2.0,3.6002e-01,3e-03,2.99e-03,2e-08,"
+      + "1.2002e-02,not-a-number,2.4004e-02,8e-10\n";
+    const v = dynamicBalanceView(bad, META);
+    expect(v.present).toBe(true);
+    expect(v.materialAvailable).toBe(true);
+    expect(v.t).toEqual([0, 1, 2]);           // the mass series is intact
+    expect(v.massResidualKg[2]).toBeCloseTo(2e-8, 12);
+    expect(v.elementsAvailable).toBe(false);
+    expect(v.elementsReason).toContain("element C");
+    expect(Object.keys(v.elementResiduals)).toEqual([]);  // no partial claim
+  });
+
+  it("CAUSAL: a header without the mandatory columns is malformed WITH a"
+     + " reason", () => {
+    const v = dynamicBalanceView("t,foo\n1,2\n", META);
+    expect(v.present).toBe(false);
+    expect(v.materialAvailable).toBe(false);
+    expect(v.malformedReason).toContain("mandatory columns");
+  });
+
   it("CAUSAL: a malformed numeric row withdraws the claim, never a silent"
      + " skip", () => {
     const badRow = TRAJ + "2.0,not-a-number,1e-3,1e-3,0,1e-2,0,2e-2,0\n";

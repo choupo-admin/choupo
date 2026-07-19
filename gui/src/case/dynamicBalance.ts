@@ -87,7 +87,13 @@ export function dynamicBalanceView(
   const it = col("t");
   const iInv = col("mass_inventory_kg");
   const iRes = col("mass_residual_kg");
-  if (it < 0 || iInv < 0 || iRes < 0) return view;
+  if (it < 0 || iInv < 0 || iRes < 0) {
+    // A trajectory without the three mandatory columns is MALFORMED, with a
+    // reason -- never a silent not-present that keeps availability claims.
+    view.materialAvailable = false;
+    view.malformedReason = "malformed trajectory (missing mandatory columns)";
+    return view;
+  }
 
   // The metadata is SOVEREIGN: when the engine withheld the elemental
   // claim, elem_* columns in a contradictory CSV are never drawn.
@@ -121,13 +127,16 @@ export function dynamicBalanceView(
     for (const { symbol, idx } of elemCols) {
       const v = Number(cells[idx]);
       if (!Number.isFinite(v)) {
-        view.materialAvailable = false;
-        view.malformedReason = `malformed trajectory (row ${li + 1},`
+        // Three-level isolation (the same contract as the engine): a
+        // malformed ELEMENT cell withdraws ONLY the elemental claim --
+        // the valid mass series stays drawn.  No partial element claim:
+        // every element series is cleared.
+        view.elementsAvailable = false;
+        view.elementsReason = `malformed trajectory (row ${li + 1},`
           + ` element ${symbol})`;
-        view.t = []; view.massInventoryKg = []; view.massResidualKg = [];
         view.elementResiduals = {};
-        view.present = false;
-        return view;
+        elemCols.length = 0;
+        break;
       }
       view.elementResiduals[symbol]!.push(v);
     }
