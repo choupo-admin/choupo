@@ -72,6 +72,22 @@ async function get(path: string): Promise<Record<string, unknown>> {
   return body;
 }
 
+/** Capability probe: is the local bridge serving?  Fast + silent (800 ms
+ *  abort) -- the landing uses it to only offer actions that can finish
+ *  (creating on disk needs the bridge; tutorials/Explore/ZIP do not). */
+export async function bridgeUp(): Promise<boolean> {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 800);
+  try {
+    const r = await fetch(`${bridgeBase()}/api/browse`, { signal: ctl.signal });
+    return r.ok;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 export interface BrowseEntry { name: string; isCase: boolean; description: string; }
 export interface BrowseResult {
   dir: string;

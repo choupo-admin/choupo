@@ -42,6 +42,7 @@ License
   store straight.
 \*---------------------------------------------------------------------------*/
 
+import { useEffect, useState } from "react";
 import { Box, Button, Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
 import {
   IconArrowRight,
@@ -52,6 +53,7 @@ import {
   IconHistory,
 } from "@tabler/icons-react";
 
+import { bridgeUp } from "../cases/workspace.js";
 import { useStore, reopenLastCase, lastCaseLabel } from "../state/store.js";
 
 // A few tutorials that span the experience -- the student's first clicks.
@@ -80,26 +82,34 @@ export function WelcomeScreen() {
   const loadTutorial = useStore((s) => s.loadTutorial);
   const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
   const reopen = lastCaseLabel();
+  // Capability-aware CTAs: creating a case on disk (and the folder chooser)
+  // need the local bridge; a hosted browser session gets tutorials, Explore
+  // and ZIP -- never a primary action that dead-ends in a terminal order.
+  const [hasBridge, setHasBridge] = useState(false);
+  useEffect(() => { void bridgeUp().then(setHasBridge); }, []);
 
   return (
     <Box
       style={{
         width: "100%", height: "100%", overflow: "auto",
         display: "flex", flexDirection: "column", alignItems: "center",
-        padding: 32, background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8))",
+        minWidth: 0,
+        padding: "clamp(12px, 4vw, 32px)",
+        background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8))",
       }}
     >
       {/* margin:auto centres vertically WHEN it fits, but collapses to 0 on
           overflow so the top (logo) is never clipped + stays scrollable. */}
-      <Stack gap="lg" align="center" style={{ maxWidth: 780, width: "100%", margin: "auto 0" }}>
+      <Stack gap="lg" align="center" style={{ maxWidth: 780, width: "100%", minWidth: 0, margin: "auto 0" }}>
         {/* Mark + what-is-this */}
         <Stack gap={6} align="center">
           {/* Horizontal lockup: leaf mark left + CHOUPO wordmark right -- compact
               (keeps the CTAs high on a laptop screen). */}
-          <Group gap="md" align="center" justify="center" wrap="nowrap">
-            <img src={LOGO2MARK} alt="" style={{ height: 80, display: "block", flexShrink: 0 }} />
-            <Stack gap={3} align="flex-start">
-              <Text fw={800} style={{ fontSize: 40, letterSpacing: 1, lineHeight: 1 }}>
+          <Group gap="md" align="center" justify="center" wrap="wrap" style={{ minWidth: 0 }}>
+            <img src={LOGO2MARK} alt=""
+              style={{ height: "clamp(52px, 14vw, 80px)", display: "block", flexShrink: 0 }} />
+            <Stack gap={3} align="flex-start" style={{ minWidth: 0 }}>
+              <Text fw={800} style={{ fontSize: "clamp(30px, 9vw, 40px)", letterSpacing: 1, lineHeight: 1 }}>
                 <span style={{ color: "light-dark(var(--mantine-color-accent-7), var(--mantine-color-accent-4))" }}>C</span>HOUPO<sup style={{ fontSize: "0.38em", fontWeight: 600, verticalAlign: "super", letterSpacing: 0 }}>™</sup>
               </Text>
               <Text c="dimmed" size="sm" style={{ lineHeight: 1.15 }}>A glass-box chemical process simulator</Text>
@@ -110,8 +120,9 @@ export function WelcomeScreen() {
               The industry you'll inherit must get cleaner — and it's yours to redesign.
             </Text>
             <Text c="dimmed" size="sm" ta="center" maw={620}>
-              Open the box, see every equation, and build it better. Open-source, in your
-              browser, nothing to install.
+              Describe the process — the assistant authors transparent case
+              dictionaries; Choupo validates them, calculates, and shows every
+              balance and model choice. Open-source, in your browser.
             </Text>
           </Stack>
         </Stack>
@@ -119,28 +130,31 @@ export function WelcomeScreen() {
         {/* Primary action = run a tutorial (the right first step: see Newton
             converge, grasp the philosophy, THEN author a case).  New case is
             secondary. */}
-        <Group gap="sm" justify="center">
-          {/* The no-case, zero-friction on-ramp: explore properties of any
-              component/mixture right now, no tutorial to open. */}
-          <Button leftSection={<IconChartLine size={16} />} color="accent"
-            onClick={() => setActiveWorkspace("explore")}>
-            Explore properties
-          </Button>
+        {/* First decision, kept small: run a tutorial (primary), create with
+            the assistant (only when the bridge can actually create on disk),
+            explore properties, ONE open-case entry (folder via the bridge,
+            ZIP hosted -- both remain in the File menu regardless). */}
+        <Group gap="sm" justify="center" style={{ minWidth: 0 }}>
           <Button leftSection={<IconBook2 size={16} />} color="accent"
             onClick={() => fire("choupo:welcome:open-tutorial")}>
             Browse tutorials
           </Button>
-          <Button leftSection={<IconFilePlus size={16} />} variant="default"
-            onClick={() => fire("choupo:welcome:new-case")}>
-            New case
+          {hasBridge && (
+            <Button leftSection={<IconFilePlus size={16} />} color="accent" variant="light"
+              onClick={() => fire("choupo:welcome:new-case")}>
+              Create with Assistant
+            </Button>
+          )}
+          <Button leftSection={<IconChartLine size={16} />} variant="default"
+            onClick={() => setActiveWorkspace("explore")}>
+            Explore properties
           </Button>
           <Button leftSection={<IconFolderOpen size={16} />} variant="default"
-            onClick={() => fire("choupo:welcome:open-zip")}>
-            Open case (.zip)
-          </Button>
-          <Button leftSection={<IconFolderOpen size={16} />} variant="default"
-            onClick={() => fire("choupo:welcome:open-folder")}>
-            Open case folder
+            title={hasBridge ? "Open a case folder from your workspace"
+                             : "Open a case packed as a .zip"}
+            onClick={() => fire(hasBridge ? "choupo:welcome:open-folder"
+                                          : "choupo:welcome:open-zip")}>
+            Open case
           </Button>
           {reopen && (
             <Button leftSection={<IconHistory size={16} />} variant="subtle"
@@ -165,6 +179,7 @@ export function WelcomeScreen() {
                 aria-label={`Open tutorial: ${t.title}`}
                 style={{
                   cursor: "pointer",
+                  minWidth: 0,
                   background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))",
                   transition: "background 120ms, border-color 120ms, transform 120ms",
                 }}
@@ -199,16 +214,15 @@ export function WelcomeScreen() {
           </SimpleGrid>
         </Stack>
 
-        <Text size="sm" c="dimmed" ta="center" maw={640}>
-          <b style={{ color: "var(--mantine-color-text)" }}>Help improve the glass-box simulator
-          chemical engineers deserve</b> — report a bug or suggest a model, tutorial, validation
-          dataset, or unit operation. Development remains maintainer-led.
-        </Text>
-
         <Text size="xs" c="dimmed" ta="center" maw={620}>
           Cases are plain-text dicts on disk — the GUI runs and visualises them.
           Author with your editor or the in-app assistant; the dicts stay the
           source of truth.
+        </Text>
+        <Text size="xs" c="dimmed" ta="center" maw={620}>
+          Help improve Choupo — report a bug or suggest a model, tutorial,
+          validation dataset, or unit operation (development remains
+          maintainer-led).
         </Text>
         <Text size="xs" c="dimmed" ta="center">
           Created and maintained by{" "}
