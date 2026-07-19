@@ -435,3 +435,16 @@ cyclone, or any solid-handling case:
 See `sucrose` (solubility + sorption + solid + crystalline standardThermochemistry) and
 `NaOH` (solid formation datum + electrolyte block) for fully-worked solid
 `.dat`s in the catalogue.
+
+## Declared elemental composition (formula-less substances)
+
+An assay cut / polymer / mixture with no single molecular formula may declare
+`elementalComposition{}` (basis `massFraction` with kg/kg fractions + a
+MANDATORY `unaccountedMassFraction`, or basis `formulaUnit` with exact
+`atomCounts{}` whose Σn·AW must reproduce `MW`), plus
+`provenance.elementalComposition{}` with an attributed `origin` and a
+`method` — all validated when the component loads; malformed blocks refuse
+loudly.  The element balances (batch campaign, steady `elementBalance`
+report, choupoCtrl ledger, the `elementalComposition` props op) resolve
+formula-first and mark declared-with-unaccounted results PARTIAL.  Keep a
+sample's ultimate analysis in the case's `constant/components/` overlay.

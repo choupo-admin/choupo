@@ -180,6 +180,30 @@ glass-box surface).  A species whose formula refuses withholds ONLY the
 elemental claim, naming itself; the mass balance stays available.  The
 `spreadsheet` report carries the matching "Element Balance" sheet.
 
+A substance WITHOUT a single molecular formula (an assay cut, a polymer, a
+mixture) may declare its composition in its component `.dat` — validated at
+read, refused loudly when malformed:
+
+```
+elementalComposition
+{
+    basis                    massFraction;       // or formulaUnit
+    massFractions            { C 0.85; H 0.148; }   // kg/kg
+    unaccountedMassFraction  0.002;   // MANDATORY here, even when zero
+}
+provenance
+{ elementalComposition { origin measured; method "ultimate analysis ..."; } }
+```
+
+`formulaUnit` declares exact `atomCounts{}` instead (legal only when the MW
+IS that unit's molar mass — verified); a parseable `formula` stays the
+operational source and, when both are present, must agree with the block
+within a named tolerance (divergence refuses).  `unaccountedMassFraction > 0`
+marks every consuming balance **PARTIAL** — the declared elements are shown,
+but no complete elemental closure is ever stamped.  A sample's ultimate
+analysis is case-local data (the `constant/components/` overlay), never a
+universal standard.
+
 **Dynamic balance ledger (choupoCtrl)** — the open-system laws
 `M(t)−M(0) = ∫(ṁ_in−ṁ_out)dt` and, per element, `N_e(t)−N_e(0) = ∫(...)dt`,
 integrated IN the engine's time loop by trapezoids on ACCEPTED states (the
