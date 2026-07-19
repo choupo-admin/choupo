@@ -27,9 +27,9 @@ reports { streamTable {}  massBalance {}  energyBalance {}  utilities {}  spread
 
 // Report-output layout: the CHT-faithful `postProcessing/<report>/<instant>/`
 // tree (OpenFOAM functionObject convention) instead of the legacy `reports/`.
-// This keeps the derived reports OUT of the way of the instant `streams` field
-// files: the stream TABLE is postProcessing/streamTable/<n>/streamTable.csv,
-// so "streams" no longer means two different things in the same case.  Default
+// This keeps the derived reports OUT of the way of the instant `streamFaces`
+// field files: the stream TABLE is postProcessing/streamTable/<n>/streamTable.csv.
+// Default
 // (any other case) stays `reports/` -- this is the pilot opting in.
 reportsLayout postProcessing;
 
@@ -44,13 +44,14 @@ reportsLayout postProcessing;
 //  system/flowsheetDict, never a numeric dir.
 //
 //  Inside each <n>/:
-//    streams    -- the global field file.  A stream IS the flux between two
+//    streamFaces -- the global field file.  A stream IS the flux between two
 //                  units (OpenFOAM's surfaceField phi): stored ONCE here.
 //                  Carries a read-only topology{} echo (who-feeds-whom), a
 //                  per-stream bc tag (fixedValue feed / computed product /
 //                  tear true), and the lossless T/P/vf/H + molarFlows body.
 //                  Reads back through the engine's own dict tokenizer.
-//    byUnit/<dotted.unit>/ -- per-unit projection: a `streams -> ../../streams`
+//    byUnit/<dotted.unit>/ -- per-unit projection: a `streamFaces ->
+//                  ../../streamFaces`
 //                  symlink (single source) + a `ports` dict naming this unit's
 //                  inlets/outlets by global key + bc role.  A shared interior
 //                  stream appears in BOTH touching units' ports but is stored

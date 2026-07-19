@@ -22,7 +22,7 @@
       `solutionControl { write true; }` in controlDict, the case root
       fills with REAL-TIME directories `0/ 50/ 100/ ... 1000/`.  Each
       `<t>/internalState` is the reactor HOLDUP at that instant; each
-      `<t>/streams` is the instantaneous outlet face.  Scrub the times
+      `<t>/streamFaces` is the instantaneous outlet face.  Scrub the times
       and you watch T(t) and the inventory march to steady state --- the
       same way you scrub a CFD transient in ParaView.
 

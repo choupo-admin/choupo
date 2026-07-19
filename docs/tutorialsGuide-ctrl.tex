@@ -120,7 +120,7 @@ The trajectory.csv columns now include both controllers' SP / PV / MV. The Sched
 \begin{tutnarrative}
 Process: A continuous CSTR (first-order compA $\to$ compB, mild exotherm) is CHARGED cold (320 K, pure compA) and then left to run with NO controller. The jacket sits at a fixed 320 K. From the cold start the reactor warms a little from the reaction exotherm, the feed/ outlet convection competes, and (T, composition) relax to the natural open-loop steady state over \textasciitilde{} several residence times.
 
-What this tutorial shows: The OpenFOAM-style transient solution directories. With `solutionControl \{ write true; \}` in controlDict, the case root fills with REAL-TIME directories `0/ 50/ 100/ ... 1000/`. Each `<t>/internalState` is the reactor HOLDUP at that instant; each `<t>/streams` is the instantaneous outlet face. Scrub the times and you watch T(t) and the inventory march to steady state --- the same way you scrub a CFD transient in ParaView.
+What this tutorial shows: The OpenFOAM-style transient solution directories. With `solutionControl \{ write true; \}` in controlDict, the case root fills with REAL-TIME directories `0/ 50/ 100/ ... 1000/`. Each `<t>/internalState` is the reactor HOLDUP at that instant; each `<t>/streamFaces` is the instantaneous outlet face. Scrub the times and you watch T(t) and the inventory march to steady state --- the same way you scrub a CFD transient in ParaView.
 
 To compare CLOSED-LOOP control, see ctrl01\_cstr\_temp\_control (a PID drives T to a 350 K setpoint) and ctrl05\_disturbance\_transient (a PID rejecting a feed-temperature disturbance), both also writing time dirs.
 
@@ -141,7 +141,7 @@ To compare CLOSED-LOOP control, see ctrl01\_cstr\_temp\_control (a PID drives T 
 \end{tutscheme}
 \tutwhat{PID disturbance rejection with OpenFOAM-style real-time instant dirs: T\_in steps down (700 s) then up (1300 s); scrub 0/ 40/ 80/ ... s to watch the PID track the 350 K setpoint and the jacket MV move}
 \begin{tutnarrative}
-the textbook control demo, captured in OpenFOAM-style real-time instant directories (see controlDict's solutionControl block). Identical physics to ctrl02; the difference is that each written time drops a `<t>/internalState` + `<t>/streams` you can scrub across the two disturbance steps to watch the PID reject them.
+the textbook control demo, captured in OpenFOAM-style real-time instant directories (see controlDict's solutionControl block). Identical physics to ctrl02; the difference is that each written time drops a `<t>/internalState` + `<t>/streamFaces` you can scrub across the two disturbance steps to watch the PID reject them.
 
 Same DynamicCSTR as ctrl01 (compA $\to$ compB, mild exotherm, jacket heat transfer). Same PID temperature controller. Two added ingredients:
 

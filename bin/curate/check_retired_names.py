@@ -122,10 +122,25 @@ AGG = re.compile(r"0/streams\b|<t>/streams\b|<n>/streams\b"
 agg_files = []
 for d, exts in ((ROOT / "bin" / "curate", (".py",)),
                 (ROOT / "docs" / "ai", (".md",)),
+                (ROOT / "docs", (".tex",)),
                 (ROOT / "src", (".H", ".cpp"))):
     for f in d.rglob("*"):
         if f.suffix in exts:
             agg_files.append(f)
+for f in (ROOT / "tutorials").rglob("*"):
+    if not f.is_file():
+        continue
+    sf = str(f)
+    if any(x in sf for x in ("/reports/", "/converged/", "/iterations/",
+                             "/postProcessing/", "/.build/", "/code/")):
+        continue                      # run output may carry old artefacts
+    if f.name.startswith("log.choupo") or f.suffix in (".csv", ".ods"):
+        continue
+    parts = f.parts
+    if any(seg.isdigit() or seg.replace(".", "").isdigit()
+           for seg in parts[parts.index("tutorials") + 1:-1]):
+        continue                      # numbered instant dirs are run output
+    agg_files.append(f)
 for f in agg_files:
     if f.name in ("check_retired_names.py", "check_stream_faces.py"):
         continue                      # the gates name the pattern they hunt

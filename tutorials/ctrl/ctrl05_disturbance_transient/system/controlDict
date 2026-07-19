@@ -20,7 +20,7 @@ writeInterval   40;       // s   (one time directory every 40 s -> 0/ 40/ ... 20
 // ---- solutionControl: OpenFOAM-style transient solution directories ----
 //   The instant directory IS the real physical time (seconds).  Each
 //   `<t>/internalState` holds the reactor HOLDUP (mole inventory, T) plus the
-//   controller-driven jacket temperature; each `<t>/streams` holds the
+//   controller-driven jacket temperature; each `<t>/streamFaces` holds the
 //   instantaneous outlet face.  Scrub across the two disturbance steps (700 s,
 //   1300 s) to SEE the PID hold T at the 350 K setpoint.  trajectory.csv is
 //   STILL written; remove this block for a byte-identical plain run.

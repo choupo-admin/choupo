@@ -3,7 +3,7 @@
   truth; the inline initial{} block is retired, no legacy).  Each unit's
   block is its authored initial state VERBATIM (T, P, V, totalMoles,
   molarComposition, ...); a closed vessel has no inlet, so there is no
-  0/streams.  Reads back via the engine's own dict tokenizer.
+  0/streamFaces.  Reads back via the engine's own dict tokenizer.
 \*-----------------------------------------------------------------------------*/
 
 time            0;

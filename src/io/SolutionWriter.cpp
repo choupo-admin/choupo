@@ -799,8 +799,8 @@ void SolutionWriter::writeDynamicInstant(
         if (cfg_.flushEach) fsyncPath(f, /*isDir=*/false);
     }
 
-    // ---- streams: the instantaneous outlet faces (continuous units) -------
-    //  Reuses the steady streams-file SHAPE (header + a `streams{}` block of
+    // ---- faces: the instantaneous outlet faces (continuous units) ---------
+    //  Reuses the steady streamFaces SHAPE (header + a `faces{}` block of
     //  per-stream T/P/vf + molarFlows) so the SAME dict reader parses it back.
     bool anyFace = false;
     for (const auto& u : units)
@@ -991,9 +991,10 @@ int SolutionWriter::restartFromLatest(
     std::set<std::string> tearSet(tears.begin(), tears.end());
 
     // PER-BRANCH restart: the instant is fractal.  An intra-sector tear (e.g.
-    // FERMENTATION.Recycle) lives ONLY in its sector view <n>/<sector>/streams,
-    // not in the plant <n>/streamFaces (which carries boundary + inter-sector faces).
-    // So we scan EVERY streams file in the instant --- the plant view plus each
+    // FERMENTATION.Recycle) lives ONLY in its sector view
+    // <n>/<sector>/streamFaces, not in the plant <n>/streamFaces (which carries
+    // boundary + inter-sector faces).  So we scan EVERY streamFaces file in the
+    // instant --- the plant view plus each
     // sector subdir --- and reseed each flagged tear ONCE (the first view that
     // carries it; an inter-sector tear seen in two views is identical in both).
     std::vector<fs::path> streamFiles;

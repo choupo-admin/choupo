@@ -10,7 +10,7 @@
   ctrl05_disturbance_transient  --  the textbook control demo, captured
   in OpenFOAM-style real-time instant directories (see controlDict's
   solutionControl block).  Identical physics to ctrl02; the difference is
-  that each written time drops a `<t>/internalState` + `<t>/streams` you
+  that each written time drops a `<t>/internalState` + `<t>/streamFaces` you
   can scrub across the two disturbance steps to watch the PID reject them.
 
   Same DynamicCSTR as ctrl01 (compA → compB, mild exotherm, jacket
