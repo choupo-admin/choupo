@@ -68,7 +68,6 @@ import { EnergyBalancePlot } from "./plotting/EnergyBalancePlot.js";
 import { MassBalancePlot } from "./plotting/MassBalancePlot.js";
 import { unitEnergy } from "../case/balances.js";
 import { CampaignBalancePlot } from "./plotting/CampaignBalancePlot.js";
-import { AtomicBalancePlot } from "./plotting/AtomicBalancePlot.js";
 import { DynamicBalancePlot } from "./plotting/DynamicBalancePlot.js";
 import { ElementBalancePlot } from "./plotting/ElementBalancePlot.js";
 import { MolarBalancePlot } from "./plotting/MolarBalancePlot.js";
@@ -83,7 +82,6 @@ type PlotKey =
   | "gantt"
   | "campaignBalance"
   | "dynamicBalance"
-  | "atomicBalance"
   | "molarBalance"
   | "elementBalance"
   | "massBalance"
@@ -117,7 +115,9 @@ export function PlotsWorkspace() {
   const scanCsvs = useMemo(() => {
     const all = result?.csvFiles ?? {};
     return Object.keys(all)
-      .filter((n) => !n.startsWith("reports/") && n !== "trajectory.csv"
+      .filter((n) => !n.startsWith("reports/")
+        && !n.startsWith("postProcessing/")   // flagship reports, not sweeps
+        && n !== "trajectory.csv"
         && n !== "balanceTrajectory.csv" && n !== "balanceTrajectory.meta")
       .sort();
   }, [result]);
@@ -148,12 +148,8 @@ export function PlotsWorkspace() {
             hint: "The batch campaign's GLOBAL mass / element / energy balances, drawn from the engine's own ledger KPIs.  Molar totals are informative (moles are not conserved through reactions); UNAVAILABLE states are shown honestly, never as zeros." },
           { key: "dynamicBalance", label: "Global balances (Ctrl)", available: hasDynBalance,
             hint: "The choupoCtrl GLOBAL balance ledger over time (mass inventory + conservation residuals per element), integrated on accepted steps in the engine.  Withheld claims render as named states." },
-          { key: "atomicBalance", label: "Global atomic balance", available: hasElemBalance,
-            hint: "THE conservative molar balance of a reacting plant: total kmol-atom/h in vs out.  Species moles may change legally; the atoms close.  The seal demands EVERY element closes (a signed total could cancel +C against -O).  From the engine's elementBalance report." },
-          { key: "elementBalance", label: "Global elemental balance", available: hasElemBalance,
-            hint: "The per-element decomposition (C/H/O/N... in kmol-atom/h) of the atomic balance, with its FULL / PARTIAL / UNAVAILABLE status.  Add elementBalance { } to controlDict.reports to produce it." },
-          { key: "molarBalance",  label: "Boundary molar flows", available: hasStreams,
-            hint: "Secondary diagnostic: total SPECIES molar flow in vs out (fluid + solids via MW).  Not a balance -- species moles change legally through reactions; the conserved quantity is the Global atomic balance." },
+          { key: "elementBalance", label: "Element balance", available: hasElemBalance,
+            hint: "Atom conservation at the plant boundary (kmol-atom/h): total atoms in vs out, sealed only when every element closes.  By-element detail inside.  Needs elementBalance { } in controlDict.reports." },
           { key: "massBalance",   label: "Mass balance",   available: hasStreams,
             hint: "Plant-boundary INPUTS vs OUTPUTS in mass basis (kg/h), stacked by component.  Title shows the closure error." },
           { key: "energyBalance", label: "Energy balance", available: hasStreams,
@@ -172,6 +168,8 @@ export function PlotsWorkspace() {
       {
         label: "Internal",
         items: [
+          { key: "molarBalance", label: "Species molar flows", available: hasStreams,
+            hint: "Diagnostic: total species kmol/h in vs out.  Species moles change legally through reactions -- see Element balance for the conserved quantity." },
           { key: "profile",    label: "Profile",    available: hasProfile,
             hint: "1-D internal state of a unit (PFR axial sweep, column stages, PSD)." },
           { key: "trajectory", label: "Trajectory", available: hasTrajectory,
@@ -215,6 +213,10 @@ export function PlotsWorkspace() {
              || result.csvFiles?.["balanceTrajectory.meta"] !== undefined)
       setView("dynamicBalance");
     else if (result.trajectory) setView("trajectory");
+    else if (Object.keys(result.csvFiles ?? {}).some(
+               (k) => k.endsWith("elementBalance.csv")
+                   || k.endsWith("elementBalance.meta")))
+      setView("elementBalance");
     else if ((result.profiles?.length ?? 0) > 0) setView("profile");
     else if (result.txy) setView("txy");
     else if (scanCsvs.length > 0) setView("scanCsv");
@@ -263,19 +265,6 @@ export function PlotsWorkspace() {
           ? <DynamicBalancePlot {...(traj !== undefined ? { trajectoryCsv: traj } : {})}
               {...(meta !== undefined ? { metaCsv: meta } : {})} />
           : null;
-      }
-      case "atomicBalance": {
-        const files = result.csvFiles ?? {};
-        const csvKey = Object.keys(files).find(
-          (k) => k.endsWith("elementBalance.csv"));
-        const metaKey = Object.keys(files).find(
-          (k) => k.endsWith("elementBalance.meta"));
-        return (
-          <AtomicBalancePlot
-            {...(csvKey !== undefined ? { csv: files[csvKey] } : {})}
-            {...(metaKey !== undefined ? { meta: files[metaKey] } : {})}
-          />
-        );
       }
       case "molarBalance": return (
         <MolarBalancePlot

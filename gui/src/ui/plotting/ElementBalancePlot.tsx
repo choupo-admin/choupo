@@ -27,16 +27,21 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  ElementBalancePlot -- the steady plant-boundary ELEMENT conservation
-  report (reports/balances/elementBalance.csv + .meta) rendered verbatim:
-  per-element IN vs OUT bars in kmol-atom/h with the closure in the hover.
-  The FULL / PARTIAL / UNAVAILABLE status and its named reasons come from
-  the engine's sidecar -- no atom or formula computation in TypeScript.
+  ElementBalancePlot -- THE element balance view (Aspen's "atom balance":
+  atomic and elemental are operational synonyms, ONE surface).  Main
+  summary: total atoms IN vs OUT [kmol-atom/h] with residual and the
+  "all elements conserved" seal -- which demands that EVERY element
+  closes (a signed total could cancel +C against -O).  The per-element
+  decomposition (C/H/O/N...) lives in the same view as a collapsible
+  detail.  Everything renders the engine's elementBalance.csv + .meta
+  verbatim -- no atom or formula computation in TypeScript.
 \*---------------------------------------------------------------------------*/
 
-import { Badge, Group, Stack, Text } from "@mantine/core";
+import { useState } from "react";
 
-import { elementBalanceSurface } from "../../case/elementBalanceSurface.js";
+import { Badge, Button, Group, Stack, Text } from "@mantine/core";
+
+import { atomicBalanceView, elementBalanceSurface } from "../../case/elementBalanceSurface.js";
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
 
 interface ElementBalancePlotProps {
@@ -46,6 +51,7 @@ interface ElementBalancePlotProps {
 
 export function ElementBalancePlot({ csv, meta }: ElementBalancePlotProps) {
   const v = elementBalanceSurface(csv, meta);
+  const [byElement, setByElement] = useState(false);
 
   if (!v.present) {
     return (
@@ -78,7 +84,24 @@ export function ElementBalancePlot({ csv, meta }: ElementBalancePlotProps) {
     );
   }
 
-  const data = [
+  const a = atomicBalanceView(v);
+  const sealed = a.allElementsClose && v.status === "FULL";
+  const fmt = (x: number) => (Math.abs(x) >= 100 ? x.toFixed(1)
+                                                  : x.toPrecision(5));
+
+  const totalsData = [{
+    type: "bar" as const,
+    x: ["total atoms IN", "total atoms OUT"],
+    y: [a.totalInKmolAtomH, a.totalOutKmolAtomH],
+    text: [`${fmt(a.totalInKmolAtomH)} kmol-atom/h`,
+           `${fmt(a.totalOutKmolAtomH)} kmol-atom/h`],
+    textposition: "inside" as const,
+    textfont: { size: 12, color: "#10242b" },
+    marker: { color: [PLOT_COLORS.series[0], PLOT_COLORS.series[1]] },
+    hovertemplate: "%{x} = %{y:.6g} kmol-atom/h<extra></extra>",
+  }];
+
+  const byElementData = [
     {
       type: "bar" as const, name: "IN",
       x: v.rows.map((r) => r.element),
@@ -95,18 +118,21 @@ export function ElementBalancePlot({ csv, meta }: ElementBalancePlotProps) {
     },
   ];
 
-  const worstOff = Math.max(0,
-    ...v.rows.map((r) => Math.abs(r.closurePct - 100.0)));
-
   return (
     <Stack gap="xs" h="100%" style={{ minHeight: 0 }}>
-      <Group gap="xs" wrap="wrap">
+      <Group gap="xs" wrap="wrap" justify="space-between">
         <Badge variant="light"
-          color={v.status === "PARTIAL" ? "yellow"
-                 : worstOff <= 0.01 ? "teal" : "orange"}>
-          {v.status === "PARTIAL" ? "PARTIAL" : "element conservation"} — worst
-          closure off by {worstOff.toExponential(2)} %
+          color={sealed ? "teal"
+                 : v.status === "PARTIAL" ? "yellow" : "orange"}>
+          {v.status === "PARTIAL" ? "PARTIAL — " : ""}
+          {sealed ? "all elements conserved" : "elemental residual"} · total
+          residual {a.residualKmolAtomH.toExponential(3)} kmol-atom/h · worst
+          element off by {a.worstElementOffPct.toExponential(2)} %
         </Badge>
+        <Button size="compact-xs" variant="subtle"
+          onClick={() => setByElement((b) => !b)}>
+          {byElement ? "Summary" : "By element"}
+        </Button>
       </Group>
       {v.status === "PARTIAL" && (
         <Text c="dimmed" size="xs">
@@ -116,13 +142,16 @@ export function ElementBalancePlot({ csv, meta }: ElementBalancePlotProps) {
         </Text>
       )}
       <Plot
-        data={data as never}
+        data={(byElement ? byElementData : totalsData) as never}
         layout={{
           ...darkLayout,
-          title: { text: "Element balance — plant boundary (kmol-atom/h)",
+          title: { text: byElement
+                     ? "By element — plant boundary (kmol-atom/h)"
+                     : "Global element balance — plant boundary",
                    font: { ...darkLayout.font, size: 13 } },
-          barmode: "group",
-          bargap: 0.35,
+          barmode: byElement ? "group" as const : undefined,
+          bargap: byElement ? 0.35 : 0.45,
+          showlegend: byElement,
           yaxis: { ...darkLayout.yaxis,
                    title: { text: "kmol-atom/h" },
                    exponentformat: "e" as const },
