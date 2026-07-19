@@ -1778,7 +1778,7 @@ Constraints: productConc.F\_mass = 0.3125 kg/s (40 wt\%) effect3.P = 13.5 kPa (t
 \end{tutscheme}
 \tutwhat{Single-effect NaCl evaporator with the boiling-point elevation from the PITZER electrolyte model (a\_w), not the ideal K\_b$\ast$m. Concentrated brine $\to$ BPE several degrees, the real value.}
 \begin{tutnarrative}
-/ flowsheetDict Single-effect NaCl evaporator whose boiling-point elevation comes from the PITZER water activity (a\_w), not the ideal K\_b$\ast$m: concentrated brine is a REAL electrolyte, and the BPE follows from the osmotic coefficient. The thermo arrives via the aqueousNaCl\_pitzer property package (see constant/propertyDict) -- swap to evaporator07's eNRTL to compare.
+/ flowsheetDict Single-effect NaCl evaporator whose boiling-point elevation comes from the PITZER water activity (a\_w), not the ideal K\_b$\ast$m: concentrated brine is a REAL electrolyte, and the BPE follows from the osmotic coefficient. The thermo arrives via the declared electrolyteGammaPhi Pitzer system (see constant/thermoPhysPropDict) -- swap to evaporator07's eNRTL to compare.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -2169,11 +2169,11 @@ The base point is 370 K, 1 bar. The gridSweep in system/outerDict overrides BOTH
 
 \clearpage
 \tutentry{flash08\_co2\_water\_package}{tutorials/steady/flash/flash08\_co2\_water\_package}
-\tutwhat{Carbonated water flash whose thermo is an INLINE property-package MANIFEST: constant/propertyDict IS the full record (components, methods per phase, solvent+solutes, the CO2-water Henry pair declared+verified). CO2 dissolves by the unsymmetric Henry convention; water stays Raoult. Read the run log: the assembly announces itself.}
+\tutwhat{Carbonated water flash whose thermo is the INLINE declared system: constant/thermoPhysPropDict IS the full record (components, the diluteSolution formulation, solvent+solutes, the CO2-water Henry pair declared+verified). CO2 dissolves by the unsymmetric Henry convention; water stays Raoult. Read the run log: the assembly announces itself.}
 \begin{tutnarrative}
 the property-package convention, minimal.
 
-Soda water at 298 K: 1 bar flash of a CO2-rich feed. The THERMO is not a pile of flat keys -- the case's constant/propertyDict IS the full INLINE manifest (name flash08\_co2Water) and the ThermoPackageBuilder assembles everything from it: liquid = solution.henryDilute (water on the Raoult rung, CO2 on the infinite-dilution Henry rung -- ONE Gibbs surface, two conventions), vapour = ideal gas, the CO2-water Henry pair declared and VERIFIED at assembly (delete the pair path from the package and the run REFUSES, naming the file). Expect K\_CO2 = H(298)/P \textasciitilde{} 1.6e3 (Sander): a huge K sets the vapour's PURITY, not the split -- the vapour is nearly pure CO2 (y\_CO2 \textasciitilde{} 0.97) but its AMOUNT is tiny (V/F \textasciitilde{} 4e-4), so only \textasciitilde{}40\% of the fed CO2 leaves in it; the liquid keeps x\_CO2 \textasciitilde{} y\_CO2/K \textasciitilde{} 6e-4.
+Soda water at 298 K: 1 bar flash of a CO2-rich feed. The THERMO is not a pile of flat keys -- the case's constant/thermoPhysPropDict IS the full inline declaration and the ThermoPackageBuilder assembles everything from it: formulation diluteSolution (water on the Raoult rung, CO2 on the infinite-dilution Henry rung -- ONE Gibbs surface, two conventions), vapour = ideal gas, the CO2-water Henry pair declared and VERIFIED at assembly (delete the pair's source path from the dict and the run REFUSES, naming the file). Expect K\_CO2 = H(298)/P \textasciitilde{} 1.6e3 (Sander): a huge K sets the vapour's PURITY, not the split -- the vapour is nearly pure CO2 (y\_CO2 \textasciitilde{} 0.97) but its AMOUNT is tiny (V/F \textasciitilde{} 4e-4), so only \textasciitilde{}40\% of the fed CO2 leaves in it; the liquid keeps x\_CO2 \textasciitilde{} y\_CO2/K \textasciitilde{} 6e-4.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -2291,11 +2291,11 @@ liquid-liquid flash of water + 1-butanol with the cited Winkelman et al. (2009) 
 
 Water + 1-butanol is THE textbook partially-miscible binary. At 320 K and 1.013 bar an equimolar mixture is well below the bubble point (water boils at 373 K, 1-butanol near 390 K), so the equilibrium is GENUINELY two LIQUIDS -- no vapour. A simple `phaseSet LL` flash (Michelsen TPD pre-check, then direct Gibbs-energy minimisation, multi-start Nelder-Mead) finds the split.
 
-THE PARAMETERS (cited, NOT fabricated -- see constant/propertyDict and README.md): the UNIQUAC interaction parameters are the LLE-specific fit of
+THE PARAMETERS (cited, NOT fabricated -- see constant/thermoPhysPropDict and README.md): the UNIQUAC interaction parameters are the LLE-specific fit of
 
 J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, Fluid Phase Equilibria 284 (2009) 71-79, Table 2 (p.73); structural r,q from their Table 1 (p.72).
 
-with the full temperature dependence A\_ij(T) = a\_ij + b\_ij$\ast$T + c\_ij$\ast$T\textasciicircum{}2 (their Eq. 10), tau\_ij = exp(-A\_ij/T) (their Eq. 7), valid 273-363 K. The same numbers, fully provenanced, also live in data/standards/binaryPairs/UNIQUAC/nButanol-water.dat.
+with the full temperature dependence A\_ij(T) = a\_ij + b\_ij$\ast$T + c\_ij$\ast$T\textasciicircum{}2 (their Eq. 10), tau\_ij = exp(-A\_ij/T) (their Eq. 7), valid 273-363 K. The same numbers, fully provenanced, also live in data/standards/parameters/UNIQUAC/nButanol-water.dat.
 
 a REAL liquid-liquid miscibility gap, reproduced from a cited primary source -- the water-rich phase is \textasciitilde{}98.3 mol\% water (\textasciitilde{}1.7 mol\% butanol) and the butanol-rich phase is \textasciitilde{}54 mol\% water (\textasciitilde{}46 mol\% butanol), matching Winkelman's Figs 1-2; the IsothermalFlash LL branch: a Michelsen TPD stability test that flags the feed as unstable, then a direct Gibbs-minimisation that resolves the two coexisting compositions; honest phase labelling -- the two output streams are named by their actual composition (waterRich / butanolRich), with alphaRich/betaRich hints steering which liquid lands in which slot.
 
@@ -2306,7 +2306,7 @@ HISTORICAL NOTE: an earlier version of this case carried only a DECHEMA VLE-fit 
 \tutreadme{At 320 K, 1.013 bar (well below the bubble point, so no vapour) a feed of 80 mol \% water / 20 mol \% butanol splits into:}
 \tutreadme{with split fraction $\beta$ $\approx$ 0.41 into the butanol-rich phase. The solver reports the Michelsen TPD instability (tm\_min $\approx$ -0.45, $\ast$unstable = YES$\ast$) and then a direct Gibbs-energy minimisation that lands the two compositions.}
 \tutreadme{An independent re-implementation of the UNIQUAC $\gamma$ (fresh code, isoactivity Newton) reproduces the engine's split to 4 decimals across 298--350 K, confirming the parameters are entered correctly. The agreement with the published figures is essentially exact --- the UNIQUAC fit is doing its job.}
-\tutreadme{constant/propertyDict carries the LLE-specific UNIQUAC for water/1-butanol, cited per value:}
+\tutreadme{constant/thermoPhysPropDict carries the LLE-specific UNIQUAC for water/1-butanol, cited per value:}
 \tutreadme{- Primary source: J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, $\ast$"Binary, ternary and quaternary liquid-liquid equilibria in 1-butanol, oleic acid, water and n-heptane mixtures"$\ast$, Fluid Phase Equilibria 284 (2009) 71--79, doi:10.1016/j.fluid.2009.06.013. - Binary interaction parameters --- their Table 2 (p.73), binary 1-butanol(1)/water(3), valid 273--363 K, with the quadratic temperature correlation A\_ij(T) = a\_ij + b\_ij$\cdot$T + c\_ij$\cdot$T$^2$ (their Eq. 10) and $\tau$\_ij = exp(-A\_ij/T) (their Eq. 7): - A\_1,3 (butanol$\to$water): a = 155.31, b = 1.0822, 10?$\cdot$c = -43.711 - A\_3,1 (water$\to$butanol): a = -579.36, b = 2.7517, 10?$\cdot$c = -6.7700 - Structural r, q --- their Table 1 (p.72) (value Magnussen et al.): 1-butanol r = 3.9243, q = 3.668; water r = 0.9200, q = 1.400.}
 \begin{tutgolden}
 \goldrow{stream}{butanolRich}{F}{0.0114431411907}
@@ -2769,10 +2769,10 @@ isothermal flash of ethanol/water at 355 K, 1 atm
 Identical to flash02\_ethanol\_water, but this case demonstrates the RESEARCH WORKFLOW: parameters loaded from case-local binaryPairs file rather than declared inline. See README.md for the full discussion.
 
 \end{tutnarrative}
-\tutreadme{The research workflow for managing thermodynamic parameters: instead of declaring NRTL pairs (...) inline in the thermoPackage, the case declares only the model and lets the simulator load the parameters from a file inside the case directory.}
+\tutreadme{The research workflow for managing thermodynamic parameters: instead of carrying the NRTL numbers inline in thermoPhysPropDict's binaryParameters, the case declares only the model and lets the simulator load the parameters from a file inside the case directory.}
 \tutreadme{This is the pattern used when you have your own fitted parameters that you do not want to mix into the standards database. The case remains self-contained and reproducible: the parameters travel with the case.}
-\tutreadme{When the simulator builds the NRTL model and discovers there are no inline pairs in thermoPackage, it falls back to file lookup:}
-\tutreadme{1. Case-local -- <case>/constant/binaryPairs/NRTL/ethanol-water.dat ? used here 2. Standards -- \$CHOUPO\_HOME/data/standards/binaryPairs/NRTL/ethanol-water.dat}
+\tutreadme{When the simulator builds the NRTL model and discovers no inline binaryParameters in the declared system, it falls back to file lookup:}
+\tutreadme{1. Case-local -- <case>/constant/parameters/NRTL/ethanol-water.dat ? used here 2. Standards -- \$CHOUPO\_HOME/data/standards/parameters/NRTL/ethanol-water.dat}
 \tutreadme{In this case the local file exists, so it wins. If you delete the local file, the run still succeeds because the standards file is the same DECHEMA set.}
 \tutreadme{The result is numerically identical to flash02\_ethanol\_water (same NRTL parameters; just a different way of supplying them).}
 \begin{tutgolden}
@@ -4637,14 +4637,14 @@ Target tolerance: $\pm$5 kg/h on L\_3, encoded via tol = 1.4e-6 kmol/s (= 5 kg/h
 \begin{tutnarrative}
 fitNRTL01 -- Levenberg-Marquardt regression of the ethanol-water NRTL pair against 1 atm bubble-T data, on the CANONICAL fit engine (fitParameters, choupoProps). This case previously ran the condemned FitBinaryPair outer driver in choupoSolve, which abused a dummy flowsheet and steered the feed composition through the legacy streams\{\} block per data row -- the design forum (\#53) ordered it moved here, WITH a golden: its chi\textasciicircum{}2 once degraded 100x with nothing going red, because a fit without numerical verification does not belong in a green corpus.
 
-Data: transcribed from constant/experiments/ethanol-water-101kPa (the raw- data home; DECHEMA / Gmehling-Onken Vol. I Part 1, pedagogical subset). Starting point: the catalogue NRTL values in constant/propertyDict.
+Data: transcribed from constant/experiments/ethanol-water-101kPa (the raw- data home; DECHEMA / Gmehling-Onken Vol. I Part 1, pedagogical subset). Starting point: the catalogue NRTL values in constant/thermoPhysPropDict.
 
 \end{tutnarrative}
 \tutreadme{The parameter-estimation workflow: regress the four NRTL binary interaction parameters of the ethanol-water pair (a\_ij, b\_ij, a\_ji, b\_ji; $\alpha$ held fixed) against experimental bubble-temperature data at 1.01325 bar, using hand-rolled Levenberg-Marquardt inside the fitParameters engine (successor of the retired fitBinaryPair driver).}
 \tutreadme{$\ast$ See an outer Marquardt loop (3-up/5-down trust region on $\lambda$) wrapped around an inner Newton-1D solving $\Sigma$ K x = 1 for each (x$_i$, T) pair. $\ast$ Watch $\lambda$ oscillate as the algorithm switches between Gauss-Newton ($\lambda$ small) and gradient-descent ($\lambda$ large) regimes. $\ast$ Watch some LM steps get rejected --- chi$^2$ gets worse, the step is reversed, $\lambda$ is multiplied by 5, retry. The whole "trust region" idea visible in one column of the log.}
 \tutreadme{Note how minimal the forward case is: one stream, one bubbleT unit. The outer driver is what does the work --- iterating over the dataset internally and looping LM over the four parameters.}
 \tutreadme{Four keywords (plus optional maxIter, tolerance, fdStep, lambda0). The driver:}
-\tutreadme{1. locates the pair in thermoPackage.activityModel.pairs by name, 2. reads the dataset (a two-column flat list of x$_i$ T$_i$), 3. finds the bubbleT unit's input stream from the flowsheetDict, 4. for each LM step: - 8 forward evals to build a central-difference Jacobian over 4 params $\times$ N data points, - solve the 4$\times$4 normal equations with Marquardt damping, - try the step; accept if chi$^2$ decreased, otherwise raise $\lambda$ and retry.}
+\tutreadme{1. locates the pair in the declared system's activityModel binaryParameters by name, 2. reads the dataset (a two-column flat list of x$_i$ T$_i$), 3. finds the bubbleT unit's input stream from the flowsheetDict, 4. for each LM step: - 8 forward evals to build a central-difference Jacobian over 4 params $\times$ N data points, - solve the 4$\times$4 normal equations with Marquardt damping, - try the step; accept if chi$^2$ decreased, otherwise raise $\lambda$ and retry.}
 \tutreadme{After the run header you get (the iteration trace below is illustrative -- it shows the SHAPE of an LM run, accept/reject and $\lambda$ adaptation; the actual run converges to chi$^2$ = 1.0426, RMS = 0.3079 K with fitted a\_ij = 9.328, b\_ij = -3609.18):}
 \begin{tutgolden}
 \goldrow{diag}{fit\_NRTL\_ethanol\_water}{chi2}{1.04279}
@@ -6079,7 +6079,7 @@ Operation block is HARDWARE only (the credo): pipe diameter, length, rise. Every
 \tutreadme{- superficial gas velocity u\_g = 21.9 m/s, - particle velocity u\_p = 21.1 m/s (Hinkle slip), - single-particle terminal velocity u\_t = 1.03 m/s, - saltation velocity u\_salt = 3.6 m/s (Rizk) --- u\_g is well above it, so transport is stable. The conveyor warns aloud (verbosity $\ge$ 1) if u\_g ever falls below u\_salt (risk of solids settling and blocking the line) --- a first-class, announced design check, never a silent clip.}
 \tutreadme{Solids loading = 0.20 kg solid / kg gas (dilute phase), suspended-solids density ?$\ast$ = 0.47 kg/m$^3$.}
 \tutreadme{- particle velocity: Hinkle u\_p = u\_g(1 - 0.68 d\_p\textasciicircum{}0.92 ?\_p\textasciicircum{}0.5 ?\_g\textasciicircum{}-0.2 D\textasciicircum{}-0.54), with an honest u\_g - u\_t fallback if the correlation leaves the dilute regime; - gas friction: Fanning (Blasius turbulent / 16/Re laminar); - solids friction: Hinkle f\_p = (3/8)(?\_g/?\_p) C\_D (D/d\_p)((u\_g-u\_p)/u\_p)$^2$, C\_D from Schiller--Naumann at the slip Reynolds number; - saltation: Rizk (1973).}
-\tutreadme{Operation block is hardware only (the credo): pipe diameter D, length L, vertical rise dz. Every velocity, the suspended density and the pressure drop are results. Particle density comes from the solid component's solid \{ rho\_p; \} (silica = 2650 kg/m$^3$); the size from the inlet PSD (Sauter mean for the drag). The carrier-gas viscosity needs a transport \{ model Chung; \} block in the thermoPackage (for the friction Reynolds numbers).}
+\tutreadme{Operation block is hardware only (the credo): pipe diameter D, length L, vertical rise dz. Every velocity, the suspended density and the pressure drop are results. Particle density comes from the solid component's solid \{ rho\_p; \} (silica = 2650 kg/m$^3$); the size from the inlet PSD (Sauter mean for the drag). The carrier-gas viscosity needs a transport vapour \{ viscosity \{ model Chung; \} \} block in thermoPhysPropDict (for the friction Reynolds numbers).}
 \begin{tutgolden}
 \goldrow{stream}{Feed}{F}{0.0138888888889}
 \goldrow{stream}{conveyed}{F}{0.0138888888889}
@@ -6140,7 +6140,7 @@ The same sand-in-N2 service as pneumaticConveyor01 (loading \textasciitilde{}2),
 \begin{tutnarrative}
 showcase for TRACK A predefined-mixture expansion.
 
-The thermoPackage lists `components ( air )`. At load time the loader splices `air` into N2 + O2 + Ar (see constant/propertyDict). A single heater then adds 5 kW to a 1 mol/s air stream at 1 bar, 298.15 K. The air is gas (vf = 1), so the heater integrates the ideal-gas mixture H\_ig over the three real components $\to$ a correct MULTICOMPONENT result.
+The declared system lists `components ( air )`. At load time the loader splices `air` into N2 + O2 + Ar (see constant/thermoPhysPropDict). A single heater then adds 5 kW to a 1 mol/s air stream at 1 bar, 298.15 K. The air is gas (vf = 1), so the heater integrates the ideal-gas mixture H\_ig over the three real components $\to$ a correct MULTICOMPONENT result.
 
 Z-SEEDING NOTE (glass-box honesty): The expansion captures the member mole fractions (N2 0.7808 / O2 0.2095 / Ar 0.0093) as a per-component seed on the ThermoPackage (`mixtureSeedVector()`). The feed below STATES the same fractions explicitly so the case is self-evident and the result is unambiguous -- a stream that declares its own composition always wins over the seed. The seed exists so a future feed that OMITS its composition can be filled from the mixture defaults; that wiring lives in the stream-construction path (Flowsheet / Composition), not in this case.
 

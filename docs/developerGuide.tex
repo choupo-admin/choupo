@@ -113,15 +113,15 @@ Choupo/
 |-- data/
 |   `-- standards/                  the FROZEN, committee-managed reference tree
 |       |-- components/             <name>.dat --- component catalogue (arity-1)
-|       |-- materials/              <name>.dat --- material database
-|       |-- membranes/              <name>.dat --- NF/RO membrane catalogue
+|       |-- species/                <name>.dat --- model species (ions, aq. gases)
+|       |-- chemistry/              real equilibria: salts, speciation, minerals
+|       |-- assets/                 physical kit, FLAT with kind = consumer
+|       |                            (membranes, materials, adsorbents, resins)
 |       |-- utilities/              <name>.dat --- plant-utility catalogue
-|       |-- binaryPairs/            NRTL / Wilson / UNIQUAC pair files (arity-2)
-|       |-- henrysLaw/              Henry's-law pairs (arity-2)
-|       |-- solution/               <solute>-<solvent>.dat --- aqueous TIER (arity-2)
-|       |-- electrolyte/            ions.dat + Pitzer/eNRTL catalogues (arity-2)
-|       |-- eos/<model>/            model-keyed binaryInteractions (k_ij)
-|       `-- unifac/                 group-interaction tables
+|       |-- parameters/             every pair catalogue (arity-2):
+|       |                            NRTL/ UNIQUAC/ Wilson/ Henry/ SRK/
+|       |                            Pitzer/ eNRTL/ solution/ UNIFAC/
+|       `-- mixtures/               predefined mixtures (air, ...)
 |-- docs/                          THIS FILE + userGuide.{md,tex,pdf}
 |-- src/
 |   |-- core/                       Dictionary, SimulationResult, Constants, Types
@@ -838,8 +838,10 @@ bin/runTests             # NaN/inf guard on every case + golden-master KPIs
 solver is a separate compile from the native binary.  Symptom of a stale
 \file{.wasm}: the native run works, but the GUI errors
 \code{UnitOperation::New: unknown type 'myOp'}.  Fix with \code{make wasm-gui}
-(force a clean one with \code{make wasm-clean \&\& make wasm} if it says
-``Nothing to be done'').  Never validate with a bare
+--- the incremental build tracks sources, flags and the standards tree by
+content, so a changed input always rebuilds; if it ever says ``Nothing to be
+done'' after a real change, that is a dependency-graph bug to report, and
+\code{make wasm-clean} is a deliberate diagnostic, not a ritual.  Never validate with a bare
 \code{choupoSolve > /dev/null \&\& PASS} loop --- a solver can return NaN with
 exit code 0; \code{bin/runTests} is the only honest gate (\S\ref{sec:regression}).
 \end{pitfall}
@@ -2086,9 +2088,12 @@ make wasm-gui          # = choupoSolve + choupoProps, the two the GUI uses
 \textbf{Skip this and the GUI throws \code{UnitOperation::New: unknown type
 'isothermalSplitter'}} even though the native binary runs the type fine.  The
 WASM solver is a separate Emscripten compile; a new built-in only reaches the
-browser after a WASM rebuild.  If \code{make wasm} reports ``Nothing to be
-done'', force it: \code{make wasm-clean \&\& make wasm}.  Never run two
-\code{make wasm} concurrently --- they clobber \file{gui/public/wasm/}.
+browser after a WASM rebuild (\code{make wasm-gui}).  The incremental build
+invalidates on source, flag and standards-content changes --- a ``Nothing to
+be done'' after a real change is a graph bug, not something to paper over
+with ritual cleans (\code{make wasm-clean} stays available as deliberate
+diagnostics).  Never run two \code{make wasm} concurrently --- they clobber
+\file{gui/public/wasm/}.
 \end{pitfall}
 
 \paragraph{Step 6 --- A minimal tutorial case.}  Keep it trivial so it doubles
@@ -2096,7 +2101,7 @@ as a regression test.  \file{tutorials/steady/mixer/splitter01\_isothermal/}:
 
 \begin{lstlisting}
 splitter01_isothermal/
-  splitter01.cho                 # empty marker (the GUI's openable entity)
+  splitter01.cho                 # GUI marker (openable; may carry GUI layout)
   system/
     controlDict                  # application choupoSolve; verbosity 3;
     flowsheetDict                # the topology below

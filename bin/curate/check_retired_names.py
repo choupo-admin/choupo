@@ -184,10 +184,47 @@ for f in agg_files:
         bad.append(f"{f.relative_to(ROOT)}: retired aggregated-snapshot"
                    f" spelling '{m.group(0)}'")
 
+# 5. RETIRED THERMO GRAMMAR in every doc surface a user/LLM reads: the v1
+#    case grammar died with the v2-native consolidation, so no guide (.tex,
+#    INCLUDING the split tutorialsGuide-*.tex parts), docs/ai reference,
+#    AGENTS.md, README.md or data/standards/README.md may teach it.  Lines
+#    marked as history stay allowed; the runtime class names ThermoPackage /
+#    ThermoPackageBuilder are legitimate (lowercase-t `thermoPackage` is the
+#    retired FILE name).
+V1_TOKENS = (
+    re.compile(r"propertyDict"),
+    re.compile(r"(?<![A-Za-z])thermoPackage"),          # not ThermoPackage
+    re.compile(r"propertyMethods"),
+    re.compile(r"recordType\s+propertyPackage"),
+    re.compile(r"binaryPairs/"),
+    re.compile(r"data/standards/methods"),
+)
+doc_files = []
+for d, exts in ((ROOT / "docs", (".tex",)),
+                (ROOT / "docs" / "ai", (".md",))):
+    for f in d.rglob("*"):
+        if f.suffix in exts:
+            doc_files.append(f)
+doc_files += [ROOT / "AGENTS.md", ROOT / "README.md",
+              ROOT / "data" / "standards" / "README.md"]
+for f in doc_files:
+    try:
+        txt = f.read_text(errors="replace")
+    except OSError:
+        continue
+    for pat in V1_TOKENS:
+        for m in pat.finditer(txt):
+            if allowed_history(txt, m.start()):
+                continue
+            bad.append(f"{f.relative_to(ROOT)}: retired v1 grammar"
+                       f" token '{m.group(0)}'")
+            break                      # one report per (file, token)
+
 if bad:
     print("RETIRED-NAME GATE FAILED (%d):" % len(bad))
     for b in bad[:60]:
         print("  " + b)
     sys.exit(1)
 print("retired-name gate: component corpus flat, tutorial sources clean,"
-      " src/ clean, aggregated snapshot speaks streamFaces")
+      " src/ clean, aggregated snapshot speaks streamFaces, doc surfaces"
+      " (guides incl. tutorialsGuide-* + docs/ai) free of v1 grammar")

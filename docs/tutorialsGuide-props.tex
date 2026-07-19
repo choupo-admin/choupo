@@ -123,7 +123,7 @@ idealGas: Z = 1 always (textbook reference; ignores attraction). SRK : Z = 0.538
 
 The lesson: at and just above Tc, BOTH cubics track CO2 well --- PR sits almost exactly on the \textasciitilde{}0.49 datum and SRK is only \textasciitilde{}0.05 high. This is a regime where cubic EoS are at their best, not their worst. Both Z curves keep falling past Pc to a shallow minimum (SRK \textasciitilde{}0.30, PR \textasciitilde{}0.275 near 98 bar) before rising again; the SRK-vs-PR gap is the diagnostic a student should read off the overlay.
 
-Each operation overrides the global thermoPackage with a different EoS via the `thermo \{\}` per-op block. The three CSVs are independent, so the GUI overlays them on the same Plotly canvas (same X axis "P", same Y "Z"). The result is one figure with three curves, ready for the project report.
+Each operation overrides the globally declared system with a different EoS via the `thermo \{\}` per-op block. The three CSVs are independent, so the GUI overlays them on the same Plotly canvas (same X axis "P", same Y "Z"). The result is one figure with three curves, ready for the project report.
 
 \end{tutnarrative}
 
@@ -291,7 +291,7 @@ WHAT THE NUMBERS SAY (locked by the golden): total AAD \textasciitilde{}4.3\% ov
 \begin{tutnarrative}
 THE MULTI-SALT eNRTL ARRIVES: the multicomponent symmetric electrolyte NRTL of Song \& Chen 2009 (Ind. Eng. Chem. Res. 48, 7788, DOI 10.1021/ie9004578) on the classic Harned experiment -- NaCl + KCl sharing water at a CONSTANT 4 mol/kg total molality, gamma\_pm of BOTH salts as KCl replaces NaCl. This is the paper's own demonstration system (its Figures 1-2).
 
-What the run shows (all golden-locked): gamma\_pm(NaCl) slides from its pure-solution value to its TRACE value in 4 m KCl, and vice versa -- both ln gamma curves are NEARLY LINEAR in the salt fraction: Harned's rule, EMERGING from the model rather than being assumed (R\textasciicircum{}2 > 0.99 with zero electrolyte-electrolyte parameters). The PURE endpoints reproduce the validated single-salt eNRTL kernel exactly (the reduction pin \textasciitilde{}1e-16): the multicomponent formulation collapses correctly. The pair parameters are the EXACT Chen \& Evans 1986 Table 1 values the paper uses (case-local constant/electrolyte/enrtl.dat, cited). The standards K-Cl.dat carries an INDEPENDENT refit to Hamer \& Wu 1972 that lands within 0.2 \% of the 1986 values -- two roads, one answer. The 1986 paper itself (Table 2) validates tauEE = 0 for NaCl-KCl: sigma = 0.019 \% on the Covington 1968 mixture osmotic data with the salt-salt energies set to zero -- this case's default is the canonical choice. HONESTY, printed by the op: the published multi-electrolyte eNRTL activity-coefficient expressions are NOT exactly Gibbs-Duhem consistent (the composition-dependent mixing rules are differentiated as constants). The op's FD oracle quantifies that inconsistency at the mid-sweep state (gibbsDuhem\_dev\_mid) next to the pure-salt state where the same oracle sits at \textasciitilde{}1e-9. THE REFINED FORMULATION SHIPS TOO (second op below): gamma as the EXACT derivative of the same Gex -- the chain rule kept through the composition-dependent mixing rules (the Bollas, Chen \& Barton 2008 idea on the symmetric form). Its oracle closes (\textasciitilde{}1e-9) at every composition; both reduce EXACTLY to the same single-salt kernel at the endpoints. Mid-sweep they differ by |dln gamma\_pm| \textasciitilde{} 0.037 (\textasciitilde{}4 \% in gamma), and the trace limits differ visibly (NaCl trace 0.608 published vs 0.667 consistent). WHICH is closer to nature is a question for MIXTURE data (Covington 1968 / Robinson 1961) -- this case states the facts and locks both; it does not pick a winner without measurements.
+What the run shows (all golden-locked): gamma\_pm(NaCl) slides from its pure-solution value to its TRACE value in 4 m KCl, and vice versa -- both ln gamma curves are NEARLY LINEAR in the salt fraction: Harned's rule, EMERGING from the model rather than being assumed (R\textasciicircum{}2 > 0.99 with zero electrolyte-electrolyte parameters). The PURE endpoints reproduce the validated single-salt eNRTL kernel exactly (the reduction pin \textasciitilde{}1e-16): the multicomponent formulation collapses correctly. The pair parameters are the EXACT Chen \& Evans 1986 Table 1 values the paper uses (case-local constant/parameters/eNRTL/, cited per pair). The standards K-Cl.dat carries an INDEPENDENT refit to Hamer \& Wu 1972 that lands within 0.2 \% of the 1986 values -- two roads, one answer. The 1986 paper itself (Table 2) validates tauEE = 0 for NaCl-KCl: sigma = 0.019 \% on the Covington 1968 mixture osmotic data with the salt-salt energies set to zero -- this case's default is the canonical choice. HONESTY, printed by the op: the published multi-electrolyte eNRTL activity-coefficient expressions are NOT exactly Gibbs-Duhem consistent (the composition-dependent mixing rules are differentiated as constants). The op's FD oracle quantifies that inconsistency at the mid-sweep state (gibbsDuhem\_dev\_mid) next to the pure-salt state where the same oracle sits at \textasciitilde{}1e-9. THE REFINED FORMULATION SHIPS TOO (second op below): gamma as the EXACT derivative of the same Gex -- the chain rule kept through the composition-dependent mixing rules (the Bollas, Chen \& Barton 2008 idea on the symmetric form). Its oracle closes (\textasciitilde{}1e-9) at every composition; both reduce EXACTLY to the same single-salt kernel at the endpoints. Mid-sweep they differ by |dln gamma\_pm| \textasciitilde{} 0.037 (\textasciitilde{}4 \% in gamma), and the trace limits differ visibly (NaCl trace 0.608 published vs 0.667 consistent). WHICH is closer to nature is a question for MIXTURE data (Covington 1968 / Robinson 1961) -- this case states the facts and locks both; it does not pick a winner without measurements.
 
 tauEE (the same-anion electrolyte-electrolyte parameter tau\_NaCl,KCl of the paper's Figures 1-2) defaults to 0; set it to +-1 to reproduce the paper's sensitivity fan.
 
@@ -447,7 +447,7 @@ halite NaCl carries NO analytic K(T) in phreeqc.dat (the db's -analytic line is 
 
 At 25 C the K(T) machinery returns logK25 for EVERY entry (byte-stable); off 25 C the run announces the form in use per entry (analytic / van't Hoff / flat) and warns loudly if an analytic is used beyond its fitted validity range. (Calcite's analytic is valid 0 - 300 C, so the whole 10 - 80 C scan is in range.)
 
-Speciation/mineral data: case-local constant/electrolyte/ -- a self- contained SNAPSHOT of the standards catalogue (USGS PHREEQC, public domain; see the .dat headers). The case files ECLIPSE data/standards/electrolyte/.
+Speciation/mineral data: the case's own constant/ closure -- species/ + chemistry/ (speciation, minerals), sealed by the sha256 propertyManifest (USGS PHREEQC, public domain; see the .dat headers). The case never reaches the installation catalogue.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -479,7 +479,7 @@ Speciation/mineral data: case-local constant/electrolyte/ -- a self- contained S
 \begin{tutnarrative}
 the first electrolyte case.
 
-gamma\_pm, the osmotic coefficient phi and the water activity a\_w for NaCl, by the Pitzer ion-interaction model. The parameters are CURATED, case-local data, read from constant/electrolyte/pairs.dat (PRIMARY: Appelo, Appl. Geochem. 55 (2015) 62 --- a 3-parameter set, beta0/beta1/Cphi). Open pitzer\_nacl.csv: gamma\_pm dips to \textasciitilde{}0.657 near 1 mol/kg, then rises above 1 by \textasciitilde{}6 mol/kg --- the textbook NaCl signature, from a closed form.
+gamma\_pm, the osmotic coefficient phi and the water activity a\_w for NaCl, by the Pitzer ion-interaction model. The parameters are CURATED, case-local data, read from constant/parameters/Pitzer/pairs/Na-Cl.dat (PRIMARY: Appelo, Appl. Geochem. 55 (2015) 62 --- a 3-parameter set, beta0/beta1/Cphi). Open pitzer\_nacl.csv: gamma\_pm dips to \textasciitilde{}0.657 near 1 mol/kg, then rises above 1 by \textasciitilde{}6 mol/kg --- the textbook NaCl signature, from a closed form.
 
 NOTE on the two L\_phi columns: pitzer\_nacl.csv reports L\_phi\_fit and L\_phi\_anchored, and their SPLIT is the lesson. The pair now carries Silvester-Pitzer dX/dT slots CALORIMETRICALLY FITTED to Parker, NSRDS-NBS 2 (1965) Table XIV A (rel-AAD 2.5 \%, m 0.1-6; bin/curate/fit\_lphi\_pitzer.py): the fit column tracks the measured heat-of-dilution curve -- the sign change near 1 mol/kg, the deep negative branch to -480 cal/mol -- while the anchored column (slots zeroed, Gibbs-Helmholtz-consistent but uncalibrated) misses it entirely. The validation block below pins the AAD vs the same curated Parker series, golden-locked. The gamma\_pm / phi / a\_w values come from the untouched 25 C surface and are identical in both.
 
@@ -500,7 +500,7 @@ NOTE on the two L\_phi columns: pitzer\_nacl.csv reports L\_phi\_fit and L\_phi\
 \end{tutscheme}
 \tutwhat{Pitzer gamma\_pm(m) for CaCl2 (a 2:1 salt) in water at 25 C --- the SAME general formula as NaCl, only the charges/stoichiometry differ. Validated vs Robinson \& Stokes (AAD 0.49\%, 0.1-2 m).}
 \begin{tutnarrative}
-the same Pitzer engine on a 2:1 electrolyte (Ca2+, 2 Cl-). Parameters curated case-local in constant/electrolyte/pairs.dat (PRIMARY: Appelo, Appl. Geochem. 55 (2015) 62). gamma\_pm dips below 0.45 then climbs steeply --- the divalent-cation signature. Valid to \textasciitilde{}2 mol/kg; CaCl2 carries a non-zero beta2 (-1.13, with alpha2 = 12) on top of beta0/beta1/Cphi --- the extra association term a 2:1 salt needs (NaCl, by contrast, has beta2 = 0).
+the same Pitzer engine on a 2:1 electrolyte (Ca2+, 2 Cl-). Parameters curated case-local in constant/parameters/Pitzer/pairs/Ca-Cl.dat (PRIMARY: Appelo, Appl. Geochem. 55 (2015) 62). gamma\_pm dips below 0.45 then climbs steeply --- the divalent-cation signature. Valid to \textasciitilde{}2 mol/kg; CaCl2 carries a non-zero beta2 (-1.13, with alpha2 = 12) on top of beta0/beta1/Cphi --- the extra association term a 2:1 salt needs (NaCl, by contrast, has beta2 = 0).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -519,7 +519,7 @@ the same Pitzer engine on a 2:1 electrolyte (Ca2+, 2 Cl-). Parameters curated ca
 \end{tutscheme}
 \tutwhat{NaCl Pitzer via the NEW property-package builder (reads zero old salt files)}
 \begin{tutnarrative}
-No `cation`/`anion` keys: the salt is resolved by the SELECTED propertyPackage (constant/propertyDict $\to$ aqueousNaCl\_pitzer). The op consumes the assembled package via thermo.electrolyte() and reports gamma\_pm / phi / a\_w.
+No `cation`/`anion` keys: the salt is resolved by the DECLARED system (constant/thermoPhysPropDict, formulation electrolyteGammaPhi -- NaCl's dissociatesTo names the ions). The op consumes the assembled package via thermo.electrolyte() and reports gamma\_pm / phi / a\_w.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -555,7 +555,7 @@ The golden master locks Choupo's exact output; the band above validates it is PH
 
 DAVIES vs PITZER (the differentiator, also pinned): the SAME composition under Davies gives SI\_calcite +0.882 and gamma\_CO2aq = 1.000 (no neutral salting- out) -- Davies is out of its trustworthy band (\textasciitilde{}0.5) at this I, overshoots the calcite SI by \textasciitilde{}0.22 vs Pitzer-HMW-with-E\_theta and misses the CO2 salting-out entirely. Pitzer is the rigorous tool for brine. Both entries run here so the divergence is VISIBLE.
 
-SELF-CONTAINED: constant/electrolyte/ carries the FULL snapshot (ions, pairs, mixing WITH carbonate theta/psi/lambda, speciation, minerals) -- the case runs with data/standards/ hidden.
+SELF-CONTAINED: the case's constant/ carries the FULL sealed closure -- species/, chemistry/ (speciation + minerals), parameters/ (pairs, mixing WITH carbonate theta/psi/lambda) under the sha256 propertyManifest -- so it runs with data/standards/ hidden.  It ALSO keeps a small case-local constant/electrolyte/speciation.dat delta, a TRANSITIONAL adapter of the speciation front-end still consumed by the speciate op (a counted 2608 debt, not the architecture).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -713,7 +713,7 @@ The golden master locks the Choupo-computed per-ion gammas; this header records 
 
 E\_theta(I) BEFORE $\to$ AFTER (constant-theta $\to$ higher-order mixing active), all pins STILL in their published band: gamma\_pm(NaCl) 0.6714 $\to$ 0.6646 (band 0.66-0.68; 1:1, E\_theta=0 for Na-Cl, shift via coupling) -- IN BAND gamma\_pm(KCl) 0.6447 $\to$ 0.6381 (band 0.62-0.64) -- E\_theta moved it INTO band gamma\_Ca 0.2141 $\to$ 0.1856 (2+ ion; E\_theta acts via Ca-Na/Ca-K/Ca-Mg) gamma\_SO4 0.1227 $\to$ 0.1040 (2- ion; E\_theta acts via SO4-Cl/SO4-OH) gamma\_Mg 0.2363 $\to$ 0.2049 gamma\_Na 0.6495 $\to$ 0.6390 gamma\_Cl 0.6941 $\to$ 0.6911 Single-salt reduction (PIN A, NaCl alone): gamma\_pm UNCHANGED at 0.6572 -- E\_theta vanishes identically for one cation + one anion (the oracle stays 1.5658e-14 over all 54 binaries).
 
-SELF-CONTAINED: constant/electrolyte/ carries the FULL snapshot (ions, pairs, mixing, speciation, minerals) -- the case runs with data/standards/ hidden.
+SELF-CONTAINED: the case's constant/ carries the FULL sealed closure -- species/, chemistry/ (speciation + minerals), parameters/ (pairs + mixing) under the sha256 propertyManifest -- so it runs with data/standards/ hidden.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -760,7 +760,7 @@ WHY PITZER IS THE ANSWER (cite the credentials, do not assert): Davies is ANNOUN
 
 E\_theta(I) BEFORE $\to$ AFTER (the scan\_pitzer fork only; scan\_davies is BYTE- IDENTICAL -- E\_theta is Pitzer-only). At r\_max (I \textasciitilde{} 3.3 mol/kg, deep brine where higher-order mixing bites hardest): SI\_gypsum\_rmax -0.144 $\to$ -0.305 SI\_calcite\_rmax 2.026 $\to$ 1.945 SI\_gypsum\_r0 -0.877 $\to$ -0.966 SI\_calcite\_r0 1.240 $\to$ 1.185 I\_rmax 3.271 $\to$ 3.323 gypsum stays undersaturated end-to-end The engineering verdict (gypsum the limiting scale) is UNCHANGED in direction; E\_theta refines the SI magnitude in the high-I tail.
 
-SELF-CONTAINED: constant/electrolyte/ carries the FULL snapshot (ions, pairs, mixing with the carbonate theta/psi/lambda, speciation, minerals) -- the case runs with data/standards/ hidden.
+SELF-CONTAINED: the case's constant/ carries the FULL sealed closure -- species/, chemistry/, parameters/ (pairs + the carbonate theta/psi/lambda mixing) under the sha256 propertyManifest -- so it runs with data/standards/ hidden.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -801,7 +801,7 @@ EQUILIBRIUM CEILING -- not a deposit prediction. The amounts are the thermodynam
 
 ALGORITHM (visible in the trace): augmented Newton in (ln m\_j [, ln a\_H]) plus one raw-linear n\_p per ACTIVE mineral; each master mole balance gains a sink -sum nu\_pj n\_p; one SI = 0 row per active phase; an OUTER active-set loop ADMITS the most-supersaturated allowed mineral and EVICTS any with n\_p < 0, re-solving between, until complementarity holds (SI <= 0 with n = 0, OR SI = 0 with n > 0). A carbonate mineral's H+ leg lands the released H+ in the electroneutrality row (pH solve) -- so precipitating calcite ACIDIFIES.
 
-CROSS-CHECK TOOL: PHREEQC EQUILIBRIUM\_PHASES (same ceiling framing). Data: case-local constant/electrolyte/ (self-contained USGS PHREEQC snapshot, public domain).
+CROSS-CHECK TOOL: PHREEQC EQUILIBRIUM\_PHASES (same ceiling framing). Data: the case's own sealed constant/ closure (species/ + chemistry/; USGS PHREEQC, public domain).
 
 GOLDEN PINS (locked by the golden master): pin\_gypsum\_amount Ca = SO4 = 0.030542 mol/kg (DOUBLE the gypsum-saturation value 0.015271) + equilibrate gypsum $\to$ SI\_gypsum = 0.000 and n\_gypsum = 0.015271 (the machine returns EXACTLY the over-added excess). feed\_eq calcite + gypsum allowed; calcite reaches SI = 0, releases H+ (pH 7.72 $\to$ \textasciitilde{}7.50, solved), gypsum stays dissolved. scan\_eq r 0 $\to$ 0.85 with feedFlow: calcite kg/day ceiling; gypsum n = 0 throughout while SIeq\_gypsum drifts BELOW the raw SI\_gypsum (calcite eats the shared Ca).
 
@@ -891,7 +891,7 @@ THE CLOSED-vs-OPEN LESSON (two scans, same feed): scan CLOSED system -- every to
 
 VALIDATION PINS (locked by the golden master): pin\_kw pure water, pH 7 GIVEN $\to$ m\_OH = Kw a\_w/(a\_H gamma\_OH) \textasciitilde{} 1.0004e-7 (unchanged) pin\_gypsum totals Ca = SO4 = 0.015271 mol/kg, pH 7 GIVEN, BACK-COMPUTED from the catalogue's logK25(gypsum) = -4.55 + CaSO4aq logK25 = 2.14 + Davies at the resulting I = 0.0455 (26\% ion pairing) so that SI\_gypsum = 0.00 +- 0.001 (unchanged) pin\_neutral pure water, pH SOLVED $\to$ electroneutrality m\_H = m\_OH must give pH 7.000 (locks the new charge-balance closure)
 
-Speciation/mineral/gas data: case-local constant/electrolyte/ (self- contained SNAPSHOT of the standards catalogue, restricted to this master set; the case files ECLIPSE data/standards/electrolyte/ -- the network is taken whole. Provenance: USGS PHREEQC, public domain -- see the .dat headers; the CO2(g) Henry constant is the db's PHASES CO2(g) entry).
+Speciation/mineral/gas data: the case's own sealed constant/ closure (species/ + chemistry/, restricted to this master set -- the network is taken whole, under the sha256 propertyManifest. Provenance: USGS PHREEQC, public domain -- see the .dat headers; the CO2(g) Henry constant is the db's PHASES CO2(g) entry).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -937,7 +937,7 @@ THE FRESH-RESIN CAVEAT (printed loudly, non-suppressible): the `exchange` op ret
 
 Brackish water (I \textasciitilde{} 0.03-0.06): Davies-valid, no Pitzer needed; the honesty banner + the I>0.5 Davies advisory cover the boundary.
 
-Data: case-local constant/electrolyte/ (self-contained USGS PHREEQC snapshot, public domain, + the SAC\_Na resin nameplate).
+Data: the case's own sealed constant/ closure (species/ + chemistry/, USGS PHREEQC public domain, + the SAC\_Na resin nameplate under constant/assets/).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1275,7 +1275,7 @@ The per-correlation deviation diags are the golden KPIs.
 \begin{tutnarrative}
 `mode evaluate`: the SCALE, not the fit.
 
-ONE operation, one question: how good is the STANDARD ethanol-water NRTL pair against this 1-atm bubble-T dataset? Nothing is adjusted, nothing is written. The propertyDict declares NO inline pairs, so what gets scored is genuinely THE CATALOGUE ENTRY resolved through the search path -- source, provenance and all -- not a private copy of the same numbers.
+ONE operation, one question: how good is the STANDARD ethanol-water NRTL pair against this 1-atm bubble-T dataset? Nothing is adjusted, nothing is written. The thermoPhysPropDict declares NO inline binaryParameters, so what gets scored is genuinely THE CATALOGUE ENTRY resolved through the search path -- source, provenance and all -- not a private copy of the same numbers.
 
 Read the verdict (rms/aad in kelvin) and THEN decide whether a refit is worth it: compare with fitNRTL01's fitted rms (0.31 K) on this same data. Failures are honest: a non-converged point becomes status=nonconverged in the parity CSV and never enters the statistics; no chi2\_reduced is printed -- without sigmas and degrees of freedom from THIS act, the name would lie.
 
@@ -1372,7 +1372,7 @@ The flash feed is set to z(water) = 0.80 (20 mol\% butanol), INSIDE the asymmetr
 \tutreadme{The agreement is essentially exact: the cited UNIQUAC fit reproduces the published mutual solubilities.}
 \tutreadme{- J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, $\ast$"Binary, ternary and quaternary liquid-liquid equilibria in 1-butanol, oleic acid, water and n-heptane mixtures"$\ast$, Fluid Phase Equilibria 284 (2009) 71--79, doi:10.1016/j.fluid.2009.06.013.}
 \tutreadme{- Interaction parameters --- their Table 2 (p.73), binary 1-butanol(1)/water(3), valid 273--363 K, with the quadratic temperature correlation A\_ij(T) = a + b$\cdot$T + c$\cdot$T$^2$ (Eq. 10), $\tau$\_ij = exp(-A\_ij/T) (Eq. 7): - A\_1,3 (butanol$\to$water): a = 155.31, b = 1.0822, 10?$\cdot$c = -43.711 - A\_3,1 (water$\to$butanol): a = -579.36, b = 2.7517, 10?$\cdot$c = -6.7700 - Structural r, q --- their Table 1 (p.72): 1-butanol r = 3.9243, q = 3.668; water r = 0.9200, q = 1.400.}
-\tutreadme{The same numbers live, fully provenanced, in data/standards/binaryPairs/UNIQUAC/nButanol-water.dat. The engine evaluates the full a + b$\cdot$T + c$\cdot$T$^2$ temperature dependence (the quadratic c$\cdot$T$^2$ term is essential --- at 320 K it is \textasciitilde{}-450 K, comparable to a).}
+\tutreadme{The same numbers live, fully provenanced, in data/standards/parameters/UNIQUAC/nButanol-water.dat. The engine evaluates the full a + b$\cdot$T + c$\cdot$T$^2$ temperature dependence (the quadratic c$\cdot$T$^2$ term is essential --- at 320 K it is \textasciitilde{}-450 K, comparable to a).}
 
 \clearpage
 \tutentry{phase01\_water\_full}{tutorials/props/scan/phase01\_water\_full}
@@ -1396,7 +1396,7 @@ Complete pure-compound P-T phase diagram of water: liquid-vapour saturation (to 
 \end{tutscheme}
 \tutwhat{Ternary VLLE phase map (compA/compB/compC) at 350 K, 1 bar via propertyScanTernary}
 \begin{tutnarrative}
-ILLUSTRATIVE / SYNTHETIC DATA. compA / compB / compC are NOT real species: they are artificial components (case-local constant/components/ + inline NRTL pairs in thermoPackage) deliberately tuned to guarantee a ternary VLLE region, so this case exercises the propertyScanTernary classifier on a known-3-phase map. Architecture (see thermoPackage): A and B mutually immiscible (LL gap on the A-B axis), C a volatile bridge soluble in both liquids. At 350 K, 1 bar the equimolar feed gives vapour rich in C, L\_alpha rich in A, L\_beta rich in B.
+ILLUSTRATIVE / SYNTHETIC DATA. compA / compB / compC are NOT real species: they are artificial components (case-local constant/components/ + inline NRTL binaryParameters in thermoPhysPropDict) deliberately tuned to guarantee a ternary VLLE region, so this case exercises the propertyScanTernary classifier on a known-3-phase map. Architecture (see thermoPhysPropDict): A and B mutually immiscible (LL gap on the A-B axis), C a volatile bridge soluble in both liquids. At 350 K, 1 bar the equimolar feed gives vapour rich in C, L\_alpha rich in A, L\_beta rich in B.
 
 Expected map (14 intervals/edge, 78 nodes): VLLE 36, LL 29, VL 0, 1-phase 13, 22 tie-lines, 0 failures. The point to SEE: a healthy spread of 3-phase (VLLE) and LL nodes with zero solver failures --- the classifier resolves the engineered gap node-by-node.
 

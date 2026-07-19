@@ -232,12 +232,14 @@ Each carries ρ, F_M (Guthrie), σ_y, max T, max P.
   m_sat [mol/kg] at 25 °C; the optional `dissolutionEnthalpy` [J/mol] sets the
   van't Hoff temperature shift of the solubility product `Ksp(T)` (omit it and `Ksp`
   is held flat in T — fine for NaCl, whose solubility is nearly T-independent).
-  - **Self-contained cases:** the ion charges (`ions.dat`) and the pair parameters
-    (`pairs.dat` for Pitzer β, `enrtl.dat` for eNRTL τ) resolve **case-local first** —
-    drop the entries you use into `<case>/constant/electrolyte/{ions,pairs,enrtl}.dat`
-    and the case carries every parameter the solver reads (the standard catalogue
-    fills any entry you did not localise; a `[overlay]` line announces the shadowing).
-    Same mechanism as `constant/components/<name>.dat` for the components.
+  - **Self-contained cases:** ion identities live in `constant/species/<name>.dat`
+    (one typed file per model species) and the pair parameters in
+    `constant/parameters/` (`Pitzer/pairs/<c>-<a>.dat`, `eNRTL/<c>-<a>.dat`),
+    sealed by the case's `propertyManifest` — the same per-record mechanism as
+    `constant/components/<name>.dat`.  (A residual case-local
+    `constant/electrolyte/speciation.dat` delta exists in two speciation
+    tutorials as a transitional adapter of the speciate op — counted 2608 debt,
+    not the architecture.)
 - `relativePermittivity <eps>;` — static dielectric constant (25 °C); on an
   **antisolvent** (e.g. ethanol 24.3) it drives the mixed-solvent eNRTL
   (drowning-out). The electrolyte models are temperature-dependent: `eps_w(T)` /
@@ -246,9 +248,11 @@ Each carries ρ, F_M (Guthrie), σ_y, max T, max P.
 
 ## The reference-state layout (NEW component .dats — forum 2026-06-11)
 
-New `.dat` files group data by **declared reference state** — the file reads as
-the γ-φ equation itself (legacy flat files stay valid forever; never mix the
-two forms for one datum — the loader refuses loudly):
+New `.dat` files group data by **declared reference state** — the file reads
+as the γ-φ equation itself.  Older flat COMPONENT records (plain top-level
+keys) remain readable — this is a statement about the component `.dat` layout
+only, not about any case grammar — but never mix the two forms for one datum:
+the loader refuses loudly.
 
 ```
 identity   { name  formula  CAS  MW }            // who

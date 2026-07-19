@@ -213,7 +213,8 @@ or control case has no flowsheet streams to seed --- its vessels carry
 
 \begin{lstlisting}
 caseName/
-|-- caseName.cho             empty marker file --- the GUI's "openable" entity
+|-- caseName.cho             GUI marker (openable entity) --- empty, or
+|                              GUI layout metadata; the solver never reads it
 |-- system/
 |   |-- controlDict          REQUIRED  application, verbosity, reports{}
 |   |-- flowsheetDict        REQUIRED  TOPOLOGY ONLY: units + connections

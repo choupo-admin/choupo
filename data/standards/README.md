@@ -63,8 +63,9 @@ data/standards/                     one folder = one KIND of thing (M1-M5, 2026-
 ├── assets/       <name>.dat        physical kit, FLAT; kind = consumer (RO|NF|IEM|
 │                                   constructionMaterial|adsorbent|ionExchangeResin)
 ├── mixtures/ · utilities/          predefined mixtures · plant utility services
-└── (a case selects records via its inline constant/propertyDict manifest;
-   sealing with bin/choupo-import makes the case runtime-self-contained)
+└── (a case declares its system in constant/thermoPhysPropDict; sealing with
+   bin/choupo-import mirrors the closure into the case's constant/ under a
+   sha256 constant/propertyManifest, making the case runtime-self-contained)
 ```
 
 ## How cases override standards
