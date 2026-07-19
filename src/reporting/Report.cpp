@@ -98,6 +98,11 @@ Report::buildChain(const DictPtr& reportsDict)
                 "reports: entry '" + key + "' must be a sub-dictionary "
                 "(e.g. `" + key + " { }`)");
         }
+        // A block may opt out with `enabled false;` -- uniform for every
+        // type, and the hook a case uses to silence the default
+        // elementBalance diagnostic.
+        if (opts->lookupWordOrDefault("enabled", "true") == "false")
+            continue;
         // The concrete type defaults to the block key; an explicit
         // `type <name>;` inside overrides (lets two instances share a type).
         const std::string typeName = opts->lookupWordOrDefault("type", key);

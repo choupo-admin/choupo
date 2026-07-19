@@ -716,7 +716,25 @@ try
     //.ods into reports/.  Runs on the direct pass AND on an outer
     // driver's representative pass (the replay at the optimum).
     auto runReports = [&](SimulationResult& result) {
-        if (!reportsDict || !result.converged) return;
+        if (!result.converged) return;
+        // The ELEMENT balance is a DEFAULT diagnostic of every converged
+        // steady run (2026-07-19): atom conservation is the invariant a
+        // reacting flowsheet is judged by, so it cannot depend on each case
+        // discovering an opt-in block.  A declared `elementBalance {...}`
+        // keeps full control (including `enabled false;` to opt out); on
+        // missing formulas the report refuses honestly (UNAVAILABLE with
+        // named reasons), so pseudo-component cases stay truthful.
+        bool declaredElementBalance = false;
+        if (reportsDict)
+            for (const auto& key : reportsDict->keys())
+            {
+                try {
+                    if (reportsDict->subDict(key)
+                            ->lookupWordOrDefault("type", key)
+                        == "elementBalance")
+                        declaredElementBalance = true;
+                } catch (const std::exception&) {}
+            }
         ThermoPackage thermoForReports;
         thermoForReports = ThermoPackageBuilder::build(packageDict, db, chemPtr);
         const bool postProc = (reportsLayout == "postProcessing");
@@ -748,7 +766,12 @@ try
         };
         if (verbosity >= 2)
             std::cout << "\nReports (-> " << reportsDir.string() << "):\n";
-        auto chain = Report::buildChain(reportsDict);
+        auto chain = reportsDict
+            ? Report::buildChain(reportsDict)
+            : std::vector<std::pair<std::unique_ptr<Report>, DictPtr>>{};
+        if (!declaredElementBalance)
+            chain.emplace_back(Report::New("elementBalance"),
+                Dictionary::fromString("", "<default elementBalance>"));
         for (auto& [rep, opts] : chain) rep->run(opts, rctx);
     };
 

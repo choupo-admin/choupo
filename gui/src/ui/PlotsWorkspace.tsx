@@ -158,7 +158,7 @@ export function PlotsWorkspace() {
             hideWhenUnavailable: true,
             hint: "The choupoCtrl GLOBAL balance ledger over time (mass inventory + conservation residuals per element), integrated on accepted steps in the engine.  Withheld claims render as named states." },
           { key: "elementBalance", label: "Element balance", available: hasElemBalance,
-            hint: "Atom conservation at the plant boundary (kmol-atom/h): total atoms in vs out, sealed only when every element closes.  By-element detail inside.  Needs elementBalance { } in controlDict.reports." },
+            hint: "Atom conservation at the plant boundary (kmol-atom/h): total atoms in vs out, sealed only when every element closes.  By-element detail inside.  A default diagnostic of every converged steady run (opt out with elementBalance { enabled false; } in controlDict.reports)." },
           { key: "massBalance",   label: "Mass balance",   available: hasStreams,
             hint: "Plant-boundary INPUTS vs OUTPUTS in mass basis (kg/h), stacked by component.  Title shows the closure error." },
           { key: "energyBalance", label: "Energy balance", available: hasStreams,
