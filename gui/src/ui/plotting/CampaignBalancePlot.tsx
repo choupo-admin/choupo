@@ -65,7 +65,6 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
   const massClosure = view.mass?.closureRel;
   const massResidual = view.mass?.residualKg;
 
-  const elements = (view.elements ?? []).map((e) => e.symbol);
   const elementsAvailable = view.elements !== undefined;
   const worstElement = view.worstElementClosureRel;
 
@@ -140,8 +139,8 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
     ? [{
         type: "bar" as const,
         name: "closure",
-        x: elements,
-        y: elements.map((e) => campaign[`element_${e}_closure_rel`] ?? 0),
+        x: (view.elements ?? []).map((e) => e.symbol),
+        y: (view.elements ?? []).map((e) => e.closureRel),
         marker: { color: PLOT_COLORS.series[3] },
         hovertemplate: "%{x}: |ΔN|/N = %{y:.3e}<extra></extra>",
       }]

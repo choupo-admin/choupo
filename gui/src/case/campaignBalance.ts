@@ -101,7 +101,8 @@ export function campaignBalanceView(
 
   const elements = Object.keys(campaign)
     .map((k) => /^element_([A-Za-z]+)_closure_rel$/.exec(k))
-    .filter((m): m is RegExpExecArray => m !== null && m[1] !== "worst")
+    .filter((m): m is RegExpExecArray =>
+      m !== null && m[1] !== "worst" && Number.isFinite(campaign[m[0]]))
     .map((m) => ({ symbol: m[1]!, closureRel: campaign[m[0]]! }));
   if (elements.length > 0) {
     view.elements = elements.sort((a, b) => a.symbol.localeCompare(b.symbol));
