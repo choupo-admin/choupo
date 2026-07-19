@@ -67,6 +67,7 @@ import { ConvergencePlot } from "./plotting/ConvergencePlot.js";
 import { EnergyBalancePlot } from "./plotting/EnergyBalancePlot.js";
 import { MassBalancePlot } from "./plotting/MassBalancePlot.js";
 import { unitEnergy } from "../case/balances.js";
+import { CampaignBalancePlot } from "./plotting/CampaignBalancePlot.js";
 import { ProfilePlot } from "./plotting/ProfilePlot.js";
 import { TrajectoryPlot } from "./plotting/TrajectoryPlot.js";
 import { TxyPlot } from "./plotting/TxyPlot.js";
@@ -76,6 +77,7 @@ import { GanttPlot } from "./plotting/GanttPlot.js";
 type PlotKey =
   | "trajectory"
   | "gantt"
+  | "campaignBalance"
   | "massBalance"
   | "energyBalance"
   | "txy"
@@ -120,10 +122,13 @@ export function PlotsWorkspace() {
     const hasConvergence = (result?.convergence.length ?? 0) > 0;
     const hasTrajectory = Boolean(result?.trajectory);
     const hasTimeline = (result?.timeline?.length ?? 0) > 0;
+    const hasCampaign = Boolean(result?.kpis?.["campaign"]);
     return [
       {
         label: "Balance",
         items: [
+          { key: "campaignBalance", label: "Campaign balance", available: hasCampaign,
+            hint: "The batch campaign's global mass / element / energy balances, drawn from the engine's own ledger KPIs.  UNAVAILABLE states are shown honestly, never as zeros." },
           { key: "massBalance",   label: "Mass balance",   available: hasStreams,
             hint: "Plant-boundary INPUTS vs OUTPUTS in mass basis (kg/h), stacked by component.  Title shows the closure error." },
           { key: "energyBalance", label: "Energy balance", available: hasStreams,
@@ -215,6 +220,10 @@ export function PlotsWorkspace() {
       case "trajectory":  return result.trajectory  ? <TrajectoryPlot data={result.trajectory} /> : null;
       case "gantt":       return result.timeline
         ? <GanttPlot timeline={result.timeline} {...(result.kpis ? { kpis: result.kpis } : {})} /> : null;
+      case "campaignBalance": {
+        const c = result.kpis?.["campaign"];
+        return c ? <CampaignBalancePlot campaign={c} /> : null;
+      }
       case "massBalance": return (
         <MassBalancePlot
           streams={result.streams}
