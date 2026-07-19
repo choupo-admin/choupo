@@ -81,6 +81,11 @@ inline std::vector<scalar> componentMassFlow(const ProcessStream& s,
 struct ElementBoundaryBalance
 {
     bool                                             available = false;
+    // PARTIAL: every species resolved, but at least one only through a
+    // declared composition with unaccounted mass -- the declared elements
+    // are usable; no COMPLETE elemental closure may be stamped.
+    bool                                             partial = false;
+    std::vector<std::pair<std::string, scalar>>      partialSpecies;
     std::vector<std::pair<std::string, std::string>> refusedSpecies;
     std::vector<std::string>                         missingStreams;
     std::map<std::string, scalar>                    elemIn;    // kmol-atom/s
@@ -129,13 +134,19 @@ inline ElementBoundaryBalance elementBoundaryBalance(
     for (std::size_t i = 0; i < n; ++i)
     {
         if (molIn[i] == 0.0 && molOut[i] == 0.0) continue;   // not present
-        const auto ec = parseElementalFormula(thermo.comp(i).formula());
-        if (!ec.available)
+        const auto er = elementalCompositionOf(thermo.comp(i));
+        if (er.completeness == ElementalResolution::Completeness::unavailable)
         {
-            out.refusedSpecies.emplace_back(thermo.comp(i).name(), ec.reason);
+            out.refusedSpecies.emplace_back(thermo.comp(i).name(), er.reason);
             continue;
         }
-        for (const auto& [sym, na] : ec.atoms)
+        if (er.completeness == ElementalResolution::Completeness::partial)
+        {
+            out.partial = true;
+            out.partialSpecies.emplace_back(thermo.comp(i).name(),
+                                            er.unaccountedMassFraction);
+        }
+        for (const auto& [sym, na] : er.atoms)
         {
             out.elemIn[sym]  += na * molIn[i];
             out.elemOut[sym] += na * molOut[i];

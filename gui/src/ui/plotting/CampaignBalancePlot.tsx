@@ -201,8 +201,11 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
           {massResidual !== undefined ? ` (residual ${fmtSci(massResidual)} kg)` : ""}
         </Badge>
         {elementsAvailable ? (
-          <Badge variant="light" color={worstElement !== undefined && worstElement < 1e-6 ? "teal" : "yellow"}>
-            worst element closure {worstElement !== undefined ? fmtSci(worstElement) : "?"}
+          <Badge variant="light"
+            color={view.elementsPartial ? "yellow"
+                   : worstElement !== undefined && worstElement < 1e-6 ? "teal" : "yellow"}>
+            {view.elementsPartial ? "elements PARTIAL — " : "worst element closure "}
+            {worstElement !== undefined ? fmtSci(worstElement) : "?"}
           </Badge>
         ) : (
           <Badge variant="light" color="gray">
@@ -226,7 +229,17 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
       <Group grow align="stretch" style={{ flex: 1, minHeight: 0 }}>
         {smallPlot(massData, "Mass — initial vs final + out", "mass (kg)")}
         {elementsAvailable
-          ? smallPlot(elementData, "Element conservation |ΔN|/N", "relative closure")
+          ? (
+            <Stack gap={0} style={{ minHeight: 0 }}>
+              {view.elementsPartial && (
+                <Text c="dimmed" size="xs" ta="center">
+                  PARTIAL — the declared elements are shown; no complete
+                  elemental closure is stamped (unaccounted mass declared).
+                </Text>
+              )}
+              {smallPlot(elementData, "Element conservation |ΔN|/N", "relative closure")}
+            </Stack>
+          )
           : (
             <Stack align="center" justify="center">
               <Text c="dimmed" size="sm" ta="center" maw={260}>

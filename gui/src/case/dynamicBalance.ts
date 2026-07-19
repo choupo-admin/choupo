@@ -40,6 +40,10 @@ export interface DynamicBalanceView {
    *  skip that keeps an AVAILABLE badge over traced NaNs. */
   malformedReason?: string;
   elementsAvailable: boolean;
+  /** Engine-declared PARTIAL: declared compositions carry unaccounted mass;
+   *  the drawn element series are usable but no complete closure is
+   *  stamped. */
+  elementsPartial: boolean;
   elementsReason?: string;
   energyAvailable: boolean;
   energyReason?: string;
@@ -59,6 +63,7 @@ export function dynamicBalanceView(
     present: false,
     materialAvailable: false,
     elementsAvailable: false,
+    elementsPartial: false,
     energyAvailable: false,
     t: [], massInventoryKg: [], massResidualKg: [],
     elementResiduals: {},
@@ -73,6 +78,7 @@ export function dynamicBalanceView(
       if (key === "material_available") view.materialAvailable = val === "1";
       else if (key === "material_reason") view.materialReason = val;
       else if (key === "elements_available") view.elementsAvailable = val === "1";
+      else if (key === "elements_partial") view.elementsPartial = val === "1";
       else if (key === "elements_reason") view.elementsReason = val;
       else if (key === "energy_available") view.energyAvailable = val === "1";
       else if (key === "energy_reason") view.energyReason = val;

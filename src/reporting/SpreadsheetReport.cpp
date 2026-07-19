@@ -190,6 +190,18 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
         }
         else
         {
+            if (eb.partial)
+            {
+                ods.newRow();
+                ods.textCell("PARTIAL -- declared compositions carry"
+                             " unaccounted mass:", OdsWriter::Bad);
+                for (const auto& [nm2, un] : eb.partialSpecies)
+                {
+                    ods.newRow();
+                    ods.textCell(nm2);
+                    ods.numberCell(un, 4);
+                }
+            }
             ods.newRow();
             ods.textCell("element",              OdsWriter::Header);
             ods.textCell("in [kmol-atom/h]",     OdsWriter::Header);

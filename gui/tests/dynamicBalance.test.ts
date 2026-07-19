@@ -56,6 +56,17 @@ describe("dynamicBalanceView", () => {
     expect(Object.keys(v.elementResiduals)).toEqual([]);
   });
 
+  it("engine-declared PARTIAL elements surface as a state with reason", () => {
+    const meta = 'key,value\nmaterial_available,1\nelements_available,1\n'
+      + 'elements_partial,1\nelements_reason,"petCut (PARTIAL, unaccounted'
+      + ' 0.02 kg/kg)"\nenergy_available,0\n';
+    const v = dynamicBalanceView(TRAJ, meta);
+    expect(v.elementsAvailable).toBe(true);
+    expect(v.elementsPartial).toBe(true);
+    expect(v.elementsReason).toContain("unaccounted");
+    expect(Object.keys(v.elementResiduals).sort()).toEqual(["C", "H"]);
+  });
+
   it("no artefacts -> not present, nothing fabricated", () => {
     const v = dynamicBalanceView(undefined, undefined);
     expect(v.present).toBe(false);

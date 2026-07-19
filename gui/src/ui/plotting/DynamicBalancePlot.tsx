@@ -114,12 +114,15 @@ export function DynamicBalancePlot({ trajectoryCsv, metaCsv }: DynamicBalancePlo
           <Badge variant="light" color={v.materialAvailable ? "teal" : "orange"}>
             material {v.materialAvailable ? "available" : "UNAVAILABLE"}
           </Badge>
-          <Badge variant="light" color={v.elementsAvailable ? "teal" : "gray"}>
-            elements {v.elementsAvailable ? "available" : "UNAVAILABLE"}
+          <Badge variant="light"
+            color={!v.elementsAvailable ? "gray"
+                   : v.elementsPartial ? "yellow" : "teal"}>
+            elements {!v.elementsAvailable ? "UNAVAILABLE"
+                      : v.elementsPartial ? "PARTIAL" : "available"}
           </Badge>
           <Badge variant="light" color="gray">energy UNAVAILABLE</Badge>
         </Group>
-        {!v.elementsAvailable && v.elementsReason && (
+        {(!v.elementsAvailable || v.elementsPartial) && v.elementsReason && (
           <Text c="dimmed" size="xs">elements: {v.elementsReason}</Text>
         )}
         <Text c="dimmed" size="xs">

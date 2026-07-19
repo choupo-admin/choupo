@@ -28,6 +28,9 @@ License
 
 #include "thermo/ElementComposition.H"
 
+#include "thermo/AtomicWeights.H"
+#include "thermo/Component.H"
+
 #include <cctype>
 #include <cmath>
 #include <vector>
@@ -240,6 +243,109 @@ ElementComposition parseElementalFormula(const std::string& formula)
         }
     }
     out.available = true;
+    return out;
+}
+
+ElementalResolution elementalCompositionOf(const Component& comp)
+{
+    ElementalResolution out;
+    const auto ec = parseElementalFormula(comp.formula());
+    const bool hasBlock = comp.hasElementalDeclaration();
+    const auto& decl = comp.elementalDeclaration();
+
+    // Project a declared block to the canonical atoms basis.
+    auto blockAtoms = [&]() -> std::map<std::string, scalar>
+    {
+        std::map<std::string, scalar> a;
+        if (decl.basis == Component::ElementalDeclaration::Basis::massFraction)
+            for (const auto& [sym, w] : decl.massFractions)
+                a[sym] = comp.MW() * w / atomicWeight(sym);
+        else
+            a = decl.atomCounts;
+        return a;
+    };
+
+    if (ec.available && hasBlock)
+    {
+        // BOTH present: project both to mass fractions and demand
+        // consistency; divergence refuses loudly.  Consistent => the
+        // formula is the operational source, the block corroborates.
+        std::map<std::string, scalar> wf, wb;
+        for (const auto& [sym, na] : ec.atoms)
+            wf[sym] = na * atomicWeight(sym) / comp.MW();
+        if (decl.basis == Component::ElementalDeclaration::Basis::massFraction)
+            wb = decl.massFractions;
+        else
+            for (const auto& [sym, na] : decl.atomCounts)
+                wb[sym] = na * atomicWeight(sym) / comp.MW();
+        std::set<std::string> syms;
+        for (const auto& [k, v] : wf) { (void) v; syms.insert(k); }
+        for (const auto& [k, v] : wb) { (void) v; syms.insert(k); }
+        for (const auto& sym : syms)
+        {
+            const scalar a = wf.count(sym) ? wf.at(sym) : 0.0;
+            const scalar b = wb.count(sym) ? wb.at(sym) : 0.0;
+            if (std::abs(a - b) > kTolMassFraction)
+            {
+                out.completeness = ElementalResolution::Completeness::unavailable;
+                out.reason = "component '" + comp.name() + "': formula '"
+                    + comp.formula() + "' and elementalComposition{}"
+                    " DISAGREE on " + sym + " (w_formula = "
+                    + std::to_string(a) + ", w_declared = "
+                    + std::to_string(b) + ", tolerance "
+                    + std::to_string(kTolMassFraction) + " kg/kg abs)";
+                return out;
+            }
+        }
+        if (decl.unaccountedMassFraction > kTolMassFraction)
+        {
+            out.completeness = ElementalResolution::Completeness::unavailable;
+            out.reason = "component '" + comp.name() + "': a parseable"
+                " formula cannot coexist with unaccountedMassFraction = "
+                + std::to_string(decl.unaccountedMassFraction)
+                + " (the formula claims the whole molecule)";
+            return out;
+        }
+        out.source = ElementalResolution::Source::formula;
+        out.completeness = ElementalResolution::Completeness::full;
+        out.atoms = ec.atoms;
+        return out;
+    }
+    if (ec.available)
+    {
+        out.source = ElementalResolution::Source::formula;
+        out.completeness = ElementalResolution::Completeness::full;
+        out.atoms = ec.atoms;
+        return out;
+    }
+    if (hasBlock)
+    {
+        out.atoms = blockAtoms();
+        if (decl.basis == Component::ElementalDeclaration::Basis::massFraction)
+        {
+            out.source = ElementalResolution::Source::declaredMassFraction;
+            out.unaccountedMassFraction = decl.unaccountedMassFraction;
+            if (decl.unaccountedMassFraction > 0.0)
+            {
+                out.completeness =
+                    ElementalResolution::Completeness::partial;
+                out.reason = "PARTIAL -- unaccounted "
+                    + std::to_string(decl.unaccountedMassFraction)
+                    + " kg/kg declared (the known elements are usable; no"
+                    " complete elemental closure may be stamped)";
+            }
+            else
+                out.completeness = ElementalResolution::Completeness::full;
+        }
+        else
+        {
+            out.source = ElementalResolution::Source::declaredFormulaUnit;
+            out.completeness = ElementalResolution::Completeness::full;
+        }
+        return out;
+    }
+    out.reason = "component '" + comp.name() + "': " + ec.reason
+        + " and no elementalComposition{} declared";
     return out;
 }
 

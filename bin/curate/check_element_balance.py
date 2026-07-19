@@ -63,6 +63,10 @@ def main():
                 if e not in rows or abs(rows[e] - 100.0) > 0.01:
                     bad.append(f"reactive: element {e} closure ="
                                f" {rows.get(e)} (want ~100)")
+            meta_full = (case / "reports" / "balances"
+                         / "elementBalance.meta").read_text()
+            if "status,FULL" not in meta_full:
+                bad.append("reactive: sidecar status is not FULL")
             # The boundary SPECIES changed: benzene leaves without entering.
             bz_in = bz_out = None
             with open(case / "reports" / "balances" / "massBalance.csv") as f:
@@ -86,12 +90,30 @@ def main():
             bad.append("impossible-formula case failed to run (the refusal"
                        " must be elemental-only, not fatal)")
         else:
-            txt = (case / "reports" / "balances"
-                   / "elementBalance.csv").read_text()
-            if not txt.startswith("status,UNAVAILABLE"):
+            meta_path = case / "reports" / "balances" / "elementBalance.meta"
+            meta = meta_path.read_text()
+            if "status,UNAVAILABLE" not in meta:
                 bad.append("impossible: elementBalance did not refuse")
-            if "toluene" not in txt:
+            if "toluene" not in meta:
                 bad.append("impossible: the refusal does not name the species")
+            # key,value declared => EVERY meta row has exactly 2 fields.
+            with open(meta_path) as f:
+                for row in csv.reader(f):
+                    if row and len(row) != 2:
+                        bad.append(f"impossible: meta row {row} breaks the"
+                                   " declared key,value arity")
+            # The canonical header survives even in UNAVAILABLE (a regular
+            # zero-row table, never a schema-less empty file).
+            with open(case / "reports" / "balances"
+                      / "elementBalance.csv") as f:
+                rd = csv.DictReader(f)
+                if rd.fieldnames != ["element", "in_kmol_atom_h",
+                                     "out_kmol_atom_h",
+                                     "residual_kmol_atom_h", "closure_pct"]:
+                    bad.append("impossible: the CSV header is not canonical")
+                if list(rd):
+                    bad.append("impossible: UNAVAILABLE must have zero data"
+                               " rows")
             closure = None
             with open(case / "reports" / "balances" / "massBalance.csv") as f:
                 for row in csv.reader(f):
@@ -128,6 +150,41 @@ def main():
                 if abs(float(cl_row["closure_pct"]) - 100.0) < 50.0:
                     bad.append("output-only: Cl closure "
                                f"{cl_row['closure_pct']} does not scream")
+
+        # ---- 4. PARTIAL: declared composition with unaccounted mass -------
+        #  toluene loses its formula and declares C/H by mass with 0.5 %
+        #  unaccounted: the known elements still close; the verdict is
+        #  PARTIAL in the sidecar, never a complete-closure stamp.
+        prov = ("provenance\n{\n    elementalComposition\n    {\n"
+                "        origin  measured;\n"
+                "        method  \"gate fixture ultimate analysis\";\n"
+                "    }\n}\n")
+        overlay4 = _re.sub(r"(?m)^formula\s+[^;]+;",
+                           "formula     aromaticCut;", std_toluene, count=1)
+        overlay4 += ("elementalComposition\n{\n    basis massFraction;\n"
+                     "    massFractions { C 0.9078; H 0.0872; }\n"
+                     "    unaccountedMassFraction 0.005;\n}\n" + prov)
+        case, r = run_case(tmp, "partial", overlay=overlay4)
+        if r.returncode != 0:
+            bad.append("partial: failed to run: "
+                       + (r.stdout + r.stderr)[-300:])
+        else:
+            meta_p = (case / "reports" / "balances"
+                      / "elementBalance.meta").read_text()
+            if "status,PARTIAL" not in meta_p:
+                bad.append("partial: sidecar status is not PARTIAL")
+            if "partialSpecies.toluene" not in meta_p:
+                bad.append("partial: the partial species is not named")
+            rows_p = {}
+            with open(case / "reports" / "balances"
+                      / "elementBalance.csv") as f:
+                for row in csv.DictReader(f):
+                    rows_p[row["element"]] = float(row["closure_pct"])
+            for e in ("C", "H"):
+                if e not in rows_p or abs(rows_p[e] - 100.0) > 1.0:
+                    bad.append(f"partial: declared element {e} closure ="
+                               f" {rows_p.get(e)} (the known elements must"
+                               " still close)")
 
     if bad:
         print("ELEMENT-BALANCE GATE FAILED (%d):" % len(bad))

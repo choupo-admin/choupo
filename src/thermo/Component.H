@@ -279,6 +279,25 @@ public:
     scalar s_pure_ig(scalar T_K) const;
     scalar g_pure_ig(scalar T_K) const;
 
+    // ---- Declared elemental composition (optional; validated at read) -------
+    //  For a substance WITHOUT a single molecular formula (assay cut,
+    //  polymer, mixture): basis massFraction (kg/kg + a MANDATORY
+    //  unaccountedMassFraction, even when zero) or formulaUnit (atomCounts
+    //  whose Sum n*AW must reproduce MW).  Parsed + refused loudly in
+    //  readFromDict -- the resolver receives only validated data.
+    struct ElementalDeclaration
+    {
+        enum class Basis { none, massFraction, formulaUnit };
+        Basis                         basis = Basis::none;
+        std::map<std::string, scalar> massFractions;   // kg/kg
+        scalar                        unaccountedMassFraction = 0.0;
+        std::map<std::string, scalar> atomCounts;      // per formula unit
+    };
+    bool hasElementalDeclaration() const
+    { return elementalDecl_.basis != ElementalDeclaration::Basis::none; }
+    const ElementalDeclaration& elementalDeclaration() const
+    { return elementalDecl_; }
+
     // ---- Per-value provenance (the keystone) --------------------------------
     // Parsed from the .dat `provenance {}` block.  DATA/VALIDATION boundary
     // ONLY — NEVER read from a value accessor / phase / K-value / flash (THE
@@ -417,6 +436,7 @@ private:
 
     // Per-value provenance, parsed-if-present (side-channel; never the hot path).
     std::map<std::string, OriginInfo> provenanceMap_;
+    ElementalDeclaration elementalDecl_;
     std::map<std::string, std::vector<std::pair<std::string, int>>> groups_;
 
     // UNIQUAC van der Waals structural parameters (intrinsic; `uniquac { r; q; }`).

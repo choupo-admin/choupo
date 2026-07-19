@@ -27,6 +27,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Component.H"
+#include "thermo/AtomicWeights.H"
+#include "thermo/ElementComposition.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // electrolyte::ionCharge (dissociatesTo -> cation/anion)
 
 #include <cmath>
@@ -319,6 +321,114 @@ void Component::readFromDict(const DictPtr& d)
     // BEFORE any subDict() call (subDict throws on a non-dict entry).  Anything
     // unexpected is stored as an empty record -- this is a side-channel that
     // NEVER feeds the solver, only the curation tools + the result JSON.
+    // ---- Declared elemental composition (optional; REFUSED loudly when
+    //      malformed -- a case-local block can never bypass curation) -------
+    if (d->found("elementalComposition"))
+    {
+        auto ec = d->subDict("elementalComposition");
+        auto fail = [&](const std::string& why) -> void
+        {
+            throw std::runtime_error("component '" + name_
+                + "' elementalComposition{}: " + why);
+        };
+        const std::string basis = ec->lookupWordOrDefault("basis", "");
+        if (basis == "massFraction")
+        {
+            elementalDecl_.basis = ElementalDeclaration::Basis::massFraction;
+            if (!ec->found("massFractions"))
+                fail("basis massFraction requires a massFractions{} block");
+            auto mf = ec->subDict("massFractions");
+            if (mf->keys().empty())
+                fail("massFractions{} is empty");
+            scalar sum = 0.0;
+            for (const auto& sym : mf->keys())
+            {
+                if (atomicWeight(sym) <= 0.0)
+                    fail("'" + sym + "' is not an element");
+                const scalar w = mf->lookupScalar(sym);
+                if (!std::isfinite(w) || w < 0.0)
+                    fail("massFractions." + sym
+                         + " must be finite and >= 0");
+                elementalDecl_.massFractions[sym] = w;
+                sum += w;
+            }
+            // MANDATORY even when zero -- absence is a refusal, never a
+            // default, and the remainder is never a pseudo-element.
+            if (!ec->found("unaccountedMassFraction"))
+                fail("unaccountedMassFraction is MANDATORY in basis"
+                     " massFraction (declare 0.0 explicitly)");
+            const scalar un = ec->lookupScalar("unaccountedMassFraction");
+            if (!std::isfinite(un) || un < 0.0)
+                fail("unaccountedMassFraction must be finite and >= 0");
+            elementalDecl_.unaccountedMassFraction = un;
+            if (std::abs(sum + un - 1.0) > kTolMassFraction)
+                fail("Sum(massFractions) + unaccountedMassFraction = "
+                     + std::to_string(sum + un) + " != 1 (tolerance "
+                     + std::to_string(kTolMassFraction) + " kg/kg)");
+        }
+        else if (basis == "formulaUnit")
+        {
+            elementalDecl_.basis = ElementalDeclaration::Basis::formulaUnit;
+            if (ec->found("unaccountedMassFraction"))
+                fail("unaccountedMassFraction has no meaning in basis"
+                     " formulaUnit -- FORBIDDEN");
+            if (!ec->found("atomCounts"))
+                fail("basis formulaUnit requires an atomCounts{} block");
+            auto ac = ec->subDict("atomCounts");
+            if (ac->keys().empty())
+                fail("atomCounts{} is empty");
+            scalar mwSum = 0.0;
+            for (const auto& sym : ac->keys())
+            {
+                const scalar aw = atomicWeight(sym);
+                if (aw <= 0.0) fail("'" + sym + "' is not an element");
+                const scalar n = ac->lookupScalar(sym);
+                if (!std::isfinite(n) || n <= 0.0)
+                    fail("atomCounts." + sym + " must be finite and > 0");
+                elementalDecl_.atomCounts[sym] = n;
+                mwSum += n * aw;
+            }
+            // The unit is only legal when MW IS that unit's molar mass.
+            if (MW_ <= 0.0
+                || std::abs(mwSum - MW_) / MW_ > kTolMWRel)
+                fail("Sum(atomCounts * atomicWeight) = "
+                     + std::to_string(mwSum) + " kg/kmol does not reproduce"
+                     " MW = " + std::to_string(MW_) + " (tolerance "
+                     + std::to_string(kTolMWRel * 100.0)
+                     + " % -- a chain-average MW must use basis"
+                     " massFraction)");
+        }
+        else
+            fail("basis must be massFraction or formulaUnit (got '"
+                 + basis + "')");
+
+        // Provenance is a DATA/VALIDATION gate (it never alters atoms):
+        // the block demands provenance.elementalComposition with an
+        // attributed origin and a non-empty method.
+        bool provOk = false;
+        if (d->found("provenance"))
+        {
+            auto pv = d->subDict("provenance");
+            if (pv->found("elementalComposition"))
+            {
+                auto pe = pv->subDict("elementalComposition");
+                const std::string org =
+                    pe->lookupWordOrDefault("origin", "unattributed");
+                const std::string method =
+                    pe->lookupWordOrDefault("method", "");
+                // Normalise through the canonical Origin vocabulary: a typo
+                // ("literatre") folds to unattributed and REFUSES -- the
+                // raw string comparison would bless any garbage word.
+                provOk = (originFromWord(org) != Origin::unattributed)
+                       && !method.empty();
+            }
+        }
+        if (!provOk)
+            fail("provenance.elementalComposition{} with an attributed"
+                 " origin and a non-empty method is REQUIRED (the"
+                 " composition is a curated datum, never anonymous)");
+    }
+
     if (d->found("provenance"))
     {
         auto p = d->subDict("provenance");

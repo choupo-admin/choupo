@@ -1107,14 +1107,35 @@ try
             //  (groups, hydrates, ionic charge, D/T isotopes): a lumped toy
             //  species whose "formula" is A/B/X is NOT an element and must
             //  not fabricate an elemental claim.
+            //  Resolution is per COMPONENT (formula first, then a declared
+            //  elementalComposition{}): unavailable withholds the claim;
+            //  PARTIAL (declared with unaccounted mass) keeps the declared
+            //  elements usable but the campaign never stamps a complete
+            //  elemental closure -- the verdict falls back to mass.
             std::map<std::string, std::string> parseReason;
-            auto parseFormula = [&parseReason](const std::string& f)
-                -> std::map<std::string, scalar>
+            std::vector<std::pair<std::string, scalar>> partialSpecies;
+            // ONE resolution per component, cached -- residual and inventory
+            // consume the same truth, and PARTIAL is listed once per name.
+            std::vector<ElementalResolution> elemRes(thermo.n());
+            for (std::size_t ci = 0; ci < thermo.n(); ++ci)
             {
-                const auto ec = parseElementalFormula(f);
-                if (!ec.available) parseReason[f] = ec.reason;
-                return ec.available ? ec.atoms
-                                    : std::map<std::string, scalar>{};
+                elemRes[ci] = elementalCompositionOf(thermo.comp(ci));
+                if (elemRes[ci].completeness
+                    == ElementalResolution::Completeness::unavailable)
+                    parseReason[thermo.comp(ci).formula()] =
+                        elemRes[ci].reason;
+                else if (elemRes[ci].completeness
+                         == ElementalResolution::Completeness::partial)
+                    partialSpecies.emplace_back(thermo.comp(ci).name(),
+                        elemRes[ci].unaccountedMassFraction);
+            }
+            auto atomsOf = [&](std::size_t ci)
+                -> const std::map<std::string, scalar>&
+            {
+                static const std::map<std::string, scalar> kEmpty;
+                return elemRes[ci].completeness
+                    == ElementalResolution::Completeness::unavailable
+                    ? kEmpty : elemRes[ci].atoms;
             };
             std::vector<std::string> unparsed;
             std::map<std::string, scalar> elem0, elemF;
@@ -1134,8 +1155,7 @@ try
                         {
                             anyDeclared = true;
                             declared_kg += kmol * thermo.comp(i).MW();
-                            for (const auto& [sym, na]
-                                 : parseFormula(thermo.comp(i).formula()))
+                            for (const auto& [sym, na] : atomsOf(i))
                                 elemDeclared[sym] += na * kmol;
                         }
             for (std::size_t i = 0; i < thermo.n(); ++i)
@@ -1143,7 +1163,7 @@ try
                 const scalar present = inventory0[i] + inventoryF[i]
                     + (i < externalOut.size() ? externalOut[i] : 0.0);
                 if (present == 0.0) continue;
-                const auto el = parseFormula(thermo.comp(i).formula());
+                const auto el = atomsOf(i);
                 if (el.empty())
                 {
                     const auto& fr = thermo.comp(i).formula();
@@ -1182,6 +1202,21 @@ try
                 ck["element_worst_closure_rel"] = elemWorst;
                 if (anyDeclared)
                     ck["element_worst_closure_vs_declared_rel"] = elemWorstAdj;
+                if (!partialSpecies.empty())
+                {
+                    ck["element_balance_partial"] = 1.0;
+                    if (verbosity >= 1)
+                    {
+                        std::cout << "[campaign] elemental balance PARTIAL"
+                                     " -- declared compositions carry"
+                                     " unaccounted mass:";
+                        for (const auto& [nm3, un] : partialSpecies)
+                            std::cout << " " << nm3 << " (" << un
+                                      << " kg/kg)";
+                        std::cout << "  -- no complete elemental closure is"
+                                     " stamped; the verdict uses mass.\n";
+                    }
+                }
             }
             else if (verbosity >= 1)
             {
@@ -1209,7 +1244,7 @@ try
             const scalar relAdjMass = anyDeclared
                 ? std::abs(mF + mOut - m0 - declared_kg) / scale_kg
                 : rel;
-            const bool leak = unparsed.empty()
+            const bool leak = (unparsed.empty() && partialSpecies.empty())
                 ? ((anyDeclared ? elemWorstAdj : elemWorst) > tolClosure)
                 : (relAdjMass > tolClosure);
             if (anyDeclared && !leak && verbosity >= 1

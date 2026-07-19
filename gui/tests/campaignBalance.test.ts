@@ -57,6 +57,19 @@ describe("campaignBalanceView", () => {
     expect(campaignBalanceView(undefined).present).toBe(false);
   });
 
+  it("CAUSAL: element_balance_partial = 1 is an independent PARTIAL state"
+     + " -- series kept, no full-closure stamp", () => {
+    const v = campaignBalanceView({
+      mass_kg_initial: 1.0, mass_kg_final: 1.0, mass_kg_external_out: 0,
+      element_C_closure_rel: 2e-4, element_H_closure_rel: 1e-4,
+      element_worst_closure_rel: 2e-4,
+      element_balance_partial: 1,
+      energy_balance_available: 0,
+    });
+    expect(v.elements?.map((e) => e.symbol)).toEqual(["C", "H"]);
+    expect(v.elementsPartial).toBe(true);   // shown, but never a green seal
+  });
+
   it("CAUSAL: available flag with a missing energy term is MALFORMED, not zeros", () => {
     const v = campaignBalanceView({
       mass_kg_initial: 1.0, mass_kg_final: 1.0, mass_kg_external_out: 0,

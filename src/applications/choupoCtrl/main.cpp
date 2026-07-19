@@ -570,6 +570,7 @@ try
     std::vector<std::string> ledgerElems;      // wide-format element columns
     std::vector<std::map<std::string, scalar>> compAtoms;  // per component
     bool ledgerElemsAvailable = true;
+    bool ledgerElemsPartial = false;
     std::string ledgerElemsReason;
     auto gatherRates = [&](sVector& in, sVector& out, sVector& inv) -> bool
     {
@@ -714,19 +715,30 @@ try
             std::set<std::string> symbols;
             for (std::size_t i = 0; i < ledger.comps.size(); ++i)
             {
-                const auto ec =
-                    parseElementalFormula(thermo.comp(i).formula());
-                if (!ec.available)
+                const auto er = elementalCompositionOf(thermo.comp(i));
+                if (er.completeness
+                    == ElementalResolution::Completeness::unavailable)
                 {
                     ledgerElemsAvailable = false;
                     if (!ledgerElemsReason.empty())
                         ledgerElemsReason += "; ";
                     ledgerElemsReason += ledger.comps[i] + " ("
-                                       + ec.reason + ")";
+                                       + er.reason + ")";
                     continue;
                 }
-                compAtoms[i] = ec.atoms;
-                for (const auto& [sym, na] : ec.atoms)
+                if (er.completeness
+                    == ElementalResolution::Completeness::partial)
+                {
+                    ledgerElemsPartial = true;
+                    if (!ledgerElemsReason.empty())
+                        ledgerElemsReason += "; ";
+                    ledgerElemsReason += ledger.comps[i]
+                        + " (PARTIAL, unaccounted "
+                        + std::to_string(er.unaccountedMassFraction)
+                        + " kg/kg)";
+                }
+                compAtoms[i] = er.atoms;
+                for (const auto& [sym, na] : er.atoms)
                 { (void) na; symbols.insert(sym); }
             }
             if (ledgerElemsAvailable)
@@ -756,8 +768,12 @@ try
                  << "trajectory_partial,1\n";
         meta << "elements_available,"
              << ((ledger.available && ledgerElemsAvailable) ? 1 : 0)
+             << "\n"
+             << "elements_partial,"
+             << ((ledger.available && ledgerElemsAvailable
+                  && ledgerElemsPartial) ? 1 : 0)
              << "\n";
-        if (!ledgerElemsAvailable)
+        if (!ledgerElemsAvailable || ledgerElemsPartial)
             meta << "elements_reason,\"" << ledgerElemsReason << "\"\n";
         meta << "energy_available,0\n"
              << "energy_reason,\""

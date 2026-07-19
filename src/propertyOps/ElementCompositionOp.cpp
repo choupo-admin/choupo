@@ -44,18 +44,22 @@ int ElementCompositionOp::run(const DictPtr& dict,
     if (dict->found("formulas"))
         for (const auto& f : dict->lookupWordList("formulas"))
             jobs.emplace_back(f, f);
+    // Component jobs resolve through THE component-level resolver
+    // (formula first, then a declared elementalComposition{} block) and
+    // print source + completeness -- the same semantics every balance uses.
+    std::vector<std::size_t> compJobs;
     if (dict->found("components"))
         for (const auto& cn : dict->lookupWordList("components"))
         {
             bool hit = false;
             for (std::size_t i = 0; i < thermo.n(); ++i)
                 if (thermo.comp(i).name() == cn)
-                { jobs.emplace_back(cn, thermo.comp(i).formula()); hit = true; }
+                { compJobs.push_back(i); hit = true; }
             if (!hit)
                 throw std::runtime_error("elementalComposition: component '"
                     + cn + "' is not in the loaded set");
         }
-    if (jobs.empty())
+    if (jobs.empty() && compJobs.empty())
         throw std::runtime_error("elementalComposition: declare `formulas"
             " ( ... )` and/or `components ( ... )`");
 
@@ -87,11 +91,56 @@ int ElementCompositionOp::run(const DictPtr& dict,
             std::cout << "  " << label << "  ->  UNAVAILABLE: " << ec.reason
                       << "\n";
     }
+    for (const auto ci : compJobs)
+    {
+        const auto& c = thermo.comp(ci);
+        const auto er = elementalCompositionOf(c);
+        const char* src =
+            er.source == ElementalResolution::Source::formula
+                ? "formula"
+          : er.source == ElementalResolution::Source::declaredMassFraction
+                ? "declaredMassFraction"
+          : er.source == ElementalResolution::Source::declaredFormulaUnit
+                ? "declaredFormulaUnit" : "none";
+        const char* comp2 =
+            er.completeness == ElementalResolution::Completeness::full
+                ? "full"
+          : er.completeness == ElementalResolution::Completeness::partial
+                ? "PARTIAL" : "UNAVAILABLE";
+        if (er.completeness
+            == ElementalResolution::Completeness::unavailable)
+        {
+            if (verbosity >= 1)
+                std::cout << "  " << c.name() << "  [component]  ->  "
+                          << comp2 << ": " << er.reason << "\n";
+            continue;
+        }
+        ++nAvail;
+        if (verbosity >= 2)
+        {
+            std::cout << "  " << c.name() << "  [component, " << src
+                      << ", " << comp2 << "]  ->  ";
+            bool first = true;
+            for (const auto& [sym, na] : er.atoms)
+            {
+                if (!first) std::cout << "  ";
+                std::cout << sym << " " << na;
+                first = false;
+            }
+            if (er.unaccountedMassFraction > 0.0)
+                std::cout << "  (unaccounted "
+                          << er.unaccountedMassFraction << " kg/kg)";
+            std::cout << "\n";
+        }
+        for (const auto& [sym, na] : er.atoms)
+            diag_[c.name() + "_" + sym] = na;
+    }
     if (verbosity >= 2)
-        std::cout << "  " << nAvail << "/" << jobs.size()
-                  << " formula(s) decomposed\n"
+        std::cout << "  " << nAvail << "/" << (jobs.size() + compJobs.size())
+                  << " decomposed\n"
                   << "===========================================\n\n";
-    diag_["formulas_total"]     = static_cast<scalar>(jobs.size());
+    diag_["formulas_total"]     =
+        static_cast<scalar>(jobs.size() + compJobs.size());
     diag_["formulas_available"] = static_cast<scalar>(nAvail);
     return 0;
 }

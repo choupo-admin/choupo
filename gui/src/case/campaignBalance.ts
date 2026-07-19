@@ -53,6 +53,9 @@ export interface CampaignBalanceView {
   /** Per-element relative closure; absent entirely = the engine WITHHELD
    *  the elemental claim (an unparseable formula) -- UNAVAILABLE state. */
   elements?: { symbol: string; closureRel: number }[];
+  /** Engine-declared element_balance_partial = 1: the declared elements are
+   *  shown, but no complete elemental closure is stamped. */
+  elementsPartial: boolean;
   worstElementClosureRel?: number;
   /** "available" = engine claimed AND every term is finite;
    *  "refused"   = energy_balance_available = 0 (named gaps in the log);
@@ -72,9 +75,10 @@ export function campaignBalanceView(
   const fin = (k: string): boolean =>
     campaign !== undefined && Number.isFinite(campaign[k]);
   if (!campaign || (!fin("mass_kg_initial") && !fin("mass_kg_final")))
-    return { present: false, energyState: "refused" };
+    return { present: false, elementsPartial: false, energyState: "refused" };
 
-  const view: CampaignBalanceView = { present: true, energyState: "refused" };
+  const view: CampaignBalanceView = { present: true, elementsPartial: false,
+                                      energyState: "refused" };
   const malformed: string[] = [];
 
   // The C++ contract emits ALL THREE mass terms; a missing one is a
@@ -106,6 +110,7 @@ export function campaignBalanceView(
     .map((m) => ({ symbol: m[1]!, closureRel: campaign[m[0]]! }));
   if (elements.length > 0) {
     view.elements = elements.sort((a, b) => a.symbol.localeCompare(b.symbol));
+    view.elementsPartial = campaign["element_balance_partial"] === 1;
     if (campaign["element_worst_closure_rel"] !== undefined)
       view.worstElementClosureRel = campaign["element_worst_closure_rel"];
   }

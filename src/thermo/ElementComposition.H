@@ -64,6 +64,17 @@ Description
 
 namespace Choupo {
 
+class Component;
+
+// Named, centralised tolerances -- printed in every refusal, never a bare
+// literal scattered through consumers.
+//   kTolMassFraction: absolute mass-fraction tolerance [kg/kg] for the
+//   declared-composition closure and the formula-vs-block comparison
+//   (ultimate analyses report to 0.1 wt%).
+//   kTolMWRel: relative tolerance for the formulaUnit MW consistency check.
+constexpr scalar kTolMassFraction = 1.0e-3;
+constexpr scalar kTolMWRel        = 1.0e-3;
+
 struct ElementComposition
 {
     bool                          available = false;
@@ -73,5 +84,32 @@ struct ElementComposition
 
 // Parse `formula` under the grammar above.  Total-string or nothing.
 ElementComposition parseElementalFormula(const std::string& formula);
+
+// ---------------------------------------------------------------------------
+//  The COMPONENT-level elemental resolution: formula first, then the
+//  declared elementalComposition{} block, then unavailable -- resolved ONCE
+//  per component; every balance consumes the same canonical projection
+//  (atoms = kmol-atom per kmol-component).  A declared mass-fraction basis
+//  converts here via atoms[e] = MW * w[e] / atomicWeight(e).  A component
+//  carrying BOTH a parseable formula and a block must be consistent within
+//  kTolMassFraction (projected to mass fractions); divergence refuses
+//  loudly.  unaccountedMassFraction > 0 marks the resolution PARTIAL: the
+//  declared elements are usable, but no consumer may stamp a complete
+//  elemental closure.
+// ---------------------------------------------------------------------------
+struct ElementalResolution
+{
+    enum class Source { none, formula, declaredMassFraction,
+                        declaredFormulaUnit };
+    enum class Completeness { full, partial, unavailable };
+
+    Source                        source = Source::none;
+    Completeness                  completeness = Completeness::unavailable;
+    std::string                   reason;   // when != full: why, named
+    std::map<std::string, scalar> atoms;    // kmol-atom / kmol-component
+    scalar                        unaccountedMassFraction = 0.0;
+};
+
+ElementalResolution elementalCompositionOf(const Component& comp);
 
 } // namespace Choupo
