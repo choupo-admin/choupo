@@ -33,11 +33,14 @@ License
 
     left   ~240 px  Tree of plot types, grouped by domain.  Each leaf
                     is a clickable row; the active row is highlighted
-                    and renders its plot on the right.  Unavailable
-                    plots (e.g. no trajectory in a steady case) are
-                    dimmed and disabled rather than hidden, so the
-                    student knows the option exists and what runs
-                    produce it.
+                    and renders its plot on the right.  A plot THIS case
+                    could produce but didn't (element balance without the
+                    reports block, T-x-y, profile) stays dimmed with a
+                    tooltip saying how to obtain it; a view belonging to
+                    ANOTHER regime or driver (batch/ctrl ledgers,
+                    trajectory, campaign Gantt, sweeps) is hidden -- it is
+                    not an option of the open case, so a dead row would
+                    only be noise.
     centre 1fr      The selected plot, full size.  Plotly components
                     are reused from gui/src/ui/plotting/ unchanged.
 
@@ -96,6 +99,10 @@ interface PlotItem {
   label: string;
   available: boolean;
   hint?: string;
+  /** Regime/driver-gated views vanish when absent (they belong to another
+   *  binary or an outerDict, not to choices inside this case); case-gated
+   *  views stay dimmed with the hint saying how to produce them. */
+  hideWhenUnavailable?: boolean;
 }
 
 interface PlotGroup {
@@ -144,9 +151,11 @@ export function PlotsWorkspace() {
       {
         label: "Balance",
         items: [
-          { key: "campaignBalance", label: "Global balances (Batch)", available: hasCampaign,
+          { key: "campaignBalance", label: "Global balances", available: hasCampaign,
+            hideWhenUnavailable: true,
             hint: "The batch campaign's GLOBAL mass / element / energy balances, drawn from the engine's own ledger KPIs.  Molar totals are informative (moles are not conserved through reactions); UNAVAILABLE states are shown honestly, never as zeros." },
-          { key: "dynamicBalance", label: "Global balances (Ctrl)", available: hasDynBalance,
+          { key: "dynamicBalance", label: "Global balances", available: hasDynBalance,
+            hideWhenUnavailable: true,
             hint: "The choupoCtrl GLOBAL balance ledger over time (mass inventory + conservation residuals per element), integrated on accepted steps in the engine.  Withheld claims render as named states." },
           { key: "elementBalance", label: "Element balance", available: hasElemBalance,
             hint: "Atom conservation at the plant boundary (kmol-atom/h): total atoms in vs out, sealed only when every element closes.  By-element detail inside.  Needs elementBalance { } in controlDict.reports." },
@@ -154,6 +163,11 @@ export function PlotsWorkspace() {
             hint: "Plant-boundary INPUTS vs OUTPUTS in mass basis (kg/h), stacked by component.  Title shows the closure error." },
           { key: "energyBalance", label: "Energy balance", available: hasStreams,
             hint: "Plant-boundary INPUTS vs OUTPUTS in enthalpy flow (kW), stacked per stream.  Closure delta = net heat from utilities + heat of reaction." },
+        ],
+      },
+      {
+        label: "Phase equilibrium",
+        items: [
           { key: "txy",           label: "T-x-y diagram",  available: hasTxy,
             hint: "Vapour-liquid envelope; emitted by VLE-related cases." },
         ],
@@ -173,8 +187,10 @@ export function PlotsWorkspace() {
           { key: "profile",    label: "Profile",    available: hasProfile,
             hint: "1-D internal state of a unit (PFR axial sweep, column stages, PSD)." },
           { key: "trajectory", label: "Trajectory", available: hasTrajectory,
+            hideWhenUnavailable: true,
             hint: "Time-series state; emitted only by choupoBatch / choupoCtrl runs." },
           { key: "gantt", label: "Campaign sequence", available: hasTimeline,
+            hideWhenUnavailable: true,
             hint: "The batch recipe as a Gantt: one lane per vessel, every FIRED action at its instant (transfers as arrows), unit status events flagged.  Hover a mark for the engine's detail line and the trigger that fired it." },
         ],
       },
@@ -182,6 +198,7 @@ export function PlotsWorkspace() {
         label: "Outer driver",
         items: [
           { key: "scanCsv", label: "Sweep / scan", available: scanCsvs.length > 0,
+            hideWhenUnavailable: true,
             hint: "CSV written by the run itself -- an outerDict sweep (KPIs vs the swept parameter) or a props scan.  The same file runCase leaves in the case folder." },
         ],
       },
@@ -355,7 +372,11 @@ export function PlotsWorkspace() {
               style={{ letterSpacing: 0.5, fontWeight: 600 }}>
               Plot types
             </Text>
-            {groups.map((g) => {
+            {groups
+              .map((g) => ({ ...g, items: g.items.filter(
+                (it) => it.available || !it.hideWhenUnavailable) }))
+              .filter((g) => g.items.length > 0)
+              .map((g) => {
               const isCollapsed = collapsed.has(g.label);
               return (
                 <Stack key={g.label} gap={0} mb={2}>
@@ -385,7 +406,9 @@ export function PlotsWorkspace() {
                     return (
                       <Tooltip
                         key={it.key}
-                        label={it.available ? (it.hint ?? "") : "Not produced by this run."}
+                        label={it.available
+                          ? (it.hint ?? "")
+                          : `Not produced by this run.  ${it.hint ?? ""}`}
                         openDelay={400}
                         position="right"
                         withArrow
