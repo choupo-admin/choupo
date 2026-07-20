@@ -96,6 +96,9 @@ cp "$src/index.html" "$dist/index.html"         # the LANDING lives at /
 # The model catalogue page at /models/ (clean route via a directory index).
 mkdir -p "$dist/models"
 cp "$src/models.html" "$dist/models/index.html" 2>/dev/null || true
+# The releases page at /releases/ (same clean-route pattern).
+mkdir -p "$dist/releases"
+cp "$src/releases.html" "$dist/releases/index.html" 2>/dev/null || true
 # The generated single-source-of-truth JSONs the landing + /models consume.
 python3 "$root/bin/curate/release_inventory.py" >/dev/null 2>&1 || true
 cp "$root/generated/releaseInventory.json" "$dist/" 2>/dev/null || true
