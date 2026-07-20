@@ -1168,6 +1168,9 @@ function readFlowsheet(
       outputs: (u["outputs"] ?? []) as string[],
       operation: (u["operation"] ?? {}) as JsonDict,
       reaction: u["reaction"] !== undefined ? String(u["reaction"]) : undefined,
+      // batchStill's continuous distillate routing -- the recipe-edge pass
+      // reads it; dropping it here made the still->receiver edge vanish.
+      dischargeTo: u["dischargeTo"] !== undefined ? String(u["dischargeTo"]) : undefined,
       energyOutputs: eOuts.length === 0
         ? undefined
       : eOuts.map((e) => ({
