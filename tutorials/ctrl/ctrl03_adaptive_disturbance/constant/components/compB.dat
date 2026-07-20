@@ -17,7 +17,9 @@ name        compB;
 formula     B;
 CAS         00-00-0;
 
-MW          50.0;
+MW          30.0;   // = compA: A -> B is an ISOMERISATION, so the toy
+                     //   conserves mass exactly (the ctrl01 decision,
+                     //   applied corpus-wide 2026-07-20)
 Tc          550.0;
 Pc          40.0;
 omega       0.20;
