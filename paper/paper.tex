@@ -1,7 +1,7 @@
 %-------------------------------------------------------------------------------
-% paper/paper.tex — the LaTeX twin of paper.md (the JOSS submission artifact).
-% JOSS itself ONLY accepts paper.md; this .tex produces the same article for
-% preprint / co-author circulation, sharing the same paper.bib.
+% paper/paper.tex — the FULL companion article for Choupo-2607.
+% JOSS itself ONLY accepts paper.md (250–1000 words); this .tex is the
+% long-form article (preprint / co-author circulation), sharing paper.bib.
 % Build:  pdflatex paper && bibtex paper && pdflatex paper && pdflatex paper
 %-------------------------------------------------------------------------------
 \documentclass[11pt,a4paper]{article}
@@ -12,11 +12,13 @@
 \usepackage[english]{babel}
 \usepackage[margin=2.6cm]{geometry}
 \usepackage{microtype}
+\usepackage{booktabs}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{xcolor}
 \definecolor{linkink}{RGB}{20,60,110}
 \usepackage[colorlinks=true, linkcolor=linkink,
             citecolor=linkink, urlcolor=linkink]{hyperref}
+\newcommand{\code}[1]{\texttt{#1}}
 
 \title{Choupo: a glass-box chemical process simulator for teaching
        transport phenomena and process engineering}
@@ -25,7 +27,7 @@
 \author{Vítor Geraldes\\[2pt]
   \small Department of Chemical Engineering, Instituto Superior Técnico,\\
   \small Universidade de Lisboa, Portugal}
-\date{20 July 2026}
+\date{20 July 2026 \,·\, describes release Choupo-2607}
 
 \begin{document}
 \maketitle
@@ -35,85 +37,299 @@ Choupo is an open-source, educational chemical process simulator written in
 C++17 with zero external dependencies, in which every numerical method is
 readable, every model choice is announced at run time, and conservation
 laws are first-class teaching artefacts.  Cases are plain-text
-dictionaries; the graphical interface is a runner and visualiser built on
-the same solvers compiled to WebAssembly.  The current release ships four
-solver binaries, 49 unit-operation models, a curated thermodynamic
-catalogue and 288 regression-validated tutorial cases.
+dictionaries in a file-first layout; each case seals its own property
+records under a checksummed manifest, so it reruns identically with no
+installation catalogue present.  Release Choupo-2607 ships four solver
+binaries by problem class, 49 unit-operation models, a curated
+thermodynamic catalogue (247 components; NRTL, UNIQUAC, Wilson, UNIFAC,
+COSMO-SAC, SRK, Peng--Robinson, a non-associating PC-SAFT core, Pitzer and
+electrolyte-NRTL electrolytes, IAPWS-IF97 steam), and 288 runnable
+tutorial cases validated by a golden-master regression suite.  Every
+converged steady run emits a plant-boundary element balance; batch
+campaigns carry material and energy ledgers closing to machine precision
+as exact state differences on the elements-of-formation datum; dynamic
+runs integrate a conservation ledger on accepted integrator steps.  A
+browser front-end runs the same solvers compiled to WebAssembly as a
+runner and visualiser, never a black-box editor.  Choupo is an
+independent, self-funded personal project, licensed GPL-3.0-or-later.
 \end{abstract}
 
-\section*{Summary}
+\section{Introduction}
 
-Choupo is an open-source, educational chemical process simulator written in
-C++17 with \textbf{zero external dependencies}: every numerical method it
-uses --- Newton--Raphson in one and many dimensions, Gauss elimination,
-Levenberg--Marquardt regression, Runge--Kutta and Rosenbrock integration,
-Wegstein acceleration, Nelder--Mead search and Michelsen's tangent-plane
-stability test \citep{michelsen1982} --- is implemented in readable source
-the student can open, step through, and modify.  Cases are plain-text
-dictionaries on disk, in a file-first layout in which the flowsheet file
-declares only topology while every stream's state lives in its own file;
-the graphical interface is a runner and visualiser (the same solvers
-compiled to WebAssembly run in the browser), never a black-box editor.
-
-The current release ships four solver binaries by problem class
-(steady-state flowsheeting, batch campaigns driven by time-triggered
-recipes, dynamic simulation with feedback control, and a property
-workbench), 49 unit-operation models, a curated thermodynamic catalogue
-(247 components, 205 Henry's-law pairs, Pitzer and electrolyte-NRTL
-parameter sets), and 288 runnable tutorial cases validated by a regression
-suite with golden-master checks on every release.
-
-\section*{Statement of need}
-
-Commercial process simulators dominate both industry and the classroom, but
-they are pedagogically opaque: the student specifies a column and receives
-converged profiles without ever seeing a residual, a Jacobian, or the
-reference state of an enthalpy.  Existing open-source alternatives
-prioritise breadth and industrial workflows over readability of the
-computation itself.  Choupo takes the opposite stance --- \emph{transparency
-over breadth}: at the default verbosity every Newton iteration, every
-K-value and every convergence aid is printed and attributed, and the engine
-refuses to silently substitute defaults for missing data (a missing binary
-pair is announced; a missing formation enthalpy makes an energy balance
-refuse rather than fabricate a zero).
-
-Three design decisions serve that goal.  First, \textbf{conservation is the
-curriculum}: every converged steady run emits a plant-boundary element
-balance (atoms of each element in versus out --- the true invariant of a
-reacting system), batch campaigns carry material and energy ledgers whose
-closures are exact state differences on the elements-of-formation datum,
-and dynamic runs integrate a conservation ledger on accepted integrator
-steps.  Claims are tri-state (full, partial, unavailable) with named
-reasons, never silent zeros.  Second, \textbf{thermodynamics is declared,
-not defaulted}: a case carries a single thermophysical-system dictionary
-that names its equilibrium formulation (activity--fugacity, dilute-solution
-Henry, a single cubic equation of state serving both phases
-\citep{soave1972,peng1976}, or aqueous electrolyte), and the run log
-announces every assembled model and parameter source.  The model library
-spans NRTL \citep{renon1968}, UNIQUAC \citep{abrams1975}, predictive UNIFAC
-\citep{fredenslund1975} and COSMO-SAC \citep{lin2002,bell2019}, Pitzer
-\citep{pitzer1973} and electrolyte-NRTL \citep{chen1986} electrolytes, and
-a validated non-associating PC-SAFT core \citep{gross2001}.  Third,
-\textbf{cases are self-contained}: an importer seals each case's property
-records into the case directory under a checksummed manifest, so a tutorial
-archived with a thesis reruns byte-for-byte years later with no
-installation catalogue present.
+Commercial process simulators dominate both industry and the classroom,
+but they are pedagogically opaque: the student specifies a column and
+receives converged profiles without ever seeing a residual, a Jacobian, or
+the reference state of an enthalpy.  Open-source alternatives exist, but
+they generally prioritise breadth and industrial workflows over the
+readability of the computation itself.  Choupo takes the opposite stance
+--- \emph{transparency over breadth}.  At the default verbosity every
+Newton iteration, every $K$-value and every convergence aid is printed and
+attributed; the engine refuses to substitute silent defaults for missing
+data (a missing binary-interaction pair is announced before it is
+ideal-defaulted; a missing formation enthalpy makes an energy balance
+refuse rather than fabricate a zero); and the source itself --- small
+C++17 classes with no external numerical libraries --- is meant to be
+read by students, not only executed.
 
 Choupo is an independent personal project, conceived, self-funded and
 developed by the author in his free time, on personal equipment; it is not
 an institutional product.  It is designed for teaching transport phenomena
 and process engineering --- and for the LLM era of case authoring: the
 documentation ships a machine-oriented reference so a student can author
-dictionaries with an assistant while the engine remains the sole arbiter
-of the physics.
+case dictionaries with an assistant while the engine remains the sole
+arbiter of the physics.  This article describes release Choupo-2607.
+
+\section{Architecture and case grammar}
+
+\subsection{Three layers, four binaries}
+
+The engine is organised in three layers.  The \emph{simulator core} turns
+one flowsheet into one solution: streams, unit results and key performance
+indicators.  An optional \emph{outer driver} wraps that pure function to
+run parameter sweeps, design specifications, optimisation
+(Nelder--Mead \citep{nelder1965} or a line-search SQP) and regression of
+thermodynamic parameters against experimental data
+(Levenberg--Marquardt \citep{marquardt1963}).  An optional
+\emph{post-processor} chain augments a converged solution with equipment
+sizing and Guthrie-style costing.  Four binaries partition the problem
+classes: \code{choupoSolve} (steady state, $F(x)=0$, with a
+Newton-on-tears recycle solver and Wegstein acceleration
+\citep{wegstein1958} as an alternative), \code{choupoBatch} (batch
+campaigns, $\mathrm{d}Y/\mathrm{d}t=f$, driven by a recipe of
+time-triggered events), \code{choupoCtrl} (dynamic continuous units with
+feedback-control loops) and \code{choupoProps} (a property workbench:
+evaluations, scans, consistency tests and parameter fitting).  Every
+extensible base class uses an explicit factory registered in
+\code{main()} --- no self-registration macros, no static-initialiser
+magic --- so a student can answer ``where does this model come from?'' by
+reading one function.
+
+\subsection{File-first cases}
+
+A case is a directory of plain-text dictionaries.  \code{system/} carries
+the control, topology, solver, outer-driver and post-processing
+dictionaries; \code{constant/} carries the thermophysical system and any
+reaction, crystallisation or drying-kinetics libraries; \code{0/} carries
+the complete initial state, one file per stream --- the flowsheet
+dictionary declares \emph{topology only}, and a stream's role (feed,
+internal, product) is inferred from that topology rather than declared.
+The steady solution is persisted to \code{converged/}, one file per
+stream, so a hierarchical (``fractal'') plant can be drilled into with the
+child case materialised from the parent's persisted state.  Completeness
+is contractual: a missing stream file is a fatal error, and the
+\code{choupo-init0} tool materialises missing files by explicit
+propagation from authored inlets --- it refuses to invent a recycle seed.
+
+Two properties of this grammar matter pedagogically.  First,
+\emph{self-containment}: an importer copies the transitive closure of
+every property record a case consumes into the case's own
+\code{constant/} tree under a manifest with per-record SHA-256 checksums;
+a sealed case reruns byte-for-byte with the installation catalogue hidden,
+which is exactly what a thesis archive needs.  Second, \emph{units on
+every scalar}: dictionary values carry named units (\code{P 1 bar;}) that
+the parser converts to SI and cross-checks dimensionally, with a clear
+error on mismatch.
+
+\section{Thermodynamics: declared, not defaulted}
+
+A case carries a single thermophysical-system dictionary
+(\code{constant/thermoPhysPropDict}) that names its components and its
+equilibrium \emph{formulation} --- the $K$-value structure the whole
+vapour--liquid equilibrium runs on: \code{gammaPhi}
+($K_i=\gamma_iP^{\mathrm{sat}}_i/\varphi_iP$), \code{gammaGamma} (two or
+more liquid phases, one excess-Gibbs surface each), \code{diluteSolution}
+(solvent on the Raoult convention, each solute on the full
+Krichevsky--Kasarnovsky Henry form \citep{krichevsky1935}), \code{phiPhi}
+(one cubic equation of state serving both phases,
+$K_i=\varphi^L_i/\varphi^V_i$) and \code{electrolyteGammaPhi} (aqueous
+electrolyte over an ideal vapour).  The builder assembles the declared
+formulation and refuses unknown shapes by name; the run log announces the
+assembled world, each phase's model and reference convention, and every
+parameter file engaged with its literature source.
+
+The activity library spans NRTL \citep{renon1968}, UNIQUAC
+\citep{abrams1975}, Wilson, predictive UNIFAC \citep{fredenslund1975} and
+COSMO-SAC in the 2002 formulation \citep{lin2002} cross-checked against
+the NIST benchmark implementation \citep{bell2019}, with each compound
+carrying its own named $\sigma$-profile sets.  Cubic equations of state
+(SRK \citep{soave1972}, Peng--Robinson \citep{peng1976}) deliver both
+roots, and a validated non-associating PC-SAFT core \citep{gross2001} is
+available on the $\varphi$--$\varphi$ route.  Electrolytes are served at
+two levels: a single-salt Pitzer adapter \citep{pitzer1973} and
+electrolyte-NRTL \citep{chen1986} for flowsheet VLE --- including the
+generalized segment-based mixed-solvent form \citep{chen2004} --- and a
+multi-ion Harvie--M{\o}ller--Weare speciation engine \citep{harvie1984}
+(with a Davies option for dilute work) for saturation-index and scaling
+studies.  Water-dominated power cycles can route through a hand-rolled
+IAPWS-IF97 steam kernel \citep{wagner2000}.  Transport properties (Chung,
+Eucken, Fuller, Vogel, Andrade, Sato--Riedel, Latini, Wilke--Chang,
+Scheibel, Brock--Bird) are declared per phase.
+
+Property estimation is deliberately a \emph{curation-time} act, not a
+runtime fallback: group-contribution estimates (Joback and relatives) are
+produced at the property workbench as reviewable data files flagged as
+estimates, and the runtime builder loads and verifies --- it never
+estimates.  Enthalpy uses one datum throughout: the elements at
+298.15\,K, so energy balances may legally cross reactors; the heat of a
+reaction is always $\sum_i\nu_ih_i(T)$ over species carrying formation
+data, and a dissolving salt's solid formation enthalpy is derived from
+its aqueous ions plus a cited heat of solution, never stored as a second,
+drifting copy.
+
+\section{Numerical methods, all readable}
+
+Every solver is hand-written and small: Newton--Raphson in one and $n$
+dimensions with visible residuals and Jacobians, Gauss elimination,
+Wegstein acceleration \citep{wegstein1958}, a Newton-on-tears recycle
+solver, Runge--Kutta~4 and an adaptive Rosenbrock method for stiff
+dynamics, Nelder--Mead \citep{nelder1965} and a line-search SQP for
+optimisation, Levenberg--Marquardt \citep{marquardt1963} for regression,
+and Michelsen's tangent-plane stability test \citep{michelsen1982} for
+phase-split detection.  Liquid--liquid equilibrium is solved by direct
+Gibbs-energy minimisation with multi-start seeding rather than
+successive substitution --- the symmetric-model saddle at $K=1$ is a
+known trap the code refuses to fall into.  Convergence aids obey a
+``no silent crutch'' rule: every initial guess, tear estimate and bound
+is first-class in the dictionaries, owned by the student, and announced
+when it binds.
+
+\section{Unit operations}
+
+Release 2607 registers 49 unit-operation models: the flash and
+saturation family; seven reactor forms (stoichiometric conversion,
+equilibrium by named reactions, Gibbs free-energy minimisation, CSTR and
+PFR with power-law and Langmuir--Hinshelwood kinetics, plus batch and
+dynamic reactors) sharing one reaction grammar; rigorous distillation by
+bubble-point Wang--Henke \citep{wang1966} and by simultaneous MESH
+Newton, with Murphree tray efficiencies and a tray-hydraulics
+rating/design pass; shortcut distillation (Fenske--Underwood--Gilliland);
+absorbers, strippers and liquid--liquid extractors; heat exchangers
+($\varepsilon$-NTU rating and a geometry-based design mode), multi-stream
+exchangers and a phase changer; evaporators; crystallisers (equilibrium,
+MSMPR and batch population-balance forms); membrane separations (a
+solution-diffusion spiral-wound module, a Donnan-steric pore model for
+charged nanofiltration, electrodialysis and ion exchange); adsorption
+(isotherm benches, linear-driving-force uptake, fixed-bed breakthrough
+and twin-bed pressure/temperature-swing shortcuts); solid and spray
+dryers with an atomiser library; cyclones and bag filters; pneumatic
+conveying; rotating equipment specified by shaft work (outlet pressure is
+a result, not an input); pipes with Darcy--Weisbach hydraulics; and batch
+vessels including a passive accumulator that receives a still's
+distillate continuously.  Heat and shaft work travel on explicit energy
+wires between units; duties are allocated to a utility catalogue by
+temperature level, and the browser front-end computes pinch composite
+curves from a converged run.
+
+\section{Conservation as the curriculum}
+
+The release's defining feature is a three-level balance discipline ---
+mass, per-element atoms, energy --- owned by the engine, with the
+interface only drawing engine artefacts.
+
+\textbf{Steady.}  Every converged \code{choupoSolve} run emits a
+plant-boundary \emph{element balance} by default: one shared formula
+parser builds the atom matrix $a_{ie}$ from each component's formula (or
+from a declared, provenance-gated elemental composition for
+formula-less substances such as petroleum cuts), and the report prints,
+per element, the atoms in, atoms out, residual and closure.  Because a
+$+$C error can cancel a $-$O error in a signed total, the conservation
+claim requires \emph{every} element to close; the compact indicator is
+the worst per-element deviation.  Claims are tri-state --- full, partial
+(a declared composition with unaccounted mass), unavailable (a species
+that cannot resolve, named, with the reason) --- never silent zeros.
+
+\textbf{Batch.}  Campaigns carry material and energy ledgers: one record
+per transfer with per-package enthalpy, one record per segment of
+constant physics, every integral an exact state difference on the
+elements datum (never a quadrature).  The reference tutorial --- react,
+transfer, then distil into a receiver --- retains all initial mass in
+its three vessels and closes mass and every element to $\sim\!10^{-15}$
+relative, with the energy ledger closing to the integration honesty of
+the mix solve.
+
+\textbf{Dynamic.}  \code{choupoCtrl} integrates a conservation ledger on
+\emph{accepted} integrator steps (mass inventory plus per-element
+residuals over time).  The physical first-law closure for the dynamic
+CSTR honestly \emph{refuses}: its energy equation is a heat-capacity/
+convective model, not the exact derivative of a stored internal energy,
+and the ledger says so rather than claim a closure the model cannot
+support.
+
+\section{The browser front-end}
+
+The graphical interface (React, with the solvers compiled to WebAssembly)
+is a \emph{runner and visualiser}: cases are authored as dictionaries on
+disk, and the browser loads, runs, and draws --- flowsheet topology with
+recipe transfers as labelled dashed edges, stream tables, global-balance
+views (the element balance as total atoms in/out with per-element
+drill-down), campaign Gantt charts in which continuous actions span their
+true intervals, trajectories, profiles, pinch composite curves, and an
+interactive property-exploration bench (binary envelopes,
+McCabe--Thiele, flash constructions, LLE maps, psychrometric charts,
+scaling scans, steam tables).  Every view deep-links to the section of
+the PDF theory guide that derives it.  The same physics runs in the
+browser and at the command line; the interface never computes physics of
+its own.
+
+\section{Validation and quality gates}
+
+The regression suite runs all 288 tutorial cases on every change: an
+exit-code check alone is banned (a solver can return NaN with exit code
+0), so every case passes a NaN/infinity guard, and 255 cases additionally
+pin key performance indicators against golden-master references.
+Doctrine gates enforce structural honesty (retired grammar cannot
+reappear in any document a student reads; sealed copies are audited
+against the live catalogue; the element-balance and control-ledger
+contracts are exercised by dedicated adversarial cases).  Physical
+validation anchors the models to primary data: Henry's-law solubilities
+against Wiebe/Larson measurements ($\sim$2\%), the N$_2$--CH$_4$
+$\varphi$--$\varphi$ isotherm against Stryjek's data ($\sim$2\%),
+mixed-solvent electrolyte-NRTL against Esteso's NaCl/ethanol--water
+activity coefficients \citep{esteso1989} with zero refitting (AAD
+$\sim$4.3\% over 47 points, with the systematic deviation at high
+ethanol declared as the ion-pairing physics a complete-dissociation
+model cannot carry), the PC-SAFT core against literature ($\sim$1\%),
+COSMO-SAC bit-for-bit against an independent implementation of the same
+equations and profiles, an IF97 Rankine cycle closing its first law to
+$10^{-12}$, and Pitzer--HMW seawater saturation indices inside the
+published oceanographic band.
+
+\section{Data governance and licensing}
+
+The public repository redistributes no third-party databank values.  The
+curated catalogue (247 components, 205 Henry pairs, 55 Pitzer and 3
+eNRTL parameter sets, 4 membranes, 3 adsorbents, 9 plant utilities)
+cites the primary source per value; beyond it, Choupo ships its own
+open group-contribution \emph{estimates}, clearly flagged as such, and a
+private, git-ignored local tier receives whatever data a user imports or
+licenses --- consumed values are announced as unverified.  The code is
+GPL-3.0-or-later; the documentation manuals are CC~BY-SA~4.0; bundled
+data files may carry their own open licences as an aggregation.  The
+\emph{Choupo} name is a trademark of TalentGround Lda.
+
+\section{Limitations}
+
+Choupo does not aim at breadth parity with industrial tools, and says so:
+the component catalogue is curated rather than encyclopaedic;
+bubble-point distillation is slow near azeotropes (the simultaneous MESH
+method is the documented escape); the dynamic CSTR's physical energy
+closure is refused pending a reformulation of its energy equation around
+a stored state function; and PC-SAFT ships without the association term.
+Each limitation is stated in the documentation next to the feature it
+bounds --- the project treats an honest refusal as a feature.
+
+\section*{Availability}
+
+Source, tutorials, documentation and the browser application:
+\url{https://github.com/choupo-admin/choupo} and
+\url{https://www.choupo.org} (release tag \code{Choupo-2607}).
 
 \section*{Acknowledgements}
 
-Substantial parts of the initial implementation, documentation and tutorial
-corpus were produced with assistance from Anthropic Claude; the published
-project is human-curated, reviewed and maintained by the authors.  The
-\emph{Choupo} name is a trademark of TalentGround Lda.; the code is
-GPL-3.0-or-later.
+Substantial parts of the initial implementation, documentation and
+tutorial corpus were produced with assistance from Anthropic Claude; the
+published project is human-curated, reviewed and maintained by the
+authors.
 
 \bibliographystyle{unsrtnat}
 \bibliography{paper}

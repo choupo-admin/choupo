@@ -23,10 +23,16 @@ public repository, installation + usage documentation (`docs/`, `README.md`),
 automated tests (`bin/runTests`), community guidelines (`CONTRIBUTING.md`),
 version tag (`Choupo-2607`).
 
-## LaTeX twin
+## The two artifacts
 
-`paper.tex` produces the same article as a standalone PDF (preprint /
-co-author circulation), sharing `paper.bib`.  Build:
-`pdflatex paper && bibtex paper && pdflatex paper && pdflatex paper`
-(3-page PDF, zero errors).  **JOSS itself only accepts `paper.md`** — keep
-the two in sync when editing; the .md is the submission artifact.
+- **`paper.md`** — the JOSS submission (JOSS only accepts Markdown and
+  caps Summary + Statement of need at 250–1000 words).
+- **`paper.tex`** — the FULL companion article on Choupo-2607 (~7 pages:
+  architecture, case grammar, thermodynamics, numerics, unit operations,
+  the three-level conservation discipline, the browser front-end,
+  validation, data governance, limitations).  Preprint / co-author
+  circulation; shares `paper.bib`.  Build:
+  `pdflatex paper && bibtex paper && pdflatex paper && pdflatex paper`.
+
+When facts change (new release numbers, new validations), update BOTH —
+the .md is the submission artifact, the .tex is the full story.
