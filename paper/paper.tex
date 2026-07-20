@@ -1,0 +1,119 @@
+%-------------------------------------------------------------------------------
+% paper/paper.tex — the LaTeX twin of paper.md (the JOSS submission artifact).
+% JOSS itself ONLY accepts paper.md; this .tex produces the same article for
+% preprint / co-author circulation, sharing the same paper.bib.
+% Build:  pdflatex paper && bibtex paper && pdflatex paper && pdflatex paper
+%-------------------------------------------------------------------------------
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage[margin=2.6cm]{geometry}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\definecolor{linkink}{RGB}{20,60,110}
+\usepackage[colorlinks=true, linkcolor=linkink,
+            citecolor=linkink, urlcolor=linkink]{hyperref}
+
+\title{Choupo: a glass-box chemical process simulator for teaching
+       transport phenomena and process engineering}
+% TODO(Vítor): decidir a lista de autores (a autoria do paper é decisão tua,
+% não deriva do copyright do código) e acrescentar o ORCID.
+\author{Vítor Geraldes\\[2pt]
+  \small Department of Chemical Engineering, Instituto Superior Técnico,\\
+  \small Universidade de Lisboa, Portugal}
+\date{20 July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Choupo is an open-source, educational chemical process simulator written in
+C++17 with zero external dependencies, in which every numerical method is
+readable, every model choice is announced at run time, and conservation
+laws are first-class teaching artefacts.  Cases are plain-text
+dictionaries; the graphical interface is a runner and visualiser built on
+the same solvers compiled to WebAssembly.  The current release ships four
+solver binaries, 49 unit-operation models, a curated thermodynamic
+catalogue and 288 regression-validated tutorial cases.
+\end{abstract}
+
+\section*{Summary}
+
+Choupo is an open-source, educational chemical process simulator written in
+C++17 with \textbf{zero external dependencies}: every numerical method it
+uses --- Newton--Raphson in one and many dimensions, Gauss elimination,
+Levenberg--Marquardt regression, Runge--Kutta and Rosenbrock integration,
+Wegstein acceleration, Nelder--Mead search and Michelsen's tangent-plane
+stability test \citep{michelsen1982} --- is implemented in readable source
+the student can open, step through, and modify.  Cases are plain-text
+dictionaries on disk, in a file-first layout in which the flowsheet file
+declares only topology while every stream's state lives in its own file;
+the graphical interface is a runner and visualiser (the same solvers
+compiled to WebAssembly run in the browser), never a black-box editor.
+
+The current release ships four solver binaries by problem class
+(steady-state flowsheeting, batch campaigns driven by time-triggered
+recipes, dynamic simulation with feedback control, and a property
+workbench), 49 unit-operation models, a curated thermodynamic catalogue
+(247 components, 205 Henry's-law pairs, Pitzer and electrolyte-NRTL
+parameter sets), and 288 runnable tutorial cases validated by a regression
+suite with golden-master checks on every release.
+
+\section*{Statement of need}
+
+Commercial process simulators dominate both industry and the classroom, but
+they are pedagogically opaque: the student specifies a column and receives
+converged profiles without ever seeing a residual, a Jacobian, or the
+reference state of an enthalpy.  Existing open-source alternatives
+prioritise breadth and industrial workflows over readability of the
+computation itself.  Choupo takes the opposite stance --- \emph{transparency
+over breadth}: at the default verbosity every Newton iteration, every
+K-value and every convergence aid is printed and attributed, and the engine
+refuses to silently substitute defaults for missing data (a missing binary
+pair is announced; a missing formation enthalpy makes an energy balance
+refuse rather than fabricate a zero).
+
+Three design decisions serve that goal.  First, \textbf{conservation is the
+curriculum}: every converged steady run emits a plant-boundary element
+balance (atoms of each element in versus out --- the true invariant of a
+reacting system), batch campaigns carry material and energy ledgers whose
+closures are exact state differences on the elements-of-formation datum,
+and dynamic runs integrate a conservation ledger on accepted integrator
+steps.  Claims are tri-state (full, partial, unavailable) with named
+reasons, never silent zeros.  Second, \textbf{thermodynamics is declared,
+not defaulted}: a case carries a single thermophysical-system dictionary
+that names its equilibrium formulation (activity--fugacity, dilute-solution
+Henry, a single cubic equation of state serving both phases
+\citep{soave1972,peng1976}, or aqueous electrolyte), and the run log
+announces every assembled model and parameter source.  The model library
+spans NRTL \citep{renon1968}, UNIQUAC \citep{abrams1975}, predictive UNIFAC
+\citep{fredenslund1975} and COSMO-SAC \citep{lin2002,bell2019}, Pitzer
+\citep{pitzer1973} and electrolyte-NRTL \citep{chen1986} electrolytes, and
+a validated non-associating PC-SAFT core \citep{gross2001}.  Third,
+\textbf{cases are self-contained}: an importer seals each case's property
+records into the case directory under a checksummed manifest, so a tutorial
+archived with a thesis reruns byte-for-byte years later with no
+installation catalogue present.
+
+Choupo was written for the \emph{Métodos Computacionais em Fenómenos de
+Transferência} course at Instituto Superior Técnico and is designed for the
+LLM era of case authoring: the documentation ships a machine-oriented
+reference so a student can author dictionaries with an assistant while the
+engine remains the sole arbiter of the physics.
+
+\section*{Acknowledgements}
+
+Substantial parts of the initial implementation, documentation and tutorial
+corpus were produced with assistance from Anthropic Claude; the published
+project is human-curated, reviewed and maintained by the authors.  The
+\emph{Choupo} name is a trademark of TalentGround Lda.; the code is
+GPL-3.0-or-later.
+
+\bibliographystyle{unsrtnat}
+\bibliography{paper}
+
+\end{document}

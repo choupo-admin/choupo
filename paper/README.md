@@ -22,3 +22,11 @@ JOSS review criteria the repo already meets: OSI licence (GPL-3.0-or-later),
 public repository, installation + usage documentation (`docs/`, `README.md`),
 automated tests (`bin/runTests`), community guidelines (`CONTRIBUTING.md`),
 version tag (`Choupo-2607`).
+
+## LaTeX twin
+
+`paper.tex` produces the same article as a standalone PDF (preprint /
+co-author circulation), sharing `paper.bib`.  Build:
+`pdflatex paper && bibtex paper && pdflatex paper && pdflatex paper`
+(3-page PDF, zero errors).  **JOSS itself only accepts `paper.md`** — keep
+the two in sync when editing; the .md is the submission artifact.
