@@ -28,6 +28,13 @@ License
 
 #include "Banner.H"
 
+// Written by the build (`make` -> gitversion rule) with a content-compare,
+// so an unchanged hash never dirties the incremental build; absent in a
+// source tarball, in which case the dev banner simply omits the commit.
+#if __has_include("../../generated/gitVersion.H")
+#include "../../generated/gitVersion.H"
+#endif
+
 #include <iostream>
 #include <string>
 
@@ -38,7 +45,18 @@ void printBanner(const char* suffix)
     // The runtime banner mirrors the source-file header (the Choupo column-tree),
     // with the build VERSION on the first line.  Raw strings keep the \|/ art
     // literal.  No License block here -- that lives in the file headers.
-    const std::string ver = std::string("Choupo  ") + CHOUPO_VERSION + suffix;
+    std::string ver = std::string("Choupo  ") + CHOUPO_VERSION + suffix;
+    // A development build moves continuously, so it identifies itself fully:
+    // the target release and the exact commit (generated/gitVersion.H is
+    // written by the build with a content-compare -- absent in a tarball).
+    if (std::string(CHOUPO_VERSION) == "Choupo-dev")
+    {
+        ver += std::string("  (target ") + CHOUPO_TARGET_RELEASE;
+#ifdef CHOUPO_GIT_HASH
+        ver += std::string(", commit ") + CHOUPO_GIT_HASH;
+#endif
+        ver += ")";
+    }
 
     std::cout
         << R"CH(/*---------------------------------------------------------------------------*\

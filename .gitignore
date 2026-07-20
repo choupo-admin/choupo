@@ -234,3 +234,4 @@ bin/dwsim-runner/
 /data/local/*
 !/data/local/README.md
 !/data/local/.gitkeep
+generated/gitVersion.H

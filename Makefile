@@ -81,7 +81,22 @@ SYMLINK_PROPS := choupoProps$(EXE)
 
 .PHONY: all clean distclean test print debug release windows lib
 
-all: $(SYMLINK_SOLVE) $(SYMLINK_BATCH) $(SYMLINK_CTRL) $(SYMLINK_PROPS)
+# Dev-banner identity: write generated/gitVersion.H with the short HEAD
+# hash, CONTENT-COMPARED so an unchanged hash never touches the file (and
+# never dirties the incremental build).  Absent git (a tarball) -> no file,
+# and the banner omits the commit.
+.PHONY: gitversion
+gitversion:
+	@h=$$(git rev-parse --short HEAD 2>/dev/null); \
+	if [ -n "$$h" ]; then \
+	  mkdir -p generated; \
+	  printf '#pragma once\n#define CHOUPO_GIT_HASH "%s"\n' "$$h" > generated/.gitVersion.tmp; \
+	  if cmp -s generated/.gitVersion.tmp generated/gitVersion.H 2>/dev/null; then \
+	    rm generated/.gitVersion.tmp; \
+	  else mv generated/.gitVersion.tmp generated/gitVersion.H; fi; \
+	fi
+
+all: gitversion $(SYMLINK_SOLVE) $(SYMLINK_BATCH) $(SYMLINK_CTRL) $(SYMLINK_PROPS)
 
 # `make lib` --- the shared engine library + choupoSolve main.o that
 # bin/buildCode needs to compile a case's own unit ops.
