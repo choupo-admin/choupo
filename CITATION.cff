@@ -4,7 +4,7 @@ message: >-
   report, talk, course notes — please cite it as below.  Doing so
   helps the project demonstrate academic impact and supports
   continued open development.
-title: "Choupo — Open Chemical Process Simulator"
+title: "Choupo — Open-source Chemical Process Simulator"
 abstract: >-
   Educational chemical-process simulator written in C++17.  Provides
   a transparent, source-readable alternative to commercial simulators
@@ -19,7 +19,7 @@ authors:
   - family-names: Geraldes
     given-names: Vítor
 repository-code: "https://github.com/choupo-admin/choupo"
-url: "https://github.com/choupo-admin/choupo"
+url: "https://www.choupo.org/"
 license: "GPL-3.0-or-later"
 keywords:
   - chemical engineering education
@@ -34,13 +34,14 @@ keywords:
   - parameter estimation
   - C++
 version: "2607"
+date-released: 2026-07-14
 preferred-citation:
   type: software
-  title: "Choupo — Open Chemical Process Simulator"
+  title: "Choupo — Open-source Chemical Process Simulator"
   authors:
     - family-names: Geraldes
       given-names: Vítor
   version: "2607"
   year: 2026
-  url: "https://github.com/choupo-admin/choupo"
+  url: "https://github.com/choupo-admin/choupo/releases/tag/v2607"
   license: "GPL-3.0-or-later"

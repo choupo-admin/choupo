@@ -86,6 +86,11 @@ Choupo/
 * **No `Co-Authored-By` trailer** in commit messages.
 * **Version** lives in `src/core/Banner.H` (`CHOUPO_VERSION`), `CITATION.cff`,
   and `CHANGELOG.md` — bump them together when tagging a release.
+* **Branches & tags (settled 2026-07-20):** two branches only — `main` (latest
+  stable release) and `dev` (`Choupo-dev`, next version).  Public name
+  `Choupo-YYMM`, immutable git tag `vYYMM`, internal version `YYMM`.  A
+  published `vYYMM` tag is NEVER deleted, moved or reused.  Release
+  procedure: [`RELEASING.md`](RELEASING.md).
 
 ---
 

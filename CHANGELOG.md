@@ -1,9 +1,12 @@
 # Changelog
 
 All notable changes to **Choupo** are documented here.  The format follows
-[Keep a Changelog](https://keepachangelog.com/).  Releases use dated catalogue
-tags (`Choupo-YYMM`), not semantic versions; **Choupo-2607** is the first
-version.
+[Keep a Changelog](https://keepachangelog.com/).  Releases are dated, not
+semantic: the public name is `Choupo-YYMM`, the immutable git tag is
+`vYYMM`, and the internal version string is `YYMM` (so `Choupo-2607` =
+tag `v2607` = version `2607`).  Development happens on the `dev` branch
+(`Choupo-dev`); `main` is always the latest stable release.
+**Choupo-2607** is the first version.
 
 ## [Unreleased]
 

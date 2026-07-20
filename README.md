@@ -4,7 +4,11 @@
 directories, modular thermo, file-based component database, browser GUI
 (WASM).
 
-> **Choupo-2607** — four binaries, one per problem class
+> **Choupo-2607** — four binaries, one per problem class.
+> Stable releases live on `main` (public name `Choupo-YYMM`, immutable tag
+> `vYYMM`); active development is the `dev` branch (`Choupo-dev`).  Cite the
+> exact version you used — see [`CITATION.cff`](CITATION.cff) and the
+> [versioned releases](https://github.com/choupo-admin/choupo/releases).
 > (`choupoSolve` steady, `choupoBatch` time-dependent + recipes,
 > `choupoCtrl` dynamic continuous + control loops, `choupoProps`
 > property evaluation + parameter fitting); 191 tutorials guarded by 243
