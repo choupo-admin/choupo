@@ -454,7 +454,10 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"detail\": "       << esc(e.detail)
                << ", \"trigger\": "      << esc(e.trigger)
                << ", \"from\": "         << esc(e.from)
-               << ", \"to\": "           << esc(e.to) << " }";
+               << ", \"to\": "           << esc(e.to);
+            if (e.tEnd > e.t)
+                os << ", \"tEnd\": "     << e.tEnd;
+            os << " }";
         }
         os << "\n  ]";
     }

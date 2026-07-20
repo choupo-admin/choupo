@@ -672,7 +672,8 @@ try
             SimulationResult::TransferRecord tr;
             tr.tStart = tNow; tr.tEnd = tNow;
             tr.from = unitNames[i];
-            tr.to   = "(unrouted outlet)";
+            tr.to   = "(external boundary)";   // no receiver declared: the
+                                               //   distillate leaves the plant
             tr.kind = "external";
             ventSlot[i] = transfers.size();
             transfers.push_back(std::move(tr));
@@ -1049,7 +1050,7 @@ try
                     timeline.push_back({ tr.tStart, "recipe",
                         tr.kind == "external" ? "externalOutlet"
                                               : "dischargeTo",
-                        det.str(), "", tr.from, tr.to });
+                        det.str(), "", tr.from, tr.to, tr.tEnd });
                 }
             }
         }

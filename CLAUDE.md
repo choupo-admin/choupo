@@ -384,7 +384,7 @@ H(n,T₁)−H(n,T₀)); `chargeFrom` solves T_mix by H-EQUALITY (fallback = mola
 average, announced + drained as a named gap).  The campaign energy balance
 claims a verdict ONLY when every piece is ledgered and priceable — otherwise
 UNAVAILABLE quoting each `energyLedgerGap()` verbatim.  Reference cases:
-recipe01 (react-then-distil, closes 6e-16), recipe02 (T-programme + impulses,
+recipe01 (react-then-distil INTO a receiver; vessels retain all mass, closure ~1e-15), recipe02 (T-programme + impulses,
 2e-15), still06/batch08 (adversarial validity).  Heat-of-crystallisation is
 SHARED steady↔batch (`CrystallisationHeat.{H,cpp}`).  Phase (f) — temporal
 utilities + cost — pending.

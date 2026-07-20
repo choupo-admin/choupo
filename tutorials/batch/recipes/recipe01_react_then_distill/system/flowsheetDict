@@ -19,7 +19,12 @@
       The recipe TRANSFERs the reactor contents to an initially empty
       batch still.  The still then runs a Rayleigh distillation at
       F_vap = 2.0e-5 kmol/s for 800 s, vaporising 0.016 kmol
-      (~85 % of the charge).  Starting from the converted mix (ethyl acetate + water +
+      (~85 % of the charge) -- the condensed distillate is routed, step
+      by step, into a passive batchAccumulator (`dischargeTo receiver;`),
+      so the campaign ends with the ester-rich distillate IN a vessel
+      while the ethanol-depleted residue stays in the still's own pot
+      (the pot IS the bottoms tank; no third transfer needed).  Mass is
+      conserved across the three vessels at every accepted step.  Starting from the converted mix (ethyl acetate + water +
       unreacted ethanol/acid), the still progressively strips the more
       volatile ethyl acetate + ethanol; pot composition follows the
       Raoult y-x curve.  (The thermoPackage here uses ideal Raoult for
@@ -54,8 +59,14 @@ units
     }
 
     {
+        name        receiver;
+        type        batchAccumulator;      // passive vessel; fills from the still
+    }
+
+    {
         name        still;
         type        batchStill;
+        dischargeTo receiver;              // condensed distillate -> vessel
 
         operation
         {

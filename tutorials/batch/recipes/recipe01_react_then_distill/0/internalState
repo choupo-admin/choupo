@@ -26,4 +26,11 @@ units
         V            0.001;
         totalMoles   0.0;               // empty until the recipe charges it
     }
+    "receiver"
+    {
+        T            350.0 K;            // placeholder; inherits the distillate T
+        P            1.013 bar;
+        V            0.001;
+        totalMoles   0.0;               // empty; fills from the still's distillate
+    }
 }

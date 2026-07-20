@@ -283,6 +283,10 @@ struct SimulationResult
         std::string from;      // acting unit (transfer source; setParameter/
                                //   status unit) -- the Gantt lane
         std::string to;        // transfer destination; empty otherwise
+        scalar      tEnd = -1.0;  // > t: a CONTINUOUS action's interval end
+                                  //   (dischargeTo / externalOutlet); < 0
+                                  //   for instantaneous events.  Last field
+                                  //   so existing brace-inits stay valid.
     };
     std::vector<TimelineEvent>                                     timeline;
 
@@ -304,7 +308,7 @@ struct SimulationResult
     {
         scalar      tStart = 0.0, tEnd = 0.0;   // s
         std::string from, to;                    // vessels; to may be an
-                                                 // "(unrouted outlet)" role
+                                                 // "(external boundary)" role
         std::string kind;                        // discrete|continuous|external
         std::map<std::string, scalar> dn;        // kmol moved, per component
         scalar      H_kJ    = 0.0;               // integrated transported enthalpy
