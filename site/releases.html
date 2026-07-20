@@ -59,9 +59,10 @@
   <h1>Releases</h1>
   <p class="sub">Choupo ships a dated stable release roughly every six months
   (public name <code>Choupo-YYMM</code>, immutable git tag <code>vYYMM</code>)
-  and a continuously moving development line, <code>Choupo-dev</code>.
-  Stable means: the full regression suite green, the catalogue frozen, the
-  tag never touched again.</p>
+  and a continuously moving development line, <code>Choupo-dev</code> —
+  which is what <code>choupo.org/app</code> runs by default.  Each stable
+  release keeps a frozen, never-touched copy of the app at
+  <code>/vYYMM/app/</code>: the URL you cite, teach from, and archive.</p>
 </div></header>
 
 <main>
@@ -77,7 +78,7 @@
       by default on every converged steady run.  Runs natively (C++17, zero
       dependencies) and in the browser via WebAssembly.</p>
       <div class="actions">
-        <a class="button" href="/app/" target="choupo-app" rel="noopener">Run in the browser</a>
+        <a class="button" href="/v2607/app/" target="choupo-app-v2607" rel="noopener">Run Choupo-2607 (frozen)</a>
         <a class="button light" href="https://github.com/choupo-admin/choupo/releases/tag/v2607" target="_blank" rel="noopener">Release notes &amp; source (v2607)</a>
         <a class="button light" href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">Repository (main)</a>
       </div>
@@ -88,14 +89,15 @@
     <h2>Development line — Choupo-dev</h2>
     <p class="when">Moving continuously toward <strong>Choupo-2701</strong> · branch <code>dev</code></p>
     <div class="card">
-      <p>New capabilities land here first.  A development build identifies
-      itself fully — the binaries print
-      <code>Choupo-dev (target Choupo-2701, commit &lt;hash&gt;)</code> —
-      precisely because this line changes daily.  No stability promises:
-      cases, results and interfaces may shift between commits; cite and
-      teach from the stable release.</p>
+      <p><strong>The app at <a href="/app/" target="choupo-app">choupo.org/app</a>
+      runs this line by default</strong> — a browser app has no install, so
+      visitors get the newest Choupo, clearly badged
+      <code>Choupo-dev · &lt;commit&gt;</code> in the top bar.  No stability
+      promises: cases, results and interfaces may shift between commits;
+      cite and teach from the frozen stable release above.</p>
       <div class="actions">
-        <a class="button light" href="https://github.com/choupo-admin/choupo/tree/dev" target="_blank" rel="noopener">View Choupo-dev on GitHub</a>
+        <a class="button" href="/app/" target="choupo-app" rel="noopener">Run Choupo-dev (latest)</a>
+        <a class="button light" href="https://github.com/choupo-admin/choupo/tree/dev" target="_blank" rel="noopener">View on GitHub</a>
       </div>
     </div>
   </section>

@@ -44,8 +44,9 @@ unless an old release someday needs long-term maintenance.
 6. Create the GitHub Release: tag `vYYMM`, title `Choupo-YYMM`, notes from
    the CHANGELOG section (`gh release create vYYMM --title "Choupo-YYMM"
    --notes-file <notes>`).
-7. Deploy the site (see the deploy procedure) so the landing shows the new
-   stable release.
+7. Freeze the release's app at `/vYYMM/app/` and deploy the site (both in
+   "Site deployment" below); add the release to the /releases/ history
+   list and point its "Run" button at the frozen copy.
 8. On `dev`: bump the Banner to `Choupo-dev` with the next target release,
    and open the next CHANGELOG section.
 
@@ -54,6 +55,66 @@ unless an old release someday needs long-term maintenance.
 - Stable (`main` / a tag): `Version: Choupo-YYMM`.
 - Development (`dev`): `Version: Choupo-dev · target Choupo-YYMM ·
   commit <short hash>` — the hash matters precisely because dev moves.
+
+## Day-to-day workflow (pushing work)
+
+All development happens on `dev`:
+
+```bash
+git checkout dev
+# ... work, commit (identity: Vítor Geraldes <talentgroundlda@gmail.com>) ...
+bin/runTests            # 0 FAIL before any push
+git push origin dev
+```
+
+A **critical fix to the stable release** goes to `main` first, then into
+`dev` — never the other way around:
+
+```bash
+git checkout main && git cherry-pick <fix>   # or commit directly
+bin/runTests && git push origin main
+git checkout dev && git merge main && git push origin dev
+```
+
+Published `vYYMM` tags are never deleted, moved or reused — no exceptions.
+
+## Site deployment (choupo.org)
+
+**`/app/` serves Choupo-dev by default** — a browser app has no install,
+so visitors run the newest line, badged `Choupo-dev · <commit>` in the top
+bar (the badge reads `wasm/version.json`, written by the WASM build beside
+the binaries).  **Each stable release keeps a frozen copy at
+`/vYYMM/app/`** — the citable, teachable, never-touched URL.
+
+Deploying the dev line (the routine deploy; ONLY with a green suite):
+
+```bash
+git checkout dev
+bin/runTests                                  # 0 FAIL or no deploy
+make wasm-gui                                 # dev banner + version.json
+bin/runSite                                   # assembles site/_dist (then --kill)
+D=<tmp>/site-deploy
+git clone https://github.com/choupo-admin/choupo-admin.github.io.git "$D"  # or pull
+rsync -a --delete --exclude='.git' --exclude='CNAME' --exclude='v*/' \
+      site/_dist/ "$D/"                       # NEVER touches the frozen /vYYMM/
+cat "$D/CNAME"                                # must still read www.choupo.org
+git -C "$D" add -A . && git -C "$D" commit -m "site: dev refresh — <resumo>" \
+   && git -C "$D" push origin HEAD:main
+```
+
+Freezing a release's app (once, at release time, from the fresh tag):
+
+```bash
+git checkout vYYMM
+make wasm-gui                                 # stable banner + version.json
+cd gui && npx vite build --base=/vYYMM/app/ --outDir dist-vYYMM && cd ..
+cp -r gui/dist-vYYMM "$D/vYYMM/app" && rm -rf gui/dist-vYYMM
+git -C "$D" add vYYMM && git -C "$D" commit -m "site: freeze Choupo-YYMM app at /vYYMM/app/" \
+   && git -C "$D" push origin HEAD:main
+```
+
+After any site push: GitHub Pages rebuilds in ~1–3 min, and the service
+worker caches — hard-refresh (`Ctrl+Shift+R`) to see the new deploy.
 
 ## Citation
 
