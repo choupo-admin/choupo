@@ -65,7 +65,23 @@ import { ColorSchemeToggle } from "./ColorSchemeToggle.js";
 import { ClipboardBridge } from "./ClipboardBridge.js";
 import { CaseSwitcher } from "./CaseSwitcher.js";
 
+interface EngineVersion { version: string; target?: string; commit?: string }
+
 export function TopBar() {
+  // The version badge reads wasm/version.json -- written by the WASM build
+  // BESIDE the binaries this app loads, so the announced version and the
+  // engine that runs can never disagree (a user landing on /app/ must know
+  // what they are about to run).
+  const [engineVersion, setEngineVersion] = useState<EngineVersion | null>(null);
+  useEffect(() => {
+    fetch(`${import.meta.env.BASE_URL}wasm/version.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((v: EngineVersion | null) => {
+        if (v && typeof v.version === "string" && v.version) setEngineVersion(v);
+      })
+      .catch(() => { /* absent (odd deployment): show no badge, never a guess */ });
+  }, []);
+
   const status = useStore((s) => s.runStatus);
   const startRun = useStore((s) => s.startRun);
   const finishRun = useStore((s) => s.finishRun);
@@ -331,6 +347,20 @@ export function TopBar() {
             <span style={{ color: "light-dark(var(--mantine-color-accent-7), var(--mantine-color-accent-4))" }}>C</span>HOUPO<sup style={{ fontSize: "0.55em", fontWeight: 600, verticalAlign: "super", letterSpacing: 0 }}>™</sup>
           </Text>
         </Group>
+        {engineVersion && (
+          <Tooltip withArrow multiline w={260}
+            label={engineVersion.version === "Choupo-dev"
+              ? `Development build toward ${engineVersion.target || "the next release"} — no stability promises.  Stable releases: choupo.org/releases`
+              : "The engine version this app runs — releases, development line and citation at choupo.org/releases"}>
+            <Badge size="sm" radius="sm" variant="light"
+              color={engineVersion.version === "Choupo-dev" ? "orange" : "gray"}
+              styles={{ root: { textTransform: "none", cursor: "help" } }}>
+              {engineVersion.version === "Choupo-dev"
+                ? `Choupo-dev${engineVersion.commit ? ` · ${engineVersion.commit}` : ""}`
+                : engineVersion.version}
+            </Badge>
+          </Tooltip>
+        )}
         <Text c="dimmed">|</Text>
         <CaseSwitcher />
         {currentEntry?.unsupportedReason && (

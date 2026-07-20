@@ -95,14 +95,28 @@ WASM_ALL_OUT := $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) \
                 $(WASM_CTRL_JS)  $(WASM_CTRL_JS:.js=.wasm) \
                 $(WASM_PROPS_JS) $(WASM_PROPS_JS:.js=.wasm)
 
-wasm: $(WASM_ALL_OUT)
+# The version the SHIPPED app announces = the version baked into these
+# binaries (Banner.H), written beside them so GUI and engine can never
+# disagree.  Content-compared: an unchanged version never touches the file.
+.PHONY: wasm-version
+wasm-version:
+	@v=$$(sed -n 's/.*CHOUPO_VERSION = "\(.*\)";/\1/p' src/core/Banner.H); \
+	t=$$(sed -n 's/.*CHOUPO_TARGET_RELEASE = "\(.*\)";/\1/p' src/core/Banner.H); \
+	h=$$(git rev-parse --short HEAD 2>/dev/null || echo ""); \
+	printf '{ "version": "%s", "target": "%s", "commit": "%s" }\n' "$$v" "$$t" "$$h" \
+	  > gui/public/wasm/.version.tmp; \
+	if cmp -s gui/public/wasm/.version.tmp gui/public/wasm/version.json 2>/dev/null; \
+	then rm gui/public/wasm/.version.tmp; \
+	else mv gui/public/wasm/.version.tmp gui/public/wasm/version.json; fi
+
+wasm: wasm-version $(WASM_ALL_OUT)
 
 # The GUI's FOUR binaries: the GUI dispatches by controlDict.application,
 # so all four must be present in gui/public/wasm/ for a transient case
 # (ctrl03 / batch04) to run in-browser and offer the time scrubber.  Same
 # set as `wasm`; the alias is kept because the bin/ scripts + docs refer
 # to it as THE GUI rebuild.
-wasm-gui: $(WASM_ALL_OUT)
+wasm-gui: wasm-version $(WASM_ALL_OUT)
 
 # The steady + props pair alone -- the fast relink when the dynamic
 # binaries are already current in gui/public/wasm/.
