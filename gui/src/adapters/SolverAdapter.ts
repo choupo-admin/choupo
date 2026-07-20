@@ -252,6 +252,9 @@ export interface TimelineEvent {
   trigger: string;     // "time" | "when: <unit.q op v>" | "" (status)
   from: string;        // acting unit (transfer source / setParameter unit / status unit)
   to: string;          // transfer destination; "" otherwise
+  /** > t: a CONTINUOUS action's interval end (dischargeTo / externalOutlet);
+   *  absent for instantaneous events.  The Gantt draws these as bars. */
+  tEnd?: number;
 }
 
 /**

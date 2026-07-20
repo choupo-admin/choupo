@@ -506,6 +506,52 @@ export function flowsheetToGraph(
     }
   }
 
+  // RECIPE edges (batch campaigns).  A `transfer` is an EVENT, not a
+  // permanent stream -- the topology is honest -- but two disconnected
+  // vessels teach the wrong story (Vitor's batch audit, 2026-07-20).  Draw
+  // each recipe transfer as a dashed edge labelled with its trigger time,
+  // and a batchStill's continuous `dischargeTo` as a dashed edge into its
+  // receiver.  Drawing only: the recipe block stays the source of truth.
+  const recipeRaw = (flowsheet as { recipe?: unknown }).recipe;
+  if (Array.isArray(recipeRaw)) {
+    for (const evRaw of recipeRaw) {
+      const ev = evRaw as { action?: unknown; from?: unknown; to?: unknown; time?: unknown };
+      if (ev.action !== "transfer") continue;
+      if (typeof ev.from !== "string" || typeof ev.to !== "string") continue;
+      const t = typeof ev.time === "number" ? `${ev.time} s` : String(ev.time ?? "");
+      edges.push({
+        id: `e:recipe:${ev.from}->${ev.to}:${t}`,
+        source: `unit:${ev.from}`,
+        target: `unit:${ev.to}`,
+        sourceHandle: "energy-out",
+        targetHandle: "energy-in",
+        label: `transfer @ ${t}`,
+        type: "smoothstep",
+        animated: false,
+        style: { stroke: "#20c997", strokeWidth: 1.6, strokeDasharray: "4 4" },
+        labelStyle: { fill: "#20c997", fontWeight: 600 },
+        data: { kind: "recipe" },
+      });
+    }
+  }
+  for (const u of view.units) {
+    const dt = (u as { dischargeTo?: unknown }).dischargeTo;
+    if (typeof dt !== "string" || dt.length === 0) continue;
+    edges.push({
+      id: `e:discharge:${u.name}->${dt}`,
+      source: `unit:${u.name}`,
+      target: `unit:${dt}`,
+      sourceHandle: "energy-out",
+      targetHandle: "energy-in",
+      label: "distillate (continuous)",
+      type: "smoothstep",
+      animated: false,
+      style: { stroke: "#20c997", strokeWidth: 1.6, strokeDasharray: "4 4" },
+      labelStyle: { fill: "#20c997", fontWeight: 600 },
+      data: { kind: "recipe" },
+    });
+  }
+
   // Duty stubs -> column: a dashed UTILITY edge from each synthetic duty
   // terminal into the column's reboiler (base) / condenser (top) handle.
   // Coloured by tier (heating warm / cooling cyan); hidden with the

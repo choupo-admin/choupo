@@ -109,7 +109,20 @@ export function GanttPlot({
                         markerEnd={`url(#gantt-arrow-${m.kind})`} />
                 </g>
               )}
-              {m.kind === "status" ? (
+              {m.xEnd !== undefined ? (
+                // CONTINUOUS action: a DURATION BAR over [t, tEnd] on the
+                // acting lane (temporal honesty -- an 800 s distillation is
+                // not an instant), with end caps.
+                <g>
+                  <rect x={m.x} y={m.laneY - 5} width={m.xEnd - m.x} height={10}
+                        rx={3} fill={colour} fillOpacity={0.45}
+                        stroke={colour} strokeWidth={1.2} />
+                  <line x1={m.x} y1={m.laneY - 7} x2={m.x} y2={m.laneY + 7}
+                        stroke={colour} strokeWidth={2} />
+                  <line x1={m.xEnd} y1={m.laneY - 7} x2={m.xEnd} y2={m.laneY + 7}
+                        stroke={colour} strokeWidth={2} />
+                </g>
+              ) : m.kind === "status" ? (
                 // status: a warning triangle
                 <polygon
                   points={`${m.x},${m.laneY - 7} ${m.x - 6},${m.laneY + 5} ${m.x + 6},${m.laneY + 5}`}
@@ -120,7 +133,9 @@ export function GanttPlot({
                   points={`${m.x},${m.laneY - 6} ${m.x + 6},${m.laneY} ${m.x},${m.laneY + 6} ${m.x - 6},${m.laneY}`}
                   fill={colour} />
               )}
-              <title>{`t = ${formatT(m.t)} s -- ${m.detail}${m.trigger ? `\ntrigger: ${m.trigger}` : ""}`}</title>
+              <title>{m.xEnd !== undefined
+                ? `[${formatT(m.t)}, ${formatT(m.tEnd!)}] s -- ${m.detail}${m.trigger ? `\ntrigger: ${m.trigger}` : ""}`
+                : `t = ${formatT(m.t)} s -- ${m.detail}${m.trigger ? `\ntrigger: ${m.trigger}` : ""}`}</title>
             </g>
           );
         })}
@@ -141,6 +156,7 @@ export function GanttPlot({
         <span><svg width={12} height={12}><polygon points="6,0 12,6 6,12 0,6" fill={COLOURS.transfer} /></svg> transfer (arrow → destination)</span>
         <span><svg width={12} height={12}><polygon points="6,0 12,6 6,12 0,6" fill={COLOURS.setParameter} /></svg> setParameter</span>
         <span><svg width={12} height={12}><polygon points="6,1 0,11 12,11" fill={STATUS_COLOUR} /></svg> unit status event</span>
+        <span><svg width={16} height={12}><rect x={1} y={3} width={14} height={6} rx={2} fill={COLOURS.transfer} fillOpacity={0.45} stroke={COLOURS.transfer} /></svg> continuous action (bar spans its interval)</span>
         <span style={{ opacity: 0.7 }}>hover a mark for the engine's detail + trigger</span>
       </div>
     </div>

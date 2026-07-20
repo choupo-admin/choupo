@@ -22,6 +22,8 @@ export interface GanttMark {
   laneY: number;      // px, centre of the acting lane
   toLane?: string;    // transfer destination
   toY?: number;       // px, centre of the destination lane
+  tEnd?: number;      // continuous action: interval end (s)
+  xEnd?: number;      // px of tEnd -- present iff tEnd > t (a duration bar)
   kind: "recipe" | "status";
   action: string;
   detail: string;
@@ -54,7 +56,7 @@ export function ganttLanes(
  *  a degenerate span (all events at t = 0) widens to 1 s so marks render. */
 export function ganttSpan(tEnd: number | undefined, events: TimelineEvent[]): number {
   let span = tEnd ?? 0;
-  for (const e of events) span = Math.max(span, e.t);
+  for (const e of events) span = Math.max(span, e.t, e.tEnd ?? 0);
   return span > 0 ? span * 1.02 : 1;
 }
 
@@ -75,6 +77,11 @@ export function ganttMarks(
       lane: e.from,
       laneY: yOf.get(e.from)!,
       ...(e.to && yOf.has(e.to) ? { toLane: e.to, toY: yOf.get(e.to)! } : {}),
+      // A CONTINUOUS action (engine tEnd > t) renders as a DURATION BAR on
+      // the acting unit's lane, not an instantaneous mark -- the temporal
+      // honesty of the sequence (Vitor's batch audit, Codex point 3).
+      ...(e.tEnd !== undefined && e.tEnd > e.t
+        ? { tEnd: e.tEnd, xEnd: xOf(e.tEnd) } : {}),
       kind: e.kind,
       action: e.action,
       detail: e.detail,
