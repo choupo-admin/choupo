@@ -17,6 +17,8 @@ import {
 const COLOURS: { [action: string]: string } = {
   transfer: "#2f7fd0",
   setParameter: "#c99117",
+  dischargeTo: "#20c997",       // teal -- matches the dashed recipe edges
+  externalOutlet: "#20c997",
 };
 const STATUS_COLOUR = "#c0392b";
 

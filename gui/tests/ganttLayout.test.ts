@@ -11,12 +11,18 @@ const ev = (o: Partial<TimelineEvent>): TimelineEvent => ({
 });
 
 describe("ganttLanes", () => {
-  it("keeps the KPI vessel order and appends event-only units once", () => {
+  it("orders lanes by the campaign's story (event appearance), then idle"
+     + " KPI vessels; the campaign aggregate never gets a lane", () => {
+    const storyLanes = ganttLanes(["campaign", "receiver", "still"], [
+      ev({ from: "reactor", to: "still" }),
+      ev({ from: "still", to: "receiver" }),
+    ]);
+    expect(storyLanes).toEqual(["reactor", "still", "receiver"]);
     const lanes = ganttLanes(["reactor", "still"], [
       ev({ from: "still", to: "receiver" }),
       ev({ from: "receiver" }),
     ]);
-    expect(lanes).toEqual(["reactor", "still", "receiver"]);
+    expect(lanes).toEqual(["still", "receiver", "reactor"]);
   });
   it("never invents a lane for an empty from/to", () => {
     expect(ganttLanes([], [ev({ from: "", to: "" })])).toEqual([]);

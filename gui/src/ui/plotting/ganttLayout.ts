@@ -35,9 +35,12 @@ export const LANE_TOP = 26;      // axis strip above the first lane
 export const PLOT_LEFT = 130;    // room for lane labels
 export const PLOT_RIGHT = 24;
 
-/** Lane order: KPI vessels first (the run's own order), then any unit that
- *  only appears in events, by first appearance.  Never invents a lane for
- *  an empty `from`. */
+/** Lane order: the CAMPAIGN'S STORY -- units in order of first appearance
+ *  in the fired events (source before destination, events in time order),
+ *  then any KPI vessel that never acted.  The "campaign" KPI bucket is the
+ *  ledger's aggregate, not a vessel: it never gets a lane.  This keeps a
+ *  transfer's arrow from crossing unrelated lanes (reactor -> still ->
+ *  receiver reads top-to-bottom).  Never invents a lane for an empty name. */
 export function ganttLanes(
   kpiUnits: string[],
   events: TimelineEvent[],
@@ -45,10 +48,10 @@ export function ganttLanes(
   const lanes: string[] = [];
   const seen = new Set<string>();
   const push = (u: string) => {
-    if (u && !seen.has(u)) { seen.add(u); lanes.push(u); }
+    if (u && u !== "campaign" && !seen.has(u)) { seen.add(u); lanes.push(u); }
   };
-  for (const u of kpiUnits) push(u);
   for (const e of events) { push(e.from); push(e.to); }
+  for (const u of kpiUnits) push(u);
   return lanes;
 }
 
