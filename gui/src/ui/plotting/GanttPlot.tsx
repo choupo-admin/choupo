@@ -114,7 +114,10 @@ export function GanttPlot({
               {m.xEnd !== undefined ? (
                 // CONTINUOUS action: a DURATION BAR over [t, tEnd] on the
                 // acting lane (temporal honesty -- an 800 s distillation is
-                // not an instant), with end caps.
+                // not an instant), with end caps.  The DESTINATION lane
+                // mirrors a lighter bar over the same interval: the receiver
+                // fills THROUGHOUT, never in one end-of-run dump (Vitor read
+                // the lone arrow as exactly that).
                 <g>
                   <rect x={m.x} y={m.laneY - 5} width={m.xEnd - m.x} height={10}
                         rx={3} fill={colour} fillOpacity={0.45}
@@ -123,6 +126,12 @@ export function GanttPlot({
                         stroke={colour} strokeWidth={2} />
                   <line x1={m.xEnd} y1={m.laneY - 7} x2={m.xEnd} y2={m.laneY + 7}
                         stroke={colour} strokeWidth={2} />
+                  {m.toY !== undefined && (
+                    <rect x={m.x} y={m.toY - 4} width={m.xEnd - m.x} height={8}
+                          rx={3} fill={colour} fillOpacity={0.18}
+                          stroke={colour} strokeWidth={1}
+                          strokeDasharray="4 3" />
+                  )}
                 </g>
               ) : m.kind === "status" ? (
                 // status: a warning triangle
