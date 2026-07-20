@@ -77,11 +77,13 @@ importer seals each case's property records into the case directory under
 a checksummed manifest, so a tutorial archived with a thesis reruns
 byte-for-byte years later with no installation catalogue present.
 
-Choupo was written for the *Métodos Computacionais em Fenómenos de
-Transferência* course at Instituto Superior Técnico and is designed for the
-LLM era of case authoring: the documentation ships a machine-oriented
-reference so a student can author dictionaries with an assistant while the
-engine remains the sole arbiter of the physics.
+Choupo is an independent personal project, conceived, self-funded and
+developed by the author in his free time, on personal equipment; it is not
+an institutional product.  It is designed for teaching transport phenomena
+and process engineering — and for the LLM era of case authoring: the
+documentation ships a machine-oriented reference so a student can author
+dictionaries with an assistant while the engine remains the sole arbiter
+of the physics.
 
 # Acknowledgements
 
