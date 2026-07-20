@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Choupo releases: the current stable release, the Choupo-dev development line, how to cite the exact version, and the release history.">
+<title>Releases | Choupo</title>
+<link rel="icon" href="logo2-mark.png">
+<style>
+  :root { --night:#101614; --paper:#f4f6f5; --white:#ffffff; --teal:#0c5b52;
+    --teal-bright:#39d3bd; --line:#dde4e1; --muted:#5b6a65; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:16px/1.6 "Inter",system-ui,sans-serif; color:#182420; background:var(--paper); }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 22px; }
+  .nav { position:sticky; top:0; z-index:20; color:#fff; background:rgba(16,22,20,.96); backdrop-filter:blur(6px); }
+  .nav-inner { min-height:60px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+  .brand { display:flex; align-items:center; gap:10px; color:#fff; font-weight:800; letter-spacing:.06em; text-decoration:none; }
+  .brand img { height:30px; }
+  .nav-links { display:flex; gap:20px; align-items:center; }
+  .nav-links a { color:#c1cdc8; font-size:14px; font-weight:650; text-decoration:none; }
+  .nav-links a:hover { color:#fff; }
+  header.head { color:#fff; background:var(--night); padding:56px 0 40px; }
+  .eyebrow { margin:0 0 10px; color:var(--teal-bright); font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
+  h1 { margin:0; font-size:44px; line-height:1.05; }
+  .sub { max-width:760px; margin:14px 0 0; color:#c1cdc8; font-size:17px; }
+  main { padding:8px 0 80px; }
+  .rel { padding:38px 0 8px; }
+  .rel h2 { margin:0 0 4px; font-size:26px; }
+  .rel .when { color:var(--muted); font-size:14px; margin:0 0 12px; }
+  .card { background:var(--white); border:1px solid var(--line); border-radius:12px; padding:26px 28px; }
+  .card p { margin:10px 0; }
+  .actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; }
+  .button { display:inline-block; border-radius:8px; padding:10px 18px; font-weight:700; font-size:14px;
+    text-decoration:none; background:var(--teal); color:#fff; }
+  .button.light { background:#eef2f0; color:var(--teal); border:1px solid var(--line); }
+  pre.cite { white-space:pre-wrap; padding:16px 18px; border-radius:10px; background:var(--paper);
+    border:1px solid var(--line); font-size:14.5px; }
+  ul.history { list-style:none; margin:14px 0 0; padding:0; }
+  ul.history li { padding:12px 0; border-bottom:1px solid var(--line); }
+  code { font:13px/1.4 "JetBrains Mono",Consolas,monospace; background:#eef2f0; border-radius:4px; padding:1px 5px; }
+  footer { padding:30px 0; color:#aab9b3; background:#0b0f0e; font-size:13px; }
+  footer a { color:#d8e1dd; }
+  @media (max-width:760px){ h1{font-size:34px;} .card{padding:20px;} }
+</style>
+</head>
+<body>
+<nav class="nav"><div class="wrap nav-inner">
+  <a class="brand" href="/"><img src="logo2-mark.png" alt=""><span>CHOUPO</span></a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/models/">Models</a>
+    <a href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">Source</a>
+    <a class="button" href="/app/" target="choupo-app" rel="noopener" style="padding:8px 14px">Open Choupo</a>
+  </div>
+</div></nav>
+
+<header class="head"><div class="wrap">
+  <p class="eyebrow">Versions</p>
+  <h1>Releases</h1>
+  <p class="sub">Choupo ships a dated stable release roughly every six months
+  (public name <code>Choupo-YYMM</code>, immutable git tag <code>vYYMM</code>)
+  and a continuously moving development line, <code>Choupo-dev</code>.
+  Stable means: the full regression suite green, the catalogue frozen, the
+  tag never touched again.</p>
+</div></header>
+
+<main>
+  <section class="rel wrap" id="stable">
+    <h2>Choupo-2607 — current stable release</h2>
+    <p class="when">Released 14&nbsp;July&nbsp;2026 · consolidated 20&nbsp;July&nbsp;2026 · tag <code>v2607</code></p>
+    <div class="card">
+      <p>Four solver binaries (steady, batch, dynamic + control, properties),
+      49 unit-operation models, a curated thermodynamic catalogue
+      (247 components, 205 Henry pairs, Pitzer and electrolyte-NRTL sets),
+      288 runnable tutorials, and the three-level conservation discipline —
+      mass, per-element atoms and energy — with the element balance emitted
+      by default on every converged steady run.  Runs natively (C++17, zero
+      dependencies) and in the browser via WebAssembly.</p>
+      <div class="actions">
+        <a class="button" href="/app/" target="choupo-app" rel="noopener">Run in the browser</a>
+        <a class="button light" href="https://github.com/choupo-admin/choupo/releases/tag/v2607" target="_blank" rel="noopener">Release notes &amp; source (v2607)</a>
+        <a class="button light" href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">Repository (main)</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="rel wrap" id="dev">
+    <h2>Development line — Choupo-dev</h2>
+    <p class="when">Moving continuously toward <strong>Choupo-2701</strong> · branch <code>dev</code></p>
+    <div class="card">
+      <p>New capabilities land here first.  A development build identifies
+      itself fully — the binaries print
+      <code>Choupo-dev (target Choupo-2701, commit &lt;hash&gt;)</code> —
+      precisely because this line changes daily.  No stability promises:
+      cases, results and interfaces may shift between commits; cite and
+      teach from the stable release.</p>
+      <div class="actions">
+        <a class="button light" href="https://github.com/choupo-admin/choupo/tree/dev" target="_blank" rel="noopener">View Choupo-dev on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="rel wrap" id="cite">
+    <h2>Cite Choupo</h2>
+    <p class="when">Make the exact software version part of the scientific record.</p>
+    <div class="card">
+      <p>A moving branch is not a citable object — cite the versioned
+      release you actually used:</p>
+      <pre class="cite">Geraldes, V. (2026). Choupo: Open-source Chemical Process Simulator
+(Version 2607) [Computer software].
+https://github.com/choupo-admin/choupo/releases/tag/v2607</pre>
+      <div class="actions">
+        <a class="button light" href="https://github.com/choupo-admin/choupo/blob/main/CITATION.cff" target="_blank" rel="noopener">CITATION.cff</a>
+        <a class="button light" href="https://github.com/choupo-admin/choupo/releases" target="_blank" rel="noopener">All versioned releases</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="rel wrap" id="history">
+    <h2>Release history</h2>
+    <ul class="history">
+      <li><strong>Choupo-2607</strong> — released 14&nbsp;July&nbsp;2026,
+        consolidated 20&nbsp;July&nbsp;2026.  First public release.
+        <a href="https://github.com/choupo-admin/choupo/releases/tag/v2607" target="_blank" rel="noopener">Announcement &amp; notes</a></li>
+    </ul>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  Choupo is free and open source, distributed under the
+  <a href="https://github.com/choupo-admin/choupo/blob/main/LICENSE" target="_blank" rel="noopener">GNU General Public Licence v3 or later</a>.
+  CHOUPO&trade; is the subject of Portuguese trademark application 769805 MNA by TalentGround Lda.
+</div></footer>
+</body>
+</html>
