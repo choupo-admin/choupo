@@ -277,6 +277,31 @@ export function flowsheetToGraph(
       position: positions.get(f)!,
     });
   }
+  // RECIPE-edge participation (batch campaigns): which units source/sink a
+  // dashed recipe/discharge edge.  Computed BEFORE the nodes so UnitNode can
+  // render the teal `recipe-out` / `recipe-in` docking handles -- React Flow
+  // silently DROPS an edge whose named handle does not exist on the node.
+  const recipeOut = new Set<string>();
+  const recipeIn = new Set<string>();
+  {
+    const recipeRawPre = (flowsheet as { recipe?: unknown }).recipe;
+    if (Array.isArray(recipeRawPre)) {
+      for (const evRaw of recipeRawPre) {
+        const ev = evRaw as { action?: unknown; from?: unknown; to?: unknown };
+        if (ev.action !== "transfer") continue;
+        if (typeof ev.from === "string") recipeOut.add(ev.from);
+        if (typeof ev.to === "string") recipeIn.add(ev.to);
+      }
+    }
+    for (const u of view.units) {
+      const dt = (u as { dischargeTo?: unknown }).dischargeTo;
+      if (typeof dt === "string" && dt.length > 0) {
+        recipeOut.add(u.name);
+        recipeIn.add(dt);
+      }
+    }
+  }
+
   for (const u of view.units) {
     const linkedPorts = ["reboiler", "condenser"].filter((p) => heatLinked.has(`${u.name}:${p}`));
     // Does this unit get a ⚡ power stub? (a grid-drawing pump/compressor or a
@@ -286,7 +311,8 @@ export function flowsheetToGraph(
     nodes.push({
       id: `unit:${u.name}`,
       type: "unitNode",
-      data: { unit: u, heatLinkedPorts: linkedPorts, powerStub },
+      data: { unit: u, heatLinkedPorts: linkedPorts, powerStub,
+              recipeOut: recipeOut.has(u.name), recipeIn: recipeIn.has(u.name) },
       position: positions.get(u.name)!,
     });
   }
@@ -523,8 +549,8 @@ export function flowsheetToGraph(
         id: `e:recipe:${ev.from}->${ev.to}:${t}`,
         source: `unit:${ev.from}`,
         target: `unit:${ev.to}`,
-        sourceHandle: "energy-out",
-        targetHandle: "energy-in",
+        sourceHandle: "recipe-out",
+        targetHandle: "recipe-in",
         label: `transfer @ ${t}`,
         type: "smoothstep",
         animated: false,
@@ -541,8 +567,8 @@ export function flowsheetToGraph(
       id: `e:discharge:${u.name}->${dt}`,
       source: `unit:${u.name}`,
       target: `unit:${dt}`,
-      sourceHandle: "energy-out",
-      targetHandle: "energy-in",
+      sourceHandle: "recipe-out",
+      targetHandle: "recipe-in",
       label: "distillate (continuous)",
       type: "smoothstep",
       animated: false,

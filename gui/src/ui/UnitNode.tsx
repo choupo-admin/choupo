@@ -160,6 +160,24 @@ export function UnitNode({ id, data, selected }: NodeProps) {
           {...hProps("energy-in", "bottom", 0.35)}
         />
       )}
+      {/* Recipe-edge handles (batch campaigns): a vessel that SOURCES a
+          dashed recipe/discharge edge exposes `recipe-out`; a destination
+          exposes `recipe-in`.  Teal, matching the dashed recipe edges --
+          without a named handle React Flow drops the edge silently. */}
+      {Boolean((data as { recipeIn?: boolean }).recipeIn) && (
+        <DraggableHandle
+          type="target"
+          color="#20c997"
+          {...hProps("recipe-in", "top", 0.5)}
+        />
+      )}
+      {Boolean((data as { recipeOut?: boolean }).recipeOut) && (
+        <DraggableHandle
+          type="source"
+          color="#20c997"
+          {...hProps("recipe-out", "bottom", 0.5)}
+        />
+      )}
       {unit.energyOutputs && unit.energyOutputs.length > 0 && (
         <DraggableHandle
           type="source"
