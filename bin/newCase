@@ -40,7 +40,7 @@
 #      <name>.cho                 empty marker -- the GUI's "openable" entity
 #      system/controlDict         application + description + verbosity
 #      system/flowsheetDict       units() + connections() -- EMPTY topology
-#      constant/propertyDict      components() -- EMPTY -- + ideal model blocks
+#      constant/thermoPhysPropDict components() -- EMPTY -- + ideal gammaPhi (v2)
 #      CLAUDE.md                  per-case brief (seeded with your statement)
 #
 #  Cases live in $CHOUPO_WORKSPACE (default $CHOUPO_HOME/cases, gitignored).
@@ -174,30 +174,41 @@ units
 );
 EOF
 
-# 4. constant/propertyDict  --  EMPTY components + ideal model defaults
-cat > "$CASE/constant/propertyDict" <<'EOF'
+# 4. constant/thermoPhysPropDict  --  EMPTY components + ideal gammaPhi default (v2)
+cat > "$CASE/constant/thermoPhysPropDict" <<'EOF'
 /*---------------------------------------------------------------------------*\
-  propertyDict  --  the components + thermodynamic models for this case.
+  thermoPhysPropDict  --  the thermophysical system for this case (v2 grammar).
 
   EMPTY skeleton.  Add your components (loaded from data/standards/components/)
-  and choose ONE global model set -- the default.  "All models are wrong, some
-  are useful": start ideal, SEE the result, then refine by evidence (an NRTL or
-  Wilson pair for a non-ideal liquid; SRK / PengRobinson for a real gas).
-  UNITS ARE MANDATORY on every dimensional value.
+  and choose the equilibrium formulation + models -- the default is an ideal
+  gamma-phi (Raoult).  "All models are wrong, some are useful": start ideal,
+  SEE the result, then refine by evidence (an NRTL/Wilson pair for a non-ideal
+  liquid; SRK/PR both phases for a real-gas phiPhi world).  Detail: docs/ai/
+  thermo.md.  UNITS ARE MANDATORY on every dimensional value.
 
       components ( ethanol  water );
 \*---------------------------------------------------------------------------*/
 
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
 components ( );
 
-activityModel
+equilibrium
 {
-    model        ideal;            // ideal | NRTL | Wilson   (+ pairs ( ... ))
-}
+    formulation gammaPhi;          // gammaPhi | gammaGamma | diluteSolution |
+                                   //   phiPhi | electrolyteGammaPhi
 
-equationOfState
-{
-    model        idealGas;         // idealGas | PengRobinson | SRK
+    liquid
+    {
+        activityModel ideal;       // ideal | NRTL | Wilson | UNIQUAC | UNIFAC
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;    // idealGas | SRK | PR
+    }
 }
 EOF
 
@@ -223,7 +234,7 @@ in-GUI AI console.
 
 - \`system/flowsheetDict\` -- units and connections (topology only).
 - \`0/<stream>\` -- one complete state file for every graph stream.
-- \`constant/propertyDict\` -- the components + thermodynamic models.
+- \`constant/thermoPhysPropDict\` -- the thermophysical system (v2 grammar).
 - \`system/controlDict\` -- application (choupoSolve/Batch/Ctrl) + verbosity.
 
 ## Rules
@@ -263,6 +274,6 @@ EOF
 
 echo "newCase: created $CASE"
 echo "  in curation phase (empty).  Next:"
-echo "    - edit system/flowsheetDict + constant/propertyDict, or"
+echo "    - edit system/flowsheetDict + constant/thermoPhysPropDict, or"
 echo "    - open it in the GUI and let the console fill the dicts."
 echo "    - then:  runCase $CASE"

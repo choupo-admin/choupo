@@ -714,7 +714,7 @@ def closure_of(pp_path, caseDir, std, AQ):
 
 def parse_packages(caseDir):
     pkgs = []
-    for name in ("thermoPhysPropDict", "propertyDict", "propertyPackage"):
+    for name in ("thermoPhysPropDict",):   # v1 propertyDict/propertyPackage are dead
         for pp in Path(caseDir).rglob("constant/" + name):
             pkgs.append(pp)
     return pkgs
@@ -922,7 +922,7 @@ def main():
 
     # ---- closures per fractal context -------------------------------------
     plant_pp = None
-    for name in ("thermoPhysPropDict", "propertyDict", "propertyPackage"):
+    for name in ("thermoPhysPropDict",):   # v1 propertyDict/propertyPackage are dead
         cand = caseDir / "constant" / name
         if cand.exists():
             plant_pp = cand

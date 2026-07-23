@@ -124,15 +124,15 @@ def main():
     # NO property data is copied (ChatGPT s25).
     plant_constant = os.path.join(plant, "constant")
     os.makedirs(os.path.join(out, "constant"))
-    ulocal_pd = os.path.join(udir, "constant", "propertyDict")
+    ulocal_pd = os.path.join(udir, "constant", "thermoPhysPropDict")
     rel_to_plant = os.path.relpath(plant_constant, os.path.join(out, "constant"))
     if os.path.isfile(ulocal_pd):
         # carry the unit's OWN override; rewrite its inherits to reach the plant here
         txt = open(ulocal_pd).read()
         txt = re.sub(r'(\binherits\s+")[^"]*(")', r'\1' + rel_to_plant + r'\2', txt)
-        open(os.path.join(out, "constant", "propertyDict"), "w").write(txt)
+        open(os.path.join(out, "constant", "thermoPhysPropDict"), "w").write(txt)
     else:
-        with open(os.path.join(out, "constant", "propertyDict"), "w") as f:
+        with open(os.path.join(out, "constant", "thermoPhysPropDict"), "w") as f:
             f.write(f'/*--- inherits the plant property context; nothing is copied. ---*/\n'
                     f'inherits "{rel_to_plant}";\n')
 

@@ -52,10 +52,16 @@ operations
       component $name; output { proposal auto; } }
 );
 EOF
-cat > "$tmp/constant/propertyDict" <<EOF
+cat > "$tmp/constant/thermoPhysPropDict" <<EOF
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
 components ( $name );
-activityModel { model ideal; }
-equationOfState { model idealGas; }
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal; standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}
 EOF
 
 # ---- run + collect ------------------------------------------------------------
