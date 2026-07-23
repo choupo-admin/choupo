@@ -220,6 +220,43 @@ for f in doc_files:
                        f" token '{m.group(0)}'")
             break                      # one report per (file, token)
 
+# 6. CASE WRITERS + user-facing engine surfaces must not emit or point at the
+#    dead v1 constant/propertyDict.  The generators (bin/newCase, bin/estimate,
+#    bin/choupo-project) that CREATE a case, and src/ error messages/comments a
+#    user reads, are exactly the surfaces the doc gate (§5) does not cover -- and
+#    the incident that opened this: a writer emitting a case the engine refuses.
+#    A line is legitimate ONLY if it DETECTS/REFUSES/MIGRATES the old name (it
+#    must pronounce it): the case-grammar refusal, the fs::exists probe, an
+#    "is refused"/"migrate" note.  Anything else creating or teaching the v1
+#    file is an offender.
+V1_FILE = re.compile(r"constant/propertyDict|/propertyDict\b|> \"[^\"]*propertyDict\"")
+V1_OK = ("the case grammar is", "is refused", "are refused", "refuses",
+         "migrate", "fs::exists", "was ", "retired", "legacy", "v1 ")
+
+def line_ok(line):
+    low = line.lower()
+    return any(tok.lower() in low for tok in V1_OK)
+
+writer_src = []
+for w in ("newCase", "estimate", "choupo-project", "choupo-import"):
+    p = ROOT / "bin" / w
+    if p.exists():
+        writer_src.append(p)
+for d in (ROOT / "src",):
+    for f in d.rglob("*"):
+        if f.suffix in (".cpp", ".H"):
+            writer_src.append(f)
+for f in writer_src:
+    try:
+        txt = f.read_text(errors="replace")
+    except OSError:
+        continue
+    for i, line in enumerate(txt.split("\n"), 1):
+        if V1_FILE.search(line) and "thermoPhysPropDict" not in line \
+                and not line_ok(line):
+            bad.append(f"{f.relative_to(ROOT)}:{i}: creates/teaches the retired"
+                       f" constant/propertyDict")
+
 if bad:
     print("RETIRED-NAME GATE FAILED (%d):" % len(bad))
     for b in bad[:60]:
@@ -227,4 +264,5 @@ if bad:
     sys.exit(1)
 print("retired-name gate: component corpus flat, tutorial sources clean,"
       " src/ clean, aggregated snapshot speaks streamFaces, doc surfaces"
-      " (guides incl. tutorialsGuide-* + docs/ai) free of v1 grammar")
+      " (guides incl. tutorialsGuide-* + docs/ai) free of v1 grammar,"
+      " bin/ writers + src/ messages emit v2 (only refusals name the old file)")
