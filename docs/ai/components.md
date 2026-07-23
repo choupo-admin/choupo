@@ -238,7 +238,7 @@ Each carries ρ, F_M (Guthrie), σ_y, max T, max P.
     sealed by the case's `propertyManifest` — the same per-record mechanism as
     `constant/components/<name>.dat`.  (A residual case-local
     `constant/electrolyte/speciation.dat` delta exists in two speciation
-    tutorials as a transitional adapter of the speciate op — counted 2608 debt,
+    tutorials as a transitional adapter of the speciate op — a known dev debt,
     not the architecture.)
 - `relativePermittivity <eps>;` — static dielectric constant (25 °C); on an
   **antisolvent** (e.g. ethanol 24.3) it drives the mixed-solvent eNRTL
