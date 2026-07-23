@@ -12,9 +12,12 @@ Git tag:          v2607       (immutable: never deleted, moved or reused)
 GitHub Release:   tag v2607, title "Choupo-2607"
 ```
 
-Never use variants (`v26.07`, `2026.07`, `Choupo-v2607`).  Releases come
-roughly every six months (2607, 2701, 2707, …).  No per-version branches
-unless an old release someday needs long-term maintenance.
+Never use variants (`v26.07`, `2026.07`, `Choupo-v2607`).  Releases are
+**calendar-driven, not fixed-cadence**: consolidated when the teaching
+term needs a stable version, most naturally near the start of a semester
+(e.g. `Choupo-2607` for the 2026 spring term, `Choupo-2609` targeted for
+the September 2026 term start).  No per-version branches unless an old
+release someday needs long-term maintenance.
 
 ## Where work goes
 
