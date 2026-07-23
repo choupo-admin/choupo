@@ -181,7 +181,7 @@ try
     auto flowsheetDict = Dictionary::fromFile("system/flowsheetDict");
     // The case system lives in constant/thermoPhysPropDict.
     if (!fs::exists("constant/thermoPhysPropDict")
-        && fs::exists("constant/thermoPhysPropDict"))
+        && fs::exists("constant/propertyDict"))
         throw std::runtime_error(
             "this case carries a constant/propertyDict -- the case grammar is"
                 " constant/thermoPhysPropDict (bin/curate/migrate_thermoPhysProp.py"

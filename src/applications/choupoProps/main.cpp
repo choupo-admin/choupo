@@ -289,7 +289,7 @@ try
     DictPtr v2Authored;   // the authored system (fit ops mutate a copy)
     // The case system lives in constant/thermoPhysPropDict.
     std::string pkgPath = resolveUp("constant/thermoPhysPropDict");
-    if (!fs::exists(pkgPath) && fs::exists(resolveUp("constant/thermoPhysPropDict")))
+    if (!fs::exists(pkgPath) && fs::exists(resolveUp("constant/propertyDict")))
         throw std::runtime_error(
             "this case carries a constant/propertyDict -- the case grammar is"
                 " constant/thermoPhysPropDict (bin/curate/migrate_thermoPhysProp.py"
