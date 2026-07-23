@@ -87,10 +87,14 @@ Choupo/
 * **Version** lives in `src/core/Banner.H` (`CHOUPO_VERSION`), `CITATION.cff`,
   and `CHANGELOG.md` — bump them together when tagging a release.
 * **Branches & tags (settled 2026-07-20):** two branches only — `main` (latest
-  stable release) and `dev` (`Choupo-dev`, next version).  Public name
+  stable release) and `dev` (`Choupo-dev`, the continuously-updated development
+  line, OpenFOAM-dev style — no pre-announced target version).  Public name
   `Choupo-YYMM`, immutable git tag `vYYMM`, internal version `YYMM`.  A
   published `vYYMM` tag is NEVER deleted, moved or reused.  Release
   procedure: [`RELEASING.md`](RELEASING.md).
+* **Starting a dev session?** Read [`DEV.md`](DEV.md) — current state,
+  the settled contracts, the roadmap, and how to work.  It is the live
+  starting point (companion to `RELEASING.md`).
 
 ---
 

@@ -1,10 +1,15 @@
-# Choupo 2607 → 2608 handoff
+# Choupo 2607 → 2608 handoff — SUPERSEDED / ARCHIVED 2026-07-21
 
-Written 2026-07-19 at the close of the 2607 consolidation wave.  This
-document describes the CODE AS IT IS on branch
-`cleanup/binarypairs-parameters-tidy` (154 unpushed commits, listed in §9) —
-not the conversation that produced it.  Verify any claim against the tree
-before acting on it.
+**This document is history.**  It was written 2026-07-19 to describe the code on
+the (now-merged, now-deleted) branch `cleanup/binarypairs-parameters-tidy` before
+anything was pushed, and it names a target release (`2608`) that is no longer the
+plan — development follows the OpenFOAM-dev model (no pre-announced target).  The
+LIVE starting point is [`../../DEV.md`](../../DEV.md) (current state + roadmap) +
+`CLAUDE.md`.  Kept only as the record of the 2607 consolidation wave.
+
+*(Original note: written 2026-07-19 at the close of the 2607 consolidation wave,
+describing the code as it was on branch `cleanup/binarypairs-parameters-tidy`,
+154 then-unpushed commits.)*
 
 ---
 
