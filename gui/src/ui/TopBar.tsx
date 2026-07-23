@@ -65,7 +65,7 @@ import { ColorSchemeToggle } from "./ColorSchemeToggle.js";
 import { ClipboardBridge } from "./ClipboardBridge.js";
 import { CaseSwitcher } from "./CaseSwitcher.js";
 
-interface EngineVersion { version: string; target?: string; commit?: string }
+interface EngineVersion { version: string; commit?: string }
 
 export function TopBar() {
   // The version badge reads wasm/version.json -- written by the WASM build
@@ -350,7 +350,7 @@ export function TopBar() {
         {engineVersion && (
           <Tooltip withArrow multiline w={260}
             label={engineVersion.version === "Choupo-dev"
-              ? `Development build toward ${engineVersion.target || "the next release"} — no stability promises.  Stable releases: choupo.org/releases`
+              ? "Development build (the continuously-updated latest, OpenFOAM-dev style) — no stability promises.  Stable releases: choupo.org/releases"
               : "The engine version this app runs — releases, development line and citation at choupo.org/releases"}>
             <Badge size="sm" radius="sm" variant="light"
               color={engineVersion.version === "Choupo-dev" ? "orange" : "gray"}

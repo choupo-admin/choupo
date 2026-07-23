@@ -4,7 +4,8 @@ Two branches, immutable tags, one naming convention (settled 2026-07-20):
 
 ```
 main   latest stable release            (e.g. Choupo-2607)
-dev    active development, Choupo-dev   (toward the next Choupo-YYMM)
+dev    active development, Choupo-dev   (the continuously-updated latest;
+                                          no pre-announced target version)
 
 Public name:      Choupo-2607
 Internal version: 2607        (CITATION.cff, Banner)
@@ -12,12 +13,16 @@ Git tag:          v2607       (immutable: never deleted, moved or reused)
 GitHub Release:   tag v2607, title "Choupo-2607"
 ```
 
-Never use variants (`v26.07`, `2026.07`, `Choupo-v2607`).  Releases are
-**calendar-driven, not fixed-cadence**: consolidated when the teaching
-term needs a stable version, most naturally near the start of a semester
-(e.g. `Choupo-2607` for the 2026 spring term, `Choupo-2609` targeted for
-the September 2026 term start).  No per-version branches unless an old
-release someday needs long-term maintenance.
+Never use variants (`v26.07`, `2026.07`, `Choupo-v2607`).  **Model:
+OpenFOAM-dev style.**  `dev` is never pinned to a named future release —
+it is just the latest, continuously.  Roughly every six months (not a
+fixed date, and not pre-announced), whoever is maintaining the project
+takes a snapshot of `dev` and that snapshot becomes the next
+`Choupo-YYMM`, named for whatever calendar month it actually lands in.
+In practice a snapshot is usually convenient near a teaching-term start,
+but that is a scheduling convenience decided at cut time, never a
+commitment baked into the code or docs beforehand.  No per-version
+branches unless an old release someday needs long-term maintenance.
 
 ## Where work goes
 
@@ -50,14 +55,14 @@ release someday needs long-term maintenance.
 7. Freeze the release's app at `/vYYMM/app/` and deploy the site (both in
    "Site deployment" below); add the release to the /releases/ history
    list and point its "Run" button at the frozen copy.
-8. On `dev`: bump the Banner to `Choupo-dev` with the next target release,
-   and open the next CHANGELOG section.
+8. On `dev`: bump the Banner back to `Choupo-dev` (no target string to set —
+   there isn't one) and open the next CHANGELOG section.
 
 ## Identification in the binaries
 
 - Stable (`main` / a tag): `Version: Choupo-YYMM`.
-- Development (`dev`): `Version: Choupo-dev · target Choupo-YYMM ·
-  commit <short hash>` — the hash matters precisely because dev moves.
+- Development (`dev`): `Version: Choupo-dev · commit <short hash>` — no
+  named target; the hash matters precisely because dev moves.
 
 ## Day-to-day workflow (pushing work)
 

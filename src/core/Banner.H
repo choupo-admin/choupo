@@ -50,10 +50,6 @@ namespace Choupo {
 // printBanner().
 inline constexpr const char* CHOUPO_VERSION = "Choupo-dev";
 
-// The release this development line is heading toward (printed by the dev
-// banner; dropped from the banner when CHOUPO_VERSION becomes the release).
-inline constexpr const char* CHOUPO_TARGET_RELEASE = "Choupo-2609";
-
 // Print the startup banner to stdout, with `suffix` placed right after the
 // version (e.g. "  batch", "  ctrl", "  props"; empty for choupoSolve).  The
 // suffix is padded with spaces to keep the box width consistent.

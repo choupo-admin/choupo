@@ -101,9 +101,8 @@ WASM_ALL_OUT := $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) \
 .PHONY: wasm-version
 wasm-version:
 	@v=$$(sed -n 's/.*CHOUPO_VERSION = "\(.*\)";/\1/p' src/core/Banner.H); \
-	t=$$(sed -n 's/.*CHOUPO_TARGET_RELEASE = "\(.*\)";/\1/p' src/core/Banner.H); \
 	h=$$(git rev-parse --short HEAD 2>/dev/null || echo ""); \
-	printf '{ "version": "%s", "target": "%s", "commit": "%s" }\n' "$$v" "$$t" "$$h" \
+	printf '{ "version": "%s", "commit": "%s" }\n' "$$v" "$$h" \
 	  > gui/public/wasm/.version.tmp; \
 	if cmp -s gui/public/wasm/.version.tmp gui/public/wasm/version.json 2>/dev/null; \
 	then rm gui/public/wasm/.version.tmp; \

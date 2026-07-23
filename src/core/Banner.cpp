@@ -46,17 +46,14 @@ void printBanner(const char* suffix)
     // with the build VERSION on the first line.  Raw strings keep the \|/ art
     // literal.  No License block here -- that lives in the file headers.
     std::string ver = std::string("Choupo  ") + CHOUPO_VERSION + suffix;
-    // A development build moves continuously, so it identifies itself fully:
-    // the target release and the exact commit (generated/gitVersion.H is
+    // A development build moves continuously (OpenFOAM-dev style: no
+    // pre-announced target release, just the latest commit), so it
+    // identifies itself by the exact commit (generated/gitVersion.H is
     // written by the build with a content-compare -- absent in a tarball).
-    if (std::string(CHOUPO_VERSION) == "Choupo-dev")
-    {
-        ver += std::string("  (target ") + CHOUPO_TARGET_RELEASE;
 #ifdef CHOUPO_GIT_HASH
-        ver += std::string(", commit ") + CHOUPO_GIT_HASH;
+    if (std::string(CHOUPO_VERSION) == "Choupo-dev")
+        ver += std::string("  (commit ") + CHOUPO_GIT_HASH + ")";
 #endif
-        ver += ")";
-    }
 
     std::cout
         << R"CH(/*---------------------------------------------------------------------------*\
