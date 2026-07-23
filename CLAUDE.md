@@ -151,7 +151,7 @@ multi-sector shape) → [`docs/ai/case-layout.md`](docs/ai/case-layout.md) and
 ```
 
 `main.cpp` is a thin orchestrator: (1) load `controlDict`, `flowsheetDict`,
-`thermoPackage`; (2) if `outerDict` → instantiate driver, hand it the simulator
+`thermoPhysPropDict`; (2) if `outerDict` → instantiate driver, hand it the simulator
 functor, loop; (3) else → one pass + (if `postDict`) the post-processor chain.
 The simulator functor is just `runSimulation(flowsheetDict,...)` — a pure
 function, used by both the direct path and every outer driver.
@@ -309,7 +309,7 @@ derivation, so single-source (arity-1) controls.  Full rationale: the
 Two DIFFERENT Pitzer engines now carry two DISTINCT factory keys (the old
 `pitzer` name-collision across two factories is gone):
 * **`pitzer`** = `ElectrolyteActivity`, the salt-level single-salt VLE adapter,
-  selected `activityModel { model pitzer; }` in a **thermoPackage** (eNRTL next).
+  selected `activityModel { model pitzer; }` in a **thermoPhysPropDict** (eNRTL next).
 * **`pitzerHMW`** = `PitzerHMW`, the per-ion multi-ion Harvie-Møller-Weare
   speciation engine, selected `activityModel pitzerHMW;` in a **propsDict
   `speciate`** op (vs `davies`).
@@ -323,8 +323,8 @@ construction-time configure downcasts were removed in A1; the engine query is th
 ### Electrolyte data tree — 7 HOMES, NO `apparent/`, NO `true` (SETTLED 2026-07-01, do NOT relitigate)
 
 A substance's ROLE (lumped / dissociated / multi-ion / molten) is chosen by the
-`propertyPackage` a case selects — **never stored on the substance** — via two
-ORTHOGONAL axes: **REPRESENTATION** (the package activates: lumped → complete
+declared `thermoPhysPropDict` a case carries — **never stored on the substance** — via two
+ORTHOGONAL axes: **REPRESENTATION** (the declared system activates: lumped → complete
 dissociation → partial/ion-pair → multi-ion) × **REFERENCE** (the method selects
 one of 4 discrete rungs: solid · pure-liquid Raoult · aqueous-inf-dilution ·
 fused-salt Temkin; mixed-solvent = aqueous + a transfer term in `parameters/`, NOT
@@ -410,8 +410,8 @@ flowsheet still splits — inactive species stay 0 in both phases (mass conserve
 exactly; identical to the full search when all species are active).  Reference
 case: **`tutorials/plant/lithiumBrinePlant`** — a FRACTAL, WIRED plant, 5 sectors
 as composite boxes across 4 worlds (Pitzer / NRTL LLE / Gibbs / molecular), mass
-closes on every element.  Cases are SELF-CONTAINED via a SEALED `constant/propertyData/`
-snapshot (`bin/choupo-import` materialises the dependency closure + a per-record
+closes on every element.  Cases are SELF-CONTAINED via a SEALED `constant/propertyManifest`
++ mirrored `constant/` records (`bin/choupo-import` materialises the dependency closure + a per-record
 sha256 manifest; the runtime is FORBIDDEN the installation catalogue when sealed;
 versioned `Choupo-2607` per `data/standards/CATALOGUE.dat`).  Full state:
 `memory/universal_solver_2026_07_06.md`.
@@ -723,10 +723,10 @@ split below).
   "earned" — Vítor OVERRULED the forum's "earned/inline-by-default"); the
   all-folders form is the standard for research / multi-scale-debug cases.  A
   unit's `constant/` is its local-data HOME (measured props, kinetics, PSD
-  accumulate there), inheriting the case `thermoPackage` via the cascade until
+  accumulate there), inheriting the case `thermoPhysPropDict` via the cascade until
   something local lands — *the house waiting for the data*, not ceremony: its
   `README` states the folder's PURPOSE, never just "inherits via cascade", and it
-  must NOT carry a `thermoPackage` placeholder (that shadows the case default and
+  must NOT carry a `thermoPhysPropDict` placeholder (that shadows the case default and
   breaks the run).  The inheritance cascade must be LOUD (per-unit `thermo:
   inherited (global)` vs `LOCAL override — …`, implemented in `runUnit`).  Full
   rationale: the `fractal-dignified-units-2026-06-08` memory +
