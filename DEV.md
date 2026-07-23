@@ -109,9 +109,12 @@ ones for day-to-day work:
 3. **`constant/electrolyte/` transitional adapters** — the multi-ion speciation
    front-end still reads case-local `speciation.dat`/`ions.dat` sidecars in a
    couple of tutorials; fold into the sealed `species/`+`chemistry/` closure.
-4. **`docs/engine-capabilities.md` still narrates the retired `children`/
-   `boundary` flowsheet grammar** in places (a deeper reconciliation than the
-   2026-07-21 nomenclature sync — 343 lines, its own pass).
+4. **Docs with partially-superseded "settled" sections** (a deeper pass than the
+   2026-07-21 nomenclature sync): `docs/engine-capabilities.md` still narrates the
+   retired `children`/`boundary` flowsheet grammar; `CLAUDE.md` §7 still says
+   "7 homes" including `phases/solid/`, which was retired (minerals folded into
+   `components/` `solidPhases{}`).  Content-correct in the code; the settled-note
+   prose lags.
 5. **`docs/ai/{consistency,extending,gui-credo}.md`** were not re-read in the v2
    scrub (no retired-token hits, but unverified end-to-end).
 6. **Landing mobile** = roadmap #7.
