@@ -30,7 +30,7 @@ File
 
 Description
     The `inherits` property-context resolver (ChatGPT-doctrine F2).  A
-    `constant/propertyDict` may carry `inherits "<rel-to-parent-constant>";`;
+    `constant/thermoPhysPropDict` may carry `inherits "<rel-to-parent-constant>";`;
     the parent context is the base and the local declaration overrides.  The
     chain is linear, cycle-detected, and loud on shadowing -- never filesystem
     crawling (the parent is named explicitly).  Shared by the case-level loader
@@ -111,7 +111,7 @@ inline DictPtr mergePropertyDicts(const DictPtr& base, const DictPtr& over,
 // (the parent is named explicitly).  The returned dict carries NO `inherits` key.
 //
 // Each constant/ resolves thermoPhysPropDict
-// (v2) FIRST, then propertyDict (v1).  The merge runs on the AUTHORED form --
+// (v2); a v1 propertyDict is refused (below).  The merge runs on the AUTHORED form --
 // a v2 chain deep-merges v2 dicts (local contexts are deliberately PARTIAL,
 // so translation happens ONCE, at the caller, on the completed system, never
 // per child).  A MIXED chain (v2 child inheriting a v1 parent or vice versa)
@@ -154,7 +154,7 @@ inline DictPtr resolvePropertyContext(const std::string&      constantDir,
     auto localClean = std::make_shared<Dictionary>(local->name());
     for (const auto& k : local->keys())
         if (k != "inherits") localClean->insert(k, local->entryValue(k));
-    return mergePropertyDicts(parent, localClean, "propertyDict",
+    return mergePropertyDicts(parent, localClean, "thermoPhysPropDict",
                               isV2System(parent));
 }
 

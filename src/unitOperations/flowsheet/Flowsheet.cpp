@@ -859,7 +859,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                         // activity block).
                         {
                             const std::filesystem::path cpd =
-                                node / "constant" / "propertyDict";
+                                node / "constant" / "thermoPhysPropDict";
                             if (std::filesystem::exists(cpd))
                             {
                                 auto cd = Dictionary::fromFile(cpd.string());
@@ -877,7 +877,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 }
             }
             // PER-UNIT PROPERTY CONTEXT (F2): hand the unit the `constant/` base of
-            // the NEAREST ancestor that owns a constant/propertyDict -- its own
+            // the NEAREST ancestor that owns a constant/thermoPhysPropDict -- its own
             // local override, else its SECTOR's world (sectors/<S>/constant, which
             // `inherits` the plant), else the plant's.  thermoFor resolves the
             // inherits chain; this is the F2 replacement for an inline thermo{} and

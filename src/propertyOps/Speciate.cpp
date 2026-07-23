@@ -256,7 +256,7 @@ void readEquilibrate(const DictPtr& dict, electrolyte::SpeciationInput& in)
 int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verbosity)
 {
     diag_.clear();
-    // PACKAGE (roadmap Phase B): the case's OFFICIAL dictionary, constant/propertyDict,
+    // PACKAGE (roadmap Phase B): the case's OFFICIAL dictionary, constant/thermoPhysPropDict,
     // when it declares propertyMethods.aqueousActivity, IS the electrolyte
     // propertyPackage -- it fixes the activity method + input basis, and the op then
     // carries only the ANALYSIS.  A flat/degenerate thermoPackage (or none) -> the

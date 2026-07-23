@@ -212,7 +212,7 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     if (ergun_ && muGas_ == 0.0 && !thermo.hasTransport())
         throw std::runtime_error("fixedBedAdsorber '" + name_
             + "': flowModel ergun needs gas viscosity. Add a transport"
-              " viscosity model to propertyDict, or declare operation.muGas"
+              " viscosity model to thermoPhysPropDict, or declare operation.muGas"
               " only for a controlled test anchor");
 
     // -----------------------------------------------------------------
@@ -233,7 +233,7 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             if (it == compNames_.end())
                 throw std::runtime_error("fixedBedAdsorber '" + name_ + "': "
                     + what + ".molarComposition lists '" + key + "' but it"
-                    " is not a component of this case (constant/propertyDict"
+                    " is not a component of this case (constant/thermoPhysPropDict"
                     " components)");
             const scalar v = mc->lookupScalar(key);
             if (v < 0.0)
@@ -302,7 +302,7 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                         + adsorbentName_ + "/ overlay)");
                 throw std::runtime_error("fixedBedAdsorber '" + name_
                     + "': operation.kLDF.k lists '" + sp + "' but it is not"
-                    " a component of this case (constant/propertyDict"
+                    " a component of this case (constant/thermoPhysPropDict"
                     " components)");
             }
             const std::size_t i =

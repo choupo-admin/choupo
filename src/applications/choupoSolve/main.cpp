@@ -451,7 +451,7 @@ try
 
     // ---- Required dictionaries -----------------------------------------
     //  Cascade resolution (fractal): a sector / unit node may omit the
-    //  propertyDict or controlDict it inherits from a PARENT folder level ---
+    //  thermoPhysPropDict or controlDict it inherits from a PARENT folder level ---
     //  walk UP the tree until the file is found (capped, to stay within the
     //  plant).  The flowsheetDict is NEVER inherited: it IS the node.
     auto resolveUp = [](const std::string& rel) -> std::string {
@@ -494,18 +494,14 @@ try
     ChemistrySystem chem;                 // constant/chemistryDict selection
     const ChemistrySystem* chemPtr = nullptr;
     {
-        // ONE name: constant/propertyDict (there are more properties than
-        // thermodynamics -- transport, chemistry, solids).  It accepts BOTH
-        // grammars, routed by content, so a simple case stays simple and a rich
-        // one gets the manifest:
-        //   - has `components` + `propertyMethods`  -> the full MANIFEST (builder);
-        //   - has `components`, no `propertyMethods` -> the FLAT form
-        //     (activityModel / equationOfState), read by the legacy reader;
-        //   - no `components`                        -> a SELECTOR (`package <name>;`).
         // The case system lives in constant/thermoPhysPropDict (the *Dict
-        // convention: flowsheetDict / solverDict / controlDict).
+        // convention: flowsheetDict / solverDict / controlDict) -- one v2
+        // record (recordType thermophysicalPropertySystem; schemaVersion 2)
+        // the builder assembles natively by its equilibrium.formulation.  It
+        // carries more than thermodynamics (transport, chemistry, solids); the
+        // v1 propertyDict/thermoPackage grammars are refused (see below).
         std::string pkgPath = resolveUp("constant/thermoPhysPropDict");
-        if (!fs::exists(pkgPath) && fs::exists(resolveUp("constant/propertyDict")))
+        if (!fs::exists(pkgPath) && fs::exists(resolveUp("constant/thermoPhysPropDict")))
             throw std::runtime_error(
                 "this case carries a constant/propertyDict -- the case grammar is"
                 " constant/thermoPhysPropDict (bin/curate/migrate_thermoPhysProp.py"
@@ -576,7 +572,7 @@ try
         solverDict = Dictionary::fromFile("system/solverDict");
 
     // reactions: the named-reaction library.  CASCADES UP the parent chain,
-    // SYMMETRICALLY with constant/propertyDict and the component overlays --
+    // SYMMETRICALLY with constant/thermoPhysPropDict and the component overlays --
     // so a branch of a fractal plant run STANDALONE
     // (./choupoSolve .../ChemicalPlantTutorial/FERMENTATION) still finds a
     // reaction (e.g. sucroseToEthanol) declared at a HIGHER folder level.

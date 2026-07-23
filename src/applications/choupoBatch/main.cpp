@@ -41,7 +41,7 @@ Description
         │   ├── controlDict      verbosity + (startTime, endTime, deltaT, writeInterval)
         │   └── flowsheetDict    list of batch units with initial state and operation
         └── constant/
-            ├── propertyDict    components + γ-φ models
+            ├── thermoPhysPropDict  the thermophysical system (v2)
             └── reactions        named-reaction library
 
     Output: trajectory.csv in the case directory.
@@ -181,7 +181,7 @@ try
     auto flowsheetDict = Dictionary::fromFile("system/flowsheetDict");
     // The case system lives in constant/thermoPhysPropDict.
     if (!fs::exists("constant/thermoPhysPropDict")
-        && fs::exists("constant/propertyDict"))
+        && fs::exists("constant/thermoPhysPropDict"))
         throw std::runtime_error(
             "this case carries a constant/propertyDict -- the case grammar is"
                 " constant/thermoPhysPropDict (bin/curate/migrate_thermoPhysProp.py"

@@ -203,7 +203,7 @@ void BatchAdsorber::initialise(const DictPtr&       unitDict,
                         + adsorbentName_ + "/ overlay)");
                 throw std::runtime_error("batchAdsorber '" + name_
                     + "': operation.kLDF.k lists '" + sp + "' but it is not"
-                    " a component of this case (constant/propertyDict"
+                    " a component of this case (constant/thermoPhysPropDict"
                     " components)");
             }
             const std::size_t i =
@@ -281,7 +281,7 @@ void BatchAdsorber::initialise(const DictPtr&       unitDict,
             if (it == compNames_.end())
                 throw std::runtime_error("batchAdsorber '" + name_
                     + "': initial.initialLoading lists '" + sp + "' but it"
-                    " is not a component of this case (constant/propertyDict"
+                    " is not a component of this case (constant/thermoPhysPropDict"
                     " components)");
             const scalar q0v = ql->lookupScalar(sp);
             if (q0v < 0.0)

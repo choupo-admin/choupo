@@ -22,7 +22,7 @@ License
 /*---------------------------------------------------------------------------*\
   ThermoPackageBuilder -- the runtime ASSEMBLY step of the property
   architecture (a.k.a. PropertyPackageAssembler).  The case's INLINE
-  constant/propertyDict manifest declares components, chemistry, property
+  constant/thermoPhysPropDict manifest declares components, chemistry, property
   methods and parameters; this builder READS that declaration and ASSEMBLES
   a runtime ThermoPackage.
 

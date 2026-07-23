@@ -258,7 +258,7 @@ try
 
     // --- Dictionaries ---------------------------------------------------
     //  Cascade resolution (fractal), identical to choupoSolve: a sector node
-    //  may omit the controlDict / propertyDict it inherits from a PARENT
+    //  may omit the controlDict / thermoPhysPropDict it inherits from a PARENT
     //  folder level --- walk UP the tree until found (capped).  The propsDict
     //  is NEVER inherited: it IS the node's own analyses.  Without this a
     //  composite sector (e.g. esterification2sector/REACTION) is a CLI dead-end.
@@ -289,7 +289,7 @@ try
     DictPtr v2Authored;   // the authored system (fit ops mutate a copy)
     // The case system lives in constant/thermoPhysPropDict.
     std::string pkgPath = resolveUp("constant/thermoPhysPropDict");
-    if (!fs::exists(pkgPath) && fs::exists(resolveUp("constant/propertyDict")))
+    if (!fs::exists(pkgPath) && fs::exists(resolveUp("constant/thermoPhysPropDict")))
         throw std::runtime_error(
             "this case carries a constant/propertyDict -- the case grammar is"
                 " constant/thermoPhysPropDict (bin/curate/migrate_thermoPhysProp.py"
