@@ -73,8 +73,15 @@ def count_registered(cpp_rel: str) -> int:
 
 
 def release_id() -> str:
-    b = (ROOT / "src" / "core" / "Banner.H").read_text()
-    m = re.search(r'CHOUPO_VERSION\s*=\s*"([^"]+)"', b)
+    """The LATEST STABLE release name -- the storefront label (homepage, README,
+    /models all say "here is the latest release, and this is what it has").
+    Read from the newest dated CHANGELOG entry, NOT from Banner.H: on the `dev`
+    branch the banner is "Choupo-dev" (the running-code identity, shown by the
+    app's own version badge), but the storefront must still announce the last
+    published release.  So this is stable on both branches; only the COUNTS
+    below track the current tree."""
+    ch = (ROOT / "CHANGELOG.md").read_text()
+    m = re.search(r"^##\s*\[(Choupo-[0-9]{4})\]", ch, re.M)
     return m.group(1) if m else "unknown"
 
 
