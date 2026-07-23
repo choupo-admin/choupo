@@ -235,3 +235,19 @@ bin/dwsim-runner/
 !/data/local/README.md
 !/data/local/.gitkeep
 generated/gitVersion.H
+
+# Local session / coordination scratch files (Vítor's working notes + the
+# AI-to-AI coordination channels) — kept on disk, never committed, and kept
+# OUT of the git-status noise.  Delete or archive them at will; they are not
+# project artefacts.
+/chatGPT.md
+/ClaudeChat.md
+/codex.MD
+/HANDOFF.md
+/MORNING.md
+/GUI_SESSION_HANDOFF.md
+/STANDARDS_REORG_HANDOFF.md
+/AI_SLOP_REVIEW.md
+# SECURITY: recovery codes must never enter git.  Better still: move them to a
+# password manager and delete this file (see DEV.md / the session note).
+/github-recovery-codes.txt
