@@ -24,13 +24,15 @@ does not keep.
 ## 1. The flow
 
 ```
-a case DECLARES its manifest INLINE     (constant/propertyDict — the CENTRE;
-        │                                the shared-catalogue `package <name>;`
-        │                                selector is RETIRED — the runtime
-        │                                actively refuses it)
-        │  declares: components · chemistry · per-phase methods · parameters
+a case DECLARES its system INLINE       (constant/thermoPhysPropDict — the CENTRE;
+        │                                recordType thermophysicalPropertySystem,
+        │                                schemaVersion 2; the shared-catalogue
+        │                                `package <name>;` selector is RETIRED,
+        │                                and v1 propertyDict/thermoPackage refused)
+        │  declares: components · equilibrium.formulation · per-phase models · parameters
         ▼
-ThermoPackageBuilder   ASSEMBLES it — loads + verifies + announces, NEVER estimates
+ThermoPackageBuilder   ASSEMBLES the declared formulation NATIVELY — loads + verifies
+        │               + announces, NEVER estimates
         ▼
 ThermoPackage          COMPUTES (K-values, γ, φ, H, S, ρ, …)
         ▼
@@ -48,7 +50,8 @@ it declares, verifies, and refuses (no silent crutch).
 | `species/<name>.dat` | one `recordType modelSpecies` file per aqueous species (`species/Na.dat`, `species/Cl.dat`, `species/O2.dat`, …): `formula` + charge + MW + `aqueousThermo{}` (hfAq/sAq/cpAq, Wagman 1982). "never fed to a flowsheet". `modelSpecies` covers BOTH charged ions AND neutral dissolved molecules (O₂(aq)/N₂(aq), charge 0 — `formula`, not `ion`); `ion`/`cation`/`anion` are reserved for charge ≠ 0. So a sealed case copies exactly the species it reaches. *(Dismantled 2026-07-18 from the earlier single `species/aqueous.dat` catalogue.)* | `[WORKS]` |
 | `chemistry/` | REAL equilibria (K + ΔH): `aqueousSpeciation/` (56), `gasLiquid/` (8, Henry), `ionExchange/` (6). *(`mineralSolubility/`, `salts/` and `phases/solid/` were RETIRED — minerals folded into `components/` `solidPhases{}`, one substance = one file.)* | `[WORKS]` |
 | `parameters/` | interaction parameters by PAIR (`Pitzer/` 55 pares +θ/ψ/λ/ζ, `eNRTL/`, `NRTL/ UNIQUAC/ Wilson/`, `Henry/` 205, `SRK/`) + group tables (`Joback.dat`, `UNIFAC/`, `vanKrevelen.dat`, `Yang2020.dat`) + `adsorption/` + `eos/kij` + `solution/` | `[WORKS]` |
-| `methods/` | a model + its reference rung, per phase/group (`activity/ electrolyte/ eos/ solution/ transport/`) | `[WORKS]` |
+| `assets/` `mixtures/` `utilities/` | flat physical kit (membranes/adsorbents/materials, `kind`-tagged), predefined mixtures (air…), plant utility services | `[WORKS]` |
+| *(`methods/` RETIRED)* | the per-model `methods/<name>.dat` ceremony records were retired with the v2-native migration — a model's reference rung is now declared IN the case's `thermoPhysPropDict` (`equilibrium.<phase>.standardState`), read by the builder, not looked up from a data home | `[RETIRED]` |
 | *(pair homes consolidated)* | Migration 2 (2026-07-16): `binaryPairs/{NRTL,UNIQUAC,Wilson}` → `parameters/{NRTL,UNIQUAC,Wilson}` (5 public pairs post-scrub), `henrysLaw/` → `parameters/Henry/` (205), `parameters/electrolyte/{pitzer,eNRTL}` → `parameters/{Pitzer,eNRTL}`, `parameters/eos/kij` → `parameters/SRK/`. ONE spelling across every tier (per-node · case · snapshot · standards · local) | `[WORKS]` |
 
 *(`propertyPackages/` — the shared manifest catalogue — was RETIRED 2026-07-15:

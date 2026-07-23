@@ -78,16 +78,16 @@ lithiumBrinePlant/
 │   ├── designDict        [optional] process-unit -> physical-equipment mapping
 │   └── economicsDict     [optional] economic-analysis configuration
 ├── constant/         model + data that do not change during execution
-│   ├── propertyPackage
-│   ├── propertyData/     the sealed snapshot (manifest + components/species/…)
-│   ├── components/       case-local overlays
+│   ├── thermoPhysPropDict   the declared thermophysical system (v2)
+│   ├── propertyManifest     the sealed record registry (sha256 per record)
+│   ├── components/          sealed / case-local component records
 │   ├── reactions/
 │   ├── designBasis/      [optional] materials, margins, pressureRules, corrosion, equipment/
 │   └── economicBasis/    [optional] currency, costIndex, utilities, labour, locationFactors, finance
 ├── BRINE/ EXTRACTION/ …  SECTORS: each a local subgraph + optional model overrides
 │   ├── system/flowsheetDict   the sector's own subgraph
 │   ├── system/solverDict       [optional override]
-│   └── constant/propertyPackage + propertyData/   the sector's THERMO WORLD (e.g. Pitzer, NRTL)
+│   └── constant/thermoPhysPropDict (+ propertyManifest)   the sector's THERMO WORLD (e.g. Pitzer, NRTL)
 ├── 0/                COMPLETE INITIAL STREAM STATE  (one file per stream)
 │   ├── BRINE/brineFeed  BRINE/naclMotherLiquor  BRINE/liRichBrine  …
 │   └── EXTRACTION/organicFeed  EXTRACTION/raffinate  EXTRACTION/loadedOrganic  …

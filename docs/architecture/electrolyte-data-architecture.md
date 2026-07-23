@@ -24,9 +24,9 @@
 >   data folded into its own `components/<mineral>.dat` `solidPhases{}` block
 >   (one substance = one file; 64 minerals today);
 > * `propertyPackages/` as a shared catalogue was **retired 2026-07-15** — the
->   manifest is INLINE in each case's `constant/propertyDict`, and the runtime
->   refuses a `package <name>;` selector ("the package selects the role" holds;
->   the package just lives in the case, not in a catalogue);
+>   system is declared INLINE in each case's `constant/thermoPhysPropDict`, and
+>   the runtime refuses a `package <name>;` selector ("the declared system
+>   selects the role" holds; it lives in the case, not in a catalogue);
 > * basis vocabulary: **flowsheet/component basis** vs **aqueous-species
 >   basis** — the older "apparent/true" wording below is retained only as
 >   historical record of the ratification debate.

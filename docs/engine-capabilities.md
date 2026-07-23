@@ -227,7 +227,7 @@ front-end.
 `unit ⊂ sector ⊂ plant`, a recursive `flowsheetDict` shape (leaf: `type` +
 `operation` + `boundary`; composite: `children` + `connections` + `boundary`),
 `Flowsheet::flattenNode` descends with namespacing, and folder-level
-`controlDict` / `thermoPackage` / `constant/components` walk UP the tree so a
+`controlDict` / `thermoPhysPropDict` / `constant/components` walk UP the tree so a
 sector runs isolated AND the full plant runs.
 
 ---
