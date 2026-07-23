@@ -110,11 +110,19 @@ ones for day-to-day work:
    front-end still reads case-local `speciation.dat`/`ions.dat` sidecars in a
    couple of tutorials; fold into the sealed `species/`+`chemistry/` closure.
 4. **Docs with partially-superseded "settled" sections** (a deeper pass than the
-   2026-07-21 nomenclature sync): `docs/engine-capabilities.md` still narrates the
-   retired `children`/`boundary` flowsheet grammar; `CLAUDE.md` §7 still says
-   "7 homes" including `phases/solid/`, which was retired (minerals folded into
-   `components/` `solidPhases{}`).  Content-correct in the code; the settled-note
-   prose lags.
+   2026-07-21 nomenclature sync — needs electrolyte-domain care, so do it with
+   Vítor, not autonomously):
+   - `CLAUDE.md` §"Electrolyte data tree" says "**7 homes**" but two of the seven
+     were retired after that 2026-07-01 note: `phases/solid/` (minerals folded
+     into `components/` `solidPhases{}`, 2026-07-18) and `methods/` (a model's
+     reference rung now lives in the case's `thermoPhysPropDict`
+     `equilibrium.<phase>.standardState`); the "property PACKAGE" home is now the
+     inline dict.  So it is really ~4 standing data homes + the case dict.  The
+     live data homes in `data/standards/` are: `components/ species/ chemistry/
+     parameters/ assets/ mixtures/ utilities/`.
+   - `docs/engine-capabilities.md` still narrates the retired `children`/`boundary`
+     flowsheet grammar in places (343 lines, its own pass).
+   Content is correct in the CODE; only the settled-note prose lags.
 5. **`docs/ai/{consistency,extending,gui-credo}.md`** were not re-read in the v2
    scrub (no retired-token hits, but unverified end-to-end).
 6. **Landing mobile** = roadmap #7.
