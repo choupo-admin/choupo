@@ -6,7 +6,7 @@ next work — no need to reconstruct it from scattered notes.  Companion to
 [`RELEASING.md`](RELEASING.md) (how to cut a release) — this file is *where we
 are and what to do next*.
 
-*Last synced 2026-07-21.  Verify any number against the tree before relying on it.*
+*Last synced 2026-07-23.  Verify any number against the tree before relying on it.*
 
 ---
 
@@ -34,7 +34,7 @@ are and what to do next*.
 The authority is [`docs/architecture/CHOUPO-CONSTITUTION.md`](docs/architecture/CHOUPO-CONSTITUTION.md)
 (level 1) + [`docs/architecture/property-architecture.md`](docs/architecture/property-architecture.md)
 (level 2); the authority map is `docs/architecture/README.md`.  **These were
-synchronised with the v2-native engine on 2026-07-21** — they no longer describe
+synchronised with the v2-native engine on 2026-07-23** — they no longer describe
 the retired v1 grammar (that catch-up was the point of the last work session).
 
 - **Files on disk are the single source of truth.**  Topology, state, numerics
@@ -99,7 +99,10 @@ ones for day-to-day work:
 5. **Reports default-on beyond elementBalance** (mass/energy as normal
    diagnostics — measure corpus impact first).
 6. **Pinch full programme** (real match sizing beyond the heuristic screen).
-7. **Landing mobile layout** (390 px clips today).
+7. **Adsorption A4-A6** — the fixed-bed energy ledger (A4) and the cycle /
+   cyclic-steady-state steps (A5-A6) still refuse in the code
+   (`FixedBedAdsorber::energyLedgerGap()` names A4; flow reversal refuses as
+   an A5 step).  Close them to complete the adsorption programme.
 
 ## 5. Known debts (severity-ish)
 
@@ -110,7 +113,7 @@ ones for day-to-day work:
    front-end still reads case-local `speciation.dat`/`ions.dat` sidecars in a
    couple of tutorials; fold into the sealed `species/`+`chemistry/` closure.
 4. **Docs with partially-superseded "settled" sections** (a deeper pass than the
-   2026-07-21 nomenclature sync — needs electrolyte-domain care, so do it with
+   2026-07-23 nomenclature sync — needs electrolyte-domain care, so do it with
    Vítor, not autonomously):
    - `CLAUDE.md` §"Electrolyte data tree" says "**7 homes**" but two of the seven
      were retired after that 2026-07-01 note: `phases/solid/` (minerals folded
@@ -125,7 +128,10 @@ ones for day-to-day work:
    Content is correct in the CODE; only the settled-note prose lags.
 5. **`docs/ai/{consistency,extending,gui-credo}.md`** were not re-read in the v2
    scrub (no retired-token hits, but unverified end-to-end).
-6. **Landing mobile** = roadmap #7.
+6. **Landing mobile** — the 390 px responsive fix WAS applied (`b9f17421a`,
+   `f7b69592f`: minWidth:0 + clamp + wrap).  Not a standing debt, but no fresh
+   390 px screenshot confirms it end-to-end (Codex: prove clean or it stays
+   a check).  The adsorption debt is roadmap #7 above.
 
 ## 6. How to work (the short version; full: RELEASING.md)
 
