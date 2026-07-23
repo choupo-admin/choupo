@@ -1,9 +1,18 @@
 # The v2-native migration — honest state + the ratified path
 
-**Status:** LIVE record, opened 2026-07-18 (Codex finding + the plan ratified
-2026-07-17).  Update this file as steps land; delete it when step 5 closes.
+**Status: CLOSED / ARCHIVED 2026-07-21.**  The migration is complete — all
+five steps executed, `translateV2` deleted (`rg translateV2 src/` is empty),
+the builder assembles every `equilibrium.formulation` natively (`[v2 native]`
+announces, no `[v2 plan]` scaffold path remains), and the negative-parity gate
+forbids the v1 grammar's return.  This file is kept as the HISTORICAL record of
+how the migration was done; **the "honest state (2026-07-18)" section below
+described the mid-migration scaffold and is now superseded by the step log at
+the end** (which records the scaffold's deletion).  Do not treat the early
+"not yet native" caveat as current — it is history.  Live architecture:
+[`CHOUPO-CONSTITUTION.md`](CHOUPO-CONSTITUTION.md) §4 +
+[`property-architecture.md`](property-architecture.md).
 
-## The honest state (2026-07-18)
+## The honest state (2026-07-18) — SUPERSEDED, see the closing note above
 
 The EXTERNAL surface is v2-only: no tutorial authors `propertyDict` /
 `thermoPackage`, and the v1 grammar is REFUSED with a migration error.  That
