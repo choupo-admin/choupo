@@ -1,10 +1,14 @@
 # The Choupo Constitution — consolidated architecture
 
-*Authoritative, session-consolidated 2026-07-07.  This is the ONE document that
-states how a Choupo case is shaped, how the engine reads it, and what every
-grammar keyword means.  The deeper per-topic specs remain as references:
-[`stream-state-architecture.md`](stream-state-architecture.md),
-[`final-property-architecture.md`](final-property-architecture.md),
+*Authoritative, session-consolidated 2026-07-07; **property/thermo section
+synchronised with the v2-native engine 2026-07-21** (the case grammar file is
+`constant/thermoPhysPropDict`, sealing is `constant/propertyManifest`; the old
+`propertyDict` / `propertyData/` names below were the pre-v2 spelling and have
+been corrected — this was a documentation catch-up, not a design change).  This
+is the ONE document that states how a Choupo case is shaped, how the engine
+reads it, and what every grammar keyword means.  The deeper per-topic specs
+remain as references: [`stream-state-architecture.md`](stream-state-architecture.md),
+[`property-architecture.md`](property-architecture.md),
 [`electrolyte-data-architecture.md`](electrolyte-data-architecture.md).  Where any
 of those disagrees with this document, THIS document wins.*
 
@@ -28,10 +32,12 @@ case/
 │   ├── outerDict            outer driver (sweep / optim / fit / PE)                   [opt]
 │   └── postDict             post-processing chain (sizing, cost)                      [opt]
 ├── constant/
-│   ├── propertyDict         the case's OWN declarative thermodynamics (SELF-CONTAINED)
-│   ├── propertyData/        SEALED dependency snapshot (bin/choupo-import)            [opt]
-│   ├── components/          case-local component overlays                            [opt]
-│   ├── electrolyte/         case-local ion / pair overlays                           [opt]
+│   ├── thermoPhysPropDict   the case's OWN declarative thermodynamics (SELF-CONTAINED,
+│   │                          recordType thermophysicalPropertySystem; schemaVersion 2)
+│   ├── propertyManifest     SEALED record registry (bin/choupo-import; sha256 per record) [opt]
+│   ├── components/          sealed / case-local component records                    [opt]
+│   ├── species/ parameters/ chemistry/   sealed record homes (as the case reaches)   [opt]
+│   ├── chemistryDict        active-chemistry selection (recordType chemistrySystem)  [opt]
 │   └── reactions            named-reaction library                                   [opt]
 └── 0/                       the COMPLETE initial stream state (committable INPUT)
 ```
@@ -42,7 +48,7 @@ Output directories the solver WRITES (never authored, `iterations/` gitignored):
 `economics/`.
 
 A unit op is entitled to its OWN dignified folder (`<unit>/system/` + `<unit>/
-constant/`), inheriting the case `propertyDict` + `controlDict` through the cascade
+constant/`), inheriting the case `thermoPhysPropDict` + `controlDict` through the cascade
 until it lands something local (e.g. `recovery/` carrying its own NRTL model + pair
 data).  A dignified folder is a first-class alternative to an inline block; the
 author picks per unit.
@@ -145,39 +151,48 @@ two-phase stream carries it as the phase seed) — never a decorative `0`, never
 
 ---
 
-## 4. Property architecture — `propertyDict` + SELF-CONTAINMENT
+## 4. Property architecture — `thermoPhysPropDict` + SELF-CONTAINMENT
 
-**A case declares its OWN thermodynamics in `constant/propertyDict` — every case is
-declaratively self-DESCRIBING (inline manifest, no shared selector).  A case is
-runtime self-CONTAINED only once SEALED**: `bin/choupo-import` materialises the
-closed dependency snapshot into `constant/propertyData/` (289 inline manifests vs
-5 sealed snapshots in the corpus, 2026-07-16).  For an unsealed case the runtime
-legitimately resolves components / methods / chemistry / parameters from
-`data/standards/` (versioned `Choupo-2607`); for a sealed case the catalogue is a
-CREATION/IMPORT-time resource only, not a runtime dependency.
+**A case declares its OWN thermodynamics in `constant/thermoPhysPropDict`
+(`recordType thermophysicalPropertySystem; schemaVersion 2;`) — every case is
+declaratively self-DESCRIBING (inline, no shared selector; the builder assembles
+each `equilibrium.formulation` natively — v1 `propertyDict`/`thermoPackage` are
+REFUSED with a migration error).  A case is runtime self-CONTAINED only once
+SEALED**: `bin/choupo-import` copies the closed dependency closure into the
+case's own `constant/` record homes and writes `constant/propertyManifest`
+(per-record sha256; the corpus is 284 sealed of 292 systems, 2026-07-21).  For
+an unsealed case the runtime legitimately resolves components / methods /
+chemistry / parameters from `data/standards/` (versioned `Choupo-2607`); for a
+sealed case the catalogue is a CREATION/IMPORT-time resource only, not a runtime
+dependency.
 
 ```
-constant/propertyDict          declares components / chemistry / propertyMethods (INLINE,
-   │                           no `package <name>;` selector, ZERO data/standards paths)
+constant/thermoPhysPropDict    declares components / equilibrium.formulation /
+   │                           models / parameters (INLINE, ZERO data/standards paths)
    ▼
-ThermoPackageBuilder           resolves records from constant/propertyData/ + local overlays
-   │                           (loads + assembles; NEVER estimates — that is curation-time)
+ThermoPackageBuilder           assembles the declared formulation NATIVELY, resolving
+   │                           records from constant/ (sealed) + local overlays
+   │                           (loads + verifies; NEVER estimates — that is curation-time)
    ▼
-constant/propertyData/         SEALED snapshot: manifest.dat (release + per-record sha256)
-   │                           + components / species / chemistry / phases / parameters
+constant/propertyManifest      SEALED registry: catalogueRelease + per-record sha256;
+   │  + components/ species/    `sealed true;` forbids every runtime catalogue fallback
+   │    parameters/ chemistry/
    ▼
 ThermoPackage  →  unit ops     (units know ONLY the ThermoPackage — never file paths)
 ```
 
-* `bin/choupo-import <case>` materialises the closed dependency snapshot into
-  `constant/propertyData/` and seals it.  When present, the runtime reads the frozen
-  copy and the log states *"installation catalogue NOT consulted"*.
+* `bin/choupo-import <case>` copies the closed dependency closure into the case's
+  own `constant/` (components/, species/, parameters/, chemistry/ — only what the
+  case reaches) and writes the sha256 `constant/propertyManifest`.  When
+  `sealed true;`, the runtime reads only those frozen records and the log states
+  *"installation catalogue NOT consulted"*.
 * **The definitive test**: move the case out of the repo / delete `data/standards/`
   entirely — a sealed case MUST still assemble and run.  `choupoSolve` enters the
   case dir BEFORE constructing the Database, so a sealed case skips the catalogue-
   root requirement.
 * Do NOT copy the whole catalogue — import a CLOSED, explicit snapshot
-  (reproducibility, not duplication).
+  (reproducibility, not duplication).  Active-chemistry selection (which salts
+  precipitate) lives in `constant/chemistryDict` (`recordType chemistrySystem`).
 
 The five legal axes of heterogeneous thermo: **models per PHASE · conventions per
 GROUP · correlations per COMPONENT · parameters per PAIR · packages per UNIT** — one
@@ -237,8 +252,9 @@ for a numerical-strategy variant.
 * **Files, not YAML/JSON/TOML.**  Hierarchical plain-text dicts; scalars carry units
   (named / bracket-dimensions / raw SI), cross-checked to canonical SI.
 * **No backward compatibility** in the forms above — `streams{}`, `boundary{}`,
-  anonymous `connections( )`, `children`, `propertyPackage`/`thermoPackage`, and
-  `derived{}` are GONE, not deprecated-but-read.
+  anonymous `connections( )`, `children`, `propertyDict` / `propertyPackage` /
+  `thermoPackage` (the v1 property grammar) / `propertyData/`, and `derived{}`
+  are GONE, not deprecated-but-read.
 * **Explicit factory pattern**, no auto-registration.  **C++17, no external libs.**
   **Make**, not CMake.  **GPL-3.0-or-later** code; the *Choupo* name is TalentGround
   Lda.'s trademark, separate from the code licence.
