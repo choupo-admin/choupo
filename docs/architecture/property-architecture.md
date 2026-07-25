@@ -192,6 +192,33 @@ speciation world is separate from the ThermoPackage.  Programme, in order:
    Wong-Sandler/PSRK only against concrete cases), PC-SAFT association,
    carboxylic vapour association.
 
+### Where a model NAME may legitimately appear (audit closed 2026-07-25)
+
+The corpus sweep that began with "30 aqueous cases declare nothing" closed with
+a sharper result: there are exactly THREE legitimate surfaces for an activity
+model's name, and everything outside them was a defect (all fixed):
+
+1. **the case declaration** — `equilibrium { aqueous { activityModel … } }`,
+   read by every process unit that ASKS for aqueous activities (membrane
+   scaling, ion exchange, electrodialysis).  Units refuse when it is absent;
+   they never default;
+2. **a props-bench operation** — the `propsDict` op names its model
+   (`activityModel pitzerHMW;` in a `speciate` op, the ratified 2026-06-29
+   selector) because there the model IS the experiment's subject; a bench
+   comparing Davies against Pitzer-HMW cannot, by definition, declare one.
+   The bench surface is glass-box by construction: the name is in the op the
+   student wrote;
+3. **a model-prescribed internal** — DSPM-DE's Davies A(T) correction is part
+   of the Bowen-Welfoot formulation itself; swapping it would change the
+   published model, not configure it.  Announced in the stage banner, and
+   deliberately NOT a dict key.
+
+What looked like "26 undeclared cases" resolved to: 22 props-bench cases
+(surface 2, already correct), the multi-world plant (each sector declares its
+own world — the settled heterogeneous-thermo design), and the DSPM-DE pair
+(surface 3, now announced).  The declaration sweep is COMPLETE; the
+unit-chemistry gate holds the line.
+
 ### Identifier typing before identifier cleanup (settled 2026-07-25, three-way)
 
 Identifiers are BARE STRINGS today, and the component↔species link is made by

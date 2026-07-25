@@ -196,7 +196,17 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
                   << "  [DSPM-DE] exclusions: steric ON"
                   << (donnanOn ? " | Donnan ON" : " | Donnan OFF (X_d=0)")
                   << (bornOn   ? " | Born ON (eps_p<eps_b)" : " | Born OFF")
-                  << "\n";
+                  << "\n"
+                  // The activity treatment is MODEL-PRESCRIBED, not a case
+                  // choice: Bowen-Welfoot partitioning is formulated on a
+                  // Davies-type correction, so swapping the gamma model would
+                  // change the published model, not configure it.  Announced
+                  // (never silent), and deliberately NOT a dict key -- the
+                  // `aqueous {}` case declaration governs units that ASK for
+                  // activities; this model IS its activity treatment.
+                  << "  [DSPM-DE] activity: Davies A(T) correction"
+                     " (model-prescribed, Bowen-Welfoot formulation --"
+                     " not a case-selectable gamma model)\n";
     }
 
     // ---- Decompose each salt solute into its ions --------------------------
