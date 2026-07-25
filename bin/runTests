@@ -499,6 +499,35 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/navgate.$$
 
+    # Aqueous-graph gate: the family views must keep coming out of the ENGINE's
+    # own record reader (one parser, never a Python re-implementation), and the
+    # graph must stay finding-free.  The assertion that matters is the last one:
+    # reactions belonging to MORE THAN ONE family are what a view can do and a
+    # directory layout cannot -- if that count ever drops to zero, the bipartite
+    # argument behind this design has silently been lost.
+    if "$ROOT/choupoProps" --aqueous-graph /tmp/aqg.$$.json > /tmp/aqg.$$ 2>&1 \
+       && python3 - /tmp/aqg.$$.json <<'PYEOF' >> /tmp/aqg.$$ 2>&1
+import json, sys
+d = json.load(open(sys.argv[1]))
+multi = [r for r in d["reactions"] if len(r["families"]) > 1]
+assert d["species"],   "no species in the graph"
+assert d["reactions"], "no reactions in the graph"
+assert not d["findings"], "graph findings: %s" % d["findings"]
+assert multi, "no reaction belongs to two families -- the view has collapsed"
+print("aqueous graph: %d species, %d equilibria, %d parameters, "
+      "%d reactions in 2+ families" % (len(d["species"]), len(d["reactions"]),
+                                       len(d["parameters"]), len(multi)))
+PYEOF
+    then
+        printf "PASS  %-40s  (%s)\n" "aqueous-graph-gate" "$(tail -1 /tmp/aqg.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run choupoProps --aqueous-graph)\n" "aqueous-graph-gate"
+        cat /tmp/aqg.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/aqg.$$ /tmp/aqg.$$.json
+
     # Element-balance gate (steady): a reacting boundary changes species but
     # closes per atom; an impossible formula refuses ONLY the elemental claim.
     if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then

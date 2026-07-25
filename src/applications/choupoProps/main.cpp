@@ -52,6 +52,7 @@ Description
 #include "core/ResultEmitter.H"
 #include "core/ThermoResolution.H"
 #include "core/Units.H"
+#include "curation/AqueousGraph.H"
 #include "propertyOps/CasePackage.H"
 #include "propertyOps/PropertyOperation.H"
 #include "propertyOps/ConstantEstimator.H"
@@ -62,6 +63,7 @@ Description
 #include "thermo/ThermoPackageBuilder.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/electrolyte/AqueousActivity.H"
+
 #include "thermo/pureFluid/PureFluidModel.H"
 #include "thermo/SurfaceTensionModel.H"
 #include "thermo/equationOfState/EquationOfState.H"
@@ -195,6 +197,45 @@ try
     bool gapReport = false;
     for (int gi = 1; gi < argc; ++gi)
         if (std::string(argv[gi]) == "--gap-report") gapReport = true;
+
+    // Catalogue-wide aqueous queries -- no case, no solver.  They read the
+    // SAME records the engine reads (records::scanRecordDir, same precedence,
+    // same sealing), which is why there is no second chemistry parser in
+    // Python or TypeScript: downstream tooling formats this JSON instead.
+    for (int gi = 1; gi < argc; ++gi)
+    {
+        const std::string a = argv[gi];
+        if (a == "--aqueous-graph" || a == "--family")
+        {
+            // Resolve the catalogue root exactly as a case run would (CHOUPO_HOME
+            // or the cwd walk) -- these queries have no case to do it for them.
+            const Database catalogue;
+            (void)catalogue;
+        }
+        if (a == "--aqueous-graph")
+        {
+            const std::string out = (gi + 1 < argc && argv[gi + 1][0] != '-')
+                                  ? argv[gi + 1] : "generated/aqueousGraph.json";
+            const auto g = electrolyte::AqueousGraph::build();
+            std::filesystem::create_directories(
+                std::filesystem::path(out).parent_path());
+            g.writeJson(out);
+            std::cout << "aqueous graph -> " << out << "  ("
+                      << g.species().size() << " species, "
+                      << g.reactions().size() << " equilibria, "
+                      << g.parameters().size() << " parameters)\n";
+            for (const auto& f : g.findings()) std::cout << "  [finding] " << f << "\n";
+            return 0;
+        }
+        if (a == "--family")
+        {
+            const auto g = electrolyte::AqueousGraph::build();
+            if (gi + 1 >= argc || argv[gi + 1][0] == '-')
+            { g.printFamilyIndex(); return 0; }
+            return g.printFamily(argv[gi + 1]);
+        }
+    }
+
     if (!gapReport) printBanner("  props");   // clean stdout for the JSON consumer
 
     VaporPressureModel::registerBuiltins();
