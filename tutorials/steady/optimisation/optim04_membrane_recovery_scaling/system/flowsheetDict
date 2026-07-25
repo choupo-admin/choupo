@@ -80,7 +80,7 @@ units
 
         scaling
         {
-            minerals    ( calcite  gypsum );
+            reportMinerals    ( calcite  gypsum );
             pH          7.0;
         }
     }

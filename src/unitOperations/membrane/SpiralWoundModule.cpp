@@ -420,11 +420,45 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     if (doScaling)
     {
         auto sc = dict->subDict("scaling");
-        scaleMinerals = sc->lookupWordList("minerals");
-        if (scaleMinerals.empty())
-            throw std::runtime_error("spiralWoundModule scaling{}: needs "
-                "`minerals ( calcite gypsum ... );` -- which saturation "
-                "indices to track");
+
+        // WHICH SOLIDS EXIST IS THE SYSTEM'S; WHAT TO DO ABOUT THEM IS THE
+        // UNIT'S.  The admitted solid phases are declared once, in
+        // constant/chemistryDict (`equilibria { solidPhases ( … ); }`) -- the
+        // ratified one home for "which equilibria/phases belong to this
+        // system".  This unit's `reportMinerals` is POLICY: which of the
+        // admitted phases to track here.  Omit it and every admitted phase is
+        // tracked; name one that the system does not admit and it is refused,
+        // because a unit may not smuggle chemistry past the declaration.
+        const auto& admitted = thermo.aqueousChemistry().solidPhases;
+        if (admitted.empty())
+            throw std::runtime_error("spiralWoundModule scaling refused: no"
+                " solid phases are admitted by this case.  Declare them in"
+                " constant/chemistryDict:\n"
+                "    recordType chemistrySystem;\n"
+                "    equilibria { solidPhases ( calcite gypsum ); }\n"
+                "The unit then decides only WHICH of them to report.");
+
+        if (sc->found("minerals"))
+            throw std::runtime_error("spiralWoundModule scaling: `minerals` is"
+                " no longer a unit key -- which solid phases EXIST belongs to"
+                " the case, in constant/chemistryDict:\n"
+                "    equilibria { solidPhases ( calcite gypsum ); }\n"
+                "Use `reportMinerals ( … );` here to track a subset of them.");
+
+        scaleMinerals = sc->found("reportMinerals")
+                      ? sc->lookupWordList("reportMinerals") : admitted;
+
+        for (const auto& m : scaleMinerals)
+            if (std::find(admitted.begin(), admitted.end(), m) == admitted.end())
+            {
+                std::string list;
+                for (const auto& a : admitted) list += " " + a;
+                throw std::runtime_error("spiralWoundModule scaling: mineral '"
+                    + m + "' is not part of the declared aqueous chemistry."
+                      "  Admitted by constant/chemistryDict:" + list
+                    + ".  A unit reports the system's phases; it never adds"
+                      " one.");
+            }
 
         // pH: `pH 6.8;` (given, e.g. acid-dosed feed) or `pH solve;`
         // (H+ solved from electroneutrality) -- same closure pair as the

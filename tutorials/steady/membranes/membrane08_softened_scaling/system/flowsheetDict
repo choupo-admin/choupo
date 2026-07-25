@@ -92,7 +92,7 @@ units
         // The SAME scaling audit as membrane07 -- but now on softened water.
         scaling
         {
-            minerals    ( calcite  gypsum );
+            reportMinerals    ( calcite  gypsum );
             pH          7.0;
         }
     }

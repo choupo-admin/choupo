@@ -528,6 +528,22 @@ PYEOF
     fi
     rm -f /tmp/aqg.$$ /tmp/aqg.$$.json
 
+    # Unit-chemistry gate: a unit op answers a PROCESS question -- which
+    # activity model evaluates the aqueous phase, and which solid phases may
+    # precipitate, are the declared system's, and the unit reads them.  The
+    # corpus grew the opposite habit because the grammar had no slot for a
+    # liquid-only electrolyte declaration; the slot exists now, the hidden
+    # defaults are gone, and this keeps them gone.
+    if "$ROOT/bin/curate/check_no_unit_chemistry.py" > /tmp/ucgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "unit-chemistry-gate" "$(head -1 /tmp/ucgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_no_unit_chemistry.py)\n" "unit-chemistry-gate"
+        cat /tmp/ucgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ucgate.$$
+
     # Element-balance gate (steady): a reacting boundary changes species but
     # closes per atom; an impossible formula refuses ONLY the elemental claim.
     if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then

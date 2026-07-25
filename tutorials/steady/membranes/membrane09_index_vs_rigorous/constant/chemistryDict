@@ -7,37 +7,17 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture.
-  Raoult DECLARED, not defaulted (gamma = 1 identically).
-  Migrated mechanically from the v1 flat form (physics identical);
-  v2 contract 2026-07-17.
+  chemistryDict -- the case's ACTIVE-CHEMISTRY SELECTION: WHICH solid phases
+  are admitted in this system's chemistry network.  Availability, not
+  presence: the Ksp/dH facts live in the phase/component records (arity-1),
+  and only an OPERATION asks for saturation or precipitation.  The membrane
+  module reports a subset of these (`scaling { reportMinerals ( ... ); }`)
+  and may not name a phase that is not admitted here.
 \*---------------------------------------------------------------------------*/
+recordType    chemistrySystem;
+schemaVersion 1;
 
-recordType    thermophysicalPropertySystem;
-schemaVersion 2;
-
-components       ( water  Na  Cl );
-
-equilibrium
+equilibria
 {
-    formulation gammaPhi;
-
-    liquid
-    {
-        activityModel ideal;
-        standardState pureLiquid;
-    }
-
-    // The liquid IS an aqueous electrolyte solution -- declared here, once,
-    // independently of the phase equilibrium above (this stack computes no
-    // VLE).  The stack READS this; it no longer freezes a model of its own.
-    aqueous
-    {
-        activityModel { model davies; }
-    }
-
-    vapour
-    {
-        fugacityModel idealGas;
-    }
+    solidPhases ( calcite gypsum );
 }

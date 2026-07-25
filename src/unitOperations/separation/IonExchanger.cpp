@@ -172,9 +172,23 @@ int IonExchanger::solve(const DictPtr& dict,
     auto wrap = std::make_shared<Dictionary>(dict->name());
     wrap->insert("exchange", exDict);
 
-    // Optional aqueous-activity-model selection (default Davies, the only S1
-    // builtin; an unknown name is refused with the available list).
-    electrolyte::SpeciationSolver solver(opDict->lookupWordOrDefault("activityModel", "davies"));
+    // THE AQUEOUS ACTIVITY MODEL IS THE CASE'S.  This unit exchanges ions on
+    // a resin; it does not get to decide how their activities are evaluated.
+    // The old `activityModel` key here, defaulting to Davies, was a hidden
+    // default -- refused now, with the block the case must declare instead.
+    if (opDict->found("activityModel"))
+        throw std::runtime_error("ionExchanger: `activityModel` is no longer a"
+            " unit key -- the aqueous activity model belongs to the case, in"
+            " constant/thermoPhysPropDict:\n"
+            "    equilibrium { aqueous { activityModel { model davies; } } }");
+    const auto& aqChem = thermo.aqueousChemistry();
+    if (!aqChem.declared || aqChem.activityModel.empty())
+        throw std::runtime_error("ionExchanger refused: this unit needs aqueous"
+            " activities but the case declares no aqueous chemistry.  Add to"
+            " constant/thermoPhysPropDict:\n"
+            "    equilibrium { aqueous { activityModel { model davies; } } }\n"
+            "No default is applied.");
+    electrolyte::SpeciationSolver solver(aqChem.activityModel);
     propertyOps::readExchange(wrap, in, solver, verbosity);
 
     // bedVolume : optional HARDWARE, the per-litre CEC nameplate then has a

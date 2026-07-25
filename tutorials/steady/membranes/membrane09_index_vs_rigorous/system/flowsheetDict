@@ -105,7 +105,7 @@ units
         // bulk + wall, at each module exit.
         scaling
         {
-            minerals    ( calcite  gypsum );
+            reportMinerals    ( calcite  gypsum );
             pH          7.0;                  // acid-dosed + controlled SWRO feed
             // the activity model is the CASE's -- constant/thermoPhysPropDict
             //   equilibrium { aqueous { activityModel { model davies; } } }

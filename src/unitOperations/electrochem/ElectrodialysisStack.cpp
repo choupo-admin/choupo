@@ -247,8 +247,22 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     IEMSpec cem, aem;
     readIEMPair(memName, cem, aem);
 
-    // ---- Frozen Davies activity model (reused electrolyte stack) -----------
-    auto act = electrolyte::AqueousActivity::New("davies");
+    // ---- The CASE's aqueous activity model, never this stack's -------------
+    //  This read a frozen "davies" literal: a unit op selecting thermodynamics
+    //  on the author's behalf, invisible in every file the student opens.  It
+    //  survived because the grammar had no slot for a liquid-only electrolyte
+    //  declaration; now that `equilibrium { aqueous { … } }` is readable with
+    //  any formulation, the stack reads what the case declared -- or refuses.
+    const auto& aqChem = thermo.aqueousChemistry();
+    if (!aqChem.declared || aqChem.activityModel.empty())
+        throw std::runtime_error("electrodialysisStack refused: this stack"
+            " needs aqueous activities but the case declares no aqueous"
+            " chemistry.  Add to constant/thermoPhysPropDict:\n"
+            "    equilibrium { aqueous { activityModel { model davies; } } }\n"
+            "(independent of `formulation` -- a stack that computes no phase"
+            " equilibrium still HAS an aqueous solution).  No default is"
+            " applied.");
+    auto act = electrolyte::AqueousActivity::New(aqChem.activityModel);
 
     // Build channel states ONCE per pass (NOT inside any inner I loop).
     ChannelState chD = buildChannel(thermo, dil.z, iWater, T, *act);

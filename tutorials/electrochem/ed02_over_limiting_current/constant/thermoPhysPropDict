@@ -28,6 +28,14 @@ equilibrium
         standardState pureLiquid;
     }
 
+    // The liquid IS an aqueous electrolyte solution -- declared here, once,
+    // independently of the phase equilibrium above (this stack computes no
+    // VLE).  The stack READS this; it no longer freezes a model of its own.
+    aqueous
+    {
+        activityModel { model davies; }
+    }
+
     vapour
     {
         fugacityModel idealGas;

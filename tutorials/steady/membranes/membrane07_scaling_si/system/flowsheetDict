@@ -84,7 +84,7 @@ units
         // case-local electrolyte catalogue) at each module exit, bulk + wall.
         scaling
         {
-            minerals    ( calcite  gypsum );
+            reportMinerals    ( calcite  gypsum );
             pH          7.0;                  // acid-dosed + controlled feed
         }
     }
