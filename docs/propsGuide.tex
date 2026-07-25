@@ -125,6 +125,61 @@ not to paper over the seam between rigorous derivation and fitted correlation --
 it is to show exactly where it runs.
 \end{keyidea}
 
+\subsection{Where the models came from --- a genealogy}\label{sec:genealogy}
+
+The chain in \S\ref{ch:thermo-chain} shows there are exactly \emph{two} ways to
+a fugacity in a mixture: through an equation of state ($\varphi$) or through an
+activity coefficient ($\gamma$).  Each has its own lineage, and knowing them
+explains why the model list looks the way it does --- and why it is a
+\emph{list} at all rather than a single answer.
+
+\paragraph{The equation-of-state line (1873 $\rightarrow$).}
+Van der Waals wrote one equation for both phases, continuous through the
+critical point: the first time liquid and gas were the same substance in one
+formula.  Redlich--Kwong (1949) improved the attraction term; Soave (1972) made
+it obey the vapour-pressure curve by introducing the acentric factor;
+Peng--Robinson (1976) repaired the liquid density.  All four share one skeleton
+--- repulsion plus attraction, with the parameters generated from $T_c, P_c,
+\omega$ --- which is why adding a new cubic to Choupo touches \emph{no data
+file}.  Then the molecular branch: Wertheim's association theory (1984) led to
+SAFT (1989) and PC-SAFT (2001), where a molecule is a \emph{chain of segments}
+and the parameters are $m, \sigma, \varepsilon/k$ instead of the critical
+triad.  That is exactly why PC-SAFT extrapolates in temperature and density
+where a cubic drifts --- and why it cannot borrow the cubic's parameters.
+
+\paragraph{The activity-coefficient line (1964 $\rightarrow$).}
+Regular-solution theory failed on polar mixtures.  Wilson (1964) introduced
+\emph{local composition} --- the admission that a molecule does not see its
+neighbours in bulk proportions --- but could not describe a liquid--liquid
+split.  NRTL (Renon \& Prausnitz, 1968) added non-randomness and \emph{could}:
+that is why an LLE case in this guide reaches for NRTL and not Wilson.
+UNIQUAC (Abrams \& Prausnitz, 1975) split the excess Gibbs energy into a
+combinatorial part (size and shape) and a residual part (energy).  UNIFAC
+(Fredenslund, 1975) made UNIQUAC \emph{predictive} by decomposing molecules
+into functional groups, so a pair never measured could still be estimated.
+COSMO-RS (Klamt, 1995) and COSMO-SAC (Lin \& Sandler, 2002) went further and
+replaced the group table with the molecule's own screening-charge surface from
+a quantum calculation --- the first genuinely \emph{a priori} route to
+$\gamma$, and the one that needs no binary datum at all.
+
+\paragraph{The electrolyte line (1923 $\rightarrow$).}
+Debye--H\"uckel derived the ionic atmosphere and is \emph{exact} in the dilute
+limit --- and only there.  Davies (1962) stretched it empirically to a few
+tenths molal.  Pitzer (1973) abandoned the pretence of derivation and wrote a
+virial expansion in molality that holds to seawater and beyond.  eNRTL (Chen,
+1982) carried local composition into ionic solutions, which is what makes a
+mixed solvent --- salt plus water plus ethanol --- tractable at all.
+
+\begin{keyidea}
+Each model was invented because the previous one \emph{failed} at something
+specific.  The list is not a menu of equivalent options; it is a history of
+failures, each one repaired.  Choosing a property method is therefore choosing
+\emph{which failure you can live with} in your system --- which is why this
+architecture insists that the choice be declared in the case file, verified at
+assembly, and confessed in the log.  A simulator that hides the choice behind a
+dropdown has not removed the failure; it has removed your view of it.
+\end{keyidea}
+
 \subsection{The glass-box promise}
 
 Because the outer shells are empirical, every number Choupo predicts should
@@ -528,23 +583,32 @@ number carries a quality word
 and an \texttt{asserted} value --- a pinned constant, a user polynomial, a user
 table --- is refused without its written \texttt{why}.
 
-\subsection{The four VLE worlds}
+\subsection{The five formulations}
 
-All selected by the \emph{liquid} method slot; each validated against measured
-data in this guide:
+A case declares one \code{equilibrium.formulation}; the builder assembles that
+one natively and gives every other shape a named refusal.  Each is validated
+against measured data in this guide:
 \begin{center}
 \small
 \begin{tabular}{@{}llll@{}}
 \toprule
-\textbf{World} & \textbf{Liquid method} & \textbf{K-value} & \textbf{Natural home}\\
+\textbf{Formulation} & \textbf{Liquid method} & \textbf{K-value} & \textbf{Natural home}\\
 \midrule
-$\gamma$--$\varphi$ & \texttt{activity.NRTL} (Wilson, UNIQUAC, UNIFAC) & $\gamma_i P^{sat}_i/P$ & organic mixtures\\
-Henry & \texttt{solution.henryDilute} & $\gamma^*_i H_i/P$ & dissolved gases\\
-$\varphi$--$\varphi$ & \texttt{eos.SRK} / \texttt{eos.PengRobinson} & $\varphi^L_i/\varphi^V_i$ & high pressure, near-critical\\
-electrolyte & \texttt{electrolyte.pitzer} / \texttt{.eNRTL} & ion activities, osmotic & brines, salts, mixed solvent\\
+\texttt{gammaPhi} & \texttt{activity.NRTL} (Wilson, UNIQUAC, UNIFAC, cosmoSAC) & $\gamma_i P^{sat}_i/P$ & organic mixtures\\
+\texttt{gammaGamma} & one activity model \emph{per named liquid phase} & $\gamma^{\alpha}_i/\gamma^{\beta}_i$ & LLE / VLLE, extraction\\
+\texttt{diluteSolution} & \texttt{solution.henryDilute} & $\gamma^*_i H_i/P$ & dissolved gases\\
+\texttt{phiPhi} & \texttt{eos.SRK} / \texttt{eos.PengRobinson} / \texttt{PCSAFT} & $\varphi^L_i/\varphi^V_i$ & high pressure, near-critical\\
+\texttt{electrolyteGammaPhi} & \texttt{Pitzer} / \texttt{eNRTL} (molality) & ion activities, osmotic & brines, salts, mixed solvent\\
 \bottomrule
 \end{tabular}
 \end{center}
+
+\noindent\texttt{gammaGamma} is the one that surprises people: two coexisting
+liquids are \emph{two phases}, each entitled to its own Gibbs surface, and the
+split is found by minimising $G$ directly rather than by iterating $K$ --- a
+symmetric $\gamma$-model would otherwise collapse onto the trivial $K=1$
+saddle.  That is the legality rule of \S\ref{ch:thermo-chain} doing visible
+work.
 
 \subsection{The five component routes}
 
