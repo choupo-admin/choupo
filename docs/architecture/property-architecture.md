@@ -192,6 +192,42 @@ speciation world is separate from the ThermoPackage.  Programme, in order:
    Wong-Sandler/PSRK only against concrete cases), PC-SAFT association,
    carboxylic vapour association.
 
+### Identifier typing before identifier cleanup (settled 2026-07-25, three-way)
+
+Identifiers are BARE STRINGS today, and the component↔species link is made by
+lexical equality (`in.totals[thermo.comp(i).name()]` in the membrane module is
+the load-bearing example).  Measured consequence: every neutral aqueous
+complex whose base name matches a component (`CaCO3aq`→`CaCO3`, `CO2aq`→`CO2`,
+`NH3aq`→`NH3` — six of six checked) would collide on rename inside that very
+mechanism.  The settled order, after one full round of proposals in both
+directions:
+
+* the historical suffixes (`aq`, `p`, `m`, `p2`, `m2`) are **technical debt
+  created by the absence of typed identifiers** — neither chemistry nor
+  architecture.  They are kept TEMPORARILY and are **not** promoted to a rule
+  (a proposed mandatory-`aq` gate was built, run, and withdrawn the same day:
+  it would have enshrined the workaround);
+* **no partial migration**: renaming only the `p`/`m` class first was
+  considered and rejected — one coherent migration, once, beats two waves of
+  golden churn;
+* the precondition is TYPED IDENTIFIERS: distinct identity spaces
+  (`component:` / `aqueousSpecies:` / `solidPhase:` internally), every lookup
+  resolving by type, the string-equality links removed, and a gate proving no
+  untyped lookup remains;
+* only then the single F2 migration: drop all suffixes, redox by Roman numeral
+  (`CuI/CuII`, `FeII/FeIII`, `MnII/MnIII`), `Mg(SO4)2²⁻` as `MgSO4_2`,
+  chemistry/ files named by REACTION (`ammonia-ionisation.dat`), never by
+  species — file names validated only for format/uniqueness/non-deception,
+  carrying no second ontology;
+* sequencing inside F2: first a closed commit eliminating the six doubly-
+  declared identities (CO3, H2PO4, HPO4, HSO4, MgOH, OH — watched, coherent),
+  then the rename transaction; both on an unpublished branch, cases
+  re-imported, corpus run with standards hidden, committed only green.
+
+The identity gate (`check_species_identity.py`) pins the 59 historical keys —
+the list may shrink in F2, never grow — and watches the six duplicates; that
+instrumentation is what makes waiting for the typing safe.
+
 Deferred by DESIGN (kept out while the engine refuses loudly what it cannot
 represent): CPA (after PC-SAFT association, against a demonstrated case),
 general solid solutions (`gamma_S = 1` pure-crystal is declared, not
