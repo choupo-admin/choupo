@@ -135,7 +135,8 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     const SolutionControl* solutionCtl = nullptr,  // null => feature OFF
     bool               init0 = false,
     bool               init0Force = false,
-    const StreamOverrides& overrides = StreamOverrides{})
+    const StreamOverrides& overrides = StreamOverrides{},
+    bool               lint = false)
 {
     // Fresh advisory sink for this pass (so a sweep/optim gets per-pass
     // advisories, and the result carries this pass's).  Cleared BEFORE the
@@ -157,6 +158,7 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     Flowsheet flowsheet;
     flowsheet.setStreamOverrides(overrides);
     flowsheet.setInit0Mode    (init0, init0Force);
+    flowsheet.setLintMode     (lint);
     flowsheet.setSolverDict   (solverDict);
     flowsheet.setReactionsDict(reactionsDict);
     flowsheet.setDatabase     (&db);          // per-unit thermo overrides
@@ -219,6 +221,15 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     }
 
     int rc = flowsheet.solve(flowsheetDict, thermo, verbosity);
+
+    // Lint: solve() returned at the validate-and-stop seam -- there is no
+    // simulation result to assemble (and no T-x-y sweep to run).
+    if (lint)
+    {
+        SimulationResult r;
+        r.converged = (rc == 0);
+        return r;
+    }
 
     SimulationResult r;
     r.streams     = flowsheet.streams();
@@ -405,14 +416,16 @@ try
     Report          ::registerBuiltins();
 
     // Flags: `-init0` materialises 0/ instead of solving (arch step 2);
-    // `--force` lets it regenerate existing internal/outlet estimates.
-    bool init0Mode = false, init0Force = false;
+    // `--force` lets it regenerate existing internal/outlet estimates;
+    // `--lint` validates the case and stops (read-only, never solves).
+    bool init0Mode = false, init0Force = false, lintMode = false;
     std::string caseDir = ".";
     for (int a = 1; a < argc; ++a)
     {
         const std::string arg = argv[a];
         if      (arg == "-init0" || arg == "--init0") init0Mode = true;
         else if (arg == "--force")                    init0Force = true;
+        else if (arg == "-lint"  || arg == "--lint")  lintMode = true;
         else caseDir = arg;
     }
     if (!fs::exists(caseDir))
@@ -847,6 +860,18 @@ try
         auto r = runSimulation(flowsheetDict, db, packageDict,
                                chemPtr, solverDict, reactionsDict, verbosity,
                                nullptr, true, init0Force);
+        return r.converged ? 0 : 1;
+    }
+
+    // ---- choupo-lint: validate the case and leave.  Same discipline as
+    //      init0 -- no solve, no reports, no converged/ writer, no JSON --
+    //      but strictly READ-ONLY: nothing on disk is touched.
+    if (lintMode)
+    {
+        auto r = runSimulation(flowsheetDict, db, packageDict,
+                               chemPtr, solverDict, reactionsDict, verbosity,
+                               nullptr, false, false, StreamOverrides{},
+                               /*lint=*/true);
         return r.converged ? 0 : 1;
     }
 

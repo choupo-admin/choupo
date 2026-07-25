@@ -183,11 +183,13 @@ cd tutorials/steady/flash/flash01_benzene_toluene
 runCase                                 # writes log.choupoSolve here
 \end{lstlisting}
 
-Two further tools appear later in this guide: \code{bin/choupo-init0}
-(materialise the initial stream state, \S\ref{sec:init0}) and
-\code{bin/choupo-import} (seal a case's property data so it runs
-self-contained, \S\ref{sec:self-contained}).  \code{bin/runTests} runs
-the full regression over every bundled tutorial.
+Three further tools appear later in this guide: \code{bin/choupo-lint}
+(validate a case without running it, \S\ref{sec:lint}),
+\code{bin/choupo-init0} (materialise the initial stream state,
+\S\ref{sec:init0}) and \code{bin/choupo-import} (seal a case's property
+data so it runs self-contained, \S\ref{sec:self-contained}).
+\code{bin/runTests} runs the full regression over every bundled
+tutorial.
 
 % =====================================================================
 \section{Anatomy of a case directory}\label{sec:anatomy}
@@ -501,6 +503,35 @@ inspectable, and on disk --- never an invisible in-memory guess.
 open, diff, and version-control --- the same glass-box rule that governs
 the solver's iterations governs its data.
 \end{keyidea}
+
+\subsection{Validating without solving: \code{bin/choupo-lint}}\label{sec:lint}
+
+The cheap step of the authoring loop --- write, \emph{lint}, fix, run.
+The tool takes the very same road the solver takes --- it reads the
+dicts, assembles the thermophysical package (every component must
+resolve), flattens the topology (every connection must cable), enforces
+the \file{0/} completeness contract and resolves the tears --- and then
+stops, just before anything would solve or be written to disk:
+
+\begin{lstlisting}
+bin/choupo-lint <caseDir>     # read-only; nothing is solved, nothing written
+\end{lstlisting}
+
+On top of the load-path checks it reports what a run only discovers
+mid-execution: an unknown unit type (with the list of available types),
+a duplicate unit name, two units producing the same stream.  Findings
+are collected and reported as \emph{one} list --- the tool describes the
+whole state of the case, not just the first defect it meets.  Exit
+status: \code{0} the case will run as declared; \code{1} findings;
+\code{2} a load-phase refusal (whose own message names the rule and the
+fix).
+
+It also prints the stream \emph{roles} inferred from the topology --- no
+producer $\rightarrow$ inlet; producer and consumer $\rightarrow$
+internal; producer only $\rightarrow$ outlet; declared tears flagged ---
+so you can confirm the graph says what you think it says before
+spending a solve.  Roles are never declared in Choupo; the topology is
+the single source of truth, and the lint report is where you read it.
 
 \subsection{Units on every scalar}\label{sec:units-suffixes}
 

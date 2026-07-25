@@ -289,3 +289,23 @@ bin/choupo-init0 <caseDir> --force    # regenerates existing internal/outlet est
 Rules: an inlet file is never touched; an unseeded recycle is a hard error
 naming the file to author; `incomplete 0/ + choupoSolve` stays FATAL — this
 tool is the sanctioned way out.
+
+## Validating a case without running it — `bin/choupo-lint`
+
+The companion to `choupo-init0`, and the cheap step in the authoring loop
+(write → **lint** → fix → run).  It runs the whole load-and-compose path —
+dict grammar, thermo package (every component resolved), fractal flattening
+(all topology cabling), the `0/` completeness contract, tear resolution —
+plus the checks a run only surfaces mid-execution (unknown unit type,
+duplicate unit names, two producers of one stream), then stops before
+anything solves or writes.  Strictly read-only.
+
+```
+bin/choupo-lint <caseDir>     # exit 0 = will run as declared; 1 = findings; 2 = load refusal
+```
+
+It also prints the topology-inferred stream ROLES (no producer → INLET;
+producer+consumer → INTERNAL; producer only → OUTLET, tears flagged) so you
+can confirm the graph says what you think it says before spending a solve.
+A case shipping its own `code/` gets a warning, not a refusal, for types
+only `bin/buildCode`'s case-local binary registers.

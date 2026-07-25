@@ -2461,6 +2461,17 @@ int Flowsheet::solve(const DictPtr& dict,
         return runInit0(units, thermo, verbosity, authoredStates, tears);
     }
 
+    // ---- choupo-lint: validate and stop (read-only, same seam) -----------
+    //  Everything above this line reads the disk and composes in memory;
+    //  everything below solves or writes.  Lint therefore inherits the whole
+    //  load-and-compose validation (grammar refusals, thermo build, topology
+    //  flattening, 0/ completeness, tear resolution) and adds only what the
+    //  regular path defers to execution time -- then stops.
+    if (lint_)
+    {
+        return runLint(units, verbosity, tears);
+    }
+
     // ---- Resolve RELATIVE bounds against the now-frozen feeds (Slice 3) -
     //  Feeds + tears are settled, so the feed aggregates (feedTotal/feedMax/
     //  feedMin/feedMean) and per-feed references are stable.  A relative band
@@ -3360,6 +3371,158 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
               << nKept << " kept)\n"
               << "[init0] no simulation was run -- `choupoSolve` solves from "
                  "this state.\n";
+    return 0;
+}
+
+// ===========================================================================
+//  choupo-lint -- validate the composed case WITHOUT solving it.
+//
+//  By the time solve() reaches the lint seam, the loud path has already
+//  validated the dict grammar, the thermo package (every component resolved),
+//  the fractal flattening (all topology cabling), the 0/ COMPLETENESS
+//  contract and the tear resolution -- a defect in any of those threw before
+//  we got here.  What remains are the checks the regular path only surfaces
+//  DURING execution (an unknown unit type errors at that unit's turn) or not
+//  at all (duplicate names), plus the topology-inferred stream ROLES, printed
+//  so the author can confirm the graph says what they think it says.
+//
+//  Findings are COLLECTED and reported as ONE list: a lint tool describes
+//  the whole state of the case, not just the first defect it meets.
+// ===========================================================================
+int Flowsheet::runLint(const std::vector<DictPtr>&     units,
+                       int                             verbosity,
+                       const std::vector<std::string>& tears)
+{
+    namespace fs = std::filesystem;
+    std::vector<std::string> findings;
+
+    // ---- 0/ presence -------------------------------------------------------
+    //  The completeness diff above only runs when a 0/ tree exists; a case
+    //  with NO 0/ at all sails past it -- and would fail at the first unit's
+    //  "input stream not in registry".  Name the real rule instead.
+    if (!fs::exists("0") || !fs::is_directory("0"))
+        findings.push_back("no 0/ state directory -- a steady case carries its"
+            " COMPLETE initial state in 0/, one file per stream (author the"
+            " domain inlets; bin/choupo-init0 materialises the rest).");
+
+    // ---- Unit types + duplicate unit names ---------------------------------
+    //  Probe the factory for EVERY flattened unit up front (the regular path
+    //  defers this to each unit's execution turn; flattenNode's utility-port
+    //  probe deliberately swallows it).  New()'s message lists the available
+    //  types, so the finding is remedy-bearing as-is.
+    //
+    //  A case shipping its own `code/` (bin/buildCode) legitimately declares
+    //  types this binary does not carry -- registerUserTypes() only fills in
+    //  inside the case-local build.  There an unknown type is a WARNING with
+    //  the honest limitation, not a refusal (lint with the buildCode binary
+    //  validates those types for real).
+    bool hasLocalCode = false;
+    if (fs::exists("code") && fs::is_directory("code"))
+        for (const auto& e : fs::directory_iterator("code"))
+            if (e.path().extension() == ".cpp") { hasLocalCode = true; break; }
+    std::size_t nWarnings = 0;
+    std::set<std::string> seenUnitNames;
+    for (const auto& u : units)
+    {
+        const std::string uname = u->lookupWordOrDefault("name", "?");
+        if (!seenUnitNames.insert(uname).second)
+            findings.push_back("DUPLICATE unit name '" + uname + "' -- unit"
+                " names key the stream registry, KPIs and reports; two units"
+                " cannot share one name.");
+        try { UnitOperation::New(u->lookupWordOrDefault("type", "")); }
+        catch (const std::exception& e)
+        {
+            if (hasLocalCode)
+            {
+                std::cerr << "WARNING: unit '" << uname << "' has a type not"
+                    " in the built-in registry, and this case ships its own"
+                    " code/ -- the type is presumably registered by"
+                    " bin/buildCode's case-local binary, which this lint"
+                    " cannot see.  Lint with that binary to validate it.\n";
+                ++nWarnings;
+            }
+            else
+                findings.push_back("unit '" + uname + "': " + e.what());
+        }
+    }
+
+    // ---- Duplicate producers ----------------------------------------------
+    //  Two units writing the same output stream: the second silently
+    //  overwrites the first in the registry -- an authoring error the solve
+    //  never reports.
+    std::map<std::string, std::string> producerOf, firstConsumerOf;
+    for (const auto& fu : topology_)
+    {
+        for (const auto& o : fu.outs)
+        {
+            auto [it, fresh] = producerOf.emplace(o, fu.name);
+            if (!fresh)
+                findings.push_back("stream '" + o + "' is produced by BOTH '"
+                    + it->second + "' and '" + fu.name + "' -- the second"
+                    " would silently overwrite the first; every stream has"
+                    " exactly one producer.");
+        }
+        for (const auto& i : fu.ins)
+            if (!firstConsumerOf.count(i)) firstConsumerOf[i] = fu.name;
+    }
+
+    // ---- Stream roles (the topology rule, printed for confirmation) --------
+    //  no producer -> INLET; producer + consumer -> INTERNAL; producer only
+    //  -> OUTLET (stream-state architecture: role is inferred from topology,
+    //  never declared).  A declared tear is flagged on its own line.
+    if (verbosity >= 1)
+    {
+        const std::set<std::string> tearSet(tears.begin(), tears.end());
+        std::set<std::string> names;
+        for (const auto& fu : topology_)
+        {
+            for (const auto& i : fu.ins)  names.insert(i);
+            for (const auto& o : fu.outs) names.insert(o);
+        }
+        std::size_t w = 8;
+        for (const auto& nm : names) w = std::max(w, nm.size());
+        std::cout << "\n[lint] stream roles inferred from the topology"
+                     " (no producer -> INLET; producer+consumer -> INTERNAL;"
+                     " producer only -> OUTLET):\n";
+        std::size_t nIn = 0, nInt = 0, nOut = 0;
+        for (const auto& nm : names)
+        {
+            const bool hasProd = producerOf.count(nm) > 0;
+            const bool hasCons = firstConsumerOf.count(nm) > 0;
+            const char* role = !hasProd ? "INLET   "
+                             : (hasCons ? "INTERNAL" : "OUTLET  ");
+            if (!hasProd) ++nIn; else if (hasCons) ++nInt; else ++nOut;
+            std::cout << "  " << role << "  " << std::left << std::setw(int(w))
+                      << nm << "  "
+                      << (hasProd ? producerOf.at(nm) : std::string("(boundary)"))
+                      << " -> "
+                      << (hasCons ? firstConsumerOf.at(nm) : std::string("(boundary)"))
+                      << (tearSet.count(nm) ? "   [declared tear]" : "")
+                      << "\n";
+        }
+        std::cout << "[lint] " << units.size() << " unit(s), " << names.size()
+                  << " stream(s): " << nIn << " inlet / " << nInt
+                  << " internal / " << nOut << " outlet"
+                  << (tears.empty() ? std::string()
+                                    : ", " + std::to_string(tears.size())
+                                      + " declared tear(s)") << "\n";
+    }
+
+    // ---- Verdict -----------------------------------------------------------
+    if (!findings.empty())
+    {
+        std::cerr << "\nERROR: choupo-lint: the case will not run as"
+                     " declared:\n";
+        for (const auto& f : findings) std::cerr << "  " << f << "\n";
+        return 1;
+    }
+    std::cout << "\n[lint] case OK -- grammar, thermo package, topology,"
+                 " 0/ completeness and unit types all check out"
+              << (nWarnings == 0 ? std::string(".")
+                                 : " (" + std::to_string(nWarnings)
+                                   + " warning(s) above -- limits of what this"
+                                     " binary can see).")
+              << "\n[lint] no simulation was run.\n";
     return 0;
 }
 

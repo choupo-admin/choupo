@@ -29,61 +29,59 @@ Class
     Choupo::Flowsheet
 
 Description
-    A linear, sequential-modular flowsheet: streams travel from one
-    unit operation to the next, no recycle loops, no tear streams.
-    Recycle support and Wegstein over tear streams arrive.
+    The sequential-modular flowsheet orchestrator.  A flowsheetDict declares
+    TOPOLOGY only -- units and their stream connections; the stream STATE
+    lives in the case's `0/` directory, one file per stream (the stream-state
+    architecture, docs/architecture/stream-state-architecture.md).  A
+    `streams {}` block in any flowsheetDict is refused loudly.
 
-Dictionary form:
+    The node is FRACTAL: a LEAF carries `type` directly ("a unit op is a
+    flowsheet of one"), a FLAT case carries an inline `units ( {...} {...} )`
+    dict list, and a COMPOSITE lists member folders (`sectors` / `units` as
+    word lists) cabled by named-edge `connections {}` -- flattenNode collapses
+    the whole tree into ONE flat solver problem with `plant.sector.unit`
+    names (the hierarchy is authoring/namespace only, never a recursive
+    solver).
 
-        simulationType  flowsheet;
+Dictionary form (topology only -- state in 0/):
 
-        flowsheet
-        {
-            streams                       // initial (feed) streams
+        units                             // ordered list -- one block per UO
+        (
             {
-                feed
-                {
-                    F    1.0;
-                    T    350.0;
-                    P    1.01325;
-                    composition  { ethanol 1.0;  water 0.0; }
-                }
+                name      reactor;
+                type      cstr;
+                in        feed;           // stream name (state in 0/feed)
+                outputs   (reactorOut );  // names to bind producedStreams()
+                operation { V_R 0.005; }
+                reaction  {... }
             }
-
-            units                         // ordered list -- one block per UO
-            (
-                {
-                    name      reactor;
-                    type      cstr;
-                    in        feed;            // stream name (must exist)
-                    outputs   (reactorOut );  // names to bind producedStreams()
-
-                    operation { V_R 0.005; }
-                    reaction  {... }
-                }
-                {
-                    name      separator;
-                    type      isothermalFlash;
-                    in        reactorOut;
-                    outputs   (liquidProduct  vaporProduct );
-                                                // order matches IsothermalFlash:
-                                                //   produced[0] = liquid
-                                                //   produced[1] = vapor
-                    operation { T 370; P 1.0; }
-                }
-            );
-        }
+            {
+                name      separator;
+                type      isothermalFlash;
+                in        reactorOut;
+                outputs   (liquidProduct  vaporProduct );
+                operation { T 370; P 1.0; }
+            }
+        );
 
     The Flowsheet:
-      1. seeds its stream registry from the per-stream `0/` state files;
-      2. iterates through `units (...)` in order;
-      3. for each unit, builds an *augmented* dict that grafts the
-         input stream's F/T/P into a synthetic `feed` sub-dict and the
-         z-vector into a synthetic `composition` sub-dict, then calls
-         `unit->solve(...)`;
-      4. takes `unit->producedStreams()` and binds them, by index, to
-         the `outputs (... )` names, registering them in the registry
-         for subsequent units to consume.
+      1. reads the raw `0/` tree, flattens the node, then seeds its stream
+         registry via the canonical manifest (StreamOwnership) -- the
+         COMPLETENESS contract (N graph streams == N state files) is
+         enforced BEFORE the solve;
+      2. iterates through the flattened units in order; for each unit,
+         builds an *augmented* dict that grafts the input stream's state
+         into synthetic `feed` / `composition` sub-dicts, then calls
+         `unit->solve(...)` and binds `producedStreams()` by index to the
+         `outputs (... )` names;
+      3. with tear streams (declared, or collected from composite levels),
+         wraps the sweep in the recycle outer loop -- Newton-on-tears on
+         per-component molar flows + T (the default) or Wegstein -- and
+         finishes with one fully-logged sweep at the converged point;
+      4. special modes bail at the seam where the flat unit list, the
+         seeded registry and the tear list all exist: `-init0` materialises
+         the missing 0/ files (runInit0), `--lint` validates and stops
+         (runLint) -- both without running the solver.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -190,6 +188,13 @@ public:
     void setInit0Mode(bool on, bool force)
     { init0_ = on; init0Force_ = force; }
 
+    // choupo-lint: compose the graph, seed from 0/ (completeness enforced),
+    // resolve tears -- then, instead of solving, VALIDATE what the load path
+    // alone cannot see (unknown unit types, duplicate names) and report the
+    // topology-inferred stream roles.  Strictly read-only: solve() returns
+    // at the same seam -init0 uses, before anything is written or run.
+    void setLintMode(bool on) { lint_ = on; }
+
     // The pass's stream manipulations (forum #55 D4): handed in EXPLICITLY,
     // one immutable copy per pass, applied once to the fresh seeded state.
     void setStreamOverrides(const StreamOverrides& ov) { streamOverrides_ = ov; }
@@ -266,8 +271,16 @@ private:
                  const std::set<std::string>&  authored,
                  const std::vector<std::string>& tears);
 
+    // The lint pass (called from solve() at the same seam as runInit0).
+    // Collects EVERY finding into one list before refusing -- a lint tool
+    // reports the whole state of the case, not just the first defect.
+    int runLint(const std::vector<DictPtr>&     units,
+                int                             verbosity,
+                const std::vector<std::string>& tears);
+
     bool init0_      = false;
     bool init0Force_ = false;
+    bool lint_       = false;
     StreamOverrides streamOverrides_;
 
     std::map<std::string, ProcessStream>                   streams_;

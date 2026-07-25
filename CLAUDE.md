@@ -790,6 +790,7 @@ domains like membranes).
 | List tutorials | `listCases` |
 | Full regression | `bin/runTests` |
 | Materialise a case's `0/` | `bin/choupo-init0 <case>` (propagates from authored inlets + tear seeds; `--force` regenerates estimates; refuses $variable streams{}) |
+| Validate a case WITHOUT solving | `bin/choupo-lint <case>` (read-only: load+compose+0/-completeness+unit-type/duplicate checks + topology-inferred stream roles; bails at the same `Flowsheet::solve` seam as `-init0`) |
 | Build / debug / clean | `make all` / `make MODE=debug` / `make clean` (current) · `make distclean` (all) |
 | List available unit-op types | `UnitOperation::availableTypes()` (in code) |
 | Vary a value in `flowsheetDict` programmatically | `dict.setScalarAtPath(path, v)` |

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# choupo-lint -- validate a case WITHOUT solving it (read-only).
+#
+#   choupo-lint <caseDir>
+#
+# Runs the whole load-and-compose path -- dict grammar, thermo package (every
+# component resolved), fractal flattening (all topology cabling), the 0/
+# COMPLETENESS contract, tear resolution -- plus the checks the regular run
+# only surfaces during execution (unknown unit type, duplicate names), then
+# stops at the same seam choupo-init0 uses, before anything solves or writes.
+# It also prints the topology-inferred stream roles (INLET / INTERNAL /
+# OUTLET) so the author can confirm the graph says what they think it says.
+#
+# Exit 0: the case will run as declared.  Exit 1: findings (all listed, not
+# just the first).  Exit 2: a load-phase refusal (its own message names the
+# rule and the fix).
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+exec "$ROOT/choupoSolve" --lint "$@"
