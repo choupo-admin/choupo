@@ -29,24 +29,37 @@ Class
     Choupo::ThermoPackage
 
 Description
-    Aggregate of components + mixture models (activity coefficient model
-    for the liquid phase, equation of state for the vapour phase).
-    Provides K-values  K_i = γ_i Psat_i / (φ_i P)  for two-phase L-V
-    flash calculations.
+    The COMPUTE step of the property architecture: components + the phase
+    models that turn a state (T, P, composition) into K-values, fugacities,
+    enthalpies, densities and transport properties.
 
-    Dictionary form (a `thermoPackage`):
+        a case DECLARES its system INLINE   (constant/thermoPhysPropDict,
+                │                            recordType thermophysicalPropertySystem)
+                ▼
+        ThermoPackageBuilder  ASSEMBLES     (loads + verifies + announces,
+                │                            NEVER estimates)
+                ▼
+        ThermoPackage         COMPUTES      <- this class
+                ▼
+        unit ops              flash · reactor · column · crystalliser · membrane
 
-        components (benzene  toluene);
+    A ThermoPackage is ASSEMBLED, never self-read from a dictionary: the
+    builder calls assembleTwoPhase / assembleNamedPhases /
+    adoptElectrolytePackage with model-config dicts it prepared from the
+    authored v2 blocks.  (The former `readFromDict` reader of the retired v1
+    grammar is gone; the v1 grammar itself is refused at the dispatch.)
 
-        activityModel
-        {
-            model       ideal;
-        }
+    ONE GIBBS SURFACE PER PHASE.  `phases_` holds the real structure -- each
+    Phase answers fEffective(T,P,x), so the generalised K between phases α
+    and β is K_i = fEff_α / fEff_β.  A vapour phase carries φ, a liquid
+    phase carries γ (or the same EoS in a phiPhi world), and a named second
+    liquid phase carries its own γ surface (gammaGamma / LLE).  The
+    activity_ / eos_ pointers are CONVENIENCE handles on the first liquid
+    and first vapour, kept for the classic two-phase VLE call sites.
 
-        equationOfState
-        {
-            model       idealGas;
-        }
+    The five formulations the builder assembles into this class:
+    gammaPhi · gammaGamma · phiPhi · diluteSolution · electrolyteGammaPhi.
+    Authority: docs/architecture/property-architecture.md (level 2).
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -481,7 +494,7 @@ private:
     // mixtures, capturing member mole fractions into `seedByName`.  Announces
     // every splice + dedup reconciliation LOUDLY on stderr.  Leaves plain
     // component tokens untouched.
-    // Shared config readers (readFromDict + the v2-native assemblies): the
+    // Shared config readers (used by the v2-native assemblies): the
     // canonical flat transport hierarchy and the pureFluids override.
     void readTransportBlock(const DictPtr& td);
     void readPureFluids(const DictPtr& pf);
@@ -492,7 +505,7 @@ private:
                    std::map<std::string, scalar>& seedByName,
                    std::map<std::string, std::map<std::string, scalar>>* membersByToken = nullptr);
 
-    // Load-time helper shared by readFromDict and the v2-native assembly:
+    // Load-time helper for the v2-native assemblies:
     // mixture expansion + alias canonicalisation + flat-by-name component
     // load + mixture-seed re-keying.  Returns the post-expansion canonical
     // names (the vector the phases and pair-file builders consume).

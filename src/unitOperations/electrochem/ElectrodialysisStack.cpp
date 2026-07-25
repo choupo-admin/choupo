@@ -28,6 +28,7 @@ License
 
 #include "ElectrodialysisStack.H"
 #include "Electrochem.H"
+#include "thermo/electrolyte/IonTransport.H"
 
 #include "core/Constants.H"
 #include "solver/NewtonRaphson.H"
@@ -165,7 +166,7 @@ ChannelState buildChannel(const ThermoPackage& thermo, const sVector& z,
     scalar kappa = 0.0, c_eq = 0.0;
     for (std::size_t k = 0; k < ch.m.size(); ++k)
     {
-        const scalar D0 = electrochem::ionD0(ch.ion[k]);            // m2/s
+        const scalar D0 = electrolyte::ionD0(ch.ion[k]);            // m2/s
         const scalar lam = ch.z[k] * ch.z[k] * electrochem::Faraday
                          * electrochem::Faraday * D0 / (constant::R * T);  // S m2/mol
         const scalar c_i = ch.m[k] * rho_w;                        // mol/m3
@@ -270,7 +271,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     // / channel-width is unknown here; we use a representative L = 0.5 m and
     // announce it (an explicit operation key can override later).
     scalar D_mean = 0.0;
-    for (const auto& nm : chD.ion) D_mean += electrochem::ionD0(nm);
+    for (const auto& nm : chD.ion) D_mean += electrolyte::ionD0(nm);
     D_mean /= static_cast<scalar>(chD.ion.size());
     const scalar d_h   = 2.0 * h_ch;                     // slit hydraulic diameter [m]
     const scalar nu    = 1.0e-6;                         // m2/s (water, 25 C, announced)

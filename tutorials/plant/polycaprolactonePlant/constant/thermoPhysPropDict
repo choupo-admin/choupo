@@ -11,6 +11,16 @@
   Raoult DECLARED, not defaulted (gamma = 1 identically).
   Migrated mechanically from the v1 flat form (physics identical);
   v2 contract 2026-07-17.
+
+  MOLECULAR-SURROGATE APPROXIMATION (declared, 2026-07-25): `pclRepeat` is
+  the polycaprolactone REPEAT UNIT treated as an ordinary non-volatile
+  molecular species.  NO polymer thermodynamic model is active -- no
+  Flory-Huggins entropy of a chain in a solvent, no chain-length
+  distribution, no melt rheology.  This is honest for what the case
+  teaches (mass/energy balances of the train, water removal by
+  volatility) and would NOT be honest for solvent-polymer phase
+  equilibrium -- a case needing that must wait for a polymer activity
+  model, which the engine will REFUSE to fake until it exists.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

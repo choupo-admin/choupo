@@ -138,50 +138,10 @@ inline scalar butlerVolmer(scalar i0, scalar alpha_a, scalar alpha_c,
     return i0 * (std::exp(alpha_a * f * eta) - std::exp(-alpha_c * f * eta));
 }
 
-// ---- ion-transport tier accessors (refuse-LOUDLY) --------------------------
-// Read the `radius` [m] / `D0` [m2/s] fields from ions.dat for the named ion
-// SPECIES key (e.g. "Na", "Cl").  The catalogue is resolved case-local-first by
-// electrolyte::findIon (the standard fractal overlay).  These REFUSE LOUDLY when
-// the ion is absent OR lacks the transport tier -- never a silent zero (the run
-// would otherwise compute a meaningless conductivity / limiting current).
-
-// Effective (Stokes/hydrated) ion radius [m].
-inline scalar ionRadius(const std::string& species)
-{
-    auto row = electrolyte::findAqueousSpecies(species);
-    if (!row)
-        throw std::runtime_error("electrochem: ion '" + species + "' has no row "
-            "(case-local constant/electrolyte/ions.dat or "
-            "data/standards/species/) -- an electrochemical run needs an "
-            "IONIC species (master ions Na, Cl, K, Ca, Mg, SO4, OH, H).");
-    if (!row->found("radius"))
-        throw std::runtime_error("electrochem: ion '" + species + "' has no "
-            "`radius` in ions.dat -- the ion-transport tier (radius + D0) is "
-            "only curated for the eight master ions an electrodialysis run can "
-            "transport (Nightingale 1959; see PROVENANCE.md).  Add a `radius` "
-            "row (raw SI metres) before using '" + species + "' in an "
-            "electrochemical unit.");
-    return row->lookupScalar("radius");
-}
-
-// Infinite-dilution (Nernst) diffusion coefficient [m2/s], 25 C.
-inline scalar ionD0(const std::string& species)
-{
-    auto row = electrolyte::findAqueousSpecies(species);
-    if (!row)
-        throw std::runtime_error("electrochem: ion '" + species + "' has no row "
-            "(case-local constant/electrolyte/ions.dat or "
-            "data/standards/species/) -- an electrochemical run needs an "
-            "IONIC species (master ions Na, Cl, K, Ca, Mg, SO4, OH, H).");
-    if (!row->found("D0"))
-        throw std::runtime_error("electrochem: ion '" + species + "' has no "
-            "`D0` in ions.dat -- the ion-transport tier (radius + D0) is only "
-            "curated for the eight master ions an electrodialysis run can "
-            "transport (Nightingale 1959; see PROVENANCE.md).  Add a `D0` row "
-            "(m2/s, derived from lambda0 via Nernst-Einstein) before using '"
-            + species + "' in an electrochemical unit.");
-    return row->lookupScalar("D0");
-}
+// ---- ion-transport tier: re-homed 2026-07-25 ---------------------------
+// ionRadius/ionD0 now live in the THERMO tier (thermo/electrolyte/IonTransport.H)
+// -- data is served by the data tier, never by one unit op to another.
+// Consumers call electrolyte::ionRadius / electrolyte::ionD0 directly.
 
 } // namespace electrochem
 } // namespace Choupo

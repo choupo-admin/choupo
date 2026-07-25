@@ -32,7 +32,8 @@ Description
     A pure-component bundle: identification, critical constants, and the
     pure-component thermodynamic sub-models (vapour pressure, ideal-gas
     Cp, liquid Cp, latent heat).  Loaded from a single dictionary file
-    typically stored in $CHOUPO_HOME/data/components/.
+    typically stored in $CHOUPO_HOME/data/standards/components/
+    (exact-name O(1) lookup; see docs/architecture/property-architecture.md).
 \*---------------------------------------------------------------------------*/
 
 #pragma once

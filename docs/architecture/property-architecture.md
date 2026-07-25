@@ -48,7 +48,7 @@ it declares, verifies, and refuses (no silent crutch).
 |---|---|---|
 | `components/` | UNIFIED substance records (247, of which 64 carry solid phases): identity (name, MW, formula) **+ `dissociatesTo`/`speciesMap`** (ion stoichiometry = identity, not behaviour) **+ `solidPhases{}`** (dissolution reaction, Ksp = logK25 + ΔH + analytic(T), solid thermochemistry) **+ crystal/shape** (ρ_p, k_v). FLAT, O(1) by exact name | `[WORKS]` |
 | `species/<name>.dat` | one `recordType modelSpecies` file per aqueous species (`species/Na.dat`, `species/Cl.dat`, `species/O2.dat`, …): `formula` + charge + MW + `aqueousThermo{}` (hfAq/sAq/cpAq, Wagman 1982). "never fed to a flowsheet". `modelSpecies` covers BOTH charged ions AND neutral dissolved molecules (O₂(aq)/N₂(aq), charge 0 — `formula`, not `ion`); `ion`/`cation`/`anion` are reserved for charge ≠ 0. So a sealed case copies exactly the species it reaches. *(Dismantled 2026-07-18 from the earlier single `species/aqueous.dat` catalogue.)* | `[WORKS]` |
-| `chemistry/` | REAL equilibria (K + ΔH): `aqueousSpeciation/` (56), `gasLiquid/` (8, Henry), `ionExchange/` (6). *(`mineralSolubility/`, `salts/` and `phases/solid/` were RETIRED — minerals folded into `components/` `solidPhases{}`, one substance = one file.)* | `[WORKS]` |
+| `chemistry/` | REAL equilibria (K + ΔH), one FLAT record per species/complex (70 today: aqueous speciation incl. the full phosphate/carbonate ladders, HSO₄⁻, HF, NH₃, H₂S; dissolved-gas equilibria O₂/N₂/CH₄/H₂; ion-exchange `…X` records).  The tree is physically FLAT — the speciation/gas/exchange grouping is the record's `recordType`/content, not a directory.  *(`mineralSolubility/`, `salts/` and `phases/solid/` were RETIRED — minerals folded into `components/` `solidPhases{}`, one substance = one file.)* | `[WORKS]` |
 | `parameters/` | interaction parameters by PAIR (`Pitzer/` 55 pares +θ/ψ/λ/ζ, `eNRTL/`, `NRTL/ UNIQUAC/ Wilson/`, `Henry/` 205, `SRK/`) + group tables (`Joback.dat`, `UNIFAC/`, `vanKrevelen.dat`, `Yang2020.dat`) + `adsorption/` + `eos/kij` + `solution/` | `[WORKS]` |
 | `assets/` `mixtures/` `utilities/` | flat physical kit (membranes/adsorbents/materials, `kind`-tagged), predefined mixtures (air…), plant utility services | `[WORKS]` |
 | *(`methods/` RETIRED)* | the per-model `methods/<name>.dat` ceremony records were retired with the v2-native migration — a model's reference rung is now declared IN the case's `thermoPhysPropDict` (`equilibrium.<phase>.standardState`), read by the builder, not looked up from a data home | `[RETIRED]` |
@@ -146,6 +146,43 @@ selective + human.
 - **Elements datum** — all formation/reaction enthalpy on the elements-at-25 °C reference; reactions carry no separate ΔH_rxn.
 - **No silent crutch** — declare → verify → refuse; every convergence aid is explicit.
 - **Model boundary** — H is the conserved truth, T the model-dependent readout; audit at seams.
+
+## 6b. The consolidation programme (audited 2026-07-25; two independent AI
+## reviews converged — the plan of record until superseded)
+
+The audit's finding, corroborated independently: the missing piece is not a
+model, it is the CONTRACT between apparent components, model species, phase
+eligibility, reactions and phase models — the volatile weak acid (NH₃, acetic,
+phenol: ionises in the liquid AND transfers to the vapour) has no coherent
+representation because the `role` enum conflates three axes and the
+speciation world is separate from the ThermoPackage.  Programme, in order:
+
+1. **Spike NH₃/water** (`[ROADMAP]`, next): UNIT-LOCAL speciation — streams
+   stay on the flowsheet/component basis on disk (the stream-state
+   constitution is untouched); inside the unit the state speciates and
+   chemical + phase equilibrium + electroneutrality solve SIMULTANEOUSLY
+   (nested numerics allowed; the convergence criterion is joint).  Validation
+   seed: `absorber01_NH3_water` (today Henry-only, no ionisation).  Acetic
+   acid is spike #2 (adds Raoult-volatile transfer + VAPOUR-phase
+   dimerisation, deliberately kept out of the foundational spike).
+2. **Standard-state coherence gate**: declared convention ==
+   activity-model implementation == reaction-K basis (the verifyCal pattern
+   extended); the mechanical CONSUMPTION of the reference rung (Born term,
+   McMillan-Mayer↔Lewis-Randall conversions) stays `[ROADMAP]` behind the
+   mixed-solvent cases that need it.
+3. **Retire the `role` enum's architectural load** (after the spike proves
+   the shape): species identity × phase eligibility × representation basis ×
+   per-phase model × reaction/transfer constraints — never one stored word.
+4. Then the model additions on a stable base: Peneloux volume translation
+   (with derived-property tests), ONE EoS-G^E rule (MHV2 first;
+   Wong-Sandler/PSRK only against concrete cases), PC-SAFT association,
+   carboxylic vapour association.
+
+Deferred by DESIGN (kept out while the engine refuses loudly what it cannot
+represent): CPA (after PC-SAFT association, against a demonstrated case),
+general solid solutions (`gamma_S = 1` pure-crystal is declared, not
+implied), full polymer thermodynamics (the polycaprolactone case DECLARES
+its molecular-surrogate approximation), a catalogue of α(T)/Psat variants.
 
 ## 7. Conscious non-goals `[OUT]`
 

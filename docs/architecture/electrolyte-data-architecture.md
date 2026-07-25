@@ -127,7 +127,7 @@ reference rung.
 
 The central claim — *reference lives in the method, not the substance* — is put
 under load where a stream crosses a **model boundary inside a recycle**.
-`tutorials/steady/crystallisation/crystalliser09_dignified` does exactly that: an
+`tutorials/steady/crystallisation/crystalliser09_KHT_KCl_series` does exactly that: an
 antisolvent crystalliser on the **eNRTL** global package feeds a solvent-recovery
 distillation carrying its **own NRTL** model (per-unit `thermo{}` override), and
 the recovered ethanol recycles back through a Newton tear. The run prints the

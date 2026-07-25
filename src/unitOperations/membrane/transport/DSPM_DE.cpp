@@ -52,10 +52,10 @@ License
 #include "thermo/electrolyte/SpeciationSolver.H"
 #include "../osmotic/OsmoticModel.H"
 
-// The ion-transport tier (radius, D0) accessors + charge live in the electrochem
-// header (the only radius/D0 accessor in the tree).  This couples membrane ->
-// electrochem; noted in the final report.  Charges also via electrolyte::ionCharge.
-#include "unitOperations/electrochem/Electrochem.H"
+// The ion-transport tier (radius, D0) lives in the THERMO tier -- re-homed
+// 2026-07-25 from the electrochem header (that home coupled membrane ->
+// electrochem, an inversion).  Charges via electrolyte::ionCharge as before.
+#include "thermo/electrolyte/IonTransport.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 
 #include <algorithm>
@@ -225,10 +225,10 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         const scalar c_salt_bulk = c_b[s] * 1.0e3;      // kmol/m^3 -> mol/m^3
 
         Ion ic; ic.name = cat; ic.z = zc; ic.salt = s; ic.stoich = nu_c;
-        ic.r = electrochem::ionRadius(cat); ic.D = electrochem::ionD0(cat);
+        ic.r = electrolyte::ionRadius(cat); ic.D = electrolyte::ionD0(cat);
         ic.c_bulk = nu_c * c_salt_bulk;
         Ion ia; ia.name = an;  ia.z = za; ia.salt = s; ia.stoich = nu_a;
-        ia.r = electrochem::ionRadius(an);  ia.D = electrochem::ionD0(an);
+        ia.r = electrolyte::ionRadius(an);  ia.D = electrolyte::ionD0(an);
         ia.c_bulk = nu_a * c_salt_bulk;
         ions.push_back(ic); ions.push_back(ia);
     }

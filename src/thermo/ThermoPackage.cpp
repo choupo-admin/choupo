@@ -130,9 +130,8 @@ void ThermoPackage::assembleTwoPhase(const std::vector<std::string>& namesIn,
                                      const DictPtr& transportDict,
                                      const DictPtr& pureFluidsDict)
 {
-    // v2-NATIVE two-phase assembly (migration step 2): the same invariants
-    // readFromDict establishes for a (liquid, vapour) world, built straight
-    // straight from model config dicts.
+    // v2-NATIVE two-phase assembly: the (liquid, vapour) world invariants,
+    // built straight from the model-config dicts the builder prepared.
     if (namesIn.empty())
         throw std::runtime_error("thermophysicalPropertySystem: 'components'"
             " list is empty");
@@ -229,8 +228,8 @@ void ThermoPackage::assembleNamedPhases(const std::vector<std::string>& namesIn,
 void ThermoPackage::applySolution(const std::string& solvent,
                                   const std::vector<std::string>& solutes)
 {
-    // Shared by readFromDict and the v2-native assemblies (the ONE home for
-    // the dissolution wiring).  Assembly-level Henry solutes: each MUST have
+    // The ONE home for the dissolution wiring (called by the v2-native
+    // assemblies after the components are loaded).  Assembly-level Henry solutes: each MUST have
     // a pair file for the declared solvent -- an explicit request with
     // missing data is an ERROR, never a silent Raoult fallback.
     solventName_    = solvent;
@@ -292,9 +291,8 @@ void ThermoPackage::readTransportBlock(const DictPtr& td)
     //                 thermalConductivity { model Eucken; } ... }
     // The bare legacy `model Chung;` at transport level (gas viscosity
     // implied) stays ACCEPTED for old cases -- a degenerate form, like the
-    // flat thermoPackage itself.  Shared by readFromDict and the v2-native
-    // assembly (which maps the phase-structured authored form onto this
-    // canonical config first).
+    // flat pre-v2 grammar.  The v2-native assembly maps the phase-structured
+    // authored form onto this canonical config first.
     transport_ = td->found("viscosity")
                ? TransportModel::New(td->subDict("viscosity"))
                : TransportModel::New(td);
@@ -324,7 +322,7 @@ void ThermoPackage::readPureFluids(const DictPtr& pf)
     //   pureFluids { water { method IF97; } }
     // Attach a PureFluidModel to a named component by index.  The kernel
     // speaks per-mass, so hand it the component's MW [g/mol] to bridge.
-    // Shared by readFromDict and the v2-native assembly.
+    // Called by the v2-native assembly with the authored pureFluids{} block.
     for (const auto& key : pf->keys())
     {
         const std::size_t i = indexOf(key);   // throws if not a component

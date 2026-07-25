@@ -340,6 +340,28 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         scalar betaFinal; sVector xA, xB;
         unpack(bestV, betaFinal, xA, xB);
 
+        // ---- TPD on the CONVERGED phases (advisory, 2026-07-25) ----------
+        //  Multi-start minimisation reduces the local-minimum risk but does
+        //  not prove global stability; the honest closing act is to ask the
+        //  tangent-plane question OF THE ANSWER: is either product phase
+        //  itself unstable (a third phase thermodynamically favourable)?
+        //  ADVISORY posture (WARN, never refuse) until corpus evidence
+        //  justifies promotion -- the same warn-first path every new guard
+        //  has walked (bounds, utility-port cabling).
+        auto tpdAdvisory = [&](const char* nm, const sVector& xc)
+        {
+            auto st = solver::michelsenTPD(thermo.phase(phaseAlpha),
+                                           in.T, in.P, xc);
+            if (st.unstable)
+                std::cerr << "WARNING: LL flash: converged phase " << nm
+                          << " is TPD-unstable (tm = " << st.tmMin
+                          << ") -- a further split may be thermodynamically"
+                             " favourable; the reported 2-phase answer may be"
+                             " a local minimum.  Consider phaseSet VLLE.\n";
+        };
+        tpdAdvisory("L-alpha", xA);
+        tpdAdvisory("L-beta",  xB);
+
         sol.regime     = "two-phase liquid (LL via Gibbs minimisation)";
         sol.V_over_F   = betaFinal;
         sol.x          = xA;
