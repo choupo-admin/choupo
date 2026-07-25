@@ -404,7 +404,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     std::vector<std::string> scaleMinerals;
     bool   scalePHsolve = false;
     scalar scalePH      = 7.0;
-    std::unique_ptr<electrolyte::SpeciationSolver> specSolver;
+    const electrolyte::SpeciationSolver* specSolver = nullptr;
     std::vector<scalar> audRecovery, audI, audPH;            // per-module rows
     std::map<std::string, std::vector<scalar>> audSIbulk, audSIwall;
     // Industry calcite indices (LSI / Stiff-Davis / Ryznar), bulk + wall -- the
@@ -528,8 +528,9 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 " that computes no phase equilibrium still HAS an aqueous"
                 " solution).  No default is applied.");
 
-        specSolver = std::make_unique<electrolyte::SpeciationSolver>(
-            aqChem.activityModel);
+        // The package OWNS the speciation: one engine per case, built from the
+        // declared model.  This unit borrows it; it no longer builds one.
+        specSolver = &thermo.speciator();
 
         // Requested minerals must be in the catalogue ...
         for (const auto& m : scaleMinerals)
@@ -679,7 +680,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     {
         return membrane::TransportContext{ thermo, soluteIdx, B_s, mem.A_w(),
                                  k_film_local, P_b, P_perm, T_in, c_b,
-                                 *osmModel, &mem, specSolver.get() };
+                                 *osmModel, &mem, specSolver };
     };
     auto sol = transportModel->localFluxes(makeCtx(kFilmAt(Q_b)));
     recordNode(0, 0.0, sol.J_w);

@@ -70,6 +70,7 @@ Description
 #include "activityCoefficient/ActivityModel.H"
 #include "electrolyte/ElectrolyteModel.H"
 #include "electrolyte/ReactiveVLE.H"
+#include "electrolyte/SpeciationSolver.H"
 #include "core/Dictionary.H"
 #include "core/Types.H"
 #include "equationOfState/EquationOfState.H"
@@ -131,6 +132,7 @@ public:
             auditFindings_      = std::move(o.auditFindings_);
             reactive_           = std::move(o.reactive_);
             aqueous_            = std::move(o.aqueous_);
+            speciator_          = std::move(o.speciator_);
             for (auto& p : phases_) if (p) p->rebindComponents(&components_);
         }
         return *this;
@@ -388,6 +390,36 @@ public:
     { aqueous_ = std::move(a); aqueous_.declared = true; }
     const AqueousChemistry& aqueousChemistry() const { return aqueous_; }
 
+    //- THE aqueous speciation query.  The unit supplies the STATE it wants
+    //  speciated (totals, T, the pH closure, which admitted solids to index);
+    //  the PACKAGE supplies the model, because choosing one is not a unit's
+    //  business.  Every consumer -- membrane scaling, ion exchange, a report --
+    //  comes through here, so there is one speciation in a case, not one per
+    //  unit.  Refuses when the case declared no aqueous chemistry: a missing
+    //  declaration is an error to be fixed, never a default to be applied.
+    electrolyte::SpeciationResult
+    speciateAqueous(const electrolyte::SpeciationInput& in, int verbosity) const
+    {
+        return speciator().solve(in, verbosity);
+    }
+
+    //- The speciation engine itself, for the queries that are not one solve
+    //  (mineral molar masses, K(T) read-outs).  Same refusal, same single
+    //  source of the model.
+    const electrolyte::SpeciationSolver& speciator() const
+    {
+        if (!aqueous_.declared || aqueous_.activityModel.empty())
+            throw std::runtime_error("ThermoPackage::speciateAqueous refused:"
+                " this case declares no aqueous chemistry.  Add to"
+                " constant/thermoPhysPropDict:\n"
+                "    equilibrium { aqueous { activityModel { model davies; } } }\n"
+                "(independent of `formulation`).  No default is applied.");
+        if (!speciator_)
+            speciator_ = std::make_unique<electrolyte::SpeciationSolver>(
+                aqueous_.activityModel);
+        return *speciator_;
+    }
+
     // ---- Reactive equilibrium (unit-local speciation; section 6b) ---------
     //  Attached by the builder when the case declares the REACTIVE shape of
     //  electrolyteGammaPhi (aqueous speciation + volatile molecular species).
@@ -587,6 +619,10 @@ private:
     // package; the flash delegates to it when present).
     std::unique_ptr<electrolyte::ReactiveVLE> reactive_;
     AqueousChemistry                         aqueous_;
+    // Built on first use from the DECLARED model; mutable so a const
+    // query can materialise it without the case pre-paying for a
+    // speciation it may never ask for.
+    mutable std::unique_ptr<electrolyte::SpeciationSolver> speciator_;
 };
 
 } // namespace Choupo

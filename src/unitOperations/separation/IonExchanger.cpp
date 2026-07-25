@@ -188,7 +188,8 @@ int IonExchanger::solve(const DictPtr& dict,
             " constant/thermoPhysPropDict:\n"
             "    equilibrium { aqueous { activityModel { model davies; } } }\n"
             "No default is applied.");
-    electrolyte::SpeciationSolver solver(aqChem.activityModel);
+    // The package owns the engine; this unit borrows it.
+    const electrolyte::SpeciationSolver& solver = thermo.speciator();
     propertyOps::readExchange(wrap, in, solver, verbosity);
 
     // bedVolume : optional HARDWARE, the per-litre CEC nameplate then has a

@@ -54,9 +54,24 @@ bad, pending = [], []
 
 # ---- 1. unit-op source may not select a model ------------------------------
 for f in sorted(list(UNITS.rglob("*.cpp")) + list(UNITS.rglob("*.H"))):
+    inComment = False
     for i, line in enumerate(f.read_text(errors="replace").splitlines(), 1):
+        # Prose is not code: a class doc block or a refusal message may quote
+        # the very names this gate forbids, and must not trip it.
+        if inComment:
+            if "*/" in line: inComment = False
+            continue
+        if "/*" in line and "*/" not in line:
+            inComment = True
+            continue
         if line.lstrip().startswith("//"):
-            continue                      # a refusal message may quote them
+            continue
+        ls = line.lstrip()
+        if (ls.startswith("#include") or "SpeciationSolver::" in line
+                or "const electrolyte::SpeciationSolver" in line
+                or "SpeciationSolver*" in line
+                or "class SpeciationSolver;" in line):
+            continue          # an include, a static helper, or a BORROWED engine
         if CONSTRUCTS.search(line) and not SELECTS.search(line):
             pending.append(f"{f.relative_to(ROOT)}:{i}: constructs a"
                            f" SpeciationSolver from the DECLARED model -- legal,"
