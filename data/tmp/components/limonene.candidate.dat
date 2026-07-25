@@ -1,0 +1,193 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: limonene  (C10H16, CAS 5989-27-5)
+  D-limonene -- bio-based citrus terpene solvent (green extraction).  Curated
+  for the VLE / distillation leg, not the membrane-solute leg.
+
+  IDENTITY source: PubChem CID 440917 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 5989-27-5 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  No aqueous
+    diffusion / partition / solubility / speciation datum was ever staged for
+    this compound, so nothing was re-homed out of it in phase 2 -- but the
+    COSMO material was, and every value below now carries unit, state, origin
+    and citation instead of living in prose.
+
+  STATUS: candidate.  Not promotable: Tc / Pc / omega absent, the boiling point
+    is a database AGGREGATE with no primary, and the stored HvapTb was a
+    MISLABELLING (see below).
+\*---------------------------------------------------------------------------*/
+
+name              limonene;
+formula           C10H16;
+CAS               5989-27-5;
+SMILES            "CC1=CCC(CC1)C(=C)C";
+InChIKey          "XMGQYMWWDOXHJM-JTQLQIEISA-N";   // full key, R-(+)-limonene.
+                                    //   NOTE the stereo layer: the identity
+                                    //   staged as "D-limonene" is ONE enantiomer;
+                                    //   the racemate (dipentene) is a different
+                                    //   substance for any chiral property.
+MW                136.234;          // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `volatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            volatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+                                    //   file does NOT have -- see the gaps.
+
+// groups: NOT decomposed.  Joback handling is IMPERFECT here (monocyclic ring
+//   alkene + exocyclic isopropenyl); proposing a decomposition would produce a
+//   silently-wrong estimate.  Declared gap, not an empty promise.
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+// Tb -- DROPPED 2026-07-24 (rights clearance).  The stored 450.0 K was a NIST
+//   WebBook average of 18 values: the aggregator's ARRANGEMENT, from a no-grant
+//   source excluded by CLAUDE.md section 10.  Unlike alphaPinene and nPropanol,
+//   this file carries NO vapour-pressure correlation, so Tb cannot be derived from
+//   a primary already in hand.  The number is therefore deleted, not re-routed.
+boilingPointStatus
+{
+    property      Tb;
+    available     none;
+    status        flagged;
+    blockedBy     "NIST WebBook average of 18 values -- aggregator arrangement, no-grant";
+    action        "stage a vapour-pressure primary for D-limonene (Steele, Chirico et al.,
+                   J. Chem. Eng. Data 47 (2002) 689 measured it -- the same paper behind
+                   the vaporizationEnthalpy table below) and DERIVE Tb at 1.01325 bar,
+                   exactly as nPropanol and alphaPinene now do";
+    droppedValue  "450.0 K";
+    consequence   "role volatile is declared but neither a vapour pressure nor a Tb is
+                   now carried -- this file cannot support a VLE calculation, which the
+                   header already states";
+}
+
+Vliq              1.620e-4; // m3/mol, LIQUID at 293 K = MW/rho with
+                            //   rho = 841.1 kg/m3 (0.8411 g/cm3 @20 degC,
+                            //   D-limonene).  [PubChem CID 440917 experimental
+                            //   density; US NIH, public domain]
+
+standardThermochemistry
+{
+    // *** DEFECT FIXED HERE. ***  The file previously stored an IDEAL-GAS
+    // dHf_298 of -5.0 kJ/mol that was DERIVED on the spot (liquid datum plus a
+    // vaporisation enthalpy).  A derivative is never stored beside its inputs
+    // (RECORD_SPEC.md: trees never store derivatives), so the LIQUID datum --
+    // the thing that was actually measured -- is what is kept, on its own rung.
+    dHf_298         -54520.0;   // J/mol, PURE LIQUID at 298.15 K, combustion
+                                //   calorimetry.  FULL CITATION RESOLVED 2026-07-25:
+                                //   Hawkins, J.E. & Eriksen, W.T., "Physical and
+                                //   thermodynamic properties of terpenes. II. The
+                                //   heats of combustion of some terpene hydro-
+                                //   carbons", J. Am. Chem. Soc. 76 (1954) 2669-2676,
+                                //   via the Cox & Pilcher (1970) reanalysis; dHf(liq)
+                                //   recomputed by NIST without Washburn correction.
+                                //   origin derived (from the combustion primary).
+    referenceState  pureLiquid;
+    // s_298: DECLARED GAP -- no open third-law entropy located.  This block is
+    //   therefore INCOMPLETE and NOT loadable as-is (the engine requires s_298);
+    //   that is deliberate honesty, not an oversight.
+}
+
+// dvapH(T) -- a TABLE, not a single at-Tb value.  Kept structured because it is
+// usable science and may not live in a comment.
+vaporizationEnthalpy
+{
+    model     tabulated;
+    unit      "J/mol";
+    points
+    (
+        ( 298.0  49500 )
+        ( 350.0  46100 )
+        ( 390.0  43500 )
+        ( 430.0  40900 )
+        ( 470.0  37900 )
+    );
+    source    "Steele, Chirico et al., J. Chem. Eng. Data 47 (2002) 689 (PAYWALLED
+               PRIMARY RESEARCH PAPER); the 298 K point (49.5 kJ/mol) is Clara, R.A.;
+               Marigliano, A.C.G. & Solimo, H.N., J. Chem. Eng. Data 54(3) (2009)
+               1087-1090 -- full citation resolved 2026-07-25 via the NIST entry";
+    licence   "facts, primary-cited";
+    status    flagged;
+    reclassified "RIGHTS CLEARANCE 2026-07-24 -- rightsPending -> flagged.  The status
+                  was a MISCLASSIFICATION: rightsPending is for values that reach us
+                  through a paywalled COMPILATION or database (Merck Index, CRC,
+                  e-Pesticide Manual, LOGKOW, NIST WebBook averages).  Steele, Chirico
+                  et al. (2002) is a primary research paper, and this corpus already
+                  carries other paywalled-primary values as candidate (e.g. urea's
+                  Kabo 1990 dHf, mannitol's Xu 2010 fusion).  Paywalled != not
+                  redistributable: the FACTS are re-citable to their measurement report.
+                  Five points read from one paper is not systematic database extraction.";
+    residualDefect "status stays FLAGGED, not candidate, because the 298 K point is
+                    attributed to a different source (Clara et al. 2009) whose full
+                    citation was never resolved -- so the five points are not one
+                    self-consistent data set with one provenance."
+}
+
+// HvapTb -- REMOVED (defect).  The file previously stored HvapTb = 40 900 J/mol.
+//   That is the 430 K point of the table above, NOT a value at Tb = 450 K: no
+//   measurement at Tb exists, and the two bracketing points (40.9 kJ/mol at
+//   430 K, 37.9 at 470 K) were being silently collapsed onto the wrong
+//   temperature.  Interpolating them now would be inventing a datum.
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// Tc / Pc / omega        : primary is Steele, Chirico et al., JCED 47 (2002) 689
+//                          (paywalled).  Not fabricated, not estimated -- Joback
+//                          is weak on ring-enes for exactly this skeleton.
+// vaporPressure (Antoine): not on any open source; Steele (2002) measured it.
+//                          Without it, `role volatile` cannot be honoured.
+// idealGasHeatCapacity   : none located.
+//
+// COSMO-SAC -- NO `cosmo {}` BLOCK, FOR TWO INDEPENDENT REASONS.
+//   (1) PROTOCOL.  evidence/lvpp-limonene (recordId lvpp-limonene) holds the
+//       LVPP cavity descriptors as EVIDENCE only: the LVPP QM protocol is
+//       incompatible with Choupo's VT-2005 `cosmoSAC2002` sets -- measured on
+//       the one compound present in both databases, ethylene: +6.1 % cavity
+//       area, +10.3 % cavity volume.  Area, volume AND the sigma profile all
+//       depend on the protocol, so no mixed paste is legitimate.
+//   (2) IDENTITY, UNRESOLVED.  LVPP ships TWO limonene records that are not
+//       consistent with each other: LIMONENE.cosmo (1433 segments, full-atom,
+//       the one the evidence record points at) and D-LIMONENE.cosmo, a LEGACY
+//       record with 629 segments and a heavy-atom-only coordinate block.  Which
+//       one represents the substance in this file has NOT been decided, and a
+//       legacy record must never be mixed into a release-v25 set.  Until a
+//       curator picks one, limonene has no COSMO identity at all.
+// PC-SAFT -- no widely-adopted published limonene set located; non-associating,
+//   so a fit would be tractable, but no fit has been done and none is invented
+//   (parameters/PCSAFT/_INVENTORY.md, section 3).
+
+provenance
+{
+    Tb
+    {
+        origin      unattributed;
+        citation    "NIST WebBook aggregate of 18 values -- NOT a primary; NIST SRD/WebBook is a no-grant source excluded by CLAUDE.md section 10";
+        status      flagged;
+    }
+    Vliq
+    {
+        origin      derived;
+        method      "MW / rho, rho = 841.1 kg/m3 at 20 degC (liquid)";
+        citation    "PubChem CID 440917 experimental density (US NIH, public domain)";
+        note        "density at 20 degC, not 25 degC";
+        status      candidate;
+    }
+    standardThermochemistry
+    {
+        origin      derived;
+        citation    "Hawkins & Eriksen, J. Am. Chem. Soc. 76 (1954) 2669-2676 (combustion), Cox & Pilcher (1970) reanalysis";
+        note        "dHf(liq) = -54.52 kJ/mol, pure-liquid rung; s_298 missing so block incomplete";
+        status      flagged;
+    }
+}

@@ -1,0 +1,205 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: urea  (CH4N2O, CAS 57-13-6)
+  PRIVATE staging tier (data/tmp/, gitignored).  The runtime does NOT read it.
+
+  ARITY-1 ONLY (phase 3, 2026-07-24).  Intrinsic pure-compound data only:
+  identity, role, dissociation, solid-rung thermochemistry, phase-declared Cp,
+  crystal density and the pure-solid molar volume derived from it.  logKow,
+  aqueous solubility and D_aq are SYSTEM properties and have been MOVED; they
+  are referenced by POINTER below.  Envelope: ../RECORD_SPEC.md.
+\*---------------------------------------------------------------------------*/
+
+name           urea;
+formula        CH4N2O;
+CAS            57-13-6;
+InChIKey       XSQUKJJJFZCRTK-UHFFFAOYSA-N;
+pubchemCID     1176;
+MW             60.056;            // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;                 // non-electrolyte, no ionizable group; van't Hoff i = 1
+
+identityProvenance
+{
+    source      "PubChem CID 1176 (US NIH, public domain), PUG-REST";
+    licence     "public-domain fact";
+    curator     "agent:components";
+    retrieved   2026-07-24;
+    status      candidate;
+}
+
+// Solid rung: urea decomposes before it vaporises, so pureSolid is the only
+// physical reference state for it.
+standardThermochemistry
+{
+    phase            solid;            // crystalline
+    referenceState   pureSolid;
+    dHf_298          -333110.0;        // J/mol
+    s_298            104.26;           // J/(mol K)
+
+    provenance
+    {
+        dHf_298
+        {
+            unit        "J/mol";
+            phase       solid;
+            origin      measured;
+            uncertainty "+/- 690 J/mol (+/- 0.69 kJ/mol) as reported";
+            citation    "Kabo, Miroshnichenko et al., combustion calorimetry (1990)";
+            route       "located through the NIST WebBook condensed-phase free view (ID=C57136, Mask=2), used only as a finding aid -- a no-grant compilation, the value is re-cited to the primary";
+            licence     "facts, primary-cited";
+            status      candidate;
+        }
+        s_298
+        {
+            unit        "J/(mol K)";
+            phase       solid;
+            origin      measured;
+            citation    "Andersson, Matsuo et al., adiabatic calorimetry 15-310 K (1993)";
+            route       "same NIST WebBook condensed-phase page, re-cited to the primary";
+            licence     "facts, primary-cited";
+            status      candidate;
+        }
+    }
+}
+
+solidHeatCapacity
+{
+    phase         solid;
+    model         polynomial;         // constant-Cp near ambient
+    coefficients  ( 92.79 );          // Cp(298.15) J/(mol K)
+    Trange        ( 280 320 );        // K
+
+    provenance
+    {
+        unit        "J/(mol K)";
+        phase       solid;
+        origin      measured;
+        citation    "Andersson, Matsuo et al., adiabatic calorimetry 15-310 K (1993)";
+        route       "NIST WebBook condensed-phase page (ID=C57136, Mask=2), re-cited to the primary";
+        licence     "facts, primary-cited";
+        status      candidate;
+    }
+}
+
+// Pure-component (arity-1) volumetrics of the CRYSTAL.  This is NOT the partial
+// molar volume in water and NOT the Le Bas volume used in Wilke-Chang.
+// RIGHTS CLEARANCE 2026-07-24 -- action: DROP.  1.3230 g/cm3 came ONLY from the CRC
+// Handbook, a no-grant all-rights-reserved compilation.  Public-domain routes were
+// checked and they do NOT confirm that digit: NOAA CAMEO Chemicals (US federal, public
+// domain) gives specific gravity 1.34 at 68 F (USCG 1999) and a description density of
+// 1.335 g/cc with no temperature -- ~1 % away and less precise.  Replacing a 4-digit
+// number by a 3-digit hazmat figure would be a downgrade dressed as a fix, so the
+// number is DELETED and the open cross-checks are kept below, clearly attributed.
+solidDensity
+{
+    phase         solid;              // crystalline
+    available     none;               // DROPPED
+    status        flagged;
+    blockedBy     "CRC Handbook of Chemistry and Physics -- no-grant, all-rights-reserved
+                   compilation (CLAUDE.md excludes it outright)";
+    action        "DERIVE rho from a published room-temperature single-crystal cell of
+                   urea (tetragonal P-42_1m, Z = 2): rho = Z*MW/(N_A*a^2*c).  Primaries
+                   to read: Vaughan, P. & Donohue, J., Acta Cryst. 5 (1952) 530-535;
+                   Worsham, Levy & Peterson, Acta Cryst. 10 (1957) 319 (neutron);
+                   Swaminathan, Craven & McMullan, Acta Cryst. B40 (1984) 300-306 gives
+                   12/60/123 K neutron cells (LOW temperature -- do not use them for a
+                   293 K density without saying so).  Record the cell parameters and the
+                   arithmetic in a derivation{} block, per RECORD_SPEC.";
+    droppedValue  "1.3230 g/cm3 at 293.15 K (audit trail only, not for re-use)";
+
+    crossCheck    // legally clean, quoted, NEVER merged and NEVER the datum
+    {
+        alt1
+        {
+            value      1.34;          // specific gravity at 68 F (20 C)
+            citation   "NOAA CAMEO Chemicals, UREA datasheet, attributed to USCG 1999";
+            licence    "PUBLIC DOMAIN (US federal government)";
+        }
+        alt2
+        {
+            value      1.335;         // g/cc, no temperature stated
+            citation   "NOAA CAMEO Chemicals, UREA general description";
+            licence    "PUBLIC DOMAIN (US federal government)";
+        }
+        alt3
+        {
+            value      1.33;          // D(meas) 1.33(1) and D(calc) 1.33, NATURAL urea
+            citation   "Bridge, P.J., 'Urea, a new mineral, and neotype phosphammite from
+                        Western Australia', Mineral. Mag. 39 (1973) 346-348 -- read via a
+                        mineralogy handbook entry, NOT at the primary";
+            caveat     "a natural mineral specimen (~96 % urea), not a pure laboratory
+                        crystal";
+        }
+    }
+}
+
+solidMolarVolume
+{
+    phase         solid;
+    available     none;               // DROPPED -- it was V = MW/rho on the dropped rho
+    status        flagged;
+    blockedBy     "derived from the dropped solidDensity above";
+    action        "recompute as V = MW / rho once a legally clear rho exists";
+    droppedValue  "4.539e-5 m3/mol (45.39 cm3/mol), from MW 60.056 and rho 1.3230 g/cm3";
+}
+
+groups
+{
+    joback  none;
+    reason  "the di-amide carbonyl has no clean first-order Joback fit; nonvolatile, no VLE estimate wanted";
+    status  flagged;
+}
+
+cosmo
+{
+    LVPP_B3LYP_def2SVPD
+    {
+        variant       lvppB3LYP_def2SVPD;   // NOT cosmoSAC2002 -- no matching runtime constants
+        source        "LVPP sigma database (github lvpp/sigma, MIT, DOI 10.5281/zenodo.3613785; Ferrarini et al., AIChE J. 64 (2018) 3443)";
+        evidenceId    "evidence/lvpp-urea/metadata.dat (recordId lvpp-urea)";
+        area          notCopied;      // stays in the evidence record
+        volume        notCopied;
+        sigmaProfile  notCopied;
+        status        flagged;
+        reason        "LVPP QM protocol is incompatible with Choupo's VT-2005 cosmoSAC2002 sets; measured on ethylene (present in both): +6.1 % cavity area, +10.3 % cavity volume.  Do NOT tag an LVPP profile as cosmoSAC2002.";
+    }
+    VT2005
+    {
+        variant       cosmoSAC2002;
+        available     none;           // no VT-2005 entry for urea in the Choupo standards
+        status        flagged;
+    }
+}
+
+pcSaft
+{
+    available     none;
+    status        flagged;
+    reason        "no pure-component parameter set located from an open primary; not fabricated.  Any kij would live in parameters/PCSAFT/, never here.";
+}
+
+// --- MOVED OUT (arity >= 2 / state-dependent) -- POINTERS ONLY, no values ---
+references
+{
+    aqueousDiffusion    "parameters/transport/diffusion/urea-water.candidate.dat (recordId diffusion-urea-water)";
+    partitionOctanolWater "parameters/partition/urea-octanol-water.candidate.dat (recordId urea-octanol-water)";
+    aqueousSolubility   "parameters/solubility/urea-water.candidate.dat (recordId urea-water)";
+    chargeAtPH7         "DELETED as DERIVED -- urea has no ionizable group near neutral pH; 'charge 0' is a consequence, not a stored datum";
+    cosmoSurface        "evidence/lvpp-urea/metadata.dat (recordId lvpp-urea)";
+}
+
+applicationNote "the textbook LOW-rejection neutral in RO: rejection is governed by solute-water-membrane hydrogen bonding, NOT by size exclusion -- urea is smaller than well-rejected hydrated ions.  Pairs with NDMA as the 'ones RO does not reject' teaching set.";

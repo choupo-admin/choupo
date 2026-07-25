@@ -1,0 +1,99 @@
+// data/tmp/parameters/volume/trehalose-water.candidate.dat
+// PRIVATE staging tier (data/tmp, gitignored).  Envelope: ../../RECORD_SPEC.md.
+// Emitted 2026-07-24 (phase 3) out of components/trehalose.candidate.dat (`Vliq`).
+// An apparent/partial molar volume at infinite dilution is arity 2.
+
+recordType      partialMolarVolume;
+schemaVersion   1;
+recordId        volume-trehalose-water;
+participants    ( trehalose water );
+property        apparentMolarVolumeAtInfiniteDilution;
+
+conditions
+{
+    temperature   298.15 K;            // as carried; the source's T is NOT verified
+    pressure      101325 Pa;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    V0            207.6 cm3/mol;       // = 2.076e-4 m3/mol
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Banipal et al., disaccharide partial-molar-volume studies --
+                 CITATION UNRESOLVED: no journal, volume, year or pages was ever
+                 recorded for this value in the staging ledgers";
+    doi         "-";
+    licence     "facts, primary-cited (citation incomplete)";
+    evidenceId  -;
+    curator     "agent:components-sugars";
+    retrieved   2026-07-24;
+}
+
+crossCheck      "sucrose V0 = 211.5 cm3/mol; lactose 209.1 -- the three isomeric
+                 disaccharides span only 4 cm3/mol, as expected";
+
+hydrationCaution
+    "The component declares the ANHYDROUS crystal while the solid in equilibrium
+    with water at 25 C is the dihydrate.  The dissolved-solute V0 is independent
+    of that choice, but do not pair it with a solid volume without saying which
+    solid.";
+
+// PHASE 6 (2026-07-24) -- the author-only citation was RESOLVED bibliographically.
+// This is an IDENTIFICATION, not a verification: the paper was not obtained and
+// the digit above has NOT been checked against its table.  Status stays flagged.
+pendingPrimary
+{
+    citation      "Banipal, P. K.; Banipal, T. S.; Lark, B. S.; Ahluwalia, J. C.,
+                   'Partial molar heat capacities and volumes of some mono-, di- and
+                   tri-saccharides in water at 298.15, 308.15 and 318.15 K',
+                   J. Chem. Soc., Faraday Trans. 93 (1997) 81-87";
+    doi           "10.1039/a604656h";
+    howResolved   "Crossref bibliographic search on the only fragment the staging tree
+                   carried ('Banipal ... disaccharide partial molar volumes'); it is the
+                   single Banipal saccharide-volume paper whose title, scope (mono-, di-
+                   and tri-saccharides in WATER, not in a co-solvent) and temperature set
+                   match this record.  The two sibling Banipal papers found alongside it
+                   are TRANSFER volumes into aqueous urea (J. Chem. Thermodyn. 32 (2000)
+                   1409) and into aqueous NaCl (34 (2002) 1825) - neither is a
+                   water-only V0 and neither can be this source.";
+    whyItFits     "the record's temperature, 298.15 K, was carried in phase 3 WITHOUT a
+                   source stating it; 298.15/308.15/318.15 K is exactly this paper's
+                   temperature set, which independently explains where the 298.15 K came
+                   from and makes the identification self-consistent";
+    access        "Royal Society of Chemistry, closed; Unpaywall is_oa = false
+                   (checked 2026-07-24).  No repository copy.";
+    action        "obtain the article (inter-library loan) and CONFIRM the V0 digit and
+                   the temperature against its table before the citation above is written
+                   into provenance{} or the record is promoted.  If the digit does not
+                   match, the number in this file has no known source at all and must be
+                   deleted with a structured absence, exactly as phase D deleted the 48
+                   unsupported numbers - do NOT quietly re-point it at whatever value the
+                   paper does report.";
+}
+
+// PHASE 7 (2026-07-25) -- retrieval ATTEMPTED, source UNREACHABLE.
+// Identification is not verification: phase 6 named the paper, phase 7 tried to
+// OBTAIN it and read the digit.  It could not.
+phase7Retrieval
+{
+    attempted     2026-07-25;
+    doi           "10.1039/a604656h";
+    outcome       "UNREADABLE -- V0 digit NOT confirmed";
+    detail        "Royal Society of Chemistry (pubs.rsc.org) returned HTTP 403 Forbidden;
+                   Unpaywall is_oa = false with NO OA location; Europe PMC has no record;
+                   Semantic Scholar reports no open PDF; the Internet Archive / fatcat
+                   hosts were unreachable from this environment.  The paper's own table was
+                   therefore never read and 207.6 cm3/mol remains UNVERIFIED against it.";
+    ruling        "record stays flagged.  The number is NEITHER promoted NOR deleted:
+                   deletion is reserved for a value that a READ primary DISAGREES with, and
+                   no disagreement can be established without the text.  DOI retained for a
+                   future retrieval through journal access (inter-library loan).";
+}
+
+status          flagged;               // unresolved citation (author-only)

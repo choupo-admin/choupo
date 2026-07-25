@@ -1,0 +1,104 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of diclofenac in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/diclofenac.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT then: solid phase NOT ESTABLISHED.
+
+  PHASE 6 (2026-07-24, agent:solubility) -- the SOLID PHASE is now established
+  by INFERENCE from a phase-characterised solubility study of the same
+  substance: crystals of the diclofenac ACID are anhydrous.  The digit in
+  this record comes from a different, unphase-characterised determination, so
+  it is not promoted.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        diclofenac-water;
+participants    ( diclofenac water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    diclofenacAcidAnhydrous;
+    phaseBasis    inferredFromPhaseStability;
+}
+
+// PHASE 4 search: no phase-identified determination located.  The SALT
+// FORM is settled and is not the marketed one -- this is the free acid,
+// not diclofenac sodium (a different substance, a different SLE, orders
+// of magnitude more soluble).  Diclofenac sodium is additionally known
+// to exist as several hydrates.
+//
+// PHASE 6 -- THE HYDRATION STATE OF THE ACID IS NOW PINNED.
+// Llinas, Burley, Box, Glen & Goodman (J. Med. Chem. 50 (2007) 979-983)
+// measured the aqueous solubility of diclofenac while characterising every
+// solid they used by thermogravimetric analysis, DSC and X-ray diffraction,
+// and state, verbatim:
+//
+//   "The commercially available form of diclofenac is the anhydrous sodium
+//    salt.  This was recrystallized from ethanol and precipitated as a
+//    hydrate containing four diclofenac anions, four sodium cations, and
+//    nineteen water molecules per unit cell. ... Crystals of the acid form
+//    of diclofenac were anhydrous and corresponded to an earlier crystal
+//    structure.  Separate solubility measurements on all three of these
+//    solid forms of diclofenac gave consistent results for the intrinsic
+//    solubility."
+//
+// So the acid -- the substance THIS record is about -- crystallises
+// anhydrous, and its hydration state is not the free variable that the
+// sodium salt's is.  Because that statement belongs to a DIFFERENT
+// determination from the digit recorded below (Fini et al. 1986, which
+// characterises nothing), the tier is `inferredFromPhaseStability` and the
+// digit is NOT promoted.
+//
+// STILL OPEN: three anhydrous crystal modifications of the free acid are
+// described in the literature (two monoclinic, one orthorhombic); nothing
+// read here says which of them Llinas et al. -- let alone Fini et al. --
+// had.  So "anhydrous" is pinned; "which anhydrate" is not.
+//
+// AND THE OBVIOUS NEXT MOVE: that same paper reports an intrinsic solubility
+// supported by three independent procedures on rigorously characterised
+// solids, and observes that published aqueous solubilities of diclofenac
+// span a factor of 100 with theirs at the low end.  Its digit could not be
+// read in phase 6 (the full text was not retrievable), so it is NOT recorded
+// as an alternative determination -- writing a number one has not read would
+// be invention.  See `nextStep`.
+value
+{
+    solubility    2.37 mg/L;
+    originalStatement  "2.37 mg/L @ 25 C, neutral acid";   // verbatim, before conversion
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Fini, A. et al. (1986); via PubChem HSDB";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Llinas, A., Burley, J.C., Box, K.J., Glen, R.C. & Goodman, J.M., Diclofenac Solubility: Independent Determination of the Intrinsic Solubility of Three Crystal Forms, J. Med. Chem. 50 (2007) 979-983";
+    doi         "10.1021/jm0612970";
+    basis       "solid forms characterised by TGA, DSC and X-ray diffraction; 'Crystals of the acid form of diclofenac were anhydrous and corresponded to an earlier crystal structure'.  Read from the article abstract; the full text was not retrievable in phase 6";
+}
+
+nextStep        "read Llinas et al. 2007 in full and record its intrinsic-solubility digit for the ANHYDROUS ACID as a phase-stated determination.  If it is read, this record can be re-headlined on a `statedBySource` basis and the Fini et al. 1986 value demoted to an alternative -- the paper itself notes that literature diclofenac solubilities span a factor of 100 and that theirs sits at the low end, so the swap would be a real numeric change and must be announced";
+
+blockedBy       "the phase is INFERRED (the anhydrous-acid statement belongs to Llinas et al. 2007, not to the Fini et al. 1986 determination recorded above), so by rule it cannot promote the digit; and WHICH of the three known anhydrous acid modifications was equilibrated is stated by nobody";
+status          flagged;

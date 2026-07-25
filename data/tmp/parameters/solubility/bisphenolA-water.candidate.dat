@@ -1,0 +1,77 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of bisphenol A in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/bisphenolA.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: good measuring primary; solid phase still NOT ESTABLISHED.
+  A 2.5x internal HSDB disagreement kept, not merged.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        bisphenolA-water;
+participants    ( bisphenolA water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25.0 +/- 0.5 C as stated by the primary
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    unspecified;
+    phaseBasis    notEstablished;
+}
+
+// PHASE 4 verification of the primary.  The article's own description of
+// the experiment was re-read: concentrations by HPLC after equilibration
+// with EXCESS SOLID for 4 days at 25.0 +/- 0.5 C, six replicates per
+// solute-solvent pair, CV < 5% in most cases; solubilities also measured
+// at pH 4 and pH 10 and in aqueous KNO3.  It says "excess solid" and
+// NOTHING about which crystalline form that solid was -- no PXRD, no
+// hydrate/anhydrate statement, no supplier form.  The primary is sound
+// on everything EXCEPT the identity of the equilibrating solid, which is
+// precisely what this family needs.  Recorded as a structured gap.
+// PHASE 4 caveat on this particular digit: the article abstract quotes
+// the three estrogen values explicitly; the bisphenol A figure carried
+// here (300 +/- 5 mg/L) comes from the same table but was NOT re-read
+// digit-by-digit in phase 4.  It is corroborated independently by HSDB
+// at 300 mg/L @ 25 C.
+value
+{
+    solubility    300 mg/L;
+    uncertainty   5 mg/L;   // as reported by the primary
+    originalStatement  "300 +/- 5 mg/L @ 25 C";   // verbatim
+}
+
+alternativeDeterminations
+{
+    hsdbLow
+    {
+        solubility    120 mg/L;
+        conditions    { solidPhase unspecified; phaseBasis notEstablished; }
+        origin        measured;
+        citation      "HSDB (US NLM, public domain)";
+        note          "2.5x below the primary, and internal to HSDB, which also carries 300 mg/L @ 25 C";
+    }
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Shareef, A., Angove, M.J., Wells, J.D. & Johnson, B.B., Aqueous Solubilities of Estrone, 17beta-Estradiol, 17alpha-Ethynylestradiol and Bisphenol A, J. Chem. Eng. Data 51 (2006) 879-881 (PRIMARY, pure water, 25.0 +/- 0.5 C)";
+    doi         "10.1021/je050318c";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+blockedBy       "no source states the equilibrating solid phase; the bisphenol A digit was not re-read from the primary in phase 4";
+status          flagged;

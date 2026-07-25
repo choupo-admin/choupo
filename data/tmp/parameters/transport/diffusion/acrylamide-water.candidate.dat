@@ -1,0 +1,76 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/acrylamide.candidate.dat; primary citation
+  cross-checked against data/tmp/pesticides_smallsolutes_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-acrylamide-water;
+participants    ( acrylamide water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             1.06e-9 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// how THIS value was obtained (glass-box; inputs stated in full)
+derivation
+{
+    method                 "order-of-magnitude literature value; no correlation, no primary";
+    origin                 estimated;
+}
+
+flagged
+{
+    reason        "ORDER-OF-MAGNITUDE ONLY - no primary source, no method; the weakest datum in this set";
+    route         "fill from a primary aqueous-diffusion study before any use";
+    action        "PHASE-6 SEARCH (2026-07-24) found no open measured primary. This record is
+                  the weakest in the directory: no primary, no correlation, NO METHOD AT ALL -
+                  it is a bare order of magnitude and cannot be used, cross-checked or
+                  corrected.  Two acceptable exits, in order: (1) transcribe a real
+                  determination - acrylamide is small, neutral and highly water-soluble, so a
+                  diaphragm-cell or Taylor-dispersion value is likely to exist in the
+                  polymerisation-kinetics or food-safety (acrylamide-in-food migration)
+                  literature; search on the compound plus 'diaphragm cell', 'Taylor
+                  dispersion' or 'DOSY' rather than on membrane papers; (2) failing that,
+                  REPLACE the bare number with an honest Hayduk-Laudie or Wilke-Chang estimate
+                  from a stated LE BAS volume - an estimate with a declared method and inputs
+                  is strictly better than a number with none.  Never promote as is.";
+}
+
+provenance
+{
+    origin        estimated;
+    citation      "literature order-of-magnitude only; NO primary pinned at curation";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          flagged;

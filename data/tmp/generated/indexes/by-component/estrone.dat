@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'estrone'
+component estrone;
+records
+(
+    { recordType acidDissociation; recordId estrone-pKa1; category flagged; file "chemistry/aqueousSpeciation/estrone-pKa1.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-estrone; category flagged; file "evidence/lvpp-estrone/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-estrone-water; category flagged; file "parameters/transport/diffusion/estrone-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId estrone-octanol-water; category rightsPending; file "parameters/partition/estrone-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId estrone-water; category flagged; file "parameters/solubility/estrone-water.candidate.dat"; }
+);

@@ -1,0 +1,156 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: gammaValerolactone  (GVL, C5H8O2, CAS 108-29-2)
+  Renewable green solvent and fuel component made from levulinic acid.  Curated
+  for the VLE / distillation leg.
+
+  IDENTITY source: PubChem CID 7921 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 108-29-2 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  No aqueous
+    diffusion / partition / solubility / speciation datum was ever staged, so
+    nothing was re-homed out of it in phase 2 -- but the COSMO material was.
+
+  STATUS: candidate.  Antoine + Tb + Vliq usable; dHf(liq) now primary-cited
+    (Leitao et al. 1990, s_298 still missing); the stored HvapTb was a
+    MISLABELLING (see below); Tc / Pc / omega / Cp absent.
+\*---------------------------------------------------------------------------*/
+
+name              gammaValerolactone;
+formula           C5H8O2;
+CAS               108-29-2;
+SMILES            "CC1CCC(=O)O1";
+InChIKey  GAEKPEKOJKCEMS-UHFFFAOYSA-N;   // 14-char skeleton only; GVL is chiral and
+                                    //   the stereo layer was not staged.
+MW                100.117;          // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `volatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            volatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "normal boiling point present in this file -- the compound IS volatile";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+// groups: NOT decomposed.  Joback handling is IMPERFECT here -- its ester group
+//   is NON-RING only and there is no lactone group at all.  Declared gap.
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+Tb                480.7;    // K, normal boiling point.  [FLAG -- VENDOR SOURCE]
+                            //   The NIST WebBook entry attributes this to the
+                            //   Aldrich catalogue (1990).  A vendor catalogue is
+                            //   not a measurement report; kept, but not citable
+                            //   as a primary.  It IS corroborated in-file: the
+                            //   Antoine set below is stated valid to 481 K.
+
+Vliq              9.52e-5;  // m3/mol, LIQUID at 293 K = MW/rho with
+                            //   rho = 1051.8 kg/m3 (1.0518 g/cm3 @20 degC).
+                            //   [PubChem CID 7921 experimental density; US NIH,
+                            //   public domain]
+
+vaporPressure
+{
+    model         Antoine;     // log10(P/bar) = A - B/(T + C)
+    coefficients  (3.48604   1315.022   -105.793);
+    Trange        (311  481);  // K
+    // [Stull, D.R., "Vapor Pressure of Pure Substances. Organic and Inorganic
+    //  Compounds", Ind. Eng. Chem. 39(4) (1947) 517-540 -- the primary underlying
+    //  the NIST WebBook entry (coefficients fitted by NIST from Stull's data).
+    //  Re-cited to the primary, not to the compilation.]
+}
+
+// dvapH over a stated window -- NOT a value at Tb.  Kept structured because it
+// is usable science and may not live in a comment.
+vaporizationEnthalpy
+{
+    model             rangeAverage;
+    unit              "J/mol";
+    value             53900;
+    temperatureRange  ( 276  350 );   // K -- near-ambient, ~130 K BELOW Tb
+    source            "Emel'yanenko, V.N.; Kozlova, S.A. et al., 'Vapour pressures and
+                        enthalpies of vaporisation of a series of the gamma-lactones',
+                        J. Chem. Thermodyn. 40(6) (2008) 911-916 (gas saturation);
+                        53.9 +/- 0.2 kJ/mol over 276-350 K -- full citation resolved
+                        2026-07-25 via the NIST entry";
+    note              "the file previously stored this number under the key `HvapTb`, which was a MISLABELLING -- 276-350 K is not Tb = 480.7 K";
+    status            flagged;
+}
+
+// HvapTb: DECLARED GAP -- no measurement at Tb.  Extrapolating the near-ambient
+//   value by ~130 K would be inventing a datum.
+
+standardThermochemistry
+{
+    // FILLED 2026-07-25 (was a DECLARED GAP).  The measured quantity is the LIQUID
+    //   formation enthalpy from combustion calorimetry; kept on the pure-liquid rung.
+    dHf_298         -461300.0;  // J/mol, PURE LIQUID at 298.15 K, combustion.
+                                //   [Leitao, M.L.P.; Pilcher, G.; Meng-Yan, Y.;
+                                //    Brown, J.M.; Conn, A.D., "Enthalpies of
+                                //    combustion of gamma-butyrolactone, gamma-
+                                //    valerolactone and delta-valerolactone",
+                                //    J. Chem. Thermodyn. 22 (1990) 885-891;
+                                //    -461.3 +/- 1.0 kJ/mol.]  origin measured.
+    referenceState  pureLiquid; // 298.15 K, 1 bar.
+    // s_298: DECLARED GAP -- no open third-law entropy located, so this block is
+    //   INCOMPLETE and not loadable as-is (the engine requires s_298).
+}
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// Tc / Pc / omega        : not on any free source.  omega COULD be derived from
+//                          the Antoine set above once Tc/Pc exist -- that is the
+//                          route; it is not taken while Tc/Pc are missing.
+//                          Joback is blocked by the lactone gap above.
+// idealGasHeatCapacity   : none located.
+// standardThermochemistry: dHf(liq) NOW FILLED from Leitao et al. (1990),
+//                          -461.3 kJ/mol (see block above).  s_298 still a gap,
+//                          so the block is not yet loadable.
+//
+// COSMO-SAC -- NO `cosmo {}` BLOCK.  evidence/lvpp-gammaValerolactone (recordId
+//   lvpp-gammaValerolactone) holds the LVPP cavity descriptors as EVIDENCE only:
+//   the LVPP QM protocol is incompatible with Choupo's VT-2005 `cosmoSAC2002`
+//   sets -- ethylene, the one compound in both databases, differs by +6.1 %
+//   cavity area and +10.3 % cavity volume.
+// PC-SAFT -- polar, non-associating; SAFT-VR studies were mentioned at a
+//   genre level but NO set was pinned, and none is invented
+//   (parameters/PCSAFT/_INVENTORY.md, section 3).
+
+provenance
+{
+    Tb
+    {
+        origin      unattributed;
+        citation    "Aldrich catalogue (1990), via the NIST WebBook entry";
+        note        "vendor catalogue, not a measurement report";
+        status      flagged;
+    }
+    Vliq
+    {
+        origin      derived;
+        method      "MW / rho, rho = 1051.8 kg/m3 at 20 degC (liquid)";
+        citation    "PubChem CID 7921 experimental density (US NIH, public domain)";
+        note        "density at 20 degC, not 25 degC";
+        status      candidate;
+    }
+    vaporPressure
+    {
+        origin      regressed;
+        citation    "Stull, Ind. Eng. Chem. 39(4) (1947) 517-540";
+        status      candidate;
+    }
+    standardThermochemistry
+    {
+        origin      measured;
+        citation    "Leitao, Pilcher, Meng-Yan, Brown & Conn, J. Chem. Thermodyn. 22 (1990) 885-891";
+        note        "dHf(liq) = -461.3 kJ/mol, pure-liquid rung; s_298 missing so block incomplete";
+        status      flagged;
+    }
+}

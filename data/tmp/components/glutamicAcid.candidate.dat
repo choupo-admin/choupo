@@ -1,0 +1,155 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: glutamicAcid  (L-glutamic acid, C5H9NO4, CAS 56-86-0)
+  PRIVATE staging tier (data/tmp/, gitignored).  The runtime does NOT read it.
+
+  ARITY-1 ONLY (phase 3, 2026-07-24).  Intrinsic pure-compound data only; every
+  system / state property has been MOVED to its arity-correct home and is
+  referenced by POINTER below.  Envelope: ../RECORD_SPEC.md.
+\*---------------------------------------------------------------------------*/
+
+name           glutamicAcid;
+formula        C5H9NO4;
+CAS            56-86-0;
+InChIKey       WHUUTDBJXJRKMK-VKHMYHEASA-N;
+pubchemCID     33032;
+MW             147.13;            // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+identityProvenance
+{
+    source      "PubChem CID 33032 (US NIH, public domain), PUG-REST";
+    licence     "public-domain fact";
+    curator     "agent:components";
+    retrieved   2026-07-24;
+    status      candidate;
+}
+
+standardThermochemistry
+{
+    phase            solid;            // crystalline zwitterion
+    referenceState   pureSolid;
+    dHf_298          -1003300.0;       // J/mol
+    s_298            188.2;            // J/(mol K)
+
+    provenance
+    {
+        dHf_298
+        {
+            unit        "J/mol";
+            phase       solid;
+            origin      measured;
+            citation    "Sakiyama & Seki, Bull. Chem. Soc. Jpn. 48 (1975) 2203";
+            crossCheck  "Contineanu, Chivu & Perisanu, J. Therm. Anal. Cal. 82 (2005) 3 (via open Iris compilation) give -1002.6 kJ/mol -- quoted, NOT merged";
+            licence     "facts, primary-cited";
+            status      candidate;
+        }
+        s_298
+        {
+            unit        "J/(mol K)";
+            phase       solid;
+            origin      measured;
+            citation    "Hutchens, Cole et al., J. Biol. Chem. 238 (1963) 2407";
+            licence     "facts, primary-cited";
+            status      candidate;
+        }
+    }
+}
+
+solidHeatCapacity
+{
+    phase         solid;
+    model         polynomial;         // constant-Cp near ambient
+    coefficients  ( 175.08 );         // Cp(298) J/(mol K)
+    Trange        ( 280 320 );        // K
+
+    provenance
+    {
+        unit        "J/(mol K)";
+        phase       solid;
+        origin      measured;
+        citation    "Sakiyama & Seki, Bull. Chem. Soc. Jpn. 48 (1975) 2203";
+        licence     "facts, primary-cited";
+        status      candidate;
+    }
+}
+
+groups
+{
+    joback  none;
+    reason  "two carboxyls plus an amine; nonvolatile solute, no VLE estimate wanted";
+    status  flagged;
+}
+
+cosmo
+{
+    LVPP_B3LYP_def2SVPD
+    {
+        variant       lvppB3LYP_def2SVPD;   // NOT cosmoSAC2002 -- no matching runtime constants
+        source        "LVPP sigma database (github lvpp/sigma, MIT, DOI 10.5281/zenodo.3613785; Ferrarini et al., AIChE J. 64 (2018) 3443)";
+        evidenceId    "evidence/lvpp-glutamicAcid/metadata.dat (recordId lvpp-glutamicAcid)";
+        area          notCopied;
+        volume        notCopied;
+        sigmaProfile  notCopied;
+        status        flagged;
+        reason        "LVPP QM protocol is incompatible with Choupo's VT-2005 cosmoSAC2002 sets; ethylene cross-check: +6.1 % cavity area, +10.3 % cavity volume.";
+    }
+    VT2005
+    {
+        variant       cosmoSAC2002;
+        available     none;
+        status        flagged;
+    }
+    modellingNote "amino acids are COSMO-modelled as the NEUTRAL gas-phase tautomer, never as the aqueous zwitterion";
+}
+
+pcSaft
+{
+    CamerettiSadowski2008
+    {
+        variant       pcSaftAssociating5Param;
+        available     none;
+        citation      "Cameretti & Sadowski, Chem. Eng. Process. 47 (2008) 1018 (neutral zwitterion); Held/Do ePC-SAFT for the charged form";
+        status        flagged;         // STRUCTURED ABSENCE -- no number is carried
+        blockedBy     "Cameretti & Sadowski (2008) is a paywalled article; the parameter
+                       row was never transcribed";
+        action        "read the amino-acid row of that paper (or Held & Sadowski's
+                       ePC-SAFT work for the charged form) and stage m, sigma, eps/k,
+                       N_assoc, eps_assoc/k, kappa_assoc TOGETHER WITH the association
+                       scheme, combining rules, objective function and data range --
+                       five numbers without a protocol are not a parameter set.  Take
+                       ONE compound's row with its own citation, never the table.";
+        legalNote     "reading one row of a primary research paper and citing it is
+                       normal scholarship; systematic extraction of the whole table is
+                       the EU sui-generis database-right risk.  Because NO number is
+                       held here, this block is a declared GAP, not a rights-pending
+                       value -- reclassified rightsPending -> flagged 2026-07-24.";
+    }
+}
+
+// --- MOVED OUT (arity >= 2 / state-dependent) -- POINTERS ONLY, no values ---
+references
+{
+    aqueousDiffusion    "parameters/transport/diffusion/glutamicAcid-water.candidate.dat (recordId diffusion-glutamicAcid-water) -- Choupo Stokes-Einstein ESTIMATE, flagged there";
+    stokesRadius        "derived inside that same diffusion record -- never a second datum";
+    acidDissociation    "chemistry/aqueousSpeciation/glutamicAcid-pKa1|pKa2|pKaR.candidate.dat (recordId glutamicAcid-pKa1, glutamicAcid-pKa2, glutamicAcid-pKaR)";
+    isoelectricPoint    "chemistry/aqueousSpeciation/glutamicAcid-pI.candidate.dat (recordId glutamicAcid-pI)";
+    chargeAtPH7         "DELETED as DERIVED -- the net -1 at pH 7 follows from the pKa equilibria, never stored";
+    partialMolarVolume  "aqueous V2 at infinite dilution (Millero, Lo Surdo & Shin, J. Phys. Chem. 82 (1978) 784) -- carried inside the derivation{} block of the diffusion record above";
+    cosmoSurface        "evidence/lvpp-glutamicAcid/metadata.dat (recordId lvpp-glutamicAcid)";
+}
+
+speciationNote  "acidic ampholyte: the van't Hoff factor is NOT a plain integer -- i = f(pH), set by the referenced dissociation equilibria, not by a component constant";

@@ -1,0 +1,116 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: PFOA  (perfluorooctanoic acid, C8HF15O2, CAS 335-67-1)
+  PFAS "forever chemical", emerging NF/RO contaminant.  Long-chain C8
+  carboxylic acid -- historically well rejected by NF/RO; being phased out.
+
+  IDENTITY source: PubChem CID 9554 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 335-67-1 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  Every system /
+    equilibrium / state datum was re-homed in phase 2 and is NOT duplicated here
+    (data/tmp/RECORD_SPEC.md, ARITY rule).  The pointers carry NO numbers.
+
+  STATUS: candidate.  Not promotable -- no thermochemistry, no Cp, no Antoine.
+\*---------------------------------------------------------------------------*/
+
+name              PFOA;
+formula           C8HF15O2;
+CAS               335-67-1;
+InChIKey  SNGREZUHAYWORS-UHFFFAOYSA-N;   // 14-char skeleton only; the full 27-char
+                                    //   InChIKey was not staged.
+MW                414.07;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "normal boiling point present in this file -- the compound IS volatile";
+    contradictsStagedRole   yes;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+                                    //   about the pure acid, which boils at
+                                    //   461 K (see Tb) -- flagged for review.
+
+
+// ---- RE-HOMED IN PHASE 2 (pointers only, no values) ------------------------
+// acid pKa              -> chemistry/aqueousSpeciation/     recordId PFOA-pKa1
+// logKow                -> parameters/partition/            recordId PFOA-octanol-water
+// aqueous solubility    -> parameters/solubility/           recordId PFOA-water
+//   (the CMC / aggregation threshold that used to sit in this file is noted
+//    inside that same solubility record -- it is a micellisation threshold,
+//    NOT a solubility, and it is NOT a component field either way)
+// chargeAtPH7 (-1) was DELETED, not moved: a net charge at a pH is a RESULT of
+//   the dissociation equilibrium, never a stored constant.
+//
+// pKa -- DELIBERATELY ABSENT from this component.  The determinations span more
+//   than THREE log units (-0.5 Goss 2007; 1.30 Kutsuna & Hori 2008; 2.80 Moody &
+//   Field 2000) -- a real, unresolved literature disagreement.  All three are
+//   held in the ONE equilibrium record PFOA-pKa1 (value + alternativeDeterminations);
+//   none is repeated here, and no "consensus" was manufactured.
+//
+// No diffusion record exists: D_aq and the Stokes radius were never measured or
+//   estimated for PFOA in this staging round (transport/diffusion/_LEDGER.md
+//   section 5).  Making the Wilke-Chang estimate now would be CREATING data.
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+Tfus              327.45;   // K (54.3 degC) -- so PFOA is a SOLID at 298 K.
+                            //   Crystal form not stated.
+Tb                461.15;   // K (188 degC), normal boiling point.
+solidDensity      1800.0;   // kg/m3 at 293 K (1.80 g/cm3 @20 degC), i.e. the
+                            //   SOLID density (20 degC < Tfus).  A molar volume
+                            //   was previously stored beside it; MW/rho is a
+                            //   DERIVATIVE and is not stored (RECORD_SPEC.md).
+// All three [ATSDR, Toxicological Profile for Perfluoroalkyls (2021), Table 4-2;
+//   US-government work, public domain; the primaries are cited therein].
+
+// Single measured vapour-pressure POINT -- not an Antoine set, and not enough to
+// fit one.  Structured (never a bare comment) with the conversion shown.
+vaporPressureData
+{
+    model     singlePoint;
+    points    ( ( 293.15  2.27 ) );   // ( T/K  P/Pa )
+    // UNIT CONVERSION (shown, not hidden): 0.017 mmHg x 133.322 Pa/mmHg = 2.27 Pa.
+    note      "the source states this value is EXTRAPOLATED, not measured at 20 degC";
+    source    "ATSDR (2021) Table 4-2 (US-gov, public domain)";
+    status    flagged;
+}
+
+
+// ---- REMOVED FROM THIS FILE, NO HOME YET (see _CLEANUP ledger) --------------
+// Henry's-law constant (solute + water = ARITY 2) was carried here as a comment.
+//   It is NOT an intrinsic component property and there is no
+//   parameters/henry/ home in this staging tree yet, so the value and its
+//   citation are recorded in _CLEANUP_hormones_pfas_volatiles.md, section
+//   "awaiting a home", and deleted from here.  It must NOT be re-added.
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// standardThermochemistry: no open formation datum located for a perfluoro acid.
+// Tc / Pc / omega        : none located; Joback has NO perfluoro-carbon groups,
+//                          so Choupo's own estimator cannot supply them either.
+// idealGasHeatCapacity   : none located.
+// vaporPressure (Antoine): one extrapolated point is not a correlation.
+// COSMO-SAC              : PFOA is NOT in the LVPP sigma database, so there is
+//                          no evidence record.  Even if there were, no `cosmo {}`
+//                          block could be written from it -- the LVPP QM protocol
+//                          is incompatible with Choupo's VT-2005 `cosmoSAC2002`
+//                          sets (ethylene cross-check: +6.1 % area, +10.3 %
+//                          volume).
+// PC-SAFT                : no set adopted.  Specialised PFAS-SAFT work exists but
+//                          none was pinned; perfluoro chains are exactly where a
+//                          generic set misleads (parameters/PCSAFT/_INVENTORY.md).
+
+provenance
+{
+    Tfus         { origin measured; citation "ATSDR (2021) Table 4-2 (US-gov, public domain)"; status candidate; }
+    Tb           { origin measured; citation "ATSDR (2021) Table 4-2 (US-gov, public domain)"; status candidate; }
+    solidDensity { origin measured; citation "ATSDR (2021) Table 4-2 (US-gov, public domain)"; note "20 degC, solid (Tfus = 54.3 degC)"; status candidate; }
+}

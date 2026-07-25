@@ -1,0 +1,86 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of carbamazepine in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/carbamazepine.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: solid phase IDENTIFIED (carbamazepine dihydrate) as the
+  aqueous-stable form; BOTH disagreeing determinations kept, neither attributed.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        carbamazepine-water;
+participants    ( carbamazepine water );
+property        aqueousSolubility;
+
+conditions
+{
+    // temperature   NOT STATED by the source -- a solubility without a
+    //               temperature is an incomplete equilibrium.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    carbamazepineDihydrate;
+    phaseBasis    inferredFromPhaseStability;
+}
+
+// PHASE 4 finding.  Carbamazepine has four anhydrous polymorphs (I-IV)
+// plus a dihydrate.  In contact with liquid water the anhydrates
+// convert, solution-mediated, to the DIHYDRATE, which is therefore the
+// solid in equilibrium with a saturated aqueous solution at 25 C
+// (Kobayashi, Y., Ito, S., Itai, S. & Yamamoto, K., Int. J. Pharm. 193
+// (2000) 137-146: dissolution of forms I and III in aqueous medium is
+// cut short by transformation to the dihydrate, and the anhydrate
+// solubilities are 1.5-1.6x that of the dihydrate).
+//
+// That fixes WHICH solid a 25 C aqueous solubility must refer to.  It
+// does NOT rescue either number below: neither determination states its
+// solid, and the two differ by 8x -- exactly the size of an
+// anhydrate/hydrate gap, but larger than the 1.5-1.6x factor Kobayashi
+// measured, so the discrepancy is NOT explained by the polymorph alone.
+// The headline value is additionally a PREDICTION (origin estimated).
+// Both are kept; neither is attributed to a phase; nothing is averaged.
+value
+{
+    solubility    152 mg/L;
+    originalStatement  "152 mg/L";   // verbatim, before conversion
+}
+
+alternativeDeterminations
+{
+    hidalgo2023
+    {
+        solubility    18 mg/L;
+        conditions    { solidPhase unspecified; phaseBasis notEstablished; }
+        origin        measured;
+        citation      "Hidalgo, A.M. et al., Membranes 13 (2023) 868, Table 3 (CC-BY)";
+        note          "8x below the headline value; a compiled table entry, not a measuring primary";
+    }
+}
+
+provenance
+{
+    origin      estimated;
+    citation    "Human Metabolome Database (HMDB); via PubChem";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Kobayashi, Y., Ito, S., Itai, S. & Yamamoto, K., Physicochemical properties and bioavailability of carbamazepine polymorphs and dihydrate, Int. J. Pharm. 193 (2000) 137-146";
+    doi         "10.1016/S0378-5173(99)00315-4";   // DERIVED mechanically from the publisher PII S0378517399003154 seen in phase 4, not read off the article itself
+    basis       "anhydrate -> dihydrate solution-mediated transformation in aqueous medium; anhydrate/dihydrate solubility ratio 1.5-1.6";
+}
+
+blockedBy       "no temperature is stated; neither the 152 mg/L nor the 18 mg/L determination names its equilibrating solid, and their 8x spread exceeds the measured anhydrate/dihydrate ratio";
+status          flagged;

@@ -1,0 +1,194 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: alphaPinene  (C10H16, CAS 80-56-8)
+  alpha-Pinene -- turpentine terpene; renewable feedstock / solvent.  Curated
+  for the VLE / distillation leg, not the membrane-solute leg.
+
+  IDENTITY source: PubChem CID 6654 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 80-56-8 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  No aqueous
+    diffusion / partition / solubility / speciation datum was ever staged, so
+    nothing was re-homed out of it in phase 2 -- but the COSMO material was.
+
+  STATUS: candidate.  Antoine (full primary now) + Vliq usable; Tb derived from
+    the Antoine set; dHf(liq) now primary-cited (Hawkins & Eriksen 1954, s_298
+    still missing); Tc / Pc / omega absent (no open primary; Joback poor for a
+    bridged bicyclic).
+\*---------------------------------------------------------------------------*/
+
+name              alphaPinene;
+formula           C10H16;
+CAS               80-56-8;
+SMILES            "CC1=CCC2CC1C2(C)C";
+InChIKey  GRWFGVWFFZKLTI-UHFFFAOYSA-N;   // 14-char skeleton only; the stereo layer
+                                    //   was not staged, and alpha-pinene is
+                                    //   chiral -- (+) and (-) forms exist.
+MW                136.234;          // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `volatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            volatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "normal boiling point present in this file -- the compound IS volatile";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+// groups: NOT decomposed.  Joback handling is POOR here -- it does not
+//   parametrize bridged bicyclo[3.1.1] skeletons.  Declared gap; a decomposition
+//   would produce a silently-wrong estimate.
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+Tb                429.4;    // K, normal boiling point.
+                            //   RIGHTS CLEARANCE 2026-07-24 -- action: REPLACE.
+                            //   The old 430.0 K was a NIST WebBook average of 14
+                            //   values -- the aggregator's arrangement, from a
+                            //   no-grant source excluded by CLAUDE.md section 10.
+                            //   Replaced by a value DERIVED from the Antoine set
+                            //   already in this file (Hawkins & Armstrong 1954):
+                            //     T = B/(A - log10 P) - C, P = 1.01325 bar
+                            //       = 1411.869/(3.92161 - 0.0057173) + 68.817
+                            //       = 360.54 + 68.817 = 429.36 K  ->  429.4 K
+                            //   origin derived.  0.6 K BELOW the aggregate it
+                            //   replaces (0.15 %).
+                            //   RESIDUAL DEFECT (1) CLEARED 2026-07-25: the Antoine
+                            //   set's primary is now fully cited (Hawkins & Armstrong,
+                            //   JACS 76 (1954) 3756-3759).  ONE residual defect
+                            //   remains, hence status stays flagged:
+                            //     (2) 429.36 K sits 0.4 K ABOVE the set's stated
+                            //         upper validity limit of 429 K -- a marginal
+                            //         extrapolation, declared, not hidden.
+                            //   status flagged
+
+Vliq              1.588e-4; // m3/mol, LIQUID at 293 K = MW/rho with
+                            //   rho = 858 kg/m3 (0.858 g/cm3 @20 degC).
+                            //   [PubChem CID 6654 experimental density; US NIH,
+                            //   public domain]
+
+vaporPressure
+{
+    model         Antoine;     // log10(P/bar) = A - B/(T + C)
+    coefficients  (3.92161   1411.869   -68.817);
+    Trange        (293  429);  // K
+    // FULL CITATION RESOLVED 2026-07-25: Hawkins, J.E. & Armstrong, G.T.,
+    //  "Physical and Thermodynamic Properties of Terpenes. III. The Vapor
+    //  Pressures of alpha-Pinene and beta-Pinene", J. Am. Chem. Soc. 76(14)
+    //  (1954) 3756-3759 -- the primary underlying the NIST WebBook entry,
+    //  re-cited to the primary, not to the compilation.  origin regressed.
+}
+
+// dvapH(T) -- a TABLE of two determinations at two temperatures, NOT a value at
+// Tb.  Kept structured because it is usable science and may not live in a comment.
+vaporizationEnthalpy
+{
+    model     tabulated;
+    unit      "J/mol";
+    points
+    (
+        ( 298.0  44600 )   // calorimetric  [An, X.; Hu, R.; Wang, H.; Wu, M.;
+                           //  Zou, Y., Acta Phys.-Chim. Sin. 3(6) (1987) 668-671;
+                           //  44.6 +/- 0.1 kJ/mol.  A second readable primary at
+                           //  283-353 K gives 45.4 kJ/mol: Clara, Marigliano &
+                           //  Solimo, J. Chem. Eng. Data 54(3) (2009) 1087-1090 --
+                           //  NOT merged]
+        ( 307.0  45000 )   // [Stephenson & Malanowski, "Handbook of the
+                           //  Thermodynamics of Organic Compounds" (1987) --
+                           //  a COMPILATION, not a primary]
+    );
+    note      "the two points are from DIFFERENT sources and are NOT a single data set; the 307 K value being HIGHER than the 298 K value is physically backwards for dvapH and is unexplained -- do not fit a slope through them";
+    status    flagged;
+}
+
+// HvapTb: DECLARED GAP -- there is NO measurement at Tb = 430 K.  Extrapolating
+//   the two near-ambient points above by ~130 K would be inventing a datum.
+
+standardThermochemistry
+{
+    // FILLED 2026-07-25 (was a DECLARED GAP; the only prior content was the prose
+    //   "~ -32 kJ/mol range", a RANGE that is not a value and was never stored).
+    //   The measured quantity is the LIQUID formation enthalpy from combustion
+    //   calorimetry -- kept on its own rung, never routed through the ideal gas.
+    dHf_298         -16400.0;   // J/mol, PURE LIQUID at 298.15 K.
+                                //   [Hawkins, J.E. & Eriksen, W.T., "Physical and
+                                //    thermodynamic properties of terpenes. II. The
+                                //    heats of combustion of some terpene hydro-
+                                //    carbons", J. Am. Chem. Soc. 76 (1954) 2669-2676
+                                //    (combustion enthalpy -6205.3 +/- 2.9 kJ/mol),
+                                //    reanalysed by Cox & Pilcher (1970); dHf(liq)
+                                //    recomputed by NIST without Washburn correction.]
+                                //   origin derived (from the combustion primary).
+    referenceState  pureLiquid; // 298.15 K, 1 bar.
+    // s_298: DECLARED GAP -- no open third-law entropy located.  This block is
+    //   therefore INCOMPLETE and NOT loadable as-is (the engine requires s_298);
+    //   deliberate honesty, not an oversight.
+}
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// Tc / Pc / omega        : not on any open source.  Joback is POOR for a bridged
+//                          bicyclic, so Choupo's own estimator is not a legitimate
+//                          fallback here either.  omega COULD be derived from the
+//                          Antoine set once Tc/Pc exist -- that is the route, and
+//                          it is deliberately not taken while Tc/Pc are missing.
+// standardThermochemistry: dHf(liq) NOW FILLED from Hawkins & Eriksen 1954
+//                          (see block above; the earlier "~ -32 kJ/mol range"
+//                          prose was both a non-value AND numerically wrong -- the
+//                          combustion primary gives -16.4 kJ/mol).  s_298 STILL a
+//                          gap, so the block is not yet loadable.
+// idealGasHeatCapacity   : none located.
+//
+// COSMO-SAC -- NO `cosmo {}` BLOCK, FOR TWO INDEPENDENT REASONS.
+//   (1) PROTOCOL.  evidence/lvpp-alphaPinene (recordId lvpp-alphaPinene) holds
+//       the LVPP cavity descriptors as EVIDENCE only: the LVPP QM protocol is
+//       incompatible with Choupo's VT-2005 `cosmoSAC2002` sets -- ethylene, the
+//       one compound in both databases, differs by +6.1 % cavity area and
+//       +10.3 % cavity volume.
+//   (2) CONFORMER, UNRESOLVED.  LVPP ships the SAME substance twice under two
+//       names -- ALPHA-PINENE.cosmo (684.30 bohr2) and A-PINENE.cosmo
+//       (669.08 bohr2) -- 2.3 % apart in cavity area.  That spread is a
+//       CONFORMER choice, and a gas-phase conformer is itself a modelling
+//       decision that a named set must declare.  Nobody has decided which
+//       conformer alpha-pinene ships, so it has no COSMO identity yet.
+//       (B-PINENE.cosmo is a different substance -- beta-pinene -- and is not a
+//       candidate for this file at all.)
+// PC-SAFT -- no adopted published set located (parameters/PCSAFT/_INVENTORY.md).
+
+provenance
+{
+    Tb
+    {
+        origin      unattributed;
+        citation    "NIST WebBook aggregate of 14 values -- NOT a primary; no-grant source (CLAUDE.md section 10)";
+        status      flagged;
+    }
+    Vliq
+    {
+        origin      derived;
+        method      "MW / rho, rho = 858 kg/m3 at 20 degC (liquid)";
+        citation    "PubChem CID 6654 experimental density (US NIH, public domain)";
+        note        "density at 20 degC, not 25 degC";
+        status      candidate;
+    }
+    vaporPressure
+    {
+        origin      regressed;
+        citation    "Hawkins & Armstrong, J. Am. Chem. Soc. 76(14) (1954) 3756-3759";
+        note        "primary underlying the NIST WebBook entry; Tb 429.4 K derived from it at 1.01325 bar";
+        status      candidate;
+    }
+    standardThermochemistry
+    {
+        origin      derived;
+        citation    "Hawkins & Eriksen, J. Am. Chem. Soc. 76 (1954) 2669-2676 (combustion), Cox & Pilcher (1970) reanalysis";
+        note        "dHf(liq) = -16.4 kJ/mol, pure-liquid rung; s_298 missing so block incomplete";
+        status      flagged;
+    }
+}

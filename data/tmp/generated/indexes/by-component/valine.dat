@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'valine'
+component valine;
+records
+(
+    { recordType acidDissociation; recordId valine-pKa1; category flagged; file "chemistry/aqueousSpeciation/valine-pKa1.candidate.dat"; }
+    { recordType acidDissociation; recordId valine-pKa2; category flagged; file "chemistry/aqueousSpeciation/valine-pKa2.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-valine; category flagged; file "evidence/lvpp-valine/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-valine-water; category flagged; file "parameters/transport/diffusion/valine-water.candidate.dat"; }
+    { recordType isoelectricPoint; recordId valine-pI; category flagged; file "chemistry/aqueousSpeciation/valine-pI.candidate.dat"; }
+);

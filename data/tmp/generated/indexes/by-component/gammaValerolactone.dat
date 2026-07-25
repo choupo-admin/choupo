@@ -1,0 +1,6 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'gammaValerolactone'
+component gammaValerolactone;
+records
+(
+    { recordType cosmoSurface; recordId lvpp-gammaValerolactone; category flagged; file "evidence/lvpp-gammaValerolactone/metadata.dat"; }
+);

@@ -1,0 +1,6 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'nPropanol'
+component nPropanol;
+records
+(
+    { recordType cosmoSurface; recordId lvpp-nPropanol; category flagged; file "evidence/lvpp-nPropanol/metadata.dat"; }
+);

@@ -1,0 +1,89 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/glutamicAcid.candidate.dat; primary citation
+  cross-checked against data/tmp/aminoacids_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-glutamicAcid-water;
+participants    ( glutamicAcid water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             7.6e-10 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// how THIS value was obtained (glass-box; inputs stated in full)
+derivation
+{
+    method                 "Stokes-Einstein D = kT/(6 pi eta r), r from the partial molar volume";
+    radius                 0.324 nm;
+    radiusOrigin           "Choupo estimate from the partial molar volume V_molar";
+    partialMolarVolume     85.9 cm3/mol;
+    viscosity              0.8903e-3 Pa.s;
+    temperature            298.15 K;
+    origin                 estimated;
+}
+
+flagged
+{
+    reason        "Choupo own estimate, NOT a measurement; the measured primary is paywalled";
+    route         "Germann, Turner & Allison, J. Phys. Chem. A 111 (2007) 1452 (NMR, 12 amino acids) - measured in D2O at pD 3.5 (cationic form): needs an H2O/charge correction";
+    action        "PHASE-6 SEARCH (2026-07-24) found no open measured primary. The phase-2
+                  route is now fully resolved: Germann, M. W.; Turner, T.; Allison, S. A.,
+                  'Translational Diffusion Constants of the Amino Acids: Measurement by NMR
+                  and Their Use in Modeling the Transport of Peptides', J. Phys. Chem. A 111
+                  (2007) 1452-1455, doi 10.1021/jp068217o (closed) - title and pagination
+                  verified 2026-07-24; REMEMBER it measures in D2O at pD 3.5, i.e. the
+                  CATIONIC form in a solvent whose viscosity is ~23 % above H2O, so it needs
+                  BOTH a viscosity correction and a speciation correction before it can be
+                  quoted as an aqueous zwitterion D.  Because its conditions are NOT the ones
+                  this record declares, prefer a route that measures the aqueous zwitterion
+                  directly: Umecky, T.; Kuga, T.; Funazukuri, T., 'Infinite Dilution Binary
+                  Diffusion Coefficients of Several alpha-Amino Acids in Water over a
+                  Temperature Range from (293.2 to 333.2) K', J. Chem. Eng. Data 51 (2006)
+                  1705-1710, doi 10.1021/je060149b (Taylor dispersion; closed, checked
+                  2026-07-24) or Ma, Y.; Zhu, C.; Ma, P.; Yu, K. T., 'Studies on the Diffusion
+                  Coefficients of Amino Acids in Aqueous Solutions', J. Chem. Eng. Data 50
+                  (2005) 1192, doi 10.1021/je049582g (closed).  If the Germann digit is used
+                  anyway, the record must carry the D2O viscosity factor and the pD 3.5
+                  speciation as declared, non-optional corrections - never as a silent
+                  transcription.";
+}
+
+provenance
+{
+    origin        estimated;
+    citation      "Choupo own Stokes-Einstein estimate from the partial molar volume (V_molar primary: Millero, Lo Surdo & Shin, J. Phys. Chem. 82 (1978) 784)";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          flagged;

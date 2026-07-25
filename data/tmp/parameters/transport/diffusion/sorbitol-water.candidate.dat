@@ -1,0 +1,101 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/sorbitol.candidate.dat; primary citation
+  cross-checked against data/tmp/polyols_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-sorbitol-water;
+participants    ( sorbitol water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             6.7e-10 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// how THIS value was obtained (glass-box; inputs stated in full)
+derivation
+{
+    method                 "Stokes-Einstein D = kT/(6 pi eta r)";
+    radius                 0.365 nm;
+    radiusOrigin           "equivalent-sphere radius (3 Vm / 4 pi NA)^(1/3) from the SOLID molar volume M/rho";
+    solidMolarVolume       122.3 cm3/mol;
+    viscosity              0.890e-3 Pa.s;
+    temperature            298.15 K;
+    origin                 estimated;
+}
+
+flagged
+{
+    reason        "Choupo own estimate, NOT a measurement; Stokes-Einstein with a hard-sphere radius underestimates D for small solutes by ~20-40%";
+    route         "Paduano, Sartorio, Vitagliano & Costantino, J. Solution Chem. (Gouy interferometry, 25 C) - PAYWALLED at curation";
+    action        "Sorbitol is NOT in Kimura et al., Bull. Chem. Soc. Jpn. 63 (1990) 533, whose
+                  abstract was read verbatim in phase 6 and covers 1,2-butanediol,
+                  1,4-butanediol, meso-erythritol, xylitol, mannitol and myo-inositol only.
+                  Chase, in this order: (1) Longsworth, L. G., 'Diffusion Measurements, at 25
+                  deg, of Aqueous Solutions of Amino Acids, Peptides and Sugars', J. Am. Chem.
+                  Soc. 75 (1953) 5705-5709, doi 10.1021/ja01118a065 (Gouy interferometry,
+                  infinite dilution) - checked 2026-07-24, Unpaywall is_oa = false, no
+                  repository copy: obtain by inter-library loan; (2) the
+                  Paduano/Sartorio/Vitagliano Naples Gouy series in J. Solution Chem. - the
+                  exact article was NOT resolvable from the author list alone (Crossref
+                  bibliographic search returned only their cyclodextrin and alkylurea papers),
+                  so the phase-2 'route' citation is itself unverified and must be pinned or
+                  dropped; (3) failing both, a fresh Taylor-dispersion determination. Do NOT
+                  transcribe from the Landolt-Boernstein 'Diffusion in Gases, Liquids and
+                  Electrolytes' volume - paywalled compilation, EU sui-generis risk.";
+}
+
+// PHASE 7 (2026-07-25) -- Kimura rule-out CONFIRMED from the primary abstract itself.
+phase7Retrieval
+{
+    attempted     2026-07-25;
+    outcome       "sorbitol RULED OUT of Kimura 1990 -- now confirmed by READING that
+                   paper's abstract, not by a secondary claim; no D digit obtained";
+    detail        "Kimura 1990 (doi 10.1246/bcsj.63.533) abstract read on Oxford Academic
+                   2026-07-25: the water solute set is 1,2-butanediol, 1,4-butanediol,
+                   meso-erythritol, xylitol, mannitol, myo-inositol -- sorbitol is ABSENT,
+                   so this paper cannot supply it.  Longsworth JACS 75 (1953) 5705 (doi
+                   10.1021/ja01118a065) is closed with no OA copy; the phase-2
+                   Paduano/Sartorio/Vitagliano J. Solution Chem. citation is still
+                   UNRESOLVABLE (it must be pinned or dropped, not treated as a source).";
+    ruling        "record stays flagged; the 0.67e-9 estimate is NEITHER promoted NOR
+                   deleted.";
+}
+
+provenance
+{
+    origin        estimated;
+    citation      "Choupo own Stokes-Einstein estimate (glass-box); no measured value adopted";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          flagged;

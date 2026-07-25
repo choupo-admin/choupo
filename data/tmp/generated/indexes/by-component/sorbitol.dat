@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'sorbitol'
+component sorbitol;
+records
+(
+    { recordType acidDissociation; recordId sorbitol-pKa1; category verified; file "chemistry/aqueousSpeciation/sorbitol-pKa1.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-sorbitol-water; category flagged; file "parameters/transport/diffusion/sorbitol-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId sorbitol-octanol-water; category flagged; file "parameters/partition/sorbitol-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId sorbitol-water; category absent; file "parameters/solubility/sorbitol-water.candidate.dat"; }
+);

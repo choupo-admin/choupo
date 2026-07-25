@@ -1,0 +1,8 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'fructose'
+component fructose;
+records
+(
+    { recordType acidDissociation; recordId fructose-pKa1; category absent; file "chemistry/aqueousSpeciation/fructose-pKa1.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-fructose-water; category derived; file "parameters/transport/diffusion/fructose-water.candidate.dat"; }
+    { recordType partialMolarVolume; recordId volume-fructose-water; category verified; file "parameters/volume/fructose-water.candidate.dat"; }
+);

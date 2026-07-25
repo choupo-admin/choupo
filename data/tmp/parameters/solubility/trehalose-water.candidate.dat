@@ -1,0 +1,94 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of trehalose in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/trehalose.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: rightsPending CLEARED by re-routing to a measuring primary;
+  solid phase IDENTIFIED as the DIHYDRATE.  Value now in the source's own basis.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        trehalose-water;
+participants    ( trehaloseDihydrate water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   293.15 K;   // 20 C
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    trehaloseDihydrate;
+    phaseBasis    inferredFromPhaseStability;
+}
+
+// RIGHTS ACTION + PHASE IDENTIFICATION (phase 4).
+//
+// Rights: phase 2 carried ~690 g/L @ 20 C from The Merck Index, a
+// paywalled commercial compilation.  That number is DELETED.  In its
+// place the record is re-routed to a measuring primary -- Lammert,
+// Schmidt & Day, Water activity and solubility of trehalose, Food
+// Chemistry 61 (1998) 139-144 -- which determined the solubility at 10,
+// 20, 30 and 40 C as 42.3, 46.6, 52.3 and 59.7 g trehalose per 100 g
+// SOLUTION.  Taking a handful of facts from a research article is not
+// systematic extraction from a database, so rightsPending is cleared.
+//
+// Phase: the substance in question is trehalose DIHYDRATE.  The component
+// record in this corpus declares ANHYDROUS trehalose (mp 203 C), but the
+// dihydrate (mp ~97 C) is the form stable in contact with liquid water at
+// ambient temperature -- the RH/temperature stability diagram of the
+// dihydrate, beta-anhydrate and alpha-anhydrate forms (Allan & Schmidt,
+// J. Food Sci. 84 (2019), doi 10.1111/1750-3841.14591) puts the dihydrate
+// on the wet side at these conditions.  `participants` now names the
+// dihydrate, not the anhydrate.
+//
+// UNITS: the value is recorded in the SOURCE'S OWN BASIS (g per 100 g of
+// solution).  It is deliberately NOT converted to mg/L: that conversion
+// needs the density of a ~47 wt% trehalose solution at 20 C, which is not
+// in hand, and inventing it would manufacture a digit.
+value
+{
+    solubility          46.6 g/100g_solution;
+    originalStatement   "46.6% (g trehalose 100 g-1 solution) at 20 C";   // verbatim
+    note                "NOT converted to mg/L -- the density of the saturated solution is not available; converting would invent a number";
+}
+
+validity
+{
+    temperatureRange ( 283.15 313.15 ) K;   // the primary reports 10, 20, 30 and 40 C
+    series
+    (
+        ( 283.15  42.3 )
+        ( 293.15  46.6 )
+        ( 303.15  52.3 )
+        ( 313.15  59.7 )
+    );   // K, g/100 g solution -- as reported by the primary
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Lammert, A.M., Schmidt, S.J. & Day, G.A., Water activity and solubility of trehalose, Food Chemistry 61 (1998) 139-144 (measuring primary)";
+    doi         "10.1016/S0308-8146(97)00132-5";   // DERIVED mechanically from the publisher PII S0308814697001325 seen in phase 4, not read off the article itself
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Allan, M. & Schmidt, S.J., RH-Temperature Stability Diagram of the Dihydrate, beta-Anhydrate and alpha-Anhydrate Forms of Crystalline Trehalose, J. Food Sci. 84 (2019)";
+    doi         "10.1111/1750-3841.14591";
+    basis       "the dihydrate is the form stable in contact with liquid water at ambient temperature";
+}
+
+blockedBy       "the primary's full text was not read -- the four solubility values were taken from the article's own abstract-level report and must be checked against the paper before promotion; the primary is also not explicit that the equilibrating solid was the dihydrate, which is assigned from an independent stability diagram";
+status          flagged;

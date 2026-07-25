@@ -1,0 +1,128 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: primidone  (C12H14N2O2, CAS 125-33-7) -- anticonvulsant
+  Small and NEUTRAL across drinking-water pH: the poorly-rejected reference
+  extreme of the NF/RO tracer set.
+
+  PHASE-3 CLEANUP 2026-07-24 -- ARITY 1 ONLY.  Every system / state-dependent
+  value that used to live in a comment block here was moved in phase 2 to its
+  arity-correct home and is NOT restated here (never in two places); what is
+  left below is intrinsic pure-compound data, each numeric carrying UNIT +
+  PHASE/state + `origin` + citation.  The comments below are POINTERS only.
+
+  RETENTION RULE for computed descriptors (McGowan V_x / Le Bas Vb): kept here
+  only when no phase-2 record already carries the number as a derivation input.
+  The Le Bas Vb is NOT kept here -- it is the derivation input of recordId
+  diffusion-primidone-water.
+
+  Private staging tier (data/tmp/, gitignored).  The runtime does not read it.
+\*---------------------------------------------------------------------------*/
+
+// ===== IDENTITY (arity 1) =====
+name              primidone;
+formula           C12H14N2O2;
+CAS               125-33-7;
+InChIKey  DQMZLTXERSFNPB-UHFFFAOYSA-N;   // FIRST BLOCK ONLY (14 chars) as retrieved
+MW                218.25;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+identityProvenance
+{
+    origin      derived;    // MW computed from the formula with standard atomic weights
+    citation    "PubChem CID 4909 (US NIH, public domain), PUG-REST retrieval";
+    doi         "-";
+    licence     "public domain (US Government)";
+    evidenceId  -;
+    curator     "agent:pharma-cleanup";
+    retrieved   2026-07-24;
+}
+
+// ===== INTRINSIC SOLID-STATE DATA =====
+meltingPoint
+{
+    value              554.65 K;         // = 281.5 C
+    originalStatement  "281.5 C";        // verbatim, before the K conversion (Choupo's own arithmetic)
+    transition         "solid -> liquid";
+    phaseBefore        solid;
+    phaseAfter         liquid;
+    polymorph          unspecified;      // NOT stated by the source
+    pressure           101325 Pa;        // ambient, ASSUMED -- not stated by the source
+    origin             measured;
+    citation           "HSDB (US NLM, public domain) and HMDB, PubChem CID 4909";
+    doi                "-";
+    licence            "public domain (US Government) / facts, primary-cited";
+    curator            "agent:pharma-cleanup";
+    retrieved          2026-07-24;
+    status             flagged;   // compilation sources; the measuring primary is not pinned.
+                                  // At 281.5 C a ureide of this type may melt with
+                                  // decomposition -- the sources do not say, so the
+                                  // transition label above is the source's claim, not a
+                                  // verified clean fusion.
+}
+
+solidStateStatus
+{
+    crystalDensity  none;
+    reason          "no crystal density curated (an X-ray unit-cell density, per polymorph, would be the primary).  Without rho_c the PURE-component molar volume V_m = MW/rho_c is NOT derivable, so none is declared.";
+    status          flagged;
+}
+
+thermochemistryStatus
+{
+    present     no;
+    reason      "no open, phase-declared solid dHf / S298 / Cp located (paywalled or unavailable).  Routing a nonvolatile solid through the ideal-gas rung is forbidden by contract.";
+    status      flagged;
+}
+
+// ===== COMPUTED MOLECULAR DESCRIPTORS =====
+descriptors
+{
+    // Le Bas Vb is NOT declared here: it is already recorded, with its method
+    // reference, as the derivation input of recordId diffusion-primidone-water
+    // (parameters/transport/diffusion/).  One number, one home.
+    note   "no arity-1 descriptor is stored in this file; see the pointer above.";
+}
+
+// ===== COSMO =====
+cosmoStatus
+{
+    namedSet       none;
+    evidence       -;      // no LVPP entry: no evidence/lvpp-primidone/ directory exists
+    deployable     no;
+    reason         "no open sigma profile located: not in the VT-2005 77-compound set, and the InChIKey-skeleton join against LVPP release v25 found no match.  The VT pharmaceutical set (Mullins, IECR 46 (2007) ie0711022) is paywalled; a CHAOS (CC-BY) join is PENDING.  Even were an LVPP profile found, LVPP's QM protocol is incompatible with Choupo's VT-2005 cosmoSAC2002 constants (ethylene cross-check: +6.1 % cavity area, +10.3 % volume).";
+    status         flagged;
+}
+
+// ===== PC-SAFT =====
+pcSaftStatus
+{
+    parameterSet   none;
+    pinnedSource   "-";
+    numbersInHand  no;
+    reason         "no published open parameter set identified.  See parameters/PCSAFT/_INVENTORY.md.";
+    status         flagged;
+}
+
+// ===== POINTERS -- values MOVED OUT in phase 2 (home + recordId; no values here) =====
+// pKa (ring N-H)        -> chemistry/aqueousSpeciation/  recordId primidone-pKa1
+// chargeAtPH7           -> DELETED (derived from the equilibrium above; never stored)
+// logKow                -> parameters/partition/         recordId primidone-octanol-water
+// aqueous solubility    -> parameters/solubility/        recordId primidone-water
+// D_aq (ESTIMATE), its  -> parameters/transport/diffusion/  recordId diffusion-primidone-water
+//   Le Bas Vb input and the Stokes radius derived from it (same record)
+
+status            candidate;   // applies to the identity block; every property
+                               // block above carries its own status

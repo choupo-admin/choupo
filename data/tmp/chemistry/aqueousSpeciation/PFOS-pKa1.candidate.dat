@@ -1,0 +1,70 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/PFOS.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        PFOS-pKa1;
+participants    ( PFOS PFOS- H+ );
+property        pKa;
+reaction        "PFOS (C8F17-SO3H, perfluorooctanesulfonic acid) = PFOS- (perfluorooctanesulfonate) + H+";
+site            "sulfonic acid (-SO3H)";
+step            1;
+
+conditions
+{
+    temperature     not stated;   // PHASE 6: phase 2 wrote a conventional 298.15 K here.  The
+                                  // source does not state a temperature.
+    phase           aqueous;
+    ionicStrength   not stated;
+    composition     "~1 ug/L PFSA in water, BELOW the self-association threshold; pH 0.3 - 6.9";
+}
+
+value
+{
+    pKa             <0.3;   // TIGHTENED in phase 6 from the phase-2 <1.0.  Vierke 2013:
+                            // the perfluoroalkane sulfonic acids were NOT volatilized at
+                            // any pH down to 0.3.  Still an UPPER BOUND, not a determination.
+    // uncertainty: not applicable to a bound
+}
+
+alternativeDeterminations   // same equilibrium, other studies -- NOT a second record
+{
+    alt1
+    {
+        pKa      "<1.0";
+        citation "Cheng, J. et al., J. Phys. Chem. A 113 (2009) 8152 -- the phase-2 source of record; the curator has NOT read this primary, and phase 2 labelled it `origin measured` without evidence of a measurement";
+    }
+    alt2 { pKa "0.14 (estimated)"; citation "ATSDR, Toxicological Profile for Perfluoroalkyls (2021) -- an ESTIMATE (US-gov public domain)"; }
+}
+
+provenance
+{
+    origin      derived;   // experimental water-to-air transfer (a NON-observation, honestly)
+    citation    "Vierke, L., Berger, U. & Cousins, I.T., Environ. Sci. Technol. 47 (2013) 11032-11039 -- 'Perfluoroalkane sulfonic acids were not volatilized, suggesting that their pKas are below the investigated pH range (pKa <0.3)'";
+    doi         "10.1021/es402691z";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation (phase 6)";
+    retrieved   2026-07-24;
+}
+verification
+{
+    primaryIdentified   yes;
+    primaryRead         "abstract only";   // the bound is stated verbatim in the abstract
+    valueSeenInPrimary  yes;
+    conditionsSeen      partial;           // concentration + pH range yes; temperature NOT stated
+}
+status          flagged;
+
+// NOTES
+//   Re-homed from components/PFOS.candidate.dat
+//   PHASE 6: source of record moved to Vierke 2013 (read in abstract) and the bound
+//     tightened <1.0 -> <0.3.  The phase-2 Cheng 2009 citation is retained as an
+//     alternative, with its unverified `origin measured` label called out.
+//   STILL flagged: a bound over a class, derived from a NON-observation.
+//   DROPPED: 'charge -1 always' -- a derived result of this equilibrium.

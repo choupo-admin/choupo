@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'urea'
+component urea;
+records
+(
+    { recordType cosmoSurface; recordId lvpp-urea; category flagged; file "evidence/lvpp-urea/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-urea-water; category verified; file "parameters/transport/diffusion/urea-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId urea-octanol-water; category rightsPending; file "parameters/partition/urea-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId urea-water; category flagged; file "parameters/solubility/urea-water.candidate.dat"; }
+);

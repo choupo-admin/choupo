@@ -1,0 +1,46 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/caffeine.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        caffeine-pKa2;
+participants    ( caffeine caffeinate- H+ );
+property        pKa;
+reaction        "caffeine (N-H) = caffeinate- + H+";
+site            "N-H (very weak acid)";
+step            2;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- the source does NOT state a temperature (FLAG)
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    pKa             ~14;   // quoted as '~14'
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Sigma-Aldrich C0750 product sheet; via PubChem PUG-View";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          flagged;
+
+// NOTES
+//   Re-homed from components/caffeine.candidate.dat
+//   Source is a VENDOR product sheet and the value is approximate -> flagged; pin a primary before promotion.
+//   Outside the ambient window (source consequence: neutral, size-exclusion tracer).

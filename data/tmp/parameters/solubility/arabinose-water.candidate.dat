@@ -1,0 +1,123 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of arabinose in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/arabinose.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility): number DELETED on rights grounds
+  (Merck Index only); solid phase NOT ESTABLISHED; the component's own
+  identity unsettled (known-wrong InChIKey).
+
+  PHASE 6 (2026-07-24, agent:solubility): the SOLID PHASE is now established
+  by INFERENCE from a CC-BY crystallographic study -- beta-L-arabinopyranose,
+  anhydrous -- and that study states there are no other known polymorphs or
+  solvates.  An inferred phase does NOT promote a digit, and there is no
+  digit here anyway: the same study measured arabinose solubility only in
+  ethanol/water mixtures, never in pure water.  The InChIKey defect is
+  unchanged and still upstream of everything.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        arabinose-water;
+participants    ( L-arabinose water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C, as the withdrawn source stated
+    pressure      101325 Pa;   // ambient, ASSUMED
+    phase         aqueous;
+    solidPhase    betaLArabinopyranose;   // anhydrous, orthorhombic P2(1)2(1)2(1)
+    phaseBasis    inferredFromPhaseStability;
+}
+
+// PHASE 6 -- HOW THE PHASE WAS REASONED, AND WHY IT IS `inferred` AND NOT
+// `statedBySource`.
+//
+// Tyson, Pask, George & Simone (Cryst. Growth Des. 22 (2022) 1371-1383,
+// CC-BY 4.0) solved/refined the single-crystal structures of D-, L- and
+// DL-arabinose and state, verbatim:
+//
+//   "l- and dl-arabinose crystals consist only of the beta-anomer of the
+//    same type of ring conformation"
+//   "the d- and l-arabinose crystal structures were made of only
+//    six-membered ring beta-anomer molecules"
+//   "Currently, there are no other known polymorphs or solvated structures
+//    for either arabinose or xylose."
+//
+// L-arabinose: orthorhombic, space group P2(1)2(1)2(1), CCDC 2114271.
+//
+// That is a crystallographic landscape, not a solubility determination:
+// nobody diffracted the residue of an AQUEOUS arabinose saturation
+// experiment.  The three-tier rule therefore forces
+// `inferredFromPhaseStability`, and an inferred phase never promotes a
+// digit -- naming the only known solid does not prove the (absent)
+// experimentalist had it.  The inference is nevertheless unusually safe,
+// because the source asserts the ABSENCE of alternatives, not merely a
+// stability ranking.
+//
+// A SECOND SOLID EXISTS BUT IS NOT THIS ONE.  The same work shows DL-
+// arabinose forms a true RACEMIC COMPOUND (monoclinic P2(1)/c, CCDC
+// 2114270) which is MORE stable than a mixture of the two enantiomers, and
+// slurry experiments at 25 C convert the enantiomeric mixture into it.
+// That racemic compound is a different substance from the natural single
+// enantiomer named in `participants`; it is recorded here so nobody
+// mistakes the two, not as an alternative phase for THIS record.
+//
+// MUTAROTATION applies as for the other sugars: the crystal is the beta
+// anomer, the solution carries an anomeric equilibrium.
+//
+// THE NUMBER IS STILL GONE, AND WHY.
+// Phase-2 carried ~834 g/L from The Merck Index -- paywalled, deleted in
+// phase 4.  Phase 6 re-hunted: Tyson et al. 2022 measured L-arabinose
+// solubility thermogravimetrically at 5-55 C but ONLY in 50:50 and 70:30
+// w/w ethanol/water (their 25 C point in 50:50 ethanol/water is
+// 0.1389 +/- 0.0038 g solid / g solution).  That is a different solvent and
+// is deliberately NOT transplanted into this water record.  No open
+// measuring primary for pure water was located.
+//
+// AND THE DEFECT UPSTREAM OF ALL OF THIS IS UNCHANGED: the arabinose
+// COMPONENT record carries a known-wrong InChIKey (copied from xylose, per
+// sugars_SOURCES.md item 7).  Until the identity is fixed there is no point
+// pinning a solubility to it.  Fix the component first.
+value
+{
+    available     none;   // still no open MEASURED digit in PURE water -- see blockedBy
+}
+
+provenance
+{
+    origin      -;
+    citation    "WITHDRAWN in phase 4 -- the previous value came from The Merck Index (paywalled commercial compilation) and is not redistributable.  Phase 6 re-hunt found no open, readable, MEASURED replacement in PURE water";
+    doi         "-";
+    licence     "-";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Tyson, B.M., Pask, C.M., George, N. & Simone, E., Crystallization Behavior and Crystallographic Properties of dl-Arabinose and dl-Xylose Diastereomer Sugars, Cryst. Growth Des. 22 (2022) 1371-1383";
+    doi         "10.1021/acs.cgd.1c01329";
+    licence     "CC-BY 4.0";
+    basis       "L-arabinose crystallises exclusively as the six-membered-ring beta-anomer (orthorhombic P2(1)2(1)2(1), CCDC 2114271); the work states that no other polymorph or solvated structure of arabinose is currently known.  This is a crystallographic landscape, NOT a diffraction of an aqueous saturation residue -- hence inferred, not stated";
+}
+
+adjacentSolid
+{
+    name        DL-arabinose;
+    note        "a true racemic COMPOUND, monoclinic P2(1)/c, CCDC 2114270, MORE stable than the enantiomeric mixture (slurry conversion demonstrated at 25 C in the same work).  A different substance from the L-enantiomer this record is about -- listed so the two are never conflated";
+}
+
+nextStep        "(1) fix the component record's InChIKey -- the identity gates everything else; (2) find an open, MEASURED aqueous solubility of L-arabinose in PURE water with a stated temperature and basis";
+
+blockedBy       "the component's InChIKey is known-wrong so the identity itself is unsettled; no open measured digit in PURE water (The Merck Index carrier deleted in phase 4; the CC-BY crystallography paper measured only ethanol/water mixtures); and the phase is INFERRED from a crystallographic landscape, which by rule cannot promote a digit even once one exists";
+
+status          flagged;

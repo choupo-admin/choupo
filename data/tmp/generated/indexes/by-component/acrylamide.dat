@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'acrylamide'
+component acrylamide;
+records
+(
+    { recordType cosmoSurface; recordId lvpp-acrylamide; category flagged; file "evidence/lvpp-acrylamide/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-acrylamide-water; category flagged; file "parameters/transport/diffusion/acrylamide-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId acrylamide-octanol-water; category rightsPending; file "parameters/partition/acrylamide-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId acrylamide-water; category flagged; file "parameters/solubility/acrylamide-water.candidate.dat"; }
+);

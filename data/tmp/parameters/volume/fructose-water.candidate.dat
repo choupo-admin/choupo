@@ -1,0 +1,46 @@
+// data/tmp/parameters/volume/fructose-water.candidate.dat
+// PRIVATE staging tier (data/tmp, gitignored).  Envelope: ../../RECORD_SPEC.md.
+// Emitted 2026-07-24 (phase 3) when components/fructose.candidate.dat was cleaned:
+// the value sat there as `Vliq`, i.e. as if it were a pure-component volume.  It
+// is NOT: an apparent/partial molar volume at infinite dilution is a SOLUTE-IN-
+// SOLVENT property -- arity 2 -- so it cannot live in a component file.
+
+recordType      partialMolarVolume;
+schemaVersion   1;
+recordId        volume-fructose-water;
+participants    ( fructose water );
+property        apparentMolarVolumeAtInfiniteDilution;
+
+conditions
+{
+    temperature   298.15 K;
+    pressure      101325 Pa;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    V0            110.6 cm3/mol;       // = 1.106e-4 m3/mol
+    // UNIT CONVERSION (shown, not hidden): 110.6 cm3/mol x 1e-6 = 1.106e-4 m3/mol
+}
+
+provenance
+{
+    origin      measured;              // density + ultrasound velocity
+    citation    "Galema & Hoiland, 'Stereochemical aspects of hydration of
+                 carbohydrates in aqueous solutions', J. Phys. Chem. 95 (1991) 5321";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:components-sugars";
+    retrieved   2026-07-24;
+}
+
+note
+    "Do NOT confuse this with the PURE-SOLID molar volume of crystalline fructose
+    (112.60 cm3/mol = MW/rho), which is arity 1 and stays in the component file.
+    The two differ by ~2 cm3/mol; they are different quantities, not two estimates
+    of one quantity.";
+
+status          candidate;

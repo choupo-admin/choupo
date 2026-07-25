@@ -1,0 +1,8 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'atrazine'
+component atrazine;
+records
+(
+    { recordType acidDissociation; recordId atrazine-pKa1; category flagged; file "chemistry/aqueousSpeciation/atrazine-pKa1.candidate.dat"; }
+    { recordType partitionCoefficient; recordId atrazine-octanol-water; category rightsPending; file "parameters/partition/atrazine-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId atrazine-water; category flagged; file "parameters/solubility/atrazine-water.candidate.dat"; }
+);

@@ -1,0 +1,75 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of erythritol in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/erythritol.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: number DELETED on rights grounds; solid phase NOT
+  ESTABLISHED.  A paywalled measuring primary is named as the lead.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        erythritol-water;
+participants    ( erythritol water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C, as the withdrawn source stated
+    pressure      101325 Pa;   // ambient, ASSUMED
+    phase         aqueous;
+    solidPhase    unspecified;
+    phaseBasis    notEstablished;
+}
+
+// RIGHTS ACTION (phase 4): NUMBER DELETED.
+//
+// The only carrier of this value was The Merck Index -- a paywalled
+// commercial compilation with no grant to honour.  The phase-4 rule is
+// that a non-redistributable number is not kept merely because it is
+// convenient: either it is re-routed to an open source that is verified
+// to report the same quantity, or it goes.  A search for an open
+// measuring primary reporting this solubility did not find one that
+// could be read and verified, so the digit has been removed rather than
+// re-labelled.  What remains is a structured absence: the record still
+// exists, still declares the equilibrium it is about, and states exactly
+// what is missing and why.
+//
+// The withdrawn statement also used the per-volume-of-SOLVENT convention
+// ("N g per 100 mL water"), so its mg/L transcription was per litre of
+// water, not per litre of solution -- a tens-of-percent difference at
+// this concentration.  Any replacement must state its basis.
+//
+// LEAD for a proper re-route: there is a measuring primary in the
+// Journal of Chemical & Engineering Data, "Solubility of Erythritol in
+// Different Solvents" (2005), which determined the disappearance of the
+// solid phase by a synthetic laser-monitoring method.  It is a research
+// article, not a compilation, so taking its water datum would clear
+// rights -- but it was not readable here, so nothing from it is recorded.
+value
+{
+    available     none;   // number DELETED in phase 4 -- see blockedBy
+}
+
+provenance
+{
+    origin      -;
+    citation    "WITHDRAWN -- the previous value came from The Merck Index (paywalled commercial compilation) and is not redistributable";
+    doi         "-";
+    licence     "-";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+nextStep        "read 'Solubility of Erythritol in Different Solvents', J. Chem. Eng. Data (2005), doi 10.1021/je0501033, and record its pure-water datum with the solid phase as that paper states it";
+
+blockedBy       "The Merck Index -- not redistributable, value deleted; no open measuring primary read; no source states the equilibrating solid phase";
+status          flagged;

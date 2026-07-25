@@ -1,0 +1,125 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: furfurylAlcohol  (C5H6O2, CAS 98-00-0)
+  Furfural derivative; resin precursor and bio-based solvent.  Curated for the
+  VLE / distillation leg.
+
+  IDENTITY source: PubChem CID 7361 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 98-00-0 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  No aqueous
+    diffusion / partition / solubility / speciation datum was ever staged, so
+    nothing was re-homed out of it in phase 2 -- but the COSMO material was.
+
+  STATUS: candidate.  Vliq is solid; Tb is a handbook value with no primary; the
+    stored HvapTb was a MISLABELLING (see below); Tc / Pc / omega / Antoine /
+    Cp / formation datum are all absent.
+\*---------------------------------------------------------------------------*/
+
+name              furfurylAlcohol;
+formula           C5H6O2;
+CAS               98-00-0;
+SMILES            "OCc1ccco1";
+InChIKey  XPFVYQJUAUNWIW-UHFFFAOYSA-N;   // 14-char skeleton only.
+MW                98.10;            // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "normal boiling point present in this file -- the compound IS volatile";
+    contradictsStagedRole   yes;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+                                    //   volatile liquid (Tb = 443 K), but
+                                    //   `volatile` demands a vaporPressure block
+                                    //   and none is in hand.  FLAG for review.
+
+// groups: NOT decomposed.  Same Joback caveat as HMF -- its aromatic groups are
+//   BENZENE-type and there is no furan heteroaromatic group.  Declared gap.
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+Tb                443.0;    // K (170 degC), normal boiling point.
+                            //   [FLAG -- NO PRIMARY]  Staged as a "standard
+                            //   handbook value", with the note that the free NIST
+                            //   aggregate is noisy (430 +/- 70 K).  A handbook is
+                            //   a compilation, not a primary; the number is kept
+                            //   but is not citable as-is.
+
+Vliq              8.70e-5;  // m3/mol, LIQUID at 293 K = MW/rho with
+                            //   rho = 1128 kg/m3 (1.128 g/cm3 @20 degC).
+                            //   [PubChem CID 7361 experimental density; US NIH,
+                            //   public domain]
+
+// dvapH(T) -- two determinations at two temperatures, from two sources, NEITHER
+// at Tb.  Kept structured because it is usable science and may not live in a
+// comment; NOT merged, NOT averaged.
+vaporizationEnthalpy
+{
+    model     tabulated;
+    unit      "J/mol";
+    points
+    (
+        ( 298.0  64400 )   // +/- 1700 J/mol.  FULL CITATION RESOLVED 2026-07-25:
+                           //  Landrieu, P.; Baylocq, F.; Johnson, J.R., "Etude
+                           //  thermochimique dans la serie furanique", Bull. Soc.
+                           //  Chim. France 45 (1929) 36-49 (a primary).
+        ( 319.0  53600 )   // [Stephenson & Malanowski, "Handbook of the
+                           //  Thermodynamics of Organic Compounds" (1987), a
+                           //  COMPILATION; stated valid 304-443 K]
+    );
+    note      "the two points disagree by ~20 % over 21 K, far beyond any physical dvapH slope -- they are competing determinations, not a data set; do not fit them";
+    status    flagged;
+}
+
+// HvapTb -- REMOVED (defect).  The file previously stored HvapTb = 53 600 J/mol.
+//   That is the 319 K point of the table above, not a value at Tb = 443 K; the
+//   parenthetical "[near Tb]" in the old comment was simply wrong (319 K is
+//   124 K below Tb).  No measurement at Tb exists and none is extrapolated.
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// Tc / Pc / omega        : not on any free source (the staged note points at a
+//                          subscription TRC compilation).  Not estimated: the
+//                          Joback furan gap above blocks Choupo's own estimator.
+// vaporPressure (Antoine): none located.  Without it `role volatile` cannot be
+//                          honoured, which is why the role is `nonvolatile`.
+// idealGasHeatCapacity   : none located.
+// standardThermochemistry: none located on any open source.
+//
+// COSMO-SAC -- NO `cosmo {}` BLOCK.  evidence/lvpp-furfurylAlcohol (recordId
+//   lvpp-furfurylAlcohol) holds the LVPP cavity descriptors as EVIDENCE only:
+//   the LVPP QM protocol is incompatible with Choupo's VT-2005 `cosmoSAC2002`
+//   sets -- ethylene, the one compound present in both databases, differs by
+//   +6.1 % cavity area and +10.3 % cavity volume.  Cavity area, volume AND the
+//   sigma profile all depend on the protocol, so no mixed paste is legitimate.
+//   (The staged note that furfuryl alcohol should be looked up in VT-2005 stands
+//   as the LEGITIMATE route: a VT-2005 set, if it exists, is directly usable.)
+// PC-SAFT -- associating (OH); no set located, none fitted
+//   (parameters/PCSAFT/_INVENTORY.md, section 3).
+
+provenance
+{
+    Tb
+    {
+        origin      unattributed;
+        citation    "'standard handbook value' -- no primary staged";
+        note        "the free NIST aggregate for this compound is 430 +/- 70 K, i.e. useless as a cross-check";
+        status      flagged;
+    }
+    Vliq
+    {
+        origin      derived;
+        method      "MW / rho, rho = 1128 kg/m3 at 20 degC (liquid)";
+        citation    "PubChem CID 7361 experimental density (US NIH, public domain)";
+        note        "density at 20 degC, not 25 degC";
+        status      candidate;
+    }
+}

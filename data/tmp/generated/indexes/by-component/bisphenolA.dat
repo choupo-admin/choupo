@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'bisphenolA'
+component bisphenolA;
+records
+(
+    { recordType acidDissociation; recordId bisphenolA-pKa1; category verified; file "chemistry/aqueousSpeciation/bisphenolA-pKa1.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-bisphenolA; category flagged; file "evidence/lvpp-bisphenolA/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-bisphenolA-water; category flagged; file "parameters/transport/diffusion/bisphenolA-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId bisphenolA-octanol-water; category rightsPending; file "parameters/partition/bisphenolA-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId bisphenolA-water; category flagged; file "parameters/solubility/bisphenolA-water.candidate.dat"; }
+);

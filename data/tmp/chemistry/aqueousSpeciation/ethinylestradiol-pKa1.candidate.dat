@@ -1,0 +1,45 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/ethinylestradiol.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        ethinylestradiol-pKa1;
+participants    ( ethinylestradiol ethinylestradiolate- H+ );
+property        pKa;
+reaction        "ethinylestradiol (phenolic A-ring OH) = ethinylestradiolate- (phenolate) + H+";
+site            "phenolic OH (A-ring)";
+step            1;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- the source does NOT state a temperature (FLAG)
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    pKa             ~10.4;   // quoted as an approximate value
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      estimated;
+    citation    "NOT PINNED -- routed to Lewis & Archer, 'pKa values of estrone, 17beta-estradiol and 2-methoxyestrone', Steroids 34 (1979) 485-499 (and Hurwitz & Liu 1977); value below is the canonical range quoted in hormones_SOURCES.md, not in PubChem";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          flagged;
+
+// NOTES
+//   Re-homed from components/ethinylestradiol.candidate.dat (already FLAGGED there)
+//   No primary pinned; the exact value/temperature must be transcribed from Lewis & Archer 1979.

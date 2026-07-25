@@ -1,0 +1,66 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/fructose.candidate.dat; primary citation
+  cross-checked against data/tmp/sugars_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-fructose-water;
+participants    ( fructose water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             6.86e-10 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// a Stokes radius computed FROM the D above is NOT an independent datum
+derived
+{
+    equation      "r = kT/(6 pi mu D)";
+    viscosity     0.8903e-3 Pa.s;
+    temperature   298.15 K;
+    radius        0.358 nm;
+    origin        derived;
+}
+
+crossCheck
+{
+    note          "a second value 7.00e-10 m2/s is reported by Uedaira (~2% spread); NOT merged";
+}
+
+provenance
+{
+    origin        measured;
+    citation      "Ribeiro et al., J. Chem. Eng. Data 51 (2006) 1836-1840 (Taylor dispersion)";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          candidate;

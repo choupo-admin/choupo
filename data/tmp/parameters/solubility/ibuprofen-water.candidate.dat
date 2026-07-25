@@ -1,0 +1,87 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of ibuprofen in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/ibuprofen.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT then: solid phase NOT ESTABLISHED -- a structured gap.
+
+  PHASE 6 (2026-07-24, agent:solubility) -- the SOLID PHASE is now established
+  by INFERENCE: at 298.15 K the only crystalline racemic ibuprofen that can
+  exist is the conventional phase I, because the sole known alternative
+  (phase II) MELTS at 290 K.  An inferred phase does not promote the digit,
+  so the record stays flagged -- but the polymorph half of the gap is closed.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        ibuprofen-water;
+participants    ( ibuprofen water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    ibuprofenRacemicPhaseI;
+    phaseBasis    inferredFromPhaseStability;
+}
+
+// PHASE 4 search: no determination of ibuprofen's aqueous solubility that
+// NAMES its equilibrating crystalline form was located.  What IS settled
+// is the ionisation state, not the crystal: the number is for the NEUTRAL
+// acid (racemic; the (S)-enantiomer is a different solid with a different
+// solubility), and above pKa 4.91 the dissolved species is the anion.
+//
+// PHASE 6 -- THE POLYMORPH QUESTION IS CLOSED BY A TEMPERATURE ARGUMENT.
+// Racemic ibuprofen is known in exactly two crystalline phases.  Dudognon,
+// Danede, Descamps & Correia (Pharm. Res. 25 (2008) 2853-2858) report that
+// the conventional phase (I) melts at 349 K, and that the new phase II
+// nucleates only after a stay at least 60 K BELOW the glass transition
+// (Tg = 228 K) and then MELTS AT 290 K.
+//
+// 290 K is 17 C.  At the 298.15 K of this record phase II is not a solid at
+// all, so it cannot be the solid at the bottom of a saturated aqueous
+// solution.  The equilibrating crystal at 25 C can only be phase I.  This is
+// a phase-stability argument on a published phase diagram, not a statement
+// by the solubility determination, so the tier is
+// `inferredFromPhaseStability` and the digit is NOT promoted.
+//
+// WHAT IS STILL OPEN: the RACEMATE-vs-CONGLOMERATE axis is settled in the
+// literature (racemic ibuprofen is a true racemic compound, and both phases
+// above are phases OF the racemate), but no source consulted screened
+// racemic ibuprofen for a HYDRATE, and the surviving numeric source
+// (AQUASOL, via PubChem) still says nothing about its solid at all.
+value
+{
+    solubility    21 mg/L;
+    originalStatement  "21 mg/L @ 25 C, neutral form";   // verbatim, before conversion
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Yalkowsky, S.H. & Dannenfelser, R.M., AQUASOL Database, Univ. Arizona 1992; via PubChem";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Dudognon, E., Danede, F., Descamps, M. & Correia, N.T., Evidence for a New Crystalline Phase of Racemic Ibuprofen, Pharm. Res. 25 (2008) 2853-2858";
+    doi         "10.1007/s11095-008-9655-7";
+    basis       "racemic ibuprofen has two known crystalline phases; phase II melts at 290 K and nucleates only from a deeply quenched glass, phase I melts at 349 K -- so at 298.15 K phase I is the only crystalline racemate that exists";
+}
+
+blockedBy       "the phase is INFERRED from the melting behaviour of the two known polymorphs, not stated by the determination, so by rule it cannot promote the digit; no source consulted screened racemic ibuprofen for a hydrate; and the surviving numeric source (AQUASOL via PubChem) names no solid";
+status          flagged;

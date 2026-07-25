@@ -1,0 +1,131 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Originally re-homed 2026-07-24 (phase 2) from a
+  COMMENT LINE in data/tmp/components/PFOA.candidate.dat.
+
+  PHASE 6 (2026-07-24) -- REWRITTEN.  Two defects were found and corrected:
+
+    (1) PROVENANCE ERROR.  The phase-2 record carried the datum as
+        `origin measured` citing "Goss, Environ. Sci. Technol. 41 (2007) 3225".
+        Goss is NOT a measurement -- the paper ESTIMATES the value "based on
+        analogy considerations and molecular modeling" (abstract, read by the
+        curator).  The citation was also wrong: the paper is Environ. Sci.
+        Technol. 42(2) (2008) 456-458, doi 10.1021/es702192c.
+    (2) SUPERSEDED VALUE.  Goss published an Addition/Correction moving his own
+        estimate from -0.5 to "close to 0".  The -0.5 that phase 2 carried as
+        THE datum is the withdrawn figure.
+
+  The datum is therefore re-pointed to the most recent EXPERIMENTAL
+  determination (Vierke 2013).  The record stays `flagged`, not because that
+  determination is weak but because the literature spread on this one
+  equilibrium is genuinely unresolved -- see DISPUTE below.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        PFOA-pKa1;
+participants    ( PFOA PFOA- H+ );
+property        pKa;
+reaction        "PFOA (C7F15-COOH, perfluorooctanoic acid) = PFOA- (perfluorooctanoate) + H+";
+site            "carboxylic acid (-COOH)";
+step            1;
+
+conditions
+{
+    temperature     not stated;   // the source does NOT state a temperature.  Phase 2 wrote
+                                  // a conventional 298.15 K here; that was an assumption, not
+                                  // a datum, so it is now written as the absence it is.
+    phase           aqueous;
+    ionicStrength   not stated;
+    composition     "~1 ug/L PFOA in water -- DELIBERATELY below the self-association
+                     (micellisation) threshold; pH varied 0.3 to 6.9";
+}
+
+value
+{
+    pKa             0.5;   // derived by fitting a volatilization model to the measured
+                           // water-to-air transfer as a function of pH
+    // uncertainty: not quoted as a +/- in the abstract
+}
+
+alternativeDeterminations   // ONE equilibrium, ONE record -- rivals live here, never as siblings
+{
+    alt1
+    {
+        pKa         3.8;
+        uncertainty 0.1;
+        origin      measured;
+        method      "potentiometric titration in a water-methanol mixed solvent, extrapolated to water";
+        citation    "Burns, D.C., Ellis, D.A., Li, H., McMurdo, C.J. & Webster, E., Environ. Sci. Technol. 42 (2008) 9283-9288";
+        doi         "10.1021/es802047v";
+        note        "The SAME paper reports the apparent pKa dropping to ~2.3 at higher
+                     concentration because perfluorooctanoate aggregates -- i.e. the
+                     measurement is concentration-dependent, which is the crux of the
+                     dispute.  A published Comment and the authors' Response
+                     (doi 10.1021/es900815a) contest this value; the curator has NOT
+                     read that exchange.";
+    }
+    alt2
+    {
+        pKa         "close to 0 (was -0.5 as first published)";
+        origin      estimated;     // NOT a measurement
+        method      "analogy considerations + COSMOtherm / SPARC molecular modelling";
+        citation    "Goss, K.-U., Environ. Sci. Technol. 42 (2008) 456-458, and its Addition/Correction";
+        doi         "10.1021/es702192c";
+    }
+    alt3
+    {
+        pKa         1.30;
+        citation    "Kutsuna, S. & Hori, H. (2008) -- carried over from phase 2; the curator has NOT seen this primary";
+    }
+    alt4
+    {
+        pKa         2.80;
+        citation    "Moody, C.A. & Field, J.A. (2000) -- carried over from phase 2; the curator has NOT seen this primary";
+    }
+}
+
+dispute
+{
+    span        "the reported values span >3 log units (about 0 to 3.8)";
+    cause       "PFOA is a surfactant: it adsorbs at the air-water and vessel
+                 interfaces and self-associates above ~mg/L, so the APPARENT pKa
+                 depends on concentration and on whether a co-solvent was used.
+                 The two camps differ in what they measured, not only in precision.";
+    whyThisDatum "Vierke 2013 works at ~1 ug/L -- above environmental background but
+                 BELOW self-association -- which is the concentration regime a
+                 membrane/water-treatment case actually operates in.  Burns 2008 is a
+                 direct potentiometric titration but in water-methanol and at
+                 concentrations where the authors themselves show aggregation shifts
+                 the constant.";
+    verdict     "UNRESOLVED.  Do not present any single number as settled.";
+}
+
+provenance
+{
+    origin      derived;   // experimental measurements + a volatilization-model fit
+    citation    "Vierke, L., Berger, U. & Cousins, I.T., 'Estimation of the acid dissociation constant of perfluoroalkyl carboxylic acids through an experimental investigation of their water-to-air transport', Environ. Sci. Technol. 47 (2013) 11032-11039";
+    doi         "10.1021/es402691z";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation (phase 6)";
+    retrieved   2026-07-24;
+}
+verification
+{
+    primaryIdentified   yes;
+    primaryRead         "abstract only";   // full text is paywalled; the value, the method,
+                                           // the concentration and the pH range are all
+                                           // stated IN the abstract and were read there
+    valueSeenInPrimary  yes;
+    conditionsSeen      partial;           // concentration + pH range yes; temperature NOT stated
+}
+status          flagged;
+
+// NOTES
+//   Re-homed from components/PFOA.candidate.dat (phase 2), rewritten phase 6.
+//   PHASE-2 DEFECT CORRECTED: `origin measured` + "Goss ... 41 (2007) 3225" was wrong on
+//     all three counts (origin, volume, year) and carried a value its own author withdrew.
+//     Phase 2's status was `candidate`; this record is DELIBERATELY demoted to `flagged`.
+//     That is not a regression -- the previous confidence was unearned.
+//   DROPPED (phase 2, still dropped): 'charge -1' at ambient pH -- a derived result.

@@ -1,0 +1,78 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  logKow of ethinylestradiol between 1-octanol and water.
+
+  ARITY 3: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/ethinylestradiol.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      partitionCoefficient;
+schemaVersion   1;
+recordId        ethinylestradiol-octanol-water;
+participants    ( ethinylestradiol octanol water );
+property        logKow;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- the conventional log P reference
+                  // temperature is NOT restated by the source; the
+                  // 25 C convention is assumed and flagged here.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    pH            "neutral form";
+    chemicalForm  neutral;
+}
+
+// phenol pKa ~10.4 (FLAGGED in the component record) => neutral at
+// ambient pH.
+value
+{
+    logKow   3.67;   // dimensionless (log10 of a concentration ratio)
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Hansch, C., Leo, A. & Hoekman, D., Exploring QSAR, ACS 1995 (LogP database); via PubChem CID 5991 / HSDB";
+    doi         "-";
+    licence     "rightsPending -- see the PHASE 6 RIGHTS RULING block below";
+    evidenceId  -;
+    curator     "agent:partition";
+    retrieved   2026-07-24;
+}
+
+status          rightsPending;
+
+// ============================================================================
+// PHASE 6 RIGHTS RULING (2026-07-24) -- STATUS DOWNGRADED, VALUE UNTOUCHED
+// ============================================================================
+//   Ruling: Hansch, Leo & Hoekman, "Exploring QSAR" (ACS 1995) is NOT a
+//   redistributable source.  It is a protected ACS monograph functioning here as a
+//   compilation/databank; neither its values nor its selection/arrangement may be the
+//   source of record.  It may be used ONLY as a bibliographic lead, via the full chain:
+//     (1) identify the PRIMARY the monograph cites for THIS compound;
+//     (2) obtain and read that primary independently;
+//     (3) confirm IN the primary: value, definition, T, pH / chemical form, units;
+//     (4) cite the PRIMARY and its evidence -- never Hansch;
+//     (5) if the primary is unidentifiable or its rights are incompatible, DELETE the
+//         value and leave a structured absence.
+//
+//   AUDIT FOR THIS RECORD
+//     old source              : Exploring QSAR, ACS 1995 (LogP database)
+//     routed via              : PubChem / HSDB (a locator, not the source of record)
+//     primary identified      : no   -- the monograph's own citation for this
+//                               compound was not visible through the PubChem re-quote
+//     primary actually read   : no
+//     chain completed         : no
+//     value                   : UNCHANGED (not deleted -- the number is retained for
+//                               internal evaluation in this private tier only)
+//     status                  : candidate -> rightsPending
+//
+//   The phase-2 ledger's claim of "rightsPending = 0" on the partition side is therefore
+//   NOT factual and is corrected in _LEDGER.md.
+//   NOT PROMOTABLE until the chain above is completed.
+
+// ============================================================================

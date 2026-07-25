@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'diclofenac'
+component diclofenac;
+records
+(
+    { recordType acidDissociation; recordId diclofenac-pKa1; category absent; file "chemistry/aqueousSpeciation/diclofenac-pKa1.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-diclofenac; category flagged; file "evidence/lvpp-diclofenac/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-diclofenac-water; category flagged; file "parameters/transport/diffusion/diclofenac-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId diclofenac-octanol-water; category rightsPending; file "parameters/partition/diclofenac-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId diclofenac-water; category flagged; file "parameters/solubility/diclofenac-water.candidate.dat"; }
+);

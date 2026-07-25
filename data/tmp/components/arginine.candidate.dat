@@ -1,0 +1,151 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: arginine  (L-arginine, C6H14N4O2, CAS 74-79-3)
+  PRIVATE staging tier (data/tmp/, gitignored).  The runtime does NOT read it.
+
+  ARITY-1 ONLY (phase 3, 2026-07-24).  Intrinsic pure-compound data only; every
+  system / state property has been MOVED to its arity-correct home and is
+  referenced by POINTER below.  Envelope: ../RECORD_SPEC.md.
+
+  ABSENCES ARE EXPLICIT, never prose: S(298) and Cp(298) are structurally
+  declared MISSING with status flagged and the paywalled primary that would
+  resolve them.  No number is invented, and no placeholder is written.
+\*---------------------------------------------------------------------------*/
+
+name           arginine;
+formula        C6H14N4O2;
+CAS            74-79-3;
+InChIKey       ODKSFYDXXFIFQN-BYPYZUCNSA-N;
+pubchemCID     6322;
+MW             174.20;            // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+identityProvenance
+{
+    source      "PubChem CID 6322 (US NIH, public domain), PUG-REST";
+    licence     "public-domain fact";
+    curator     "agent:components";
+    retrieved   2026-07-24;
+    status      candidate;
+}
+
+standardThermochemistry
+{
+    phase            solid;            // crystalline zwitterion
+    referenceState   pureSolid;
+    dHf_298          -637700.0;        // J/mol
+
+    s_298
+    {
+        available    none;             // EXPLICIT ABSENCE -- do not fabricate
+        unit         "J/(mol K)";
+        phase        solid;
+        status       flagged;
+        blockedBy    "Pokorny et al., Int. J. Thermophys. 42 (2021) article 156 -- PAYWALLED; the NIST WebBook condensed-phase page for C74793 exposes no S(298) (reaction thermochemistry only)";
+        attempted    "2026-07-25: the OPEN Pokorny et al. Molecules 28 (2023) 451 (PMC9823850) was checked -- its title set is L-Cys/L-Ser/L-Thr/L-Lys/L-Met and it does NOT include arginine.  The 2021 paywalled paper therefore remains the sole S/Cp source; not obtained.";
+        action       "transcribe S(298) digit-exact from Int. J. Thermophys. 42 (2021) 156 at curation";
+    }
+
+    provenance
+    {
+        dHf_298
+        {
+            unit        "J/mol";
+            phase       solid;
+            origin      measured;
+            citation    "Yang, Liu, Gao, Hou & Shi (1999), combustion calorimetry";
+            route       "via the OPEN Iris compilation (Neacsu / Perisanu, 'The Enthalpy of Formation of L-alpha-Amino Acids', ID.000515)";
+            crossCheck  "the same compilation lists an alternative -635.5 kJ/mol [ref 52]; also Lukyanova, Papina et al., Moscow Univ. Chem. Bull. 66 (2011) 88 -- quoted, NOT merged or averaged";
+            licence     "facts, primary-cited";
+            status      candidate;
+        }
+    }
+}
+
+solidHeatCapacity
+{
+    phase         solid;
+    available     none;                // EXPLICIT ABSENCE -- do not fabricate
+    unit          "J/(mol K)";
+    status        flagged;
+    blockedBy     "Pokorny et al., Int. J. Thermophys. 42 (2021) article 156 -- PAYWALLED";
+    attempted     "2026-07-25: the open Pokorny Molecules 28 (2023) 451 (PMC9823850) does NOT include arginine (only Cys/Ser/Thr/Lys/Met); no open Cp primary located.";
+    action        "transcribe Cp(298) digit-exact from Int. J. Thermophys. 42 (2021) 156 at curation; until then arginine cannot enter a solid-phase energy balance";
+}
+
+groups
+{
+    joback  none;
+    reason  "guanidinium side chain has no first-order Joback group; nonvolatile solute, no VLE estimate wanted";
+    status  flagged;
+}
+
+cosmo
+{
+    LVPP_B3LYP_def2SVPD
+    {
+        variant       lvppB3LYP_def2SVPD;
+        available     none;            // LVPP ships no COSMO output for arginine
+        source        "LVPP sigma database (github lvpp/sigma, MIT)";
+        status        flagged;
+    }
+    VT2005
+    {
+        variant       cosmoSAC2002;
+        available     none;
+        status        flagged;
+    }
+    reason        "no deployable set exists.  Even where LVPP data exist its QM protocol is incompatible with Choupo's VT-2005 cosmoSAC2002 constants (ethylene cross-check: +6.1 % cavity area, +10.3 % cavity volume) -- never tag an LVPP profile as cosmoSAC2002.";
+    modellingNote "amino acids are COSMO-modelled as the NEUTRAL gas-phase tautomer, never as the aqueous zwitterion";
+}
+
+pcSaft
+{
+    CamerettiSadowski2008
+    {
+        variant       pcSaftAssociating5Param;
+        available     none;
+        citation      "Cameretti & Sadowski, Chem. Eng. Process. 47 (2008) 1018 (neutral zwitterion); Held/Do ePC-SAFT for the charged form";
+        status        flagged;         // STRUCTURED ABSENCE -- no number is carried
+        blockedBy     "Cameretti & Sadowski (2008) is a paywalled article; the parameter
+                       row was never transcribed";
+        action        "read the amino-acid row of that paper (or Held & Sadowski's
+                       ePC-SAFT work for the charged form) and stage m, sigma, eps/k,
+                       N_assoc, eps_assoc/k, kappa_assoc TOGETHER WITH the association
+                       scheme, combining rules, objective function and data range --
+                       five numbers without a protocol are not a parameter set.  Take
+                       ONE compound's row with its own citation, never the table.";
+        legalNote     "reading one row of a primary research paper and citing it is
+                       normal scholarship; systematic extraction of the whole table is
+                       the EU sui-generis database-right risk.  Because NO number is
+                       held here, this block is a declared GAP, not a rights-pending
+                       value -- reclassified rightsPending -> flagged 2026-07-24.";
+    }
+}
+
+// --- MOVED OUT (arity >= 2 / state-dependent) -- POINTERS ONLY, no values ---
+references
+{
+    aqueousDiffusion    "parameters/transport/diffusion/arginine-water.candidate.dat (recordId diffusion-arginine-water) -- Choupo Stokes-Einstein ESTIMATE, flagged there";
+    stokesRadius        "derived inside that same diffusion record -- never a second datum";
+    acidDissociation    "chemistry/aqueousSpeciation/arginine-pKa1|pKa2|pKaR.candidate.dat (recordId arginine-pKa1, arginine-pKa2, arginine-pKaR)";
+    isoelectricPoint    "chemistry/aqueousSpeciation/arginine-pI.candidate.dat (recordId arginine-pI)";
+    chargeAtPH7         "DELETED as DERIVED -- the net +1 across the NF window follows from the pKa equilibria, never stored";
+    partialMolarVolume  "aqueous V2 at infinite dilution, FLAGGED approximate (Millero, Lo Surdo & Shin, J. Phys. Chem. 82 (1978) 784 / Mishra & Ahluwalia, J. Phys. Chem. 88 (1984) 86) -- carried inside the derivation{} block of the diffusion record above";
+    cosmoSurface        "no evidence record -- LVPP ships no COSMO output for arginine";
+}
+
+speciationNote  "strongly basic ampholyte: the van't Hoff factor is NOT a plain integer -- i = f(pH), set by the referenced dissociation equilibria, not by a component constant";

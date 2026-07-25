@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'lysine'
+component lysine;
+records
+(
+    { recordType acidDissociation; recordId lysine-pKa2; category flagged; file "chemistry/aqueousSpeciation/lysine-pKa2.candidate.dat"; }
+    { recordType acidDissociation; recordId lysine-pKaR; category flagged; file "chemistry/aqueousSpeciation/lysine-pKaR.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-lysine; category flagged; file "evidence/lvpp-lysine/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-lysine-water; category flagged; file "parameters/transport/diffusion/lysine-water.candidate.dat"; }
+    { recordType isoelectricPoint; recordId lysine-pI; category flagged; file "chemistry/aqueousSpeciation/lysine-pI.candidate.dat"; }
+);

@@ -1,0 +1,44 @@
+// data/tmp/parameters/volume/galactose-water.candidate.dat
+// PRIVATE staging tier (data/tmp, gitignored).  Envelope: ../../RECORD_SPEC.md.
+// Emitted 2026-07-24 (phase 3) out of components/galactose.candidate.dat, where it
+// sat as `Vliq` as if it were a pure-component volume.  An apparent/partial molar
+// volume at infinite dilution is a SOLUTE-IN-SOLVENT property -- arity 2.
+
+recordType      partialMolarVolume;
+schemaVersion   1;
+recordId        volume-galactose-water;
+participants    ( galactose water );
+property        apparentMolarVolumeAtInfiniteDilution;
+
+conditions
+{
+    temperature   298.15 K;
+    pressure      101325 Pa;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    V0            110.2 cm3/mol;       // = 1.102e-4 m3/mol
+}
+
+provenance
+{
+    origin      measured;              // density + ultrasound velocity
+    citation    "Galema & Hoiland, 'Stereochemical aspects of hydration of
+                 carbohydrates in aqueous solutions', J. Phys. Chem. 95 (1991) 5321";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:components-sugars";
+    retrieved   2026-07-24;
+}
+
+note
+    "The PURE-SOLID molar volume of crystalline galactose (120.1 cm3/mol = MW/rho)
+    is a different, arity-1 quantity and stays in the component file.  The 10
+    cm3/mol gap between them is real physics (crystal packing vs hydration), not
+    a discrepancy.";
+
+status          candidate;

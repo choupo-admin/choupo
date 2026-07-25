@@ -1,0 +1,7 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'iopromide'
+component iopromide;
+records
+(
+    { recordType diffusionCoefficient; recordId diffusion-iopromide-water; category flagged; file "parameters/transport/diffusion/iopromide-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId iopromide-octanol-water; category absent; file "parameters/partition/iopromide-octanol-water.candidate.dat"; }
+);

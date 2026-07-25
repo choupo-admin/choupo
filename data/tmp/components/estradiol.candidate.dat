@@ -1,0 +1,107 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: estradiol  (17-beta-estradiol, C18H24O2, CAS 50-28-2)
+  Steroid endocrine disruptor (EDC); the most-studied estrogenic EDC in NF/RO
+  and a canonical trace-organic rejection benchmark.
+
+  IDENTITY source: PubChem CID 5757 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 50-28-2 as listed on that public record
+    (a bare fact, not the proprietary CAS arrangement).
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  Every system /
+    equilibrium / state datum that used to sit in this file's comment block was
+    re-homed in phase 2 and is NOT duplicated here -- one datum, one home
+    (data/tmp/RECORD_SPEC.md, ARITY rule).  The pointers below carry NO numbers.
+
+  STATUS: candidate.  Not promotable -- no thermochemistry, no Cp, no VLE leg.
+\*---------------------------------------------------------------------------*/
+
+name              estradiol;
+formula           C18H24O2;
+CAS               50-28-2;
+InChIKey  VOXZDWNPVJITMN-ZBRFXRBCSA-N;   // 14-char skeleton only; the full 27-char
+                                    //   InChIKey (with the stereo/protonation
+                                    //   layers) was not staged -- do NOT join
+                                    //   on this as if it were a full key.
+MW                272.38;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+                                    //   NF/RO leg), not a measured statement
+                                    //   about the pure substance's volatility.
+
+
+// ---- RE-HOMED IN PHASE 2 (pointers only, no values) ------------------------
+// D_aq + Stokes radius  -> parameters/transport/diffusion/  recordId diffusion-estradiol-water
+// logKow                -> parameters/partition/            recordId estradiol-octanol-water
+// aqueous solubility    -> parameters/solubility/           recordId estradiol-water
+// phenolic-OH pKa       -> chemistry/aqueousSpeciation/     recordId estradiol-pKa1
+// COSMO cavity (LVPP)   -> evidence/lvpp-estradiol/         recordId lvpp-estradiol
+// chargeAtPH7 was DELETED, not moved: a net charge at a pH is a RESULT of the
+//   equilibrium, never a stored constant (RECORD_SPEC.md).
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+Tfus              451.65;   // K (178.5 degC), crystalline solid.  The POLYMORPH
+                            //   is not stated by the source -- form unspecified.
+                            //   [HSDB via PubChem CID 5757; US NLM, public domain]
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// solidDensity           : no crystal density on the public record (PubChem /
+//                          HSDB carry none).  Absent, NOT estimated.  The Le Bas
+//                          additive volume that feeds the Wilke-Chang diffusion
+//                          estimate lives inside diffusion-estradiol-water, which
+//                          is where that derivation belongs.
+// standardThermochemistry: no open combustion / formation datum for crystalline
+//                          estradiol located.  Nothing fabricated.  Not needed
+//                          for the membrane leg (no energy balance runs on a
+//                          trace solute).
+// Tc / Pc / omega /
+// vaporPressure /
+// idealGasHeatCapacity   : no VLE leg.  A fused-ring steroid decomposes before
+//                          it boils and Joback is not parametrized for it.
+//
+// pKa -- DELIBERATELY ABSENT HERE (an equilibrium is arity >= 2, RECORD_SPEC ARITY
+//   rule).  It lives in chemistry/aqueousSpeciation/estradiol-pKa1.candidate.dat
+//   and nowhere else.  RIGHTS CLEARANCE 2026-07-24: that record no longer carries
+//   the DrugBank value.  The route named here was followed -- Lewis, K.M. &
+//   Archer, R.D., Steroids 34 (1979) 485-499 (PMID 516114) -- and it does NOT
+//   confirm the old 10.46: the primary reports pKa = 10.71 for 17beta-estradiol.
+//   10.71 is now the datum (status candidate); 10.46 (DrugBank, CC BY-NC 4.0,
+//   EXCLUDED from the public tier) survives only inside that record's crossCheck{}
+//   block and may never be promoted.
+//
+// COSMO-SAC -- NO DEPLOYABLE SET, and no `cosmo {}` block may be written here.
+//   evidence/lvpp-estradiol holds the LVPP cavity descriptors as EVIDENCE only:
+//   the LVPP QM protocol is incompatible with Choupo's VT-2005 `cosmoSAC2002`
+//   sets (measured on the one compound present in both databases -- ethylene:
+//   +6.1 % cavity area, +10.3 % cavity volume).  Cavity area, volume AND the
+//   sigma profile all depend on the QM protocol, so a mixed paste is invalid.
+//   The LVPP surface is the NEUTRAL GAS-PHASE tautomer, NEVER the aqueous
+//   species -- any aqueous use of it must say so out loud.
+// PC-SAFT -- no published steroid parameter set exists
+//   (parameters/PCSAFT/_INVENTORY.md, section 3).
+
+provenance
+{
+    Tfus
+    {
+        origin      measured;
+        citation    "HSDB via PubChem CID 5757 (US NLM, public domain)";
+        note        "polymorph not stated by the source";
+        status      candidate;
+    }
+}

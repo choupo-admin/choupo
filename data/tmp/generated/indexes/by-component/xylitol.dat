@@ -1,0 +1,8 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'xylitol'
+component xylitol;
+records
+(
+    { recordType diffusionCoefficient; recordId diffusion-xylitol-water; category flagged; file "parameters/transport/diffusion/xylitol-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId xylitol-octanol-water; category flagged; file "parameters/partition/xylitol-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId xylitol-water; category absent; file "parameters/solubility/xylitol-water.candidate.dat"; }
+);

@@ -1,0 +1,66 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of acrylamide in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/acrylamide.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: solid phase NOT ESTABLISHED; the competing CRC figure
+  was REMOVED on rights grounds (all-rights-reserved compilation).
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        acrylamide-water;
+participants    ( acrylamide water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    unspecified;
+    phaseBasis    notEstablished;
+}
+
+// PHASE 4 search: no phase-identified determination located.
+//
+// RIGHTS ACTION taken in phase 4: the phase-2 file carried a competing
+// figure lifted from the CRC Handbook of Chemistry and Physics.  CRC is
+// an all-rights-reserved commercial compilation -- one of the sources
+// Choupo excludes outright (there is no grant to honour).  The number
+// has been DELETED, not merely re-labelled.  What survives is the
+// STATEMENT that a large disagreement exists between the CC-BY ICSC
+// value below and a well-known non-redistributable compilation, at a
+// slightly lower temperature and far too big to be a 5 C effect.  If
+// that disagreement matters, it must be re-established from a primary.
+//
+// Physical caveat: at ~2040 g/L the saturated solution is roughly two
+// parts acrylamide to one part water.  Calling this a dilute SLE is a
+// category error.
+// UNIT CONVERSION (shown, not hidden): 204 g/100 mL = 2040 g/L; 2040 g/L * 1000 mg/g = 2.04e6 mg/L
+value
+{
+    solubility    2.04e6 mg/L;
+    originalStatement  "204 g/100 mL @ 25 C (~2040 g/L)";   // verbatim, before conversion
+}
+
+provenance
+{
+    origin      measured;
+    citation    "ILO-WHO International Chemical Safety Card ICSC #0091 (CC-BY); via PubChem";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+blockedBy       "no source states the equilibrating solid phase; a large unresolved disagreement with a non-redistributable compilation was dropped rather than carried";
+status          flagged;

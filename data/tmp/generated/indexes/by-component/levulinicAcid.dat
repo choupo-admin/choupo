@@ -1,0 +1,6 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'levulinicAcid'
+component levulinicAcid;
+records
+(
+    { recordType cosmoSurface; recordId lvpp-levulinicAcid; category flagged; file "evidence/lvpp-levulinicAcid/metadata.dat"; }
+);

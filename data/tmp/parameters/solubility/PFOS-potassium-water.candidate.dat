@@ -1,0 +1,95 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of potassium perfluorooctanesulfonate in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/PFOS.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: IDENTITY FIXED -- participants now name the POTASSIUM SALT,
+  which is what was actually equilibrated.  Temperature still missing.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        PFOS-potassium-water;
+participants    ( PFOS-potassium water );
+property        aqueousSolubility;
+
+// PHASE 4 IDENTITY CORRECTION.  Phase 2 recorded this under
+// `participants ( PFOS water )` with a loud in-file caveat.  That was the
+// wrong shape: a caveat is not a participant list.  The substance whose
+// solubility was measured is potassium perfluorooctanesulfonate
+// (PFOS-K), a DIFFERENT substance from perfluorooctanesulfonic acid --
+// different solid, different dissolution equilibrium (K+ + PFOS- rather
+// than HPFOS), different number.  `participants` and `recordId` now say
+// so.  This record must NOT be attached to the PFOS acid component.
+// A record for the free acid does not exist in this corpus and would
+// need its own determination.
+substituteFor   PFOS;   // the acid this datum was WRONGLY parked under
+saltForm        potassium;
+
+conditions
+{
+    // temperature   NOT STATED by the source.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    potassiumSalt;
+    phaseBasis    statedBySource;   // the source explicitly says "potassium salt"
+}
+
+// The same source family also carries 680 mg/L @ 25 C, 519 mg/L @ 20 C
+// and 12.4 mg/L in seawater.  That spread is counter-ion and ionic
+// strength, not measurement error, which is exactly why the salt form
+// had to move into `participants`.
+value
+{
+    solubility    570 mg/L;
+    originalStatement  "570 mg/L in pure water (potassium salt)";   // verbatim
+}
+
+alternativeDeterminations
+{
+    brooke25C
+    {
+        solubility    680 mg/L;
+        conditions    { temperature 298.15 K; solidPhase potassiumSalt; phaseBasis statedBySource; }
+        origin        measured;
+        citation      "Brooke, D. et al., Environmental Risk Evaluation Report: PFOS, UK Environment Agency (2004); via ATSDR 2021";
+        note          "pure water, temperature stated";
+    }
+    brooke20C
+    {
+        solubility    519 mg/L;
+        conditions    { temperature 293.15 K; solidPhase potassiumSalt; phaseBasis statedBySource; }
+        origin        measured;
+        citation      "Brooke, D. et al. (2004); via ATSDR 2021";
+        note          "pure water, temperature stated";
+    }
+    seawater
+    {
+        solubility    12.4 mg/L;
+        conditions    { solidPhase potassiumSalt; phaseBasis statedBySource; medium seawater; }
+        origin        measured;
+        citation      "Brooke, D. et al. (2004); via ATSDR 2021";
+        note          "NOT pure water -- a salting-out result, kept only to show the ionic-strength effect";
+    }
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Brooke, D. et al., Environmental Risk Evaluation Report: PFOS, UK Environment Agency (2004); via ATSDR, Toxicological Profile for Perfluoroalkyls (2021) (US-gov, public domain)";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+blockedBy       "the headline 570 mg/L determination states no temperature; the crystalline form / hydration state of the potassium salt is not stated either";
+status          flagged;

@@ -1,0 +1,110 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of glyphosate in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/glyphosate.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT then: rightsPending CLEARED by re-routing to the open
+  USDA-ARS PPD (same digit); solid phase NOT ESTABLISHED, and pH missing.
+
+  PHASE 6 (2026-07-24, agent:solubility) -- the SOLID PHASE is now established
+  by INFERENCE from a CC-BY study of glyphosate crystallisation FROM AQUEOUS
+  SOLUTION: the anhydrous zwitterionic monoclinic crystal.  The pH defect is
+  UNCHANGED and is now the sole remaining blocker -- and the phase itself is
+  pH-dependent, so the two are the same defect seen twice.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        glyphosate-water;
+participants    ( glyphosate water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- as stated by the OPEN source
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    glyphosateZwitterionAnhydrous;   // monoclinic, P2(1)/c
+    phaseBasis    inferredFromPhaseStability;
+    // pH         NOT STATED -- and for a polyprotic acid that is a
+    //            first-order omission, not a detail (see below).
+}
+
+// RIGHTS ACTION (phase 4).  Phase 2 carried 12 g/L attributed to
+// Worthing & Walker (eds.), The Pesticide Manual, BCPC 1987 -- paywalled,
+// hence rightsPending.  The USDA-ARS Pesticide Properties Database
+// (US-government, public domain) was read directly and reports:
+//
+//     Water solubility (ppm):   -temp-   -source-   -reference-
+//     1.2E+04 *                  25                  9HERBH
+//
+// The same digit, from an open source.  rightsPending is cleared and the
+// number is unchanged.
+//
+// PHYSICS CAVEAT that survives the re-route: glyphosate is a polyprotic
+// zwitterionic acid, so its solubility is a function of pH BY
+// CONSTRUCTION.  A "solubility in water" with no pH is under-specified no
+// matter how open the source.  The withdrawn compilation separately
+// quoted a value at pH 1.9 -- a different equilibrium (fully protonated
+// form), not a competing measurement of this one; that number was
+// paywalled and has NOT been carried over.
+// PHASE 6 -- THE SOLID THAT CRYSTALLISES FROM WATER.
+// Castro, Sanchez-Burgos, H. Espejo, Garaizar, Maggioni & Espinosa
+// (J. Phys. Chem. B 130 (2026) 3217-3226, CC-BY) state, verbatim:
+//
+//   "glyphosate crystallizes from an aqueous solution in a pH-dependent
+//    zwitterionic form, adopting a monoclinic unit cell.  This structure
+//    belongs to the P 2(1)/c 1 space group in the Hermann-Mauguin notation."
+//
+// and, in their introduction:
+//
+//   "This complexity arises from glyphosate's pH-dependent zwitterionic
+//    structure, extensive hydrogen-bonding network, and polymorphic behavior
+//    under varying pH and pressure conditions."
+//
+// So the equilibrating solid at ambient conditions is anhydrous zwitterionic
+// glyphosate, monoclinic P2(1)/c.  This is a crystallisation/simulation study,
+// not the USDA-ARS determination recorded below, so the tier is
+// `inferredFromPhaseStability` and the digit is not promoted.
+//
+// AND NOTE HOW THE TWO DEFECTS COLLAPSE INTO ONE.  The source says the
+// crystalline form is pH-DEPENDENT.  The USDA-ARS number states no pH.  So
+// the missing pH is not merely an under-specified solution composition -- it
+// also leaves the SOLID under-specified.  A glyphosate solubility without a
+// pH names neither side of its own equilibrium.
+//
+// UNIT CONVERSION (shown, not hidden): 1.2e4 ppm == 1.2e4 mg/L (dilute aqueous, 1 kg/L)
+value
+{
+    solubility    1.2e4 mg/L;
+    originalStatement  "1.2E+04 ppm @ 25 C (selected value, ref 9HERBH)";   // verbatim from the open source
+}
+
+provenance
+{
+    origin      measured;
+    citation    "USDA-ARS Pesticide Properties Database (PPD), individual pesticide file; US Department of Agriculture, Agricultural Research Service -- US-government work, public domain (GLYPHOSATE.TXT), selected value, ref 9HERBH";
+    doi         "-";
+    licence     "US-government work, public domain";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Castro, A., Sanchez-Burgos, I., H. Espejo, N., Garaizar, A., Maggioni, G.M. & Espinosa, J.R., Understanding How Synthetic Impurities Affect Glyphosate Solubility and Crystal Growth Using Free Energy Calculations and Molecular Dynamics Simulations, J. Phys. Chem. B 130 (2026) 3217-3226";
+    doi         "10.1021/acs.jpcb.5c06978";
+    licence     "CC-BY 4.0";
+    basis       "'glyphosate crystallizes from an aqueous solution in a pH-dependent zwitterionic form, adopting a monoclinic unit cell ... P 2(1)/c 1' -- the anhydrous zwitterion is the solid that comes out of water.  The same work warns of polymorphic behaviour under varying pH and pressure, so this assignment is conditional on the (unstated) pH";
+}
+
+blockedBy       "no pH stated, and this solute is polyprotic -- which under-specifies BOTH sides of the equilibrium, because the cited phase source says the crystalline form is itself pH-dependent; and the phase is INFERRED from a crystallisation study rather than stated by the USDA-ARS determination, so by rule it cannot promote the digit";
+status          flagged;

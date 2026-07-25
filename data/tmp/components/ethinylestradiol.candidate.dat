@@ -1,0 +1,96 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: ethinylestradiol  (C20H24O2, CAS 57-63-6)
+  Synthetic estrogen (contraceptive); the most potent estrogenic micropollutant
+  in the NF/RO trace-organic rejection benchmark set.
+
+  IDENTITY source: PubChem CID 5991 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 57-63-6 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  Every system /
+    equilibrium / state datum was re-homed in phase 2 and is NOT duplicated here
+    (data/tmp/RECORD_SPEC.md, ARITY rule).  The pointers carry NO numbers.
+
+  STATUS: candidate.  Not promotable -- no thermochemistry, no Cp, no VLE leg,
+    and the solid phase is ambiguous (two polymorphs, see below).
+\*---------------------------------------------------------------------------*/
+
+name              ethinylestradiol;
+formula           C20H24O2;
+CAS               57-63-6;
+InChIKey  BFPYWIDHMRZLRN-SLHNCBLASA-N;   // 14-char skeleton only (see estradiol note)
+MW                296.40;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+
+// ---- RE-HOMED IN PHASE 2 (pointers only, no values) ------------------------
+// D_aq + Stokes radius  -> parameters/transport/diffusion/  recordId diffusion-ethinylestradiol-water
+// logKow                -> parameters/partition/            recordId ethinylestradiol-octanol-water
+// aqueous solubility    -> parameters/solubility/           recordId ethinylestradiol-water
+// phenolic-OH pKa       -> chemistry/aqueousSpeciation/     recordId ethinylestradiol-pKa1
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+// Tfus is NOT a single number for this substance: the source reports TWO
+// melting ranges, i.e. two polymorphs.  Recording either one as "the" melting
+// point would be inventing a solid phase, so both are kept, labelled, and
+// neither is promoted to a bare `Tfus` key.
+solidPolymorphs
+{
+    formLow   { TfusRange ( 415.15 419.15 ); }   // K (142-146 degC)
+    formHigh  { TfusRange ( 453.15 459.15 ); }   // K (180-186 degC)
+    // Both [HSDB via PubChem CID 5991; US NLM, public domain].  Which form is
+    // the ambient-stable one is UNRESOLVED -- and it is the same gap that keeps
+    // parameters/solubility/ethinylestradiol-water at `solidPhase unspecified`.
+}
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// solidDensity           : no crystal density on the public record; absent, NOT
+//                          estimated.  The Le Bas additive volume feeding the
+//                          Wilke-Chang diffusion estimate lives inside
+//                          diffusion-ethinylestradiol-water.
+// standardThermochemistry: no open combustion / formation datum located.
+// Tc / Pc / omega /
+// vaporPressure /
+// idealGasHeatCapacity   : no VLE leg (fused-ring steroid + ethynyl; decomposes
+//                          before it boils; Joback not parametrized for it).
+//
+// pKa: the staged value was the unpinned "~10.4"; it lives, `flagged`, in
+//   chemistry/aqueousSpeciation/ethinylestradiol-pKa1 -- and only there.  The
+//   public-tier route is Lewis & Archer, Steroids 34 (1979) 485.
+//
+// COSMO-SAC -- NOT IN LVPP.  Unlike its three sibling estrogens, no
+//   ethinylestradiol geometry is shipped in the LVPP sigma database, so there is
+//   no evidence record for it at all.  Even if there were, no `cosmo {}` block
+//   could be written from it: the LVPP QM protocol is incompatible with Choupo's
+//   VT-2005 `cosmoSAC2002` sets (ethylene cross-check: +6.1 % area, +10.3 %
+//   volume), and a steroid LVPP surface is the NEUTRAL GAS-PHASE tautomer, never
+//   the aqueous species.
+// PC-SAFT -- no published steroid parameter set
+//   (parameters/PCSAFT/_INVENTORY.md, section 3).
+
+provenance
+{
+    solidPolymorphs
+    {
+        origin      measured;
+        citation    "HSDB via PubChem CID 5991 (US NLM, public domain)";
+        note        "two melting ranges reported; polymorph identities not assigned by the source";
+        status      flagged;
+    }
+}

@@ -1,0 +1,87 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/simazine.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        simazine-pKa1;
+participants    ( simazineH+ simazine H+ );
+property        pKa;
+reaction        "simazineH+ (protonated triazine ring N) = simazine + H+";
+site            "triazine ring N (conjugate acid, very weak base)";
+step            1;
+
+conditions
+{
+    temperature     293.15 K;   // 20 C -- EXPLICITLY stated by the source, NOT 25 C
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    available       none;      // DROPPED 2026-07-24 -- see NOTES (rights clearance)
+}
+
+alternativeDeterminations   // quoted for orientation ONLY -- none is the datum
+{
+    alt1
+    {
+        pKa       1.62;
+        temperature 293.15 K;
+        citation  "Tomlin, The Pesticide Manual 11th ed. (BCPC 1997); via PubChem PUG-View / HSDB";
+        licence   "rightsPending -- paywalled commercial compilation, PRIVATE tier only.
+                   This was the datum until 2026-07-24.";
+    }
+    alt2
+    {
+        pKa       1.70;
+        temperature 294.15 K;   // 21 C, as stated
+        citation  "California DPR, 'Simazine Risk Characterization Document' (2013),
+                   Table 1 -- a US STATE-GOVERNMENT document, but it attributes the
+                   value to Montgomery (1993), 'Agrochemicals Desk Reference', which is
+                   itself a commercial compilation";
+        licence   "route is public-sector, underlying attribution is a commercial
+                   compilation -- NOT adopted as the datum";
+    }
+}
+
+provenance
+{
+    origin      none;          // no value is carried
+    citation    "-";
+    doi         "-";
+    licence     "-";
+    evidenceId  -;
+    curator     "agent:rightsClearance";
+    retrieved   2026-07-24;
+}
+status          rightsPending;
+blockedBy       "The Pesticide Manual (BCPC) -- paywalled commercial compilation, not
+                 redistributable in Choupo's public tier";
+action          "read Weber, J.B., 'Spectrophotometrically determined ionization
+                 constants of 13 alkylamino-s-triazines and the relationship of
+                 molecular structure and basicity', Spectrochim. Acta 23A (1967)
+                 458-461, or Bailey, White & Rothberg, Soil Sci. Soc. Am. Proc. 32
+                 (1968) 222-234 (which covers the s-triazine family), and transcribe
+                 the SIMAZINE row with its own citation, temperature and method";
+
+// NOTES
+//   RIGHTS CLEARANCE 2026-07-24 -- action: DROP (phase 4).
+//     The 1.62 (20 C) datum reached us only through The Pesticide Manual (BCPC), a
+//     paywalled commercial compilation.  Two candidate open routes were searched and
+//     NEITHER confirmed the digit at a primary: the ATSDR public-domain route that
+//     cleared atrazine has no simazine counterpart, and the California DPR document
+//     (public-sector) re-cites a commercial compilation, not a measurement.
+//     A number we cannot legally ship is worse than a declared gap, so the number
+//     is deleted and the gap is declared.
+//   Re-homed from components/simazine.candidate.dat
+
+// VOCABULARY UNIFIED 2026-07-24: rights blockage is encoded in `status`,
+// not only in `licence` -- the two directories had diverged and a rights-blocked
+// record must never sit at a status that reads clean.
+statusVocabularyNote  "was flagged; rights blockage promoted into status";

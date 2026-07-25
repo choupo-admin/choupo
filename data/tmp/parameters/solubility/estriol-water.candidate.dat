@@ -1,0 +1,54 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of estriol in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/estriol.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: solid phase NOT ESTABLISHED and no temperature either.
+  The one estrogen Shareef et al. did not cover.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        estriol-water;
+participants    ( estriol water );
+property        aqueousSolubility;
+
+conditions
+{
+    // temperature   NOT STATED by the source.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    unspecified;
+    phaseBasis    notEstablished;
+}
+
+// Estriol is the only one of the four estrogens in this corpus NOT
+// covered by Shareef et al. 2006, and its number comes with neither a
+// temperature nor a solid.  PHASE 4 search located no measuring primary
+// stating either.
+value
+{
+    solubility    13.25 mg/L;
+    originalStatement  "13.25 mg/L (double-distilled water)";   // verbatim
+}
+
+provenance
+{
+    origin      measured;
+    citation    "HSDB (US NLM, public domain), CID 5756 (double-distilled water)";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+blockedBy       "no source states the equilibrating solid phase; no temperature stated";
+status          flagged;

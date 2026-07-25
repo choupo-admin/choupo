@@ -1,0 +1,106 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/erythritol.candidate.dat; primary citation
+  cross-checked against data/tmp/polyols_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-erythritol-water;
+participants    ( erythritol water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             7.6e-10 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// how THIS value was obtained (glass-box; inputs stated in full)
+derivation
+{
+    method                 "Stokes-Einstein D = kT/(6 pi eta r)";
+    radius                 0.34 nm;
+    radiusOrigin           "MEASURED hydrodynamic radius - see record hydrodynamicRadius-erythritol-water";
+    viscosity              0.890e-3 Pa.s;
+    temperature            298.15 K;
+    origin                 estimated;
+}
+
+crossCheck
+{
+    note          "a measured D of ~0.9e-9 m2/s is reported; Stokes-Einstein underestimates D for small solutes - the estimate is NOT reconciled to it";
+}
+
+flagged
+{
+    reason        "Choupo own estimate, NOT a measurement";
+    route         "Longsworth, J. Am. Chem. Soc. 75 (1953) 5705; Kimura et al., Bull. Chem. Soc. Jpn. 63 (1990) 533 - exact values PAYWALLED at curation";
+    action        "TWO THINGS MUST BE SETTLED BY ONE TRANSCRIPTION.  meso-Erythritol is a named
+                  solute of Kimura, Y. et al., Bull. Chem. Soc. Jpn. 63 (1990) 533-537, doi
+                  10.1246/bcsj.63.533 (abstract read verbatim 2026-07-24: water, close to
+                  infinite dilution, 278-373 K; Oxford Academic, paywalled).  Transcribing its
+                  298 K digit (a) replaces this Stokes-Einstein estimate with a measurement
+                  and (b) decides the UNRECONCILED ~18 % conflict recorded in the ledger
+                  between this 0.76e-9 and the 'measured ~0.9e-9' quoted in polyols_SOURCES.md
+                  - one of the two is wrong and no curator has yet said which.  Second route:
+                  Longsworth, J. Am. Chem. Soc. 75 (1953) 5705-5709, doi 10.1021/ja01118a065.
+                  Note also that the companion measured RADIUS record is for concentrated
+                  erythritol-water DROPLETS, not this bulk infinite-dilution state, so it
+                  cannot be used to close the gap.";
+}
+
+// PHASE 7 (2026-07-25) -- Kimura primary sought; ABSTRACT read, DIGIT unreadable.
+phase7Retrieval
+{
+    attempted     2026-07-25;
+    doi           "10.1246/bcsj.63.533";
+    outcome       "PARTIAL -- solute membership CONFIRMED from the primary's abstract; the
+                   298 K interdiffusion DIGIT could NOT be read (tables paywalled)";
+    detail        "Oxford Academic (academic.oup.com/bcsj/article/63/2/533/7365372) served
+                   the ABSTRACT ONLY; the data tables are behind a paywall (EUR 20 / 24 h or
+                   subscription).  The legacy bronze-OA host journal.csj.jp that Unpaywall
+                   still lists is DEAD (301 -> CSJ landing page).  The abstract WAS read and
+                   states the water solute set -- 1,2-butanediol, 1,4-butanediol,
+                   meso-erythritol, xylitol, mannitol, myo-inositol, concentrations close to
+                   infinite dilution, 278-373 K -- so meso-erythritol IS in the study, but
+                   its 298 K value was not transcribed.  The ~18 % estimate-vs-measured
+                   conflict noted in the ledger therefore remains UNDECIDED.";
+    ruling        "record stays flagged; the 0.76e-9 estimate is NEITHER promoted NOR
+                   deleted.  Longsworth JACS 75 (1953) 5705 (doi 10.1021/ja01118a065)
+                   remains closed with no OA copy.";
+}
+
+provenance
+{
+    origin        estimated;
+    citation      "Choupo own Stokes-Einstein estimate from the MEASURED hydrodynamic radius (see hydrodynamicRadius-erythritol-water)";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          flagged;

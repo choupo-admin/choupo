@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'serine'
+component serine;
+records
+(
+    { recordType acidDissociation; recordId serine-pKa1; category flagged; file "chemistry/aqueousSpeciation/serine-pKa1.candidate.dat"; }
+    { recordType acidDissociation; recordId serine-pKa2; category flagged; file "chemistry/aqueousSpeciation/serine-pKa2.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-serine; category flagged; file "evidence/lvpp-serine/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-serine-water; category flagged; file "parameters/transport/diffusion/serine-water.candidate.dat"; }
+    { recordType isoelectricPoint; recordId serine-pI; category flagged; file "chemistry/aqueousSpeciation/serine-pI.candidate.dat"; }
+);

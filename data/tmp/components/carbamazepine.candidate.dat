@@ -1,0 +1,128 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: carbamazepine  (C15H12N2O, CAS 298-46-4)
+  Anti-epileptic; one of the most-used NF/RO pharmaceutical rejection benchmarks.
+
+  PHASE-3 CLEANUP 2026-07-24 -- ARITY 1 ONLY.  Every system / state-dependent
+  value that used to live in a comment block here was moved in phase 2 to its
+  arity-correct home and is NOT restated here (never in two places); what is
+  left below is intrinsic pure-compound data, each numeric carrying UNIT +
+  PHASE/state + `origin` + citation.  The comments below are POINTERS only.
+
+  RETENTION RULE for computed descriptors (McGowan V_x / Le Bas Vb): kept here
+  only when no phase-2 record already carries the number as a derivation input.
+
+  Private staging tier (data/tmp/, gitignored).  The runtime does not read it.
+\*---------------------------------------------------------------------------*/
+
+// ===== IDENTITY (arity 1) =====
+name              carbamazepine;
+formula           C15H12N2O;
+CAS               298-46-4;
+InChIKey  FFGPTBGBLSHEPO-UHFFFAOYSA-N;   // FIRST BLOCK ONLY (14 chars) as retrieved
+MW                236.27;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+identityProvenance
+{
+    origin      derived;    // MW computed from the formula with standard atomic weights
+    citation    "PubChem CID 2554 (US NIH, public domain), PUG-REST retrieval";
+    doi         "-";
+    licence     "public domain (US Government)";
+    evidenceId  -;
+    curator     "agent:pharma-cleanup";
+    retrieved   2026-07-24;
+}
+
+// ===== INTRINSIC SOLID-STATE DATA =====
+meltingPointStatus
+{
+    present     no;
+    reason      "no melting point was curated at staging.  Carbamazepine has forms I-IV plus a dihydrate, so any melting point MUST name its polymorph as well as its phase transition; none is invented here.";
+    status      flagged;
+}
+
+solidStateStatus
+{
+    crystalDensity  none;
+    reason          "no crystal density curated.  It would have to be per POLYMORPH (forms I-IV + dihydrate), from an X-ray unit cell.  Without rho_c the pure-component molar volume V_m = MW/rho_c is not derivable, so none is declared.";
+    status          flagged;
+}
+
+thermochemistryStatus
+{
+    present     no;
+    reason      "no open, phase-declared solid dHf / S298 / Cp located (combustion / DSC calorimetry paywalled), and it would be polymorph-specific.  Routing a nonvolatile solid through the ideal-gas rung is forbidden by contract.";
+    status      flagged;
+}
+
+// ===== COMPUTED MOLECULAR DESCRIPTORS (arity 1, NOT measurements) =====
+descriptors
+{
+    mcGowanVolume
+    {
+        value       181.1 cm3/mol;
+        state       molecularDescriptor;   // additive; not a phase property, not V_m
+        origin      estimated;
+        method      "McGowan characteristic volume V_x: additive atomic contributions minus 6.56 cm3/mol per bond; computed by Choupo for C15H12N2O, 3 rings";
+        citation    "Abraham, M.H. & McGowan, J.C., Chromatographia 23 (1987) 243";
+        doi         "-";
+        licence     "facts, primary-cited";
+        curator     "agent:pharma-cleanup";
+        retrieved   2026-07-24;
+        status      flagged;   // Choupo's own estimate; never a measured molar volume
+        note        "retained here because no phase-2 record carries it: recordId diffusion-carbamazepine-water derives D from a MEASURED Stokes radius, not from V_x.";
+    }
+}
+
+// ===== COSMO =====
+cosmoStatus
+{
+    namedSet       none;
+    evidence       "evidence/lvpp-carbamazepine/metadata.dat  (recordId lvpp-carbamazepine)";
+    evidenceModel  "COSMO, NWChem B3LYP def2-SVPD, SES cavity, LVPP release v25";
+    deployable     no;
+    reason         "LVPP's QM protocol is incompatible with Choupo's VT-2005 sigma profiles used by the cosmoSAC2002 variant: on the ethylene cross-check the LVPP cavity is +6.1 % in area and +10.3 % in volume vs VT-2005.  Mixing a profile with another variant's constants is a LOUD error by contract.";
+    status         flagged;
+}
+
+// ===== PC-SAFT =====
+pcSaftStatus
+{
+    parameterSet   none;
+    pinnedSource   "-";   // genre-level lead only ("cocrystal-solubility PC-SAFT studies exist"); no paper pinned
+    numbersInHand  no;
+    reason         "no specific published set pinned -- a genre-level lead is not a citation.  See parameters/PCSAFT/_INVENTORY.md.";
+    status         flagged;
+}
+
+// ===== POINTERS -- values MOVED OUT in phase 2 (home + recordId; no values here) =====
+// pKa (amide N-H)      -> chemistry/aqueousSpeciation/  recordId carbamazepine-pKa1
+// chargeAtPH7          -> DELETED (derived from the equilibrium above; never stored)
+// logKow               -> parameters/partition/         recordId carbamazepine-octanol-water
+// aqueous solubility   -> parameters/solubility/        recordId carbamazepine-water
+// D_aq                 -> parameters/transport/diffusion/  recordId diffusion-carbamazepine-water
+// Stokes radius (meas.)-> parameters/transport/diffusion/  recordId hydrodynamicRadius-carbamazepine-water
+// COSMO cavity         -> evidence/lvpp-carbamazepine/metadata.dat  recordId lvpp-carbamazepine
+
+// DEFECT FIXED 2026-07-24: this component used to quote a SINGLE aqueous
+// solubility as if settled while a second open source disagreed by ~8x -- a
+// polymorph/hydrate difference with neither value stating its solid.  This file
+// now asserts NO solubility at all; the disagreement is carried, flagged and
+// explained inside recordId carbamazepine-water.
+
+status            candidate;   // applies to the identity block; every property
+                               // block above carries its own status

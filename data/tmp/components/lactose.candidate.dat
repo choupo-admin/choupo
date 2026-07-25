@@ -1,0 +1,239 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: lactose  (C12H22O11, CAS 63-42-3, ANHYDROUS) --
+  disaccharide, galactose-beta-1,4-glucose.  Non-volatile non-electrolyte SOLUTE
+  (NF/RO sugar-rejection family).  Decomposes -> SOLID rung (referenceState pureSolid).
+
+  PRIVATE staging tier (data/tmp, gitignored).  Envelope + ARITY rule:
+  ../RECORD_SPEC.md.  Cleaned 2026-07-24 (phase 3, component cleanup).
+
+  ARITY-1 ONLY.  Intrinsic single-substance data only; system properties live in
+  their arity-correct homes (pointers below).
+
+  HYDRATE AMBIGUITY -- STATED, NOT HIDDEN (see hydrateAmbiguity{}): this component
+  declares the ANHYDROUS solid (CAS 63-42-3, mp ~222 C), but the solid phase in
+  equilibrium with water at ambient temperature is alpha-lactose MONOHYDRATE
+  (mp ~202 C).  Any solid-phase property read from this file -- the crystal
+  thermochemistry, Cp, density, and above all the aqueous solubility record --
+  must declare which solid it means.
+\*---------------------------------------------------------------------------*/
+
+// --- MOVED OUT in phase 2 -- POINTERS ONLY (a cross-reference, not data) ---
+// D_aq + Stokes radius: see parameters/transport/diffusion/lactose-water (recordId diffusion-lactose-water)
+// pKa1: see chemistry/aqueousSpeciation/lactose-pKa1 (recordId lactose-pKa1; order-of-magnitude placeholder, no primary)
+// aqueous solubility: see parameters/solubility/lactose-water (recordId lactose-water; solid phase unspecified -- most likely the MONOHYDRATE)
+// partial molar volume in water (the old `Vliq`): see parameters/volume/lactose-water (recordId volume-lactose-water)
+
+name           lactose;
+formula        C12H22O11;
+CAS            63-42-3;
+
+MW             342.297;        // g/mol -- derived from the formula with IUPAC
+                               //   standard atomic weights (origin derived);
+                               //   ANHYDROUS (the monohydrate is 360.31 g/mol)
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;              // non-electrolyte, van't Hoff i = 1
+
+identity
+{
+    pubchemCID         6134;
+    InChIKey   GUBGYTABKSRVRQ-DCSYEGIMSA-N;      // 14-character BLOCK 1 ONLY
+    inchiKeyStatus     skeletonBlockOnly;
+    inchiKeyNote       "Block 1 hashes CONSTITUTION only; C12H22O11 hexose-hexose
+                        disaccharides of this connectivity (lactose, maltose,
+                        cellobiose) collide here.  It does NOT identify lactose,
+                        nor the anomer, nor the hydration state.  Fetch the full
+                        27-character key from PubChem CID 6134.";
+    stereochemicalForm "4-O-beta-D-galactopyranosyl-D-glucose; anomer (alpha/beta)
+                        NOT declared by the sources used";
+    hydrationState     anhydrous;
+    identitySource     "PubChem CID 6134 (US NIH, public domain), retrieved 2026-07-24";
+    status             flagged;             // truncated key + undeclared anomer
+}
+
+// The solid this file describes, stated once, explicitly.
+hydrateAmbiguity
+{
+    declaredSolid       "anhydrous lactose, CAS 63-42-3, mp ~222 C (decomp.)";
+    ambientAqueousSolid "alpha-lactose monohydrate, mp ~202 C -- the phase that is
+                         actually in equilibrium with water at 25 C";
+    consequence         "the aqueous-solubility record (~195 g/L) most likely
+                         belongs to the MONOHYDRATE, not to the solid declared here;
+                         a dissolution enthalpy computed from an anhydrous datum
+                         against a monohydrate solubility would be wrong by the
+                         hydration enthalpy of one water";
+    unresolved          yes;
+    status              flagged;
+}
+
+// ---------------------------------------------------------------------------
+// ARITY-1 INTRINSIC, SOLID rung.  No formation datum is carried -- see
+// thermochemistryStatus{}.  NOTHING was fabricated.
+standardThermochemistry
+{
+    // dHf_298 ABSENT BY DECISION -- see thermochemistryStatus{} below.
+    // s_298   ABSENT BY DECISION -- see entropyStatus{} below.
+    referenceState      pureSolid;
+}
+
+thermochemistryStatus
+{
+    property        dHf_298;
+    phase           solid;
+    value           none;                  // nothing shipped, nothing invented
+    pendingPrimary  "Clarke & Stegeman, J. Am. Chem. Soc. 61 (1939) 1726-1730 --
+                     they measured the lactose heat of combustion, but the derived
+                     dHf(cr) is not exposed by the free NIST view; transcribe from
+                     the primary";
+    orderOfMagnitude "-2236 kJ/mol (anhydrous) -- an ORDER, deliberately not
+                      written into the block above";
+    extraRequirement "the primary must also state hydrate vs anhydrous and the
+                      anomer -- see hydrateAmbiguity{}";
+    status          flagged;
+}
+
+entropyStatus
+{
+    property        s_298;
+    phase           solid;
+    value           none;
+    pendingPrimary  "a third-law (low-temperature calorimetry) determination for
+                     crystalline lactose -- not located at curation";
+    status          flagged;
+}
+
+// REAL crystalline-lactose solid heat capacity.  Phase SOLID.
+// origin measured; PRIMARY: Kawaizumi, Nishio et al., J. Chem. Thermodyn. 13 (1981).
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = 417.6 J/(mol K) at 300 K (= 1.22 J/g/K)
+    coefficients  ( 417.6 );           // J/(mol K)
+    Trange        ( 270  325 );        // K
+    // [Kawaizumi, Nishio et al. 1981, J. Chem. Thermodyn. 13] -- measured, solid.
+    // VERIFIED 2026-07-25 against NIST WebBook (ID=C63423, Mask=2): 417.6 J/(mol K),
+    //   270-325 K -- and it is the ONLY condensed-phase datum NIST exposes for lactose
+    //   (NO dfH, NO S), which corroborates the two absences flagged above.
+    // HYDRATION CAVEAT: the source does not state anhydrous vs monohydrate; at
+    // 1.22 J/g/K the two differ by ~5 % per mole.  See hydrateAmbiguity{}.
+}
+
+// --- PURE-COMPONENT (arity-1) properties, each with unit + phase + origin + citation ---
+pureComponentProperties
+{
+    solidDensity
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index -- paywalled commercial compilation";
+        action        "read Dx (calculated density) from a published single-crystal structure of
+                      the NAMED polymorph/anomer -- Acta Cryst. reports it directly -- or
+                      derive rho = Z*MW/(N_A*V_cell) from open cell parameters (the
+                      Crystallography Open Database is CC0 and cites the primary for each
+                      entry).  Record the cell, Z and the arithmetic in a derivation{}
+                      block, and NAME the solid form.";
+        droppedValue  "value = 1.525 g/cm3; temperature = 293.15 K; citation = The Merck Index, 14th ed.";
+    }
+
+    solidMolarVolume
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "DERIVED from the solidDensity above, which was dropped -- a
+                       derivative cannot outlive the datum it was computed from";
+        action        "recompute V = MW / rho once a legally clear rho exists, and
+                       name the solid form both refer to";
+        droppedValue  "224.46 cm3/mol  (this is the PURE-SOLID molar volume; the partial molar
+                       volume in water is a SYSTEM property and is unaffected -- it
+                       lives in parameters/volume/)";
+    }
+
+    meltingPoint
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index -- paywalled commercial compilation";
+        action        "take T_fus from a calorimetric (DSC / adiabatic) primary that STATES the
+                      polymorph or anomer it melted, and stage it in a fusion{} block
+                      together with dHfus -- a melting point without a named solid form is
+                      not a property of a substance, it is a property of a sample.";
+        droppedValue  "value = 495.15 K; transition = decomposition; citation = The Merck Index, 14th ed.";
+    }
+}
+
+identityDescriptors
+{
+    specificRotation
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index -- paywalled commercial compilation";
+        action        "take [alpha]_D from a polarimetric primary that states c, solvent,
+                      temperature, wavelength and the mutarotation state.  This is an
+                      IDENTITY descriptor, not a thermophysical datum, so it is the
+                      lowest-priority gap in this file.";
+        droppedValue  "value = 55.4 deg; temperature = 293.15 K; solvent = water; composition = mutarotation equilibrium; wavelength = 589.3 nm; citation = The Merck Index, 14th ed.";
+    }
+}
+
+// --- COSMO surface: NO deployable set (structured flag) ---
+cosmoStatus
+{
+    recordType      cosmoSurfaceStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    evidenceRecord  evidence/lvpp-lactose;   // cavity descriptors ONLY (316.88 A2 /
+                                             //   380.71 A3, 2097 segments); NO sigma profile
+    reason          "the LVPP record is EVIDENCE, not a deployable set: it carries
+                     no sigma profile, and its anomer is not labelled by the source
+                     (a single lactose record, hydration state unstated).";
+    protocolIncompatibility
+        "LVPP surfaces come from a different QM protocol (NWChem B3LYP/def2-SVPD,
+         SES cavity) from the VT-2005 surfaces Choupo's cosmoSAC2002 constants were
+         regressed against (Mullins et al., IECR 45 (2006) 4389).  Measured on
+         ethylene, present in both databases: +6.1 % cavity area, +10.3 % cavity
+         volume.  These numbers must NOT be pasted into a cosmo{} block and must
+         NOT be tagged variant cosmoSAC2002.";
+    status          flagged;
+}
+
+// --- PC-SAFT: no set in hand (structured flag) ---
+pcSaftStatus
+{
+    recordType      saftParameterSetStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    sourcePinned    "Held & Sadowski, AIChE J. 59 (2013) 4794-4805, Table 2
+                     (lactose among the 13 fitted sugars; 2 association sites)";
+    numbersInHand   no;
+    legalNote       "one row with its own citation if ever needed -- never the table";
+    status          flagged;         // STRUCTURED ABSENCE -- no number is carried
+    blockedBy       "the pinned parameter source is a paywalled article and no row was
+                     ever transcribed";
+    action          "read ONE compound's row at the pinned source and stage it with its
+                     own citation PLUS variant, units, association scheme, combining
+                     rules, objective function and data range; never the whole table";
+    legalNote2      "reclassified rightsPending -> flagged 2026-07-24 (rights-clearance
+                     pass): rightsPending means a VALUE is held that cannot be shipped.
+                     No value is held here, so this is a declared GAP, not a legal
+                     blocker on any number.";
+}
+
+groups
+{
+    unifac (  );   // EMPTY BY DECISION -- disaccharide (galactose-beta-1,4-glucose):
+                   //   decompose as 2 pyranose rings + 1 ether (glycosidic) linkage;
+                   //   review against the Choupo UNIFAC vocabulary before filling.
+}

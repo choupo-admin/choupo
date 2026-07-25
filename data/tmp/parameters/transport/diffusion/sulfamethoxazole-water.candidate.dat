@@ -1,0 +1,92 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/sulfamethoxazole.candidate.dat; primary citation
+  cross-checked against data/tmp/pharma2_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-sulfamethoxazole-water;
+participants    ( sulfamethoxazole water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             5.7e-10 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// how THIS value was obtained (glass-box; inputs stated in full)
+derivation
+{
+    method                 "Hayduk-Laudie correlation at 25 C, mu=0.894 cP, from the Le Bas additive molar volume (Poling, Prausnitz & O'Connell, Properties of Gases and Liquids, 5th ed.)";
+    leBasVolume            256.8 cm3/mol;
+    viscosity              0.894e-3 Pa.s;
+    temperature            298.15 K;
+    origin                 estimated;
+}
+
+// a Stokes radius computed FROM the D above is NOT an independent datum
+derived
+{
+    equation      "r = kT/(6 pi mu D)";
+    viscosity     0.890e-3 Pa.s;
+    temperature   298.15 K;
+    radius        0.43 nm;   // PROVISIONAL: recompute if D is replaced
+    origin        derived;
+}
+
+flagged
+{
+    reason        "Choupo own engineering estimate, NOT a measurement";
+    route         "replace with a measured D_aq from an open primary when one is curated";
+    action        "PHASE-6 SEARCH (2026-07-24) found no open measured primary. Hayduk-Laudie is
+                  a CORRELATION, not a datum, and the record says so.  The deliverable is a
+                  direct determination of D_aq at 298 K by Taylor dispersion, diaphragm cell
+                  or PFG-NMR (DOSY).  Concrete places to look, in order: (1) the Coimbra
+                  aqueous Taylor-dispersion programme (A. C. F. Ribeiro and co-workers, J.
+                  Chem. Eng. Data / J. Chem. Thermodyn. / J. Solution Chem.), which has
+                  published limiting mutual diffusion coefficients for drug solutes including
+                  paracetamol, caffeine and L-dopa - check for this drug by name; (2) the
+                  Evora/Coimbra group that measured ibuprofen and ketoprofen (Mendes, Cruz,
+                  Martins, Prates Ramalho & Martins, J. Chem. Thermodyn. 178 (2023) 106955),
+                  which already supplies two CANDIDATE records in this directory - a companion
+                  paper covering more NSAIDs/drugs is the single most likely source; (3) a
+                  DOSY determination in the pharmaceutical NMR literature, remembering that a
+                  D2O self-diffusion coefficient needs a viscosity correction and is not the
+                  mutual D this record declares.";
+}
+
+provenance
+{
+    origin        estimated;
+    citation      "Choupo own Hayduk-Laudie estimate (glass-box); no measured value located open";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          flagged;

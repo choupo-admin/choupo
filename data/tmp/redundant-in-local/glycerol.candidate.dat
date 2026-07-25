@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo (CANDIDATE) -*------------------*\
+  CANDIDATE component: propane-1,2,3-triol  (C3H8O3, CAS 56-81-5)
+  Common use: high-boiling polyol; NF/RO osmotic + biodiesel byproduct; viscous.
+
+  IDENTITY source: PubChem CID 753 (US NIH, public domain — free of copyright).
+    Retrieved 2026-07-24 via PUG-REST /property.  CAS 56-81-5 is the compound's
+    registry number as listed on that public record (bare fact, not the
+    proprietary CAS arrangement).
+  LICENCE of this staged record: identity facts are public domain.
+  PROPERTY VALUES: NONE copied from any compilation.  The proposed joback
+    groups below feed Choupo's OWN estimator (bin/estimate glycerol) — that is the
+    legal route to Tc/Pc/omega/Antoine/Cp/dHf as Choupo's open work.
+  NEEDS (to promote to data/standards/components/): estimate; Joback weak for high-polyol Tb — flag, curate Antoine/Cp carefully.
+  STATUS: proposed groups — REVIEW before estimating/promoting.
+\*---------------------------------------------------------------------------*/
+
+name        glycerol;
+formula     C3H8O3;
+CAS         56-81-5;
+MW          92.094;
+// SMILES OCC(O)CO   InChIKey PEDCQBHIVMGVHV-UHFFFAOYSA-N   PubChem CID 753
+
+groups
+{
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 3; } );   // PROPOSED (review) — first-order Joback decomposition
+}

@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'mannitol'
+component mannitol;
+records
+(
+    { recordType acidDissociation; recordId mannitol-pKa1; category verified; file "chemistry/aqueousSpeciation/mannitol-pKa1.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-mannitol; category flagged; file "evidence/lvpp-mannitol/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-mannitol-water; category flagged; file "parameters/transport/diffusion/mannitol-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId mannitol-octanol-water; category flagged; file "parameters/partition/mannitol-octanol-water.candidate.dat"; }
+);

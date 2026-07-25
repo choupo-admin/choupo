@@ -1,0 +1,94 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of testosterone in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/testosterone.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT then: solid phase NOT ESTABLISHED -- a structured gap.
+
+  PHASE 6 (2026-07-24, agent:solubility) -- still NOT ESTABLISHED, but the gap
+  is now specific instead of generic: a testosterone HYDRATE and an ANHYDRATE
+  are BOTH crystallographically characterised in the literature, so this is a
+  live two-way question at exactly the condition of this record, not an
+  academic one.  No source read settles which one an aqueous saturation sits
+  on.  Deliberately left open rather than guessed.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        testosterone-water;
+participants    ( testosterone water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    unspecified;
+    phaseBasis    notEstablished;
+}
+
+// PHASE 4 search: no phase-identified determination located.  This is the
+// free steroid, not an ester (propionate/enanthate/cypionate are separate
+// substances with their own, far lower, aqueous solubilities).
+//
+// PHASE 6 -- THE GAP IS A HYDRATE/ANHYDRATE FORK, AND IT IS OPEN.
+//
+// What is established: both solids exist and both have been solved.
+// Crystallographic data for testosterone HYDRATE and ANHYDRATE were
+// published in Acta Cryst. B 26 (1970) 1184, and a later solid-state NMR /
+// first-principles study (Phys. Chem. Chem. Phys. 8 (2006) 137-143) works
+// with two distinct forms of testosterone.  So "testosterone" names at least
+// two different solids, with different solubilities.
+//
+// What is NOT established, and what phase 6 refuses to invent: which of them
+// is in equilibrium with a saturated aqueous solution at 25 C.  Secondary
+// literature encountered in the search points BOTH ways -- towards anhydrate
+// -> hydrate conversion on contact with water, and towards hydrates of
+// 17-alkylated testosterone derivatives being metastable and dehydrating.
+// The derivatives are different substances and prove nothing about
+// testosterone itself, and neither strand was read in a source that could be
+// quoted.  Two directions of unread evidence do not make a phase assignment;
+// they make a well-posed question.
+//
+// Why this matters numerically: the two forms do not have the same
+// solubility, so a 23.4 mg/L attached to an unnamed solid is not merely
+// incomplete -- it is ambiguous by a factor that no one has bounded here.
+value
+{
+    solubility    23.4 mg/L;
+    originalStatement  "23.4 mg/L @ 25 C";   // verbatim
+}
+
+provenance
+{
+    origin      measured;
+    citation    "HSDB (US NLM, public domain), CID 6013";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseLandscape
+{
+    citation    "Crystallographic data for testosterone hydrate and anhydrate, Acta Cryst. B 26 (1970) 1184";
+    doi         "10.1107/s0567740870003801";
+    candidateSolids  ( testosteroneAnhydrate testosteroneHydrate );
+    known       "both a hydrate and an anhydrate of testosterone are crystallographically characterised";
+    missing     "which of the two is thermodynamically stable in contact with liquid water at 298.15 K -- no source read states it, and the secondary literature encountered points both ways";
+    readState   "bibliographic record only; neither this nor any slurry-conversion study was read in full in phase 6";
+}
+
+nextStep        "find a slurry / solution-mediated-transformation study of testosterone under water at 25 C (the pattern that settled carbamazepine and lactose in this family), or a solubility determination that runs PXRD on its residue";
+
+blockedBy       "the equilibrating solid is one of two crystallographically known forms -- testosterone anhydrate or testosterone hydrate -- and no source read establishes which is stable under liquid water at 298.15 K; the two do not share a solubility, so the digit is ambiguous by an unbounded factor";
+status          flagged;

@@ -1,0 +1,88 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  logKow of iopromide between 1-octanol and water.
+
+  *** STRUCTURED ABSENCE -- THERE IS NO VALUE IN THIS RECORD. ***
+
+  PHASE 6 (2026-07-24).  The phase-6 rights ruling holds that the Human Metabolome
+  Database is a LOCATOR, not a canonical source: a public page plus a citation
+  obligation is not a GPL-compatible redistribution licence, and HMDB carries public
+  references to academic / non-commercial use.  Where HMDB is the SOLE value source,
+  the record must be re-routed to a primary or the value dropped.
+
+  Iopromide is the one record in this directory where HMDB was the sole source.
+  Re-routing is impossible: the number HMDB carried was HMDB's OWN COMPUTED logP,
+  so there is no primary behind it to route to -- it is a prediction, not a
+  measurement, and it was never anybody's experiment.
+
+  The value (-2.05) is therefore DELETED, not downgraded.  This file is kept as an
+  explicit, structured statement that the capability is ABSENT, so that the absence
+  cannot be mistaken for an oversight and so that a future curator does not
+  re-import the same prediction from the same place.
+\*---------------------------------------------------------------------------*/
+
+recordType      partitionCoefficient;
+schemaVersion   1;
+recordId        iopromide-octanol-water;
+participants    ( iopromide octanol water );
+property        logKow;
+
+conditions
+{
+    // stated for completeness -- iopromide does not ionize in the 2-12 window, so the
+    // neutral form is the process species and logD == logKow across the whole useful band
+    temperature   "would be 298.15 K by convention";
+    pH            "non-ionizable in the 2-12 window";
+    chemicalForm  neutral;
+}
+
+value
+{
+    // DELIBERATELY EMPTY.  No number may be written here until a measurement is read
+    // in its primary.  Do NOT fill this with a prediction.
+}
+
+absence
+{
+    reason          "no experimental octanol-water partition coefficient for iopromide was
+                     located in any source the project may use";
+    deletedValue    -2.05;
+    deletedOrigin   estimated;      // a COMPUTED descriptor, never a measurement
+    deletedSource   "Human Metabolome Database (HMDB), computed logP";
+    deletedWhen     2026-07-24;
+    deletedWhy      "phase-6 rights ruling: HMDB is a locator, not a canonical source, and
+                     as the SOLE source here there was nothing to re-route to";
+    searchedPhase6  "yes -- no open experimental value found";
+}
+
+verification
+{
+    primaryIdentified   no;    // there is no primary: the number was a prediction
+    primaryRead         n/a;
+    chainCompleted      no;
+    valueRetained       no;    // DELETED, per the ruling's step (5)
+}
+
+provenance
+{
+    origin      -;
+    citation    "-";
+    doi         "-";
+    licence     "-";
+    evidenceId  -;
+    curator     "agent:partition (phase 6)";
+    retrieved   2026-07-24;
+}
+
+status          rightsPending;
+
+// NOTES
+//   Iopromide is a highly hydrophilic iodinated contrast medium; its true logKow is
+//   strongly negative, which is precisely why nobody measures it by shake-flask -- the
+//   octanol phase concentration is near the detection limit.  The honest expectation is
+//   that this gap is HARD to close, not that it was missed.
+//   SHARPENED ACTION: if a partition descriptor is ever needed for iopromide, look for a
+//     slow-stirring or pH-metric determination in the primary literature, or accept that
+//     the compound is better described by its size/hydrophilicity for NF/RO purposes and
+//     drop the partition leg entirely.  Do NOT reinstate a computed value.

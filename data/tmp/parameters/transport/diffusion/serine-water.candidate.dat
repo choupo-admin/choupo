@@ -1,0 +1,87 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/serine.candidate.dat; primary citation
+  cross-checked against data/tmp/aminoacids_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-serine-water;
+participants    ( serine water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             8.5e-10 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// how THIS value was obtained (glass-box; inputs stated in full)
+derivation
+{
+    method                 "Stokes-Einstein D = kT/(6 pi eta r), r from the partial molar volume";
+    radius                 0.288 nm;
+    radiusOrigin           "Choupo estimate from the partial molar volume V_molar";
+    partialMolarVolume     60.6 cm3/mol;
+    viscosity              0.8903e-3 Pa.s;
+    temperature            298.15 K;
+    origin                 estimated;
+}
+
+flagged
+{
+    reason        "Choupo own estimate, NOT a measurement; the measured primary is paywalled";
+    route         "Ma, Zhu, Wang et al., J. Chem. Eng. Data 50 (2005) 1192 (Taylor dispersion) - PAYWALLED";
+    action        "PHASE-6 SEARCH (2026-07-24) found no open measured primary. The named routes
+                  were pinned instead.  Best route: Umecky et al., 'Effects of hydroxyl groups
+                  on binary diffusion coefficients of alpha-amino acids in dilute aqueous
+                  solutions', Fluid Phase Equilib. 264 (2008) 18-22, doi
+                  10.1016/j.fluid.2007.10.013 - this is the HYDROXY-amino-acid paper (closed)
+                  - serine is the archetypal hydroxy-amino acid and is the paper's subject;
+                  then Umecky, T.; Kuga, T.; Funazukuri, T., 'Infinite Dilution Binary
+                  Diffusion Coefficients of Several alpha-Amino Acids in Water over a
+                  Temperature Range from (293.2 to 333.2) K', J. Chem. Eng. Data 51 (2006)
+                  1705-1710, doi 10.1021/je060149b (Taylor dispersion; closed, checked
+                  2026-07-24); then Ma, Y.; Zhu, C.; Ma, P.; Yu, K. T., 'Studies on the
+                  Diffusion Coefficients of Amino Acids in Aqueous Solutions', J. Chem. Eng.
+                  Data 50 (2005) 1192, doi 10.1021/je049582g (closed); then Longsworth, J. Am.
+                  Chem. Soc. 75 (1953) 5705-5709, doi 10.1021/ja01118a065 (Gouy, 25 deg C,
+                  infinite dilution; closed, no repository copy).  None is open access. Obtain
+                  one by inter-library loan and transcribe the 298.15 K infinite-dilution
+                  digit.  Until then the value stays a Stokes-Einstein estimate built on
+                  Millero's V0 = 60.6 cm3/mol, and must not be promoted.";
+}
+
+provenance
+{
+    origin        estimated;
+    citation      "Choupo own Stokes-Einstein estimate from the partial molar volume (V_molar primary: Millero, Lo Surdo & Shin, J. Phys. Chem. 82 (1978) 784)";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          flagged;

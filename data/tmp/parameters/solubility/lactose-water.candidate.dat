@@ -1,0 +1,140 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of lactose in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/lactose.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility): number DELETED on rights grounds
+  (Merck Index), but the solid phase was IDENTIFIED as alpha-lactose
+  MONOHYDRATE from an open CC-BY primary.  The record was left as the
+  best-posed empty record in the family, with a `nextStep` asking for the
+  total (mutarotation-equilibrium) solubility at 25 C in transferable units.
+
+  PHASE 6 (2026-07-24, agent:solubility): that `nextStep` is DONE.  The same
+  CC-BY primary states, in words, the WATER MOLE FRACTION of the solution
+  saturated with respect to alpha-lactose monohydrate at 25 C.  For a binary
+  the solute mole fraction is its exact complement, so a transferable number
+  is now available without guessing anything.  Value RESTORED, record
+  PROMOTED to candidate.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        lactose-water;
+participants    ( alphaLactoseMonohydrate water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- stated by the primary
+    pressure      101325 Pa;   // ambient, ASSUMED
+    phase         aqueous;
+    solidPhase    alphaLactoseMonohydrate;
+    phaseBasis    statedBySource;   // the same work states it, and it is the work the value comes from
+}
+
+// PHASE 6 -- WHAT THE SOURCE ACTUALLY SAYS, VERBATIM.
+//
+//   "Given that the solubility at 25 C is [expression], corresponding to a
+//    water molar fraction of 0.9886, measurements at higher concentrations
+//    have been accomplished by heating the suspension to completely dissolve
+//    the powder and by subsequently cooling back to 25 C."
+//
+// and, Figure 1 caption:
+//
+//   "(a) Water activity and (b) equilibrium molar fraction ratio of aqueous
+//    lactose solutions as a function of the molar fraction of water at 25 C.
+//    The vertical dashed line corresponds to the solubility of alpha-lactose
+//    monohydrate."
+//
+// HONESTY NOTE ON HOW THIS DIGIT WAS OBTAINED.  The paper's own mass-unit
+// solubility value is typeset as an inline IMAGE in the published article
+// and could not be read.  What COULD be read, as running text, is the water
+// mole fraction of the saturated solution: 0.9886.  The system is binary
+// (lactose + water; the alpha and beta anomers are isomers of the same
+// solute), so
+//
+//   ARITHMETIC (shown, not hidden):  x_lactose = 1 - x_water = 1 - 0.9886
+//                                              = 0.0114
+//
+// That is an exact complement, not an estimate.  Precision is limited by the
+// source: 0.9886 carries four figures, so the complement carries three, and
+// the record does not pretend to more.
+//
+// TOTAL, NOT ALPHA-ONLY -- and why that is now settled.
+// Lactose MUTAROTATES.  Adding alpha-lactose monohydrate to water first
+// saturates the solution in the alpha anomer (c_alpha,sat); mutarotation
+// then converts alpha to beta, un-saturating the alpha and letting more
+// solid dissolve, until anomeric equilibrium is reached at a higher total
+// (c_tot,sat,eq).  These differ by roughly a factor of three, so a record
+// that does not say which one it means is useless.
+//
+// Three things fix this one as the TOTAL at mutarotation equilibrium:
+//   (i)   the paper distinguishes c_alpha,sat from c_tot,sat,eq throughout
+//         and calls THIS one, without qualifier, "the solubility at 25 C";
+//   (ii)  Figure 1's dashed line is labelled "the solubility of alpha-lactose
+//         monohydrate", i.e. the saturation boundary of the slurry, and the
+//         paper's protocol equilibrates for 8-12 h, long enough for
+//         mutarotation (which it says takes 12 h at 25 C);
+//   (iii) the derived composition is ~0.219 g lactose per g water, which is
+//         the order of the total solubility, not of the alpha-only one.
+// Recorded as the total; the reasoning is stated rather than assumed, and
+// the residual is carried in `residualUncertainty`.
+//
+// STILL NOT CONVERTED TO mg/L.  That needs the density of a ~18 wt% lactose
+// solution, which the source does not give.  Kept in the source's own basis
+// plus the exact complement, as for trehalose and galactose.
+value
+{
+    solubility           0.0114 molFraction;   // total dissolved lactose (alpha + beta) at anomeric equilibrium
+    waterMoleFraction    0.9886;               // the quantity the source actually states
+    originalStatement    "the solubility at 25 C ... corresponding to a water molar fraction of 0.9886";   // verbatim
+}
+
+relatedQuantities
+{
+    // Also stated in words by the same work (Table 1, parameters used for
+    // simulating the dissolution of alpha-lactose monohydrate at 25 C).
+    // Recorded because it is the thermodynamically primitive form of this
+    // same equilibrium, not a second solubility.
+    solubilityProductAlphaMonohydrate  0.00494;   // dimensionless, mole-fraction based
+    crystalDensity                     1545 kg/m^3;   // attributed by the source to Visser
+    volumetricShapeFactor              0.5236;    // pi/6, as stated
+}
+
+validity
+{
+    temperatureRange ( 298.15 298.15 ) K;   // a single stated point
+}
+
+residualUncertainty  "the source's own mass-unit solubility is rendered as an image and was not read; the value here is the exact binary complement of the stated water mole fraction 0.9886, so it inherits that quantity's three significant figures.  The total-vs-alpha-only reading is argued in-file from the paper's protocol and Figure 1 caption -- it is not spelled out in a single sentence by the source";
+
+provenance
+{
+    origin      measured;
+    citation    "Trespi, S., Roshanfekr, S. & Mazzotti, M., Thermodynamics of Isomers and Solubility Prediction in Multicomponent Sugar Solutions, J. Phys. Chem. B 129 (2025) 3661-3669";
+    doi         "10.1021/acs.jpcb.4c08616";
+    licence     "CC-BY 4.0";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Trespi, S., Roshanfekr, S. & Mazzotti, M., J. Phys. Chem. B 129 (2025) 3661-3669 -- same work as the value";
+    doi         "10.1021/acs.jpcb.4c08616";
+    licence     "CC-BY 4.0";
+    basis       "alpha-lactose monohydrate is the equilibrating solid phase throughout that work's lactose-water SLE, and is named as such in the Figure 1 caption that carries the saturation point used here";
+}
+
+supersedes      "phase-2 headline 1.95e5 mg/L @ 298.15 K from The Merck Index -- deleted in phase 4 on rights grounds and NOT reinstated; the value above is an independent, open, measured determination, not a re-labelling of the withdrawn one";
+
+identityNote    "the component record in this corpus declares ANHYDROUS lactose (CAS 63-42-3, mp 222 C).  That is NOT the solid at the bottom of a saturated aqueous lactose solution at 25 C.  `participants` here names the monohydrate deliberately; the component record still needs reconciling";
+
+status          candidate;

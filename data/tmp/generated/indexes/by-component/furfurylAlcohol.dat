@@ -1,0 +1,6 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'furfurylAlcohol'
+component furfurylAlcohol;
+records
+(
+    { recordType cosmoSurface; recordId lvpp-furfurylAlcohol; category flagged; file "evidence/lvpp-furfurylAlcohol/metadata.dat"; }
+);

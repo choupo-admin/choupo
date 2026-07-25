@@ -1,0 +1,87 @@
+// data/tmp/evidence/lvpp-diclofenac/metadata.dat
+// PRIVATE staging tier (data/tmp, gitignored).  Envelope: data/tmp/RECORD_SPEC.md.
+// COSMO cavity descriptors for diclofenac, extracted from the LVPP sigma database.
+// EVIDENCE ONLY -- see `status` and `note` below.  The raw segment table is NEVER
+// copied here: this record POINTS at the .cosmo file under _sources/.
+
+recordType        cosmoSurface;
+schemaVersion     1;
+recordId          lvpp-diclofenac;
+participants      ( diclofenac );
+model             COSMO;
+qmProtocol        "NWChem B3LYP def2-SVPD (LVPP release v25)";
+surfaceDefinition SES;
+
+identity
+{
+    cas               15307-86-5;
+    molecularFormula  C14H11Cl2NO2;          // recomputed from the .cosmo $coord_rad atom list
+    ringCount         2;                // heavy-atom rings, from the LVPP mol/ geometry
+    nameMatch         verified;           // filename <-> candidate name; formula + ring count checked
+}
+
+conditions
+{
+    phase             gas;                // gas-phase optimised geometry
+    composition       idealConductorScreening;   // epsilon = infinity, screen = 1.000
+}
+
+value
+{
+    cavityArea        295.34 A2;      // sum of the 1696 $segment_information areas (printed in A2)
+    cavityVolume      338.56 A3;      // = 2284.70 bohr3 x 0.14818471
+    nSegments         1696;
+    // AS PRINTED in the file's $cosmo_data block -- ATOMIC UNITS, not A2/A3:
+    cavityAreaRaw     1054.66 bohr2;  // x 0.28002852 = 295.33 A2
+    cavityVolumeRaw   2284.70 bohr3;
+    solvationRadius   1.300 A;            // rsolv, as declared in $cosmo
+}
+
+// UNIT CORRECTION (checked, all 35 staged compounds): the $cosmo_data `area=` and
+// `volume=` fields are in ATOMIC UNITS (bohr2 / bohr3), NOT in A2 / A3 as the column
+// headers of _sources/lvpp_area_volume.csv claim.  Proof per file: the sum of the
+// $segment_information areas (which the file itself labels [A2]) equals
+// area_raw x 0.28002852 to within 0.001 A2.  The A2/A3 values above are the physical ones.
+
+sourceFile        "_sources/lvpp_sigma/release_v25/DICLOFENAC.cosmo";
+
+provenance
+{
+    origin        measured;
+    originNote    "QM-COMPUTED (NWChem COSMO), not experimental -- 'measured' is the envelope's slot for the primary output of the cited calculation.";
+    citation      "LVPP sigma-profile database, DOI 10.5281/zenodo.3613785; Ferrarini et al., AIChE J. 64 (2018) 3443";
+    doi           "10.5281/zenodo.3613785";
+    licence       "MIT (LVPP)";
+    evidenceId    -;                      // this record IS the evidence
+    curator       "agent:cosmo";
+    retrieved     2026-07-24;
+}
+
+status          incompatibleWithCosmoSAC2002;
+note
+    "NOT COMPATIBLE with Choupo's shipped VT-2005 cosmoSAC2002 sets: these values
+    come from a DIFFERENT QM protocol (NWChem B3LYP/def2-SVPD, SES cavity) than
+    the surfaces the cosmoSAC2002 constants were regressed against (Mullins et
+    al., IECR 45 (2006) 4389). Cavity area, cavity volume AND the sigma profile
+    all depend on the QM level, the surface definition, the sigma-averaging
+    convention and the model parametrization -- they are NOT interchangeable.
+    These numbers must NOT be pasted into a component `cosmo` block and must NOT
+    be tagged variant cosmoSAC2002. They become usable only when a NAMED 'LVPP'
+    set (area + volume + 51-point profile) has been generated AND validated on a
+    diverse panel -- area conservation, profile normalisation, sigma moments,
+    then published properties -- against a matching runtime variant. Until then
+    the raw .cosmo file is kept as EVIDENCE and this record stays flagged.";
+
+// RULING 2026-07-24 (advisor): this surface is NOT a capability.  Measured on a
+// 15-compound panel (COSMO_VALIDATION_STUDY.md): an LVPP-derived profile LOADS
+// into cosmoSAC2002 without complaint yet shifts gamma by up to -79% and FLIPS
+// the sign of G^E.  Passing structurally makes it MORE dangerous, not less.
+incompatibilityBasis
+{
+    withModel      cosmoSAC2002;
+    sigma2Deficit  "-5..-41 % (mean -20.4 %) across all 15 panel compounds";
+    shapeDeviation "L1_norm 0.177-0.581 = 170x-580x the validated control";
+    gammaImpact    "-11.9 % (water/ethanol); -64.4 % (gamma-inf water/n-hexane); -79.4 % (water/acetone, G^E sign flips)";
+    reconcilable   no;   // no r_av closes it; per-compound fits span 19x; CS2 has no solution
+    ruling         "VT2005-only for the existing model; LVPP preserved as evidence/roadmap, never a runtime variant in this phase";
+}

@@ -1,0 +1,220 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: mannitol  (C6H14O6, CAS 69-65-8) -- sugar alcohol (polyol).
+  D-mannitol, the C2 epimer of sorbitol.  Non-volatile non-electrolyte SOLUTE
+  (NF sweetener/osmotic family).  Linear polyol -> clean first-order Joback
+  decomposition.  High-melting crystal -> SOLID rung (referenceState pureSolid).
+
+  PRIVATE staging tier (data/tmp, gitignored).  Envelope + ARITY rule:
+  ../RECORD_SPEC.md.  Cleaned 2026-07-24 (phase 3, component cleanup).
+
+  ARITY-1 ONLY.  Intrinsic single-substance data only; every system property was
+  emitted in phase 2 to its arity-correct home (pointers below).
+
+  FIXED HERE: Cp,solid and the fusion data were hiding in prose comments; both are
+  now structured blocks with unit, phase, origin and primary citation.
+\*---------------------------------------------------------------------------*/
+
+// --- MOVED OUT in phase 2 -- POINTERS ONLY (a cross-reference, not data) ---
+// D_aq + equivalent-sphere radius: see parameters/transport/diffusion/mannitol-water (recordId diffusion-mannitol-water; Stokes-Einstein ESTIMATE, not measured)
+// aqueous solubility: see parameters/solubility/mannitol-water (recordId mannitol-water)
+// logKow / XLogP3: see parameters/partition/mannitol-octanol-water (recordId mannitol-octanol-water; PubChem COMPUTED descriptor -- identical to sorbitol's, which is itself the argument against using it as data)
+
+name           mannitol;
+formula        C6H14O6;
+CAS            69-65-8;
+
+MW             182.17;         // g/mol -- derived from the formula with IUPAC
+                               //   standard atomic weights (origin derived)
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;              // non-electrolyte, van't Hoff i = 1
+
+identity
+{
+    pubchemCID         6251;
+    inchiKey           FBPFZTCFMRRESA-KVTDHHQDSA-N;   // FULL 27-character key
+    inchiKeyStatus     full;
+    inchiKeyNote       "Block 1 (FBPFZTCFMRRESA) is SHARED with sorbitol -- the two
+                        hexitols differ only in block 2.  This pair is the standing
+                        proof that a truncated key cannot identify a stereoisomer.";
+    stereochemicalForm "D-mannitol, crystalline (beta polymorph is the commercial form)";
+    identitySource     "PubChem CID 6251 (US NIH, public domain), retrieved 2026-07-24";
+    status             candidate;
+}
+
+// ---------------------------------------------------------------------------
+// ARITY-1 INTRINSIC, SOLID rung.  Two concordant combustion determinations.
+// PRIMARY (dHf_298): McClaine, PhD thesis, Stanford University (1947) --
+//   combustion; corroborated by Parks, West, Naylor, Fujii & McClaine,
+//   J. Am. Chem. Soc. 68 (1946) 2524 (-1337.2 +/- 0.79 kJ/mol).
+// PRIMARY (s_298): Parks, Kelley & Huffman, J. Am. Chem. Soc. 51 (1929) 1969 --
+//   third-law (low-temperature calorimetry).
+standardThermochemistry
+{
+    dHf_298    -1337200.0;     // J/mol (-1337.2 +/- 0.79 kJ/mol), phase CRYSTALLINE
+                               //   origin measured (combustion)
+                               //   PRIMARY (peer-reviewed): Parks, West, Naylor,
+                               //   Fujii & McClaine, JACS 68 (1946) 2524
+                               //   corroboration -1337.5 kJ/mol [McClaine, PhD
+                               //   thesis, Stanford (1947)] -- agrees to 0.3 kJ/mol
+    s_298      238.5;          // J/(mol K), third-law absolute, phase CRYSTALLINE
+                               //   origin measured (low-T calorimetry)
+                               //   [Parks, Kelley & Huffman, JACS 51 (1929) 1969]
+    referenceState      pureSolid;
+}
+
+thermochemistryStatus
+{
+    property        dHf_298;
+    phase           solid;
+    resolution      "RE-POINTED 2026-07-25 to the peer-reviewed primary.  Verified
+                     against the NIST WebBook condensed-phase entry (ID=C69658), which
+                     lists BOTH determinations: -1337.5 (McClaine, 1947, thesis) and
+                     -1337.2 +/- 0.79 (Parks, West et al., JACS 68 (1946) 2524, method
+                     Ccb).  The datum is now the JACS 1946 value; the McClaine thesis
+                     is demoted to corroboration.  The 0.3 kJ/mol change is within the
+                     stated uncertainty.";
+    route           "NIST WebBook (ID=C69658, Mask=2) used as a finding aid to the
+                     primary";
+    status          candidate;
+}
+
+// REAL crystalline-mannitol solid heat capacity -- LIFTED OUT OF A COMMENT.
+// Phase SOLID, origin measured.
+// PRIMARY: Lian, Chen, Suurkuusk & Wadsoe, Acta Chem. Scand. A36 (1982) 735.
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = 239.00 J/(mol K) at 298.15 K, single point
+    coefficients  ( 239.00 );          // J/(mol K)
+    Trange        ( 290  310 );        // K -- narrow window: ONE measured point
+    // [Lian, Chen, Suurkuusk & Wadsoe 1982, Acta Chem. Scand. A36, 735]
+    // crossCheck (independent, NOT merged): 236.0 J/(mol K) at 294.1 K
+    //   [Parks & Anderson, JACS 48 (1926) 1506]; 244.8 J/(mol K) at 303 K
+    //   [Spaght, Thomas & Parks, J. Phys. Chem. 36 (1932) 882].
+}
+
+// Fusion -- ARITY-1 INTRINSIC (a pure-substance phase transition).  LIFTED OUT OF
+// A COMMENT into a structured block.
+fusion
+{
+    enthalpy     54.69 kJ/mol;         // +/- 1.64
+    temperature  437.25 K;             // Tfus
+    entropy      125.08 J/molK;        // = dHfus / Tfus (derived, shown)
+    phaseChange  "crystalline solid -> liquid";
+    origin       measured;             // DSC
+    citation     "Xu, Chen et al., J. Chem. Eng. Data (2010), doi 10.1021/je900285w";
+    doi          "10.1021/je900285w";
+    polymorphNote "the polymorph (alpha/beta/delta) is not stated by the source;
+                   mannitol polymorphs differ measurably in dHfus";
+    status       flagged;              // polymorph unstated
+}
+
+// --- PURE-COMPONENT (arity-1) properties, each with unit + phase + origin + citation ---
+pureComponentProperties
+{
+    solidDensity
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "CRC Handbook of Chemistry and Physics -- no-grant, all-rights-reserved";
+        action        "read Dx (calculated density) from a published single-crystal structure of
+                      the NAMED polymorph/anomer -- Acta Cryst. reports it directly -- or
+                      derive rho = Z*MW/(N_A*V_cell) from open cell parameters (the
+                      Crystallography Open Database is CC0 and cites the primary for each
+                      entry).  Record the cell, Z and the arithmetic in a derivation{}
+                      block, and NAME the solid form.";
+        droppedValue  "value = 1.514 g/cm3; temperature = 293.15 K; citation = CRC Handbook of Chemistry and Physics, 79th ed.";
+    }
+
+    solidMolarVolume
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "DERIVED from the solidDensity above, which was dropped -- a
+                       derivative cannot outlive the datum it was computed from";
+        action        "recompute V = MW / rho once a legally clear rho exists, and
+                       name the solid form both refer to";
+        droppedValue  "120.32 cm3/mol  (this is the PURE-SOLID molar volume; the partial molar
+                       volume in water is a SYSTEM property and is unaffected -- it
+                       lives in parameters/volume/)";
+    }
+
+    meltingPoint
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "compilation-only source (CRC Handbook / Merck Index / NIST-TRC),
+                       not redistributable in Choupo's public tier";
+        supersededBy  "this file already carries the SAME transition as a primary-cited
+                       fusion{} block: T_fus = 437.25 +/- 0.12 K
+                       [Xu, Chen et al., J. Chem. Eng. Data (2010), doi 10.1021/je900285w].
+                       The compilation entry was therefore a SECOND, weaker copy of a
+                       datum we already hold -- an arity-1 duplication as well as a
+                       rights problem.  Deleting it loses nothing.";
+        action        "none for the value; the OPEN defect is that neither source names
+                       the polymorph, which the fusion{} block already flags";
+        droppedValue  "value = 438.15 K; range = ( 438.15 442.15 ) K; transition = fusion; citation = CRC Handbook, 79th ed.; crossCheck = 437.25 K from the DSC fusion study above -- consistent";
+    }
+}
+
+// --- COSMO surface: NO deployable set (structured flag) ---
+cosmoStatus
+{
+    recordType      cosmoSurfaceStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    evidenceRecord  evidence/lvpp-mannitol;  // cavity descriptors ONLY (211.66 A2 /
+                                             //   219.79 A3, 1493 segments); NO sigma profile
+    reason          "the LVPP record is EVIDENCE, not a deployable set: it carries
+                     no sigma profile and no validated variant.";
+    protocolIncompatibility
+        "LVPP surfaces come from a different QM protocol (NWChem B3LYP/def2-SVPD,
+         SES cavity) from the VT-2005 surfaces Choupo's cosmoSAC2002 constants were
+         regressed against (Mullins et al., IECR 45 (2006) 4389).  Measured on
+         ethylene, present in both databases: +6.1 % cavity area, +10.3 % cavity
+         volume.  These numbers must NOT be pasted into a cosmo{} block and must
+         NOT be tagged variant cosmoSAC2002.";
+    conformerCaution "gas-phase optimised geometry, one conformer of an acyclic
+                      hexitol -- a named set must declare which conformer.";
+    status          flagged;
+}
+
+// --- PC-SAFT: no set in hand (structured flag) ---
+pcSaftStatus
+{
+    recordType      saftParameterSetStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    sourcePinned    "Carneiro, Held, Rodriguez, Sadowski & Macedo, J. Phys. Chem. B
+                     117 (2013) 9980 -- mannitol among the fitted sugar alcohols";
+    numbersInHand   no;
+    legalNote       "one row with its own citation only -- never the table";
+    status          flagged;         // STRUCTURED ABSENCE -- no number is carried
+    blockedBy       "the pinned parameter source is a paywalled article and no row was
+                     ever transcribed";
+    action          "read ONE compound's row at the pinned source and stage it with its
+                     own citation PLUS variant, units, association scheme, combining
+                     rules, objective function and data range; never the whole table";
+    legalNote2      "reclassified rightsPending -> flagged 2026-07-24 (rights-clearance
+                     pass): rightsPending means a VALUE is held that cannot be shipped.
+                     No value is held here, so this is a declared GAP, not a legal
+                     blocker on any number.";
+}
+
+groups
+{
+    joback ( { group CH2; count 2; } { group CH; count 4; } { group OH; count 6; } );   // PROPOSED (review) -- linear polyol, clean CH2/CH/OH decomposition
+}

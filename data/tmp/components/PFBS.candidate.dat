@@ -1,0 +1,91 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: PFBS  (perfluorobutanesulfonic acid, C4HF9O3S,
+  CAS 375-73-5).  Short-chain C4 sulfonic acid -- the PFOS replacement; small
+  permanent anion, the LOW-rejection challenge case for NF/RO.
+
+  IDENTITY source: PubChem CID 67815 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 375-73-5 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.
+
+  THE DOMINANT FINDING FOR THIS FILE: as for PFOS, the staged literature is
+    salt-dominated.  ATSDR records no free-acid bulk properties at all, and the
+    one solubility figure is for the POTASSIUM SALT (PFBS-K) -- a DIFFERENT
+    SUBSTANCE from the free acid named above.  Nothing is carried here as if it
+    belonged to the acid.  A nearly empty file is the honest result.
+
+  STATUS: candidate identity; NO intrinsic property datum for the free acid.
+\*---------------------------------------------------------------------------*/
+
+name              PFBS;
+formula           C4HF9O3S;
+CAS               375-73-5;
+InChIKey  JGTNAGYHADQMCM-UHFFFAOYSA-N;   // 14-char skeleton only.
+MW                300.10;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+
+// ---- RE-HOMED IN PHASE 2 (pointers only, no values) ------------------------
+// acid pKa              -> chemistry/aqueousSpeciation/     recordId PFBS-pKa1
+//   (a CLASS BOUND, "< 1.6", not a determination -- flagged there)
+// aqueous solubility    -> parameters/solubility/           recordId PFBS-potassium-water
+//   *** and that record's dissolved solid is the POTASSIUM SALT, not the acid
+//   named in this file.  The solubility of PFBS the ACID is NOT known to us. ***
+// chargeAtPH7 (-1) was DELETED, not moved: a charge at a pH is a RESULT.
+//
+// NO partition record exists, deliberately: the source states logKow is "not
+//   applicable (ionic surfactant)" -- an absence, not a datum
+//   (parameters/partition/_LEDGER.md).  No logKow may be written here.
+// NO diffusion record exists (transport/diffusion/_LEDGER.md section 5).
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+// (none -- see below)
+
+
+// ---- REMOVED FROM THIS FILE, NO HOME YET (see _CLEANUP ledger) --------------
+// A soil organic-carbon partition coefficient (logKoc) was carried here as a
+//   comment.  It is (a) a RANGE, not a value,
+//   and (b) organic-carbon partition -- a different SYSTEM (soil organic matter,
+//   not octanol), out of scope for parameters/partition/ by that family's own
+//   ledger.  Recorded in _CLEANUP_hormones_pfas_volatiles.md and deleted here.
+
+
+// ---- DECLARED GAPS / SUBSTANCE MISMATCHES -----------------------------------
+// Tfus / Tb / density / vaporPressure : ATSDR records NO free-acid bulk data
+//                 (salt-dominated literature).  Nothing staged, nothing invented.
+// Tc / Pc / omega / Cp /
+// standardThermochemistry : none located.  Joback has no perfluoro-carbon groups.
+// COSMO-SAC     : PFBS is NOT in the LVPP sigma database -- no evidence record.
+//                 Even if it were, no `cosmo {}` block could be written from it:
+//                 the LVPP QM protocol is incompatible with Choupo's VT-2005
+//                 `cosmoSAC2002` sets (ethylene cross-check: +6.1 % area,
+//                 +10.3 % volume).
+// PC-SAFT       : no set adopted (parameters/PCSAFT/_INVENTORY.md).
+//
+// TO CLOSE THIS FILE a curator must find free-ACID data, or the catalogue must
+// carry PFBS-K as its own component with its own CAS.
+
+provenance
+{
+    identity
+    {
+        origin      measured;
+        citation    "PubChem CID 67815 (US NIH, public domain), PUG-REST 2026-07-24";
+        status      candidate;
+    }
+}

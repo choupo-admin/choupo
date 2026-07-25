@@ -1,0 +1,73 @@
+{
+  "Record": {
+    "RecordType": "CID",
+    "RecordNumber": 5329,
+    "RecordTitle": "Sulfamethoxazole",
+    "Section": [
+      {
+        "TOCHeading": "Chemical and Physical Properties",
+        "Description": "Various chemical and physical properties that are experimentally determined for this compound.  See also the Safety and Hazard Properties section (if available), which has additional properties pertinent to chemical safety and hazards.",
+        "Section": [
+          {
+            "TOCHeading": "Experimental Properties",
+            "Description": "Various experimentally determined properties for this compound.  See also the Safety and Hazard Properties section (if available), which has additional properties pertinent to chemical safety and hazards.",
+            "Section": [
+              {
+                "TOCHeading": "Dissociation Constants",
+                "Description": "A specific type of equilibrium constant that measures the propensity of a larger object to separate (dissociate) reversibly into smaller components, as when a complex falls apart into its component molecules, or when a salt splits up into its component ions. This includes pKa (the negative logarithm of the acid dissociation constant) and pKb (the negative logarithm of the base dissociation constant).",
+                "Information": [
+                  {
+                    "ReferenceNumber": 47,
+                    "Description": "PEER REVIEWED",
+                    "Reference": [
+                      "PMID:15298203",
+                      "Boreen AL et al; Environ Sci Technol 38: 3933-40 (2004)"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "PMID:15298203",
+                        "Matched": {
+                          "PCLID": 900016095,
+                          "Citation": "PMID:15298203"
+                        }
+                      },
+                      {
+                        "Citation": "Boreen AL et al; Environ Sci Technol 38: 3933-40 (2004)",
+                        "Matched": {
+                          "PCLID": 17307746,
+                          "Citation": "Boreen AL, Arnold WA, McNeill K. Photochemical fate of sulfa drugs in the aquatic environment: sulfa drugs containing five-membered heterocyclic groups. Environ Sci Technol. 2004 Jul 15;38(14):3933–40. doi: 10.1021/es0353053. PMID: 15298203.",
+                          "PMID": 15298203,
+                          "DOI": "10.1021/es0353053"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "pKa1 = 1.6; pKa2 = 5.7"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Reference": [
+      {
+        "ReferenceNumber": 47,
+        "SourceName": "Hazardous Substances Data Bank (HSDB)",
+        "SourceID": "3186",
+        "Name": "SULFAMETHOXAZOLE",
+        "Description": "The Hazardous Substances Data Bank (HSDB) is a toxicology database that focuses on the toxicology of potentially hazardous chemicals. It provides information on human exposure, industrial hygiene, emergency handling procedures, environmental fate, regulatory requirements, nanomaterials, and related areas. The information in HSDB has been assessed by a Scientific Review Panel.",
+        "URL": "https://pubchem.ncbi.nlm.nih.gov/source/hsdb/3186",
+        "LicenseURL": "https://www.nlm.nih.gov/web_policies.html",
+        "IsToxnet": true,
+        "ANID": 2347
+      }
+    ]
+  }
+}

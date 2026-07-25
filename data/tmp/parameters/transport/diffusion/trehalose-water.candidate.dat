@@ -1,0 +1,108 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/trehalose.candidate.dat; primary citation
+  cross-checked against data/tmp/sugars_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-trehalose-water;
+participants    ( trehalose water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             5.0e-10 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// how THIS value was obtained (glass-box; inputs stated in full)
+derivation
+{
+    method                 "approximate reading of the primary + sucrose analogue";
+    anchorValue            5.23e-10 m2/s;
+    anchorSubstance        sucrose;
+    origin                 estimated;
+}
+
+// a Stokes radius computed FROM the D above is NOT an independent datum
+derived
+{
+    equation      "r = kT/(6 pi mu D)";
+    viscosity     0.8903e-3 Pa.s;
+    temperature   298.15 K;
+    radius        0.49 nm;   // PROVISIONAL: recompute if D is replaced
+    origin        derived;
+}
+
+flagged
+{
+    reason        "the exact infinite-dilution digit was NOT transcribed from the primary";
+    route         "Ekdawi-Sever, de Pablo et al., J. Phys. Chem. A 107 (2003) 936";
+    action        "PHASE 6 TRIED HARDEST HERE AND STILL FAILED.  Checked 2026-07-24: (a) the
+                  phase-2 route is now fully resolved - Ekdawi-Sever, N.; de Pablo, J. J. et
+                  al., 'Diffusion of Sucrose and alpha,alpha-Trehalose in Aqueous Solutions',
+                  J. Phys. Chem. A 107 (2003) 936-943, doi 10.1021/jp020187b - CLOSED (is_oa =
+                  false); (b) second route Rampp, M.; Buttersack, C.; Luedemann, H.-D.,
+                  'c,T-dependence of the viscosity and the self-diffusion coefficients in some
+                  aqueous carbohydrate solutions', Carbohydr. Res. 328 (2000) 561-572, doi
+                  10.1016/S0008-6215(00)00141-5 - CLOSED; its abstract was read and it does
+                  measure alpha,alpha-trehalose, BUT by PFG-NMR at HIGH concentration, so (i)
+                  it yields a SELF-diffusion coefficient, which is not the mutual coefficient
+                  this record's D slot means, and (ii) a dilute-limit extrapolation would be
+                  required and must be declared as such.  Preferred deliverable therefore
+                  remains the mutual coefficient from (a).  Do not promote the sucrose-
+                  anchored surrogate.";
+}
+
+// PHASE 7 (2026-07-25) -- primary sought UNREACHABLE; wrong-quantity defect reaffirmed.
+phase7Retrieval
+{
+    attempted     2026-07-25;
+    outcome       "UNREADABLE -- no mutual-D digit confirmed";
+    detail        "Ekdawi-Sever et al., J. Phys. Chem. A 107 (2003) 936 (doi
+                   10.1021/jp020187b) is ACS-closed and ACS returned HTTP 403 (platform
+                   migration outage); no OA copy.  The value remains a sucrose-anchored
+                   ESTIMATE.";
+    wrongQuantity "the only openly citable trehalose measurement -- Rampp, Buttersack &
+                   Luedemann, Carbohydr. Res. 328 (2000) 561 (doi
+                   10.1016/S0008-6215(00)00141-5) -- is a PFG-NMR SELF-diffusion coefficient
+                   measured at HIGH concentration.  That is NOT the mutual (interdiffusion)
+                   coefficient this record's D slot means; it may not be written into the
+                   value without a declared dilute-limit extrapolation, and is kept out.";
+    ruling        "value stays an ESTIMATE (origin estimated); NOT promoted.";
+}
+
+provenance
+{
+    origin        estimated;
+    citation      "approximate reading of Ekdawi-Sever, de Pablo et al., J. Phys. Chem. A 107 (2003) 936 (PGSE-NMR + MD); anchored on sucrose 5.23e-10 m2/s at low concentration";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          flagged;

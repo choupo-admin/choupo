@@ -1,0 +1,45 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/bisphenolA.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        bisphenolA-pKa2;
+participants    ( bisphenolA- bisphenolA2- H+ );
+property        pKa;
+reaction        "bisphenolA- (mono-phenolate) = bisphenolA2- (di-phenolate) + H+";
+site            "second phenolic OH";
+step            2;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- the source does NOT state a temperature (FLAG)
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    pKa             ~10.2;   // approximate; FLAGGED in the source
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      estimated;
+    citation    "NOT PINNED -- routed to Staples et al., Chemosphere 36 (1998) 2149 (and Cousins 2002)";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          flagged;
+
+// NOTES
+//   Re-homed from components/bisphenolA.candidate.dat (already FLAGGED there)
+//   Diprotic: the source's consequence 'neutral below ~pH 9; mono-/di-anionic above' follows from pKa1+pKa2.

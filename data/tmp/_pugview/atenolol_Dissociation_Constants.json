@@ -1,0 +1,234 @@
+{
+  "Record": {
+    "RecordType": "CID",
+    "RecordNumber": 2249,
+    "RecordTitle": "Atenolol",
+    "Section": [
+      {
+        "TOCHeading": "Chemical and Physical Properties",
+        "Description": "Various chemical and physical properties that are experimentally determined for this compound.  See also the Safety and Hazard Properties section (if available), which has additional properties pertinent to chemical safety and hazards.",
+        "Section": [
+          {
+            "TOCHeading": "Experimental Properties",
+            "Description": "Various experimentally determined properties for this compound.  See also the Safety and Hazard Properties section (if available), which has additional properties pertinent to chemical safety and hazards.",
+            "Section": [
+              {
+                "TOCHeading": "Dissociation Constants",
+                "Description": "A specific type of equilibrium constant that measures the propensity of a larger object to separate (dissociate) reversibly into smaller components, as when a complex falls apart into its component molecules, or when a salt splits up into its component ions. This includes pKa (the negative logarithm of the acid dissociation constant) and pKb (the negative logarithm of the base dissociation constant).",
+                "Information": [
+                  {
+                    "ReferenceNumber": 11,
+                    "Name": "Basic pKa",
+                    "ExtendedReference": [
+                      {
+                        "Citation": "Tested as SID 103164873 in AID 781325: https://pubchem.ncbi.nlm.nih.gov/bioassay/781325#sid=103164873",
+                        "Matched": {
+                          "PCLID": 906317749,
+                          "Citation": "Tested as SID 103164873 in AID 781325: https://pubchem.ncbi.nlm.nih.gov/bioassay/781325#sid=103164873"
+                        }
+                      },
+                      {
+                        "Citation": "Comparison of the accuracy of experimental and predicted pKa values of basic and acidic compounds. Pharm Res. 2014; 31(4):1082-95. DOI:10.1007/s11095-013-1232-z. PMID:24249037",
+                        "PMID": 24249037,
+                        "DOI": "10.1007/s11095-013-1232-z",
+                        "PublicationTitle": "Comparison of the accuracy of experimental and predicted pKa values of basic and acidic compounds",
+                        "PublicationAuthor": [
+                          "Settimo L, Bellman K, Knegtel RM"
+                        ],
+                        "PublicationName": "Pharm Res",
+                        "PublicationVolume": "31",
+                        "PublicationIssue": "4",
+                        "PublicationPage": "1082-95",
+                        "PublicationDate": {
+                          "Year": 2014
+                        },
+                        "Matched": {
+                          "PCLID": 30306634,
+                          "Citation": "Settimo L, Bellman K, Knegtel RMA. Comparison of the Accuracy of Experimental and Predicted pKa Values of Basic and Acidic Compounds. Pharmaceutical Research. 2013 Nov 19;31(4):1082–95. doi: 10.1007/s11095-013-1232-z.",
+                          "PMID": 24249037,
+                          "DOI": "10.1007/s11095-013-1232-z"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "9.58"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 11,
+                    "Name": "Basic pKa",
+                    "ExtendedReference": [
+                      {
+                        "Citation": "Tested as SID 103164873 in AID 781326: https://pubchem.ncbi.nlm.nih.gov/bioassay/781326#sid=103164873",
+                        "Matched": {
+                          "PCLID": 900288212,
+                          "Citation": "Tested as SID 103164873 in AID 781326: https://pubchem.ncbi.nlm.nih.gov/bioassay/781326#sid=103164873"
+                        }
+                      },
+                      {
+                        "Citation": "Comparison of the accuracy of experimental and predicted pKa values of basic and acidic compounds. Pharm Res. 2014; 31(4):1082-95. DOI:10.1007/s11095-013-1232-z. PMID:24249037",
+                        "PMID": 24249037,
+                        "DOI": "10.1007/s11095-013-1232-z",
+                        "PublicationTitle": "Comparison of the accuracy of experimental and predicted pKa values of basic and acidic compounds",
+                        "PublicationAuthor": [
+                          "Settimo L, Bellman K, Knegtel RM"
+                        ],
+                        "PublicationName": "Pharm Res",
+                        "PublicationVolume": "31",
+                        "PublicationIssue": "4",
+                        "PublicationPage": "1082-95",
+                        "PublicationDate": {
+                          "Year": 2014
+                        },
+                        "Matched": {
+                          "PCLID": 30306634,
+                          "Citation": "Settimo L, Bellman K, Knegtel RMA. Comparison of the Accuracy of Experimental and Predicted pKa Values of Basic and Acidic Compounds. Pharmaceutical Research. 2013 Nov 19;31(4):1082–95. doi: 10.1007/s11095-013-1232-z.",
+                          "PMID": 24249037,
+                          "DOI": "10.1007/s11095-013-1232-z"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "9.54"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 11,
+                    "Name": "Basic pKa",
+                    "ExtendedReference": [
+                      {
+                        "Citation": "Tested as SID 103164873 in AID 781328: https://pubchem.ncbi.nlm.nih.gov/bioassay/781328#sid=103164873",
+                        "Matched": {
+                          "PCLID": 900288339,
+                          "Citation": "Tested as SID 103164873 in AID 781328: https://pubchem.ncbi.nlm.nih.gov/bioassay/781328#sid=103164873"
+                        }
+                      },
+                      {
+                        "Citation": "Comparison of the accuracy of experimental and predicted pKa values of basic and acidic compounds. Pharm Res. 2014; 31(4):1082-95. DOI:10.1007/s11095-013-1232-z. PMID:24249037",
+                        "PMID": 24249037,
+                        "DOI": "10.1007/s11095-013-1232-z",
+                        "PublicationTitle": "Comparison of the accuracy of experimental and predicted pKa values of basic and acidic compounds",
+                        "PublicationAuthor": [
+                          "Settimo L, Bellman K, Knegtel RM"
+                        ],
+                        "PublicationName": "Pharm Res",
+                        "PublicationVolume": "31",
+                        "PublicationIssue": "4",
+                        "PublicationPage": "1082-95",
+                        "PublicationDate": {
+                          "Year": 2014
+                        },
+                        "Matched": {
+                          "PCLID": 30306634,
+                          "Citation": "Settimo L, Bellman K, Knegtel RMA. Comparison of the Accuracy of Experimental and Predicted pKa Values of Basic and Acidic Compounds. Pharmaceutical Research. 2013 Nov 19;31(4):1082–95. doi: 10.1007/s11095-013-1232-z.",
+                          "PMID": 24249037,
+                          "DOI": "10.1007/s11095-013-1232-z"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "9.6"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 19,
+                    "Name": "pKa",
+                    "Reference": [
+                      "MERCK INDEX (2001)"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "MERCK INDEX (2001)",
+                        "Matched": {
+                          "PCLID": 900289141,
+                          "Citation": "MERCK INDEX (2001)"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "9.6"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 42,
+                    "Description": "PEER REVIEWED",
+                    "Reference": [
+                      "O'Neil, M.J. (ed.). The Merck Index - An Encyclopedia of  Chemicals, Drugs, and Biologicals. 13th Edition, Whitehouse  Station, NJ:  Merck and Co., Inc., 2001., p. 147"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "O'Neil, M.J. (ed.). The Merck Index - An Encyclopedia of  Chemicals, Drugs, and Biologicals. 13th Edition, Whitehouse  Station, NJ:  Merck and Co., Inc., 2001., p. 147",
+                        "Matched": {
+                          "PCLID": 900125459,
+                          "Citation": "O'Neil, M.J. (ed.). The Merck Index - An Encyclopedia of  Chemicals, Drugs, and Biologicals. 13th Edition, Whitehouse  Station, NJ:  Merck and Co., Inc., 2001., p. 147"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "pKa = 9.6"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Reference": [
+      {
+        "ReferenceNumber": 11,
+        "SourceName": "ChEMBL",
+        "SourceID": "Compound::CHEMBL24",
+        "Name": "ATENOLOL",
+        "Description": "ChEMBL or ChEMBLdb is a manually curated chemical database of bioactive molecules with drug-like properties. It is maintained by the European Bioinformatics Institute (EBI), of the European Molecular Biology Laboratory (EMBL), based at the Wellcome Trust Genome Campus, Hinxton, UK.",
+        "URL": "https://www.ebi.ac.uk/chembl/explore/compound/CHEMBL24",
+        "LicenseNote": "Access to the web interface of ChEMBL is made under the EBI's Terms of Use (http://www.ebi.ac.uk/Information/termsofuse.html). The ChEMBL data is made available on a Creative Commons Attribution-Share Alike 3.0 Unported License (http://creativecommons.org/licenses/by-sa/3.0/).",
+        "LicenseURL": "http://www.ebi.ac.uk/Information/termsofuse.html",
+        "ANID": 31294556
+      },
+      {
+        "ReferenceNumber": 19,
+        "SourceName": "DrugBank",
+        "SourceID": "DB00335",
+        "Name": "Atenolol",
+        "Description": "The DrugBank database is a unique bioinformatics and cheminformatics resource that combines detailed drug (i.e. chemical, pharmacological and pharmaceutical) data with comprehensive drug target (i.e. sequence, structure, and pathway) information.",
+        "URL": "https://www.drugbank.ca/drugs/DB00335",
+        "LicenseNote": "Creative Common's Attribution-NonCommercial 4.0 International License (http://creativecommons.org/licenses/by-nc/4.0/legalcode)",
+        "LicenseURL": "https://www.drugbank.ca/legal/terms_of_use",
+        "ANID": 3601941
+      },
+      {
+        "ReferenceNumber": 42,
+        "SourceName": "Hazardous Substances Data Bank (HSDB)",
+        "SourceID": "6526",
+        "Name": "ATENOLOL",
+        "Description": "The Hazardous Substances Data Bank (HSDB) is a toxicology database that focuses on the toxicology of potentially hazardous chemicals. It provides information on human exposure, industrial hygiene, emergency handling procedures, environmental fate, regulatory requirements, nanomaterials, and related areas. The information in HSDB has been assessed by a Scientific Review Panel.",
+        "URL": "https://pubchem.ncbi.nlm.nih.gov/source/hsdb/6526",
+        "LicenseURL": "https://www.nlm.nih.gov/web_policies.html",
+        "IsToxnet": true,
+        "ANID": 4320
+      }
+    ]
+  }
+}

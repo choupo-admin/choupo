@@ -1,0 +1,67 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  logKow of PFOA between 1-octanol and water.
+
+  ARITY 3: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/PFOA.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      partitionCoefficient;
+schemaVersion   1;
+recordId        PFOA-octanol-water;
+participants    ( PFOA octanol water );
+property        logKow;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- the conventional log P reference
+                  // temperature is NOT restated by the source; the
+                  // 25 C convention is assumed and flagged here.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    pH            "neutral acid (nominal)";
+    chemicalForm  neutral;
+}
+
+// FLAGGED: log Kow is ILL-DEFINED for a perfluoroalkyl surfactant.
+// PFOA is an anionic surfactant (pKa -0.5, Goss 2007) that adsorbs at
+// the octanol/water interface and aggregates, so a shake-flask logKow
+// is not a clean two-phase partition.  Recorded because the number is
+// widely quoted; use with care, never as an NF/RO rejection descriptor.
+value
+{
+    logKow   6.3;   // dimensionless (log10 of a concentration ratio)
+}
+
+provenance
+{
+    origin      measured;
+    citation    "ILO-WHO International Chemical Safety Card ICSC #1613 (CC-BY)";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:partition";
+    retrieved   2026-07-24;
+}
+
+status          flagged;
+
+// ----------------------------------------------------------------------------
+// PHASE 6 (2026-07-24) -- value unchanged; the speciation side moved, this side did not.
+// ----------------------------------------------------------------------------
+//   Phase 6 re-pointed the PFAS SPECIATION records to the experimental study behind the
+//   regulatory class bounds (Vierke, Berger & Cousins, Environ. Sci. Technol. 47 (2013)
+//   11032-11039).  That work does not report octanol-water partition coefficients, so it
+//   does nothing for this record.
+//   The phase-2 objection stands unchanged and is PHYSICAL, not evidential: logKow is
+//   ill-defined for a perfluoroalkyl surfactant, which adsorbs at the interface and
+//   self-associates, so the shake-flask quantity is not a partition coefficient of a
+//   dissolved species at all.  A better citation would not repair that.
+//   Note for consistency: the PFOS and PFBS partition values were deliberately NOT
+//   emitted in phase 2 because ATSDR states "not applicable (ionic surfactant)".  The
+//   same reasoning arguably applies here; the value is retained only because a
+//   redistributable source (ILO-WHO ICSC, CC-BY) prints it.
+// ----------------------------------------------------------------------------

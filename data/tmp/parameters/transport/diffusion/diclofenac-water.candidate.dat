@@ -1,0 +1,101 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/diclofenac.candidate.dat; primary citation
+  cross-checked against data/tmp/pharma1_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-diclofenac-water;
+participants    ( diclofenac water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             5e-10 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// how THIS value was obtained (glass-box; inputs stated in full)
+derivation
+{
+    method                 "Wilke-Chang from the McGowan characteristic volume V_x";
+    mcGowanVolume          202.5 cm3/mol;
+    temperature            298.15 K;
+    origin                 estimated;
+}
+
+// THE MISMATCH, DECLARED IN THE RECORD (phase 6) - no longer only in the ledger
+methodMismatch
+{
+    correlation        "Wilke-Chang (Wilke, C. R.; Chang, P., AIChE J. 1 (1955) 264)";
+    volumeRequired     "Le Bas additive molar volume Vb at the normal boiling point, cm3/mol";
+    volumeSupplied     "McGowan characteristic volume V_x (Abraham, M. H.; McGowan, J. C.,
+                        Chromatographia 23 (1987) 243), computed by Choupo";
+    sameQuantity       no;
+    consequence        "Vb and V_x come from different additive schemes and are not
+                        interchangeable; V_x is the smaller for solutes of this class.
+                        Wilke-Chang gives D proportional to Vb^-0.6, so feeding it the
+                        smaller V_x returns a LARGER D - the value in this record is
+                        biased HIGH.  The size of the bias is NOT quantified here: doing
+                        so needs the Le Bas Vb for this molecule, which nobody has computed,
+                        and inventing one now would be creating data.";
+    handling           "the value is kept exactly as phase 2 emitted it, and the record is
+                        NOT promotable while this block reads status declaredNotFixed";
+    status             declaredNotFixed;
+}
+
+flagged
+{
+    reason        "no clean open primary pinned; the value is an order-of-magnitude own estimate";
+    route         "verify against a measured Taylor-dispersion value before any use";
+    action        "PHASE-6 SEARCH (2026-07-24) found no open measured primary. TWO SEPARATE
+                  DEFECTS.  (1) METHOD/VOLUME MISMATCH - Wilke-Chang is defined on the LE BAS
+                  additive volume Vb, while this record's input is the McGowan characteristic
+                  volume V_x; they are different quantities, V_x being systematically the
+                  smaller for aromatic drug acids of this size, and since D_WC varies as Vb^-0.6 the
+                  pairing biases this D HIGH by an amount nobody has quantified.  Fix by
+                  recomputing with a genuine Le Bas Vb (and saying so in derivation{}), or
+                  leave the value and keep the mismatch declared - it is now stated in
+                  methodMismatch{} in this file rather than only in the ledger.  (2) THE DATUM
+                  - replace the estimate outright.  The strongest lead is the group that
+                  already supplied this directory's two measured NSAID records: Mendes, Cruz,
+                  Martins, Prates Ramalho & Martins, J. Chem. Thermodyn. 178 (2023) 106955
+                  measured ibuprofen and ketoprofen by the same technique - search that group
+                  for a companion paper covering this drug, then the Coimbra Taylor-dispersion
+                  series.";
+}
+
+provenance
+{
+    origin        estimated;
+    citation      "Choupo own Wilke-Chang estimate from the Choupo-computed McGowan V_x (method primary: Abraham & McGowan, Chromatographia 23 (1987) 243)";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          flagged;

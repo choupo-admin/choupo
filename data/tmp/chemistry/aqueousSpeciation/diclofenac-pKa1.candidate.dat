@@ -1,0 +1,129 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/diclofenac.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        diclofenac-pKa1;
+participants    ( diclofenac diclofenacate- H+ );
+property        pKa;
+reaction        "diclofenac (carboxylic acid, -COOH) = diclofenacate- (carboxylate) + H+";
+site            "carboxylic acid (-COOH)";
+step            1;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- the source does NOT state a temperature (FLAG)
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    available       none;      // DROPPED 2026-07-24 -- see NOTES (rights clearance)
+}
+
+alternativeDeterminations   // quoted for orientation ONLY -- none is the datum
+{
+    alt1
+    {
+        pKa       4.15;
+        citation  "Sangster, LOGKOW Databank (1994); via PubChem PUG-View / HSDB";
+        licence   "rightsPending -- the LOGKOW Databank is a paywalled COMPILATION,
+                   PRIVATE tier only.  This was the datum until 2026-07-24.";
+    }
+    alt2
+    {
+        pKa       "3.99 - 4.30";     // a RANGE, not a determination
+        citation  "ChEMBL";
+        licence   "ChEMBL is distributed under CC BY-SA 3.0 (share-alike) -- that IS
+                   acceptable under Choupo's data policy, but CONFIRM the licence and
+                   obtain the underlying primary before any promotion.  A range is not
+                   a datum in any case.";
+    }
+}
+
+provenance
+{
+    origin      none;          // no value is carried
+    citation    "-";
+    doi         "-";
+    licence     "-";
+    evidenceId  -;
+    curator     "agent:rightsClearance";
+    retrieved   2026-07-24;
+}
+status          rightsPending;
+blockedBy       "Sangster, LOGKOW Databank -- a paywalled commercial COMPILATION, not
+                 redistributable in Choupo's public tier";
+action          "obtain an aqueous, 25 C, stated-ionic-strength potentiometric or
+                 spectrophotometric DETERMINATION of the carboxyl pKa and transcribe it
+                 with its own citation.  LEADS FOUND but NOT YET READ (titles and
+                 journals seen, authors/volume/pages NOT verified -- resolve them before
+                 citing):
+                   * 'Dissociation constants of several non-steroidal anti-inflammatory
+                     drugs in isopropyl alcohol/water mixtures', Analytica Chimica Acta
+                     (1997), Elsevier PII S0003-2670(97)00307-3 -- covers diclofenac,
+                     ketoprofen, naproxen, ibuprofen; MIXED solvent, so it needs
+                     extrapolation to pure water.
+                   * 'The thermodynamic dissociation constants of four non-steroidal
+                     anti-inflammatory drugs by the least-squares nonlinear regression of
+                     multiwavelength spectrophotometric pH-titration data', Journal of
+                     Pharmaceutical and Biomedical Analysis (2007), Elsevier PII
+                     S0731-7085(07)00442-6 -- states ionic strengths and 25/37 C.
+                   * 'pH-metric log P 11. pKa determination of water-insoluble drugs in
+                     organic solvent-water mixtures', PubMed PMID 10704132.
+                 NOTE the literature spread is LARGE (method-, ionic-strength- and
+                 aggregation-dependent) -- do NOT average; pick ONE determination and
+                 carry its conditions.";
+
+// NOTES
+//   Re-homed from the SPECIATION comment block of components/diclofenac.candidate.dat
+//   RIGHTS CLEARANCE 2026-07-24 -- action: DROP (phase 4).
+//     The datum reached us only through the LOGKOW Databank, a paywalled commercial
+//     compilation.  A search for an OPEN primary reporting the SAME digit under
+//     stated aqueous conditions did not succeed; the openly-licensed alternatives
+//     that were found (ChEMBL, and an open-access membrane paper quoting it) name no
+//     primary measurement of their own and disagree with the dropped value.
+//     Rather than ship an unlicensable number or promote an unsourced aggregator
+//     value, the number is deleted and the gap is declared above.
+
+// PHASE 6 (2026-07-24) -- searched for an OPEN replacement for the excluded
+//   Sangster / LOGKOW Databank source.  A suitable primary was IDENTIFIED but could NOT
+//   be read, so NOTHING was changed: the value, the citation and the `rightsPending`
+//   status all stand.  Recording the search so it is not repeated blind.
+//
+//   BEST CANDIDATE PRIMARY:
+//     Meloun, M., Bordovska, S. & Galla, L., "The thermodynamic dissociation constants of
+//     four non-steroidal anti-inflammatory drugs by the least-squares nonlinear regression
+//     of multiwavelength spectrophotometric pH-titration data", J. Pharm. Biomed. Anal. 45
+//     (2007) 552-564, doi 10.1016/j.jpba.2007.07.029.
+//   Why it is the right target (all of this IS in the abstract, which was read):
+//     - it determines MIXED dissociation constants at ionic strengths I = 0.003-0.155,
+//       at 25 C AND 37 C, and then estimates the THERMODYNAMIC pKa(T) by nonlinear
+//       regression of the (pKa, I) data.  That is exactly the missing metadata this
+//       whole directory is short of: a stated T and a stated I, with an I -> 0 extrapolation.
+//     - it is a determination, not a compilation, so it clears the rights problem outright.
+//   BLOCKER: the abstract does NOT print the numeric pKa values, and the full text is
+//     paywalled.  A value may not be transcribed from a paper that has not been read.
+//   COVERAGE WARNING: the four drugs in Meloun 2007 are ibuprofen, diclofenac,
+//     flurbiprofen and ketoprofen.  This compound IS covered.
+//   ROUTES REJECTED in phase 6, with reasons (do not re-try these):
+//     - "IUPAC Digitized pKa Dataset" (Zheng, Lafontant-Joseph & Green, RSC Adv. 16 (2026)
+//       21397; Zenodo 10.5281/zenodo.7236452): CC BY-NC 4.0, and it is a digitisation of
+//       Serjeant & Dempsey (1979) / Perrin -- a compilation of a compilation.  Excluded twice over.
+//     - Hidalgo, A.M. et al., Membranes 13 (2023) 868 (CC BY, open): its Table 3 does quote
+//       ketoprofen pKa 3.98 and carbamazepine 13.9, but the paper states these are COMPILED
+//       from its refs [25-27], not measured there.  An open re-quote of a closed compilation
+//       launders nothing; it is a locator at best.
+//   SHARPENED ACTION: obtain the Meloun 2007 full text (or an equivalent determination for
+//     naproxen), read the value table, confirm T and I, and only then re-point and promote.
+
+// VOCABULARY UNIFIED 2026-07-24: rights blockage is encoded in `status`,
+// not only in `licence` -- the two directories had diverged and a rights-blocked
+// record must never sit at a status that reads clean.
+statusVocabularyNote  "was flagged; rights blockage promoted into status";

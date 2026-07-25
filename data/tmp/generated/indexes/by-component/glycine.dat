@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'glycine'
+component glycine;
+records
+(
+    { recordType acidDissociation; recordId glycine-pKa1; category flagged; file "chemistry/aqueousSpeciation/glycine-pKa1.candidate.dat"; }
+    { recordType acidDissociation; recordId glycine-pKa2; category flagged; file "chemistry/aqueousSpeciation/glycine-pKa2.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-glycine; category flagged; file "evidence/lvpp-glycine/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-glycine-water; category derived; file "parameters/transport/diffusion/glycine-water.candidate.dat"; }
+    { recordType isoelectricPoint; recordId glycine-pI; category flagged; file "chemistry/aqueousSpeciation/glycine-pI.candidate.dat"; }
+);

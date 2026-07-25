@@ -1,0 +1,7 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'NDMA'
+component NDMA;
+records
+(
+    { recordType diffusionCoefficient; recordId diffusion-NDMA-water; category flagged; file "parameters/transport/diffusion/NDMA-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId NDMA-octanol-water; category rightsPending; file "parameters/partition/NDMA-octanol-water.candidate.dat"; }
+);

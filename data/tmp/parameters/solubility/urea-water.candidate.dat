@@ -1,0 +1,94 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of urea in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/urea.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT then: solid phase NOT ESTABLISHED -- only one ambient
+  crystalline form of urea is known, but no source SAID so in this record.
+
+  PHASE 6 (2026-07-24, agent:solubility) -- a source now says so, and is
+  cited: a CC-BY crystal-growth study states that urea "has only one
+  polymorph under ambient conditions".  The phase is established by
+  INFERENCE (that work is not this solubility determination), so the digit is
+  not promoted.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        urea-water;
+participants    ( urea water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    ureaFormI;   // tetragonal, P-42(1)m, anhydrous
+    phaseBasis    inferredFromPhaseStability;
+}
+
+// PHASE 4 search: no determination naming the equilibrated solid was
+// located.  Urea forms no hydrate and has a single well-known ambient
+// crystalline form (tetragonal), so the ambiguity here is far smaller
+// than for carbamazepine or the sugars -- but "small" is not "stated",
+// and this family's rule is that the phase is part of the equilibrium,
+// not an assumption the curator supplies.
+//
+// PHASE 6 -- THE ASSUMPTION IS REPLACED BY A CITATION.
+// Anker, McKechnie, Mulheran & Sefcik (Cryst. Growth Des. 24 (2024) 143-158,
+// CC-BY 4.0) state, verbatim:
+//
+//   "Urea is a convenient system for the study of crystal nucleation and
+//    growth since it has only one polymorph under ambient conditions and
+//    exhibits relatively fast nucleation and crystal growth."
+//
+// That is exactly the missing sentence: at ambient conditions there is one
+// solid, form I (tetragonal, P-42(1)m, anhydrous), so a 25 C aqueous
+// saturation can only be sitting on it.  It is nevertheless a statement in a
+// DIFFERENT work from the AQUASOL determination below, so the tier is
+// `inferredFromPhaseStability` and the digit is not promoted -- the rule does
+// not bend for easy cases.
+//
+// (High-pressure urea phases II-IV exist and are discussed in that same
+// work; they are irrelevant at 101325 Pa and are not the solid here.)
+//
+// Physical caveat that survives phase 4: at 545 g/L the saturated
+// solution is HALF urea by mass.  This is a concentrated-solution
+// equilibrium, nowhere near the dilute limit, and any activity model
+// fitted to it must say so.
+// UNIT CONVERSION (shown, not hidden): 545 g/L * 1000 mg/g = 5.45e5 mg/L
+value
+{
+    solubility    5.45e5 mg/L;
+    originalStatement  "545 g/L @ 25 C";   // verbatim, before conversion
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Yalkowsky, S.H., AQUASOL / Arizona Aqueous Solubility Database, Univ. Arizona 1989; via PubChem";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Anker, S., McKechnie, D., Mulheran, P. & Sefcik, J., Assessment of GAFF and OPLS Force Fields for Urea: Crystal and Aqueous Solution Properties, Cryst. Growth Des. 24 (2024) 143-158";
+    doi         "10.1021/acs.cgd.3c00785";
+    licence     "CC-BY 4.0";
+    basis       "'urea ... has only one polymorph under ambient conditions' -- so an ambient aqueous saturation can only equilibrate with form I (tetragonal, anhydrous).  High-pressure forms II-IV are irrelevant at 101325 Pa";
+}
+
+blockedBy       "the phase is INFERRED from a crystal-growth study rather than stated by the AQUASOL determination, so by rule it cannot promote the digit; and the saturated solution is ~50 wt% urea, i.e. this is a concentrated-solution equilibrium that no dilute-limit model may be fitted to without saying so";
+status          flagged;

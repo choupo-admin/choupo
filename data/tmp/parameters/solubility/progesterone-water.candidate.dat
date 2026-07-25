@@ -1,0 +1,90 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of progesterone in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/progesterone.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT then: solid phase NOT ESTABLISHED although the compound
+  is known to have two crystal forms.
+
+  PHASE 6 (2026-07-24, agent:solubility) -- the FORM I / FORM II axis is
+  closed by INFERENCE from a dedicated polymorphism study: form I is the
+  thermodynamically stable polymorph and form II converts into it.  The
+  hydrate axis was NOT screened by anything read here, and an inferred phase
+  does not promote the digit, so the record stays flagged.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        progesterone-water;
+participants    ( progesterone water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    progesteroneFormI;
+    phaseBasis    inferredFromPhaseStability;
+}
+
+// Progesterone has two well-known crystal forms (I and II).  PHASE 4
+// search located no aqueous-solubility determination that says which one
+// was equilibrated.
+//
+// PHASE 6 -- WHICH OF THE TWO.
+// Sarkar, Ragab & Rohani devoted a paper to exactly this question --
+// "Polymorphism of Progesterone: A New Approach for the Formation of Form II
+// and the Relative Stabilities of Form I and Form II", Cryst. Growth Des. 14
+// (2014) 4574-4582 -- and rank form I as the more stable of the two, with
+// form II converting to form I.  Form I melts at ~129 C, form II at ~122 C.
+// A saturated aqueous slurry left at 25 C therefore ends up on form I.
+//
+// This is a phase-stability ranking in a separate work, not a statement by
+// the HSDB number below, so the tier is `inferredFromPhaseStability` and the
+// digit is NOT promoted.
+//
+// WHAT IS STILL OPEN, AND IT IS NOT SMALL: nothing read in phase 6 screened
+// progesterone for a HYDRATE.  For a steroid in contact with liquid water
+// that is the axis that actually bites (compare testosterone in this same
+// family, where a hydrate and an anhydrate are both crystallographically
+// known).  "Form I rather than form II" is settled; "anhydrate rather than
+// some hydrate" is asserted by nobody consulted.
+//
+// HONESTY NOTE: the Sarkar et al. paper was read at abstract level only --
+// its full text was not retrievable in phase 6.  The stability ranking is
+// the paper's own headline claim, but no in-text quotation is reproduced
+// here because none was read.
+value
+{
+    solubility    8.81 mg/L;
+    originalStatement  "8.81 mg/L @ 25 C";   // verbatim
+}
+
+provenance
+{
+    origin      measured;
+    citation    "HSDB (US NLM, public domain), CID 5994";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Sarkar, A., Ragab, D. & Rohani, S., Polymorphism of Progesterone: A New Approach for the Formation of Form II and the Relative Stabilities of Form I and Form II, Cryst. Growth Des. 14 (2014) 4574-4582";
+    doi         "10.1021/cg5006727";
+    basis       "form I is the thermodynamically stable polymorph of the two known forms and form II converts to it -- so an equilibrated 25 C aqueous slurry sits on form I.  Read at abstract level only; the full text was not retrievable in phase 6";
+}
+
+blockedBy       "the phase is INFERRED from a polymorphism study rather than stated by the HSDB determination, so by rule it cannot promote the digit; and no source read screened progesterone for a HYDRATE, which for a steroid under liquid water is the axis that matters most";
+status          flagged;

@@ -1,0 +1,443 @@
+{
+  "Record": {
+    "RecordType": "CID",
+    "RecordNumber": 5329,
+    "RecordTitle": "Sulfamethoxazole",
+    "Section": [
+      {
+        "TOCHeading": "Chemical and Physical Properties",
+        "Description": "Various chemical and physical properties that are experimentally determined for this compound.  See also the Safety and Hazard Properties section (if available), which has additional properties pertinent to chemical safety and hazards.",
+        "Section": [
+          {
+            "TOCHeading": "Experimental Properties",
+            "Description": "Various experimentally determined properties for this compound.  See also the Safety and Hazard Properties section (if available), which has additional properties pertinent to chemical safety and hazards.",
+            "Section": [
+              {
+                "TOCHeading": "Solubility",
+                "Description": "The solubility of a substance is the amount of that substance that will dissolve in a given amount of solvent. The default solvent is water, if not indicated.",
+                "URL": "https://chem.libretexts.org/Courses/Purdue/Purdue%3A_Chem_26505%3A_Organic_Chemistry_I_(Lipton)/Chapter_4._Intermolecular_Forces_and_Physical_Properties/4.4_Solubility",
+                "Information": [
+                  {
+                    "ReferenceNumber": 4,
+                    "Reference": [
+                      "National Toxicology Program, Institute of Environmental Health Sciences, National Institutes of Health (NTP). 1992. National Toxicology Program Chemical Repository Database. Research Triangle Park, North Carolina."
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "National Toxicology Program, Institute of Environmental Health Sciences, National Institutes of Health (NTP). 1992. National Toxicology Program Chemical Repository Database. Research Triangle Park, North Carolina.",
+                        "Matched": {
+                          "PCLID": 900163266,
+                          "Citation": "National Toxicology Program, Institute of Environmental Health Sciences, National Institutes of Health (NTP). 1992. National Toxicology Program Chemical Repository Database. Research Triangle Park, North Carolina."
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "less than 1 mg/mL at 68 °F (NTP, 1992)"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 24,
+                    "Reference": [
+                      "YALKOWSKY,SH & DANNENFELSER,RM (1992)"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "YALKOWSKY,SH & DANNENFELSER,RM (1992)"
+                      }
+                    ],
+                    "Value": {
+                      "Number": [
+                        610
+                      ],
+                      "Unit": "mg/L (at 37 °C)"
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 47,
+                    "Description": "PEER REVIEWED",
+                    "Reference": [
+                      "Osol, A. and J.E. Hoover, et al. (eds.). Remington's Pharmaceutical Sciences. 15th ed. Easton, Pennsylvania: Mack Publishing Co., 1975., p. 1110"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "Osol, A. and J.E. Hoover, et al. (eds.). Remington's Pharmaceutical Sciences. 15th ed. Easton, Pennsylvania: Mack Publishing Co., 1975., p. 1110",
+                        "Matched": {
+                          "PCLID": 900099749,
+                          "Citation": "Osol, A. and J.E. Hoover, et al. (eds.). Remington's Pharmaceutical Sciences. 15th ed. Easton, Pennsylvania: Mack Publishing Co., 1975., p. 1110"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "PRACTICALLY INSOL IN WATER, ETHER & CHLOROFORM; 1 G IN 50 ML ALCOHOL & ABOUT 4 ML ACETONE; DISSOLVES IN HCL HYDROGEN CHLORIDE OR SODIUM HYDROXIDE SOLN THROUGH SALT FORMATION",
+                          "Markup": [
+                            {
+                              "Start": 21,
+                              "Length": 5,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/WATER",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-962"
+                            },
+                            {
+                              "Start": 36,
+                              "Length": 10,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/CHLOROFORM",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-6212"
+                            },
+                            {
+                              "Start": 82,
+                              "Length": 7,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/ACETONE",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-180"
+                            },
+                            {
+                              "Start": 108,
+                              "Length": 17,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/HYDROGEN%20CHLORIDE",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-313"
+                            },
+                            {
+                              "Start": 129,
+                              "Length": 16,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/SODIUM%20HYDROXIDE",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-14798"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 47,
+                    "Description": "PEER REVIEWED",
+                    "Reference": [
+                      "Lide, D.R. CRC Handbook of Chemistry and Physics 86TH  Edition 2005-2006. CRC Press, Taylor & Francis, Boca Raton,  FL 2005, p. 3-464"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "Lide, D.R. CRC Handbook of Chemistry and Physics 86TH  Edition 2005-2006. CRC Press, Taylor & Francis, Boca Raton,  FL 2005, p. 3-464",
+                        "Matched": {
+                          "PCLID": 900060195,
+                          "Citation": "Lide, D.R. CRC Handbook of Chemistry and Physics 86TH  Edition 2005-2006. CRC Press, Taylor & Francis, Boca Raton,  FL 2005, p. 3-464"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "Insoluble in ethyl ether"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 47,
+                    "Description": "PEER REVIEWED",
+                    "Reference": [
+                      "Yalkowsky, S.H., He, Yan., Handbook of Aqueous Solubility  Data: An Extensive Compilation of Aqueous Solubility Data  for Organic Compounds Extracted from the  AQUASOL dATAbASE.  CRC Press LLC, Boca Raton, FL. 2003., p. 658"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "Yalkowsky, S.H., He, Yan., Handbook of Aqueous Solubility  Data: An Extensive Compilation of Aqueous Solubility Data  for Organic Compounds Extracted from the  AQUASOL dATAbASE.  CRC Press LLC, Boca Raton, FL. 2003., p. 658",
+                        "Matched": {
+                          "PCLID": 900154372,
+                          "Citation": "Yalkowsky, S.H., He, Yan., Handbook of Aqueous Solubility  Data: An Extensive Compilation of Aqueous Solubility Data  for Organic Compounds Extracted from the  AQUASOL dATAbASE.  CRC Press LLC, Boca Raton, FL. 2003., p. 658"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "In water, 610 mg/L at 37 °C",
+                          "Markup": [
+                            {
+                              "Start": 3,
+                              "Length": 5,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/water",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-962"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 47,
+                    "Description": "PEER REVIEWED",
+                    "Reference": [
+                      "Subrahmanyam CV et al; Indian Drugs 33: 195-1995 (May 1996)"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "Subrahmanyam CV et al; Indian Drugs 33: 195-1995 (May 1996)",
+                        "Matched": {
+                          "PCLID": 900129816,
+                          "Citation": "Subrahmanyam CV et al; Indian Drugs 33: 195-1995 (May 1996)"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "The solubility interactions of trimethoprim and sulfamethoxazole in binary solvents were studied using hexane (n-hexane)-ethyl acetate, ethyl acetate-methyl alcohol (methanol), and methyl alcohol-water as the solve mixtures. When solubilities were obtained for individual components, trimethoprim exhibited solvation in ethyl acetate-methyl alcohol mixtures, while sulfamethoxazole showed weaker solute-solvent interactions in the solvent series. At its peak, the solubility of sulfamethoxazole was about 8 times higher than that of trimethoprim when the drugs were combined. Sulfamethoxazole lowered trimethoprim solubility by 13-74%. Similarly, trimethoprim suppressed sulfamethoxazole solubility by 10-94%. In water, although mutual solubility was reduced, the solubility ratio of trimethoprim to sulfamethoxazole was 1:4 on the mol fraction scale.",
+                          "Markup": [
+                            {
+                              "Start": 31,
+                              "Length": 12,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/trimethoprim",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-5578"
+                            },
+                            {
+                              "Start": 48,
+                              "Length": 16,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/sulfamethoxazole",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-5329"
+                            },
+                            {
+                              "Start": 103,
+                              "Length": 6,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/hexane",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-8058"
+                            },
+                            {
+                              "Start": 111,
+                              "Length": 8,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/n-hexane",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-8058"
+                            },
+                            {
+                              "Start": 121,
+                              "Length": 13,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/ethyl%20acetate",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-8857"
+                            },
+                            {
+                              "Start": 136,
+                              "Length": 13,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/ethyl%20acetate",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-8857"
+                            },
+                            {
+                              "Start": 150,
+                              "Length": 14,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/methyl%20alcohol",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-887"
+                            },
+                            {
+                              "Start": 166,
+                              "Length": 8,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/methanol",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-887"
+                            },
+                            {
+                              "Start": 181,
+                              "Length": 14,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/methyl%20alcohol",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-887"
+                            },
+                            {
+                              "Start": 196,
+                              "Length": 5,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/water",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-962"
+                            },
+                            {
+                              "Start": 284,
+                              "Length": 12,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/trimethoprim",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-5578"
+                            },
+                            {
+                              "Start": 320,
+                              "Length": 13,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/ethyl%20acetate",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-8857"
+                            },
+                            {
+                              "Start": 334,
+                              "Length": 14,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/methyl%20alcohol",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-887"
+                            },
+                            {
+                              "Start": 365,
+                              "Length": 16,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/sulfamethoxazole",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-5329"
+                            },
+                            {
+                              "Start": 478,
+                              "Length": 16,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/sulfamethoxazole",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-5329"
+                            },
+                            {
+                              "Start": 533,
+                              "Length": 12,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/trimethoprim",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-5578"
+                            },
+                            {
+                              "Start": 576,
+                              "Length": 16,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/Sulfamethoxazole",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-5329"
+                            },
+                            {
+                              "Start": 601,
+                              "Length": 12,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/trimethoprim",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-5578"
+                            },
+                            {
+                              "Start": 647,
+                              "Length": 12,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/trimethoprim",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-5578"
+                            },
+                            {
+                              "Start": 671,
+                              "Length": 16,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/sulfamethoxazole",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-5329"
+                            },
+                            {
+                              "Start": 713,
+                              "Length": 5,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/water",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-962"
+                            },
+                            {
+                              "Start": 784,
+                              "Length": 12,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/trimethoprim",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-5578"
+                            },
+                            {
+                              "Start": 800,
+                              "Length": 16,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/sulfamethoxazole",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-5329"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 48,
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "4.59e-01 g/L"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 276,
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": ">38 [ug/mL] (The mean of the results at pH 7.4)"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Reference": [
+      {
+        "ReferenceNumber": 4,
+        "SourceName": "CAMEO Chemicals",
+        "SourceID": "21046",
+        "Name": "SULFAMETHOXAZOLE",
+        "Description": "CAMEO Chemicals is a chemical database designed for people who are involved in hazardous material incident response and planning. CAMEO Chemicals contains a library with thousands of datasheets containing response-related information and recommendations for hazardous materials that are commonly transported, used, or stored in the United States. CAMEO Chemicals was developed by the National Oceanic and Atmospheric Administration's Office of Response and Restoration in partnership with the Environmental Protection Agency's Office of Emergency Management.",
+        "URL": "https://cameochemicals.noaa.gov/chemical/21046",
+        "LicenseNote": "CAMEO Chemicals and all other CAMEO products are available at no charge to those organizations and individuals (recipients) responsible for the safe handling of chemicals. However, some of the chemical data itself is subject to the copyright restrictions of the companies or organizations that provided the data.",
+        "LicenseURL": "https://cameochemicals.noaa.gov/help/reference/terms_and_conditions.htm?d_f=false",
+        "ANID": 760878
+      },
+      {
+        "ReferenceNumber": 24,
+        "SourceName": "DrugBank",
+        "SourceID": "DB01015",
+        "Name": "Sulfamethoxazole",
+        "Description": "The DrugBank database is a unique bioinformatics and cheminformatics resource that combines detailed drug (i.e. chemical, pharmacological and pharmaceutical) data with comprehensive drug target (i.e. sequence, structure, and pathway) information.",
+        "URL": "https://www.drugbank.ca/drugs/DB01015",
+        "LicenseNote": "Creative Common's Attribution-NonCommercial 4.0 International License (http://creativecommons.org/licenses/by-nc/4.0/legalcode)",
+        "LicenseURL": "https://www.drugbank.ca/legal/terms_of_use",
+        "ANID": 3607622
+      },
+      {
+        "ReferenceNumber": 47,
+        "SourceName": "Hazardous Substances Data Bank (HSDB)",
+        "SourceID": "3186",
+        "Name": "SULFAMETHOXAZOLE",
+        "Description": "The Hazardous Substances Data Bank (HSDB) is a toxicology database that focuses on the toxicology of potentially hazardous chemicals. It provides information on human exposure, industrial hygiene, emergency handling procedures, environmental fate, regulatory requirements, nanomaterials, and related areas. The information in HSDB has been assessed by a Scientific Review Panel.",
+        "URL": "https://pubchem.ncbi.nlm.nih.gov/source/hsdb/3186",
+        "LicenseURL": "https://www.nlm.nih.gov/web_policies.html",
+        "IsToxnet": true,
+        "ANID": 2347
+      },
+      {
+        "ReferenceNumber": 48,
+        "SourceName": "Human Metabolome Database (HMDB)",
+        "SourceID": "HMDB0015150",
+        "Name": "Sulfamethoxazole",
+        "Description": "The Human Metabolome Database (HMDB) is a freely available electronic database containing detailed information about small molecule metabolites found in the human body.",
+        "URL": "http://www.hmdb.ca/metabolites/HMDB0015150",
+        "LicenseNote": "HMDB is offered to the public as a freely available resource. Use and re-distribution of the data, in whole or in part, for commercial purposes requires explicit permission of the authors and explicit acknowledgment of the source material (HMDB) and the original publication (see the HMDB citing page). We ask that users who download significant portions of the database cite the HMDB paper in any resulting publications.",
+        "LicenseURL": "https://www.hmdb.ca/citing",
+        "ANID": 2151563
+      },
+      {
+        "ReferenceNumber": 276,
+        "SourceName": "Sanford-Burnham Center for Chemical Genomics",
+        "SourceID": "SID855654",
+        "Name": "SID855654",
+        "Description": "Aqueous solubility in buffer at pH 7.4",
+        "URL": "https://pubchem.ncbi.nlm.nih.gov/bioassay/1996#section=Data-Table",
+        "ANID": 694447
+      }
+    ]
+  }
+}

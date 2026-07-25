@@ -1,0 +1,121 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: NDMA  (N-nitrosodimethylamine, C2H6N2O, CAS 62-75-9)
+  PRIVATE staging tier (data/tmp/, gitignored).  The runtime does NOT read it.
+
+  ARITY-1 ONLY (phase 3, 2026-07-24).  Intrinsic pure-compound data only.
+  logKow and D_aq are SYSTEM properties and have been MOVED; pointers below.
+  Absences (thermochemistry, density, COSMO) are declared STRUCTURALLY with
+  status flagged, never left as prose.  Envelope: ../RECORD_SPEC.md.
+\*---------------------------------------------------------------------------*/
+
+name           NDMA;
+formula        C2H6N2O;
+CAS            62-75-9;
+InChIKey       UMFJAHHVKNCGLG-UHFFFAOYSA-N;
+SMILES         "CN(C)N=O";
+pubchemCID     6124;
+MW             74.08;             // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;                 // non-electrolyte, N-nitrosamine, no ionization near pH 7
+
+identityProvenance
+{
+    source      "PubChem CID 6124 (US NIH, public domain), PUG-REST";
+    licence     "public-domain fact";
+    curator     "agent:components";
+    retrieved   2026-07-24;
+    status      candidate;
+}
+
+roleReview
+{
+    status      flagged;
+    finding     "the declared role 'nonvolatile' CONTRADICTS the compound's own reported normal boiling point of about 152 C (a liquid, not a decomposing solid).  'nonvolatile' here encodes the intended USE (a trace aqueous contaminant in an NF/RO case), not the physics.";
+    action      "either re-declare the role for a volatile liquid and supply a vapour-pressure correlation, or state explicitly that the role is a case-scoped simplification";
+}
+
+normalBoilingPoint
+{
+    phase       liquid;
+    value       ~425;              // K (about 152 C), APPROXIMATE, as stated in the staging source
+    unit        "K";
+    origin      "stated in the staging source WITHOUT a citation";
+    status      flagged;
+    action      "pin an open primary before this number is used for anything";
+}
+
+standardThermochemistry
+{
+    available    none;             // EXPLICIT ABSENCE -- do not fabricate
+    phase        liquid;           // NDMA is a liquid at ambient; the solid rung does not apply
+    status       flagged;
+    blockedBy    "no clean primary condensed-phase dHf / S / Cp obtained; a gas-phase dHf exists but the condensed-phase datum was not sourced clean";
+    action       "fill dHf, S(298) and Cp from a primary (route: NIST WebBook ID=C62759 as a finding aid) before any NDMA energy balance";
+}
+
+liquidDensity
+{
+    phase        liquid;
+    available    none;             // EXPLICIT ABSENCE
+    unit         "kg/m3";
+    status       flagged;
+    action       "transcribe a cited liquid density; the pure-liquid molar volume V = MW/rho follows from it and is not stored independently";
+}
+
+groups
+{
+    joback  none;
+    reason  "no first-order Joback group for the N-nitroso centre";
+    status  flagged;
+}
+
+cosmo
+{
+    VT2005
+    {
+        variant       cosmoSAC2002;
+        available     none;        // no VT-2005 entry for NDMA
+        status        flagged;
+    }
+    LVPP_B3LYP_def2SVPD
+    {
+        variant       lvppB3LYP_def2SVPD;
+        available     none;        // LVPP ships no COSMO output for NDMA
+        source        "LVPP sigma database (github lvpp/sigma, MIT)";
+        status        flagged;
+    }
+    reason        "no deployable set exists.  Even where LVPP data exist its QM protocol is incompatible with Choupo's VT-2005 cosmoSAC2002 constants (ethylene cross-check: +6.1 % cavity area, +10.3 % cavity volume) -- never tag an LVPP profile as cosmoSAC2002.";
+}
+
+pcSaft
+{
+    available     none;
+    status        flagged;
+    reason        "no pure-component parameter set located from an open primary; not fabricated.";
+}
+
+// --- MOVED OUT (arity >= 2 / state-dependent) -- POINTERS ONLY, no values ---
+references
+{
+    partitionOctanolWater "parameters/partition/NDMA-octanol-water.candidate.dat (recordId NDMA-octanol-water)";
+    aqueousDiffusion    "parameters/transport/diffusion/NDMA-water.candidate.dat (recordId diffusion-NDMA-water) -- order-of-magnitude, flagged there";
+    aqueousSolubility   "NO RECORD EMITTED -- the only source (Mirvish et al., J. Natl. Cancer Inst. 1976, via PubChem) states 'miscible / infinitely soluble, 23-25 C', a QUALITATIVE statement with no SLE and no number; recorded verbatim as a not-emitted entry in parameters/solubility/_LEDGER.md";
+    chargeAtPH7         "DELETED as DERIVED -- an N-nitrosamine has no ionization near pH 7; 'charge 0' is a consequence, not a stored datum";
+    cosmoSurface        "no evidence record -- LVPP ships no COSMO output for NDMA";
+}
+
+applicationNote "THE low-RO-rejection benchmark: small, neutral, hydrophilic and poorly removed by RO; transport correlates with aqueous diffusivity and molecular size, not with charge.  Pairs with urea as the 'ones RO does not reject' teaching set.";

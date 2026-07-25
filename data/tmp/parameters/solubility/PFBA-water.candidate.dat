@@ -1,0 +1,70 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (liquid-liquid mutual solubility) of PFBA in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/PFBA.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: NOT AN SLE.  PFBA melts at -17.5 C, so at 25 C the
+  equilibrium is LIQUID-LIQUID.  Record re-typed accordingly -> candidate.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        PFBA-water;
+participants    ( PFBA water );
+property        aqueousSolubility;
+
+// PHASE 4 RE-TYPING.  The whole family is built on the premise that an
+// aqueous solubility is an equilibrium between a SOLID phase and water.
+// For PFBA that premise is false: its melting point is -17.5 C, so at
+// 25 C there is no solid to equilibrate.  What is tabulated is the
+// mutual solubility of two LIQUIDS -- the water-rich phase saturated
+// against a PFBA-rich liquid phase.  The record now says so in its own
+// grammar instead of carrying `solidPhase unspecified`, which would have
+// been a gap that can never be filled because the object it asks about
+// does not exist.
+equilibriumType liquidLiquid;
+soluteState     liquidSolute;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    none;        // no solid exists at this temperature
+    phaseBasis    statedBySource;   // mp -17.5 C, same ATSDR table
+    coexistingPhase  "PFBA-rich liquid";
+}
+
+// PROMOTED TO candidate: the coexisting phase is identified (a liquid,
+// established by the melting point in the same public-domain table), the
+// temperature is stated, and the source is open.  The residual is that
+// the table reports only the water-rich branch -- the PFBA-rich branch of
+// the same tie line is not given, so this is half a mutual-solubility
+// determination.
+value
+{
+    solubility    3.3e3 mg/L;
+    originalStatement  "3.3e3 mg/L @ 25 C";   // verbatim
+}
+
+residualUncertainty  "only the water-rich branch of the liquid-liquid tie line is reported; the PFBA-rich branch is not";
+
+provenance
+{
+    origin      measured;
+    citation    "ATSDR, Toxicological Profile for Perfluoroalkyls (2021), Table 4-2 (US-gov, public domain); melting point -17.5 C from the same table";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+status          candidate;

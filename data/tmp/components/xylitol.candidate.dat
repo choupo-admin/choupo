@@ -1,0 +1,229 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: xylitol  (C5H12O5, CAS 87-99-0) -- sugar alcohol (polyol).
+  Pentitol sweetener.  Non-volatile non-electrolyte SOLUTE (NF sweetener/osmotic
+  family).  Linear polyol -> clean first-order Joback decomposition.
+  Melts at ~92-96 C -> SOLID rung (referenceState pureSolid), crystalline datum.
+
+  PRIVATE staging tier (data/tmp, gitignored).  Envelope + ARITY rule:
+  ../RECORD_SPEC.md.  Cleaned 2026-07-24 (phase 3, component cleanup).
+
+  ARITY-1 ONLY.  Intrinsic single-substance data only; every system property was
+  emitted in phase 2 to its arity-correct home (pointers below).
+
+  DEFECT FIXED HERE: the formation-enthalpy phase.  The datum is the CRYSTALLINE
+  -1219.3 kJ/mol (Tong et al. 2007, O2 bomb).  The older LIQUID -1118.6 kJ/mol
+  (Oberemok-Yakubova & Balandin 1963) appears ONCE, in supersededHistory{},
+  explicitly labelled as a different phase and superseded -- it is not the datum
+  and must never be read as one.  (The two differ by ~100 kJ/mol; a case that
+  picked the liquid value by accident would be wrong by that much.)
+\*---------------------------------------------------------------------------*/
+
+// --- MOVED OUT in phase 2 -- POINTERS ONLY (a cross-reference, not data) ---
+// D_aq + equivalent-sphere radius: see parameters/transport/diffusion/xylitol-water (recordId diffusion-xylitol-water; Stokes-Einstein ESTIMATE, not measured)
+// aqueous solubility: see parameters/solubility/xylitol-water (recordId xylitol-water)
+// logKow / XLogP3: see parameters/partition/xylitol-octanol-water (recordId xylitol-octanol-water; PubChem COMPUTED descriptor, not a measurement)
+
+name           xylitol;
+formula        C5H12O5;
+CAS            87-99-0;
+
+MW             152.15;         // g/mol -- derived from the formula with IUPAC
+                               //   standard atomic weights (origin derived)
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;              // non-electrolyte, van't Hoff i = 1
+
+identity
+{
+    pubchemCID         6912;
+    inchiKey           HEBKCHPVOIAQTA-NGQZWQHPSA-N;   // FULL 27-character key
+    inchiKeyStatus     full;
+    inchiKeyNote       "Block 1 (HEBKCHPVOIAQTA) is shared with the other pentitols
+                        of this connectivity (ribitol, arabitol); only block 2
+                        separates them.  Never join on block 1 alone.";
+    stereochemicalForm "xylitol (meso pentitol), crystalline";
+    identitySource     "PubChem CID 6912 (US NIH, public domain), retrieved 2026-07-24";
+    status             candidate;
+}
+
+// ---------------------------------------------------------------------------
+// ARITY-1 INTRINSIC, SOLID rung.  CRYSTALLINE datum.
+// PRIMARY: Tong, Tan, Shi, Li, Yue & Wang, Thermochim. Acta 457 (2007) 20-26 --
+//   precision oxygen-bomb combustion, dcH = -(2463.2 +/- 1.2) kJ/mol.
+standardThermochemistry
+{
+    dHf_298    -1219300.0;     // J/mol (-1219.3 +/- 0.3 kJ/mol), phase CRYSTALLINE
+                               //   origin measured (O2 bomb combustion)
+                               //   [Tong, Tan, Shi, Li, Yue & Wang,
+                               //    Thermochim. Acta 457 (2007) 20-26]
+    // s_298   ABSENT BY DECISION -- see entropyStatus{}.  NOT fabricated.
+    referenceState      pureSolid;
+}
+
+// Superseded number, kept ONLY as labelled history.  NOT data -- never read from here.
+supersededHistory
+{
+    dHf_298_liquid_superseded
+    {
+        value        -1118.6 kJ/mol;      // +/- 0.63
+        phase        liquid;              // NOTE: a DIFFERENT PHASE from the datum
+        citation     "Oberemok-Yakubova & Balandin, Bull. Acad. Sci. USSR
+                      Div. Chem. Sci. (1963) 2038";
+        supersededBy "Tong, Tan, Shi, Li, Yue & Wang, Thermochim. Acta 457 (2007) 20-26";
+        reason       "the 1963 value is the LIQUID (supercooled melt) formation
+                      enthalpy; Choupo's xylitol takes the SOLID rung, so the
+                      crystalline 2007 determination is the datum.  The ~100 kJ/mol
+                      gap between them is the phase difference, not a discrepancy.";
+        status       superseded;
+    }
+}
+
+entropyStatus
+{
+    property        s_298;
+    phase           solid;
+    value           none;                  // nothing shipped, nothing invented
+    pendingPrimary  "Tong et al. 2007 measured Cp(T) 80-390 K by adiabatic
+                     calorimetry and derived S(298.15); the number is in the
+                     paywalled table -- transcribe it, do not estimate it";
+    consequence     "no solid-xylitol entropy/Gibbs balance may be run";
+    status          flagged;
+}
+
+solidHeatCapacityStatus
+{
+    property        Cp_solid;
+    phase           solid;
+    value           none;                  // NOT fabricated
+    measuredRange   ( 80 390 ) K;          // the curve EXISTS and is measured...
+    pendingPrimary  "Tong, Tan, Shi, Li, Yue & Wang, Thermochim. Acta 457 (2007) 20
+                     -- adiabatic calorimetry; the exact Cp(298.15) is in the
+                     paywalled table";
+    consequence     "no solid-xylitol energy balance until the value is transcribed";
+    status          flagged;
+}
+
+// Fusion -- ARITY-1 INTRINSIC.  LIFTED OUT OF A COMMENT into a structured block.
+fusion
+{
+    enthalpy     37.4 kJ/mol;
+    temperature  365.7 K;              // Tfus (92.6 C)
+    phaseChange  "crystalline solid -> liquid";
+    origin       measured;             // calorimetry, compiled evaluation
+    citation     "Barone & Della Gatta (1990); evaluated in Domalski & Hearing,
+                  J. Phys. Chem. Ref. Data 25 (1996) 1";
+    crossCheck   "33.26 kJ/mol at 369 K [Tong et al., Thermochim. Acta 457 (2007) 20]
+                  -- an 11 % spread, NOT merged; xylitol has two known crystal forms
+                  (a metastable one melting near 61 C), which is the likely cause";
+    polymorphNote "neither source states which crystal form was melted";
+    status       flagged;              // polymorph unstated + 11 % spread unresolved
+}
+
+// --- PURE-COMPONENT (arity-1) properties, each with unit + phase + origin + citation ---
+pureComponentProperties
+{
+    solidDensity
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "CRC Handbook of Chemistry and Physics -- no-grant, all-rights-reserved";
+        action        "read Dx (calculated density) from a published single-crystal structure of
+                      the NAMED polymorph/anomer -- Acta Cryst. reports it directly -- or
+                      derive rho = Z*MW/(N_A*V_cell) from open cell parameters (the
+                      Crystallography Open Database is CC0 and cites the primary for each
+                      entry).  Record the cell, Z and the arithmetic in a derivation{}
+                      block, and NAME the solid form.";
+        droppedValue  "value = 1.52 g/cm3; temperature = 293.15 K; citation = CRC Handbook of Chemistry and Physics, 79th ed.";
+    }
+
+    solidMolarVolume
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "DERIVED from the solidDensity above, which was dropped -- a
+                       derivative cannot outlive the datum it was computed from";
+        action        "recompute V = MW / rho once a legally clear rho exists, and
+                       name the solid form both refer to";
+        droppedValue  "100.10 cm3/mol  (this is the PURE-SOLID molar volume; the partial molar
+                       volume in water is a SYSTEM property and is unaffected -- it
+                       lives in parameters/volume/)";
+    }
+
+    meltingPoint
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "compilation-only source (CRC Handbook / Merck Index / NIST-TRC),
+                       not redistributable in Choupo's public tier";
+        supersededBy  "this file already carries the SAME transition as a primary-cited
+                       fusion{} block: T_fus = 365.7 K
+                       [Barone & Della Gatta (1990), evaluated in Domalski & Hearing, J. Phys. Chem. Ref. Data 25 (1996) 1].
+                       The compilation entry was therefore a SECOND, weaker copy of a
+                       datum we already hold -- an arity-1 duplication as well as a
+                       rights problem.  Deleting it loses nothing.";
+        action        "none for the value; the OPEN defect is that neither source names
+                       the polymorph, which the fusion{} block already flags";
+        droppedValue  "value = 365.15 K; range = ( 365.15 369.15 ) K; transition = fusion; citation = NIST/TRC; polymorphNote = the stable form melts at ~92-96 C";
+    }
+}
+
+// --- COSMO surface: NO deployable set (structured flag) ---
+cosmoStatus
+{
+    recordType      cosmoSurfaceStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    evidenceRecord  none;                 // no evidence/lvpp-xylitol record staged
+    reason          "no VT-2005 cosmoSAC2002 set ships for xylitol and no LVPP
+                     xylitol record was staged.";
+    protocolIncompatibility
+        "An LVPP surface would not be usable as-is: different QM protocol (NWChem
+         B3LYP/def2-SVPD, SES cavity) from the VT-2005 surfaces Choupo's
+         cosmoSAC2002 constants were regressed against (Mullins et al., IECR 45
+         (2006) 4389); measured on ethylene, present in both databases, +6.1 %
+         cavity area and +10.3 % cavity volume.  Never tag an LVPP surface
+         variant cosmoSAC2002.";
+    conformerCaution "acyclic pentitol -- many low-energy conformers; a named set
+                      must declare which one it ships.";
+    status          flagged;
+}
+
+// --- PC-SAFT: no set in hand (structured flag) ---
+pcSaftStatus
+{
+    recordType      saftParameterSetStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    sourcePinned    "Carneiro, Held, Rodriguez, Sadowski & Macedo, J. Phys. Chem. B
+                     117 (2013) 9980 -- xylitol among the fitted sugar alcohols";
+    numbersInHand   no;
+    legalNote       "one row with its own citation only -- never the table";
+    status          flagged;         // STRUCTURED ABSENCE -- no number is carried
+    blockedBy       "the pinned parameter source is a paywalled article and no row was
+                     ever transcribed";
+    action          "read ONE compound's row at the pinned source and stage it with its
+                     own citation PLUS variant, units, association scheme, combining
+                     rules, objective function and data range; never the whole table";
+    legalNote2      "reclassified rightsPending -> flagged 2026-07-24 (rights-clearance
+                     pass): rightsPending means a VALUE is held that cannot be shipped.
+                     No value is held here, so this is a declared GAP, not a legal
+                     blocker on any number.";
+}
+
+groups
+{
+    joback ( { group CH2; count 2; } { group CH; count 3; } { group OH; count 5; } );   // PROPOSED (review) -- linear polyol, clean CH2/CH/OH decomposition
+}

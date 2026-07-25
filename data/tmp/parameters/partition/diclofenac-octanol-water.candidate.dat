@@ -1,0 +1,72 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  logKow of diclofenac between 1-octanol and water.
+
+  ARITY 3: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/diclofenac.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      partitionCoefficient;
+schemaVersion   1;
+recordId        diclofenac-octanol-water;
+participants    ( diclofenac octanol water );
+property        logKow;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- the conventional log P reference
+                  // temperature is NOT restated by the source; the
+                  // 25 C convention is assumed and flagged here.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    pH            "neutral form";
+    chemicalForm  neutral;
+}
+
+// A COMPUTED value of 3.9 is carried elsewhere for the same compound -- not merged,
+// and see the phase-6 block below on why that comparison is no longer evidential.
+// pKa 4.15 => the species actually present at pH 7 is the anion;
+// this record is the NEUTRAL acid partition, not logD(pH7).
+value
+{
+    logKow   4.51;   // dimensionless (log10 of a concentration ratio)
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Avdeef, A. (1997); via PubChem DrugBank/HSDB";
+    doi         "-";
+    licence     "rightsPending -- primary not identifiable; routed via a NonCommercial source";
+    evidenceId  -;
+    curator     "agent:partition";
+    retrieved   2026-07-24;
+}
+
+status          rightsPending;
+
+// ============================================================================
+// PHASE 6 RIGHTS RULING (2026-07-24) -- STATUS DOWNGRADED, VALUE UNTOUCHED
+// ============================================================================
+//   Two defects, either one sufficient:
+//   (1) The citation "Avdeef, A. (1997)" is NOT a citation.  No journal, no volume, no
+//       pages, no DOI -- it cannot be located, therefore it cannot have been read, and
+//       a value may not carry `origin measured` on a reference nobody can open.
+//       (Contrast the ibuprofen record, whose Avdeef reference IS complete.)
+//   (2) The route is "via PubChem DrugBank/HSDB".  DrugBank is CC BY-NC; the HMDB
+//       comparison value is likewise unusable per the phase-6 ruling.
+//
+//   AUDIT
+//     old source            : "Avdeef, A. (1997)"; via PubChem DrugBank/HSDB
+//     primary identified    : no  -- the reference is too incomplete to identify
+//     primary actually read : no
+//     chain completed       : no
+//     value                 : UNCHANGED (retained for internal evaluation only)
+//     status                : candidate -> rightsPending
+//   SHARPENED ACTION: resolve which Avdeef 1997 work this is, or replace it.  The
+//     pH-metric log P method papers of that period are the obvious family; do not
+//     assume -- confirm the compound and the number in the paper itself.
+// ============================================================================

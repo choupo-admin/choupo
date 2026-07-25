@@ -1,0 +1,92 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Henry's-law constant of PFBA (perfluorobutanoic acid) in liquid water.
+
+  ARITY 2: an air-water partition coefficient is a SOLUTE-SOLVENT (system)
+  property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/PFBA.candidate.dat.
+
+  Provenance chain: phase 3 (2026-07-24) DELETED this value from the component
+  file because no `parameters/henry/` home existed; it was held verbatim in
+  data/tmp/components/_CLEANUP_hormones_pfas_volatiles.md, section 2
+  ("removed from a component, and NO HOME EXISTS YET").  This record is that
+  home.  The value and its citation were MOVED verbatim -- nothing was
+  re-derived, rounded or improved.  Do NOT re-add it to the component.
+  Envelope: ../../RECORD_SPEC.md.  The runtime does NOT read this file yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      henrysLawConstant;
+schemaVersion   1;
+recordId        henry-PFBA-water;
+participants    ( PFBA water );
+property        henrysLawConstant;
+
+conditions
+{
+    temperature   298.15 K;   // ASSUMED, NOT SOURCED.  ATSDR Table 4-2 does not
+                  // restate a temperature for this entry.  The 25 C convention
+                  // is applied here and flagged.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    composition   infiniteDilution;
+    chemicalForm  neutral;     // the NEUTRAL acid -- see the caveat below
+}
+
+// FLAGGED, and not for a legal reason.  Two independent physical caveats:
+//  (1) FORM.  PFBA's staged pKa is a CLASS BOUND, "< 1.6" (held in
+//      chemistry/aqueousSpeciation/PFBA-pKa1.candidate.dat), so at every
+//      process pH the perfluorobutanoate ANION dominates and the effective
+//      air-water partitioning is far below this neutral-acid constant.
+//  (2) STATE.  PFBA melts at -17.5 C and boils at 121 C: at 298 K the pure
+//      substance is a LIQUID (the component declares `stateAt298 liquid`).
+//      This is therefore a genuine volatile solute's Henry constant, not the
+//      near-zero constant of a crystalline solid -- which is exactly why the
+//      component's `role nonvolatile` is wrong (see ../../_ROLE_VOCABULARY_GAP.md).
+value
+{
+    H_pc     1.24 Pa.m3/mol;   // = p_gas / c_aqueous  (concentration basis)
+    // no uncertainty is reported by the source
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single point, at the ASSUMED T
+    concentrationRange infiniteDilution;
+}
+
+// Basis conversion to the engine's H_xp [Pa] form, shown rather than hidden.
+derived
+{
+    equation      "H_xp = H_pc * c_water,  c_water = rho_water / M_water";
+    rhoWater      997.05 kg/m3;      // at 298.15 K (standard value)
+    MWater        0.0180153 kg/mol;
+    cWater        55345.7 mol/m3;    // = 997.05 / 0.0180153, Choupo's own arithmetic
+    H_xp          6.863e4 Pa;        // = 1.24 x 55345.7
+    origin        derived;
+    note          "PROVISIONAL: this inherits the ASSUMED 298.15 K above.  It is
+                   NOT a second independent datum and must be recomputed, never
+                   re-cited, if H_pc or the temperature is replaced.";
+}
+
+declaredGaps
+{
+    dissolutionEnthalpy   "absent -- no second temperature staged";
+    primary               "ATSDR Table 4-2 consolidates primaries but does not
+                           name one for this entry; pin it before promotion";
+    sourceTemperature     "not restated by the compilation";
+}
+
+provenance
+{
+    origin      measured;
+    citation    "ATSDR, Toxicological Profile for Perfluoroalkyls (2021), Table 4-2";
+    doi         "-";
+    licence     "public domain (US Government, ATSDR/CDC) -- legally clean for the public tier";
+    evidenceId  -;
+    curator     "agent:henry";
+    retrieved   2026-07-24;
+}
+
+status          flagged;   // legally clean; flagged on PHYSICS (form/pH) and on
+                           // the unsourced temperature.

@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'naproxen'
+component naproxen;
+records
+(
+    { recordType acidDissociation; recordId naproxen-pKa1; category absent; file "chemistry/aqueousSpeciation/naproxen-pKa1.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-naproxen; category flagged; file "evidence/lvpp-naproxen/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-naproxen-water; category flagged; file "parameters/transport/diffusion/naproxen-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId naproxen-octanol-water; category rightsPending; file "parameters/partition/naproxen-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId naproxen-water; category flagged; file "parameters/solubility/naproxen-water.candidate.dat"; }
+);

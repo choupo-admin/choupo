@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'atenolol'
+component atenolol;
+records
+(
+    { recordType acidDissociation; recordId atenolol-pKa1; category verified; file "chemistry/aqueousSpeciation/atenolol-pKa1.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-atenolol; category flagged; file "evidence/lvpp-atenolol/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-atenolol-water; category flagged; file "parameters/transport/diffusion/atenolol-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId atenolol-octanol-water; category verified; file "parameters/partition/atenolol-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId atenolol-water; category flagged; file "parameters/solubility/atenolol-water.candidate.dat"; }
+);

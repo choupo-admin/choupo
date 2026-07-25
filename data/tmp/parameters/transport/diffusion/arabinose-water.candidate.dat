@@ -1,0 +1,89 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/arabinose.candidate.dat; primary citation
+  cross-checked against data/tmp/sugars_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-arabinose-water;
+participants    ( arabinose water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             7.5e-10 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// how THIS value was obtained (glass-box; inputs stated in full)
+derivation
+{
+    method                 "chemical-analogue surrogate (aldopentose, xylose)";
+    anchorValue            7.50e-10 m2/s;
+    anchorSubstance        xylose;
+    origin                 estimated;
+}
+
+// a Stokes radius computed FROM the D above is NOT an independent datum
+derived
+{
+    equation      "r = kT/(6 pi mu D)";
+    viscosity     0.8903e-3 Pa.s;
+    temperature   298.15 K;
+    radius        0.33 nm;   // PROVISIONAL: recompute if D is replaced
+    origin        derived;
+}
+
+flagged
+{
+    reason        "the exact 298.15 K digit was NOT transcribable from the paywalled primary table";
+    route         "Mogi, Sugai, Fuse & Funazukuri, J. Chem. Eng. Data 52 (2007) 40-43";
+    action        "PHASE 6 TRIED HARDEST HERE AND STILL FAILED - the record is an analogue
+                  surrogate (xylose, the sister aldopentose) and must not be promoted while it
+                  is.  Checked 2026-07-24: (a) Mogi et al., J. Chem. Eng. Data 52 (2007)
+                  40-43, doi 10.1021/je0601816 - CLOSED; whether arabinose is among its six
+                  sugars is UNCONFIRMED and is the first thing to check; (b) Uedaira &
+                  Uedaira, Bull. Chem. Soc. Jpn. 42 (1969) 2140, doi 10.1246/bcsj.42.2140
+                  covers ONLY xylose and maltose (title verified) - it is the source of the
+                  ANCHOR, not of an arabinose value, and must stop being cited as though it
+                  were; its companion at 42 (1969) 2137 is an ACTIVITY-coefficient paper, not
+                  a diffusion one.  Deliverable: a determination for arabinose itself.  Carry
+                  over the ledger's warning that this component's InChIKey was copied from
+                  xylose - any key-based join that pairs this record with a measured value is
+                  unsafe until that identity defect is fixed.";
+}
+
+provenance
+{
+    origin        estimated;
+    citation      "analogue estimate: arabinose ~ xylose (both aldopentoses), xylose D_aq = 7.50e-10 m2/s [Mogi et al. 2007 / Uedaira 1969]";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          flagged;

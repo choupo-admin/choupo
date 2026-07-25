@@ -1,0 +1,223 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: arabinose  (C5H10O5, CAS 5328-37-0) -- L-arabinose,
+  aldo-pentose.  Non-volatile non-electrolyte SOLUTE (NF/RO sugar-rejection
+  family).  Decomposes/melts high -> SOLID rung (referenceState pureSolid).
+
+  PRIVATE staging tier (data/tmp, gitignored).  Envelope + ARITY rule:
+  ../RECORD_SPEC.md.  Cleaned 2026-07-24 (phase 3, component cleanup).
+
+  ARITY-1 ONLY.  Intrinsic single-substance data only; every system property was
+  emitted in phase 2 to its arity-correct home (pointers below).
+
+  IDENTITY DEFECT -- RESOLVED, WITH A CORRECTION TO THE DIAGNOSIS.
+  The file previously carried the bare 14-character block SRBFZHDQGSBBOR and the
+  ledgers called it "copied from xylose, WRONG".  Verified: block 1 of an InChIKey
+  hashes CONSTITUTION only, and ALL aldopentoses of this connectivity (arabinose,
+  xylose, ribose, lyxose) legitimately share SRBFZHDQGSBBOR.  The block was
+  therefore not wrong -- it was TRUNCATED, hence unable to distinguish arabinose
+  from xylose, which is what made the copy invisible.  The full, stereo-resolved
+  key for L-arabinose (PubChem CID 439195) is
+        SRBFZHDQGSBBOR-HWQSCIPKSA-N
+  and it is recorded in identity{} below.  Note that it still begins with the same
+  14 characters as xylose's key: any join must use the FULL 27-character key.
+\*---------------------------------------------------------------------------*/
+
+// --- MOVED OUT in phase 2 -- POINTERS ONLY (a cross-reference, not data) ---
+// D_aq + Stokes radius: see parameters/transport/diffusion/arabinose-water (recordId diffusion-arabinose-water; ESTIMATED from the xylose anchor, not measured)
+// pKa1: see chemistry/aqueousSpeciation/arabinose-pKa1 (recordId arabinose-pKa1; order-of-magnitude placeholder, no primary)
+// aqueous solubility: see parameters/solubility/arabinose-water (recordId arabinose-water)
+// partial molar volume in water (the old `Vliq`): see parameters/volume/arabinose-water (recordId volume-arabinose-water)
+
+name           arabinose;
+formula        C5H10O5;
+CAS            5328-37-0;
+
+MW             150.13;         // g/mol -- derived from the formula with IUPAC
+                               //   standard atomic weights (origin derived)
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;              // non-electrolyte, van't Hoff i = 1
+
+identity
+{
+    pubchemCID         439195;
+    inchiKey           SRBFZHDQGSBBOR-HWQSCIPKSA-N;   // FULL 27-character key, L-arabinose
+    inchiKeyStatus     full;
+    inchiKeySource     "PubChem CID 439195 (L-arabinose), US NIH, public domain";
+    inchiKeyNote       "Block 1 (SRBFZHDQGSBBOR) is shared with xylose/ribose/lyxose
+                        by construction -- it encodes constitution only.  The
+                        stereochemistry lives in block 2 (HWQSCIPKSA).  Never join
+                        on block 1 alone; that collision is what let xylose's key
+                        be copied here undetected.";
+    stereochemicalForm "L-arabinose (the naturally abundant enantiomer; CAS 5328-37-0)";
+    identitySource     "PubChem CID 439195 (US NIH, public domain), retrieved 2026-07-24";
+    status             candidate;           // identity resolved; verify on promotion
+}
+
+// ---------------------------------------------------------------------------
+// ARITY-1 INTRINSIC, SOLID rung.  PROVISIONAL -- see the status below the block.
+standardThermochemistry
+{
+    dHf_298    -1057900.0;   // J/mol (-1057.9 +/- 1.6 kJ/mol), phase CRYSTALLINE
+                             //   origin measured (combustion calorimetry)
+                             //   PRIMARY: Desai & Wilhoit, 1970 (dcH(cr) = -2338.8
+                             //   +/- 1.6 kJ/mol); independent: Stroh & Fincke, 1963
+                             //   (dcH(cr) = -2336.2 kJ/mol).  Measured on D-arabinose;
+                             //   see enantiomerNote in thermochemistryStatus{}.
+    // s_298   ABSENT BY DECISION -- see entropyStatus{}.  NOT fabricated.
+    referenceState      pureSolid;
+}
+
+thermochemistryStatus
+{
+    property        dHf_298;
+    phase           solid;
+    resolution      "PRIMARY RESOLVED 2026-07-25 via the NIST WebBook condensed-phase
+                     free view for D-arabinose (ID=C10323203, Mask=2): dfH(cr) =
+                     -1057.9 +/- 1.6 kJ/mol from Desai & Wilhoit, 1970 (combustion,
+                     dcH(cr) = -2338.8 +/- 1.6 kJ/mol), with an independent combustion
+                     by Stroh & Fincke, 1963 (dcH(cr) = -2336.2 kJ/mol).  This retires
+                     the earlier unresolved `combustion series' citation.";
+    enantiomerNote  "the calorimetry is on D-arabinose; this component declares
+                     L-arabinose.  Standard enthalpy of formation is ENANTIOMER-
+                     INVARIANT (mirror-image crystals of a pure enantiomer have
+                     identical lattice energy and identical dfH), so the D value is the
+                     correct datum for L-arabinose.  Only chiroptical properties differ.";
+    crossCheck      "-1054.5 kJ/mol for alpha-D-xylose (Ribeiro da Silva et al. 2013)
+                     -- the sister aldopentose, consistent to ~3 kJ/mol.";
+    route           "NIST WebBook used only as a finding aid to the primary";
+    status          candidate;         // dHf resolved; S and Cp still flagged below
+}
+
+entropyStatus
+{
+    property        s_298;
+    phase           solid;
+    value           none;                  // nothing shipped, nothing invented
+    pendingPrimary  "low-temperature heat-capacity study of beta-D-arabinose(cr)
+                     -- paywalled at curation";
+    analogueNote    "xylose is 175.3 J/(mol K); the analogy is NOT shipped as a value";
+    status          flagged;
+}
+
+solidHeatCapacityStatus
+{
+    property        Cp_solid;
+    phase           solid;
+    value           none;
+    pendingPrimary  "the same beta-D-arabinose low-temperature calorimetry study";
+    analogueNote    "xylose is 178.1 J/(mol K) at 298.15 K; NOT shipped as a value";
+    status          flagged;
+}
+
+// --- PURE-COMPONENT (arity-1) properties, each with unit + phase + origin + citation ---
+pureComponentProperties
+{
+    solidDensity
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "ChemicalBook (web aggregator) + CRC Handbook -- neither is redistributable";
+        action        "read Dx (calculated density) from a published single-crystal structure of
+                      the NAMED polymorph/anomer -- Acta Cryst. reports it directly -- or
+                      derive rho = Z*MW/(N_A*V_cell) from open cell parameters (the
+                      Crystallography Open Database is CC0 and cites the primary for each
+                      entry).  Record the cell, Z and the arithmetic in a derivation{}
+                      block, and NAME the solid form.";
+        droppedValue  "value = 1.585 g/cm3; temperature = 293.15 K; citation = ChemicalBook CAS 5328-37-0";
+    }
+
+    solidMolarVolume
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "DERIVED from the solidDensity above, which was dropped -- a
+                       derivative cannot outlive the datum it was computed from";
+        action        "recompute V = MW / rho once a legally clear rho exists, and
+                       name the solid form both refer to";
+        droppedValue  "94.72 cm3/mol  (this is the PURE-SOLID molar volume; the partial molar
+                       volume in water is a SYSTEM property and is unaffected -- it
+                       lives in parameters/volume/)";
+    }
+
+    meltingPoint
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index + ChemicalBook -- paywalled compilation / web aggregator";
+        action        "take T_fus from a calorimetric (DSC / adiabatic) primary that STATES the
+                      polymorph or anomer it melted, and stage it in a fusion{} block
+                      together with dHfus -- a melting point without a named solid form is
+                      not a property of a substance, it is a property of a sample.";
+        droppedValue  "value = 431.15 K; range = ( 431.15 438.15 ) K; transition = fusionWithDecomposition; citation = The Merck Index";
+    }
+}
+
+identityDescriptors
+{
+    specificRotation
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index -- paywalled commercial compilation";
+        action        "take [alpha]_D from a polarimetric primary that states c, solvent,
+                      temperature, wavelength and the mutarotation state.  This is an
+                      IDENTITY descriptor, not a thermophysical datum, so it is the
+                      lowest-priority gap in this file.";
+        droppedValue  "value = 104.5 deg; temperature = 293.15 K; solvent = water; composition = mutarotation equilibrium; wavelength = 589.3 nm; citation = The Merck Index";
+    }
+}
+
+// --- COSMO surface: NO deployable set (structured flag) ---
+cosmoStatus
+{
+    recordType      cosmoSurfaceStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    evidenceRecord  none;                 // no evidence/lvpp-arabinose record staged
+    reason          "no VT-2005 cosmoSAC2002 set ships for arabinose and no LVPP
+                     arabinose record was staged.";
+    protocolIncompatibility
+        "An LVPP surface would not be usable anyway: different QM protocol (NWChem
+         B3LYP/def2-SVPD, SES cavity) from the VT-2005 surfaces the cosmoSAC2002
+         constants were regressed against (Mullins et al., IECR 45 (2006) 4389);
+         measured on ethylene, +6.1 % area / +10.3 % volume.  Never tag an LVPP
+         surface variant cosmoSAC2002.";
+    identityCaution "any future LVPP/CHAOS match MUST use the full 27-character key
+                     above -- block 1 alone would silently return xylose.";
+    status          flagged;
+}
+
+// --- PC-SAFT: no set exists (structured flag) ---
+pcSaftStatus
+{
+    recordType      saftParameterSetStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    sourcePinned    none;                 // arabinose is NOT among the 13 sugars
+                                          //   fitted by Held & Sadowski (AIChE J.
+                                          //   59 (2013) 4794-4805)
+    numbersInHand   no;
+    surrogateNote   "using xylose parameters for arabinose is a MODELLING CHOICE
+                     made by a case, never arabinose's own parameter set; it must
+                     never be filed here.";
+    status          flagged;              // needs a fit with the full protocol recorded
+}
+
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 3; } { group OH; count 4; } { group CHO; count 1; } );   // PROPOSED (review vs Choupo UNIFAC vocab) -- aldo-pentose, open-chain decomposition
+}

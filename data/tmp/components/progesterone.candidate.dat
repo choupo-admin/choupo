@@ -1,0 +1,94 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: progesterone  (C21H30O2, CAS 57-83-0)
+  Progestogen steroid hormone / EDC; neutral 3,20-diketone Delta4 steroid.
+  Part of the studied steroid set for NF/RO trace-organic rejection.
+
+  IDENTITY source: PubChem CID 5994 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 57-83-0 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  Every system /
+    equilibrium / state datum was re-homed in phase 2 and is NOT duplicated here
+    (data/tmp/RECORD_SPEC.md, ARITY rule).  The pointers carry NO numbers.
+
+  STATUS: candidate.  Not promotable -- no thermochemistry, no Cp, no VLE leg.
+\*---------------------------------------------------------------------------*/
+
+name              progesterone;
+formula           C21H30O2;
+CAS               57-83-0;
+InChIKey  RJKFOVLPORLFTN-LEKSSAKUSA-N;   // 14-char skeleton only (see estradiol note)
+MW                314.46;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+
+// ---- RE-HOMED IN PHASE 2 (pointers only, no values) ------------------------
+// D_aq + Stokes radius  -> parameters/transport/diffusion/  recordId diffusion-progesterone-water
+// logKow                -> parameters/partition/            recordId progesterone-octanol-water
+// aqueous solubility    -> parameters/solubility/           recordId progesterone-water
+// COSMO cavity (LVPP)   -> evidence/lvpp-progesterone/      recordId lvpp-progesterone
+// NO dissociation record exists, deliberately: the source states there is no
+//   acidic pKa in 0-14 and the strongest-basic centre (18.92, an enol) lies
+//   outside the window (chemistry/aqueousSpeciation/_LEDGER.md section 6a).
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+Tfus              402.15;   // K (129 degC), crystalline solid; POLYMORPH not
+                            //   stated by the source (progesterone is known to
+                            //   be polymorphic -- form unspecified).
+                            //   [HSDB via PubChem CID 5994; US NLM, public domain]
+
+solidDensity      1166.0;   // kg/m3, crystal at 296 K (1.166 g/cm3 @23 degC --
+                            //   note the source's 23 degC, not 25).
+                            //   [HSDB via PubChem CID 5994]
+                            //   A molar volume was previously stored beside it;
+                            //   MW/rho is a DERIVATIVE and is not stored.
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// standardThermochemistry: no open combustion / formation datum located.
+// Tc / Pc / omega /
+// vaporPressure /
+// idealGasHeatCapacity   : no VLE leg (fused-ring steroid; Joback not
+//                          parametrized for it).
+//
+// COSMO-SAC -- NO DEPLOYABLE SET; no `cosmo {}` block may be written here.
+//   evidence/lvpp-progesterone holds the LVPP cavity descriptors as EVIDENCE
+//   only: the LVPP QM protocol is incompatible with Choupo's VT-2005
+//   `cosmoSAC2002` sets (ethylene cross-check: +6.1 % area, +10.3 % volume).
+//   The LVPP surface is the NEUTRAL GAS-PHASE tautomer (keto, not enol), NEVER
+//   the aqueous species, and it is one chosen conformer.
+// PC-SAFT -- no published steroid parameter set
+//   (parameters/PCSAFT/_INVENTORY.md, section 3).
+
+provenance
+{
+    Tfus
+    {
+        origin      measured;
+        citation    "HSDB via PubChem CID 5994 (US NLM, public domain)";
+        note        "polymorph not stated by the source";
+        status      candidate;
+    }
+    solidDensity
+    {
+        origin      measured;
+        citation    "HSDB via PubChem CID 5994 (US NLM, public domain)";
+        note        "crystal density at 23 degC (NOT 25 degC); crystal form not stated";
+        status      candidate;
+    }
+}

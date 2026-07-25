@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'ethinylestradiol'
+component ethinylestradiol;
+records
+(
+    { recordType acidDissociation; recordId ethinylestradiol-pKa1; category flagged; file "chemistry/aqueousSpeciation/ethinylestradiol-pKa1.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-ethinylestradiol-water; category flagged; file "parameters/transport/diffusion/ethinylestradiol-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId ethinylestradiol-octanol-water; category rightsPending; file "parameters/partition/ethinylestradiol-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId ethinylestradiol-water; category flagged; file "parameters/solubility/ethinylestradiol-water.candidate.dat"; }
+);

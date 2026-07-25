@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo (CANDIDATE) -*------------------*\
+  CANDIDATE component: acetonitrile  (C2H3N, CAS 75-05-8)
+  Common use: HPLC/extraction polar aprotic solvent; nitrile group exercise.
+
+  IDENTITY source: PubChem CID 6342 (US NIH, public domain — free of copyright).
+    Retrieved 2026-07-24 via PUG-REST /property.  CAS 75-05-8 is the compound's
+    registry number as listed on that public record (bare fact, not the
+    proprietary CAS arrangement).
+  LICENCE of this staged record: identity facts are public domain.
+  PROPERTY VALUES: NONE copied from any compilation.  The proposed joback
+    groups below feed Choupo's OWN estimator (bin/estimate acetonitrile) — that is the
+    legal route to Tc/Pc/omega/Antoine/Cp/dHf as Choupo's open work.
+  NEEDS (to promote to data/standards/components/): estimate + primary-cite; polar aprotic solvent.
+  STATUS: proposed groups — REVIEW before estimating/promoting.
+\*---------------------------------------------------------------------------*/
+
+name        acetonitrile;
+formula     C2H3N;
+CAS         75-05-8;
+MW          41.053;
+// SMILES CC#N   InChIKey WEVYAHXRMPXWCK-UHFFFAOYSA-N   PubChem CID 6342
+
+groups
+{
+    joback ( { group CH3; count 1; } { group CN; count 1; } );   // PROPOSED (review) — first-order Joback decomposition
+}

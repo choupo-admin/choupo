@@ -1,0 +1,80 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of PFOA in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/PFOA.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: solid phase NOT ESTABLISHED; three determinations spanning
+  3x kept side by side, none averaged; surfactant caveat retained.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        PFOA-water;
+participants    ( PFOA water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    unspecified;
+    phaseBasis    notEstablished;
+}
+
+// PHASE 4 search: no determination naming the equilibrated solid was
+// located.  Unlike PFOS and PFBS in this family, the substance here IS
+// the neutral acid, not a salt -- the identity is right, only the crystal
+// form is missing.
+//
+// PFOA is surface-active: above roughly 3 g/L the "dissolved" state
+// involves micelles/aggregates, so the quantity stops being a clean SLE
+// well below the 9.5 g/L headline figure.  The CMC (~3000 mg/L in
+// 100 mM NaCl, Costanza et al.) is a DIFFERENT property and is not
+// recorded here.
+value
+{
+    solubility    9.5e3 mg/L;
+    originalStatement  "9.5e3 mg/L @ 25 C";   // verbatim, before conversion
+}
+
+alternativeDeterminations
+{
+    inoue2011
+    {
+        solubility    3300 mg/L;
+        conditions    { solidPhase unspecified; phaseBasis notEstablished; }
+        origin        measured;
+        citation      "Inoue et al. (2011), neutral acid; via ATSDR 2021";
+        note          "measuring primary underlying the same profile; ~3x below the headline";
+    }
+    rahman2014
+    {
+        solubility    4340 mg/L;
+        conditions    { solidPhase unspecified; phaseBasis notEstablished; }
+        origin        measured;
+        citation      "Rahman et al. (2014), neutral acid; via ATSDR 2021";
+        note          "measuring primary underlying the same profile; ~2x below the headline";
+    }
+}
+
+provenance
+{
+    origin      measured;
+    citation    "ATSDR, Toxicological Profile for Perfluoroalkyls (2021), Table 4-2 (US-gov, public domain)";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+blockedBy       "no source states the equilibrating solid phase; the three determinations span 3x and micellisation makes the headline value a non-SLE quantity";
+status          flagged;

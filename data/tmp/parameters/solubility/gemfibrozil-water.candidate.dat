@@ -1,0 +1,66 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of gemfibrozil in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/gemfibrozil.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: solid phase NOT ESTABLISHED, and neither is the
+  temperature or the source.  The weakest record in the family.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        gemfibrozil-water;
+participants    ( gemfibrozil water );
+property        aqueousSolubility;
+
+conditions
+{
+    // temperature   NOT STATED by the source.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    unspecified;
+    phaseBasis    notEstablished;
+}
+
+// FLAGGED three times over: neither the TEMPERATURE nor the SOLID PHASE
+// is stated, and there is no primary behind the number at all.
+// PHASE 4 search found no measuring primary either.  Kept only so the
+// figure is not lost; not promotable under any reading.
+value
+{
+    solubility    11 mg/L;
+    originalStatement  "~11 mg/L (approximate)";   // verbatim, before conversion
+}
+
+alternativeDeterminations
+{
+    hmdb
+    {
+        solubility    28 mg/L;
+        conditions    { solidPhase unspecified; phaseBasis notEstablished; }
+        origin        estimated;
+        citation      "Human Metabolome Database (HMDB); via PubChem";
+        note          "2.5x the headline value; a prediction";
+    }
+}
+
+provenance
+{
+    origin      measured;
+    citation    "UNPINNED -- 'sparingly soluble, ~11 mg/L' as carried in the component record; no firm open measurement at a stated temperature was located in phase 2 or phase 4";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+blockedBy       "no source states the equilibrating solid phase; no temperature; no measuring primary";
+status          flagged;

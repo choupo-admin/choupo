@@ -1,0 +1,8 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'arabinose'
+component arabinose;
+records
+(
+    { recordType acidDissociation; recordId arabinose-pKa1; category flagged; file "chemistry/aqueousSpeciation/arabinose-pKa1.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-arabinose-water; category flagged; file "parameters/transport/diffusion/arabinose-water.candidate.dat"; }
+    { recordType partialMolarVolume; recordId volume-arabinose-water; category flagged; file "parameters/volume/arabinose-water.candidate.dat"; }
+);

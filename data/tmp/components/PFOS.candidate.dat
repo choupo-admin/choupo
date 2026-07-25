@@ -1,0 +1,96 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: PFOS  (perfluorooctanesulfonic acid, C8HF17O3S,
+  CAS 1763-23-1).  PFAS "forever chemical", emerging NF/RO contaminant.
+  Long-chain C8 sulfonic acid -- strong acid, permanent anion in water.
+
+  IDENTITY source: PubChem CID 74483 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 1763-23-1 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.
+
+  THE DOMINANT FINDING FOR THIS FILE: essentially the whole PFOS literature is
+    about the POTASSIUM SALT (PFOS-K), which is a DIFFERENT SUBSTANCE from the
+    free acid named above.  Melting point, vapour pressure and aqueous
+    solubility as staged are all salt data.  None of them is carried here as if
+    it belonged to the acid.  This file is therefore nearly empty -- and that is
+    the correct, honest result, not a curation failure.
+
+  STATUS: candidate identity; NO intrinsic property datum for the free acid.
+\*---------------------------------------------------------------------------*/
+
+name              PFOS;
+formula           C8HF17O3S;
+CAS               1763-23-1;
+InChIKey  YFSUTJLHUFNCNZ-UHFFFAOYSA-N;   // 14-char skeleton only.
+MW                500.13;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+
+// ---- RE-HOMED IN PHASE 2 (pointers only, no values) ------------------------
+// acid pKa              -> chemistry/aqueousSpeciation/     recordId PFOS-pKa1
+//   (a BOUND, "< 1.0", not a determination -- flagged there, not repeated here)
+// aqueous solubility    -> parameters/solubility/           recordId PFOS-potassium-water
+//   *** and that record's equilibrated solid is the POTASSIUM SALT, not the acid
+//   named in this file.  The solubility of PFOS the ACID is NOT known to us. ***
+// chargeAtPH7 (-1) was DELETED, not moved: a charge at a pH is a RESULT.
+//
+// NO partition record exists, deliberately: the source (ATSDR 2021) states
+//   logKow is "not applicable (ionic surfactant)".  That is the absence of a
+//   datum, not a datum (parameters/partition/_LEDGER.md, "deliberately NOT
+//   emitted") -- so no logKow may be written here either.
+// NO diffusion record exists: D_aq and the Stokes radius were never measured or
+//   estimated (transport/diffusion/_LEDGER.md section 5).
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+// (none -- see below)
+
+
+// ---- DECLARED GAPS / SUBSTANCE MISMATCHES -----------------------------------
+// Tfus          : NOT KNOWN for the free acid.  The staged ">= 400 degC" is the
+//                 POTASSIUM SALT (ATSDR 2021 Table 4-2).  A salt's melting point
+//                 is not the acid's; it is not carried here in any form.
+// vaporPressure : NOT KNOWN for the free acid.  The staged 2.48e-6 mmHg @20 degC
+//                 is likewise the POTASSIUM SALT (ATSDR 2021).  Not carried.
+// density /
+// molar volume  : ATSDR states "no data" for the free acid -- so no molar volume
+//                 is derivable here, and none was invented.
+// Tb / Tc / Pc /
+// omega / Cp /
+// standardThermochemistry : none located.  Joback has no perfluoro-carbon
+//                 groups, so Choupo's own estimator cannot supply them either.
+// COSMO-SAC     : PFOS is NOT in the LVPP sigma database -- no evidence record.
+//                 Even if it were, no `cosmo {}` block could be written from it:
+//                 the LVPP QM protocol is incompatible with Choupo's VT-2005
+//                 `cosmoSAC2002` sets (ethylene cross-check: +6.1 % cavity area,
+//                 +10.3 % cavity volume).
+// PC-SAFT       : no set adopted; perfluoro chains are exactly where a generic
+//                 set misleads (parameters/PCSAFT/_INVENTORY.md).
+//
+// TO CLOSE THIS FILE a curator must find free-ACID data, or the catalogue must
+// carry PFOS-K as its own component with its own CAS -- the two are not
+// interchangeable and must never share a record.
+
+provenance
+{
+    identity
+    {
+        origin      measured;
+        citation    "PubChem CID 74483 (US NIH, public domain), PUG-REST 2026-07-24";
+        status      candidate;
+    }
+}

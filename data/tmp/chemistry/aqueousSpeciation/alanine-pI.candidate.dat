@@ -1,0 +1,51 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/alanine.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      isoelectricPoint;
+schemaVersion   1;
+recordId        alanine-pI;
+participants    ( alanine );
+property        pI;
+derivedFrom     ( alanine-pKa1 alanine-pKa2 );
+
+conditions
+{
+    temperature     298.15 K;
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+derived   // pI is NOT an independent datum -- it is a FUNCTION of the equilibria
+{
+    equation    "pI = (pKa1 + pKa2)/2  -- mean of the two pKa bracketing the zwitterion";
+    inputs      "alanine-pKa1 = 2.34 ; alanine-pKa2 = 9.69";
+    check       "(2.34 + 9.69)/2 = 6.015  vs quoted pI 6.00";
+}
+
+value
+{
+    pI              6.00;
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      derived;
+    citation    "DERIVED in this record from the pKa records listed in derivedFrom; the quoted pI in the source ledger (aminoacids_SOURCES.md section 2) is reproduced as the check";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          flagged;
+
+// NOTES
+//   pI is NOT a stored constant -- it is a FUNCTION of the equilibria (RECORD_SPEC ARITY rule).
+//   Kept only because the source quotes a definite number; consumers must recompute from the pKa records.
+//   status flagged: the underlying pKa are consensus values, so the pI inherits that status.

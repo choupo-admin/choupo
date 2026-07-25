@@ -1,0 +1,54 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/taurine.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      isoelectricPoint;
+schemaVersion   1;
+recordId        taurine-pI;
+participants    ( taurine );
+property        pI;
+derivedFrom     ( taurine-pKa1 taurine-pKa2 );
+
+conditions
+{
+    temperature     298.15 K;
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+derived   // pI is NOT an independent datum -- it is a FUNCTION of the equilibria
+{
+    equation    "pI = (pKa1 + pKa2)/2  -- mean of the two pKa bracketing the zwitterion";
+    inputs      "taurine-pKa1 = ~1.5 ; taurine-pKa2 = ~9.06";
+    check       "(1.5 + 9.06)/2 = 5.280  vs quoted pI ~5.2 (both inputs approximate)";
+}
+
+value
+{
+    pI              ~5.2;   // APPROXIMATE -- inherits the estimated sulfonate pKa1
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      derived;
+    citation    "DERIVED in this record from the pKa records listed in derivedFrom; the quoted pI in the source ledger (aminoacids_SOURCES.md section 2) is reproduced as the check";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          flagged;
+
+// NOTES
+//   pI is NOT a stored constant -- recompute from the pKa records.
+//   Doubly soft: pKa1 is an ESTIMATE, so this pI is an estimate of an estimate.
+//   PHASE 6 (2026-07-24): the phase-6 search for an open primary behind taurine's
+//     sulfonate pKa1 FAILED (see taurine-pKa1 for exactly what was checked and why the
+//     two available routes -- Dawson 1986 and the CC BY-NC IUPAC digitisation -- are both
+//     unusable).  This pI therefore remains an estimate of an estimate and stays `flagged`.

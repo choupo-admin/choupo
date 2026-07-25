@@ -1,0 +1,230 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: erythritol  (C4H10O4, CAS 149-32-6) -- sugar alcohol
+  (polyol).  meso-Erythritol, tetritol sweetener.  Non-volatile non-electrolyte
+  SOLUTE (NF sweetener/osmotic family).  Linear polyol -> clean first-order Joback
+  decomposition.  SOLID rung (referenceState pureSolid).
+
+  PRIVATE staging tier (data/tmp, gitignored).  Envelope + ARITY rule:
+  ../RECORD_SPEC.md.  Cleaned 2026-07-24 (phase 3, component cleanup).
+
+  ARITY-1 ONLY.  Intrinsic single-substance data only; every system property was
+  emitted in phase 2 to its arity-correct home (pointers below).  In particular
+  the MEASURED hydrodynamic radius (0.34 nm) is a solute-in-water property and is
+  NOT stored here -- it has its own arity-2 record.
+
+  FIXED HERE: the two measured solid Cp points were hiding in a prose comment;
+  they are now a structured block (with the honest statement that Cp(298.15) is an
+  interpolation nobody has made, so no engine-facing solidHeatCapacity is shipped).
+\*---------------------------------------------------------------------------*/
+
+// --- MOVED OUT in phase 2 -- POINTERS ONLY (a cross-reference, not data) ---
+// D_aq: see parameters/transport/diffusion/erythritol-water (recordId diffusion-erythritol-water; Stokes-Einstein ESTIMATE 7.6e-10, with an unreconciled measured ~9e-10 cross-check)
+// measured hydrodynamic radius: see parameters/transport/diffusion/erythritol-water.hydrodynamicRadius (recordId hydrodynamicRadius-erythritol-water; MEASURED on erythritol-water droplets, not bulk infinite dilution)
+// aqueous solubility: see parameters/solubility/erythritol-water (recordId erythritol-water)
+// logKow / XLogP3: see parameters/partition/erythritol-octanol-water (recordId erythritol-octanol-water; PubChem COMPUTED descriptor, not a measurement)
+
+name           erythritol;
+formula        C4H10O4;
+CAS            149-32-6;
+
+MW             122.12;         // g/mol -- derived from the formula with IUPAC
+                               //   standard atomic weights (origin derived)
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;              // non-electrolyte, van't Hoff i = 1
+
+identity
+{
+    pubchemCID         222285;
+    inchiKey           UNXHWFMMPAWVPI-ZXZARUISSA-N;   // FULL 27-character key
+    inchiKeyStatus     full;
+    inchiKeyNote       "Block 1 (UNXHWFMMPAWVPI) is shared with threitol (the other
+                        C4H10O4 tetritol); only block 2 separates meso-erythritol
+                        from it.  Never join on block 1 alone.";
+    stereochemicalForm "meso-erythritol, crystalline";
+    identitySource     "PubChem CID 222285 (US NIH, public domain), retrieved 2026-07-24";
+    status             candidate;
+}
+
+// ---------------------------------------------------------------------------
+// ARITY-1 INTRINSIC, SOLID rung.
+// PRIMARY (dHf_298): Parks & Manchester, J. Am. Chem. Soc. 74 (1952) 3435 --
+//   heats of solution + combustion of polyhydroxy alcohols (via the NIST
+//   condensed-phase compilation).  See thermochemistryStatus{} -- the PHASE
+//   attribution of this value needs checking against the paper.
+// PRIMARY (s_298): Parks, Kelley & Huffman, J. Am. Chem. Soc. 51 (1929) 1969 --
+//   third-law (low-temperature calorimetry).
+standardThermochemistry
+{
+    dHf_298    -885200.0;      // J/mol (-885.2 kJ/mol), phase CRYSTALLINE
+                               //   origin DERIVED (Hess) from the MEASURED solid
+                               //   enthalpy of combustion -- see derivation below
+                               //   [Parks & Manchester, JACS 74 (1952) 3435, dcH(cr)]
+    s_298      166.5;          // J/(mol K), third-law absolute, phase CRYSTALLINE
+                               //   origin measured (low-T calorimetry)
+                               //   [Parks, Kelley & Huffman, JACS 51 (1929) 1969]
+    referenceState      pureSolid;
+}
+
+// dHf is NOT a directly measured datum: it is a glass-box Hess result from the
+// MEASURED solid enthalpy of combustion.  Every input is stated.
+formationEnthalpyDerivation
+{
+    property     dHf_298;
+    phase        solid;
+    origin       derived;
+    equation     "C4H10O4(cr) + 4.5 O2(g) -> 4 CO2(g) + 5 H2O(l);
+                  dHf(cr) = 4 dHf(CO2,g) + 5 dHf(H2O,l) - dcH(cr)";
+    inputs
+    {
+        dcH_cr       -2118.0 kJ/mol;   // MEASURED, phase SOLID, method Cm
+                                       //   [Parks & Manchester, JACS 74 (1952) 3435]
+        dHf_CO2_g    -393.51 kJ/mol;   // CODATA
+        dHf_H2O_l    -285.83 kJ/mol;   // CODATA
+    }
+    result       -885.2 kJ/mol;        // = 4(-393.51) + 5(-285.83) - (-2118.0)
+    route        "located through the NIST WebBook condensed-phase free view
+                  (ID=C149326, Mask=2), used only as a finding aid";
+    status       candidate;
+}
+
+thermochemistryStatus
+{
+    property        dHf_298;
+    phase           solid;
+    resolution      "PHASE ATTRIBUTION VERIFIED 2026-07-25 against the NIST WebBook
+                     condensed-phase entry (ID=C149326).  The earlier concern -- that
+                     Parks & Manchester 1952 was a LIQUID measurement -- was WRONG.
+                     NIST lists Parks & Manchester 1952 as the SOLID enthalpy of
+                     combustion dcH(cr) = -2118.0 kJ/mol (method Cm).  The LIQUID data
+                     on the same page (dfH(liq) = -910.48 +/- 0.54 kJ/mol; dcH(liq) =
+                     -2092.8 kJ/mol) belong to a DIFFERENT paper, Parks, West et al.,
+                     JACS 68 (1946) 2524, and are NOT the datum carried here.";
+    phaseDistinction "solid datum (this file) = -885.2 kJ/mol, DERIVED from the solid
+                     combustion; the liquid formation enthalpy -910.48 kJ/mol is a
+                     different phase, recorded here only to keep the two visibly apart
+                     -- never combine them.";
+    residualDefect  "the only real defect was the origin label: it was `measured`, it
+                     is `derived` (Hess) -- fixed above.  No enthalpy-of-fusion trap
+                     occurred; the value was always the crystalline solid.";
+    status          candidate;
+}
+
+// Solid heat capacity: two MEASURED points, LIFTED OUT OF A COMMENT.  No engine
+// solidHeatCapacity{} block is shipped because Cp(298.15) would be an
+// interpolation between them that nobody has made -- stating the data is honest,
+// interpolating silently is not.
+solidHeatCapacityData
+{
+    property     Cp_solid;
+    phase        solid;
+    origin       measured;
+    points
+    (
+        { temperature 291.7 K;  value 161.9 J/molK;  citation "Parks & Anderson, JACS 48 (1926) 1506"; }
+        { temperature 303.0 K;  value 170.7 J/molK;  citation "Spaght, Thomas & Parks, J. Phys. Chem. 36 (1932) 882"; }
+    )
+    note         "the two points imply dCp/dT ~ 0.78 J/(mol K^2) over 291.7-303 K;
+                  a linear interpolation would give ~166.8 J/(mol K) at 298.15 K --
+                  DELIBERATELY NOT SHIPPED as a value.";
+    pendingPrimary "a modern adiabatic Cp(T) study of crystalline meso-erythritol";
+    status       flagged;
+}
+
+// --- PURE-COMPONENT (arity-1) properties, each with unit + phase + origin + citation ---
+pureComponentProperties
+{
+    solidDensity
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "CRC Handbook of Chemistry and Physics -- no-grant, all-rights-reserved";
+        action        "read Dx (calculated density) from a published single-crystal structure of
+                      the NAMED polymorph/anomer -- Acta Cryst. reports it directly -- or
+                      derive rho = Z*MW/(N_A*V_cell) from open cell parameters (the
+                      Crystallography Open Database is CC0 and cites the primary for each
+                      entry).  Record the cell, Z and the arithmetic in a derivation{}
+                      block, and NAME the solid form.";
+        droppedValue  "value = 1.45 g/cm3; temperature = 293.15 K; citation = CRC Handbook of Chemistry and Physics, 79th ed.";
+    }
+
+    solidMolarVolume
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "DERIVED from the solidDensity above, which was dropped -- a
+                       derivative cannot outlive the datum it was computed from";
+        action        "recompute V = MW / rho once a legally clear rho exists, and
+                       name the solid form both refer to";
+        droppedValue  "84.22 cm3/mol  (this is the PURE-SOLID molar volume; the partial molar
+                       volume in water is a SYSTEM property and is unaffected -- it
+                       lives in parameters/volume/)";
+    }
+
+    meltingPoint
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "CRC Handbook + The Merck Index -- no-grant / paywalled compilations";
+        action        "take T_fus from a calorimetric (DSC / adiabatic) primary that STATES the
+                      polymorph or anomer it melted, and stage it in a fusion{} block
+                      together with dHfus -- a melting point without a named solid form is
+                      not a property of a substance, it is a property of a sample.";
+        droppedValue  "value = 391.15 K; range = ( 391.15 394.15 ) K; transition = fusion; citation = CRC Handbook, 79th ed.";
+    }
+}
+
+// --- COSMO surface: NO deployable set (structured flag) ---
+cosmoStatus
+{
+    recordType      cosmoSurfaceStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    evidenceRecord  evidence/lvpp-erythritol;  // cavity descriptors ONLY (157.57 A2 /
+                                               //   151.33 A3, 1077 segments); NO sigma profile
+    reason          "the LVPP record is EVIDENCE, not a deployable set: it carries
+                     no sigma profile and no validated variant.";
+    protocolIncompatibility
+        "LVPP surfaces come from a different QM protocol (NWChem B3LYP/def2-SVPD,
+         SES cavity) from the VT-2005 surfaces Choupo's cosmoSAC2002 constants were
+         regressed against (Mullins et al., IECR 45 (2006) 4389).  Measured on
+         ethylene, present in both databases: +6.1 % cavity area, +10.3 % cavity
+         volume.  These numbers must NOT be pasted into a cosmo{} block and must
+         NOT be tagged variant cosmoSAC2002.";
+    conformerCaution "gas-phase optimised geometry, one conformer of an acyclic
+                      tetritol -- a named set must declare which conformer.";
+    status          flagged;
+}
+
+// --- PC-SAFT: no set exists (structured flag) ---
+pcSaftStatus
+{
+    recordType      saftParameterSetStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    sourcePinned    none;                 // the polyol ledger says only "Held &
+                                          //   Sadowski framework -- confirm
+                                          //   erythritol is fitted"; the fit is
+                                          //   UNCONFIRMED, so no source is pinned
+    numbersInHand   no;
+    status          flagged;              // needs a real citation or a fit with the
+                                          //   full protocol recorded
+}
+
+groups
+{
+    joback ( { group CH2; count 2; } { group CH; count 2; } { group OH; count 4; } );   // PROPOSED (review) -- linear polyol, clean CH2/CH/OH decomposition
+}

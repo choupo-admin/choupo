@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'trimethoprim'
+component trimethoprim;
+records
+(
+    { recordType acidDissociation; recordId trimethoprim-pKa1; category verified; file "chemistry/aqueousSpeciation/trimethoprim-pKa1.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-trimethoprim-water; category flagged; file "parameters/transport/diffusion/trimethoprim-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId trimethoprim-octanol-water; category verified; file "parameters/partition/trimethoprim-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId trimethoprim-water; category flagged; file "parameters/solubility/trimethoprim-water.candidate.dat"; }
+);

@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'ibuprofen'
+component ibuprofen;
+records
+(
+    { recordType acidDissociation; recordId ibuprofen-pKa1; category absent; file "chemistry/aqueousSpeciation/ibuprofen-pKa1.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-ibuprofen; category flagged; file "evidence/lvpp-ibuprofen/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-ibuprofen-water; category derived; file "parameters/transport/diffusion/ibuprofen-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId ibuprofen-octanol-water; category flagged; file "parameters/partition/ibuprofen-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId ibuprofen-water; category flagged; file "parameters/solubility/ibuprofen-water.candidate.dat"; }
+);

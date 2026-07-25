@@ -1,0 +1,128 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of galactose in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/galactose.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT then: solid phase NOT ESTABLISHED and the carrier was a
+  commercial web aggregator with no primary.  Number retained but doubly blocked.
+
+  PHASE 6 (2026-07-24, agent:solubility) -- establishing the missing solid
+  phases.  VERDICT NOW: a CC-BY measuring primary was located that determined
+  this solubility by the isothermal excess-solute method AND ran PXRD on the
+  solid deposit in equilibrium with the saturated solution at 298.15 K.  The
+  equilibrating solid is therefore STATED BY THE SOURCE, the aggregator figure
+  is replaced by a measured, redistributable value, and the record is PROMOTED
+  to candidate.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        galactose-water;
+participants    ( D-alpha-galactose water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- stated by the primary
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    D-alpha-galactose;
+    phaseBasis    statedBySource;
+}
+
+// PHASE 6 -- HOW THE PHASE WAS ESTABLISHED.
+//
+// Chua et al. (Food Biophysics 17 (2022) 181-197, CC-BY 4.0) state their
+// method verbatim:
+//
+//   "the isothermal method with excess of the solute was applied to
+//    determine the aqueous solubility and examine the crystal structure of
+//    the solid deposit in equilibrium with the saturated solutions at
+//    T = 298.15 K and T = 323.15 K.  The crystal structure of the solid
+//    phase was measured by Powder X-Ray Diffraction (PXRD)."
+//
+// and their result verbatim:
+//
+//   "For D-sucrose, D-beta-fructose and D-alpha-xylose, and D-alpha-galactose
+//    no crystal change was observed in the solid phase during the solubility
+//    measurements.  Therefore, D-beta-fructose, D-alpha-xylose and
+//    D-alpha-galactose were assigned to their beta-form and alpha-forms,
+//    respectively"
+//
+// This is the rare case the three-tier rule was written for: the
+// determination itself characterises its equilibrating solid, by
+// diffraction, at the temperature of the measurement.  `statedBySource`,
+// and the digit may be promoted.
+//
+// WHAT THE PHASE-2/4 AGGREGATOR NUMBER WAS, AND WHY IT IS GONE.
+// The previous headline was "~650 g/L @ 20 C" carried by ChemicalBook, a
+// commercial web aggregator with NO primary attribution.  It is not
+// withdrawn on rights grounds -- it is withdrawn on PROVENANCE grounds: an
+// unattributed aggregator entry is not a determination, so there is nothing
+// to disagree with and nothing to keep side by side.  It is recorded here in
+// prose so the substitution is not silent, and deliberately NOT kept as an
+// `alternativeDeterminations` entry, because that block is for competing
+// MEASUREMENTS.  (It is also at a different temperature, 20 C, and in a
+// different basis, so it could not have been compared without converting
+// both -- which nobody can do without a saturated-solution density.)
+//
+// BASIS -- READ THIS BEFORE USING THE NUMBER.
+// The primary reports a WEIGHT-FRACTION solubility, w_sat, i.e. g of
+// galactose per g of SATURATED SOLUTION.  It is NOT converted to mg/L here:
+// that conversion needs the density of a 33 wt% sugar solution, which the
+// source does not supply, and inventing one would be exactly the kind of
+// hidden step this corpus forbids.  The value is kept in the source's own
+// basis, as was done for trehalose.
+//
+// MUTAROTATION -- the second layer of this equilibrium.
+// Galactose mutarotates.  The solid is the alpha anomer; in solution the
+// alpha and beta forms interconvert, and the same paper quotes an anomeric
+// distribution of alpha 28.5% / beta 59.5% from the literature.  The
+// measured w_sat is therefore the TOTAL dissolved galactose at anomeric
+// equilibrium sitting on an alpha-D-galactose crystal -- which is the
+// physically meaningful saturation, but a record that did not say so would
+// be ambiguous by a large factor.  Stated here; carried in
+// `residualUncertainty` below.
+value
+{
+    solubility    0.3256 g/g;    // g galactose per g SATURATED SOLUTION (mass fraction)
+    uncertainty   0.03 g/g;      // standard deviation of multiple measurements, as reported
+    originalStatement  "w_sat,298.15K = 0.3256 +/- 0.03 g g^-1 (Table 5)";   // verbatim, no conversion applied
+}
+
+validity
+{
+    temperatureRange ( 298.15 298.15 ) K;   // a single measured point; the paper also measured at 323.15 K
+}
+
+residualUncertainty  "value is a mass fraction of the saturated SOLUTION, not a mg/L concentration -- converting requires a saturated-solution density the source does not give; and the number is the TOTAL dissolved galactose at anomeric (mutarotation) equilibrium over an alpha-D-galactose crystal, not an anomer-resolved solubility";
+
+provenance
+{
+    origin      measured;
+    citation    "Chua, Y.Z., Do, H.T., Kumar, A., Hallermann, M., Zaitsau, D., Schick, C. & Held, C., The melting properties of D-alpha-glucose, D-beta-fructose, D-sucrose, D-alpha-galactose, and D-alpha-xylose and their solubility in water: A revision, Food Biophysics 17 (2022) 181-197";
+    doi         "10.1007/s11483-021-09707-6";
+    licence     "CC-BY 4.0";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Chua, Y.Z. et al., Food Biophysics 17 (2022) 181-197 -- same work as the value";
+    doi         "10.1007/s11483-021-09707-6";
+    licence     "CC-BY 4.0";
+    basis       "PXRD of the solid deposit in equilibrium with the saturated solution at 298.15 K showed no crystal change; the solid was assigned to D-alpha-galactose";
+}
+
+supersedes      "phase-2/4 headline 6.5e5 mg/L @ 293.15 K, carried only by the ChemicalBook aggregator entry for CAS 59-23-4 with no primary attribution -- dropped on provenance grounds in phase 6, not kept as an alternative because an unattributed aggregator entry is not a determination";
+
+status          candidate;

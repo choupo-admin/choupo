@@ -1,0 +1,211 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: xylose  (C5H10O5, CAS 58-86-6) -- aldo-pentose.
+  Non-volatile non-electrolyte SOLUTE (NF/RO sugar-rejection family).  Decomposes
+  before it vaporises -> SOLID rung (referenceState pureSolid).
+
+  PRIVATE staging tier (data/tmp, gitignored).  Envelope + ARITY rule:
+  ../RECORD_SPEC.md.  Cleaned 2026-07-24 (phase 3, component cleanup).
+
+  ARITY-1 ONLY.  Intrinsic single-substance data only; every system property was
+  emitted in phase 2 to its arity-correct home (pointers below).
+
+  DEFECT FIXED HERE: the entropy datum.  The only S(298) in this file is now the
+  CURATED 175.3 J/(mol K) of Ribeiro da Silva et al. 2013 (PPMS, 1.9-300 K).  The
+  stale 143.5 J/(mol K) (Miller 1935) is recorded ONCE, in supersededHistory{},
+  explicitly labelled superseded -- it is not a datum and must never be read as one.
+\*---------------------------------------------------------------------------*/
+
+// --- MOVED OUT in phase 2 -- POINTERS ONLY (a cross-reference, not data) ---
+// D_aq + Stokes radius: see parameters/transport/diffusion/xylose-water (recordId diffusion-xylose-water)
+// pKa1: see chemistry/aqueousSpeciation/xylose-pKa1 (recordId xylose-pKa1; note it is at 18 C, not 25 C)
+// aqueous solubility: see parameters/solubility/xylose-water (recordId xylose-water)
+// partial molar volume in water (the old `Vliq`): see parameters/volume/xylose-water (recordId volume-xylose-water)
+
+name           xylose;
+formula        C5H10O5;
+CAS            58-86-6;
+
+MW             150.13;         // g/mol -- derived from the formula with IUPAC
+                               //   standard atomic weights (origin derived)
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;              // non-electrolyte, van't Hoff i = 1
+
+identity
+{
+    pubchemCID         135191;
+    InChIKey   SRBFZHDQGSBBOR-IOVATXLUSA-N;      // 14-character BLOCK 1 ONLY
+    inchiKeyStatus     skeletonBlockOnly;
+    inchiKeyNote       "This skeleton block is SHARED by ALL aldopentoses of this
+                        connectivity -- xylose, arabinose, ribose and lyxose all
+                        hash to SRBFZHDQGSBBOR-IOVATXLUSA-N.  It does NOT identify xylose and
+                        must not be used for an identity join (this is exactly the
+                        collision that produced the arabinose identity defect).
+                        Fetch the full 27-character key from PubChem CID 135191.";
+    stereochemicalForm "alpha-D-xylopyranose in the crystalline solid (the
+                        thermochemical datum below is that crystal)";
+    identitySource     "PubChem CID 135191 (US NIH, public domain), retrieved 2026-07-24";
+    status             flagged;             // truncated, non-discriminating key
+}
+
+// ---------------------------------------------------------------------------
+// ARITY-1 INTRINSIC, SOLID rung.  ONE primary supplies dHf, S and Cp:
+// Ribeiro da Silva, Ribeiro da Silva, Lobo Ferreira, Shi, Woodfield & Goldberg,
+// "Thermochemistry of alpha-D-xylose(cr)", J. Chem. Thermodyn. 58 (2013) 20-28
+// -- oxygen-bomb combustion + PPMS heat capacity (1.9-300 K).
+standardThermochemistry
+{
+    dHf_298    -1054500.0;   // J/mol (-1054.5 +/- 1.1 kJ/mol), phase CRYSTALLINE alpha
+                             //   origin measured (combustion)
+                             //   [Ribeiro da Silva et al. 2013]
+    s_298      175.3;        // J/(mol K), third-law absolute, phase CRYSTALLINE alpha
+                             //   origin measured (PPMS, 1.9-300 K)
+                             //   [Ribeiro da Silva et al. 2013]  <- THE curated value
+    referenceState      pureSolid;
+}
+
+// REAL crystalline-xylose solid heat capacity, same 2013 study.  Phase SOLID.
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = 178.1 +/- 1.8 J/(mol K) at 298.15 K
+    coefficients  ( 178.1 );           // J/(mol K)
+    Trange        ( 280  330 );        // K
+    // [Ribeiro da Silva et al. 2013, J. Chem. Thermodyn. 58, 20] -- measured, solid
+}
+
+// Superseded numbers, kept ONLY as labelled history so a curator meeting the old
+// figure elsewhere knows it was rejected.  NOT data -- never read from here.
+supersededHistory
+{
+    s_298_superseded
+    {
+        value        143.5 J/molK;
+        phase        solid;
+        citation     "Miller (1935), early low-temperature calorimetry";
+        supersededBy "Ribeiro da Silva et al., J. Chem. Thermodyn. 58 (2013) 20-28";
+        reason       "pre-modern calorimetry; the 2013 PPMS determination covers
+                      1.9-300 K and is the curated value (175.3 J/(mol K))";
+        status       superseded;
+    }
+}
+
+// --- PURE-COMPONENT (arity-1) properties, each with unit + phase + origin + citation ---
+pureComponentProperties
+{
+    solidDensity
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index -- paywalled commercial compilation";
+        action        "read Dx (calculated density) from a published single-crystal structure of
+                      the NAMED polymorph/anomer -- Acta Cryst. reports it directly -- or
+                      derive rho = Z*MW/(N_A*V_cell) from open cell parameters (the
+                      Crystallography Open Database is CC0 and cites the primary for each
+                      entry).  Record the cell, Z and the arithmetic in a derivation{}
+                      block, and NAME the solid form.";
+        droppedValue  "value = 1.525 g/cm3; temperature = 293.15 K; citation = The Merck Index (via PubChem CID 135191 experimental properties)";
+    }
+
+    solidMolarVolume
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "DERIVED from the solidDensity above, which was dropped -- a
+                       derivative cannot outlive the datum it was computed from";
+        action        "recompute V = MW / rho once a legally clear rho exists, and
+                       name the solid form both refer to";
+        droppedValue  "98.45 cm3/mol  (this is the PURE-SOLID molar volume; the partial molar
+                       volume in water is a SYSTEM property and is unaffected -- it
+                       lives in parameters/volume/)";
+    }
+
+    meltingPoint
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index -- paywalled commercial compilation";
+        action        "take T_fus from a calorimetric (DSC / adiabatic) primary that STATES the
+                      polymorph or anomer it melted, and stage it in a fusion{} block
+                      together with dHfus -- a melting point without a named solid form is
+                      not a property of a substance, it is a property of a sample.";
+        droppedValue  "value = 426.15 K; range = ( 426.15 427.15 ) K; transition = fusion; citation = The Merck Index (via PubChem CID 135191)";
+    }
+}
+
+identityDescriptors
+{
+    specificRotation
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index -- paywalled commercial compilation";
+        action        "take [alpha]_D from a polarimetric primary that states c, solvent,
+                      temperature, wavelength and the mutarotation state.  This is an
+                      IDENTITY descriptor, not a thermophysical datum, so it is the
+                      lowest-priority gap in this file.";
+        droppedValue  "value = NOT PRESERVED in this pass; temperature = 293.15 K; solvent = water; composition = 10 % w/v, mutarotation equilibrium; wavelength = 589.3 nm; citation = The Merck Index";
+    }
+}
+
+// --- COSMO surface: NO deployable set (structured flag) ---
+cosmoStatus
+{
+    recordType      cosmoSurfaceStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    evidenceRecord  none;                 // NO evidence/lvpp-xylose record exists
+    identityUnresolved
+        "The LVPP file the staging CSV matched, XYLOSE.cosmo, is the OPEN-CHAIN
+         (acyclic aldehyde) tautomer -- 0 rings in the LVPP geometry -- whereas
+         D-xylose is the PYRANOSE ring in the solid and predominantly so in water.
+         LVPP does ship the ring form (DXYLOSE.cosmo, 604.85 bohr2 / 1162.29 bohr3,
+         6-membered C5O ring) but that is a different file.  Wrong tautomer = wrong
+         surface, so the match is IDENTITY-UNVERIFIED and no record was written.";
+    protocolIncompatibility
+        "Independently: LVPP surfaces come from a different QM protocol (NWChem
+         B3LYP/def2-SVPD, SES cavity) than the VT-2005 surfaces the cosmoSAC2002
+         constants were regressed against (Mullins et al., IECR 45 (2006) 4389);
+         measured on ethylene, +6.1 % area / +10.3 % volume.  Never tag an LVPP
+         surface variant cosmoSAC2002.";
+    status          flagged;
+}
+
+// --- PC-SAFT: no set in hand (structured flag) ---
+pcSaftStatus
+{
+    recordType      saftParameterSetStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    sourcePinned    "Held & Sadowski, AIChE J. 59 (2013) 4794-4805, Table 2
+                     (xylose among the 13 fitted sugars; 2 association sites)";
+    numbersInHand   no;
+    legalNote       "one row with its own citation if ever needed -- never the table";
+    status          flagged;         // STRUCTURED ABSENCE -- no number is carried
+    blockedBy       "the pinned parameter source is a paywalled article and no row was
+                     ever transcribed";
+    action          "read ONE compound's row at the pinned source and stage it with its
+                     own citation PLUS variant, units, association scheme, combining
+                     rules, objective function and data range; never the whole table";
+    legalNote2      "reclassified rightsPending -> flagged 2026-07-24 (rights-clearance
+                     pass): rightsPending means a VALUE is held that cannot be shipped.
+                     No value is held here, so this is a declared GAP, not a legal
+                     blocker on any number.";
+}
+
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 3; } { group OH; count 4; } { group CHO; count 1; } );   // PROPOSED (review vs Choupo UNIFAC vocab) -- aldo-pentose, open-chain decomposition
+}

@@ -1,0 +1,112 @@
+{
+  "Record": {
+    "RecordType": "CID",
+    "RecordNumber": 5578,
+    "RecordTitle": "Trimethoprim",
+    "Section": [
+      {
+        "TOCHeading": "Chemical and Physical Properties",
+        "Description": "Various chemical and physical properties that are experimentally determined for this compound.  See also the Safety and Hazard Properties section (if available), which has additional properties pertinent to chemical safety and hazards.",
+        "Section": [
+          {
+            "TOCHeading": "Experimental Properties",
+            "Description": "Various experimentally determined properties for this compound.  See also the Safety and Hazard Properties section (if available), which has additional properties pertinent to chemical safety and hazards.",
+            "Section": [
+              {
+                "TOCHeading": "Dissociation Constants",
+                "Description": "A specific type of equilibrium constant that measures the propensity of a larger object to separate (dissociate) reversibly into smaller components, as when a complex falls apart into its component molecules, or when a salt splits up into its component ions. This includes pKa (the negative logarithm of the acid dissociation constant) and pKb (the negative logarithm of the base dissociation constant).",
+                "Information": [
+                  {
+                    "ReferenceNumber": 20,
+                    "Name": "pKa",
+                    "Reference": [
+                      "PERRIN,DD (1972)"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "PERRIN,DD (1972)",
+                        "Matched": {
+                          "PCLID": 900289261,
+                          "Citation": "PERRIN,DD (1972)"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "7.12 (at 20 °C)"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 45,
+                    "Description": "QC REVIEWED",
+                    "Reference": [
+                      "Perrin DD; Dissociation Constants of Organic Bases in Aqueous Solution. London, UK: Butterworth (1965)"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "Perrin DD; Dissociation Constants of Organic Bases in Aqueous Solution. London, UK: Butterworth (1965)",
+                        "Matched": {
+                          "PCLID": 900064922,
+                          "Citation": "Perrin DD; Dissociation Constants of Organic Bases in Aqueous Solution. London, UK: Butterworth (1965)"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "pKa= 7.12 (conjugate acid)"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 54,
+                    "Value": {
+                      "ExternalTableName": "iupacpka"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Reference": [
+      {
+        "ReferenceNumber": 20,
+        "SourceName": "DrugBank",
+        "SourceID": "DB00440",
+        "Name": "Trimethoprim",
+        "Description": "The DrugBank database is a unique bioinformatics and cheminformatics resource that combines detailed drug (i.e. chemical, pharmacological and pharmaceutical) data with comprehensive drug target (i.e. sequence, structure, and pathway) information.",
+        "URL": "https://www.drugbank.ca/drugs/DB00440",
+        "LicenseNote": "Creative Common's Attribution-NonCommercial 4.0 International License (http://creativecommons.org/licenses/by-nc/4.0/legalcode)",
+        "LicenseURL": "https://www.drugbank.ca/legal/terms_of_use",
+        "ANID": 3602818
+      },
+      {
+        "ReferenceNumber": 45,
+        "SourceName": "Hazardous Substances Data Bank (HSDB)",
+        "SourceID": "6781",
+        "Name": "TRIMETHOPRIM",
+        "Description": "The Hazardous Substances Data Bank (HSDB) is a toxicology database that focuses on the toxicology of potentially hazardous chemicals. It provides information on human exposure, industrial hygiene, emergency handling procedures, environmental fate, regulatory requirements, nanomaterials, and related areas. The information in HSDB has been assessed by a Scientific Review Panel.",
+        "URL": "https://pubchem.ncbi.nlm.nih.gov/source/hsdb/6781",
+        "LicenseURL": "https://www.nlm.nih.gov/web_policies.html",
+        "IsToxnet": true,
+        "ANID": 4452
+      },
+      {
+        "ReferenceNumber": 54,
+        "SourceName": "IUPAC Digitized pKa Dataset",
+        "SourceID": "iu_496128782",
+        "Name": "pyrimidine, 2,4-diamino-5-(3',4',5'-trimethoxybenzyl)-",
+        "Description": "The IUPAC Digitized pKa Dataset is an ongoing digitization of \"high-confidence\" pKa data from three reference works of Serjeant (1979), Perrin (1965) and Perrin Supplement (1972).",
+        "URL": "https://github.com/IUPAC/Dissociation-Constants",
+        "ANID": 39303886
+      }
+    ]
+  }
+}

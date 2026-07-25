@@ -1,0 +1,47 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/caffeine.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        caffeine-pKa1;
+participants    ( caffeineH+ caffeine H+ );
+property        pKa;
+reaction        "caffeineH+ (protonated, cation) = caffeine + H+";
+site            "protonated imidazole N (conjugate acid)";
+step            1;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- the source does NOT state a temperature (FLAG)
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    pKa             ~0.6;   // quoted as '~0.6'
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Svorc, Int. J. Electrochem. Sci. 8 (2013) 5755; via PubChem PUG-View";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          flagged;
+
+// NOTES
+//   Re-homed from pharma1_SOURCES.md (the caffeine table); this step is ABSENT from
+//     components/caffeine.candidate.dat, which quotes only the weak-acid pKa ~14.
+//   Step ORDER by ascending pKa: ~0.6 (cation) < ~14 (N-H acid).
+//   Approximate value -> status flagged.

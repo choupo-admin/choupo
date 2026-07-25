@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'ketoprofen'
+component ketoprofen;
+records
+(
+    { recordType acidDissociation; recordId ketoprofen-pKa1; category absent; file "chemistry/aqueousSpeciation/ketoprofen-pKa1.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-ketoprofen; category flagged; file "evidence/lvpp-ketoprofen/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-ketoprofen-water; category derived; file "parameters/transport/diffusion/ketoprofen-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId ketoprofen-octanol-water; category rightsPending; file "parameters/partition/ketoprofen-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId ketoprofen-water; category flagged; file "parameters/solubility/ketoprofen-water.candidate.dat"; }
+);

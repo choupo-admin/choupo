@@ -1,0 +1,80 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  logKow of atenolol between 1-octanol and water.
+
+  ARITY 3: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/atenolol.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      partitionCoefficient;
+schemaVersion   1;
+recordId        atenolol-octanol-water;
+participants    ( atenolol octanol water );
+property        logKow;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- the conventional log P reference
+                  // temperature is NOT restated by the source; the
+                  // 25 C convention is assumed and flagged here.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    pH            "neutral free base";
+    chemicalForm  neutral;
+}
+
+// pKa 9.6 => the species at pH 7 is the ammonium CATION; this record is
+// the neutral free-base partition, and logD(pH7) is ~2.5 log units lower.
+value
+{
+    logKow   0.16;   // dimensionless (log10 of a concentration ratio)
+}
+
+provenance
+{
+    origin      measured;
+    citation    "HSDB (US NLM, public domain), CID 2249, experimental log Kow; concurs HMDB";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:partition";
+    retrieved   2026-07-24;
+}
+
+status          candidate;
+
+// ----------------------------------------------------------------------------
+// PHASE 6 RIGHTS RULING (2026-07-24) -- HMDB COMPARISON DEMOTED (no status change)
+// ----------------------------------------------------------------------------
+//   This record mentions a Human Metabolome Database value as a comparison.  Per the
+//   phase-6 ruling, HMDB is a LOCATOR, not a canonical source (a public page plus a
+//   citation obligation is not a GPL-compatible redistribution licence, and there are
+//   public references to academic / non-commercial use).
+//   HMDB is NOT the value source for this record, so the value and status are UNCHANGED.
+//   What changes is the WEIGHT of the comparison: an HMDB number may no longer be read
+//   as independent evidence for or against this value.  In every case here it is also a
+//   COMPUTED prediction, so it was never evidence of a measurement in the first place --
+//   quoting it as a "disagreement" overstated it twice.
+//   Treat the HMDB line above as a pointer to look elsewhere, nothing more.
+// ----------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------
+// PHASE 6 VERIFICATION AUDIT (2026-07-24) -- status UNCHANGED (candidate)
+// ----------------------------------------------------------------------------
+//   Source of record is HSDB (US National Library of Medicine).  HSDB is a US-government
+//   work in the PUBLIC DOMAIN, so unlike Hansch, DrugBank, HMDB, Merck, CRC, BCPC and the
+//   LOGKOW Databank there is no rights obstacle: the record survives the phase-6 ruling
+//   intact and keeps `candidate`.
+//   The EVIDENTIAL caveat is recorded honestly all the same: HSDB is itself a compilation.
+//   It labels this value experimental but the underlying determination has not been traced
+//   to its own report, so `candidate` here rests on a public-domain secondary, not on a
+//   primary that a curator has read.
+//     primary identified    : no  (HSDB does not surface it through the PubChem re-quote)
+//     primary actually read : no
+//     rights position       : clean (public domain)
+//   SHARPENED ACTION: trace the determination behind the HSDB entry before promotion out
+//     of this tier.  Rights are satisfied; provenance depth is not.
+// ----------------------------------------------------------------------------

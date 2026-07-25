@@ -1,0 +1,46 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/carbamazepine.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        carbamazepine-pKa1;
+participants    ( carbamazepine carbamazepinate- H+ );
+property        pKa;
+reaction        "carbamazepine (amide N-H) = carbamazepinate- + H+";
+site            "amide N-H";
+step            1;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- the source does NOT state a temperature (FLAG)
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    pKa             13.9;
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Jones, Voulvoulis & Lester, Water Research 36 (2002) 5013; via PubChem PUG-View / HSDB";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          candidate;
+
+// NOTES
+//   Re-homed from components/carbamazepine.candidate.dat
+//   OUTSIDE the ambient window: the source records the consequence as 'NEUTRAL across all environmental pH'.
+//   A pKa OUT of the working range is still an equilibrium and still belongs here -- it is NOT 'no pKa'.

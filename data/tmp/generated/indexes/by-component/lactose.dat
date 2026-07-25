@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'lactose'
+component lactose;
+records
+(
+    { recordType acidDissociation; recordId lactose-pKa1; category flagged; file "chemistry/aqueousSpeciation/lactose-pKa1.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-lactose; category flagged; file "evidence/lvpp-lactose/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-lactose-water; category derived; file "parameters/transport/diffusion/lactose-water.candidate.dat"; }
+    { recordType partialMolarVolume; recordId volume-lactose-water; category flagged; file "parameters/volume/lactose-water.candidate.dat"; }
+);

@@ -1,0 +1,44 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/sulfamethoxazole.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        sulfamethoxazole-pKa2;
+participants    ( sulfamethoxazole sulfamethoxazole- H+ );
+property        pKa;
+reaction        "sulfamethoxazole (sulfonamide N-H) = sulfamethoxazole- (sulfonamide anion) + H+";
+site            "sulfonamide N-H";
+step            2;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- the source does NOT state a temperature (FLAG)
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    pKa             5.7;
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      measured;
+    citation    "HSDB (US NLM, public domain), PubChem CID 5329";
+    doi         "-";
+    licence     "facts, primary-cited (HSDB, US NLM -- public domain)";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          candidate;
+
+// NOTES
+//   Re-homed from components/sulfamethoxazole.candidate.dat

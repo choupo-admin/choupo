@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'progesterone'
+component progesterone;
+records
+(
+    { recordType cosmoSurface; recordId lvpp-progesterone; category flagged; file "evidence/lvpp-progesterone/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-progesterone-water; category flagged; file "parameters/transport/diffusion/progesterone-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId progesterone-octanol-water; category rightsPending; file "parameters/partition/progesterone-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId progesterone-water; category flagged; file "parameters/solubility/progesterone-water.candidate.dat"; }
+);

@@ -1,0 +1,6 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'limonene'
+component limonene;
+records
+(
+    { recordType cosmoSurface; recordId lvpp-limonene; category flagged; file "evidence/lvpp-limonene/metadata.dat"; }
+);

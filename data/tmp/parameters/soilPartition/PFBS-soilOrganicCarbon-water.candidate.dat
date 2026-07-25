@@ -1,0 +1,96 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Soil organic-carbon / water partition coefficient (log Koc) of PFBS
+  (perfluorobutanesulfonic acid).
+
+  ARITY 3: solute + soil ORGANIC MATTER + water.  The sorbent is not a pure
+  substance and not a Choupo phase -- see _LEDGER.md for why this is its own
+  family and NOT `parameters/partition/`.
+
+  Provenance chain: phase 3 (2026-07-24) DELETED this from
+  components/PFBS.candidate.dat (a range, and the wrong system) and parked it in
+  components/_CLEANUP_hormones_pfas_volatiles.md section 2, "awaiting a home".
+  This record is that home.  The value was MOVED verbatim -- it is still a
+  RANGE and has NOT been collapsed to a midpoint.
+  Envelope: ../../RECORD_SPEC.md.  The runtime does NOT read this file yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      organicCarbonPartition;
+schemaVersion   1;
+recordId        PFBS-soilOrganicCarbon-water;
+participants    ( PFBS soilOrganicCarbon water );
+property        logKoc;
+
+conditions
+{
+    temperature   "not stated by the source";
+    pressure      "not stated by the source";
+    phase         aqueous;
+    pH            "not stated by the source";
+    chemicalForm  anion;   // PFBS is a strong acid (staged pKa a class bound,
+                  // "< 1.6"): the perfluorobutanesulfonate ANION is the sorbing
+                  // species at every environmental and process pH.
+    sorbent       "unspecified natural soil / sediment organic matter";
+}
+
+// THIS IS A RANGE, NOT A VALUE.  It is stored as a range on purpose, following
+// the `TfusRange` / `fusionData { determinations }` convention introduced by the
+// component cleanup: collapsing 1.2-2.7 to a midpoint would INVENT a number.
+// A 1.5-log-unit spread on a partition coefficient is a factor of ~32.
+value
+{
+    logKocRange   ( 1.2 2.7 );   // dimensionless (log10)
+    isRange       true;
+    doNotCollapse "a midpoint of this range is not a datum";
+}
+
+// WHY THE SPREAD IS PHYSICAL, NOT SLOPPY REPORTING.  Koc normalises sorption to
+// the organic-CARBON content of the sorbent.  That normalisation assumes
+// hydrophobic partitioning into natural organic matter, which is exactly what a
+// short-chain perfluoroalkyl SULFONATE does not do: it is an anion at every
+// relevant pH, and its sorption is dominated by electrostatics and by the
+// mineral surface, not by the organic-carbon fraction.  Koc is therefore
+// sorbent-dependent for this compound -- reporting a range is honest, and no
+// single value can be "the" Koc.  The same objection is on record for PFBS's
+// octanol-water partition, which the partition family declined to write at all
+// ("not applicable (ionic surfactant)" -- an absence, not a datum).
+interpretationCaveat
+{
+    status     flagged;
+    statement  "Koc is defined on the assumption of hydrophobic partitioning into
+                soil organic matter.  For an anionic perfluoroalkyl surfactant that
+                assumption fails, so Koc is a sorbent-dependent operational number,
+                not a transferable property.";
+}
+
+// NOT A CHOUPO PROCESS PROPERTY.  Nothing in the engine consumes a soil Koc:
+// there is no soil/sorbent phase, and no unit operation reads it.  It is kept
+// because it is the only mobility descriptor staged for PFBS (whose component
+// file is otherwise identity-only), and because deleting it would lose the
+// citation.  It must NOT be repurposed as a membrane, adsorbent or activated-
+// carbon descriptor -- a different sorbent is a different record.
+applicability
+{
+    consumedBy  "nothing in the current engine";
+    keepReason  "the only staged mobility descriptor for PFBS; provenance would
+                 otherwise be lost";
+    misuseGuard "never substitute for an adsorbent isotherm (data/standards/assets)
+                 or a membrane rejection";
+}
+
+provenance
+{
+    origin      measured;
+    citation    "ITRC (Interstate Technology & Regulatory Council), PFAS Technical
+                 and Regulatory Guidance Document; via data/tmp/pfas_volatiles_SOURCES.md";
+    doi         "-";
+    licence     "facts, source-cited -- ITRC guidance is published for free public use;
+                 licence terms NOT verified for redistribution.  Verify before promotion.";
+    evidenceId  -;
+    curator     "agent:henry";
+    retrieved   2026-07-24;
+}
+
+status          flagged;   // a RANGE, no primary, no T, no pH, no stated sorbent,
+                           // and a property the engine does not consume.

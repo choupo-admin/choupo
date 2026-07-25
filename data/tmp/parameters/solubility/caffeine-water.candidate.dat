@@ -1,0 +1,68 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of caffeine in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/caffeine.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: solid phase IDENTIFIED (caffeine hydrate) from an
+  independent phase-stability boundary; the determination itself is silent.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        caffeine-water;
+participants    ( caffeine water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    caffeineHydrate;
+    phaseBasis    inferredFromPhaseStability;
+}
+
+// PHASE 4 finding.  Caffeine has two anhydrous polymorphs (I, II / beta)
+// plus a hydrate.  Allan & Schmidt (J. Food Sci. 2020, doi
+// 10.1111/1750-3841.15114) measured the RH-temperature transition
+// boundaries by water-activity-controlled equilibration + PXRD + FTIR:
+// the beta-caffeine -> caffeine-hydrate boundary sits at
+// a_w = 0.835 +/- 0.027 at 25 C.  A saturated aqueous caffeine solution
+// at 21.6 g/L is dilute (a_w ~ 1, far above 0.835), so the solid in
+// equilibrium with saturated water at 25 C is the HYDRATE, not an
+// anhydrate.  That fixes the phase; it does NOT confirm the digit,
+// because the Yalkowsky compilation does not say which solid it used.
+// UNIT CONVERSION (shown, not hidden): 21.6 g/L * 1000 mg/g / 1 L = 2.16e4 mg/L
+value
+{
+    solubility    2.16e4 mg/L;
+    originalStatement  "21.6 g/L @ 25 C";   // verbatim, before conversion
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Yalkowsky, S.H., He, Y. & Jain, P., Handbook of Aqueous Solubility Data, 2nd ed., CRC 2010; via PubChem";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Allan, M. & Schmidt, S.J., Relative humidity-temperature transition boundaries for anhydrous beta-caffeine and caffeine hydrate crystalline forms, J. Food Sci. (2020)";
+    doi         "10.1111/1750-3841.15114";
+    basis       "a_w transition boundary 0.835 +/- 0.027 at 25 C, PXRD/FTIR-confirmed";
+}
+
+blockedBy       "the 21.6 g/L determination does not name its equilibrating solid; the phase is assigned from an independent phase-stability boundary, not from the determination itself";
+status          flagged;

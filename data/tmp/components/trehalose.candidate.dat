@@ -1,0 +1,241 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: trehalose  (C12H22O11, CAS 99-20-7, ANHYDROUS) --
+  non-reducing disaccharide, glucose-alpha,alpha-1,1-glucose.  Non-volatile
+  non-electrolyte SOLUTE (NF/RO sugar-rejection family).  Decomposes -> SOLID rung.
+
+  PRIVATE staging tier (data/tmp, gitignored).  Envelope + ARITY rule:
+  ../RECORD_SPEC.md.  Cleaned 2026-07-24 (phase 3, component cleanup).
+
+  ARITY-1 ONLY.  Intrinsic single-substance data only; system properties live in
+  their arity-correct homes (pointers below).
+
+  HYDRATE AMBIGUITY -- STATED, NOT HIDDEN (see hydrateAmbiguity{}): this component
+  declares the ANHYDROUS crystal (polymorph beta, mp ~203 C), but the solid in
+  equilibrium with water at ambient temperature is trehalose DIHYDRATE (mp ~97 C).
+  The formation enthalpy below is derived for the ANHYDROUS crystal; the aqueous
+  solubility record almost certainly refers to the dihydrate.
+\*---------------------------------------------------------------------------*/
+
+// --- MOVED OUT in phase 2 -- POINTERS ONLY (a cross-reference, not data) ---
+// D_aq + Stokes radius: see parameters/transport/diffusion/trehalose-water (recordId diffusion-trehalose-water; ESTIMATED from the sucrose anchor, not measured)
+// pKa1: see chemistry/aqueousSpeciation/trehalose-pKa1 (recordId trehalose-pKa1; order-of-magnitude placeholder, no primary)
+// aqueous solubility: see parameters/solubility/trehalose-water (recordId trehalose-water; solid phase unspecified -- most likely the DIHYDRATE)
+// partial molar volume in water (the old `Vliq`): see parameters/volume/trehalose-water (recordId volume-trehalose-water)
+
+name           trehalose;
+formula        C12H22O11;
+CAS            99-20-7;
+
+MW             342.297;        // g/mol -- derived from the formula with IUPAC
+                               //   standard atomic weights (origin derived);
+                               //   ANHYDROUS (the dihydrate is 378.33 g/mol)
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;              // non-electrolyte, van't Hoff i = 1
+
+identity
+{
+    pubchemCID         7427;
+    InChIKey   HDTRYLNUVZCQOY-LIZSDCNHSA-N;      // 14-character BLOCK 1 ONLY
+    inchiKeyStatus     skeletonBlockOnly;
+    inchiKeyNote       "Block 1 hashes CONSTITUTION only and does not distinguish
+                        the alpha,alpha / alpha,beta / beta,beta anomeric pairs of
+                        a 1,1-linked glucosyl-glucose, nor the hydration state.
+                        Fetch the full 27-character key from PubChem CID 7427.";
+    stereochemicalForm "alpha,alpha-trehalose; crystalline anhydrous polymorph beta
+                        (the polymorph the combustion primary burnt)";
+    hydrationState     anhydrous;
+    identitySource     "PubChem CID 7427 (US NIH, public domain), retrieved 2026-07-24";
+    status             flagged;             // truncated key
+}
+
+hydrateAmbiguity
+{
+    declaredSolid       "anhydrous alpha,alpha-trehalose, polymorph beta, mp ~203 C";
+    ambientAqueousSolid "alpha,alpha-trehalose DIHYDRATE, mp ~97 C -- the phase in
+                         equilibrium with water at 25 C";
+    consequence         "the solubility record (~690 g/L) belongs to a different
+                         solid from the one whose formation enthalpy is derived
+                         here; do not combine the two into a dissolution enthalpy
+                         without adding the dihydration term";
+    unresolved          yes;
+    status              flagged;
+}
+
+// ---------------------------------------------------------------------------
+// ARITY-1 INTRINSIC, SOLID rung.  dHf is DERIVED (glass-box Hess) from a measured
+// combustion energy -- the derivation is written out, never hidden.
+// COMBUSTION PRIMARY: Lopes Jesus, Rosado, Leitao, Redinha et al., "Crystalline
+//   anhydrous alpha,alpha-trehalose (polymorph beta) and crystalline dihydrate
+//   alpha,alpha-trehalose: a calorimetric study", J. Chem. Thermodyn. 37 (2005)
+//   1231 -- static-bomb; massic energy of combustion of the ANHYDROUS polymorph
+//   beta, Dc_u = -(16434.05 +/- 4.50) J/g.
+standardThermochemistry
+{
+    dHf_298    -2241000.0;   // J/mol (-2241.0 kJ/mol), phase CRYSTALLINE ANHYDROUS
+                             //   origin DERIVED (Hess) -- see derivation below
+    // s_298   ABSENT BY DECISION -- see entropyStatus{}.  NOT fabricated.
+    referenceState      pureSolid;
+}
+
+formationEnthalpyDerivation
+{
+    property     dHf_298;
+    phase        solid;
+    origin       derived;
+    equation     "C12H22O11(s) + 12 O2(g) -> 12 CO2(g) + 11 H2O(l);  dn_gas = 0
+                  => dcH = dcU;  dHf = 12 dHf(CO2,g) + 11 dHf(H2O,l) - dcH";
+    inputs
+    {
+        massicEnergy   -16434.05 J/g;     // measured [Lopes Jesus et al. 2005]
+        molarMass      342.297 g/mol;     // anhydrous
+        dcH            -5625.3 kJ/mol;    // = -16434.05 J/g x 0.342297 kg/mol
+        dHf_CO2_g      -393.51 kJ/mol;    // CODATA
+        dHf_H2O_l      -285.83 kJ/mol;    // CODATA
+    }
+    result       -2240.9 kJ/mol;          // rounded to -2241.0 in the block above
+    reconcile    "the paper reports its own Washburn-corrected dHf; this glass-box
+                  derivation must be reconciled against it before promotion --
+                  the two need not agree to the last kJ";
+    status       flagged;
+}
+
+entropyStatus
+{
+    property        s_298;
+    phase           solid;
+    value           none;                  // nothing shipped, nothing invented
+    pendingPrimary  "a third-law calorimetry determination for crystalline
+                     anhydrous trehalose -- not located at curation";
+    nistCheck       "2026-07-25: the NIST WebBook page for trehalose (ID=C99207)
+                     carries NO condensed-phase thermochemistry (identity + MS only),
+                     so neither S nor Cp can be reached through it; the paywalled Lopes
+                     Jesus et al. 2005 calorimetric study remains the place to look.";
+    status          flagged;
+}
+
+solidHeatCapacityStatus
+{
+    property        Cp_solid;
+    phase           solid;
+    value           none;
+    pendingPrimary  "a measured Cp(298.15) for the crystalline anhydrous polymorph
+                     (the 2005 calorimetric study is the natural place to look)";
+    orderOfMagnitude "~400 J/(mol K) -- an ORDER only, deliberately not shipped";
+    status          flagged;
+}
+
+// --- PURE-COMPONENT (arity-1) properties, each with unit + phase + origin + citation ---
+pureComponentProperties
+{
+    solidDensity
+    {
+        value        1.58 g/cm3;
+        temperature  293.15 K;
+        phase        solid;
+        origin       derived;             // crystallographic (unit cell), anhydrous
+        derivation   "from the reported crystal structure of anhydrous trehalose";
+        citation     "crystallographic determination, anhydrous form -- exact
+                      structure report NOT pinned at curation";
+        status       flagged;             // citation unresolved
+    }
+
+    solidMolarVolume
+    {
+        value        216.64 cm3/mol;
+        temperature  293.15 K;
+        phase        solid;
+        origin       derived;
+        derivation   "V = MW / rho = 342.297 g/mol / 1.58 g/cm3, ANHYDROUS basis.
+                      NOT the partial molar volume in water (207.6 cm3/mol), a
+                      SYSTEM property -- see parameters/volume/trehalose-water";
+        status       flagged;             // inherits the density's unresolved citation
+    }
+
+    meltingPoint
+    {
+        value        476.15 K;            // 203 C, anhydrous
+        phase        solid;
+        transition   fusionWithDecomposition;
+        origin       measured;
+        citation     "HMDB; PubChem CID 7427";
+        hydrationNote "the DIHYDRATE melts at ~97 C (370 K) -- a different solid,
+                       quoted only to make the ambiguity visible";
+        status       flagged;             // aggregator source, no primary pinned
+    }
+}
+
+identityDescriptors
+{
+    specificRotation
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index -- paywalled commercial compilation";
+        action        "take [alpha]_D from a polarimetric primary that states c, solvent,
+                      temperature, wavelength and the mutarotation state.  This is an
+                      IDENTITY descriptor, not a thermophysical datum, so it is the
+                      lowest-priority gap in this file.";
+        droppedValue  "value = NOT PRESERVED in this pass; temperature = 293.15 K; solvent = water; wavelength = 589.3 nm; citation = The Merck Index, 14th ed.";
+    }
+}
+
+// --- COSMO surface: NO deployable set (structured flag) ---
+cosmoStatus
+{
+    recordType      cosmoSurfaceStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    evidenceRecord  none;                 // no evidence/lvpp-trehalose record staged
+    reason          "no VT-2005 cosmoSAC2002 set ships for trehalose and no LVPP
+                     trehalose record was staged.";
+    protocolIncompatibility
+        "An LVPP surface would not be usable as-is: different QM protocol (NWChem
+         B3LYP/def2-SVPD, SES cavity) from the VT-2005 surfaces the cosmoSAC2002
+         constants were regressed against (Mullins et al., IECR 45 (2006) 4389);
+         measured on ethylene, +6.1 % area / +10.3 % volume.  Never tag an LVPP
+         surface variant cosmoSAC2002.";
+    status          flagged;
+}
+
+// --- PC-SAFT: no set in hand (structured flag) ---
+pcSaftStatus
+{
+    recordType      saftParameterSetStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    sourcePinned    "Held & Sadowski, AIChE J. 59 (2013) 4794-4805, Table 2
+                     (trehalose among the 13 fitted sugars; 2 association sites)";
+    numbersInHand   no;
+    legalNote       "one row with its own citation if ever needed -- never the table";
+    status          flagged;         // STRUCTURED ABSENCE -- no number is carried
+    blockedBy       "the pinned parameter source is a paywalled article and no row was
+                     ever transcribed";
+    action          "read ONE compound's row at the pinned source and stage it with its
+                     own citation PLUS variant, units, association scheme, combining
+                     rules, objective function and data range; never the whole table";
+    legalNote2      "reclassified rightsPending -> flagged 2026-07-24 (rights-clearance
+                     pass): rightsPending means a VALUE is held that cannot be shipped.
+                     No value is held here, so this is a declared GAP, not a legal
+                     blocker on any number.";
+}
+
+groups
+{
+    unifac (  );   // EMPTY BY DECISION -- non-reducing disaccharide
+                   //   (glucose-alpha,alpha-1,1-glucose): 2 pyranose rings + 1 ether
+                   //   linkage; review against the Choupo UNIFAC vocabulary first.
+}

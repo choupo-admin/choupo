@@ -1,0 +1,8 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'simazine'
+component simazine;
+records
+(
+    { recordType acidDissociation; recordId simazine-pKa1; category absent; file "chemistry/aqueousSpeciation/simazine-pKa1.candidate.dat"; }
+    { recordType partitionCoefficient; recordId simazine-octanol-water; category rightsPending; file "parameters/partition/simazine-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId simazine-water; category flagged; file "parameters/solubility/simazine-water.candidate.dat"; }
+);

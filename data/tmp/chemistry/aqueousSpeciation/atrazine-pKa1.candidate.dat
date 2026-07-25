@@ -1,0 +1,87 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/atrazine.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        atrazine-pKa1;
+participants    ( atrazineH+ atrazine H+ );
+property        pKa;
+reaction        "atrazineH+ (protonated triazine ring N) = atrazine + H+";
+site            "triazine ring N (conjugate acid, very weak base)";
+step            1;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- the source does NOT state a temperature (FLAG)
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    pKa             1.68;
+    // uncertainty: NOT reported by the route source
+}
+
+crossCheck          // never merged, never averaged
+{
+    alt1
+    {
+        pKa       1.60;
+        citation  "e-Pesticide Manual 15th ed. (BCPC 2008-2010); via PubChem PUG-View / HSDB";
+        licence   "rightsPending -- paywalled commercial compilation; PRIVATE tier only,
+                   never promotable.  This was the datum until 2026-07-24.";
+    }
+    alt2
+    {
+        pKa       1.44;
+        citation  "quoted in the s-triazine electrochemistry literature (polarographic
+                   protonation constant); NEITHER the value NOR its source was read at
+                   the primary -- recorded only to show the spread, NOT usable";
+        status    unverified;
+    }
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Bailey, G.W., White, J.L. & Rothberg, T., 'Adsorption of organic
+                 herbicides by montmorillonite: role of pH and chemical character of
+                 adsorbate', Soil Sci. Soc. Am. Proc. (J.) 32 (1968) 222-234";
+    doi         "10.2136/sssaj1968.03615995003200020021x";
+    licence     "facts, primary-cited; the number was taken from a US-GOVERNMENT
+                 PUBLIC-DOMAIN publication (see route), so it is redistributable";
+    route       "ATSDR, Toxicological Profile for Atrazine, Chapter 4, Table 4-2
+                 'Physical and Chemical Properties of Atrazine' (US Agency for Toxic
+                 Substances and Disease Registry -- a US-government work, PUBLIC
+                 DOMAIN).  That table lists pKa = 1.68 and attributes it to
+                 'Bailey et al. 1968'.  The PRIMARY ITSELF WAS NOT INSPECTED: the
+                 digit is confirmed only at the public-domain route.";
+    evidenceId  -;
+    curator     "agent:rightsClearance";
+    retrieved   2026-07-24;
+}
+status          flagged;
+
+// NOTES
+//   RIGHTS CLEARANCE 2026-07-24 -- action: REPLACE (phase 4).
+//     Old datum 1.60 came ONLY through the e-Pesticide Manual (BCPC), a paywalled
+//     commercial compilation excluded from the public tier.  The replacement 1.68 is
+//     taken from a public-domain US-government document that re-cites a named 1968
+//     primary, so the LEGAL blocker is cleared.
+//   WHY status flagged, not candidate: (a) the primary was not read, only its
+//     public-domain re-citation; (b) no temperature is stated by the route source --
+//     the 298.15 K below remains the CONVENTIONAL 25 C, not a reported condition;
+//     (c) no uncertainty is reported.
+//   ACTION to reach candidate: read Bailey, White & Rothberg (1968) and confirm the
+//     digit, the temperature and the method; or Weber, J.B., 'Spectrophotometrically
+//     determined ionization constants of 13 alkylamino-s-triazines and the
+//     relationship of molecular structure and basicity', Spectrochim. Acta 23A (1967)
+//     458-461, which is the s-triazine pKa determination paper.
+//   Re-homed from components/atrazine.candidate.dat.  The component file's
+//   'dissociation 1;' entry (van't Hoff i) is a SEPARATE engine field, left untouched.

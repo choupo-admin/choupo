@@ -1,0 +1,46 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/primidone.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        primidone-pKa1;
+participants    ( primidone primidonate- H+ );
+property        pKa;
+reaction        "primidone (ring N-H) = primidonate- + H+";
+site            "ring N-H (very weak acid)";
+step            1;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- the source does NOT state a temperature (FLAG)
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    pKa             12.3;
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      measured;
+    citation    "HSDB (US NLM, public domain), PubChem CID 4909";
+    doi         "-";
+    licence     "facts, primary-cited (HSDB, US NLM -- public domain)";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          candidate;
+
+// NOTES
+//   Re-homed from components/primidone.candidate.dat
+//   OUTSIDE the ambient window (source consequence: neutral across drinking-water pH).
+//   A pKa out of the working range is still an equilibrium -- it is NOT 'no pKa'.

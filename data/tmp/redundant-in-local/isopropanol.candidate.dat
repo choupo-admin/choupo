@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo (CANDIDATE) -*------------------*\
+  CANDIDATE component: propan-2-ol  (C3H8O, CAS 67-63-0)
+  Common use: ubiquitous polar protic solvent; azeotrope teaching (IPA/water).
+
+  IDENTITY source: PubChem CID 3776 (US NIH, public domain — free of copyright).
+    Retrieved 2026-07-24 via PUG-REST /property.  CAS 67-63-0 is the compound's
+    registry number as listed on that public record (bare fact, not the
+    proprietary CAS arrangement).
+  LICENCE of this staged record: identity facts are public domain.
+  PROPERTY VALUES: NONE copied from any compilation.  The proposed joback
+    groups below feed Choupo's OWN estimator (bin/estimate isopropanol) — that is the
+    legal route to Tc/Pc/omega/Antoine/Cp/dHf as Choupo's open work.
+  NEEDS (to promote to data/standards/components/): estimate + primary-cite all property blocks; add liquid transport if needed.
+  STATUS: proposed groups — REVIEW before estimating/promoting.
+\*---------------------------------------------------------------------------*/
+
+name        isopropanol;
+formula     C3H8O;
+CAS         67-63-0;
+MW          60.096;
+// SMILES CC(C)O   InChIKey KFZMGEQAYNKOFK-UHFFFAOYSA-N   PubChem CID 3776
+
+groups
+{
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group OH; count 1; } );   // PROPOSED (review) — first-order Joback decomposition
+}

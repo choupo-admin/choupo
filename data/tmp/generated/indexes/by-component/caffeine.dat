@@ -1,0 +1,11 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'caffeine'
+component caffeine;
+records
+(
+    { recordType acidDissociation; recordId caffeine-pKa1; category flagged; file "chemistry/aqueousSpeciation/caffeine-pKa1.candidate.dat"; }
+    { recordType acidDissociation; recordId caffeine-pKa2; category flagged; file "chemistry/aqueousSpeciation/caffeine-pKa2.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-caffeine; category flagged; file "evidence/lvpp-caffeine/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-caffeine-water; category verified; file "parameters/transport/diffusion/caffeine-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId caffeine-octanol-water; category rightsPending; file "parameters/partition/caffeine-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId caffeine-water; category flagged; file "parameters/solubility/caffeine-water.candidate.dat"; }
+);

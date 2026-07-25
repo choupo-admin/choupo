@@ -1,0 +1,76 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of ethinylestradiol in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/ethinylestradiol.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: good measuring primary re-verified; solid phase still
+  NOT ESTABLISHED although the component itself records TWO melting points.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        ethinylestradiol-water;
+participants    ( ethinylestradiol water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25.0 +/- 0.5 C as stated by the primary
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    unspecified;
+    phaseBasis    notEstablished;
+}
+
+// PHASE 4 verification of the primary.  The article's own description of
+// the experiment was re-read: concentrations by HPLC after equilibration
+// with EXCESS SOLID for 4 days at 25.0 +/- 0.5 C, six replicates per
+// solute-solvent pair, CV < 5% in most cases; solubilities also measured
+// at pH 4 and pH 10 and in aqueous KNO3.  It says "excess solid" and
+// NOTHING about which crystalline form that solid was -- no PXRD, no
+// hydrate/anhydrate statement, no supplier form.  The primary is sound
+// on everything EXCEPT the identity of the equilibrating solid, which is
+// precisely what this family needs.  Recorded as a structured gap.
+// The gap bites hardest here: the component record itself carries TWO
+// melting points (142-146 C and a 180-186 C form), i.e. the compound is
+// KNOWN to be polymorphic in this corpus, and the solubility primary
+// still does not say which solid it equilibrated.
+value
+{
+    solubility    9.20 mg/L;
+    uncertainty   0.09 mg/L;   // as reported by the primary
+    originalStatement  "9.20 +/- 0.09 mg/L @ 25 C";   // verbatim
+}
+
+alternativeDeterminations
+{
+    hsdb
+    {
+        solubility    11.3 mg/L;
+        conditions    { temperature 300.15 K; solidPhase unspecified; phaseBasis notEstablished; }
+        origin        measured;
+        citation      "HSDB (US NLM, public domain)";
+        note          "23% higher at 27 C; the two are not obviously inconsistent";
+    }
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Shareef, A., Angove, M.J., Wells, J.D. & Johnson, B.B., Aqueous Solubilities of Estrone, 17beta-Estradiol, 17alpha-Ethynylestradiol and Bisphenol A, J. Chem. Eng. Data 51 (2006) 879-881 (PRIMARY, pure water, 25.0 +/- 0.5 C)";
+    doi         "10.1021/je050318c";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+blockedBy       "no source states the equilibrating solid phase, and this compound is known-polymorphic (two melting points in its own component record)";
+status          flagged;

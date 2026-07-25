@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'arginine'
+component arginine;
+records
+(
+    { recordType acidDissociation; recordId arginine-pKa2; category flagged; file "chemistry/aqueousSpeciation/arginine-pKa2.candidate.dat"; }
+    { recordType acidDissociation; recordId arginine-pKaR; category flagged; file "chemistry/aqueousSpeciation/arginine-pKaR.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-arginine-water; category flagged; file "parameters/transport/diffusion/arginine-water.candidate.dat"; }
+    { recordType isoelectricPoint; recordId arginine-pI; category flagged; file "chemistry/aqueousSpeciation/arginine-pI.candidate.dat"; }
+);

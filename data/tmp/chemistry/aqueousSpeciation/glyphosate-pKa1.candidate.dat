@@ -1,0 +1,64 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/glyphosate.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        glyphosate-pKa1;
+participants    ( glyphosate_H4 glyphosate_H3 H+ );
+property        pKa;
+reaction        "glyphosate_H4 = glyphosate_H3 + H+   (step 1 of 4)";
+site            "NOT ASSIGNED per step by the source (the 4-step set spans phosphonate / carboxyl / amine)";
+step            1;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- the source does NOT state a temperature (FLAG)
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    pKa             2.0;
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Caceres-Jensen et al., J. Environ. Qual. 38 (2009) 1449; via PubChem PUG-View";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          candidate;
+
+// NOTES
+//   Re-homed from components/glyphosate.candidate.dat (the 4-value pKa set)
+//   Forms are labelled glyphosate_H4..H0 by PROTON COUNT ONLY -- the source does NOT
+//     assign a functional group to each individual step, so none is invented here.
+//   an ALTERNATIVE 3-step assignment exists: pKa 2.34 / 5.73 / 10.2 [e-Pesticide Manual 15th ed. (BCPC 2008-2010); via PubChem] -- it does NOT map 1:1 onto these 4 steps, so it is recorded as a whole-set alternative in the ledger, not per-step
+//   DROPPED: 'chargeAtpH7 ~ -2 (net)' -- a derived result of these 4 equilibria.
+//   DROPPED: 'pI: zwitterionic, no single pI (polyprotic)' -- a loose prose statement, no number.
+
+// PHASE 6 (2026-07-24) -- searched for a determination that SETTLES the 4-step vs 3-step
+//   clash.  NOT FOUND.  Nothing was merged; both sets stand exactly as phase 2 left them.
+//   What the search establishes:
+//     * The two sets are not reconcilable by inspection.  Caceres-Jensen 2009 gives FOUR
+//       steps (2.0 / 2.6 / 5.6 / 10.6) and assigns NONE of them to a functional group;
+//       the e-Pesticide Manual (BCPC, paywalled, excluded) gives THREE (2.34 / 5.73 / 10.2).
+//       Glyphosate has FOUR ionisable protons (two phosphonic, one carboxylic, one amine),
+//       so a 3-step set is necessarily either a merged pair or a truncated window --
+//       but WHICH, no source seen says.  Guessing would manufacture chemistry.
+//     * A settling determination would have to be a full potentiometric speciation study
+//       resolving all four constants WITH site assignment, at a stated T and I.
+//   SHARPENED ACTION: find such a study and read it.  Until then this record keeps the
+//     4-step set as the datum, keeps the 3-step set as a WHOLE-SET alternative, and does
+//     NOT assign sites.  Do not average the two sets; do not pick "the closest match".

@@ -1,0 +1,179 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: levulinicAcid  (4-oxopentanoic acid, C5H8O3, CAS 123-76-2)
+  Top-12 biorefinery platform molecule from C6 sugars.  A LINEAR keto-acid, so
+  the Joback decomposition is clean -- the one compound in this set where
+  Choupo's own estimator is a legitimate route to Tc / Pc / omega.
+
+  IDENTITY source: PubChem CID 11579 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 123-76-2 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  No aqueous
+    diffusion / partition / solubility datum was ever staged, so nothing was
+    re-homed out of it in phase 2 -- but the COSMO material was.
+
+  KNOWN GAP CALLED OUT BY THE SPECIATION LEDGER: levulinic acid is a CARBOXYLIC
+    ACID with a pKa in the ambient window, and NO pKa was ever gathered for it.
+    That is the most consequential missing equilibrium in the whole staging set
+    (chemistry/aqueousSpeciation/_LEDGER.md section 6b).  Nothing is invented
+    here; the gap is stated.
+
+  STATUS: candidate.  Antoine + Tb + Vliq usable; Tfus was an INVENTED MIDPOINT
+    (fixed below); HvapTb was a MISLABELLING (fixed below).
+\*---------------------------------------------------------------------------*/
+
+name              levulinicAcid;
+formula           C5H8O3;
+CAS               123-76-2;
+SMILES            "CC(=O)CCC(=O)O";
+InChIKey          "JOOXCMJARBKPKM-UHFFFAOYSA-N";   // full 27-char key
+MW                116.11;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `volatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            volatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "normal boiling point present in this file -- the compound IS volatile";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+groups
+{
+    // Linear keto-acid: a CLEAN first-order Joback decomposition, unlike every
+    // other volatile in this set.  This is a curated, reviewable record, not an
+    // estimate: it is the INPUT to `bin/estimate levulinicAcid`.
+    joback ( { group CH3; count 1; } { group ketone; count 1; }
+             { group CH2; count 2; } { group acid;   count 1; } );
+}
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+Tb                518.7;    // K, normal boiling point.  [FLAG -- VENDOR SOURCE]
+                            //   The NIST WebBook entry attributes this to the
+                            //   Aldrich catalogue (1990).  Kept, but not citable
+                            //   as a primary.  Corroborated in-file: the Antoine
+                            //   set below is stated valid to 519 K.
+
+Vliq              1.019e-4; // m3/mol, LIQUID at 293 K = MW/rho with
+                            //   rho = 1140 kg/m3 (1.14 g/cm3 @20 degC).
+                            //   [PubChem CID 11579 experimental density; US NIH,
+                            //   public domain]
+
+vaporPressure
+{
+    model         Antoine;     // log10(P/bar) = A - B/(T + C)
+    coefficients  (6.63219   3152.908   -43.564);
+    Trange        (375  519);  // K
+    // [Stull, D.R., "Vapor Pressure of Pure Substances. Organic and Inorganic
+    //  Compounds", Ind. Eng. Chem. 39(4) (1947) 517-540 -- the primary underlying
+    //  the NIST WebBook entry.  Re-cited to the primary, not to the compilation.]
+}
+
+// Tfus -- REMOVED AS A BARE KEY (defect).  The file previously stored
+//   `Tfus 308.0`, which is the ARITHMETIC MIDPOINT of two century-old
+//   determinations that differ by 4 K.  A midpoint of two disagreeing
+//   measurements is an INVENTED number, so it is gone; the determinations
+//   themselves are kept, labelled, and NOT merged.
+fusionData
+{
+    determinations
+    (
+        ( 306.0  "Buechner, E.H., Z. Phys. Chem. 54 (1906) 665 (+/- 2 K)" )      // K
+        ( 310.0  "Berthelot, M., Thermochimie (Gauthier-Villars, Paris, 1897) (+/- 1 K)" )     // K
+    );
+    dHfus     9220;     // J/mol at 306.2 K.  FULL CITATION RESOLVED 2026-07-25:
+                        //   Acree, W.E., "Thermodynamic properties of organic
+                        //   compounds", Thermochim. Acta 189(1) (1991) 37-56.
+    note      "the two melting points differ by 4 K and neither has been checked against a modern DSC value; pick one primary, do not average.  Fusion sources resolved via the NIST entry";
+    status    flagged;
+}
+
+// dvapH at a stated temperature -- NOT a value at Tb.  Kept structured because
+// it is usable science and may not live in a comment.
+vaporizationEnthalpy
+{
+    model             singleTemperature;
+    unit              "J/mol";
+    value             74400;
+    temperature       390.0;          // K
+    validityRange     ( 375  519 );   // K, as stated by the source
+    source            "Stephenson & Malanowski, 'Handbook of the Thermodynamics of Organic Compounds' (1987) -- a COMPILATION, not a primary";
+    note              "the file previously stored this number under the key `HvapTb`, which was a MISLABELLING -- 390 K is not Tb = 518.7 K";
+    status            flagged;
+}
+
+// HvapTb: DECLARED GAP -- no measurement at Tb.  Extrapolating the 390 K value
+//   by ~129 K would be inventing a datum.
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// Tc / Pc / omega        : NOT stored, and deliberately NOT estimated in this
+//                          cleanup pass -- running the estimator is a curation
+//                          act, not a file-tidying act.  The legitimate route is
+//                          `bin/estimate levulinicAcid` on the Joback groups
+//                          above (Choupo's OWN open estimate, legally clean),
+//                          followed by a primary cross-check.
+// idealGasHeatCapacity   : none located; Joback also yields a Cp polynomial, by
+//                          the same route.
+// standardThermochemistry: none located on a free source.  Combustion/formation
+//                          data for levulinic acid exist in the primary
+//                          literature; retrieve one, or estimate via Joback --
+//                          but never both stored at once.
+// acid pKa               : NOT gathered (see the header).  A carboxylic acid
+//                          with no pKa is a real hole in the staging set.
+//
+// COSMO-SAC -- NO `cosmo {}` BLOCK.  evidence/lvpp-levulinicAcid (recordId
+//   lvpp-levulinicAcid) holds the LVPP cavity descriptors as EVIDENCE only: the
+//   LVPP QM protocol is incompatible with Choupo's VT-2005 `cosmoSAC2002` sets
+//   -- ethylene, the one compound present in both databases, differs by +6.1 %
+//   cavity area and +10.3 % cavity volume.  The LVPP surface is also the NEUTRAL
+//   gas-phase acid, never the levulinate anion.
+// PC-SAFT -- carboxylic-acid association (1A / 2B schemes are both used in the
+//   literature); no set located, none fitted
+//   (parameters/PCSAFT/_INVENTORY.md, section 3).
+
+provenance
+{
+    Tb
+    {
+        origin      unattributed;
+        citation    "Aldrich catalogue (1990), via the NIST WebBook entry";
+        note        "vendor catalogue, not a measurement report";
+        status      flagged;
+    }
+    Vliq
+    {
+        origin      derived;
+        method      "MW / rho, rho = 1140 kg/m3 at 20 degC (liquid)";
+        citation    "PubChem CID 11579 experimental density (US NIH, public domain)";
+        note        "density at 20 degC, not 25 degC";
+        status      candidate;
+    }
+    vaporPressure
+    {
+        origin      regressed;
+        citation    "Stull, Ind. Eng. Chem. 39(4) (1947) 517-540";
+        status      candidate;
+    }
+    fusionData
+    {
+        origin      measured;
+        citation    "Tfus: Buechner, Z. Phys. Chem. 54 (1906) 665 / Berthelot, Thermochimie (1897).  dHfus: Acree, Thermochim. Acta 189(1) (1991) 37-56";
+        note        "two disagreeing melting points (306 / 310 K), not averaged; dHfus 9.22 kJ/mol at 306.2 K";
+        status      flagged;
+    }
+    groups
+    {
+        origin      derived;
+        method      "first-order Joback decomposition read off the PubChem SMILES";
+        citation    "Joback & Reid, Chem. Eng. Commun. 57 (1987) 233";
+        status      candidate;
+    }
+}

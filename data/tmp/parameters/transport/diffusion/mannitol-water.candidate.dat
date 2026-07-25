@@ -1,0 +1,98 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/mannitol.candidate.dat; primary citation
+  cross-checked against data/tmp/polyols_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-mannitol-water;
+participants    ( mannitol water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             6.8e-10 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// how THIS value was obtained (glass-box; inputs stated in full)
+derivation
+{
+    method                 "Stokes-Einstein D = kT/(6 pi eta r)";
+    radius                 0.362 nm;
+    radiusOrigin           "equivalent-sphere radius (3 Vm / 4 pi NA)^(1/3) from the SOLID molar volume M/rho";
+    solidMolarVolume       120.3 cm3/mol;
+    viscosity              0.890e-3 Pa.s;
+    temperature            298.15 K;
+    origin                 estimated;
+}
+
+flagged
+{
+    reason        "Choupo own estimate, NOT a measurement; Stokes-Einstein with a hard-sphere radius underestimates D for small solutes by ~20-40%";
+    route         "Ribeiro et al., 'Diffusion coefficient of mannitol in water at infinite dilution' (Taylor dispersion, ~0.66e-9 m2/s at 298.15 K); Longsworth, J. Am. Chem. Soc. 75 (1953) 5705 - exact value PAYWALLED at curation";
+    action        "SHORTEST ROUTE PINNED in phase 6: Kimura, Y. et al., 'Diffusion of Polar and
+                  Nonpolar Molecules in Water and Ethanol', Bull. Chem. Soc. Jpn. 63 (1990)
+                  533-537, doi 10.1246/bcsj.63.533 - its abstract, read verbatim 2026-07-24,
+                  states that interdiffusion coefficients of mannitol in water were measured
+                  AT CONCENTRATIONS CLOSE TO INFINITE DILUTION between 278 and 373 K, so a 298
+                  K digit exists in its table.  Access: Oxford Academic, paywalled (EUR 20 /
+                  institutional); Unpaywall reports is_oa = true but the only location is the
+                  dead journal.csj.jp host. Second route: Longsworth, J. Am. Chem. Soc. 75
+                  (1953) 5705-5709, doi 10.1021/ja01118a065.  Since the estimate (0.68e-9) and
+                  the quoted experimental (~0.66e-9) differ by only ~3 %, one transcription
+                  closes this record.";
+}
+
+// PHASE 7 (2026-07-25) -- Kimura primary sought; ABSTRACT read, DIGIT unreadable.
+phase7Retrieval
+{
+    attempted     2026-07-25;
+    doi           "10.1246/bcsj.63.533";
+    outcome       "PARTIAL -- mannitol membership CONFIRMED from the primary's abstract; the
+                   298 K interdiffusion DIGIT could NOT be read (tables paywalled)";
+    detail        "Oxford Academic served the ABSTRACT ONLY (tables paywalled, EUR 20);
+                   the legacy bronze-OA host journal.csj.jp is DEAD.  The abstract WAS read
+                   and confirms mannitol among the water solutes (1,2-butanediol,
+                   1,4-butanediol, meso-erythritol, xylitol, mannitol, myo-inositol; close
+                   to infinite dilution; 278-373 K), but no digit was transcribed.  The
+                   estimate (0.68e-9) and the quoted experimental (~0.66e-9) still differ
+                   ~3 % with no primary read to settle it.";
+    ruling        "record stays flagged; the 0.68e-9 estimate is NEITHER promoted NOR
+                   deleted.  Longsworth JACS 75 (1953) 5705 remains closed, no OA copy.";
+}
+
+provenance
+{
+    origin        estimated;
+    citation      "Choupo own Stokes-Einstein estimate (glass-box); no measured value adopted";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          flagged;

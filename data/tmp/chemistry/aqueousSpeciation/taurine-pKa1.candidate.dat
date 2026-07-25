@@ -1,0 +1,84 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/taurine.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        taurine-pKa1;
+participants    ( taurineH+ taurine H+ );
+property        pKa;
+reaction        "taurineH+ (-SO3H protonated) = taurine (zwitterion, -SO3- / -NH3+) + H+";
+site            "sulfonate (-SO3H, strong acid)";
+step            1;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- inherited from the amino-acid consensus
+                                // lineage; NOT restated for this compound by any source seen.
+    phase           aqueous;
+    ionicStrength   notStated;   // phase 7: kept explicit -- NOT invented
+}
+
+value
+{
+    pKa             ~1.5;   // ESTIMATE -- strong acid, no potentiometric primary located
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      estimated;
+    citation    "consensus (Lehninger / CRC Handbook 84th ed. lineage, aqueous potentiometric titration 25 C); the ledger records the sulfonate pKa1 as an ESTIMATE -- no potentiometric primary pinned";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          rightsPending;
+
+// PHASE 6 (2026-07-24) -- searched for an open potentiometric primary.  NOT FOUND.
+//   What the search DID establish, so the next curator does not repeat it:
+//     * PubChem CID 1123 lists exactly one dissociation constant, pKa 1.5, and attributes
+//       it to "Dawson et al., Data for Biochemical Research, 3rd ed. (1986)" -- an Oxford
+//       University Press compilation.  That is a LOCATOR, not a source of record: it is the
+//       same class as Merck Index / CRC / Lange, which the phase-4 rights ruling excludes.
+//     * PubChem's two other pKa entries point at the "IUPAC Digitized pKa Dataset"
+//       (Zheng, Lafontant-Joseph & Green, RSC Adv. 16 (2026) 21397, Zenodo 10.5281/zenodo.7236452).
+//       That dataset is a digitisation of Serjeant & Dempsey (1979) / Perrin (1965,1972)
+//       and is licensed CC BY-NC 4.0.  DOUBLY unusable: a compilation-of-compilations AND
+//       a NonCommercial licence, which CLAUDE.md excludes outright.
+//   SHARPENED ACTION: taurine's sulfonate pKa1 needs a potentiometric or conductometric
+//     determination read in the primary.  The value is an extremely strong acid at the edge
+//     of the measurable window, so expect the primary to quote a bound or a large
+//     uncertainty; do NOT accept a bare "1.5" from any handbook.
+//   The record therefore stays `flagged`, origin `estimated`, value UNCHANGED.
+//
+// NOTES
+//   Re-homed from components/taurine.candidate.dat
+//   The ledger FLAGS this explicitly: 'taurine pI/pKa1 (sulfonate) -- consensus estimate; pin an open potentiometric primary'
+//   Consequence recorded by the source: the -SO3- centre is deprotonated across the WHOLE NF/RO window
+//   LEGAL: consensus lineage reaches us via PAYWALLED compilations (CRC 84th ed. / Lehninger); re-pin an OPEN potentiometric primary before promotion
+
+// VOCABULARY UNIFIED 2026-07-24: rights blockage is encoded in `status`,
+// not only in `licence` -- the two directories had diverged and a rights-blocked
+// record must never sit at a status that reads clean.
+statusVocabularyNote  "was flagged; rights blockage promoted into status";
+
+// ===== PHASE 7 (2026-07-25) amino-acid pKa hunt -- re-reviewed, UNCHANGED =====
+//   Correct as an ESTIMATE.  The sulfonate pKa1 (~1.5) stays origin=estimated,
+//   status=rightsPending, value UNCHANGED -- it must NOT be dressed as a determination
+//   (curator's explicit instruction: taurine's sulfonate pKa1 and pI are ESTIMATES).
+//   ionicStrength stays notStated; no open potentiometric/conductometric primary was
+//   located this phase either (JBC 403 to automated fetch; web-search budget exhausted
+//   upstream; the only handbook routes -- Dawson's OUP compilation and the CC-BY-NC
+//   IUPAC digitisation -- remain excluded, as phase 6 established).
+//   SHARPENED ACTION: taurine -SO3H is an extremely strong acid at the edge of the
+//   measurable window -> chase a CONDUCTOMETRIC or spectrophotometric determination
+//   READ in the primary (expect a bound / large uncertainty); do NOT accept a bare
+//   handbook "1.5".  The derived taurine-pI inherits this estimate and is likewise
+//   NOT promotable until pKa1 is pinned.

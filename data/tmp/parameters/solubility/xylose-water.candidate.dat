@@ -1,0 +1,122 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of xylose in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/xylose.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility): number DELETED on rights grounds
+  (Merck Index only); solid phase NOT ESTABLISHED.  Structured absence.
+
+  PHASE 6 (2026-07-24, agent:solubility): the SOLID PHASE is now ESTABLISHED
+  -- D-alpha-xylose (alpha-D-xylopyranose, anhydrous) -- by a CC-BY measuring
+  primary that diffracted the residual solid of its own solubility
+  measurement, and independently corroborated by a CC-BY crystallographic
+  study that reports NO other known polymorph or solvate of xylose.  The
+  DIGIT is still absent: neither open source measured xylose solubility in
+  PURE water.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        xylose-water;
+participants    ( D-alpha-xylose water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- the temperature at which the phase was pinned
+    pressure      101325 Pa;   // ambient, ASSUMED
+    phase         aqueous;
+    solidPhase    D-alpha-xylose;   // alpha-D-xylopyranose, anhydrous
+    phaseBasis    statedBySource;
+}
+
+// PHASE 6 -- HOW THE PHASE WAS ESTABLISHED.
+//
+// (1) THE DETERMINATION THAT NAMES ITS OWN RESIDUE.
+// Chua et al. (Food Biophysics 17 (2022) 181-197, CC-BY 4.0) applied "the
+// isothermal method with excess of the solute ... to determine the aqueous
+// solubility and examine the crystal structure of the solid deposit in
+// equilibrium with the saturated solutions at T = 298.15 K and T = 323.15 K"
+// by PXRD, and report, verbatim:
+//
+//   "For D-sucrose, D-beta-fructose and D-alpha-xylose, and D-alpha-galactose
+//    no crystal change was observed in the solid phase during the solubility
+//    measurements."
+//   "Fructose and xylose do not change crystal structure upon solubilizing
+//    the solid into the aqueous solution."
+//
+// (2) INDEPENDENT CORROBORATION FROM THE CRYSTALLOGRAPHY.
+// Tyson, Pask, George & Simone (Cryst. Growth Des. 22 (2022) 1371-1383,
+// CC-BY 4.0) solved and refined the single-crystal structures of D- and
+// L-xylose and state, verbatim:
+//
+//   "the previously reported d-xylose crystal structures present only
+//    molecules of the alpha-anomer of the six-membered ring structure"
+//   "Currently, there are no other known polymorphs or solvated structures
+//    for either arabinose or xylose."
+//
+// D-xylose: orthorhombic, space group P2(1)2(1)2(1), CCDC 2114268.
+//
+// Two independent CC-BY works, one of them diffracting the actual
+// equilibrium residue, agreeing on the same solid.  `statedBySource`.
+//
+// MUTAROTATION still applies: the crystal is the alpha anomer, the solution
+// carries an anomeric equilibrium, so any number that lands here is the
+// TOTAL dissolved xylose over an alpha-D-xylopyranose crystal and must say
+// so.
+//
+// THE NUMBER IS STILL GONE, AND WHY.
+// Phase-2 carried "1 g in 0.8 mL water" from The Merck Index -- paywalled,
+// no temperature, and expressed per volume of SOLVENT rather than of
+// solution.  Deleted in phase 4.  Phase 6 re-hunted:
+//   * Chua et al. 2022 measured it but tabulate w_sat only for D-sucrose
+//     and D-alpha-galactose.
+//   * Tyson et al. 2022 measured xylose solubility thermogravimetrically at
+//     5-55 C, but ONLY in 50:50 and 70:30 w/w ethanol/water -- not in pure
+//     water.  Their 25 C point in 50:50 ethanol/water is 0.2954 +/- 0.0052
+//     g solid / g solution; it is deliberately NOT recorded in this record,
+//     because it is a different solvent and this record is the water SLE.
+// So the digit stays absent, and the absence is now surgical.
+value
+{
+    available     none;   // still no open MEASURED digit in PURE water -- see blockedBy
+}
+
+provenance
+{
+    origin      -;
+    citation    "WITHDRAWN in phase 4 -- the previous value came from The Merck Index (paywalled commercial compilation) and is not redistributable.  Phase 6 re-hunt found no open, readable, MEASURED replacement in PURE water";
+    doi         "-";
+    licence     "-";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Chua, Y.Z., Do, H.T., Kumar, A., Hallermann, M., Zaitsau, D., Schick, C. & Held, C., The melting properties of D-alpha-glucose, D-beta-fructose, D-sucrose, D-alpha-galactose, and D-alpha-xylose and their solubility in water: A revision, Food Biophysics 17 (2022) 181-197";
+    doi         "10.1007/s11483-021-09707-6";
+    licence     "CC-BY 4.0";
+    basis       "PXRD of the solid deposit in equilibrium with the saturated aqueous solution at 298.15 K showed no crystal change; the solid was assigned to D-alpha-xylose";
+}
+
+phaseCorroboration
+{
+    citation    "Tyson, B.M., Pask, C.M., George, N. & Simone, E., Crystallization Behavior and Crystallographic Properties of dl-Arabinose and dl-Xylose Diastereomer Sugars, Cryst. Growth Des. 22 (2022) 1371-1383";
+    doi         "10.1021/acs.cgd.1c01329";
+    licence     "CC-BY 4.0";
+    basis       "D-xylose crystallises exclusively as the six-membered-ring alpha-anomer (orthorhombic P2(1)2(1)2(1), CCDC 2114268); no other polymorph or solvate of xylose is known";
+}
+
+nextStep        "find an open, MEASURED aqueous solubility of D-alpha-xylose in PURE water with a stated temperature and basis.  Lead: the solubility data cited by Chua et al. 2022; Gong, Wang, Zhang & Qu, J. Chem. Eng. Data 57 (2012) 3264-3269 measured xylose in ethanol-water and may carry the water endpoint (paywalled but a measuring primary, so admissible if a digit can actually be read)";
+
+blockedBy       "no open measured digit in PURE water: the only phase-2 carrier was The Merck Index (not redistributable, deleted in phase 4, and expressed per volume of SOLVENT with no temperature); the CC-BY primary that pins the phase does not tabulate xylose solubility, and the CC-BY crystallography paper measured only ethanol/water mixtures";
+
+status          flagged;

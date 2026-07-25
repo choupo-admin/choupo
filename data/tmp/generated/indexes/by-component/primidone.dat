@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'primidone'
+component primidone;
+records
+(
+    { recordType acidDissociation; recordId primidone-pKa1; category verified; file "chemistry/aqueousSpeciation/primidone-pKa1.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-primidone-water; category flagged; file "parameters/transport/diffusion/primidone-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId primidone-octanol-water; category verified; file "parameters/partition/primidone-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId primidone-water; category flagged; file "parameters/solubility/primidone-water.candidate.dat"; }
+);

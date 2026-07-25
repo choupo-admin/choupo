@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'PFBA'
+component PFBA;
+records
+(
+    { recordType acidDissociation; recordId PFBA-pKa1; category flagged; file "chemistry/aqueousSpeciation/PFBA-pKa1.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-PFBA; category flagged; file "evidence/lvpp-PFBA/metadata.dat"; }
+    { recordType henrysLawConstant; recordId henry-PFBA-water; category flagged; file "parameters/henry/PFBA-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId PFBA-octanol-water; category flagged; file "parameters/partition/PFBA-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId PFBA-water; category verified; file "parameters/solubility/PFBA-water.candidate.dat"; }
+);

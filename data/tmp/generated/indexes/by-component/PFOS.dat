@@ -1,0 +1,6 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'PFOS'
+component PFOS;
+records
+(
+    { recordType acidDissociation; recordId PFOS-pKa1; category flagged; file "chemistry/aqueousSpeciation/PFOS-pKa1.candidate.dat"; }
+);

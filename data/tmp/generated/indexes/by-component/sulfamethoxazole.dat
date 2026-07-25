@@ -1,0 +1,11 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'sulfamethoxazole'
+component sulfamethoxazole;
+records
+(
+    { recordType acidDissociation; recordId sulfamethoxazole-pKa1; category verified; file "chemistry/aqueousSpeciation/sulfamethoxazole-pKa1.candidate.dat"; }
+    { recordType acidDissociation; recordId sulfamethoxazole-pKa2; category verified; file "chemistry/aqueousSpeciation/sulfamethoxazole-pKa2.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-sulfamethoxazole-water; category flagged; file "parameters/transport/diffusion/sulfamethoxazole-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId sulfamethoxazole-octanol-water; category verified; file "parameters/partition/sulfamethoxazole-octanol-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId sulfamethoxazole-octanol-water-pH8; category verified; file "parameters/partition/sulfamethoxazole-octanol-water-pH8.candidate.dat"; }
+    { recordType solubility; recordId sulfamethoxazole-water; category flagged; file "parameters/solubility/sulfamethoxazole-water.candidate.dat"; }
+);

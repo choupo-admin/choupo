@@ -1,0 +1,132 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: PFBA  (perfluorobutanoic acid, C4HF7O2, CAS 375-22-4)
+  Short-chain C4 carboxylic acid -- the PFOA replacement; small + charged in
+  water, the HARD-to-reject teaching contrast against PFOA.
+
+  IDENTITY source: PubChem CID 9777 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 375-22-4 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.
+
+  DEFECT FIXED HERE: PFBA melts at -17.5 degC and boils at 121 degC, so at
+    298 K the PURE SUBSTANCE IS A LIQUID, not a crystalline solid, and it is
+    genuinely volatile.  The file previously implied a nonvolatile solid solute
+    throughout.  The state is now declared explicitly (see `stateAt298`), the
+    density is filed as a LIQUID density, and the "aqueous solubility" is
+    understood as a LIQUID-LIQUID mutual solubility (re-homed; see pointer).
+
+  STATUS: candidate.  `role nonvolatile` is a CASE role only and is
+    PHYSICALLY WRONG as a volatility claim -- flagged for the curator.
+\*---------------------------------------------------------------------------*/
+
+name              PFBA;
+formula           C4HF7O2;
+CAS               375-22-4;
+InChIKey  YPJUNDFVDDCYIH-UHFFFAOYSA-N;   // 14-char skeleton only.
+MW                214.04;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "normal boiling point present in this file -- the compound IS volatile";
+    contradictsStagedRole   yes;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+                                    //   acid boils at 394 K and has a measurable
+                                    //   vapour pressure (below): as a statement
+                                    //   about the substance this label is WRONG.
+                                    //   It is kept only because no Antoine set is
+                                    //   in hand and `volatile` / `solute` would
+                                    //   demand one.  FLAG for review.
+stateAt298        liquid;           // Tfus = 255.65 K << 298.15 K << Tb = 394.15 K
+
+
+// ---- RE-HOMED IN PHASE 2 (pointers only, no values) ------------------------
+// acid pKa              -> chemistry/aqueousSpeciation/     recordId PFBA-pKa1
+//   (a CLASS BOUND, "< 1.6", not a determination -- flagged there)
+// logKow                -> parameters/partition/            recordId PFBA-octanol-water
+//   (labelled an ESTIMATE by its source, and ill-defined for a perfluoro
+//    surfactant -- flagged there)
+// water solubility      -> parameters/solubility/           recordId PFBA-water
+//   *** that record is marked `soluteState liquidSolute`: with no solid phase at
+//   298 K it is a LIQUID-LIQUID mutual solubility, NOT a solid-liquid
+//   equilibrium.  This component must not be read as having a known SLE. ***
+// COSMO cavity (LVPP)   -> evidence/lvpp-PFBA/              recordId lvpp-PFBA
+//   (LVPP file HEPTAFLUOROBUTANOIC_ACID.cosmo; synonymy checked on the formula)
+// chargeAtPH7 (-1) was DELETED, not moved: a charge at a pH is a RESULT.
+//
+// NO diffusion record exists: D_aq and the Stokes radius were never measured or
+//   estimated (transport/diffusion/_LEDGER.md section 5).
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+Tfus              255.65;   // K (-17.5 degC)
+Tb                394.15;   // K (121 degC), normal boiling point
+Vliq              1.296e-4; // m3/mol -- LIQUID molar volume = MW/rho with
+                            //   rho = 1651 kg/m3 (1.651 g/cm3 @20 degC), i.e. a
+                            //   genuine liquid density (20 degC > Tfus).
+                            //   214.04 / 1.651 = 129.6 cm3/mol.
+// All three [ATSDR, Toxicological Profile for Perfluoroalkyls (2021), Table 4-2;
+//   US-government work, public domain; the primaries are cited therein].
+
+// Single measured vapour-pressure POINT -- not an Antoine set, and not enough to
+// fit one.  Structured (never a bare comment) with the conversion shown.
+vaporPressureData
+{
+    model     singlePoint;
+    points    ( ( 329.15  5866.0 ) );   // ( T/K  P/Pa )
+    // UNIT CONVERSION (shown, not hidden): 44 mmHg x 133.322 Pa/mmHg = 5866 Pa,
+    //   at 56 degC = 329.15 K.
+    source    "ATSDR (2021) Table 4-2 (US-gov, public domain)";
+    status    flagged;   // one point; no correlation, no stated uncertainty
+}
+
+
+// ---- REMOVED FROM THIS FILE, NO HOME YET (see _CLEANUP ledger) --------------
+// Henry's-law constant (solute + water = ARITY 2) was carried here as a comment.
+//   Not an intrinsic component property; no parameters/henry/ home exists in
+//   this staging tree yet, so the value and its citation are recorded in
+//   _CLEANUP_hormones_pfas_volatiles.md, section "awaiting a home", and deleted
+//   from here.  Do NOT re-add it.
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// standardThermochemistry: no open formation datum located.
+// Tc / Pc / omega        : none located; Joback has NO perfluoro-carbon groups,
+//                          so Choupo's own estimator cannot supply them either.
+// idealGasHeatCapacity   : none located.
+// vaporPressure (Antoine): one point is not a correlation.  With Tb AND one
+//                          (T,P) point in hand, a two-parameter Clausius-
+//                          Clapeyron fit is TEMPTING -- it is deliberately NOT
+//                          done: that would be manufacturing a correlation.
+// COSMO-SAC              : NO `cosmo {}` block.  evidence/lvpp-PFBA holds the
+//                          LVPP cavity descriptors as EVIDENCE only -- the LVPP
+//                          QM protocol is incompatible with Choupo's VT-2005
+//                          `cosmoSAC2002` sets (ethylene cross-check: +6.1 %
+//                          area, +10.3 % volume).  The LVPP surface is the
+//                          NEUTRAL gas-phase acid, never the perfluorobutanoate
+//                          anion that exists at every process pH.
+// PC-SAFT                : no set adopted; perfluoro chains are exactly where a
+//                          generic set misleads (parameters/PCSAFT/_INVENTORY.md).
+
+provenance
+{
+    Tfus { origin measured; citation "ATSDR (2021) Table 4-2 (US-gov, public domain)"; status candidate; }
+    Tb   { origin measured; citation "ATSDR (2021) Table 4-2 (US-gov, public domain)"; status candidate; }
+    Vliq
+    {
+        origin      derived;
+        method      "MW / rho, rho = 1651 kg/m3 at 20 degC (liquid)";
+        citation    "ATSDR (2021) Table 4-2 (US-gov, public domain)";
+        note        "density measured at 20 degC, not 25 degC";
+        status      candidate;
+    }
+}

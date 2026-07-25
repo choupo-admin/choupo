@@ -1,0 +1,193 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: galactose  (C6H12O6, CAS 59-23-4) -- aldo-hexose, the C4
+  epimer of glucose.  Non-volatile non-electrolyte SOLUTE (NF/RO sugar-rejection
+  family).  Decomposes before it vaporises -> SOLID rung (referenceState pureSolid).
+
+  PRIVATE staging tier (data/tmp, gitignored).  Envelope + ARITY rule:
+  ../RECORD_SPEC.md.  Cleaned 2026-07-24 (phase 3, component cleanup).
+
+  ARITY-1 ONLY.  Intrinsic single-substance data only; every system property was
+  emitted in phase 2 to its arity-correct home and is referenced by a one-line
+  pointer below.  (chargeAtPH7 is DERIVED and is never stored.)
+\*---------------------------------------------------------------------------*/
+
+// --- MOVED OUT in phase 2 -- POINTERS ONLY (a cross-reference, not data) ---
+// D_aq + Stokes radius: see parameters/transport/diffusion/galactose-water (recordId diffusion-galactose-water; ESTIMATED from the glucose anchor, not measured)
+// pKa1: see chemistry/aqueousSpeciation/galactose-pKa1 (recordId galactose-pKa1)
+// aqueous solubility: see parameters/solubility/galactose-water (recordId galactose-water)
+// partial molar volume in water (the old `Vliq`): see parameters/volume/galactose-water (recordId volume-galactose-water)
+
+name           galactose;
+formula        C6H12O6;
+CAS            59-23-4;
+
+MW             180.156;        // g/mol -- derived from the formula with IUPAC
+                               //   standard atomic weights (origin derived)
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;              // non-electrolyte, van't Hoff i = 1
+
+identity
+{
+    pubchemCID         6036;
+    InChIKey   WQZGKKKJIJFFOK-SVZMEOIVSA-N;      // 14-character BLOCK 1 ONLY
+    inchiKeyStatus     skeletonBlockOnly;
+    inchiKeyNote       "This skeleton block is SHARED by every aldohexose of this
+                        connectivity -- glucose, galactose and mannose all hash to
+                        WQZGKKKJIJFFOK-SVZMEOIVSA-N.  The stored key therefore does NOT identify
+                        galactose; it cannot be used for an identity join.  Fetch
+                        the full 27-character key from PubChem CID 6036.";
+    stereochemicalForm "alpha-D-galactopyranose in the crystalline solid (the
+                        thermochemical datum below is the alpha crystal)";
+    identitySource     "PubChem CID 6036 (US NIH, public domain), retrieved 2026-07-24";
+    status             flagged;             // truncated, non-discriminating key
+}
+
+// ---------------------------------------------------------------------------
+// ARITY-1 INTRINSIC, SOLID rung.
+// PRIMARY (dHf_298): Clarke & Stegeman, J. Am. Chem. Soc. 61 (1939) 1726-1730 --
+//   combustion calorimetry; Cox & Pilcher 1970 reanalysis.
+// PRIMARY (s_298): Jack & Stegeman, J. Am. Chem. Soc. 63 (1941) 2121-2123 --
+//   adiabatic calorimetry.
+standardThermochemistry
+{
+    dHf_298    -1286300.0;   // J/mol (-1286.3 +/- 0.54 kJ/mol), phase CRYSTALLINE alpha
+                             //   origin measured (combustion)
+                             //   [Clarke & Stegeman 1939; Cox & Pilcher 1970 reanal.]
+    s_298      205.4;        // J/(mol K), third-law absolute, phase CRYSTALLINE alpha
+                             //   origin measured (adiabatic calorimetry)
+                             //   [Jack & Stegeman 1941]
+    referenceState      pureSolid;
+}
+
+// REAL crystalline-galactose solid heat capacity.  Phase: SOLID (crystalline alpha).
+// origin measured; PRIMARY: Kawaizumi, Nishio et al., J. Chem. Thermodyn. 13 (1981).
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = 216.3 J/(mol K), single measured point at 300 K
+    coefficients  ( 216.3 );           // J/(mol K)
+    Trange        ( 270  325 );        // K -- extrapolation window around the one point
+    // [Kawaizumi, Nishio et al. 1981, J. Chem. Thermodyn. 13] -- measured, solid
+    // crossCheck (independent, NOT merged): 220.54 J/(mol K) at 296.9 K, crystalline
+    //   alpha, 64-297 K [Jack & Stegeman, JACS 63 (1941) 2121].  Verified 2026-07-25
+    //   via NIST WebBook (ID=C59234, Mask=2), which also confirms S(298)=205.4
+    //   (Jack & Stegeman 1941; extrapolation below 90 K = 48.95 J/(mol K)).
+}
+
+// --- PURE-COMPONENT (arity-1) properties, each with unit + phase + origin + citation ---
+pureComponentProperties
+{
+    solidDensity
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index + ChemicalBook -- paywalled compilation / web aggregator";
+        action        "read Dx (calculated density) from a published single-crystal structure of
+                      the NAMED polymorph/anomer -- Acta Cryst. reports it directly -- or
+                      derive rho = Z*MW/(N_A*V_cell) from open cell parameters (the
+                      Crystallography Open Database is CC0 and cites the primary for each
+                      entry).  Record the cell, Z and the arithmetic in a derivation{}
+                      block, and NAME the solid form.";
+        droppedValue  "value = 1.5 g/cm3; temperature = 293.15 K; citation = The Merck Index, 14th ed.";
+    }
+
+    solidMolarVolume
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "DERIVED from the solidDensity above, which was dropped -- a
+                       derivative cannot outlive the datum it was computed from";
+        action        "recompute V = MW / rho once a legally clear rho exists, and
+                       name the solid form both refer to";
+        droppedValue  "120.1 cm3/mol  (this is the PURE-SOLID molar volume; the partial molar
+                       volume in water is a SYSTEM property and is unaffected -- it
+                       lives in parameters/volume/)";
+    }
+
+    meltingPoint
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index -- paywalled commercial compilation";
+        action        "take T_fus from a calorimetric (DSC / adiabatic) primary that STATES the
+                      polymorph or anomer it melted, and stage it in a fusion{} block
+                      together with dHfus -- a melting point without a named solid form is
+                      not a property of a substance, it is a property of a sample.";
+        droppedValue  "value = 440.15 K; range = ( 440.15 443.15 ) K; transition = decomposition; citation = The Merck Index, 14th ed.";
+    }
+}
+
+identityDescriptors
+{
+    specificRotation
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index -- paywalled commercial compilation";
+        action        "take [alpha]_D from a polarimetric primary that states c, solvent,
+                      temperature, wavelength and the mutarotation state.  This is an
+                      IDENTITY descriptor, not a thermophysical datum, so it is the
+                      lowest-priority gap in this file.";
+        droppedValue  "value = 80.2 deg; temperature = 293.15 K; solvent = water; composition = mutarotation equilibrium; wavelength = 589.3 nm; citation = The Merck Index, 14th ed.";
+    }
+}
+
+// --- COSMO surface: NO deployable set (structured flag) ---
+cosmoStatus
+{
+    recordType      cosmoSurfaceStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    evidenceRecord  none;                 // no evidence/lvpp-galactose record staged
+    reason          "no VT-2005 cosmoSAC2002 set ships for galactose and the LVPP
+                     staging set contains no galactose record.";
+    protocolIncompatibility
+        "Even if an LVPP surface is retrieved it is NOT usable as-is: LVPP uses a
+         different QM protocol (NWChem B3LYP/def2-SVPD, SES cavity) from the
+         VT-2005 surfaces Choupo's cosmoSAC2002 constants were regressed against
+         (Mullins et al., IECR 45 (2006) 4389).  Measured on ethylene, present in
+         both: +6.1 % cavity area, +10.3 % cavity volume.  Never tag an LVPP
+         surface variant cosmoSAC2002.";
+    status          flagged;
+}
+
+// --- PC-SAFT: no set in hand (structured flag) ---
+pcSaftStatus
+{
+    recordType      saftParameterSetStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    sourcePinned    "Held & Sadowski, AIChE J. 59 (2013) 4794-4805, Table 2
+                     (galactose among the 13 fitted sugars; 2 association sites)";
+    numbersInHand   no;
+    legalNote       "one row with its own citation if ever needed -- never the table
+                     (EU sui-generis database right)";
+    status          flagged;         // STRUCTURED ABSENCE -- no number is carried
+    blockedBy       "the pinned parameter source is a paywalled article and no row was
+                     ever transcribed";
+    action          "read ONE compound's row at the pinned source and stage it with its
+                     own citation PLUS variant, units, association scheme, combining
+                     rules, objective function and data range; never the whole table";
+    legalNote2      "reclassified rightsPending -> flagged 2026-07-24 (rights-clearance
+                     pass): rightsPending means a VALUE is held that cannot be shipped.
+                     No value is held here, so this is a declared GAP, not a legal
+                     blocker on any number.";
+}
+
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 5; } { group CHO; count 1; } );   // PROPOSED (review vs Choupo UNIFAC vocab) -- aldo-hexose, open-chain decomposition
+}

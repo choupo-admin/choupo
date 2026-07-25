@@ -1,0 +1,67 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/PFBA.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        PFBA-pKa1;
+participants    ( PFBA PFBA- H+ );
+property        pKa;
+reaction        "PFBA (C3F7-COOH, perfluorobutanoic acid) = PFBA- (perfluorobutanoate) + H+";
+site            "carboxylic acid (-COOH)";
+step            1;
+
+conditions
+{
+    temperature     not stated;   // PHASE 6: phase 2 wrote a conventional 298.15 K here.  The
+                                  // source does not state a temperature, so the absence is
+                                  // now written as an absence, not as a number.
+    phase           aqueous;
+    ionicStrength   not stated;
+    composition     "~1 ug/L PFCA in water, BELOW the self-association threshold; pH 0.3 - 6.9";
+}
+
+value
+{
+    pKa             <1.6;   // still a BOUND, not a point determination -- but now an
+                            // EXPERIMENTAL bound for the C4-C11 PFCA homologue series,
+                            // not an unsourced "class value"
+    // uncertainty: not applicable to a bound
+}
+
+alternativeDeterminations   // same equilibrium, other studies -- NOT a second record
+{
+    alt1 { pKa "~0.4 (estimated)";  citation "ITRC / ATSDR 2021 PFCA class estimate -- carried over from phase 2"; }
+}
+
+provenance
+{
+    origin      derived;   // experimental water-to-air transfer + a volatilization-model fit
+    citation    "Vierke, L., Berger, U. & Cousins, I.T., 'Estimation of the acid dissociation constant of perfluoroalkyl carboxylic acids through an experimental investigation of their water-to-air transport', Environ. Sci. Technol. 47 (2013) 11032-11039 -- 'our results suggest that the pKas of C4-11 PFCAs are <1.6'";
+    doi         "10.1021/es402691z";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation (phase 6)";
+    retrieved   2026-07-24;
+}
+verification
+{
+    primaryIdentified   yes;
+    primaryRead         "abstract only";   // the bound is stated verbatim in the abstract
+    valueSeenInPrimary  yes;
+    conditionsSeen      partial;           // concentration + pH range yes; temperature NOT stated
+}
+status          flagged;
+
+// NOTES
+//   Re-homed from components/PFBA.candidate.dat
+//   PHASE 6: provenance RE-POINTED.  Phase 2 cited the ITRC/ATSDR 2021 class table,
+//     which is a regulatory compilation; the experimental work that BOUNDS the C4-C11
+//     PFCAs is Vierke et al. 2013, and that is now the source of record.
+//   STILL flagged: the value is a BOUND covering a homologue series, not a
+//     compound-specific determination of PFBA.  Do not use it as a point value.
+//   DROPPED: 'charge -1' -- a derived result of this equilibrium.

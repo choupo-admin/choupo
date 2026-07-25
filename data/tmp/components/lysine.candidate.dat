@@ -1,0 +1,158 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: lysine  (L-lysine, C6H14N2O2, CAS 56-87-1)
+  PRIVATE staging tier (data/tmp/, gitignored).  The runtime does NOT read it.
+
+  ARITY-1 ONLY (phase 3, 2026-07-24).  Intrinsic pure-compound data only; every
+  system / state property has been MOVED to its arity-correct home and is
+  referenced by POINTER below.  Envelope: ../RECORD_SPEC.md.
+\*---------------------------------------------------------------------------*/
+
+name           lysine;
+formula        C6H14N2O2;
+CAS            56-87-1;
+InChIKey       KDXKERNSBIXSRK-YFKPBYRVSA-N;
+pubchemCID     5962;
+MW             146.19;            // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+identityProvenance
+{
+    source      "PubChem CID 5962 (US NIH, public domain), PUG-REST";
+    licence     "public-domain fact";
+    curator     "agent:components";
+    retrieved   2026-07-24;
+    status      candidate;
+}
+
+standardThermochemistry
+{
+    phase            solid;            // crystalline zwitterion
+    referenceState   pureSolid;
+    dHf_298          -678700.0;        // J/mol
+    s_298            240.7;            // J/(mol K)
+
+    provenance
+    {
+        dHf_298
+        {
+            unit        "J/mol";
+            phase       solid;
+            origin      measured;
+            citation    "Vasil'ev, Borodin & Kopnyshev, Russ. J. Phys. Chem. 65 (1991) 29 (combustion -3683.2 kJ/mol; reported -678.7 +/- 1.5)";
+            route       "located through the NIST WebBook condensed-phase free view (ID=C56871, Mask=2), used only as a finding aid -- a no-grant compilation, the value is re-cited to the primary";
+            licence     "facts, primary-cited";
+            status      candidate;
+        }
+        s_298
+        {
+            unit        "J/(mol K)";
+            phase       solid;
+            origin      measured;
+            citation    "Pokorny, Stejfa, Havlin, Fulem & Ruzicka, Molecules 28 (2023) 451 (open access)";
+            licence     "facts, primary-cited";
+            status      candidate;
+        }
+    }
+}
+
+solidHeatCapacity
+{
+    phase         solid;
+    model         polynomial;         // constant-Cp near ambient
+    coefficients  ( 289.2 );          // Cp(298) J/(mol K)
+    Trange        ( 280 320 );        // K
+
+    provenance
+    {
+        unit        "J/(mol K)";
+        phase       solid;
+        origin      measured;
+        citation    "Pokorny, Stejfa, Havlin, Fulem & Ruzicka, 'Heat Capacities of L-Cysteine, L-Serine, L-Threonine, L-Lysine, and L-Methionine', Molecules 28 (2023) 451 (open access; PMCID PMC9823850)";
+        licence     "facts, primary-cited";
+        status      flagged;
+        outlierReview "WITHDRAWN 2026-07-25.  The `1.98 vs 1.19 J/(g K) outlier' argument was PHYSICALLY MISGUIDED.  The primary states verbatim that 'L-lysine and L-methionine are in close proximity to a second-order phase transition at T = 298.15 K, leading to an increased heat capacity' -- so an anomalously HIGH Cp near ambient is EXPECTED for L-lysine, not a transcription error.  The family-trend comparison assumed a smooth Cp, which fails across a near-ambient lambda-type transition.";
+        flagReason  "the EXACT digit (289.2) could NOT be certified in this pass: the open full text (PMC9823850) tabulates Cp,m in Table 6 + Tables S8-S12, whose numeric cells were not machine-readable during retrieval.  A high value is qualitatively corroborated by the documented transition, but the precise Cp(298.15) needs a human read.";
+        action      "read Table 6 (and Tables S8-S12) of PMC9823850 digit-exact; confirm 289.2 or replace, and state explicitly whether the reported Cp(298.15) is the transition-PEAK value or a baseline Cp -- the distinction matters for any energy balance.";
+    }
+}
+
+groups
+{
+    joback  none;
+    reason  "two amines plus an acid on a 6-carbon chain; nonvolatile solute, no VLE estimate wanted";
+    status  flagged;
+}
+
+cosmo
+{
+    LVPP_B3LYP_def2SVPD
+    {
+        variant       lvppB3LYP_def2SVPD;   // NOT cosmoSAC2002 -- no matching runtime constants
+        source        "LVPP sigma database (github lvpp/sigma, MIT, DOI 10.5281/zenodo.3613785; Ferrarini et al., AIChE J. 64 (2018) 3443)";
+        evidenceId    "evidence/lvpp-lysine/metadata.dat (recordId lvpp-lysine)";
+        area          notCopied;
+        volume        notCopied;
+        sigmaProfile  notCopied;
+        status        flagged;
+        reason        "LVPP QM protocol is incompatible with Choupo's VT-2005 cosmoSAC2002 sets; ethylene cross-check: +6.1 % cavity area, +10.3 % cavity volume.";
+    }
+    VT2005
+    {
+        variant       cosmoSAC2002;
+        available     none;
+        status        flagged;
+    }
+    modellingNote "amino acids are COSMO-modelled as the NEUTRAL gas-phase tautomer, never as the aqueous zwitterion";
+}
+
+pcSaft
+{
+    CamerettiSadowski2008
+    {
+        variant       pcSaftAssociating5Param;
+        available     none;
+        citation      "Cameretti & Sadowski, Chem. Eng. Process. 47 (2008) 1018 (neutral zwitterion); Held/Do ePC-SAFT for the charged form";
+        status        flagged;         // STRUCTURED ABSENCE -- no number is carried
+        blockedBy     "Cameretti & Sadowski (2008) is a paywalled article; the parameter
+                       row was never transcribed";
+        action        "read the amino-acid row of that paper (or Held & Sadowski's
+                       ePC-SAFT work for the charged form) and stage m, sigma, eps/k,
+                       N_assoc, eps_assoc/k, kappa_assoc TOGETHER WITH the association
+                       scheme, combining rules, objective function and data range --
+                       five numbers without a protocol are not a parameter set.  Take
+                       ONE compound's row with its own citation, never the table.";
+        legalNote     "reading one row of a primary research paper and citing it is
+                       normal scholarship; systematic extraction of the whole table is
+                       the EU sui-generis database-right risk.  Because NO number is
+                       held here, this block is a declared GAP, not a rights-pending
+                       value -- reclassified rightsPending -> flagged 2026-07-24.";
+    }
+}
+
+// --- MOVED OUT (arity >= 2 / state-dependent) -- POINTERS ONLY, no values ---
+references
+{
+    aqueousDiffusion    "parameters/transport/diffusion/lysine-water.candidate.dat (recordId diffusion-lysine-water) -- Choupo Stokes-Einstein ESTIMATE, flagged there";
+    stokesRadius        "derived inside that same diffusion record -- never a second datum";
+    acidDissociation    "chemistry/aqueousSpeciation/lysine-pKa1|pKa2|pKaR.candidate.dat (recordId lysine-pKa1, lysine-pKa2, lysine-pKaR)";
+    isoelectricPoint    "chemistry/aqueousSpeciation/lysine-pI.candidate.dat (recordId lysine-pI)";
+    chargeAtPH7         "DELETED as DERIVED -- the net +1 at pH 7 follows from the pKa equilibria, never stored";
+    partialMolarVolume  "aqueous V2 at infinite dilution, FLAGGED approximate (Millero, Lo Surdo & Shin, J. Phys. Chem. 82 (1978) 784 / Mishra & Ahluwalia, J. Phys. Chem. 88 (1984) 86) -- carried inside the derivation{} block of the diffusion record above";
+    cosmoSurface        "evidence/lvpp-lysine/metadata.dat (recordId lvpp-lysine)";
+}
+
+speciationNote  "basic ampholyte: the van't Hoff factor is NOT a plain integer -- i = f(pH), set by the referenced dissociation equilibria, not by a component constant";

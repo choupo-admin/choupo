@@ -1,0 +1,135 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: caffeine  (C8H10N4O2, CAS 58-08-2)
+  Neutral stimulant; ubiquitous wastewater tracer; NF/RO micropollutant benchmark.
+
+  PHASE-3 CLEANUP 2026-07-24 -- ARITY 1 ONLY.  Every system / state-dependent
+  value that used to live in a comment block here was moved in phase 2 to its
+  arity-correct home and is NOT restated here (never in two places); what is
+  left below is intrinsic pure-compound data, each numeric carrying UNIT +
+  PHASE/state + `origin` + citation.  Zero usable science is left in a comment:
+  the comments below are POINTERS (home + recordId) only.
+
+  RETENTION RULE applied to computed descriptors (McGowan V_x / Le Bas Vb):
+  they are NOT measured pure-component molar volumes, so they are kept here
+  ONLY when no other record already carries them; when a phase-2 record
+  restates one as a derivation input, this file drops it and points there.
+
+  Private staging tier (data/tmp/, gitignored).  The runtime does not read it.
+\*---------------------------------------------------------------------------*/
+
+// ===== IDENTITY (arity 1) =====
+name              caffeine;
+formula           C8H10N4O2;
+CAS               58-08-2;
+InChIKey  RYYVLZVUVIJVGH-UHFFFAOYSA-N;   // FIRST BLOCK ONLY (14 chars) as retrieved;
+                                    // the full 27-char InChIKey was never recorded
+MW                194.19;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+identityProvenance
+{
+    origin      derived;    // MW computed from the formula with standard atomic weights
+    citation    "PubChem CID 2519 (US NIH, public domain), PUG-REST retrieval";
+    doi         "-";
+    licence     "public domain (US Government)";
+    evidenceId  -;
+    curator     "agent:pharma-cleanup";
+    retrieved   2026-07-24;
+}
+
+// ===== INTRINSIC SOLID-STATE DATA =====
+// meltingPoint: ABSENT -- none was ever recorded for caffeine in this file and
+// none is invented here.
+meltingPointStatus
+{
+    present     no;
+    reason      "no melting point was curated for caffeine at staging; a value must arrive with phase (solid -> liquid), pressure and an open primary before it is declared.";
+    status      flagged;
+}
+
+solidStateStatus
+{
+    crystalDensity  none;
+    reason          "no crystal density curated (an X-ray unit-cell density, per polymorph, would be the primary).  Without rho_c the PURE-component molar volume V_m = MW/rho_c is NOT derivable, so none is declared.  The V_x below is a COMPUTED descriptor and is NOT V_m.";
+    status          flagged;
+}
+
+thermochemistryStatus
+{
+    present     no;
+    reason      "no open, phase-declared solid dHf / S298 / Cp located (combustion / DSC calorimetry paywalled).  A block would have to declare `phase solid`; routing a nonvolatile solid through the ideal-gas rung is forbidden by contract.  Non-essential for the nonvolatile membrane-solute role.";
+    status      flagged;
+}
+
+// ===== COMPUTED MOLECULAR DESCRIPTORS (arity 1, NOT measurements) =====
+descriptors
+{
+    mcGowanVolume
+    {
+        value       136.3 cm3/mol;
+        state       molecularDescriptor;   // additive; not a phase property, not V_m
+        origin      estimated;
+        method      "McGowan characteristic volume V_x: additive atomic contributions minus 6.56 cm3/mol per bond; computed by Choupo for C8H10N4O2, 2 rings";
+        citation    "Abraham, M.H. & McGowan, J.C., Chromatographia 23 (1987) 243";
+        doi         "-";
+        licence     "facts, primary-cited";
+        curator     "agent:pharma-cleanup";
+        retrieved   2026-07-24;
+        status      flagged;   // Choupo's own estimate; never to be read as a measured molar volume
+        note        "retained here because no phase-2 record carries it (caffeine has no diffusion record).";
+    }
+}
+
+// ===== COSMO =====
+cosmoStatus
+{
+    namedSet       none;    // no deployable set in this file
+    evidence       "evidence/lvpp-caffeine/metadata.dat  (recordId lvpp-caffeine)";
+    evidenceModel  "COSMO, NWChem B3LYP def2-SVPD, SES cavity, LVPP release v25";
+    deployable     no;
+    reason         "LVPP's QM protocol is incompatible with Choupo's VT-2005 sigma profiles used by the cosmoSAC2002 variant: on the ethylene cross-check the LVPP cavity is +6.1 % in area and +10.3 % in volume vs VT-2005.  Mixing a profile with another variant's constants is a LOUD error by contract, so no `cosmo { }` set is declared.";
+    status         flagged;
+}
+
+// ===== PC-SAFT =====
+pcSaftStatus
+{
+    parameterSet   none;
+    pinnedSource   "-";
+    numbersInHand  no;
+    reason         "no published caffeine parameter set identified; a set would have to be fitted or cited to a primary, and must carry variant, units, association scheme, combining rules, objective function and data range.  See parameters/PCSAFT/_INVENTORY.md.";
+    status         flagged;
+}
+
+// ===== POINTERS -- values MOVED OUT in phase 2 (home + recordId; no values here) =====
+// pKa (cation step)   -> chemistry/aqueousSpeciation/  recordId caffeine-pKa1
+// pKa (N-H acid step) -> chemistry/aqueousSpeciation/  recordId caffeine-pKa2
+// chargeAtPH7         -> DELETED (derived from the two equilibria above; never stored)
+// logKow              -> parameters/partition/         recordId caffeine-octanol-water
+// aqueous solubility  -> parameters/solubility/        recordId caffeine-water
+// D_aq / Stokes radius-> parameters/transport/diffusion/  NO RECORD: only an
+//                        order-of-magnitude range was ever held, and a range is
+//                        not a value (see that home's _LEDGER.md, "not emitted")
+// COSMO cavity        -> evidence/lvpp-caffeine/metadata.dat  recordId lvpp-caffeine
+
+// DEFECT FIXED 2026-07-24: this component previously asserted ONLY the weak-acid
+// pKa (N-H) and was therefore MISSING A WHOLE DISSOCIATION STEP -- the
+// conjugate-acid (cation) equilibrium.  Both steps now live in the speciation
+// home; this file asserts NEITHER, only the two pointers above.
+
+status            candidate;   // applies to the identity block; every property
+                               // block above carries its own status

@@ -1,0 +1,54 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of atenolol in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/atenolol.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: solid phase NOT ESTABLISHED -- a structured gap, not a
+  guess.  Rights already clear.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        atenolol-water;
+participants    ( atenolol water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    unspecified;
+    phaseBasis    notEstablished;
+}
+
+// Free base, not a salt.  Atenolol is cationic at pH 7 (pKa 9.6), so the
+// dissolved species is not the solid's neutral form.
+// PHASE 4 search: no phase-identified determination located.
+// UNIT CONVERSION (shown, not hidden): 13.3 g/L * 1000 mg/g = 1.33e4 mg/L
+value
+{
+    solubility    1.33e4 mg/L;
+    originalStatement  "13.3 g/L @ 25 C";   // verbatim, before conversion
+}
+
+provenance
+{
+    origin      measured;
+    citation    "HSDB (US NLM, public domain), CID 2249; concurs HMDB";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+blockedBy       "no source states the equilibrating solid phase (free-base polymorph)";
+status          flagged;

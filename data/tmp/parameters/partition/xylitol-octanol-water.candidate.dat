@@ -1,0 +1,74 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  XLogP3 of xylitol between 1-octanol and water.
+
+  ARITY 3: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/xylitol.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      partitionCoefficient;
+schemaVersion   1;
+recordId        xylitol-octanol-water;
+participants    ( xylitol octanol water );
+property        XLogP3;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- the conventional log P reference
+                  // temperature is NOT restated by the source; the
+                  // 25 C convention is assumed and flagged here.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    pH            "non-ionizable";
+    chemicalForm  neutral;
+}
+
+// FLAGGED / ESTIMATED: XLogP3 is a PREDICTION, not a measurement.
+value
+{
+    XLogP3   -2.5;   // dimensionless (log10 of a concentration ratio)
+}
+
+provenance
+{
+    origin      estimated;
+    citation    "PubChem CID 6912, XLogP3 -- COMPUTED atom/knowledge-based descriptor (Cheng, T. et al., J. Chem. Inf. Model. 47 (2007) 2140)";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:partition";
+    retrieved   2026-07-24;
+}
+
+status          flagged;
+
+// ----------------------------------------------------------------------------
+// PHASE 6 (2026-07-24) -- searched for a MEASURED logKow.  NOT FOUND.  Value unchanged.
+// ----------------------------------------------------------------------------
+//   The brief asked specifically whether a measured octanol-water partition coefficient
+//   exists for any of the four sugar alcohols (sorbitol / mannitol / xylitol / erythritol),
+//   so that the PubChem XLogP3 PREDICTION carried here could be replaced by data.
+//   None was found in any source the project may use.  Nothing was substituted.
+//
+//   This is very likely a REAL absence rather than a failed search.  A polyol partitions
+//   overwhelmingly into water (predicted logKow about -2 to -3), so the octanol-phase
+//   concentration in a shake-flask sits at or below the analytical detection limit; the
+//   measurement is not merely unperformed, it is close to unperformable by the standard
+//   method.  Values quoted for these compounds in the literature are, as far as phase 6
+//   can see, uniformly fragment-QSAR estimates of the same family as XLogP3 itself.
+//
+//   Do NOT paper over this by importing another prediction under a different name.  The
+//   `property XLogP3` label (not `logKow`) that phase 2 chose is the correct treatment and
+//   is retained: it makes the prediction impossible to mistake for a measurement.
+//
+//   CROSS-REFERENCE, and the sharpest available argument against using XLogP3 as data:
+//     phase 6 DID close the speciation gap for two of these four compounds from a primary
+//     it read in full -- Thamsen, Acta Chem. Scand. 6 (1952) 270-284 -- which measures
+//     mannitol at pK' 13.50 and sorbitol at pK' 13.57 (18 C, I = 0.015-0.05 M NaOH).
+//     A real measurement separates the two diastereomers.  XLogP3 assigns them the
+//     IDENTICAL -3.1, because it cannot tell them apart at all.
+//     See ../../chemistry/aqueousSpeciation/{mannitol,sorbitol}-pKa1.candidate.dat
+// ----------------------------------------------------------------------------

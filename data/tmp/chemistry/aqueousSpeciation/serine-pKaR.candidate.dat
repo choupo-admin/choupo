@@ -1,0 +1,60 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/serine.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        serine-pKaR;
+participants    ( serine- serine2- H+ );
+property        pKa;
+reaction        "serine- (beta-OH intact) = serine2- (beta-alkoxide) + H+";
+site            "beta-OH (side chain)";
+step            3;
+
+conditions
+{
+    temperature     298.15 K;   // NOMINAL 25 C of the consensus lineage; NOT read from a primary (phase 7)
+    phase           aqueous;
+    ionicStrength   notStated;   // phase 7: kept explicit -- NOT invented (see SHARPENED ACTION)
+}
+
+value
+{
+    pKa             ~13;   // ORDER-OF-MAGNITUDE, declared 'inert' by the source -- no primary pinned
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      estimated;
+    citation    "consensus set (Lehninger, Principles of Biochemistry; CRC Handbook 84th ed.); lineage = aqueous potentiometric titration at 25 C (Smith & Smith, J. Biol. Chem. 1942; King, J. Am. Chem. Soc. 1951; Nozaki & Tanford, J. Biol. Chem. 242 (1967) 4731 for exposed side chains) -- side-chain value quoted only as '~13, inert'";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          flagged;
+
+// NOTES
+//   Re-homed from components/serine.candidate.dat line: 'pKa1 = 2.21 ; pKa2 = 9.15 ; (b-OH ~13, inert)'
+//   NOT usable as a number: order-of-magnitude only; kept so the datum is not lost in a comment
+//   LEGAL: consensus lineage reaches us via PAYWALLED compilations (CRC 84th ed. / Lehninger); re-pin an OPEN potentiometric primary before promotion
+//
+// ===== PHASE 7 (2026-07-25) amino-acid pKa hunt -- SHARPENED ACTION =====
+//   flagged, UNCHANGED -- and this one is a permanent non-promotion.
+//   TARGET: the beta-OH is an aliphatic ALCOHOL; its alkoxide pKa (~13-14) lies ABOVE
+//     the aqueous titration window and is effectively non-titratable -- NO reliable
+//     potentiometric primary exists, and the source itself calls it 'inert'.  KEEP as
+//     an order-of-magnitude ESTIMATE (origin estimated); do NOT promote.  For alcoholate
+//     determinations in general cf. Thamsen, Acta Chem. Scand. 6 (1952) 270 (the
+//     mannitol/sorbitol records in this directory) -- but serine's beta-OH specifically
+//     is inert and is NOT a promotion candidate; no T or I is retrievable for it.
+//   ionicStrength stays notStated; value ~13 UNCHANGED.
+//   ROUTES CHECKED (do not re-try blindly): J. Res. NBS is PUBLIC DOMAIN and machine-
+//     readable via the DOI resolver but holds no serine determination; web-search
+//     budget was exhausted upstream this phase.

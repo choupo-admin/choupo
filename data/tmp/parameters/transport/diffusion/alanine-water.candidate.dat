@@ -1,0 +1,61 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/alanine.candidate.dat; primary citation
+  cross-checked against data/tmp/aminoacids_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-alanine-water;
+participants    ( alanine water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             9.10e-10 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// a Stokes radius computed FROM the D above is NOT an independent datum
+derived
+{
+    equation      "r = kT/(6 pi mu D)";
+    viscosity     0.8903e-3 Pa.s;
+    temperature   298.15 K;
+    radius        0.270 nm;
+    origin        derived;
+}
+
+provenance
+{
+    origin        measured;
+    citation      "Longsworth, J. Am. Chem. Soc. 75 (1953) 5705 (Gouy interferometry); alpha-alanine also Gutter & Kegeles, J. Am. Chem. Soc. 75 (1953) 3893 (0.910e-5 cm2/s)";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          candidate;

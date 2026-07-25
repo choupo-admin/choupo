@@ -1,0 +1,72 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of potassium perfluorobutanesulfonate in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/PFBS.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: IDENTITY FIXED (potassium salt) and the equilibrating
+  substance IS stated by the source, with a temperature range -> candidate.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        PFBS-potassium-water;
+participants    ( PFBS-potassium water );
+property        aqueousSolubility;
+
+// PHASE 4 IDENTITY CORRECTION, same as PFOS: the equilibrated solid is
+// potassium perfluorobutanesulfonate, not perfluorobutanesulfonic acid.
+// `participants` and `recordId` now name the salt; the acid keeps no
+// number in this corpus.
+substituteFor   PFBS;   // the acid this datum was WRONGLY parked under
+saltForm        potassium;
+
+conditions
+{
+    temperature   296.4 K;   // midpoint of the source's 22.5-24 C range
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    potassiumSalt;
+    phaseBasis    statedBySource;   // the source explicitly says "potassium salt"
+}
+
+// PROMOTED TO candidate in phase 4.  Everything this record needs is
+// stated by an open, US-government public-domain source: the substance
+// (potassium salt), the medium (water), the quantity, and a temperature
+// (as a range, preserved in `validity`).  What is NOT stated is the
+// crystalline form / hydration state of the salt -- a second-order axis
+// here, since the salt-vs-acid choice is what actually moves this number
+// by orders of magnitude, and that axis is now pinned.  Recorded as a
+// candidate WITH that residual openly noted below.
+// UNIT CONVERSION (shown, not hidden): 52.6 g/L * 1000 mg/g = 5.26e4 mg/L
+value
+{
+    solubility    5.26e4 mg/L;
+    originalStatement  "52.6 g/L @ 22.5-24 C (potassium salt)";   // verbatim
+}
+
+validity
+{
+    temperatureRange ( 295.65 297.15 ) K;   // the source quotes a range, not a point
+}
+
+residualUncertainty  "crystalline form / hydration state of the potassium salt not stated; temperature is a 1.5 K range, not a point";
+
+provenance
+{
+    origin      measured;
+    citation    "ITRC PFAS Technical/Regulatory Guidance; also ATSDR, Toxicological Profile for Perfluoroalkyls (2021) (US-gov, public domain)";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+status          candidate;

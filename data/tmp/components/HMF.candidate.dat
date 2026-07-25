@@ -1,0 +1,151 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: HMF  (5-hydroxymethylfurfural, C6H6O3, CAS 67-47-0)
+  The key C6-sugar dehydration platform molecule of the biorefinery route.
+
+  IDENTITY source: PubChem CID 237332 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 67-47-0 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  No aqueous
+    diffusion / partition / solubility / speciation datum was ever staged, so
+    nothing was re-homed out of it in phase 2.  HMF is NOT in the LVPP sigma
+    database, so it has no COSMO evidence record either.
+
+  STATUS: candidate, and the DATA-POOREST file in this set.  Tb, Tc, Pc, omega,
+    Antoine, Cp and the formation datum are all absent.
+\*---------------------------------------------------------------------------*/
+
+name              HMF;
+formula           C6H6O3;
+CAS               67-47-0;
+SMILES            "OCc1ccc(C=O)o1";
+InChIKey  NOEGNKMFWQHSLB-UHFFFAOYSA-N;   // 14-char skeleton only.
+MW                126.11;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+                                    //   boiling point (it decomposes), so
+                                    //   `volatile` would demand an Antoine set
+                                    //   that does not and may not exist.
+
+// groups: NOT decomposed.  Joback handling is IMPERFECT here -- its aromatic
+//   groups (arCH / arC) are BENZENE-type and there is no furan heteroaromatic
+//   group.  Declared gap; a benzene-group decomposition of a furan would be a
+//   silently-wrong estimate.
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+Tfus              308.5;    // K (35.3 degC) -- so HMF is a SOLID at 298 K and a
+                            //   liquid a couple of degrees above it.  DSC.
+                            //   FULL CITATION RESOLVED 2026-07-25: Verevkin, S.P.;
+                            //   Emel'yanenko, V.N.; Stepurko, E.N.; Ralys, R.V.;
+                            //   Zaitsau, D.H.; Stark, A., "Biomass-Derived Platform
+                            //   Chemicals: Thermodynamic Studies on the Conversion
+                            //   of 5-Hydroxymethylfurfural into Bulk Intermediates",
+                            //   Ind. Eng. Chem. Res. 48(22) (2009) 10087-10093,
+                            //   doi:10.1021/ie901012g.  origin measured.
+
+fusionEnthalpy
+{
+    dHfus     19800;        // J/mol at Tfus = 308.5 K, DSC
+    source    "Verevkin, Emel'yanenko, Stepurko, Ralys, Zaitsau & Stark, Ind. Eng.
+               Chem. Res. 48(22) (2009) 10087-10093, doi:10.1021/ie901012g";
+    status    candidate;
+}
+
+// dvapH over a stated window -- NOT a value at Tb (HMF has no clean Tb).  Kept
+// structured because it is usable science and may not live in a comment.
+vaporizationEnthalpy
+{
+    model             rangeAverage;
+    unit              "J/mol";
+    value             83400;
+    temperatureRange  ( 314  368 );   // K -- ABOVE Tfus, so this is vaporisation
+                                      //   of the melt, not sublimation.
+    method            "gas-saturation (transpiration)";
+    source            "Verevkin, Emel'yanenko, Stepurko, Ralys, Zaitsau & Stark, Ind.
+                       Eng. Chem. Res. 48(22) (2009) 10087-10093, doi:10.1021/ie901012g;
+                       83.4 +/- 0.2 kJ/mol.  Full citation resolved 2026-07-25";
+    note              "the file previously stored this number under the key `HvapTb`, which was a MISLABELLING -- HMF has no normal boiling point and this value is not at one";
+    status            flagged;
+}
+
+// Reduced-pressure boiling point -- the only boiling datum in hand.
+boilingPointReduced
+{
+    property      "T_boil at reduced pressure";
+    available     none;               // DROPPED 2026-07-24 (rights clearance)
+    status        flagged;
+    blockedBy     "Weast (ed.), CRC Handbook of Chemistry and Physics -- a no-grant,
+                   all-rights-reserved compilation, EXCLUDED outright by CLAUDE.md
+                   section 10.  There is nothing to honour and nothing to re-cite.";
+    action        "take a reduced-pressure boiling point (or better, a vapour-pressure
+                   correlation) for 5-HMF from a measurement report.  The file already
+                   pins one candidate: Verevkin, Emel'yanenko et al. (2009), the
+                   gas-saturation study behind the vaporisation enthalpy above --
+                   resolve its full citation and read its P-T data.";
+    droppedValue  "T = 388.2 K at P = 100.0 Pa";
+    consequence   "HMF now carries NO boiling datum at all; the vaporisation enthalpy
+                   above is a range-average ABOVE Tfus and is separately flagged";
+}
+
+solidDensity      1240.0;   // kg/m3  [FLAG -- UNATTRIBUTED]
+                            //   Staged as a bare "rho ~1.24 g/cm3" with NO source
+                            //   and no stated temperature or crystal form.  Kept
+                            //   so the number is not lost, but it is not usable
+                            //   as data.  A previously-quoted extrapolated LIQUID
+                            //   molar volume was derived from THIS unattributed
+                            //   density and is not stored: a derivative of a
+                            //   flagged input is not a datum.
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// Tb / Tc / Pc / omega   : HMF decomposes near its boiling point; no open values.
+// vaporPressure (Antoine): none located.
+// idealGasHeatCapacity   : none located.
+// standardThermochemistry: DECLARED GAP.  Verevkin, Emel'yanenko, Stepurko,
+//                          Ralys, Zaitsau & Stark, Ind. Eng. Chem. Res. 48(22)
+//                          (2009) 10087-10093 (doi:10.1021/ie901012g) report BOTH
+//                          dHf(cr) and dHf(gas) for HMF -- citation now RESOLVED --
+//                          but the paper is paywalled and the free NIST condensed-
+//                          phase page is subscription-gated, so the digits were not
+//                          read.  That is the route: read that paper's HMF rows.
+// COSMO-SAC              : HMF is NOT in the LVPP sigma database -- no evidence
+//                          record exists.  Even if it were, no `cosmo {}` block
+//                          could be written from LVPP output: its QM protocol is
+//                          incompatible with Choupo's VT-2005 `cosmoSAC2002`
+//                          sets (ethylene cross-check: +6.1 % cavity area,
+//                          +10.3 % cavity volume).
+// PC-SAFT                : associating (OH + CHO); no set located, none fitted
+//                          (parameters/PCSAFT/_INVENTORY.md, section 3).
+
+provenance
+{
+    Tfus
+    {
+        origin      measured;
+        method      "DSC";
+        citation    "Verevkin, Emel'yanenko, Stepurko, Ralys, Zaitsau & Stark, Ind. Eng. Chem. Res. 48(22) (2009) 10087-10093, doi:10.1021/ie901012g";
+        note        "full citation resolved 2026-07-25";
+        status      candidate;
+    }
+    solidDensity
+    {
+        origin      unattributed;
+        citation    "-";
+        note        "bare '~1.24 g/cm3' with no source, no temperature, no crystal form";
+        status      flagged;
+    }
+}

@@ -1,0 +1,223 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: fructose  (C6H12O6, CAS 57-48-7) -- keto-hexose, isomer
+  of glucose.  Non-volatile non-electrolyte SOLUTE (NF/RO sugar-rejection family,
+  beside the shipped glucose/sucrose cases).  Decomposes before it vaporises, so
+  the energy ladder takes the SOLID rung (referenceState pureSolid).
+
+  PRIVATE staging tier (data/tmp, gitignored).  Envelope + ARITY rule:
+  ../RECORD_SPEC.md.  Cleaned 2026-07-24 (phase 3, component cleanup).
+
+  ARITY-1 ONLY.  This file carries nothing but INTRINSIC single-substance data.
+  Every SYSTEM property (solute+solvent, solute+octanol, a real equilibrium) was
+  emitted in phase 2 into its arity-correct home; below it is referenced by a
+  ONE-LINE pointer -- a cross-reference, NEVER a second copy of the number.
+
+  (chargeAtPH7 was never stored here -- it is DERIVED from the pKa equilibrium.)
+\*---------------------------------------------------------------------------*/
+
+// --- MOVED OUT in phase 2 -- POINTERS ONLY (a cross-reference, not data) ---
+// D_aq + Stokes radius: see parameters/transport/diffusion/fructose-water (recordId diffusion-fructose-water)
+// pKa1: see chemistry/aqueousSpeciation/fructose-pKa1 (recordId fructose-pKa1)
+// aqueous solubility: see parameters/solubility/fructose-water (recordId fructose-water)
+// partial molar volume in water (the old `Vliq`): see parameters/volume/fructose-water (recordId volume-fructose-water)
+
+name           fructose;
+formula        C6H12O6;
+CAS            57-48-7;
+
+MW             180.156;        // g/mol -- derived from the formula with IUPAC
+                               //   standard atomic weights (origin derived)
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;              // non-electrolyte, van't Hoff i = 1 (arity-1 declaration)
+
+identity
+{
+    pubchemCID         2723872;
+    InChIKey   RFSUNEUAIZKAJO;      // 14-character BLOCK 1 ONLY
+    inchiKeyStatus     skeletonBlockOnly;
+    inchiKeyNote       "Block 1 of an InChIKey hashes CONSTITUTION only; every
+                        C6H12O6 aldose/ketose sharing this connectivity hashes
+                        identically.  The stored key therefore does NOT identify
+                        the stereoisomer or the anomer.  Fetch the full 27-char
+                        key from PubChem CID 2723872 before ANY key-based join.";
+    stereochemicalForm "D-fructose; beta-D-fructopyranose in the crystalline solid,
+                        a furanose/pyranose/open-chain equilibrium in water";
+    identitySource     "PubChem CID 2723872 (US NIH, public domain), retrieved 2026-07-24";
+    status             flagged;             // truncated key
+}
+
+// ---------------------------------------------------------------------------
+// Standard enthalpy of formation of CRYSTALLINE D-fructose.  ARITY-1 INTRINSIC
+// (the molecule + its elements), SOLID rung -- fructose decomposes before it
+// vaporises, so the energy ladder never integrates a fructose vapour leg.
+// PRIMARY: Clarke & Stegeman, "Heats of combustion of some mono- and
+// disaccharides", J. Am. Chem. Soc. 61 (1939) 1726-1730 -- combustion
+// calorimetry, dHc = -(2810.4 +/- 0.3) kJ/mol; reanalysed by Cox & Pilcher 1970.
+standardThermochemistry
+{
+    dHf_298    -1265600.0;     // J/mol (-1265.6 +/- 0.46 kJ/mol), phase CRYSTALLINE
+                               //   origin measured (combustion)
+                               //   [Clarke & Stegeman 1939; Cox & Pilcher 1970 reanal.]
+    // s_298   ABSENT BY DECISION -- see entropyStatus{} below.  NOT fabricated.
+    referenceState      pureSolid;
+}
+
+// Third-law entropy: no number is carried.  Structured flag, not a bare comment.
+entropyStatus
+{
+    property        s_298;
+    phase           solid;
+    value           none;                  // nothing shipped, nothing invented
+    pendingPrimary  "low-temperature adiabatic-calorimetry study of crystalline
+                     D-fructose, J. Chem. Thermodyn. (2012) -- paywalled at curation";
+    nistCheck       "2026-07-25: NIST WebBook condensed-phase (ID=C57487) lists ONLY
+                     dfH(cr) -1265.6 +/- 0.46 (Clarke & Stegeman 1939; Cox & Pilcher
+                     1970 reanalysis) -- S and Cp are genuinely ABSENT there.  dfH
+                     above is VERIFIED digit-exact; the S/Cp gap is real, not an
+                     oversight.";
+    consequence     "no solid-fructose entropy/Gibbs balance may be run";
+    status          flagged;
+}
+
+// Solid heat capacity: no number is carried (same primary as the entropy).
+solidHeatCapacityStatus
+{
+    property        Cp_solid;
+    phase           solid;
+    value           none;
+    pendingPrimary  "J. Chem. Thermodyn. (2012) fructose adiabatic-calorimetry study";
+    consequence     "no solid-fructose energy balance; in NF separation the solute
+                     carries no energy balance (water dominates Cp), so the shipped
+                     cases do not need it (glucose.dat flags its solid Cp likewise)";
+    status          flagged;
+}
+
+// --- PURE-COMPONENT (arity-1) properties, each with unit + phase + origin + citation ---
+pureComponentProperties
+{
+    solidDensity
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "CRC Handbook of Chemistry and Physics -- no-grant, all-rights-reserved";
+        action        "read Dx (calculated density) from a published single-crystal structure of
+                      the NAMED polymorph/anomer -- Acta Cryst. reports it directly -- or
+                      derive rho = Z*MW/(N_A*V_cell) from open cell parameters (the
+                      Crystallography Open Database is CC0 and cites the primary for each
+                      entry).  Record the cell, Z and the arithmetic in a derivation{}
+                      block, and NAME the solid form.";
+        droppedValue  "value = 1.60 g/cm3; temperature = 293.15 K; citation = CRC Handbook of Chemistry and Physics, 79th ed., p.3-167";
+    }
+
+    solidMolarVolume
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "DERIVED from the solidDensity above, which was dropped -- a
+                       derivative cannot outlive the datum it was computed from";
+        action        "recompute V = MW / rho once a legally clear rho exists, and
+                       name the solid form both refer to";
+        droppedValue  "112.60 cm3/mol  (this is the PURE-SOLID molar volume; the partial molar
+                       volume in water is a SYSTEM property and is unaffected -- it
+                       lives in parameters/volume/)";
+    }
+
+    meltingPoint
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index + CRC Handbook -- paywalled / no-grant compilations";
+        action        "take T_fus from a calorimetric (DSC / adiabatic) primary that STATES the
+                      polymorph or anomer it melted, and stage it in a fusion{} block
+                      together with dHfus -- a melting point without a named solid form is
+                      not a property of a substance, it is a property of a sample.";
+        droppedValue  "value = 376.15 K; range = ( 376.15 378.15 ) K; transition = decomposition; citation = The Merck Index, 12th ed.";
+    }
+}
+
+// Optical rotation -- an IDENTITY / purity descriptor (which enantiomer), not a
+// thermophysical property.  Measured in aqueous solution, so its conditions are
+// declared in full; it is retained here only as an identity marker.
+identityDescriptors
+{
+    specificRotation
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "The Merck Index -- paywalled commercial compilation";
+        action        "take [alpha]_D from a polarimetric primary that states c, solvent,
+                      temperature, wavelength and the mutarotation state.  This is an
+                      IDENTITY descriptor, not a thermophysical datum, so it is the
+                      lowest-priority gap in this file.";
+        droppedValue  "value = -92.0 deg; temperature = 293.15 K; solvent = water; composition = c = 2 g/100 mL, mutarotation equilibrium; wavelength = 589.3 nm; citation = The Merck Index, 12th ed.";
+    }
+}
+
+// --- COSMO surface: NO deployable set (structured flag, never a loose comment) ---
+cosmoStatus
+{
+    recordType      cosmoSurfaceStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    evidenceRecord  none;                 // NO evidence/lvpp-fructose record exists
+    identityUnresolved
+        "LVPP ships THREE distinct fructose structures -- FRUCTOSE.cosmo (furanose,
+         5-membered ring), DFRUCTOSE.cosmo (pyranose, 6-membered ring) and
+         KETO_D_FRUCTOSE.cosmo (open-chain keto).  The staging CSV name-match
+         picked the FURANOSE while this candidate is the crystalline pyranose;
+         cavity areas differ by ~4 % (706.00 / 678.57 / 733.95 bohr2).  The match
+         is IDENTITY-UNVERIFIED, so no record was written and none may be pasted.";
+    protocolIncompatibility
+        "Independently of the identity question: LVPP surfaces come from a
+         DIFFERENT QM protocol (NWChem B3LYP/def2-SVPD, SES cavity) than the
+         VT-2005 surfaces Choupo's cosmoSAC2002 constants were regressed against
+         (Mullins et al., IECR 45 (2006) 4389).  Measured on ethylene, present in
+         both databases: +6.1 % cavity area, +10.3 % cavity volume.  An LVPP
+         surface must NEVER be tagged variant cosmoSAC2002.";
+    status          flagged;
+}
+
+// --- PC-SAFT: no set in hand (structured flag) ---
+pcSaftStatus
+{
+    recordType      saftParameterSetStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    sourcePinned    "Held & Sadowski, 'Modeling thermodynamic properties of aqueous
+                     single-/multi-solute sugar solutions with PC-SAFT',
+                     AIChE J. 59 (2013) 4794-4805, Table 2 (fructose among the 13
+                     fitted sugars; 2 association sites)";
+    numbersInHand   no;
+    legalNote       "systematic extraction of that table is the EU sui-generis
+                     database-right case; take one compound's row with its own
+                     citation if ever needed -- never the table";
+    status          flagged;         // STRUCTURED ABSENCE -- no number is carried
+    blockedBy       "the pinned parameter source is a paywalled article and no row was
+                     ever transcribed";
+    action          "read ONE compound's row at the pinned source and stage it with its
+                     own citation PLUS variant, units, association scheme, combining
+                     rules, objective function and data range; never the whole table";
+    legalNote2      "reclassified rightsPending -> flagged 2026-07-24 (rights-clearance
+                     pass): rightsPending means a VALUE is held that cannot be shipped.
+                     No value is held here, so this is a declared GAP, not a legal
+                     blocker on any number.";
+}
+
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 3; } { group OH; count 5; } { group ketone; count 1; } );   // PROPOSED (review vs Choupo UNIFAC vocab) -- keto-hexose, open-chain decomposition
+}

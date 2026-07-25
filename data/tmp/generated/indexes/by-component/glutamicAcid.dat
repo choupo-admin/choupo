@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'glutamicAcid'
+component glutamicAcid;
+records
+(
+    { recordType acidDissociation; recordId glutamicAcid-pKa1; category flagged; file "chemistry/aqueousSpeciation/glutamicAcid-pKa1.candidate.dat"; }
+    { recordType acidDissociation; recordId glutamicAcid-pKaR; category flagged; file "chemistry/aqueousSpeciation/glutamicAcid-pKaR.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-glutamicAcid; category flagged; file "evidence/lvpp-glutamicAcid/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-glutamicAcid-water; category flagged; file "parameters/transport/diffusion/glutamicAcid-water.candidate.dat"; }
+    { recordType isoelectricPoint; recordId glutamicAcid-pI; category flagged; file "chemistry/aqueousSpeciation/glutamicAcid-pI.candidate.dat"; }
+);

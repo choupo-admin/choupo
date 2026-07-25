@@ -1,0 +1,7 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'PFBS'
+component PFBS;
+records
+(
+    { recordType acidDissociation; recordId PFBS-pKa1; category flagged; file "chemistry/aqueousSpeciation/PFBS-pKa1.candidate.dat"; }
+    { recordType organicCarbonPartition; recordId PFBS-soilOrganicCarbon-water; category flagged; file "parameters/soilPartition/PFBS-soilOrganicCarbon-water.candidate.dat"; }
+);

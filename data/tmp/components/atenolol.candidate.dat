@@ -1,0 +1,135 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: atenolol  (C14H22N2O3, CAS 29122-68-7) -- beta-blocker
+  Weak base, cationic and hydrophilic at neutral pH; NF/RO trace-organic tracer.
+
+  PHASE-3 CLEANUP 2026-07-24 -- ARITY 1 ONLY.  Every system / state-dependent
+  value that used to live in a comment block here was moved in phase 2 to its
+  arity-correct home and is NOT restated here (never in two places); what is
+  left below is intrinsic pure-compound data, each numeric carrying UNIT +
+  PHASE/state + `origin` + citation.  The comments below are POINTERS only.
+
+  RETENTION RULE for computed descriptors (McGowan V_x / Le Bas Vb): kept here
+  only when no phase-2 record already carries the number as a derivation input.
+  The Le Bas Vb is NOT kept here -- it is the derivation input of recordId
+  diffusion-atenolol-water.
+
+  Private staging tier (data/tmp/, gitignored).  The runtime does not read it.
+\*---------------------------------------------------------------------------*/
+
+// ===== IDENTITY (arity 1) =====
+name              atenolol;
+formula           C14H22N2O3;
+CAS               29122-68-7;
+InChIKey  METKIMKYRPQLGS-UHFFFAOYSA-N;   // FIRST BLOCK ONLY (14 chars) as retrieved
+MW                266.34;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+identityProvenance
+{
+    origin      derived;    // MW computed from the formula with standard atomic weights
+    citation    "PubChem CID 2249 (US NIH, public domain), PUG-REST retrieval";
+    doi         "-";
+    licence     "public domain (US Government)";
+    evidenceId  -;
+    curator     "agent:pharma-cleanup";
+    retrieved   2026-07-24;
+}
+
+// NOTE ON IDENTITY: CAS 29122-68-7 is the RACEMATE.  Racemate and (S)-enantiomer
+// are different solids -- the melting-point spread below may partly reflect that.
+
+// ===== INTRINSIC SOLID-STATE DATA =====
+meltingPoint
+{
+    range              ( 419.15 421.15 ) K;   // = 146-148 C
+    originalStatement  "146-148 C";           // verbatim, before the K conversion (Choupo's own arithmetic)
+    transition         "solid -> liquid";
+    phaseBefore        solid;
+    phaseAfter         liquid;
+    polymorph          unspecified;           // NOT stated by the source
+    stereochemicalForm unspecified;           // NOT stated by the source
+    pressure           101325 Pa;             // ambient, ASSUMED -- not stated by the source
+    origin             measured;
+    citation           "HSDB (US NLM, public domain), PubChem CID 2249";
+    doi                "-";
+    licence            "public domain (US Government)";
+    curator            "agent:pharma-cleanup";
+    retrieved          2026-07-24;
+    status             flagged;   // see the contradiction below -- do not use unresolved
+
+    crossCheck
+    {
+        statement   "HMDB 147 C (= 420.15 K), inside this range; DrugBank 158-160 C (= 431.15-433.15 K), 10-14 K ABOVE it";
+        note        "quoted, NEVER merged.  UNRESOLVED CONTRADICTION: two public compilations disagree by more than 10 K on the same name.  Candidate explanations are a racemate/enantiomer difference or a polymorph; neither source states its form.  A primary that names the form is required before this melting point is used for anything.";
+    }
+}
+
+solidStateStatus
+{
+    crystalDensity  none;
+    reason          "no crystal density curated (an X-ray unit-cell density, per polymorph and stereochemical form, would be the primary).  Without rho_c the PURE-component molar volume V_m = MW/rho_c is NOT derivable, so none is declared.";
+    status          flagged;
+}
+
+thermochemistryStatus
+{
+    present     no;
+    reason      "no open, phase-declared solid dHf / S298 / Cp located (paywalled or unavailable).  Routing a nonvolatile solid through the ideal-gas rung is forbidden by contract.";
+    status      flagged;
+}
+
+// ===== COMPUTED MOLECULAR DESCRIPTORS =====
+descriptors
+{
+    // Le Bas Vb is NOT declared here: it is already recorded, with its method
+    // reference, as the derivation input of recordId diffusion-atenolol-water
+    // (parameters/transport/diffusion/).  One number, one home.
+    note   "no arity-1 descriptor is stored in this file; see the pointer above.";
+}
+
+// ===== COSMO =====
+cosmoStatus
+{
+    namedSet       none;
+    evidence       "evidence/lvpp-atenolol/metadata.dat  (recordId lvpp-atenolol)";
+    evidenceModel  "COSMO, NWChem B3LYP def2-SVPD, SES cavity, LVPP release v25";
+    deployable     no;
+    reason         "LVPP's QM protocol is incompatible with Choupo's VT-2005 sigma profiles used by the cosmoSAC2002 variant: on the ethylene cross-check the LVPP cavity is +6.1 % in area and +10.3 % in volume vs VT-2005.  Mixing a profile with another variant's constants is a LOUD error by contract.  Note additionally that the LVPP geometry is a neutral gas-phase molecule, while atenolol is protonated at process pH.";
+    status         flagged;
+}
+
+// ===== PC-SAFT =====
+pcSaftStatus
+{
+    parameterSet   none;
+    pinnedSource   "-";
+    numbersInHand  no;
+    reason         "no published open parameter set identified.  See parameters/PCSAFT/_INVENTORY.md.";
+    status         flagged;
+}
+
+// ===== POINTERS -- values MOVED OUT in phase 2 (home + recordId; no values here) =====
+// pKa (secondary amine) -> chemistry/aqueousSpeciation/  recordId atenolol-pKa1
+// chargeAtPH7           -> DELETED (derived from the equilibrium above; never stored)
+// logKow                -> parameters/partition/         recordId atenolol-octanol-water
+// aqueous solubility    -> parameters/solubility/        recordId atenolol-water
+// D_aq (ESTIMATE), its  -> parameters/transport/diffusion/  recordId diffusion-atenolol-water
+//   Le Bas Vb input and the Stokes radius derived from it (same record)
+// COSMO cavity          -> evidence/lvpp-atenolol/metadata.dat  recordId lvpp-atenolol
+
+status            candidate;   // applies to the identity block; every property
+                               // block above carries its own status

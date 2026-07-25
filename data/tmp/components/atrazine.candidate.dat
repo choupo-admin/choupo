@@ -1,0 +1,144 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: atrazine  (C8H14ClN5, CAS 1912-24-9)
+  PRIVATE staging tier (data/tmp/, gitignored).  The runtime does NOT read it.
+
+  ARITY-1 ONLY (phase 3, 2026-07-24).  Intrinsic pure-compound data only:
+  identity, role, dissociation, crystal density and the pure-solid molar volume
+  derived from it.  pKa, logKow and aqueous solubility are SYSTEM / equilibrium
+  properties and have been MOVED; pointers below.  Envelope: ../RECORD_SPEC.md.
+\*---------------------------------------------------------------------------*/
+
+name           atrazine;
+formula        C8H14ClN5;
+CAS            1912-24-9;
+InChIKey       MXWJVTOOROXGIU-UHFFFAOYSA-N;
+pubchemCID     2256;
+MW             215.68;            // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;                 // effectively neutral at ambient pH -- justified by the pKa record referenced below
+
+identityProvenance
+{
+    source      "PubChem CID 2256 (US NIH, public domain), PUG-REST";
+    licence     "public-domain fact";
+    curator     "agent:components";
+    retrieved   2026-07-24;
+    status      candidate;
+}
+
+standardThermochemistry
+{
+    available    none;             // EXPLICIT ABSENCE -- do not fabricate
+    phase        solid;
+    status       flagged;
+    blockedBy    "no clean primary solid dHf / S / Cp located";
+    action       "fill from a primary before any atrazine energy balance";
+}
+
+// Pure-component (arity-1) volumetrics of the CRYSTAL.  NOT a partial molar
+// volume in water and NOT the Le Bas volume used in Wilke-Chang.
+solidDensity
+{
+    phase         solid;
+    value         1230.0;             // kg/m3 (1.23 g/cm3)
+    temperature   295.15;             // K (22 C)
+
+    provenance
+    {
+        unit        "kg/m3";
+        phase       solid;
+        origin      measured;
+        citation    "ATSDR, Toxicological Profile for Atrazine, Chapter 4, Table 4-2
+                     'Physical and Chemical Properties of Atrazine' (US Agency for Toxic
+                     Substances and Disease Registry), which lists 1.23 g/cm3 (22 C) and
+                     attributes it to HSDB 2002";
+        licence     "PUBLIC DOMAIN -- a work of the US federal government (ATSDR); HSDB
+                     was likewise a US National Library of Medicine product.  Freely
+                     redistributable; the rightsPending blocker is CLEARED.";
+        route       "RE-ROUTED 2026-07-24: the SAME value (1.23 g/cm3 at 22 C) previously
+                     reached us only through the e-Pesticide Manual (BCPC), a paywalled
+                     commercial compilation.  It is now taken from the public-domain
+                     ATSDR table.  The digits and the temperature AGREE exactly.";
+        status      flagged;
+        residualDefect "no PRIMARY measurement is named -- ATSDR re-cites HSDB, itself a
+                        compilation.  Legally clean, provenance still one hop short of a
+                        measurement report.";
+    }
+}
+
+solidMolarVolume
+{
+    phase         solid;
+    value         1.7535e-4;          // m3/mol (175.35 cm3/mol)
+    temperature   295.15;             // K
+
+    derivation
+    {
+        equation   "V = MW / rho";
+        MW         215.68;            // g/mol
+        rho        1.23;              // g/cm3, from solidDensity above
+        origin     derived;
+    }
+    status        flagged;            // inherits the density's status: legally CLEAR
+                                      //   (public-domain route), primary still unnamed
+}
+
+groups
+{
+    joback  none;
+    reason  "chloro-triazine ring has no first-order Joback group; nonvolatile trace solute, no VLE estimate wanted";
+    status  flagged;
+}
+
+cosmo
+{
+    VT2005
+    {
+        variant       cosmoSAC2002;
+        available     none;           // no VT-2005 entry for atrazine
+        status        flagged;
+    }
+    LVPP_B3LYP_def2SVPD
+    {
+        variant       lvppB3LYP_def2SVPD;
+        available     none;           // LVPP ships no COSMO output for atrazine
+        source        "LVPP sigma database (github lvpp/sigma, MIT)";
+        status        flagged;
+    }
+    reason        "no deployable set exists.  Even where LVPP data exist its QM protocol is incompatible with Choupo's VT-2005 cosmoSAC2002 constants (ethylene cross-check: +6.1 % cavity area, +10.3 % cavity volume) -- never tag an LVPP profile as cosmoSAC2002.";
+}
+
+pcSaft
+{
+    available     none;
+    status        flagged;
+    reason        "no pure-component parameter set located from an open primary; not fabricated.";
+}
+
+// --- MOVED OUT (arity >= 2 / state-dependent) -- POINTERS ONLY, no values ---
+references
+{
+    acidDissociation    "chemistry/aqueousSpeciation/atrazine-pKa1.candidate.dat (recordId atrazine-pKa1)";
+    chargeAtPH7         "DELETED as DERIVED -- the negligible protonated fraction at pH 7 follows from that pKa, never stored";
+    partitionOctanolWater "parameters/partition/atrazine-octanol-water.candidate.dat (recordId atrazine-octanol-water)";
+    aqueousSolubility   "parameters/solubility/atrazine-water.candidate.dat (recordId atrazine-water)";
+    stokesRadius        "NO RECORD -- the candidate primaries (Kiso et al., J. Membr. Sci. 358 (2010) 101-113; Van der Bruggen et al., J. Membr. Sci. 193 (2001) 51-63) were paywalled at curation; the previously staged '~0.34 nm typical' was an uncited placeholder and is NOT retained";
+    aqueousDiffusion    "NO RECORD -- would follow by Stokes-Einstein from the missing radius, or from the same NF-table primaries";
+    cosmoSurface        "no evidence record -- LVPP ships no COSMO output for atrazine";
+}
+
+applicationNote "the most-retained member of the atrazine / simazine / diuron NF benchmark set: rejection is steric and polar rather than charge-driven.  A previously staged rejection range of 81-98 % on commercial NF membranes carried NO citation and NO membrane identity and has been REMOVED -- a rejection is a membrane+solute+operating-condition result, not a component property.";

@@ -1,0 +1,71 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  logKow of ibuprofen between 1-octanol and water.
+
+  ARITY 3: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/ibuprofen.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      partitionCoefficient;
+schemaVersion   1;
+recordId        ibuprofen-octanol-water;
+participants    ( ibuprofen octanol water );
+property        logKow;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- the conventional log P reference
+                  // temperature is NOT restated by the source; the
+                  // 25 C convention is assumed and flagged here.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    pH            "neutral form";
+    chemicalForm  neutral;
+}
+
+// NEUTRAL-form partition.  The component comment also carries a loose
+// 'logD(pH7) ~ 1.0' aside with NO primary -- deliberately NOT recorded
+// here: a logD at a stated pH is a separate measurement, not a note.
+value
+{
+    logKow   3.97;   // dimensionless (log10 of a concentration ratio)
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Avdeef, A., J. Pharm. Sci. 82 (1993) 183-190; via PubChem HSDB";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:partition";
+    retrieved   2026-07-24;
+}
+
+status          flagged;
+
+// ----------------------------------------------------------------------------
+// PHASE 6 VERIFICATION AUDIT (2026-07-24) -- status candidate -> flagged
+// ----------------------------------------------------------------------------
+//   Phase 6 works to the rule: "a value is `measured` only if you saw the primary
+//   report it."  This record survives the Hansch/HMDB rights ruling -- its source is a
+//   NAMED, COMPLETE, locatable journal citation, which is exactly what the fifteen
+//   downgraded records lack, and the rights position is clean.
+//   But the value reached this tier through PubChem/HSDB, and no curator has opened the
+//   cited paper.  `candidate` asserted a verification that never happened.
+//
+//   AUDIT
+//     old source            : Avdeef, A., J. Pharm. Sci. 82 (1993) 183-190; via PubChem HSDB
+//     primary identified    : YES -- complete citation, locatable
+//     primary actually read : no
+//     rights position       : clean (a journal article, not a compilation)
+//     value                 : UNCHANGED
+//     status                : candidate -> flagged
+//
+//   This is the CHEAPEST class of record to fix in the whole directory: one reading of a
+//   named paper promotes it to `candidate` outright, with T and the chemical form
+//   confirmed from the source rather than assumed.  Do these before chasing new data.
+// ----------------------------------------------------------------------------

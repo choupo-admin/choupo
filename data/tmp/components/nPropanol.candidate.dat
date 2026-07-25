@@ -1,0 +1,323 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: nPropanol  (propan-1-ol, C3H8O, CAS 71-23-8)
+  A common alcohol; the n- vs iso- pedagogical pair with isopropanol.  The
+  best-characterised compound in this staging set -- and the only one carrying
+  a PC-SAFT parameter set whose numbers are actually in hand.
+
+  IDENTITY source: PubChem CID 1031 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 71-23-8 as listed on that public record
+    (a bare fact, not the proprietary CAS arrangement).
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  No aqueous
+    diffusion / partition / solubility / speciation datum was ever staged, so
+    nothing was re-homed out of it in phase 2 -- but the COSMO material was, and
+    the PC-SAFT set was restructured (see below).
+
+  TWO DEFECTS FIXED IN THIS PASS:
+    (1) the PC-SAFT set lived in a `//` COMMENT.  It is now a STRUCTURED NAMED
+        SET, with every transportability slot the ruling demands either stated
+        or written FLAG -- never guessed.
+    (2) the "NIST WebBook average of N values" and "PRIMARY re-cite pending"
+        placeholders are gone: each value now either names its primary or is
+        marked [FLAG].  NIST SRD/WebBook is a no-grant source excluded by
+        CLAUDE.md section 10, and an average over N tabulated values is the
+        aggregator's own arrangement, not a datum with a primary.
+
+  STATUS: candidate.  The PC-SAFT set stays `candidate` (numbers in hand, single
+    named primary) but is NOT TRANSPORTABLE while its FLAG slots are open.
+\*---------------------------------------------------------------------------*/
+
+name              nPropanol;
+formula           C3H8O;
+CAS               71-23-8;
+SMILES            "CCCO";
+InChIKey          "BDERNNFJNOPAEC-UHFFFAOYSA-N";   // full 27-char key
+MW                60.096;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `volatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            volatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "normal boiling point present in this file -- the compound IS volatile";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+groups
+{
+    // PROPOSED first-order decomposition, read off the PubChem SMILES -- a
+    // curated, reviewable record and the INPUT to `bin/estimate nPropanol`,
+    // never an estimate in itself.
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group OH; count 1; } );
+}
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+Tc                536.71;   // K, critical temperature.
+                            //   FULL CITATION RESOLVED 2026-07-25: Ambrose, D. &
+                            //   Townsend, R., "Thermodynamic Properties of Organic
+                            //   Oxygen Compounds. Part 9. The Critical Properties
+                            //   and Vapour Pressures, above Five Atmospheres, of
+                            //   Six Aliphatic Alcohols", J. Chem. Soc. (1963)
+                            //   3614-3625 -- a direct critical-point DETERMINATION,
+                            //   a real primary.  (NIST WebBook exposes this same
+                            //   paper as the source of its high-T Antoine range,
+                            //   whose upper limit 536.71 K IS this measured Tc.)
+                            //   origin measured.
+                            //   The value REPLACES the file's earlier 536.9 K,
+                            //   which was a NIST WebBook average of 20 tabulated
+                            //   values (no primary) -- 0.19 K lower, 0.04 %.
+
+Vc                2.18e-4;   // m3/mol, critical molar volume (= 0.218 L/mol).
+                            //   [Gude, M. & Teja, A.S., "Vapor-Liquid Critical
+                            //    Properties of Elements and Compounds. 4. Aliphatic
+                            //    Alkanols", J. Chem. Eng. Data 40 (1995) 1025-1036 --
+                            //    the SINGLE primary NIST WebBook names for Vc (not
+                            //    an average).  origin measured/evaluated.]
+
+// Pc -- DROPPED 2026-07-24 (rights clearance).  The stored 52.0 bar was a NIST
+//   WebBook average of 12 values with no primary named: the aggregator's
+//   ARRANGEMENT, and NIST SRD/WebBook is a no-grant source excluded by CLAUDE.md
+//   section 10.  A number we cannot legally ship is worse than a declared gap.
+criticalPressureStatus
+{
+    property      Pc;
+    available     none;
+    status        flagged;
+    blockedBy     "NIST WebBook average of 12 values -- aggregator arrangement, no-grant source";
+    action        "read Pc from a critical-point DETERMINATION for 1-propanol.  Two
+                   readable primaries both report it directly: Ambrose & Townsend,
+                   J. Chem. Soc. (1963) 3614-3625 (the SAME paper that supplied Tc and
+                   Vc above), and Gude & Teja, J. Chem. Eng. Data 40 (1995) 1025-1036.
+                   NEITHER was read in this pass (both are paywalled), so no Pc digit
+                   is staged -- NIST exposes only its 12-value AVERAGE, which is barred.
+                   Stage Pc from one of those two once read, with its uncertainty";
+    droppedValue  "52.0 bar";
+    consequence   "omega cannot be derived from the Antoine set + Tc + Pc while Pc is
+                   missing, so the omega gap below stays open too";
+}
+
+omega             0.620;    // -, acentric factor.  [FLAG -- COMPILATION]
+                            //   Poling, Prausnitz & O'Connell, "The Properties of
+                            //   Gases and Liquids" tabulation.  A copyrighted
+                            //   compilation, no primary re-cited.  The legally
+                            //   clean route is to DERIVE it from the Antoine set
+                            //   below plus Tc and Pc (omega = -log10(Psat(0.7 Tc)
+                            //   / Pc) - 1); that derivation is deliberately NOT
+                            //   performed here -- it is a curation act, and Pc is
+                            //   itself flagged.
+
+Tb                370.30;   // K, normal boiling point.
+                            //   RIGHTS CLEARANCE 2026-07-24 -- action: RE-ROUTE.
+                            //   The old entry was a NIST WebBook AGGREGATE (the
+                            //   aggregator's arrangement, a no-grant source).  The
+                            //   SAME number is DERIVED here from the primary Antoine
+                            //   set already in this file:
+                            //     log10(P/bar) = A - B/(T + C), P = 1.01325 bar
+                            //     T = B/(A - log10 P) - C
+                            //       = 1441.629/(4.87601 - 0.0057173) + 74.299
+                            //       = 296.004 + 74.299 = 370.30 K
+                            //   origin derived; the datum is Ambrose & Sprake,
+                            //   J. Chem. Thermodyn. 2 (1970) 631 -- a real primary.
+                            //   The Antoine validity window (333-378 K) BRACKETS Tb,
+                            //   so this is interpolation, not extrapolation.
+                            //   The aggregate it replaces was 370.3 K: identical to
+                            //   the digits carried.  No compilation is now relied on.
+
+HvapTb            41440;    // J/mol at Tb = 370.3 K.  [FLAG -- EVALUATED
+                            //   COMPILATION]  Majer & Svoboda, "Enthalpies of
+                            //   Vaporization of Organic Compounds" (1985),
+                            //   recommended value.  An evaluated compilation, not
+                            //   a single measurement report.
+
+Vliq              7.48e-5;  // m3/mol, LIQUID at 293 K = MW/rho with
+                            //   rho = 803.5 kg/m3 (0.8035 g/cm3 @20 degC).
+                            //   [PubChem CID 1031 experimental density; US NIH,
+                            //   public domain]
+
+standardThermochemistry
+{
+    // FILLED 2026-07-25 on the MEASURED (pure-liquid) rung.  The earlier ideal-gas
+    //   entry was dropped because it was a NIST WebBook 7-value average with no
+    //   primary; the MEASURED quantity for an alcohol is the LIQUID formation
+    //   enthalpy from combustion calorimetry.  Both values below sit on the SAME
+    //   pure-liquid rung and each names a single primary -- a consistent, loadable
+    //   block.  The ideal-gas value is a DERIVATIVE (liquid + Hvap298), shown as a
+    //   derived{} block and NEVER stored as the datum.
+    dHf_298         -302540.0;  // J/mol, PURE LIQUID at 298.15 K, combustion
+                                //   calorimetry.  [Mosselman, C. & Dekker, H.,
+                                //    "Enthalpies of formation of n-alkan-1-ols",
+                                //    J. Chem. Soc. Faraday Trans. 1 (1975) 417-424;
+                                //    -302.54 +/- 0.25 kJ/mol.  The single lowest-
+                                //    uncertainty combustion primary NIST lists (cf.
+                                //    Chao & Rossini 1965 -304.6, Green 1960 -306.3
+                                //    -- NOT averaged in).]  origin measured.
+    s_298           192.8;      // J/(mol K), LIQUID third-law absolute at 298.15 K.
+                                //   [Counsell, J.F.; Lees, E.B.; Martin, J.F.,
+                                //    "Thermodynamic properties of organic oxygen
+                                //    compounds. Part XIX. Low temperature heat
+                                //    capacity and entropy of propan-1-ol ...",
+                                //    J. Chem. Soc. A (1968) (page range not read).]
+                                //   origin measured.
+    referenceState  pureLiquid; // 298.15 K, 1 bar -- both values are pure-liquid.
+    derived
+    {
+        // Ideal-gas formation enthalpy, DERIVED (not a second datum):
+        //   dHf_298(ig) = dHf_298(liq) + dvapH(298.15 K)
+        //              = -302.54 + 47.45 = -255.09 kJ/mol
+        property     dHf_298_idealGas;
+        value        -255090.0;   // J/mol
+        equation     "dHf(ig) = dHf(liq) + dvapH(298.15 K)";
+        inputs       "dHf(liq) = -302.54 kJ/mol (Mosselman & Dekker 1975); dvapH(298.15 K) = 47.45 kJ/mol (Majer & Svoboda 1985, evaluated compilation -- FLAG)";
+        origin       derived;
+        note         "carries the flag of its dvapH input; use the stored liquid rung as the datum";
+    }
+}
+
+vaporPressure
+{
+    model         Antoine;     // log10(P/bar) = A - B/(T + C)
+    coefficients  (4.87601   1441.629   -74.299);
+    Trange        (333  378);  // K
+    // [Ambrose, D. & Sprake, C.H.S., "Thermodynamic properties of organic
+    //  oxygen compounds XXV. Vapour pressures and normal boiling temperatures
+    //  of aliphatic alcohols", J. Chem. Thermodyn. 2(5) (1970) 631-645 -- a
+    //  real primary, re-cited as such and not via the compilation that
+    //  reproduces it.]
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;  // Cp/(J/mol/K) = a + bT + cT^2 + dT^3
+    coefficients  (2.470   0.3325   -1.855e-4   4.296e-8);
+    Trange        (200  1500); // K
+    // [FLAG -- COMPILATION]  Poling, Prausnitz & O'Connell tabulation; no
+    //  primary re-cited.  A readable in-range PRIMARY exists for a future
+    //  re-fit: Stromsoe, E.; Ronne, H.G.; Lydersen, A.L., "Heat capacity of
+    //  alcohol vapors at atmospheric pressure", J. Chem. Eng. Data 15 (1970)
+    //  286-290 (Cp,gas 371-603 K) -- data points, not this polynomial, so it
+    //  is named as the route and NOT stitched into the coefficients.
+    crossCheck
+    {
+        // A corroborating independent number, QUOTED but never merged into the
+        // coefficients above and never a second datum (the ledger convention).
+        property    "Cp_idealGas(298.15 K)";
+        thisModel   86.2;      // J/(mol K), evaluated from the polynomial above
+        reference   85.56;     // J/(mol K), tabulated value quoted in the
+                               //   staging note; source NOT pinned  [FLAG]
+        deviation   "+0.8 %";
+    }
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (143.96);    // J/(mol K), LIQUID at 298.15 K
+    Trange        (290  360);  // K
+    // FILLED 2026-07-25 with a primary measurement (replaces the earlier bare
+    //  144.0 that carried no citation): Tanaka, R.; Toyama, S.; Murakami, S.,
+    //  "Heat capacities of {x C_nH_2n+1OH + (1-x) C7H16} for n = 1 to 6 at
+    //  298.15 K", J. Chem. Thermodyn. 18 (1986) 63-73; Cp,liq(298.15 K) =
+    //  143.96 J/(mol K).  origin measured.  (Corroborated within 0.5 % by
+    //  Zegers & Somsen 1984 144.44 and Vesely et al. 1979 143.78 -- NOT merged.)
+}
+
+
+// ---- PC-SAFT: NAMED PARAMETER SET (arity 1, so it belongs HERE) -------------
+// A pure-component PC-SAFT set is arity 1 and lives in the component file, next
+// to the compound, exactly like a `cosmo {}` set.  parameters/PCSAFT/ is
+// reserved for arity >= 2 records (kij, cross-association) and holds none.
+//
+// The ruling this block implements: a set is TRANSPORTABLE only if it records
+// variant, units, association scheme, combining rules, objective function, data
+// range and conventions -- not just m / sigma / epsilon.  Five numbers with no
+// protocol are not a parameter set; they are five numbers.  Where the protocol
+// slot is unknown it says FLAG.  NOTHING WAS GUESSED: the "usual" pairing
+// (Lorentz-Berthelot for sigma/epsilon plus Wolbach-Sandler for cross-
+// association) is NOT written in, because the paper's own choice was never read.
+pcSaft
+{
+    grossSadowski2002
+    {
+        variant             PCSAFT;      // Gross & Sadowski (2001) dispersion
+                                         //   term + (2002) association term.
+                                         //   NOT ePC-SAFT, NOT PC-SAFT with a
+                                         //   polar term.
+        associationScheme   2B;          // one donor site, one acceptor site
+        m                   2.9997;      // -, segment number
+        sigma               3.2522;      // A, segment diameter
+        epsilonOverK        233.40;      // K, dispersion energy / k_B
+        epsilonAB_overK     2276.8;      // K, association energy / k_B
+        kappaAB             0.015268;    // -, association volume
+
+        combiningRules      FLAG;        // NOT read from the paper.  Do not
+                                         //   assume Lorentz-Berthelot.
+        objectiveFunction   FLAG;        // what was regressed (vapour pressure
+                                         //   and/or saturated liquid density)
+                                         //   and with what weighting: unknown.
+        dataRange           FLAG;        // the T (and reduced-T) window of the
+                                         //   fit: unknown.  Extrapolation outside
+                                         //   an unknown window is on the user.
+        siteConventions     FLAG;        // number and assignment of association
+                                         //   sites beyond the "2B" label.
+
+        provenance
+        {
+            origin      regressed;
+            citation    "Gross & Sadowski, Ind. Eng. Chem. Res. 41 (2002) 5510 (1-propanol)";
+            doi         "-";
+            licence     "single set re-cited as a fact from one named primary; NOT lifted from a compilation table";
+            evidenceId  "-";
+            curator     "agent:component-cleanup";
+            retrieved   2026-07-24;
+        }
+        status              candidate;   // numbers in hand, one named primary --
+                                         //   but NOT transportable while the four
+                                         //   FLAG slots above are open.
+    }
+}
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// COSMO-SAC -- NO `cosmo {}` BLOCK, but this is the ONE compound in the set with
+//   a legitimate route already identified:
+//     * evidence/lvpp-nPropanol (recordId lvpp-nPropanol) holds the LVPP cavity
+//       descriptors as EVIDENCE ONLY.  They may NOT be pasted into a `cosmo {}`
+//       block: the LVPP QM protocol is incompatible with Choupo's VT-2005
+//       `cosmoSAC2002` sets -- ethylene, the one compound present in both
+//       databases, differs by +6.1 % cavity area and +10.3 % cavity volume.
+//     * 1-propanol IS in VT-2005 itself (Mullins et al., Ind. Eng. Chem. Res. 45
+//       (2006) 4389), which is the database Choupo's shipped `cosmoSAC2002` sets
+//       come from.  Copying THAT set (area + volume + the 51-point sigma
+//       profile, keyed on InChIKey BDERNNFJNOPAEC-UHFFFAOYSA-N) is the correct
+//       curation act.  It was not done here: transcribing 51 floats is a
+//       curation act with a real fabrication risk, not a file-tidying act.
+// PC-SAFT binaries (kij, cross-association): none pinned by any ledger.
+
+provenance
+{
+    Tc            { origin measured;     citation "Ambrose & Townsend, J. Chem. Soc. (1963) 3614-3625"; note "direct critical-point determination; replaces a NIST WebBook 20-value average"; status candidate; }
+    Vc            { origin measured;     citation "Gude & Teja, J. Chem. Eng. Data 40 (1995) 1025-1036"; note "0.218 L/mol; the single primary NIST names for Vc (not an average)"; status candidate; }
+    Pc            { origin unattributed; citation "NIST WebBook average of 12 values -- no primary; no-grant source (CLAUDE.md section 10)"; note "readable primaries: Ambrose & Townsend 1963 or Gude & Teja 1995 -- neither read this pass"; status flagged; }
+    omega         { origin unattributed; citation "Poling, Prausnitz & O'Connell tabulation -- copyrighted compilation, no primary"; note "derivable from the Antoine set + Tc once Pc is staged"; status flagged; }
+    Tb            { origin derived;      method "T = B/(A - log10 P) - C at P = 1.01325 bar, Ambrose & Sprake 1970 Antoine set (window 333-378 K brackets Tb)"; citation "Ambrose & Sprake, J. Chem. Thermodyn. 2(5) (1970) 631-645"; status candidate; }
+    HvapTb        { origin measured;     citation "Majer & Svoboda, 'Enthalpies of Vaporization of Organic Compounds' (1985), recommended value"; note "evaluated compilation, not a single measurement report"; status flagged; }
+    Vliq          { origin derived;      method "MW / rho, rho = 803.5 kg/m3 at 20 degC (liquid)"; citation "PubChem CID 1031 experimental density (US NIH, public domain)"; status candidate; }
+    standardThermochemistry
+    {
+        origin      measured;
+        citation    "dHf_298(liq): Mosselman & Dekker, J. Chem. Soc. Faraday Trans. 1 (1975) 417-424 (-302.54 kJ/mol).  s_298(liq): Counsell, Lees & Martin, J. Chem. Soc. A (1968) (192.8 J/mol/K; page range not read)";
+        note        "both on the pure-liquid rung, each single-primary; ideal-gas dHf is a derived{} block, not a datum";
+        status      candidate;
+    }
+    vaporPressure { origin regressed; citation "Ambrose & Sprake, J. Chem. Thermodyn. 2(5) (1970) 631-645"; status candidate; }
+    idealGasHeatCapacity { origin regressed; citation "Poling, Prausnitz & O'Connell tabulation -- no primary; in-range primary Stromsoe et al. 1970 named as re-fit route"; status flagged; }
+    liquidHeatCapacity   { origin measured; citation "Tanaka, Toyama & Murakami, J. Chem. Thermodyn. 18 (1986) 63-73"; note "143.96 J/mol/K at 298.15 K"; status candidate; }
+}

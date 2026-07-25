@@ -1,0 +1,8 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'glyphosate'
+component glyphosate;
+records
+(
+    { recordType cosmoSurface; recordId lvpp-glyphosate; category flagged; file "evidence/lvpp-glyphosate/metadata.dat"; }
+    { recordType partitionCoefficient; recordId glyphosate-octanol-water; category rightsPending; file "parameters/partition/glyphosate-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId glyphosate-water; category flagged; file "parameters/solubility/glyphosate-water.candidate.dat"; }
+);

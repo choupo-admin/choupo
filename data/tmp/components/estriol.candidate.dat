@@ -1,0 +1,96 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: estriol  (C18H24O3, CAS 50-27-1)
+  Steroid endocrine disruptor (EDC); the most hydrophilic estrogen (three OH).
+  Completes the studied estrogen set (estradiol, estrone, ethinylestradiol) for
+  NF/RO trace-organic rejection.
+
+  IDENTITY source: PubChem CID 5756 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 50-27-1 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  Every system /
+    equilibrium / state datum was re-homed in phase 2 and is NOT duplicated here
+    (data/tmp/RECORD_SPEC.md, ARITY rule).  The pointers carry NO numbers.
+
+  STATUS: candidate.  Not promotable -- no thermochemistry, no Cp, no VLE leg.
+\*---------------------------------------------------------------------------*/
+
+name              estriol;
+formula           C18H24O3;
+CAS               50-27-1;
+InChIKey  PROQIPRRNZUXQM-ZXXIGWHRSA-N;   // 14-char skeleton only (see estradiol note)
+MW                288.38;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+
+// ---- RE-HOMED IN PHASE 2 (pointers only, no values) ------------------------
+// D_aq + Stokes radius  -> parameters/transport/diffusion/  recordId diffusion-estriol-water
+// logKow                -> parameters/partition/            recordId estriol-octanol-water
+// aqueous solubility    -> parameters/solubility/           recordId estriol-water
+// phenolic-OH pKa       -> chemistry/aqueousSpeciation/     recordId estriol-pKa1
+// COSMO cavity (LVPP)   -> evidence/lvpp-estriol/           recordId lvpp-estriol
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+Tfus              561.15;   // K (288 degC) -- the source states the substance
+                            //   DECOMPOSES at this point, so this is a
+                            //   decomposition temperature, not a clean melting
+                            //   point.  POLYMORPH not stated.
+                            //   [HSDB via PubChem CID 5756; US NLM, public domain]
+
+solidDensity      1270.0;   // kg/m3, crystal at 298 K (1.27 g/cm3 @25 degC).
+                            //   [HSDB via PubChem CID 5756]
+                            //   A molar volume was previously stored beside it;
+                            //   MW/rho is a DERIVATIVE and is not stored.
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// standardThermochemistry: no open combustion / formation datum located.
+// Tc / Pc / omega /
+// vaporPressure /
+// idealGasHeatCapacity   : no VLE leg (fused-ring steroid; decomposes at the
+//                          melting point, see Tfus above).
+//
+// pKa: the staged value was the unpinned "~10.4"; it lives, `flagged`, in
+//   chemistry/aqueousSpeciation/estriol-pKa1 -- and only there.  Public-tier
+//   route: Lewis & Archer, Steroids 34 (1979) 485.
+//
+// COSMO-SAC -- NO DEPLOYABLE SET; no `cosmo {}` block may be written here.
+//   evidence/lvpp-estriol holds the LVPP cavity descriptors as EVIDENCE only:
+//   the LVPP QM protocol is incompatible with Choupo's VT-2005 `cosmoSAC2002`
+//   sets (ethylene cross-check: +6.1 % area, +10.3 % volume).  The LVPP surface
+//   is the NEUTRAL GAS-PHASE tautomer, NEVER the aqueous species.
+// PC-SAFT -- no published steroid parameter set
+//   (parameters/PCSAFT/_INVENTORY.md, section 3).
+
+provenance
+{
+    Tfus
+    {
+        origin      measured;
+        citation    "HSDB via PubChem CID 5756 (US NLM, public domain)";
+        note        "reported WITH decomposition; not a clean fusion point; polymorph not stated";
+        status      flagged;
+    }
+    solidDensity
+    {
+        origin      measured;
+        citation    "HSDB via PubChem CID 5756 (US NLM, public domain)";
+        note        "crystal density at 25 degC; crystal form not stated";
+        status      candidate;
+    }
+}

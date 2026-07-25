@@ -1,0 +1,64 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  logKow of gemfibrozil between 1-octanol and water.
+
+  ARITY 3: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/gemfibrozil.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      partitionCoefficient;
+schemaVersion   1;
+recordId        gemfibrozil-octanol-water;
+participants    ( gemfibrozil octanol water );
+property        logKow;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- the conventional log P reference
+                  // temperature is NOT restated by the source; the
+                  // 25 C convention is assumed and flagged here.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    pH            "neutral form";
+    chemicalForm  neutral;
+}
+
+// FLAGGED / ESTIMATED: KOWWIN is a fragment-QSAR estimator, not a
+// measurement.  HMDB predicts 3.4 for the same compound (1.4 log units
+// apart) -- the spread is the estimator's, and is why this is not
+// `candidate`.  pKa 4.43 => anionic at pH 7.
+value
+{
+    logKow   4.77;   // dimensionless (log10 of a concentration ratio)
+}
+
+provenance
+{
+    origin      estimated;
+    citation    "Radjenovic, J., Petrovic, M., Barcelo, D., Water Res. 42 (2008) 3601, Table 1 -- value attributed there to Syracuse KOWWIN (QSAR ESTIMATE)";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:partition";
+    retrieved   2026-07-24;
+}
+
+status          flagged;
+
+// ----------------------------------------------------------------------------
+// PHASE 6 RIGHTS RULING (2026-07-24) -- HMDB COMPARISON DEMOTED (no status change)
+// ----------------------------------------------------------------------------
+//   This record mentions a Human Metabolome Database value as a comparison.  Per the
+//   phase-6 ruling, HMDB is a LOCATOR, not a canonical source (a public page plus a
+//   citation obligation is not a GPL-compatible redistribution licence, and there are
+//   public references to academic / non-commercial use).
+//   HMDB is NOT the value source for this record, so the value and status are UNCHANGED.
+//   What changes is the WEIGHT of the comparison: an HMDB number may no longer be read
+//   as independent evidence for or against this value.  In every case here it is also a
+//   COMPUTED prediction, so it was never evidence of a measurement in the first place --
+//   quoting it as a "disagreement" overstated it twice.
+//   Treat the HMDB line above as a pointer to look elsewhere, nothing more.
+// ----------------------------------------------------------------------------

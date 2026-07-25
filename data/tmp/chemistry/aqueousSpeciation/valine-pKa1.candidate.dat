@@ -1,0 +1,63 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/valine.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        valine-pKa1;
+participants    ( valineH+ valine H+ );
+property        pKa;
+reaction        "valineH+ (alpha-COOH protonated, cation) = valine (zwitterion) + H+";
+site            "alpha-COOH";
+step            1;
+
+conditions
+{
+    temperature     298.15 K;   // NOMINAL 25 C of the consensus lineage; NOT read from a primary (phase 7)
+    phase           aqueous;
+    ionicStrength   notStated;   // phase 7: kept explicit -- NOT invented (see SHARPENED ACTION)
+}
+
+value
+{
+    pKa             2.32;
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      measured;
+    citation    "consensus set (Lehninger, Principles of Biochemistry; CRC Handbook 84th ed.); lineage = aqueous potentiometric titration at 25 C (Smith & Smith, J. Biol. Chem. 1942; King, J. Am. Chem. Soc. 1951; Nozaki & Tanford, J. Biol. Chem. 242 (1967) 4731 for exposed side chains)";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          flagged;
+
+// NOTES
+//   Re-homed from the SPECIATION comment block of components/valine.candidate.dat
+//   LEGAL: consensus lineage reaches us via PAYWALLED compilations (CRC 84th ed. / Lehninger); re-pin an OPEN potentiometric primary before promotion
+//
+// ===== PHASE 7 (2026-07-25) amino-acid pKa hunt -- SHARPENED ACTION =====
+//   flagged, UNCHANGED.  No primary was read this phase: nothing promoted, and
+//   NO temperature or ionic strength invented.  The value above is still the
+//   CRC/Lehninger CONSENSUS number; its DEFINITION -- thermodynamic (I->0) vs a
+//   stoichiometric pK' at some stated I -- is UNKNOWN because no primary was read.
+//   TARGET: L-valine alpha-COOH (pKa1) / alpha-NH3+ (pKa2), potentiometric / EMF with
+//     extrapolation to I->0.  OPEN route -> the Smith amino-acid thermodynamics series
+//     (J. Biol. Chem., open access).  Read pK at 25 C AND its ionic strength.
+//   ON OBTAINING IT: set conditions.temperature + conditions.ionicStrength from the
+//     paper, add a definition {} block (thermodynamic I->0 OR stoichiometric pK' at
+//     stated I), re-point provenance at that primary, promote to candidate.
+//   ROUTES CHECKED (do not re-try blindly): J. Res. NBS is PUBLIC DOMAIN and machine-
+//     readable via the DOI resolver (10.6028/jres.043.* renders), but vol 43 is Bates
+//     & Pinching's tris/weak-base electrochemistry (RP2043, p519), not amino acids;
+//     JBC legacy PDFs (jbc.org/content/...) now return 403 to automated fetch (post-
+//     Elsevier migration); the upstream web-search budget was exhausted, so the exact
+//     primary URLs could not be located this phase.

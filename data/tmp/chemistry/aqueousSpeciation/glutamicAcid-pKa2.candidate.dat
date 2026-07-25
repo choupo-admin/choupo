@@ -1,0 +1,62 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/glutamicAcid.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        glutamicAcid-pKa2;
+participants    ( glutamate- glutamate2- H+ );
+property        pKa;
+reaction        "glutamate- = glutamate2- (both carboxylates deprotonated, neutral amine) + H+";
+site            "alpha-NH3+";
+step            3;
+
+conditions
+{
+    temperature     298.15 K;   // NOMINAL 25 C of the consensus lineage; NOT read from a primary (phase 7)
+    phase           aqueous;
+    ionicStrength   notStated;   // phase 7: kept explicit -- NOT invented (see SHARPENED ACTION)
+}
+
+value
+{
+    pKa             9.67;
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      measured;
+    citation    "consensus set (Lehninger, Principles of Biochemistry; CRC Handbook 84th ed.); lineage = aqueous potentiometric titration at 25 C (Smith & Smith, J. Biol. Chem. 1942; King, J. Am. Chem. Soc. 1951; Nozaki & Tanford, J. Biol. Chem. 242 (1967) 4731 for exposed side chains)";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          flagged;
+
+// NOTES
+//   Re-homed from components/glutamicAcid.candidate.dat
+//   LEGAL: consensus lineage reaches us via PAYWALLED compilations (CRC 84th ed. / Lehninger); re-pin an OPEN potentiometric primary before promotion
+//
+// ===== PHASE 7 (2026-07-25) amino-acid pKa hunt -- SHARPENED ACTION =====
+//   flagged, UNCHANGED.  No primary was read this phase: nothing promoted, and
+//   NO temperature or ionic strength invented.  DEFINITION (thermodynamic I->0 vs
+//   stoichiometric pK' at some stated I) is UNKNOWN because no primary was read.
+//   TARGET: L-glutamic acid three-proton speciation -- alpha-COOH (pKa1), gamma-COOH
+//     side chain (pKaR 4.25, INSIDE the working window and readily measurable at stated
+//     I), alpha-NH3+ (pKa2).  Chase a full potentiometric titration reporting ALL THREE
+//     pK with T and I.  OPEN routes -> the Smith amino-acid thermodynamics series
+//     (J. Biol. Chem., open access); Nozaki & Tanford, J. Biol. Chem. 242 (1967) 4731
+//     [OPEN] for the gamma-carboxyl reference at a stated ionic strength.
+//   ON OBTAINING IT: set conditions.temperature + conditions.ionicStrength, add a
+//     definition {} block, re-point provenance, promote to candidate.
+//   ROUTES CHECKED (do not re-try blindly): J. Res. NBS is PUBLIC DOMAIN and machine-
+//     readable via the DOI resolver (10.6028/jres.043.* renders) but vol 43 is Bates's
+//     tris/weak-base electrochemistry, not amino acids; JBC legacy PDFs now 403 to
+//     automated fetch; upstream web-search budget was exhausted this phase.

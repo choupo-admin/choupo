@@ -1,0 +1,8 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'metformin'
+component metformin;
+records
+(
+    { recordType acidDissociation; recordId metformin-pKa2; category verified; file "chemistry/aqueousSpeciation/metformin-pKa2.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-metformin-water; category flagged; file "parameters/transport/diffusion/metformin-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId metformin-octanol-water; category flagged; file "parameters/partition/metformin-octanol-water.candidate.dat"; }
+);

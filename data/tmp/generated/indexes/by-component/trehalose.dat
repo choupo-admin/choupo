@@ -1,0 +1,8 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'trehalose'
+component trehalose;
+records
+(
+    { recordType acidDissociation; recordId trehalose-pKa1; category flagged; file "chemistry/aqueousSpeciation/trehalose-pKa1.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-trehalose-water; category flagged; file "parameters/transport/diffusion/trehalose-water.candidate.dat"; }
+    { recordType partialMolarVolume; recordId volume-trehalose-water; category flagged; file "parameters/volume/trehalose-water.candidate.dat"; }
+);

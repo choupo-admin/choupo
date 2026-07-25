@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo (CANDIDATE) -*------------------*\
+  CANDIDATE component: ethane-1,2-diol  (C2H6O2, CAS 107-21-1)
+  Common use: coolant/antifreeze; diol non-ideality; MEG dehydration teaching.
+
+  IDENTITY source: PubChem CID 174 (US NIH, public domain — free of copyright).
+    Retrieved 2026-07-24 via PUG-REST /property.  CAS 107-21-1 is the compound's
+    registry number as listed on that public record (bare fact, not the
+    proprietary CAS arrangement).
+  LICENCE of this staged record: identity facts are public domain.
+  PROPERTY VALUES: NONE copied from any compilation.  The proposed joback
+    groups below feed Choupo's OWN estimator (bin/estimate ethyleneGlycol) — that is the
+    legal route to Tc/Pc/omega/Antoine/Cp/dHf as Choupo's open work.
+  NEEDS (to promote to data/standards/components/): estimate + primary-cite; antifreeze/coolant, hydrogen-bonding non-ideality.
+  STATUS: proposed groups — REVIEW before estimating/promoting.
+\*---------------------------------------------------------------------------*/
+
+name        ethyleneGlycol;
+formula     C2H6O2;
+CAS         107-21-1;
+MW          62.068;
+// SMILES OCCO   InChIKey LYCAIKOWRPUZTN-UHFFFAOYSA-N   PubChem CID 174
+
+groups
+{
+    joback ( { group CH2; count 2; } { group OH; count 2; } );   // PROPOSED (review) — first-order Joback decomposition
+}

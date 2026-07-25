@@ -1,0 +1,7 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'diuron'
+component diuron;
+records
+(
+    { recordType partitionCoefficient; recordId diuron-octanol-water; category rightsPending; file "parameters/partition/diuron-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId diuron-water; category flagged; file "parameters/solubility/diuron-water.candidate.dat"; }
+);

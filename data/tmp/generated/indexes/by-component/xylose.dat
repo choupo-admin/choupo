@@ -1,0 +1,8 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'xylose'
+component xylose;
+records
+(
+    { recordType acidDissociation; recordId xylose-pKa1; category absent; file "chemistry/aqueousSpeciation/xylose-pKa1.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-xylose-water; category derived; file "parameters/transport/diffusion/xylose-water.candidate.dat"; }
+    { recordType partialMolarVolume; recordId volume-xylose-water; category verified; file "parameters/volume/xylose-water.candidate.dat"; }
+);

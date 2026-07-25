@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'PFOA'
+component PFOA;
+records
+(
+    { recordType acidDissociation; recordId PFOA-pKa1; category flagged; file "chemistry/aqueousSpeciation/PFOA-pKa1.candidate.dat"; }
+    { recordType henrysLawConstant; recordId henry-PFOA-water; category flagged; file "parameters/henry/PFOA-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId PFOA-octanol-water; category flagged; file "parameters/partition/PFOA-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId PFOA-water; category flagged; file "parameters/solubility/PFOA-water.candidate.dat"; }
+);

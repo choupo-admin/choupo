@@ -1,0 +1,114 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of sorbitol in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/sorbitol.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT then: number DELETED on rights grounds -- and it was
+  internally inconsistent anyway.  Solid phase NOT ESTABLISHED.
+
+  PHASE 6 (2026-07-24, agent:solubility) -- the solid-form LANDSCAPE is now
+  documented and cited, but the phase is still NOT ESTABLISHED, deliberately:
+  the literature reports four anhydrous sorbitol polymorphs AND a hydrate,
+  and nothing read here says which of them sits under liquid water at 25 C.
+  Naming the most stable ANHYDRATE would not answer the question that was
+  asked.  Gap narrowed, not closed.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        sorbitol-water;
+participants    ( sorbitol water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C, as the withdrawn source stated
+    pressure      101325 Pa;   // ambient, ASSUMED
+    phase         aqueous;
+    solidPhase    unspecified;
+    phaseBasis    notEstablished;
+}
+
+// RIGHTS ACTION (phase 4): NUMBER DELETED.
+//
+// The only carrier of this value was The Merck Index -- a paywalled
+// commercial compilation with no grant to honour.  The phase-4 rule is
+// that a non-redistributable number is not kept merely because it is
+// convenient: either it is re-routed to an open source that is verified
+// to report the same quantity, or it goes.  A search for an open
+// measuring primary reporting this solubility did not find one that
+// could be read and verified, so the digit has been removed rather than
+// re-labelled.  What remains is a structured absence: the record still
+// exists, still declares the equilibrium it is about, and states exactly
+// what is missing and why.
+//
+// The withdrawn statement was self-contradictory on its face: it gave a
+// mass-per-litre figure and a percent-w/v figure differing by a factor of
+// about 3.4.  The most likely explanation is that the percent figure
+// described a commercial SYRUP grade rather than a saturation limit --
+// which means the transcription chain had already lost track of what was
+// being reported.  Deleting it removes a number that could not have been
+// promoted under any rights regime.
+//
+// PHASE 6 -- WHY THIS ONE IS STILL `notEstablished` AND NOT INFERRED.
+//
+// Nezzal, Aerts, Verspaille, Henderickx & Redl (Polymorphism of sorbitol,
+// J. Cryst. Growth 311 (2009) 3863-3870) describe the landscape: four
+// anhydrous crystalline phases -- alpha (A), beta (B), gamma, and the
+// crystallised melt (E) -- PLUS one hydrate form; and the gamma polymorph is
+// the most stable of the ANHYDROUS forms, evidenced by its high melting
+// point and low hygroscopicity.
+//
+// It is tempting to write `solidPhase gammaSorbitol;
+// phaseBasis inferredFromPhaseStability;` and move on.  That would be wrong.
+// The ranking that is documented is gamma > the other ANHYDRATES.  The
+// question this record asks is a different one: under LIQUID WATER at 25 C,
+// where the water activity is 1, is the stable solid gamma or the hydrate?
+// A hydrate's stability field is exactly where water activity is high, so
+// the anhydrate ranking does not settle it -- it is the same trap that
+// carbamazepine (anhydrate -> dihydrate under water) and lactose
+// (anhydrate -> monohydrate) fell into in this very family.
+//
+// Nothing read in phase 6 states the sorbitol hydrate's stability field.  So
+// the honest outcome is a BETTER-POSED gap, not an answer: the candidate
+// solids are now enumerated and cited, and the single missing fact is named.
+//
+// HONESTY NOTE: the Nezzal et al. paper was read at abstract level only --
+// its full text was not retrievable in phase 6.
+value
+{
+    available     none;   // number DELETED in phase 4 -- see blockedBy
+}
+
+provenance
+{
+    origin      -;
+    citation    "WITHDRAWN -- the previous value came from The Merck Index (paywalled commercial compilation) and is not redistributable; no open primary located";
+    doi         "-";
+    licence     "-";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseLandscape
+{
+    citation    "Nezzal, A., Aerts, L., Verspaille, M., Henderickx, G. & Redl, A., Polymorphism of sorbitol, J. Cryst. Growth 311 (2009) 3863-3870";
+    doi         "10.1016/j.jcrysgro.2009.06.003";
+    candidateSolids  ( alphaSorbitol betaSorbitol gammaSorbitol crystallisedMeltE sorbitolHydrate );
+    known       "gamma is the most stable of the four ANHYDROUS forms (highest melting point, lowest hygroscopicity)";
+    missing     "the stability field of the reported HYDRATE relative to gamma at water activity ~1 -- i.e. exactly the condition of this record.  Without it the anhydrate ranking cannot be promoted to a phase assignment";
+    readState   "abstract level only; full text not retrievable in phase 6";
+}
+
+nextStep        "read Nezzal et al. 2009 in full (or a slurry-conversion study of sorbitol under water at 25 C) and settle gamma-vs-hydrate at water activity 1.  Only then does a sorbitol solubility have a nameable solid";
+
+blockedBy       "The Merck Index -- not redistributable, value deleted; the withdrawn statement was internally inconsistent by a factor ~3.4; and the equilibrating solid remains unnamed -- five candidate solids are now enumerated (four anhydrous polymorphs plus a hydrate), gamma is the most stable ANHYDRATE, but no source read establishes gamma-vs-hydrate under liquid water";
+status          flagged;

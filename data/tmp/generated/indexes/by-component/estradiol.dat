@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'estradiol'
+component estradiol;
+records
+(
+    { recordType acidDissociation; recordId estradiol-pKa1; category verified; file "chemistry/aqueousSpeciation/estradiol-pKa1.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-estradiol; category flagged; file "evidence/lvpp-estradiol/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-estradiol-water; category flagged; file "parameters/transport/diffusion/estradiol-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId estradiol-octanol-water; category rightsPending; file "parameters/partition/estradiol-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId estradiol-water; category flagged; file "parameters/solubility/estradiol-water.candidate.dat"; }
+);

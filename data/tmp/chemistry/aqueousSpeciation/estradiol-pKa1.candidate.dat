@@ -1,0 +1,83 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/estradiol.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        estradiol-pKa1;
+participants    ( estradiol estradiolate- H+ );
+property        pKa;
+reaction        "estradiol (phenolic A-ring OH) = estradiolate- (phenolate) + H+";
+site            "phenolic OH (A-ring)";
+step            1;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- the source does NOT state a temperature (FLAG)
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    pKa             10.71;
+    // uncertainty: NOT stated in the primary's abstract, the only part read
+}
+
+crossCheck          // legally-clean comparison ONLY -- never merged, never averaged
+{
+    alt1
+    {
+        pKa       10.46;
+        uncertainty 0.03;
+        citation  "DrugBank, via PubChem CID 5757";
+        licence   "CC BY-NC 4.0 -- NonCommercial, EXCLUDED from Choupo's public
+                   tier by CLAUDE.md.  Retained here, in the PRIVATE staging
+                   tier only, as the comparison that motivated the replacement.
+                   It must NEVER be promoted or redistributed.";
+        note      "this was the datum until 2026-07-24; it disagrees with the
+                   primary by 0.25 pK units";
+    }
+}
+
+provenance
+{
+    origin      measured;                 // spectrophotometric
+    citation    "Lewis, K.M. & Archer, R.D., 'pKa values of estrone, 17beta-estradiol
+                 and 2-methoxyestrone', Steroids 34 (1979) 485-499";
+    doi         "-";        // NOT staged: no DOI was read at the source, and one is never invented
+    pmid        "516114";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:rightsClearance";
+    retrieved   2026-07-24;
+    route       "the PRIMARY's own abstract (PubMed record PMID 516114) was read and
+                 states the value verbatim: 'The acid ionization constants of estrone
+                 (10.77), 17 beta-estradiol (10.71) and 2-methoxyestrone (10.81) have
+                 been determined'.  The FULL TEXT was NOT obtained, so the method
+                 detail, temperature, ionic strength and uncertainty are unverified.";
+}
+status          candidate;
+
+// NOTES
+//   RIGHTS CLEARANCE 2026-07-24 -- action: REPLACE (phase 4).
+//     Old datum: pKa 10.46 from DrugBank (CC BY-NC 4.0), EXCLUDED from Choupo's
+//     public tier by CLAUDE.md regardless of copyleft.  The route named in the old
+//     record -- Lewis & Archer, Steroids 34 (1979) 485 -- was followed and it does
+//     NOT confirm 10.46: the primary reports 10.71 for 17beta-estradiol (its
+//     abstract also states that it corrects earlier published values).
+//     The primary's value is therefore the datum; 10.46 survives only inside
+//     crossCheck{} above, attributed, and may never be promoted.
+//   OPEN DEFECT (unchanged by this pass): the temperature below is the CONVENTIONAL
+//     25 C -- neither source states one.  The digit is confirmed, the CONDITIONS are not.
+//   Companion values from the same primary, for the sibling estrogen records:
+//     estrone 10.77, 2-methoxyestrone 10.81.
+
+// VOCABULARY UNIFIED 2026-07-24: rights blockage is encoded in `status`,
+// not only in `licence` -- the two directories had diverged and a rights-blocked
+// record must never sit at a status that reads clean.
+statusVocabularyNote  "REVERTED 2026-07-24: the excluded source appears ONLY in a demoted\n//     crossCheck/alternative block, never in this record's own provenance.  A demoted\n//     comparison must not contaminate the datum's status.";

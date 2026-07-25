@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  logD of sulfamethoxazole between 1-octanol and water.
+
+  ARITY 3: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/sulfamethoxazole.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      partitionCoefficient;
+schemaVersion   1;
+recordId        sulfamethoxazole-octanol-water-pH8;
+participants    ( sulfamethoxazole octanol water );
+property        logD;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- the conventional log P reference
+                  // temperature is NOT restated by the source; the
+                  // 25 C convention is assumed and flagged here.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    pH            8;
+    chemicalForm  anion;
+}
+
+// DISTRIBUTION coefficient of the pH-8 speciation mixture (predominantly
+// the sulfonamide anion) -- NOT the same quantity as logKow 0.89 of the
+// neutral form.  Kept as a separate record on purpose; never merged.
+value
+{
+    logD   -1.54;   // dimensionless (log10 of a concentration ratio)
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Bizi, M. & El Bachra, F.E., Molecules 26 (2021) 7318 (open access)";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:partition";
+    retrieved   2026-07-24;
+}
+
+status          candidate;

@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'erythritol'
+component erythritol;
+records
+(
+    { recordType cosmoSurface; recordId lvpp-erythritol; category flagged; file "evidence/lvpp-erythritol/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-erythritol-water; category flagged; file "parameters/transport/diffusion/erythritol-water.candidate.dat"; }
+    { recordType hydrodynamicRadius; recordId hydrodynamicRadius-erythritol-water; category verified; file "parameters/transport/diffusion/erythritol-water.hydrodynamicRadius.candidate.dat"; }
+    { recordType partitionCoefficient; recordId erythritol-octanol-water; category flagged; file "parameters/partition/erythritol-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId erythritol-water; category absent; file "parameters/solubility/erythritol-water.candidate.dat"; }
+);

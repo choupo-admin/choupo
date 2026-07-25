@@ -1,0 +1,121 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of fructose in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/fructose.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility): number DELETED on rights grounds
+  (Merck Index only); solid phase NOT ESTABLISHED.  Structured absence.
+
+  PHASE 6 (2026-07-24, agent:solubility): the SOLID PHASE is now ESTABLISHED
+  -- D-beta-fructose, by PXRD of the solid deposit in equilibrium with the
+  saturated solution at 298.15 K, in a CC-BY measuring primary.  The DIGIT is
+  still absent: that same work tabulates its measured w_sat only for
+  D-sucrose and D-alpha-galactose, and no other open, readable measuring
+  primary was found.  So this record is now fully specified EXCEPT for the
+  number -- the mirror image of the usual defect.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        fructose-water;
+participants    ( D-beta-fructose water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- the temperature at which the phase was pinned
+    pressure      101325 Pa;   // ambient, ASSUMED
+    phase         aqueous;
+    solidPhase    D-beta-fructose;   // beta-D-fructopyranose, anhydrous
+    phaseBasis    statedBySource;
+}
+
+// PHASE 6 -- HOW THE PHASE WAS ESTABLISHED.
+//
+// Chua et al. (Food Biophysics 17 (2022) 181-197, CC-BY 4.0) determined
+// aqueous saccharide solubilities by "the isothermal method with excess of
+// the solute ... to determine the aqueous solubility and examine the crystal
+// structure of the solid deposit in equilibrium with the saturated solutions
+// at T = 298.15 K and T = 323.15 K.  The crystal structure of the solid
+// phase was measured by Powder X-Ray Diffraction (PXRD)."  Their finding,
+// verbatim:
+//
+//   "For D-sucrose, D-beta-fructose and D-alpha-xylose, and D-alpha-galactose
+//    no crystal change was observed in the solid phase during the solubility
+//    measurements."
+//
+// and, in the discussion:
+//
+//   "Fructose and xylose do not change crystal structure upon solubilizing
+//    the solid into the aqueous solution."
+//
+// The equilibrating solid at 25 C is therefore D-beta-fructose
+// (beta-D-fructopyranose), anhydrous, named by a determination that
+// diffracted its own residue.  `statedBySource`.
+//
+// TEMPERATURE IS PART OF THIS PHASE CLAIM -- IT IS NOT A CONSTANT.
+// A second CC-BY source (Veith, Luebbert & Sadowski, Molecules 26
+// (2021) 3176) states that fructose forms a HYDRATE, and excludes solubility
+// data below 298.15 K from its own analysis for exactly that reason:
+// "Due to hydrate formation of fructose, solubility data below 298.15 K is
+// not considered in this work."  So 298.15 K sits at or just above the
+// hydrate/anhydrate boundary.  The phase above is asserted AT 298.15 K ONLY;
+// a fructose solubility at 20 C is a DIFFERENT equilibrium, on a different
+// solid, and must not reuse this phase assignment.
+//
+// THE NUMBER IS STILL GONE, AND WHY.
+// The phase-2 headline came from The Merck Index alone -- a paywalled
+// commercial compilation with no grant to honour -- and was deleted in
+// phase 4.  Phase 6 re-hunted for an open measuring primary:
+//   * Chua et al. 2022 (CC-BY) measured this solubility but tabulate w_sat
+//     only for D-sucrose and D-alpha-galactose; fructose appears in the
+//     melting-property and PXRD analysis, not in the solubility table.
+//   * The Molecules 26 (2021) 3176 deliquescence study quotes a saturated
+//     mass fraction at 298.15 K, but it is a PC-SAFT PREDICTION, not a
+//     measurement, and this record does not accept a modelled digit as a
+//     restoration of a measured one.
+// So the digit stays absent.  What has changed is that the absence is now
+// surgical: everything else about the equilibrium is pinned.
+value
+{
+    available     none;   // still no open MEASURED digit -- see blockedBy
+}
+
+provenance
+{
+    origin      -;
+    citation    "WITHDRAWN in phase 4 -- the previous value came from The Merck Index (paywalled commercial compilation) and is not redistributable.  Phase 6 re-hunt found no open, readable, MEASURED replacement";
+    doi         "-";
+    licence     "-";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Chua, Y.Z., Do, H.T., Kumar, A., Hallermann, M., Zaitsau, D., Schick, C. & Held, C., The melting properties of D-alpha-glucose, D-beta-fructose, D-sucrose, D-alpha-galactose, and D-alpha-xylose and their solubility in water: A revision, Food Biophysics 17 (2022) 181-197";
+    doi         "10.1007/s11483-021-09707-6";
+    licence     "CC-BY 4.0";
+    basis       "PXRD of the solid deposit in equilibrium with the saturated aqueous solution at 298.15 K showed no crystal change; the solid was assigned to D-beta-fructose";
+}
+
+phaseCaveat
+{
+    citation    "Veith, H., Luebbert, C. & Sadowski, G., Predicting Deliquescence Relative Humidities of Crystals and Crystal Mixtures, Molecules 26 (2021) 3176";
+    doi         "10.3390/molecules26113176";
+    licence     "CC-BY 4.0";
+    basis       "fructose forms a hydrate; that work excludes aqueous solubility data below 298.15 K on those grounds -- so the anhydrate assignment above is valid AT 298.15 K and must not be extrapolated downwards";
+}
+
+nextStep        "find an open, MEASURED aqueous solubility of D-beta-fructose at 298.15 K in a stated basis.  Leads: the solubility data sets cited by Chua et al. 2022 and by Molecules 26 (2021) 3176 (their reference for experimental fructose solubility); a measuring primary, not a compilation";
+
+blockedBy       "no open measured digit: the only phase-2 carrier was The Merck Index (not redistributable, deleted in phase 4), the CC-BY primary that pins the solid phase does not tabulate fructose solubility, and the one open number available is a PC-SAFT prediction rather than a measurement";
+
+status          flagged;

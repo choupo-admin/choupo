@@ -1,0 +1,106 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of estradiol in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/estradiol.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT then: good measuring primary re-verified; solid phase
+  still NOT ESTABLISHED (the primary says only 'excess solid').
+
+  PHASE 6 (2026-07-24, agent:solubility) -- still NOT ESTABLISHED, and this
+  one is a deliberate refusal.  The solid-form landscape of 17-beta-estradiol
+  has been mapped in an open CC-BY study, and the hemihydrate is widely
+  treated as the form that survives contact with water -- but that study's
+  full text could not be retrieved in phase 6, and this corpus does not
+  assign a crystal form on the strength of a search-engine summary.  The
+  paper is named as the lead to read; the phase slot stays empty.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        estradiol-water;
+participants    ( estradiol water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25.0 +/- 0.5 C as stated by the primary
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    unspecified;
+    phaseBasis    notEstablished;
+}
+
+// PHASE 4 verification of the primary.  The article's own description of
+// the experiment was re-read: concentrations by HPLC after equilibration
+// with EXCESS SOLID for 4 days at 25.0 +/- 0.5 C, six replicates per
+// solute-solvent pair, CV < 5% in most cases; solubilities also measured
+// at pH 4 and pH 10 and in aqueous KNO3.  It says "excess solid" and
+// NOTHING about which crystalline form that solid was -- no PXRD, no
+// hydrate/anhydrate statement, no supplier form.  The primary is sound
+// on everything EXCEPT the identity of the equilibrating solid, which is
+// precisely what this family needs.  Recorded as a structured gap.
+//
+// PHASE 6 -- WHY THE OBVIOUS ANSWER IS NOT WRITTEN IN.
+//
+// 17-beta-estradiol has a rich solid-form landscape -- an anhydrate, a
+// HEMIHYDRATE, solvates and an amorphous form -- and the hemihydrate is the
+// form the pharmacopoeias carry as the drug substance, which is a strong
+// hint that it is what water leaves behind.  Stevenson, Lancaster, Buanz &
+// Price mapped that landscape in "The solid state forms of the sex hormone
+// 17-beta-estradiol", CrystEngComm 21 (2019) 2154-2163
+// (doi 10.1039/c8ce01874j), which is OPEN ACCESS under CC-BY.
+//
+// The publisher's PDF could not be retrieved in phase 6 (repeated HTTP 403),
+// and no repository mirror was found.  So the only thing available was a
+// second-hand summary of the paper's claims.  A `phaseBasis` of
+// `inferredFromPhaseStability` requires an "independent, CITED
+// phase-stability study" -- and citing a stability claim one has not read,
+// as if one had, is precisely the failure mode this corpus exists to
+// prevent.  A pharmacopoeial habit is not a stability measurement either.
+//
+// Therefore: phase slot stays `unspecified`, the paper is named in
+// `nextStep` as the single document that would close this, and the record
+// is not promoted.  It remains, with estrone and ethinylestradiol, the
+// best-posed promotion candidate in the family -- one PXRD, or one readable
+// copy of that CrystEngComm paper, away.
+value
+{
+    solubility    1.51 mg/L;
+    uncertainty   0.04 mg/L;   // as reported by the primary
+    originalStatement  "1.51 +/- 0.04 mg/L @ 25 C (pure water)";   // verbatim
+}
+
+alternativeDeterminations
+{
+    hsdb
+    {
+        solubility    3.90 mg/L;
+        conditions    { temperature 300.15 K; solidPhase unspecified; phaseBasis notEstablished; }
+        origin        measured;
+        citation      "HSDB (US NLM, public domain)";
+        note          "2.6x higher at only 2 C higher -- not reconcilable by temperature alone";
+    }
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Shareef, A., Angove, M.J., Wells, J.D. & Johnson, B.B., Aqueous Solubilities of Estrone, 17beta-Estradiol, 17alpha-Ethynylestradiol and Bisphenol A, J. Chem. Eng. Data 51 (2006) 879-881 (PRIMARY, pure water, 25.0 +/- 0.5 C)";
+    doi         "10.1021/je050318c";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+nextStep        "obtain a readable copy of Stevenson, E., Lancaster, R.W., Buanz, A. & Price, L.S., The solid state forms of the sex hormone 17-beta-estradiol, CrystEngComm 21 (2019) 2154-2163, doi 10.1039/c8ce01874j (CC-BY) -- publisher PDF returned HTTP 403 in phase 6 and no mirror was found.  If it establishes the hemihydrate as the form stable in contact with water, this record gains `inferredFromPhaseStability` (still not a promotion); only PXRD on a saturation residue would give `statedBySource`";
+
+blockedBy       "no source states the equilibrating solid phase; the primary reports only 'excess solid'.  The anhydrate/hemihydrate question is the specific open axis, and the CC-BY study that maps it could not be retrieved in phase 6 -- a phase is NOT assigned from a second-hand summary";
+status          flagged;

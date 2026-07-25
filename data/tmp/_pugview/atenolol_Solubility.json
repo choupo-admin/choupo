@@ -1,0 +1,282 @@
+{
+  "Record": {
+    "RecordType": "CID",
+    "RecordNumber": 2249,
+    "RecordTitle": "Atenolol",
+    "Section": [
+      {
+        "TOCHeading": "Chemical and Physical Properties",
+        "Description": "Various chemical and physical properties that are experimentally determined for this compound.  See also the Safety and Hazard Properties section (if available), which has additional properties pertinent to chemical safety and hazards.",
+        "Section": [
+          {
+            "TOCHeading": "Experimental Properties",
+            "Description": "Various experimentally determined properties for this compound.  See also the Safety and Hazard Properties section (if available), which has additional properties pertinent to chemical safety and hazards.",
+            "Section": [
+              {
+                "TOCHeading": "Solubility",
+                "Description": "The solubility of a substance is the amount of that substance that will dissolve in a given amount of solvent. The default solvent is water, if not indicated.",
+                "URL": "https://chem.libretexts.org/Courses/Purdue/Purdue%3A_Chem_26505%3A_Organic_Chemistry_I_(Lipton)/Chapter_4._Intermolecular_Forces_and_Physical_Properties/4.4_Solubility",
+                "Information": [
+                  {
+                    "ReferenceNumber": 19,
+                    "Reference": [
+                      "MCFARLAND,JW ET AL. (2001)"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "MCFARLAND,JW ET AL. (2001)",
+                        "Matched": {
+                          "PCLID": 900289416,
+                          "Citation": "MCFARLAND,JW ET AL. (2001)"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "Number": [
+                        13300
+                      ],
+                      "Unit": "mg/L (at 25 °C)"
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 42,
+                    "Description": "PEER REVIEWED",
+                    "Reference": [
+                      "O'Neil, M.J. (ed.). The Merck Index - An Encyclopedia of  Chemicals, Drugs, and Biologicals. 13th Edition, Whitehouse  Station, NJ:  Merck and Co., Inc., 2001., p. 147"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "O'Neil, M.J. (ed.). The Merck Index - An Encyclopedia of  Chemicals, Drugs, and Biologicals. 13th Edition, Whitehouse  Station, NJ:  Merck and Co., Inc., 2001., p. 147",
+                        "Matched": {
+                          "PCLID": 900125459,
+                          "Citation": "O'Neil, M.J. (ed.). The Merck Index - An Encyclopedia of  Chemicals, Drugs, and Biologicals. 13th Edition, Whitehouse  Station, NJ:  Merck and Co., Inc., 2001., p. 147"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "Freely soluble in methanol; soluble in acetic acid, DMSO; sparingly soluble in 96% ethanol; slightly soluble in isopropanol; very slightly soluble in acetone, dioxane; practically insoluble in acetonitrile, ethyl acetate; chloroform",
+                          "Markup": [
+                            {
+                              "Start": 18,
+                              "Length": 8,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/methanol",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-887"
+                            },
+                            {
+                              "Start": 39,
+                              "Length": 11,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/acetic%20acid",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-176"
+                            },
+                            {
+                              "Start": 52,
+                              "Length": 4,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/DMSO",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-679"
+                            },
+                            {
+                              "Start": 83,
+                              "Length": 7,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/ethanol",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-702"
+                            },
+                            {
+                              "Start": 112,
+                              "Length": 11,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/isopropanol",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-3776"
+                            },
+                            {
+                              "Start": 150,
+                              "Length": 7,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/acetone",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-180"
+                            },
+                            {
+                              "Start": 159,
+                              "Length": 7,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/dioxane",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-122652514"
+                            },
+                            {
+                              "Start": 193,
+                              "Length": 12,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/acetonitrile",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-6342"
+                            },
+                            {
+                              "Start": 207,
+                              "Length": 13,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/ethyl%20acetate",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-8857"
+                            },
+                            {
+                              "Start": 222,
+                              "Length": 10,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/chloroform",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-6212"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 42,
+                    "Description": "PEER REVIEWED",
+                    "Reference": [
+                      "Physicians' Desk Reference. 57th ed. Montvale, NJ: Medical Economics Co., Inc., p. 685 (2002)"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "Physicians' Desk Reference. 57th ed. Montvale, NJ: Medical Economics Co., Inc., p. 685 (2002)",
+                        "Matched": {
+                          "PCLID": 900149053,
+                          "Citation": "Physicians' Desk Reference. 57th ed. Montvale, NJ: Medical Economics Co., Inc., p. 685 (2002)"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "Freely soluble in 1 N HCl (300 mg/ml @ 25 °C); less soluble in chloroform (3 mg/ml @ 25 °C)",
+                          "Markup": [
+                            {
+                              "Start": 63,
+                              "Length": 10,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/chloroform",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-6212"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 42,
+                    "Description": "PEER REVIEWED",
+                    "Reference": [
+                      "PMID:11604037",
+                      "McFarland JW et al; J Chem Inf Comput Sci 41: 1355-59 (2001)"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "PMID:11604037",
+                        "Matched": {
+                          "PCLID": 900007080,
+                          "Citation": "PMID:11604037"
+                        }
+                      },
+                      {
+                        "Citation": "McFarland JW et al; J Chem Inf Comput Sci 41: 1355-59 (2001)",
+                        "Matched": {
+                          "PCLID": 10467538,
+                          "Citation": "McFarland JW, Avdeef A, Berger CM, Raevsky OA. Estimating the water solubilities of crystalline compounds from their chemical structures alone. J Chem Inf Comput Sci. 2001 Sep;41(5):1355–9. doi: 10.1021/ci0102822. PMID: 11604037.",
+                          "PMID": 11604037,
+                          "DOI": "10.1021/ci0102822"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "In water, 1.33X10+4 mg/l @ 25 °C",
+                          "Markup": [
+                            {
+                              "Start": 3,
+                              "Length": 5,
+                              "URL": "https://pubchem.ncbi.nlm.nih.gov/compound/water",
+                              "Type": "PubChem Internal Link",
+                              "Extra": "CID-962"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 43,
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "13.3 mg/mL at 25 °C"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "ReferenceNumber": 153,
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": ">40 [ug/mL] (The mean of the results at pH 7.4)"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Reference": [
+      {
+        "ReferenceNumber": 19,
+        "SourceName": "DrugBank",
+        "SourceID": "DB00335",
+        "Name": "Atenolol",
+        "Description": "The DrugBank database is a unique bioinformatics and cheminformatics resource that combines detailed drug (i.e. chemical, pharmacological and pharmaceutical) data with comprehensive drug target (i.e. sequence, structure, and pathway) information.",
+        "URL": "https://www.drugbank.ca/drugs/DB00335",
+        "LicenseNote": "Creative Common's Attribution-NonCommercial 4.0 International License (http://creativecommons.org/licenses/by-nc/4.0/legalcode)",
+        "LicenseURL": "https://www.drugbank.ca/legal/terms_of_use",
+        "ANID": 3601941
+      },
+      {
+        "ReferenceNumber": 42,
+        "SourceName": "Hazardous Substances Data Bank (HSDB)",
+        "SourceID": "6526",
+        "Name": "ATENOLOL",
+        "Description": "The Hazardous Substances Data Bank (HSDB) is a toxicology database that focuses on the toxicology of potentially hazardous chemicals. It provides information on human exposure, industrial hygiene, emergency handling procedures, environmental fate, regulatory requirements, nanomaterials, and related areas. The information in HSDB has been assessed by a Scientific Review Panel.",
+        "URL": "https://pubchem.ncbi.nlm.nih.gov/source/hsdb/6526",
+        "LicenseURL": "https://www.nlm.nih.gov/web_policies.html",
+        "IsToxnet": true,
+        "ANID": 4320
+      },
+      {
+        "ReferenceNumber": 43,
+        "SourceName": "Human Metabolome Database (HMDB)",
+        "SourceID": "HMDB0001924",
+        "Name": "Atenolol",
+        "Description": "The Human Metabolome Database (HMDB) is a freely available electronic database containing detailed information about small molecule metabolites found in the human body.",
+        "URL": "http://www.hmdb.ca/metabolites/HMDB0001924",
+        "LicenseNote": "HMDB is offered to the public as a freely available resource. Use and re-distribution of the data, in whole or in part, for commercial purposes requires explicit permission of the authors and explicit acknowledgment of the source material (HMDB) and the original publication (see the HMDB citing page). We ask that users who download significant portions of the database cite the HMDB paper in any resulting publications.",
+        "LicenseURL": "https://www.hmdb.ca/citing",
+        "ANID": 2143445
+      },
+      {
+        "ReferenceNumber": 153,
+        "SourceName": "Sanford-Burnham Center for Chemical Genomics",
+        "SourceID": "SID855957",
+        "Name": "SID855957",
+        "Description": "Aqueous solubility in buffer at pH 7.4",
+        "URL": "https://pubchem.ncbi.nlm.nih.gov/bioassay/1996#section=Data-Table",
+        "ANID": 694539
+      }
+    ]
+  }
+}

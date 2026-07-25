@@ -1,0 +1,63 @@
+{
+  "Record": {
+    "RecordType": "CID",
+    "RecordNumber": 4909,
+    "RecordTitle": "Primidone",
+    "Section": [
+      {
+        "TOCHeading": "Chemical and Physical Properties",
+        "Description": "Various chemical and physical properties that are experimentally determined for this compound.  See also the Safety and Hazard Properties section (if available), which has additional properties pertinent to chemical safety and hazards.",
+        "Section": [
+          {
+            "TOCHeading": "Experimental Properties",
+            "Description": "Various experimentally determined properties for this compound.  See also the Safety and Hazard Properties section (if available), which has additional properties pertinent to chemical safety and hazards.",
+            "Section": [
+              {
+                "TOCHeading": "Dissociation Constants",
+                "Description": "A specific type of equilibrium constant that measures the propensity of a larger object to separate (dissociate) reversibly into smaller components, as when a complex falls apart into its component molecules, or when a salt splits up into its component ions. This includes pKa (the negative logarithm of the acid dissociation constant) and pKb (the negative logarithm of the base dissociation constant).",
+                "Information": [
+                  {
+                    "ReferenceNumber": 43,
+                    "Description": "PEER REVIEWED",
+                    "Reference": [
+                      "Schaffer M et al; Chemosphere 87: 513-20 (2012)"
+                    ],
+                    "ExtendedReference": [
+                      {
+                        "Citation": "Schaffer M et al; Chemosphere 87: 513-20 (2012)",
+                        "Matched": {
+                          "PCLID": 900024071,
+                          "Citation": "Schaffer M et al; Chemosphere 87: 513-20 (2012)"
+                        }
+                      }
+                    ],
+                    "Value": {
+                      "StringWithMarkup": [
+                        {
+                          "String": "pKa = 12.3 (acidic character of ionizable functional group)"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Reference": [
+      {
+        "ReferenceNumber": 43,
+        "SourceName": "Hazardous Substances Data Bank (HSDB)",
+        "SourceID": "3169",
+        "Name": "Primidone",
+        "Description": "The Hazardous Substances Data Bank (HSDB) is a toxicology database that focuses on the toxicology of potentially hazardous chemicals. It provides information on human exposure, industrial hygiene, emergency handling procedures, environmental fate, regulatory requirements, nanomaterials, and related areas. The information in HSDB has been assessed by a Scientific Review Panel.",
+        "URL": "https://pubchem.ncbi.nlm.nih.gov/source/hsdb/3169",
+        "LicenseURL": "https://www.nlm.nih.gov/web_policies.html",
+        "IsToxnet": true,
+        "ANID": 2333
+      }
+    ]
+  }
+}

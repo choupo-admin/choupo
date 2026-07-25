@@ -1,0 +1,86 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of mannitol in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/mannitol.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: number DELETED on rights grounds, but solid phase
+  IDENTIFIED: beta-D-mannitol, the ambient-stable polymorph.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        mannitol-water;
+participants    ( betaMannitol water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C
+    pressure      101325 Pa;   // ambient, ASSUMED
+    phase         aqueous;
+    solidPhase    betaMannitol;
+    phaseBasis    inferredFromPhaseStability;
+}
+
+// RIGHTS ACTION (phase 4): NUMBER DELETED.
+//
+// The only carrier of this value was The Merck Index -- a paywalled
+// commercial compilation with no grant to honour.  The phase-4 rule is
+// that a non-redistributable number is not kept merely because it is
+// convenient: either it is re-routed to an open source that is verified
+// to report the same quantity, or it goes.  A search for an open
+// measuring primary reporting this solubility did not find one that
+// could be read and verified, so the digit has been removed rather than
+// re-labelled.  What remains is a structured absence: the record still
+// exists, still declares the equilibrium it is about, and states exactly
+// what is missing and why.
+//
+// PHASE IDENTIFICATION.  D-mannitol has three well-characterised
+// polymorphs, alpha, beta and delta.  Cornel, Kidambi & Mazzotti
+// (Precipitation and Transformation of the Three Polymorphs of
+// D-Mannitol, Ind. Eng. Chem. Res. 49 (2010) 5854-5862) measured the
+// solubility of all three in water as a function of temperature and
+// found the ordering delta > alpha > beta.  The least soluble form is by
+// definition the thermodynamically stable one, so BETA is the polymorph
+// in equilibrium with a saturated aqueous solution at ambient
+// temperature; the other two are metastable and will convert.
+// `participants` now names beta-mannitol.
+//
+// A solubility quoted for "mannitol" without a form is therefore
+// ambiguous across three known values, which is precisely the failure
+// mode this family exists to prevent.  The individual numbers were not
+// read from that paper and are NOT reproduced here.
+value
+{
+    available     none;   // number DELETED in phase 4 -- see blockedBy
+}
+
+provenance
+{
+    origin      -;
+    citation    "WITHDRAWN -- the previous value came from The Merck Index (paywalled commercial compilation) and is not redistributable";
+    doi         "-";
+    licence     "-";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+phaseProvenance
+{
+    citation    "Cornel, J., Kidambi, P. & Mazzotti, M., Precipitation and Transformation of the Three Polymorphs of D-Mannitol, Ind. Eng. Chem. Res. 49 (2010) 5854-5862";
+    doi         "-";   // DOI not verified in phase 4 -- cite by journal/volume/pages, do not guess an identifier
+    basis       "aqueous solubility ordering delta > alpha > beta, i.e. beta is the stable polymorph";
+}
+
+nextStep        "obtain the beta-mannitol aqueous solubility at 298.15 K from that paper (or another form-resolved determination) and record it with the polymorph named";
+
+blockedBy       "The Merck Index -- not redistributable, value deleted; the form-resolved solubilities were not read, so the phase is pinned but no digit is";
+status          flagged;

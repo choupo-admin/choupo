@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'testosterone'
+component testosterone;
+records
+(
+    { recordType cosmoSurface; recordId lvpp-testosterone; category flagged; file "evidence/lvpp-testosterone/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-testosterone-water; category flagged; file "parameters/transport/diffusion/testosterone-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId testosterone-octanol-water; category rightsPending; file "parameters/partition/testosterone-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId testosterone-water; category flagged; file "parameters/solubility/testosterone-water.candidate.dat"; }
+);

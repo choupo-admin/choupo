@@ -1,0 +1,131 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: metformin  (C4H11N5, CAS 657-24-9) -- antidiabetic biguanide
+  The small, hard-to-reject CATION extreme of the NF/RO tracer set.
+
+  PHASE-3 CLEANUP 2026-07-24 -- ARITY 1 ONLY.  Every system / state-dependent
+  value that used to live in a comment block here was moved in phase 2 to its
+  arity-correct home and is NOT restated here (never in two places); what is
+  left below is intrinsic pure-compound data, each numeric carrying UNIT +
+  PHASE/state + `origin` + citation.  The comments below are POINTERS only.
+
+  RETENTION RULE for computed descriptors (McGowan V_x / Le Bas Vb): kept here
+  only when no phase-2 record already carries the number as a derivation input.
+  The Le Bas Vb is NOT kept here -- it is the derivation input of recordId
+  diffusion-metformin-water.
+
+  Private staging tier (data/tmp/, gitignored).  The runtime does not read it.
+\*---------------------------------------------------------------------------*/
+
+// ===== IDENTITY (arity 1) =====
+name              metformin;
+formula           C4H11N5;
+CAS               657-24-9;
+InChIKey  XZWYZXLIPXDOLR-UHFFFAOYSA-N;   // FIRST BLOCK ONLY (14 chars) as retrieved
+MW                129.16;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+identityProvenance
+{
+    origin      derived;    // MW computed from the formula with standard atomic weights
+    citation    "PubChem CID 4091 (US NIH, public domain), PUG-REST retrieval";
+    doi         "-";
+    licence     "public domain (US Government)";
+    evidenceId  -;
+    curator     "agent:pharma-cleanup";
+    retrieved   2026-07-24;
+}
+
+// IDENTITY WARNING: this record is the FREE BASE (C4H11N5, CAS 657-24-9).  The
+// hydrochloride (CAS 1115-70-4) is the marketed and far more frequently tabulated
+// solid.  Solid-state data must be checked against the form before it is used --
+// see meltingPointStatus below.
+
+// ===== INTRINSIC SOLID-STATE DATA =====
+// The staged melting point (223-226 C) is NOT declared as a value: it cannot be
+// attributed to the identity of this file with confidence.
+meltingPointStatus
+{
+    present            no;
+    withheldStatement  "223-226 C, quoted by DrugBank/HMDB for 'metformin' without stating the form";
+    reason             "SALT / FREE-BASE MISMATCH SUSPECTED: that figure is the one commonly tabulated for metformin HYDROCHLORIDE, whereas this record is the free base.  Declaring it here would attach a salt's melting point to a different substance.  Withheld pending a primary that names the form; the number is quoted in this block only so the withholding is auditable, never as data.";
+    status             flagged;
+}
+
+solidStateStatus
+{
+    crystalDensity  none;
+    reason          "no crystal density curated, and it would have to be form-specific (free base vs hydrochloride).  Without rho_c the PURE-component molar volume V_m = MW/rho_c is NOT derivable, so none is declared.";
+    status          flagged;
+}
+
+thermochemistryStatus
+{
+    present     no;
+    reason      "no open, phase-declared solid dHf / S298 / Cp located.  Routing a nonvolatile solid through the ideal-gas rung is forbidden by contract; and as a permanent cation in water, metformin's aqueous rung is the ion (aqueous, infinite dilution), not the ideal gas.";
+    status      flagged;
+}
+
+// ===== COMPUTED MOLECULAR DESCRIPTORS =====
+descriptors
+{
+    // Le Bas Vb is NOT declared here: it is already recorded, with its method
+    // reference, as the derivation input of recordId diffusion-metformin-water
+    // (parameters/transport/diffusion/).  One number, one home.
+    note   "no arity-1 descriptor is stored in this file; see the pointer above.";
+}
+
+// ===== COSMO =====
+cosmoStatus
+{
+    namedSet       none;
+    evidence       -;      // no LVPP entry: no evidence/lvpp-metformin/ directory exists
+    deployable     no;
+    reason         "no open sigma profile located: not in the VT-2005 77-compound set, and the InChIKey-skeleton join against LVPP release v25 found no match; a CHAOS (CC-BY) join is PENDING.  Even were an LVPP profile found, LVPP's QM protocol is incompatible with Choupo's VT-2005 cosmoSAC2002 constants (ethylene cross-check: +6.1 % cavity area, +10.3 % volume).  Note also that a neutral-molecule sigma profile would misrepresent a species that is protonated at every process pH.";
+    status         flagged;
+}
+
+// ===== PC-SAFT =====
+pcSaftStatus
+{
+    parameterSet   none;
+    pinnedSource   "-";
+    numbersInHand  no;
+    reason         "no published open set identified, and plain PC-SAFT is the wrong model: metformin is a permanent cation in water, so an ePC-SAFT (electrolyte) treatment with a counter-ion would be required.  See parameters/PCSAFT/_INVENTORY.md.";
+    status         flagged;
+}
+
+// ===== POINTERS -- values MOVED OUT in phase 2 (home + recordId; no values here) =====
+// pKa step 1 (di-protonated -> mono-cation)
+//                       -> chemistry/aqueousSpeciation/  recordId metformin-pKa1
+// pKa step 2 (guanidinium -> neutral base)
+//                       -> chemistry/aqueousSpeciation/  recordId metformin-pKa2
+// chargeAtPH7           -> DELETED (derived from the two equilibria above; never stored)
+// logKow                -> parameters/partition/         recordId metformin-octanol-water
+// aqueous solubility    -> NO RECORD: the staged statement was a qualitative lower
+//                          bound with no temperature, and a bound is not a value
+//                          (see parameters/solubility/_LEDGER.md, "not emitted")
+// D_aq (ESTIMATE), its  -> parameters/transport/diffusion/  recordId diffusion-metformin-water
+//   Le Bas Vb input and the Stokes radius derived from it (same record)
+
+// DEFECT FIXED 2026-07-24: this component labelled the HIGHER pKa as "the pKa"
+// and the LOWER one as "the second".  By ORDER OF DEPROTONATION the lower one is
+// step 1 (the di-protonated biguanide losing its first proton).  Both steps now
+// live in the speciation home, numbered by ascending pKa; this file asserts
+// NEITHER value, only the two pointers above.
+
+status            candidate;   // applies to the identity block; every property
+                               // block above carries its own status

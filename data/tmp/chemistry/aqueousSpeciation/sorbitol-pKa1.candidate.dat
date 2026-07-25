@@ -1,0 +1,95 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  RECORD_SPEC.md ARITY rule.
+
+  PHASE 6 (2026-07-24) -- NEW record, closing a documented coverage gap.
+  The phase-2 ledger listed the four polyols (sorbitol / mannitol / xylitol /
+  erythritol) under "no pKa datum was ever staged -- a GAP".  This record
+  closes the sorbitol half of that gap from a PRIMARY that the curator
+  OBTAINED AND READ (scanned PDF, Acta Chemica Scandinavica open archive):
+  the values, the temperatures, the electrode method and the ionic strength
+  were all taken off the paper's own tables, NOT from any compilation.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        sorbitol-pKa1;
+participants    ( sorbitol sorbitolate- H+ );
+property        pKa;
+pKaType         "stoichiometric (pK', mixed constant)";   // see DEFINITION below
+reaction        "sorbitol (ROH, D-glucitol) = sorbitolate- (RO-, the alcoholate) + H+";
+site            "hydroxyl -OH (alcoholate formation)";
+step            1;
+
+conditions
+{
+    temperature     291.15 K;   // 18 C -- STATED BY THE SOURCE (table heading), not a convention
+    phase           aqueous;
+    medium          "aqueous NaOH, no added swamping electrolyte";
+    ionicStrength   0.02 to 0.05 mol/L;    // = c_NaOH of the titration series (Table 8);
+                                           // STATED BY THE SOURCE
+    composition     "c_sorbitol 0.05 - 0.2 mol/L";
+}
+
+value
+{
+    pKa             13.57;      // mean of the 6 determinations in Table 8
+    spread          "13.47 - 13.62 over the 6 runs";
+    // uncertainty: no formal uncertainty quoted; the run-to-run spread above is
+    // the honest measure of scatter.
+}
+
+definition
+{
+    // The paper's K'_s: a_H+ and CONCENTRATIONS of RO- / ROH, with the activity
+    // coefficient of the neutral ROH fixed at 1 and f(RO-) approximated by f(OH-)
+    // at equal ionic strength.  This is a MIXED / stoichiometric constant at the
+    // stated ionic strength -- NOT the thermodynamic (I = 0) pKa.
+    equation        "K'_s = c_RO- * f_OH- * a_H+ / c_ROH";
+    Kw_used         "10^-14.93 (0 C) and 10^-14.22 (18 C), as fixed by the author";
+}
+
+alternativeDeterminations   // same equilibrium, other conditions/studies -- NOT second records
+{
+    alt1
+    {
+        pKa         14.14;
+        conditions  "0 C (273.15 K), same method, I = 0.02 - 0.05 mol/L NaOH";
+        spread      "14.01 - 14.19 over the 6 runs (Table 7)";
+        citation    "Thamsen (1952), the SAME paper -- a temperature series, not a rival value";
+    }
+    alt2
+    {
+        pKa         13.62;
+        conditions  "about 18 C";
+        citation    "Michaelis, L. & Rona, P., Biochem. Z. 49 (1913) 232 -- as quoted AND recalculated by Thamsen (1952) p.283; the curator has NOT read Michaelis & Rona directly";
+    }
+}
+
+provenance
+{
+    origin      measured;
+    citation    "Thamsen, J., 'The Acidic Dissociation Constants of Glucose, Mannitol and Sorbitol, as Measured by Means of the Hydrogen Electrode and the Glass Electrode at 0 and 18 C', Acta Chem. Scand. 6 (1952) 270-284, Table 8 + summary p.283";
+    doi         "10.3891/acta.chem.scand.06-0270";
+    licence     "facts, primary-cited; the paper is served free by the Acta Chemica Scandinavica open archive";
+    evidenceId  -;
+    curator     "agent:speciation (phase 6)";
+    retrieved   2026-07-24;
+}
+verification
+{
+    primaryIdentified   yes;
+    primaryRead         yes;   // scanned PDF read page-by-page: title page, method (p.271),
+                               // Table 7 (0 C), Table 8 (18 C), summary (p.283-284)
+    valueSeenInPrimary  yes;
+    conditionsSeen      yes;   // T from the table headings, I from the c_NaOH column
+}
+status          candidate;
+
+// NOTES
+//   The companion record is mannitol-pKa1 (same paper, same method, same series).
+//   sorbitol and mannitol are diastereomers and the paper separates them cleanly
+//     (13.57 vs 13.50 at 18 C) -- worth contrasting with the PARTITION side, where
+//     PubChem's computed XLogP3 gives both the identical -3.1 and cannot tell them
+//     apart.  A measurement distinguishes them; a prediction does not.
+//   xylitol and erythritol remain GENUINE GAPS -- this paper does not cover them.

@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'gemfibrozil'
+component gemfibrozil;
+records
+(
+    { recordType acidDissociation; recordId gemfibrozil-pKa1; category verified; file "chemistry/aqueousSpeciation/gemfibrozil-pKa1.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-gemfibrozil-water; category flagged; file "parameters/transport/diffusion/gemfibrozil-water.candidate.dat"; }
+    { recordType partitionCoefficient; recordId gemfibrozil-octanol-water; category flagged; file "parameters/partition/gemfibrozil-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId gemfibrozil-water; category flagged; file "parameters/solubility/gemfibrozil-water.candidate.dat"; }
+);

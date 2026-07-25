@@ -1,0 +1,11 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'carbamazepine'
+component carbamazepine;
+records
+(
+    { recordType acidDissociation; recordId carbamazepine-pKa1; category verified; file "chemistry/aqueousSpeciation/carbamazepine-pKa1.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-carbamazepine; category flagged; file "evidence/lvpp-carbamazepine/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-carbamazepine-water; category derived; file "parameters/transport/diffusion/carbamazepine-water.candidate.dat"; }
+    { recordType hydrodynamicRadius; recordId hydrodynamicRadius-carbamazepine-water; category verified; file "parameters/transport/diffusion/carbamazepine-water.hydrodynamicRadius.candidate.dat"; }
+    { recordType partitionCoefficient; recordId carbamazepine-octanol-water; category flagged; file "parameters/partition/carbamazepine-octanol-water.candidate.dat"; }
+    { recordType solubility; recordId carbamazepine-water; category flagged; file "parameters/solubility/carbamazepine-water.candidate.dat"; }
+);

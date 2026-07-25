@@ -1,0 +1,63 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  Aqueous solubility (solid-liquid equilibrium) of trimethoprim in water.
+
+  ARITY 2: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/trimethoprim.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+
+  PHASE 4 (2026-07-24, agent:solubility) -- solid-phase identification and
+  rights clearance.  VERDICT: solid phase NOT ESTABLISHED -- a structured gap, not a
+  guess.  Rights already clear.
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      solubility;
+schemaVersion   1;
+recordId        trimethoprim-water;
+participants    ( trimethoprim water );
+property        aqueousSolubility;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    phase         aqueous;
+    solidPhase    unspecified;
+    phaseBasis    notEstablished;
+}
+
+// PHASE 4 search: no phase-identified determination located.
+value
+{
+    solubility    400 mg/L;
+    originalStatement  "400 mg/L @ 25 C";   // verbatim, before conversion
+}
+
+alternativeDeterminations
+{
+    hmdb
+    {
+        solubility    615 mg/L;
+        conditions    { solidPhase unspecified; phaseBasis notEstablished; }
+        origin        estimated;
+        citation      "Human Metabolome Database (HMDB); via PubChem";
+        note          "1.5x the headline value; almost certainly a prediction";
+    }
+}
+
+provenance
+{
+    origin      measured;
+    citation    "HSDB (US NLM, public domain), CID 5578";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:solubility";
+    retrieved   2026-07-24;
+}
+
+blockedBy       "no source states the equilibrating solid phase";
+status          flagged;

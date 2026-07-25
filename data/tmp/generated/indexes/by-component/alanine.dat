@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'alanine'
+component alanine;
+records
+(
+    { recordType acidDissociation; recordId alanine-pKa1; category flagged; file "chemistry/aqueousSpeciation/alanine-pKa1.candidate.dat"; }
+    { recordType acidDissociation; recordId alanine-pKa2; category flagged; file "chemistry/aqueousSpeciation/alanine-pKa2.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-alanine; category flagged; file "evidence/lvpp-alanine/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-alanine-water; category derived; file "parameters/transport/diffusion/alanine-water.candidate.dat"; }
+    { recordType isoelectricPoint; recordId alanine-pI; category flagged; file "chemistry/aqueousSpeciation/alanine-pI.candidate.dat"; }
+);

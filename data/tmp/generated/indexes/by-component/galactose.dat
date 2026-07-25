@@ -1,0 +1,8 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'galactose'
+component galactose;
+records
+(
+    { recordType acidDissociation; recordId galactose-pKa1; category flagged; file "chemistry/aqueousSpeciation/galactose-pKa1.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-galactose-water; category flagged; file "parameters/transport/diffusion/galactose-water.candidate.dat"; }
+    { recordType partialMolarVolume; recordId volume-galactose-water; category verified; file "parameters/volume/galactose-water.candidate.dat"; }
+);

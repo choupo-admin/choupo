@@ -1,0 +1,206 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: sorbitol  (C6H14O6, CAS 50-70-4) -- sugar alcohol (polyol).
+  D-glucitol.  Non-volatile non-electrolyte SOLUTE (NF sweetener/osmotic family).
+  Linear polyol -> clean first-order Joback decomposition (CH2/CH/OH only).
+  Decomposes before boiling -> SOLID rung (referenceState pureSolid).
+
+  PRIVATE staging tier (data/tmp, gitignored).  Envelope + ARITY rule:
+  ../RECORD_SPEC.md.  Cleaned 2026-07-24 (phase 3, component cleanup).
+
+  ARITY-1 ONLY.  Intrinsic single-substance data only; every system property was
+  emitted in phase 2 to its arity-correct home (pointers below).
+
+  DEFECT FIXED HERE: the aqueous-solubility statement this file used to carry was
+  internally inconsistent -- it quoted a mass-per-volume figure and a per-cent w/v
+  figure that differ from each other by a factor of ~3.4.  NO solubility number
+  remains in this component; both figures and the unresolved contradiction live in
+  the arity-2 record parameters/solubility/sorbitol-water.
+  Also fixed: Cp,solid was hiding in a prose comment; it is now a structured
+  solidHeatCapacity{} block with phase, unit and primary citation.
+\*---------------------------------------------------------------------------*/
+
+// --- MOVED OUT in phase 2 -- POINTERS ONLY (a cross-reference, not data) ---
+// D_aq + equivalent-sphere radius: see parameters/transport/diffusion/sorbitol-water (recordId diffusion-sorbitol-water; Stokes-Einstein ESTIMATE, not measured)
+// aqueous solubility: see parameters/solubility/sorbitol-water (recordId sorbitol-water; the internally inconsistent statement is recorded and flagged there)
+// logKow / XLogP3: see parameters/partition/sorbitol-octanol-water (recordId sorbitol-octanol-water; PubChem COMPUTED descriptor, not a measurement)
+
+name           sorbitol;
+formula        C6H14O6;
+CAS            50-70-4;
+
+MW             182.17;         // g/mol -- derived from the formula with IUPAC
+                               //   standard atomic weights (origin derived)
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;              // non-electrolyte, van't Hoff i = 1
+
+identity
+{
+    pubchemCID         5780;
+    inchiKey           FBPFZTCFMRRESA-JGWLITMVSA-N;   // FULL 27-character key
+    inchiKeyStatus     full;
+    inchiKeyNote       "Block 1 (FBPFZTCFMRRESA) is SHARED with mannitol and the
+                        other hexitol stereoisomers -- only block 2 separates them.
+                        Never join on block 1 alone.";
+    stereochemicalForm "D-sorbitol (D-glucitol), crystalline";
+    identitySource     "PubChem CID 5780 (US NIH, public domain), retrieved 2026-07-24";
+    status             candidate;
+}
+
+// ---------------------------------------------------------------------------
+// ARITY-1 INTRINSIC, SOLID rung (sorbitol decomposes before it vaporises).
+// PRIMARY: Gerasimov, Blokh & Gubareva, Izv. Vyssh. Uchebn. Zaved. Khim. Khim.
+//   Tekhnol. 28 (1985) 54 -- combustion calorimetry (Russian).
+standardThermochemistry
+{
+    dHf_298    -1353700.0;     // J/mol (-1353.7 +/- 1.4 kJ/mol), phase CRYSTALLINE
+                               //   origin measured (combustion)
+                               //   [Gerasimov, Blokh & Gubareva 1985]
+    // s_298   ABSENT BY DECISION -- see entropyStatus{}.  NOT fabricated.
+    referenceState      pureSolid;
+}
+
+entropyStatus
+{
+    property        s_298;
+    phase           solid;
+    value           none;                  // nothing shipped, nothing invented
+    pendingPrimary  "a low-temperature adiabatic-calorimetry determination for
+                     crystalline D-sorbitol -- not in the NIST WebBook, not located
+                     at curation";
+    consequence     "no solid-sorbitol entropy/Gibbs balance may be run";
+    status          flagged;
+}
+
+// REAL crystalline-sorbitol solid heat capacity -- LIFTED OUT OF A COMMENT into a
+// structured block.  Phase SOLID, origin measured.
+// PRIMARY: Lian, Chen, Suurkuusk & Wadsoe, Acta Chem. Scand. A36 (1982) 735.
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = 241.43 J/(mol K) at 298.15 K, single point
+    coefficients  ( 241.43 );          // J/(mol K)
+    Trange        ( 290  310 );        // K -- narrow window: ONE measured point
+    // [Lian, Chen, Suurkuusk & Wadsoe 1982, Acta Chem. Scand. A36, 735]
+}
+
+solidHeatCapacityStatus
+{
+    property        Cp_solid_curve;
+    phase           solid;
+    value           singlePointOnly;       // the 241.43 above; no Cp(T) curve
+    pendingPrimary  "a Cp(T) curve for crystalline sorbitol (Della Gatta group,
+                     Thermochim. Acta 2021 fusion/Cp study) -- required before any
+                     solid balance over a temperature range";
+    status          flagged;
+}
+
+// --- PURE-COMPONENT (arity-1) properties, each with unit + phase + origin + citation ---
+pureComponentProperties
+{
+    solidDensity
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "CRC Handbook of Chemistry and Physics -- no-grant, all-rights-reserved";
+        action        "read Dx (calculated density) from a published single-crystal structure of
+                      the NAMED polymorph/anomer -- Acta Cryst. reports it directly -- or
+                      derive rho = Z*MW/(N_A*V_cell) from open cell parameters (the
+                      Crystallography Open Database is CC0 and cites the primary for each
+                      entry).  Record the cell, Z and the arithmetic in a derivation{}
+                      block, and NAME the solid form.";
+        droppedValue  "value = 1.489 g/cm3; temperature = 293.15 K; citation = CRC Handbook of Chemistry and Physics, 79th ed.";
+    }
+
+    solidMolarVolume
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "DERIVED from the solidDensity above, which was dropped -- a
+                       derivative cannot outlive the datum it was computed from";
+        action        "recompute V = MW / rho once a legally clear rho exists, and
+                       name the solid form both refer to";
+        droppedValue  "122.34 cm3/mol  (this is the PURE-SOLID molar volume; the partial molar
+                       volume in water is a SYSTEM property and is unaffected -- it
+                       lives in parameters/volume/)";
+    }
+
+    meltingPoint
+    {
+        available     none;               // DROPPED 2026-07-24 (rights clearance)
+        status        flagged;
+        blockedBy     "CRC Handbook + The Merck Index -- no-grant / paywalled compilations";
+        action        "take T_fus from a calorimetric (DSC / adiabatic) primary that STATES the
+                      polymorph or anomer it melted, and stage it in a fusion{} block
+                      together with dHfus -- a melting point without a named solid form is
+                      not a property of a substance, it is a property of a sample.";
+        droppedValue  "value = 372.15 K; range = ( 372.15 374.15 ) K; transition = fusion; citation = CRC Handbook, 79th ed.";
+    }
+}
+
+// --- COSMO surface: NO deployable set (structured flag) ---
+cosmoStatus
+{
+    recordType      cosmoSurfaceStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    evidenceRecord  none;                 // no evidence/lvpp-sorbitol record staged
+    reason          "no VT-2005 cosmoSAC2002 set ships for sorbitol and no LVPP
+                     sorbitol record was staged (mannitol and erythritol were).";
+    protocolIncompatibility
+        "An LVPP surface would not be usable as-is: different QM protocol (NWChem
+         B3LYP/def2-SVPD, SES cavity) from the VT-2005 surfaces Choupo's
+         cosmoSAC2002 constants were regressed against (Mullins et al., IECR 45
+         (2006) 4389); measured on ethylene, present in both databases, +6.1 %
+         cavity area and +10.3 % cavity volume.  Never tag an LVPP surface
+         variant cosmoSAC2002.";
+    conformerCaution "an acyclic hexitol has many low-energy conformers; a single
+                      gas-phase conformer is itself a modelling choice and a named
+                      set must state which one it ships.";
+    status          flagged;
+}
+
+// --- PC-SAFT: no set in hand (structured flag) ---
+pcSaftStatus
+{
+    recordType      saftParameterSetStatus;
+    schemaVersion   1;
+    deployableSet   none;
+    sourcePinned    "Carneiro, Held, Rodriguez, Sadowski & Macedo, 'Solubility of
+                     Sugars and Sugar Alcohols in Ionic Liquids: Measurement and
+                     PC-SAFT Modeling', J. Phys. Chem. B 117 (2013) 9980 --
+                     sorbitol among the fitted polyols";
+    numbersInHand   no;
+    legalNote       "do not transcribe the table in bulk (EU sui-generis database
+                     right); one compound's row with its own citation only";
+    transportability "even with the five numbers, a set is transportable only with
+                      variant, units, association scheme, combining rules,
+                      objective function, data range and conventions recorded";
+    status          flagged;         // STRUCTURED ABSENCE -- no number is carried
+    blockedBy       "the pinned parameter source is a paywalled article and no row was
+                     ever transcribed";
+    action          "read ONE compound's row at the pinned source and stage it with its
+                     own citation PLUS variant, units, association scheme, combining
+                     rules, objective function and data range; never the whole table";
+    legalNote2      "reclassified rightsPending -> flagged 2026-07-24 (rights-clearance
+                     pass): rightsPending means a VALUE is held that cannot be shipped.
+                     No value is held here, so this is a declared GAP, not a legal
+                     blocker on any number.";
+}
+
+groups
+{
+    joback ( { group CH2; count 2; } { group CH; count 4; } { group OH; count 6; } );   // PROPOSED (review) -- linear polyol, clean CH2/CH/OH decomposition
+}

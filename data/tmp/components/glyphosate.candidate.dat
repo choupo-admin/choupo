@@ -1,0 +1,157 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: glyphosate  (C3H8NO5P, CAS 1071-83-6)
+  PRIVATE staging tier (data/tmp/, gitignored).  The runtime does NOT read it.
+
+  ARITY-1 ONLY (phase 3, 2026-07-24).  Intrinsic pure-compound data only:
+  identity, role, crystal density and the pure-solid molar volume derived from
+  it.  Every dissociation constant, the partition coefficient and the aqueous
+  solubility are SYSTEM / equilibrium properties and have been MOVED; pointers
+  below.  Envelope: ../RECORD_SPEC.md.
+
+  DEFECT FIXED here: this file carried TWO INCOMPATIBLE pKa sets -- a 4-step set
+  (2.0 / 2.6 / 5.6 / 10.6, Caceres-Jensen et al. 2009) and a 3-step alternative
+  (2.34 / 5.73 / 10.2, e-Pesticide Manual) that does NOT map 1:1 onto it.  The
+  component now carries NO pKa at all: both sets live in chemistry/aqueousSpeciation/,
+  where the 4-step set is per-step recorded and the 3-step set is kept as a
+  whole-set alternative in the ledger.  Nothing was reconciled or averaged.
+\*---------------------------------------------------------------------------*/
+
+name           glyphosate;
+formula        C3H8NO5P;
+CAS            1071-83-6;
+InChIKey       XDDAORKBJWWYJS-UHFFFAOYSA-N;
+SMILES         "C(C(=O)O)NCP(=O)(O)O";
+pubchemCID     3496;
+MW             169.07;            // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+identityProvenance
+{
+    source      "PubChem CID 3496 (US NIH, public domain), PUG-REST";
+    licence     "public-domain fact";
+    curator     "agent:components";
+    retrieved   2026-07-24;
+    status      candidate;
+}
+
+standardThermochemistry
+{
+    available    none;             // EXPLICIT ABSENCE -- do not fabricate
+    phase        solid;
+    status       flagged;
+    blockedBy    "no clean primary solid dHf / S / Cp located";
+    action       "fill from a primary before any glyphosate energy balance";
+}
+
+// Pure-component (arity-1) volumetrics of the CRYSTAL.  NOT a partial molar
+// volume in water and NOT the Le Bas volume used in Wilke-Chang.
+solidDensity
+{
+    phase         solid;
+    value         1705.0;             // kg/m3 (1.705 g/cm3)
+    temperature   293.15;             // K (20 C)
+
+    provenance
+    {
+        unit        "kg/m3";
+        phase       solid;
+        origin      measured;
+        citation    "ATSDR, Toxicological Profile for Glyphosate (August 2020), Chapter 4,
+                     Table 4-2 'Physical and Chemical Properties of Glyphosate and its
+                     Isopropylamine Salt', which lists density at 20 C = 1.705 for the
+                     ACID and attributes it to McBean (2011) / O'Neil et al. (2013)";
+        licence     "PUBLIC DOMAIN -- a work of the US federal government (ATSDR).
+                     Freely redistributable; the rightsPending blocker is CLEARED.";
+        route       "RE-ROUTED 2026-07-24: the SAME value (1.705 g/cm3 at 20 C) previously
+                     reached us only through the e-Pesticide Manual (BCPC).  It is now
+                     taken from the public-domain ATSDR table.  Digits and temperature
+                     AGREE exactly.  NOTE the row is for the glyphosate ACID, which is
+                     what this file describes -- not the isopropylamine salt.";
+        status      flagged;
+        residualDefect "no PRIMARY measurement is named -- ATSDR itself attributes the
+                        number to two commercial compilations.  The ROUTE is legally
+                        clean; the provenance is still one hop short of a measurement.";
+    }
+}
+
+solidMolarVolume
+{
+    phase         solid;
+    value         9.916e-5;           // m3/mol (99.16 cm3/mol)
+    temperature   293.15;             // K
+
+    derivation
+    {
+        equation   "V = MW / rho";
+        MW         169.07;            // g/mol
+        rho        1.705;             // g/cm3, from solidDensity above
+        origin     derived;
+    }
+    status        flagged;            // inherits the density's status: legally CLEAR
+                                      //   (public-domain route), primary still unnamed
+}
+
+groups
+{
+    joback  none;
+    reason  "no first-order Joback group for the phosphonate; nonvolatile, no VLE estimate wanted";
+    status  flagged;
+}
+
+cosmo
+{
+    LVPP_B3LYP_def2SVPD
+    {
+        variant       lvppB3LYP_def2SVPD;   // NOT cosmoSAC2002 -- no matching runtime constants
+        source        "LVPP sigma database (github lvpp/sigma, MIT, DOI 10.5281/zenodo.3613785; Ferrarini et al., AIChE J. 64 (2018) 3443)";
+        evidenceId    "evidence/lvpp-glyphosate/metadata.dat (recordId lvpp-glyphosate)";
+        area          notCopied;
+        volume        notCopied;
+        sigmaProfile  notCopied;
+        status        flagged;
+        reason        "LVPP QM protocol is incompatible with Choupo's VT-2005 cosmoSAC2002 sets; measured on ethylene (present in both): +6.1 % cavity area, +10.3 % cavity volume.";
+    }
+    VT2005
+    {
+        variant       cosmoSAC2002;
+        available     none;
+        status        flagged;
+    }
+    modellingNote "a multiprotic zwitterion is not representable by a single neutral-molecule COSMO profile -- an electrolyte speciation model is the physically right route";
+}
+
+pcSaft
+{
+    available     none;
+    status        flagged;
+    reason        "no pure-component parameter set located from an open primary; not fabricated.";
+}
+
+// --- MOVED OUT (arity >= 2 / state-dependent) -- POINTERS ONLY, no values ---
+references
+{
+    acidDissociation    "chemistry/aqueousSpeciation/glyphosate-pKa1|pKa2|pKa3|pKa4.candidate.dat (recordId glyphosate-pKa1 .. glyphosate-pKa4) -- the 4-step set; the incompatible 3-step alternative is held as a whole-set entry in that directory's _LEDGER.md";
+    isoelectricPoint    "NOT DEFINED -- polyprotic, no single pI; the statement was prose with no number and is not stored";
+    chargeAtPH7         "DELETED as DERIVED -- the net -2 at pH 7 is a result of the four equilibria, never stored";
+    partitionOctanolWater "parameters/partition/glyphosate-octanol-water.candidate.dat (recordId glyphosate-octanol-water)";
+    aqueousSolubility   "parameters/solubility/glyphosate-water.candidate.dat (recordId glyphosate-water)";
+    stokesRadius        "NO RECORD -- no primary NF/electrodialysis table transcribed; the effective size is speciation- and hydration-dependent";
+    aqueousDiffusion    "NO RECORD -- speciation-dependent, no primary aqueous-diffusion study transcribed";
+    cosmoSurface        "evidence/lvpp-glyphosate/metadata.dat (recordId lvpp-glyphosate)";
+}
+
+applicationNote "NF/RO rejection is DONNAN-dominated (a divalent anion at pH 7 against a negatively charged NF membrane), which makes glyphosate the pedagogical contrast to the neutral triazine / phenylurea set (atrazine, simazine, diuron).";

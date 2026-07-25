@@ -1,0 +1,64 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  logKow of metformin between 1-octanol and water.
+
+  ARITY 3: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/metformin.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      partitionCoefficient;
+schemaVersion   1;
+recordId        metformin-octanol-water;
+participants    ( metformin octanol water );
+property        logKow;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- the conventional log P reference
+                  // temperature is NOT restated by the source; the
+                  // 25 C convention is assumed and flagged here.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    pH            "neutral free base";
+    chemicalForm  neutral;
+}
+
+// FLAGGED: the number is quoted everywhere but no primary was pinned at
+// curation.  Do NOT promote before a primary is attached.
+// Physically also near-meaningless as stated: metformin is a permanent
+// guanidinium CATION (pKa 12.4) at every drinking-water pH, so the
+// free-base partition is not the species in the process.
+value
+{
+    logKow   -1.43;   // dimensionless (log10 of a concentration ratio)
+}
+
+provenance
+{
+    origin      measured;
+    citation    "UNPINNED -- widely-cited experimental free-base value; no open primary located (PubChem carries only the computed XLogP3 = -0.5)";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:partition";
+    retrieved   2026-07-24;
+}
+
+status          flagged;
+
+// ----------------------------------------------------------------------------
+// PHASE 6 (2026-07-24) -- searched for the missing primary.  NOT FOUND.  Value unchanged.
+// ----------------------------------------------------------------------------
+//   Phase 2 flagged this value as UNPINNED: a widely-quoted experimental free-base logKow
+//   of -1.43 with no traceable report behind it.  Phase 6 did not find one.
+//   The record stays `flagged` and the value stays for internal evaluation only.
+//   Note the phase-2 physical objection still dominates and is not fixable by better
+//   sourcing: metformin is a permanent cation (pKa2 = 12.4) at every process pH, so a
+//   neutral-form logKow is not the descriptor that governs its behaviour.  Even a
+//   perfectly-sourced number here would be the wrong quantity to use; a logD at the
+//   working pH is what a membrane case actually needs.
+//   SHARPENED ACTION: prefer finding a measured logD(pH) over pinning this logKow.
+// ----------------------------------------------------------------------------

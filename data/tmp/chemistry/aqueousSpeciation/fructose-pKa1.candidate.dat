@@ -1,0 +1,103 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/fructose.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        fructose-pKa1;
+participants    ( fructose fructoseAnion- H+ );
+property        pKa;
+reaction        "fructose (hydroxyl OH) = fructoseAnion- (alkoxide) + H+";
+site            "hydroxyl OH (sugar, very weak acid)";
+step            1;
+
+conditions
+{
+    temperature     298.15 K;   // the nominal condition of the DROPPED value; no value
+                                //   is carried now, a replacement brings its own
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    available       none;      // DROPPED 2026-07-24 -- see NOTES (rights clearance)
+}
+
+alternativeDeterminations   // quoted for orientation ONLY -- not the datum
+{
+    alt1
+    {
+        pKa       12.03;
+        citation  "Merck Index; via HSDB / PubChem";
+        licence   "rightsPending -- the Merck Index is a paywalled commercial
+                   compilation, PRIVATE tier only.  This was the datum until 2026-07-24.";
+    }
+}
+
+provenance
+{
+    origin      none;          // no value is carried
+    citation    "-";
+    doi         "-";
+    licence     "-";
+    evidenceId  -;
+    curator     "agent:rightsClearance";
+    retrieved   2026-07-24;
+}
+status          rightsPending;
+blockedBy       "The Merck Index -- a paywalled commercial compilation, not
+                 redistributable in Choupo's public tier";
+action          "read the sugar row in a PRIMARY calorimetric/potentiometric
+                 determination and transcribe it with its own citation and conditions.
+                 Best leads (titles/journals verified, the TABLES were NOT read):
+                   * Izatt, R.M., Rytting, J.H., Hansen, L.D. & Christensen, J.J.,
+                     'Thermodynamics of Proton Dissociation in Dilute Aqueous Solution.
+                     V. An Entropy Titration Study of Adenosine, Pentoses, Hexoses, and
+                     Related Compounds', J. Am. Chem. Soc. 88 (1966) 2641-2645 -- 25 C,
+                     covers lyxose, xylose, arabinose, mannose, FRUCTOSE, glucose,
+                     galactose.
+                   * Christensen, J.J., Rytting, J.H. & Izatt, R.M., 'Thermodynamics of
+                     proton dissociation in dilute aqueous solution. Part XV. Proton
+                     dissociation from several monosaccharides at 10 and 40 C',
+                     J. Chem. Soc. B (1970) 1646 -- NOT at 25 C.
+                   * Thamsen, J., Acta Chem. Scand. 6 (1952) 270-284 (FREE full text at
+                     actachemscand.ki.ku.dk) -- hydrogen/glass electrode at 0 and 18 C,
+                     but it covers ONLY glucose, mannitol and sorbitol; it was fetched
+                     and OCR'd during this pass and contains NO pentose/ketose row.";
+
+// NOTES
+//   RIGHTS CLEARANCE 2026-07-24 -- action: DROP (phase 4).
+//     pKa 12.03 reached us only through the Merck Index, a paywalled commercial
+//     compilation.  No open primary reporting that digit could be READ during this
+//     pass (the Izatt 1966 and Christensen 1970 tables are behind ACS/RSC paywalls;
+//     the one free full text located, Thamsen 1952, does not cover fructose).
+//     The number is therefore deleted and the gap declared.
+//   Re-homed from components/fructose.candidate.dat
+
+// PHASE 6 (2026-07-24) -- an ANCHOR was found, but it does NOT promote this record.
+//   Thamsen, J., Acta Chem. Scand. 6 (1952) 270-284, doi 10.3891/acta.chem.scand.06-0270
+//   (open archive; READ in full by the curator) measures GLUCOSE at pK' 12.43 @ 18 C and
+//   12.92 @ 0 C, by hydrogen electrode and glass electrode, in 0.015-0.05 M NaOH.  That
+//   confirms the ORDER OF MAGNITUDE this placeholder sits at, and it fixes the rung
+//   (alcoholate formation, ROH = RO- + H+).  It does NOT measure THIS sugar.
+//   A different sugar is a different measurement: Thamsen's own mannitol/sorbitol pair
+//   (13.50 vs 13.57) differ by more than the placeholders differ from each other, so
+//   "close enough" reasoning across sugars is not available.
+//   The placeholder therefore stays `flagged`, value UNCHANGED, and still must NOT be
+//   used numerically.  SHARPENED ACTION: the two determination families worth chasing are
+//   (a) the Thamsen-style electrode work extended to other sugars, and (b) Christensen,
+//   Rytting & Izatt, "Thermodynamics of proton dissociation in dilute aqueous solution.
+//   Part XV. Proton dissociation from several monosaccharides at 10 and 40 C",
+//   J. Chem. Soc. B (1970) 1646 -- a calorimetric-titration study that reports pK with
+//   dH and dS, i.e. with the temperature dependence this directory lacks everywhere.
+//   Neither was readable in phase 6 (the 1970 paper is paywalled RSC).
+
+// VOCABULARY UNIFIED 2026-07-24: rights blockage is encoded in `status`,
+// not only in `licence` -- the two directories had diverged and a rights-blocked
+// record must never sit at a status that reads clean.
+statusVocabularyNote  "was flagged; rights blockage promoted into status";

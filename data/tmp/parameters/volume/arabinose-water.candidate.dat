@@ -1,0 +1,89 @@
+// data/tmp/parameters/volume/arabinose-water.candidate.dat
+// PRIVATE staging tier (data/tmp, gitignored).  Envelope: ../../RECORD_SPEC.md.
+// Emitted 2026-07-24 (phase 3) out of components/arabinose.candidate.dat (`Vliq`).
+// An apparent/partial molar volume at infinite dilution is arity 2.
+
+recordType      partialMolarVolume;
+schemaVersion   1;
+recordId        volume-arabinose-water;
+participants    ( arabinose water );
+property        apparentMolarVolumeAtInfiniteDilution;
+
+conditions
+{
+    temperature   298.15 K;
+    pressure      101325 Pa;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    V0            93.4 cm3/mol;        // = 0.934e-4 m3/mol
+}
+
+provenance
+{
+    origin      measured;              // density + ultrasound velocity
+    citation    "Galema & Hoiland, 'Stereochemical aspects of hydration of
+                 carbohydrates in aqueous solutions', J. Phys. Chem. 95 (1991) 5321";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:components-sugars";
+    retrieved   2026-07-24;
+}
+
+identityCaution
+    "The component record now carries the FULL stereo-resolved key for
+    L-arabinose (SRBFZHDQGSBBOR-HWQSCIPKSA-N).  Galema & Hoiland's series is
+    stereochemistry-centred, so which arabinose enantiomer/anomer this V0 refers
+    to must be checked against the paper before promotion -- the D and L forms
+    have the same V0 by symmetry, but the anomeric composition does matter.";
+
+note
+    "The PURE-SOLID molar volume of crystalline arabinose (94.72 cm3/mol = MW/rho)
+    is a different, arity-1 quantity and stays in the component file.";
+
+// PHASE 6 (2026-07-24) -- the citation was completed (it had no DOI and no page range).
+pendingPrimary
+{
+    citation      "Galema, S. A.; Hoiland, H., 'Stereochemical aspects of hydration of
+                   carbohydrates in aqueous solutions. 3. Density and ultrasound
+                   measurements', J. Phys. Chem. 95 (1991) 5321-5326";
+    doi           "10.1021/j100166a073";
+    howResolved   "Crossref bibliographic search, 2026-07-24: title, journal, volume,
+                   full page range and DOI all confirmed; only the volume+first page were
+                   carried before.  The 'part 3' of the series title is what makes it the
+                   DENSITY paper - parts 1 and 2 are kinetic-medium-effect papers
+                   (J. Am. Chem. Soc. 112 (1990) 9665; J. Org. Chem. 57 (1992) 1995) and
+                   contain no partial molar volumes.";
+    access        "American Chemical Society, closed; the ACS platform was additionally
+                   under a migration outage on 2026-07-24.";
+    action        "obtain the article and read off, from its own table, WHICH arabinose
+                   was measured -- the series is explicitly stereochemistry-centred, so
+                   the enantiomer and the anomeric equilibrium are the point of the
+                   paper, not an incidental detail.  D- and L-arabinose share V0 by
+                   symmetry, so the enantiomer question is only an identity/labelling
+                   matter; the ANOMERIC composition is the one that can move the digit.
+                   Confirm 93.4 cm3/mol at 298.15 K before promotion.";
+}
+
+// PHASE 7 (2026-07-25) -- retrieval ATTEMPTED, source UNREACHABLE.
+phase7Retrieval
+{
+    attempted     2026-07-25;
+    doi           "10.1021/j100166a073";
+    outcome       "UNREADABLE -- V0 digit and anomeric composition NOT confirmed";
+    detail        "American Chemical Society (pubs.acs.org) returned HTTP 403 Forbidden
+                   (the ACS platform migration outage was still in effect); Unpaywall
+                   is_oa = false with NO OA location; no repository copy found.  The
+                   paper's own table was never read, so 93.4 cm3/mol at 298.15 K remains
+                   UNVERIFIED and the record's actual blocker -- WHICH arabinose (anomeric
+                   composition) the series measured -- is still open.";
+    ruling        "record stays flagged.  Number NEITHER promoted NOR deleted (no READ
+                   disagreement possible without the text).  DOI + full page range
+                   (5321-5326) retained.";
+}
+
+status          flagged;               // enantiomer/anomer of the cited series unverified

@@ -1,0 +1,56 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  AQUEOUS SPECIATION record -- ONE dissociation step (a real chemical
+  EQUILIBRIUM, arity >= 2).  Re-homed 2026-07-24 from a COMMENT LINE in
+  data/tmp/components/metformin.candidate.dat (an equilibrium is NOT a
+  component constant -- RECORD_SPEC.md ARITY rule).
+  Value + primary citation preserved VERBATIM; nothing adjusted or invented.
+\*---------------------------------------------------------------------------*/
+
+recordType      acidDissociation;
+schemaVersion   1;
+recordId        metformin-pKa2;
+participants    ( metforminH+ metformin H+ );
+property        pKa;
+reaction        "metforminH+ (guanidinium) = metformin (neutral base) + H+";
+site            "guanidinium (strong basic centre)";
+step            2;
+
+conditions
+{
+    temperature     298.15 K;   // CONVENTIONAL 25 C -- the source does NOT state a temperature (FLAG)
+    phase           aqueous;
+    ionicStrength   not stated;
+}
+
+value
+{
+    pKa             12.4;
+    // uncertainty: NOT reported by the source
+}
+
+provenance
+{
+    origin      measured;
+    citation    "DrugBank & HSDB (public), PubChem CID 4091";
+    doi         "-";
+    licence     "facts, primary-cited (HSDB, US NLM -- public domain)";
+    evidenceId  -;
+    curator     "agent:speciation";
+    retrieved   2026-07-24;
+}
+status          candidate;
+
+// NOTES
+//   Re-homed from components/metformin.candidate.dat
+//   PHASE 6 -- STEP NUMBERING VERIFIED, and the clash now stated on BOTH steps (phase 2
+//     stated it only on pKa1, so a reader arriving at this file alone would not have seen it):
+//       This directory numbers steps by ASCENDING pKa, i.e. by the order in which protons
+//       actually leave.  metformin is a di-protonated dication at low pH, so
+//         step 1 = ~2.8  (the weaker biguanide centre)
+//         step 2 = 12.4  (the guanidinium)
+//       The SOURCE (DrugBank / HSDB via PubChem CID 4091) uses the OPPOSITE labels: it calls
+//       12.4 "the pKa" and ~2.8 "the second, weaker pKa".  The source is labelling by
+//       importance, not by deprotonation order.  Numbers were NOT changed -- only the step
+//       indices, which are this directory's convention.  Anyone reconciling against the
+//       source must expect the labels to be inverted.
+//   Source consequence (cationic across the entire drinking-water pH range) is a RESULT of this equilibrium, not stored.

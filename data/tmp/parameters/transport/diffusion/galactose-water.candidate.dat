@@ -1,0 +1,96 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  STAGING RECORD - PRIVATE tier (data/tmp, gitignored).  Envelope per
+  data/tmp/RECORD_SPEC.md.  The runtime does NOT read this file yet.
+
+  ARITY 2: an aqueous diffusion coefficient is a SOLUTE-SOLVENT
+  (system) property, not an intrinsic pure-compound datum -> it lives under
+  parameters/, never inside components/<name>.candidate.dat.
+
+  Provenance chain: extracted 2026-07-24 (phase-2 reclassification) from the
+  comment block of components/galactose.candidate.dat; primary citation
+  cross-checked against data/tmp/sugars_SOURCES.md.  The value and its
+  citation were MOVED verbatim - nothing was re-derived, rounded or improved.
+\*---------------------------------------------------------------------------*/
+
+
+recordType      diffusionCoefficient;
+schemaVersion   1;
+recordId        diffusion-galactose-water;
+participants    ( galactose water );
+property        aqueousDiffusionCoefficient;
+
+conditions
+{
+    temperature   298.15 K;
+    phase         aqueous;
+    composition   infiniteDilution;
+}
+
+value
+{
+    D             6.8e-10 m2/s;
+}
+
+validity
+{
+    temperatureRange   ( 298.15 298.15 ) K;   // single-point datum
+    concentration      infiniteDilution;
+}
+
+// how THIS value was obtained (glass-box; inputs stated in full)
+derivation
+{
+    method                 "chemical-analogue surrogate (C4 epimer of glucose)";
+    anchorValue            6.79e-10 m2/s;
+    anchorSubstance        glucose;
+    origin                 estimated;
+}
+
+// a Stokes radius computed FROM the D above is NOT an independent datum
+derived
+{
+    equation      "r = kT/(6 pi mu D)";
+    viscosity     0.8903e-3 Pa.s;
+    temperature   298.15 K;
+    radius        0.36 nm;   // PROVISIONAL: recompute if D is replaced
+    origin        derived;
+}
+
+flagged
+{
+    reason        "the exact 298.15 K digit was NOT transcribable from the paywalled primary table";
+    route         "Mogi, Sugai, Fuse & Funazukuri, J. Chem. Eng. Data 52 (2007) 40-43 (measured the full T-series; transcribe the 298.15 K digit)";
+    action        "PHASE 6 TRIED HARDEST HERE AND STILL FAILED - the record is an analogue
+                  surrogate (the glucose C4 epimer) and must not be promoted while it is.
+                  What was checked on 2026-07-24: (a) Mogi, N.; Sugai, E.; Fuse, Y.;
+                  Funazukuri, T., 'Infinite Dilution Binary Diffusion Coefficients for Six
+                  Sugars at 0.1 MPa and Temperatures from (273.2 to 353.2) K', J. Chem. Eng.
+                  Data 52 (2007) 40-43, doi 10.1021/je0601816 - CLOSED (Unpaywall is_oa =
+                  false; the ACS platform served no abstract, and was under a migration
+                  outage), so it is not even confirmed that galactose is one of its six
+                  sugars: CONFIRM THAT FIRST, it is a one-line check once the paper is in
+                  hand; (b) Uedaira, H.; Uedaira, H., Bull. Chem. Soc. Jpn. 42 (1969)
+                  2140-2142, doi 10.1246/bcsj.42.2140 - title verified as 'Diffusion
+                  Coefficients of Xylose and Maltose in Aqueous Solution', i.e. it CANNOT
+                  supply galactose; stop citing the 1969 pair for this compound; (c) a
+                  Landolt-Boernstein entry literally titled 'Diffusion coefficient of
+                  D-galactose in water at infinite dilution' EXISTS, doi
+                  10.1007/978-3-662-54089-3_1868 - do NOT extract the number from it
+                  (paywalled compilation, EU sui-generis database right); use it ONLY to read
+                  off which primary it cites, then obtain that primary.  Deliverable: a
+                  Taylor-dispersion or Gouy determination of D-galactose at 298.15 K, infinite
+                  dilution.";
+}
+
+provenance
+{
+    origin        estimated;
+    citation      "analogue estimate anchored on glucose D_aq = 6.79e-10 m2/s [Ribeiro et al., J. Chem. Eng. Data 51 (2006) 1836]; galactose is the C4 epimer of glucose";
+    doi           "-";
+    licence       "facts, primary-cited";
+    evidenceId    -;
+    curator       "agent:diffusion";
+    retrieved     2026-07-24;
+}
+
+status          flagged;

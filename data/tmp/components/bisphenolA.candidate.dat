@@ -1,0 +1,97 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: bisphenolA  (C15H16O2, CAS 80-05-7)
+  Endocrine disruptor; diprotic phenol; hydrophobic -- adsorption and rejection
+  both matter.  NF/RO micropollutant benchmark.
+
+  IDENTITY source: PubChem CID 6623 (US NIH, public domain), retrieved
+    2026-07-24 via PUG-REST.  CAS 80-05-7 as listed on that public record.
+
+  SCOPE (phase-3 cleanup, 2026-07-24): ARITY-1 INTRINSIC ONLY.  Every system /
+    equilibrium / state datum was re-homed in phase 2 and is NOT duplicated here
+    (data/tmp/RECORD_SPEC.md, ARITY rule).  The pointers carry NO numbers.
+
+  STATUS: candidate.  Not promotable -- no thermochemistry, no Cp, no VLE leg.
+\*---------------------------------------------------------------------------*/
+
+name              bisphenolA;
+formula           C15H16O2;
+CAS               80-05-7;
+InChIKey  IISBACLAFKSPIT-UHFFFAOYSA-N;   // 14-char skeleton only (see estradiol note)
+MW                228.29;           // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+
+
+// ---- RE-HOMED IN PHASE 2 (pointers only, no values) ------------------------
+// D_aq + Stokes radius  -> parameters/transport/diffusion/  recordId diffusion-bisphenolA-water
+// logKow                -> parameters/partition/            recordId bisphenolA-octanol-water
+// aqueous solubility    -> parameters/solubility/           recordId bisphenolA-water
+// 1st phenolic-OH pKa   -> chemistry/aqueousSpeciation/     recordId bisphenolA-pKa1
+// 2nd phenolic-OH pKa   -> chemistry/aqueousSpeciation/     recordId bisphenolA-pKa2
+// COSMO cavity (LVPP)   -> evidence/lvpp-bisphenolA/        recordId lvpp-bisphenolA
+// The prose claim "neutral below ~pH 9, mono-/di-anionic above" was DELETED, not
+//   moved: it is a CONSEQUENCE of the two pKa records plus a pH, never a datum.
+
+
+// ---- ARITY-1 INTRINSIC ------------------------------------------------------
+
+// Tfus is reported as a RANGE; kept as a range rather than collapsed to a
+// midpoint (a midpoint would be an invented number).
+TfusRange         ( 429.15 431.15 );  // K (156-158 degC), crystalline solid;
+                                      //   POLYMORPH not stated by the source.
+                                      //   [HMDB / HSDB via PubChem CID 6623]
+
+solidDensity      1195.0;   // kg/m3, crystal at 298 K (1.195 g/cm3 @25 degC).
+                            //   [HSDB via PubChem CID 6623]
+                            //   A molar volume was previously stored beside it;
+                            //   MW/rho is a DERIVATIVE and is not stored.
+
+
+// ---- DECLARED GAPS (absences, never estimates) ------------------------------
+// standardThermochemistry: no open combustion / formation datum located; not
+//                          needed for the membrane leg.  (Bisphenol A is a real
+//                          industrial monomer, so a primary probably exists --
+//                          this is a genuine gap, not an impossibility.)
+// Tc / Pc / omega /
+// vaporPressure /
+// idealGasHeatCapacity   : no VLE leg staged.
+//
+// COSMO-SAC -- NO DEPLOYABLE SET; no `cosmo {}` block may be written here.
+//   evidence/lvpp-bisphenolA holds the LVPP cavity descriptors as EVIDENCE only:
+//   the LVPP QM protocol is incompatible with Choupo's VT-2005 `cosmoSAC2002`
+//   sets (ethylene cross-check: +6.1 % area, +10.3 % volume).  The LVPP surface
+//   is the NEUTRAL GAS-PHASE species (both OH protonated), never the mono- or
+//   di-phenolate that exists above pH ~9.
+// PC-SAFT -- no open bisphenol-A parameter set adopted
+//   (parameters/PCSAFT/_INVENTORY.md, section 3).
+
+provenance
+{
+    TfusRange
+    {
+        origin      measured;
+        citation    "HMDB / HSDB via PubChem CID 6623 (HSDB: US NLM, public domain)";
+        note        "reported as a 156-158 degC range; polymorph not stated";
+        status      candidate;
+    }
+    solidDensity
+    {
+        origin      measured;
+        citation    "HSDB via PubChem CID 6623 (US NLM, public domain)";
+        note        "crystal density at 25 degC; crystal form not stated";
+        status      candidate;
+    }
+}

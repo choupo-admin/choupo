@@ -1,0 +1,66 @@
+/*---------------------------------------------------------------------------*\
+  Choupo STAGING record  --  PRIVATE tier (data/tmp/, gitignored).
+
+  logKow of sulfamethoxazole between 1-octanol and water.
+
+  ARITY 3: this is a SYSTEM property, not an intrinsic component field.
+  Reclassified 2026-07-24 out of a comment line in
+  data/tmp/components/sulfamethoxazole.candidate.dat  (RECORD_SPEC.md arity rule:
+  "zero usable science may live only in a comment").
+  The runtime does not read this tier yet.
+\*---------------------------------------------------------------------------*/
+
+recordType      partitionCoefficient;
+schemaVersion   1;
+recordId        sulfamethoxazole-octanol-water;
+participants    ( sulfamethoxazole octanol water );
+property        logKow;
+
+conditions
+{
+    temperature   298.15 K;   // 25 C -- the conventional log P reference
+                  // temperature is NOT restated by the source; the
+                  // 25 C convention is assumed and flagged here.
+    pressure      101325 Pa;   // ambient, ASSUMED -- not stated by the source
+    pH            "neutral form";
+    chemicalForm  neutral;
+}
+
+// Amphoteric (pKa1 1.6 / pKa2 5.7) => ANIONIC at pH 7.  The measured
+// pH-8 distribution coefficient is a SEPARATE record:
+//   sulfamethoxazole-octanol-water-pH8.candidate.dat
+value
+{
+    logKow   0.89;   // dimensionless (log10 of a concentration ratio)
+}
+
+provenance
+{
+    origin      measured;
+    citation    "HSDB (US NLM, public domain), CID 5329, experimental log Kow; concurs Radjenovic, J. et al., Water Res. 42 (2008) 3601, Table 1";
+    doi         "-";
+    licence     "facts, primary-cited";
+    evidenceId  -;
+    curator     "agent:partition";
+    retrieved   2026-07-24;
+}
+
+status          candidate;
+
+// ----------------------------------------------------------------------------
+// PHASE 6 VERIFICATION AUDIT (2026-07-24) -- status UNCHANGED (candidate)
+// ----------------------------------------------------------------------------
+//   Source of record is HSDB (US National Library of Medicine).  HSDB is a US-government
+//   work in the PUBLIC DOMAIN, so unlike Hansch, DrugBank, HMDB, Merck, CRC, BCPC and the
+//   LOGKOW Databank there is no rights obstacle: the record survives the phase-6 ruling
+//   intact and keeps `candidate`.
+//   The EVIDENTIAL caveat is recorded honestly all the same: HSDB is itself a compilation.
+//   It labels this value experimental but the underlying determination has not been traced
+//   to its own report, so `candidate` here rests on a public-domain secondary, not on a
+//   primary that a curator has read.
+//     primary identified    : no  (HSDB does not surface it through the PubChem re-quote)
+//     primary actually read : no
+//     rights position       : clean (public domain)
+//   SHARPENED ACTION: trace the determination behind the HSDB entry before promotion out
+//     of this tier.  Rights are satisfied; provenance depth is not.
+// ----------------------------------------------------------------------------

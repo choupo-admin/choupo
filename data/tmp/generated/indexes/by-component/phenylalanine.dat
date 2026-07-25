@@ -1,0 +1,10 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'phenylalanine'
+component phenylalanine;
+records
+(
+    { recordType acidDissociation; recordId phenylalanine-pKa1; category flagged; file "chemistry/aqueousSpeciation/phenylalanine-pKa1.candidate.dat"; }
+    { recordType acidDissociation; recordId phenylalanine-pKa2; category flagged; file "chemistry/aqueousSpeciation/phenylalanine-pKa2.candidate.dat"; }
+    { recordType cosmoSurface; recordId lvpp-phenylalanine; category flagged; file "evidence/lvpp-phenylalanine/metadata.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-phenylalanine-water; category flagged; file "parameters/transport/diffusion/phenylalanine-water.candidate.dat"; }
+    { recordType isoelectricPoint; recordId phenylalanine-pI; category flagged; file "chemistry/aqueousSpeciation/phenylalanine-pI.candidate.dat"; }
+);

@@ -1,0 +1,9 @@
+// DOSSIER (generated 2026-07-24) -- everything staged for 'taurine'
+component taurine;
+records
+(
+    { recordType acidDissociation; recordId taurine-pKa1; category flagged; file "chemistry/aqueousSpeciation/taurine-pKa1.candidate.dat"; }
+    { recordType acidDissociation; recordId taurine-pKa2; category flagged; file "chemistry/aqueousSpeciation/taurine-pKa2.candidate.dat"; }
+    { recordType diffusionCoefficient; recordId diffusion-taurine-water; category flagged; file "parameters/transport/diffusion/taurine-water.candidate.dat"; }
+    { recordType isoelectricPoint; recordId taurine-pI; category flagged; file "chemistry/aqueousSpeciation/taurine-pI.candidate.dat"; }
+);

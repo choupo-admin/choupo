@@ -1,0 +1,170 @@
+/*----------------------------*- Choupo (CANDIDATE) -*----------------------*\
+  CANDIDATE component: acrylamide  (C3H5NO, CAS 79-06-1)
+  PRIVATE staging tier (data/tmp/, gitignored).  The runtime does NOT read it.
+
+  ARITY-1 ONLY (phase 3, 2026-07-24).  Intrinsic pure-compound data only:
+  identity, role, dissociation, solid-rung thermochemistry (now a STRUCTURED
+  block, no longer a comment), phase-declared Cp, and the measured combustion
+  enthalpy that is the dHf lineage.  logKow, aqueous solubility and D_aq are
+  SYSTEM properties and have been MOVED; pointers below.  Envelope: ../RECORD_SPEC.md.
+\*---------------------------------------------------------------------------*/
+
+name           acrylamide;
+formula        C3H5NO;
+CAS            79-06-1;
+InChIKey       HRPVXLWXLXDGHG-UHFFFAOYSA-N;
+pubchemCID     6579;
+MW             71.08;             // g/mol
+// role: WITHDRAWN 2026-07-24 (advisor ruling).  The engine's `role` enum conflates
+// three independent axes -- intrinsic phase behaviour, what the CASE lets the
+// component do, and which equilibrium route is used.  Staged as `nonvolatile`, it here meant
+// only "I intend to use this as an aqueous solute" -- a CASE INTENT, not a physical
+// claim.  A component may be BOTH volatile and a solute; they are not exclusive.
+// The physical evidence is kept structured below; the engine does not read this tree.
+phaseBehaviour
+{
+    roleAsStaged            nonvolatile;      // historical, NOT a physical assertion
+    volatilityEvidence      "none in this file";
+    contradictsStagedRole   no;
+    note "restate as: intrinsic phase evidence | case phase declaration | equilibrium route (Raoult|EOS|Henry|chemical|excluded)";
+}
+intendedCaseUse             aqueousSolute;   // declaration of INTENT
+
+dissociation   1;                 // non-electrolyte, primary amide, no ionization near pH 7
+
+identityProvenance
+{
+    source      "PubChem CID 6579 (US NIH, public domain), PUG-REST";
+    licence     "public-domain fact";
+    curator     "agent:components";
+    retrieved   2026-07-24;
+    status      candidate;
+}
+
+standardThermochemistry
+{
+    phase            solid;            // crystalline
+    referenceState   pureSolid;
+    dHf_298          -212080.0;        // J/mol
+
+    s_298
+    {
+        available    none;             // EXPLICIT ABSENCE -- do not fabricate
+        unit         "J/(mol K)";
+        phase        solid;
+        status       flagged;
+        blockedBy    "CONFIRMED absent 2026-07-25 from the NIST WebBook condensed-phase page (ID=C79061, Mask=2), which lists ONLY dfH(cr) -212.08 +/- 0.30, dcH(cr) -1683.02 +/- 0.26 and Cp(cr) 110.58 -- all Steele, Chirico et al. 1989 -- and NO S(298)";
+        action       "the Steele & Chirico 1989 combustion/Cp study is the natural primary for a third-law S(298); obtain and transcribe it before any solid-acrylamide entropy or Gibbs calculation.  NOTE: dfH and Cp above are VERIFIED digit-exact against NIST.";
+    }
+
+    provenance
+    {
+        dHf_298
+        {
+            unit        "J/mol";
+            phase       solid;
+            origin      measured;
+            uncertainty "+/- 300 J/mol (+/- 0.30 kJ/mol) as reported";
+            citation    "Steele, Chirico et al., combustion calorimetry (1989)";
+            route       "located through the NIST WebBook condensed-phase free view (ID=C79061, Mask=2), used only as a finding aid -- a no-grant compilation, the value is re-cited to the primary";
+            licence     "facts, primary-cited";
+            status      candidate;
+        }
+    }
+}
+
+// The measured quantity behind dHf_298 -- kept as its own datum, not as a comment.
+enthalpyOfCombustion
+{
+    phase         solid;
+    value         -1683020.0;         // J/mol (-1683.02 kJ/mol)
+    temperature   298.15;             // K
+
+    provenance
+    {
+        unit        "J/mol";
+        phase       solid;
+        origin      measured;
+        uncertainty "+/- 260 J/mol (+/- 0.26 kJ/mol) as reported";
+        citation    "Steele, Chirico et al., combustion calorimetry (1989)";
+        licence     "facts, primary-cited";
+        status      candidate;
+    }
+}
+
+solidHeatCapacity
+{
+    phase         solid;
+    model         polynomial;         // constant-Cp treatment
+    coefficients  ( 110.58 );         // Cp J/(mol K), quoted at 298.15 K
+    Trange        ( 305 415 );        // K -- the MEASURED range; acrylamide polymerises above 415 K
+
+    provenance
+    {
+        unit        "J/(mol K)";
+        phase       solid;
+        origin      measured;
+        citation    "Steele, Chirico et al. (1989)";
+        route       "NIST WebBook condensed-phase page (ID=C79061, Mask=2), re-cited to the primary";
+        caveat      "the value is quoted at 298.15 K but the measured interval starts at 305 K -- using it at 298 K is a short extrapolation, stated here rather than hidden";
+        licence     "facts, primary-cited";
+        status      candidate;
+    }
+}
+
+solidDensity
+{
+    phase         solid;
+    available     none;               // EXPLICIT ABSENCE -- do not fabricate
+    unit          "kg/m3";
+    status        flagged;
+    blockedBy     "the PubChem density entry is not primary-clean";
+    action        "transcribe a crystal density from a cited primary; the pure-solid molar volume V = MW/rho follows from it and is not stored independently";
+}
+
+groups
+{
+    joback  partial;
+    reason  "the vinyl centres (=CH2, =CH-) fit Joback but the primary amide does not; nonvolatile, no VLE estimate wanted";
+    status  flagged;
+}
+
+cosmo
+{
+    LVPP_B3LYP_def2SVPD
+    {
+        variant       lvppB3LYP_def2SVPD;   // NOT cosmoSAC2002 -- no matching runtime constants
+        source        "LVPP sigma database (github lvpp/sigma, MIT, DOI 10.5281/zenodo.3613785; Ferrarini et al., AIChE J. 64 (2018) 3443)";
+        evidenceId    "evidence/lvpp-acrylamide/metadata.dat (recordId lvpp-acrylamide)";
+        area          notCopied;
+        volume        notCopied;
+        sigmaProfile  notCopied;
+        status        flagged;
+        reason        "LVPP QM protocol is incompatible with Choupo's VT-2005 cosmoSAC2002 sets; measured on ethylene (present in both): +6.1 % cavity area, +10.3 % cavity volume.";
+    }
+    VT2005
+    {
+        variant       cosmoSAC2002;
+        available     none;
+        status        flagged;
+    }
+}
+
+pcSaft
+{
+    available     none;
+    status        flagged;
+    reason        "no pure-component parameter set located from an open primary; not fabricated.";
+}
+
+// --- MOVED OUT (arity >= 2 / state-dependent) -- POINTERS ONLY, no values ---
+references
+{
+    aqueousDiffusion    "parameters/transport/diffusion/acrylamide-water.candidate.dat (recordId diffusion-acrylamide-water) -- order-of-magnitude, flagged there";
+    partitionOctanolWater "parameters/partition/acrylamide-octanol-water.candidate.dat (recordId acrylamide-octanol-water)";
+    aqueousSolubility   "parameters/solubility/acrylamide-water.candidate.dat (recordId acrylamide-water)";
+    chargeAtPH7         "DELETED as DERIVED -- a primary amide has no ionization near pH 7; 'charge 0' is a consequence, not a stored datum";
+    cosmoSurface        "evidence/lvpp-acrylamide/metadata.dat (recordId lvpp-acrylamide)";
+}
+
+applicationNote "small neutral solute -- a low-to-moderate RO rejection reference that pairs with urea and NDMA.";
