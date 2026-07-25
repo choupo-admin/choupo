@@ -469,6 +469,36 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/elgate.$$
 
+    # Species-identity gate: chemical truth lives in explicit fields, never in
+    # the key.  Prospective (a NEW opaque name is refused; the ~59 historical
+    # keys are pinned, not blessed), and it WATCHES the six identities that are
+    # still declared twice -- that vigilance is precisely what lets the ratified
+    # schema-v2 campaign wait instead of being rushed.
+    if "$ROOT/bin/curate/check_species_identity.py" > /tmp/sidgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "species-identity-gate" "$(head -1 /tmp/sidgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_species_identity.py)\n" "species-identity-gate"
+        cat /tmp/sidgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sidgate.$$
+
+    # Navigation-ontology gate: metadata/aqueous-navigation.dat is a VIEW input,
+    # never a runtime one.  Proves no phantom species, complete family coverage,
+    # the mediators declared (without them family propagation collapses every
+    # acid-base reaction into `water`), and NO solver reading the file -- which
+    # is what keeps a taxonomy edit from ever drifting a sealed case.
+    if "$ROOT/bin/curate/check_aqueous_navigation.py" > /tmp/navgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "aqueous-navigation-gate" "$(head -1 /tmp/navgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_aqueous_navigation.py)\n" "aqueous-navigation-gate"
+        cat /tmp/navgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/navgate.$$
+
     # Element-balance gate (steady): a reacting boundary changes species but
     # closes per atom; an impossible formula refuses ONLY the elemental claim.
     if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then

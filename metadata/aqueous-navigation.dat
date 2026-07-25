@@ -1,0 +1,126 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  metadata/aqueous-navigation.dat -- the AQUEOUS NAVIGATION ONTOLOGY.
+
+  This file is NOT thermodynamic data.  It carries no property, no constant
+  and no equilibrium: it says only how a HUMAN navigates the aqueous network
+  -- which chemical family a master species belongs to, which species are
+  universal mediators that must not dominate that navigation, and the closed
+  vocabulary of process topics.
+
+  It lives OUTSIDE data/standards/ deliberately.  Consequences, all intended:
+    * no solver, model or resolver reads it (enforced by a curation gate);
+    * it never enters a case's propertyManifest;
+    * changing a taxonomy here can NEVER drift a sealed case's hashes;
+    * it is validated against the species registry -- it may not name a
+      species that does not exist.
+
+  WHY mediators exist.  Families of a reaction are PROPAGATED from its
+  participants, never stored per record.  A blind union would put every
+  acid-base reaction in `water`, because H+/OH-/H2O appear in almost all of
+  them (NH4 = NH3 + H, HCO3 = CO3 + H, Fe + H2O = FeOH + H ...), and the
+  classification would collapse.  The rule is therefore:
+
+      families(reaction) = U familyRoots( participants WITHOUT navigationRole )
+      if that set is empty:
+      families(reaction) = U familyRoots( the mediator participants )
+
+  so NH4 = NH3 + H lands in `ammonia`, Fe + H2O = FeOH + H lands in `iron`
+  (topic hydrolysis), and H2O = H + OH -- where water itself is the subject --
+  lands in `water`.
+
+  Species ids here are the CURRENT catalogue keys (schema v1), including the
+  historical opaque ones (Fep3, Cup, Mnp3).  They are renamed only by the
+  ratified F2 campaign; this file follows the registry, it never leads it.
+\*-----------------------------------------------------------------------------*/
+recordType    aqueousNavigationOntology;
+schemaVersion 1;
+
+speciesNavigation
+{
+    // --- water: the universal mediators -----------------------------------
+    H     { familyRoots ( water );      navigationRole protonMediator;  }
+    OH    { familyRoots ( water );      navigationRole protonMediator;  }
+
+    // --- carbonate --------------------------------------------------------
+    HCO3  { familyRoots ( carbonate );  }
+    CO3   { familyRoots ( carbonate );  }
+
+    // --- sulfate / sulfide ------------------------------------------------
+    SO4   { familyRoots ( sulfate );    }
+    HSO4  { familyRoots ( sulfate );    }
+    HS    { familyRoots ( sulfide );    }
+
+    // --- phosphate --------------------------------------------------------
+    PO4   { familyRoots ( phosphate );  }
+    HPO4  { familyRoots ( phosphate );  }
+    H2PO4 { familyRoots ( phosphate );  }
+
+    // --- silicate / borate ------------------------------------------------
+    H4SiO4   { familyRoots ( silicate ); }
+    H3BO3    { familyRoots ( borate );   }
+    BOH4     { familyRoots ( borate );   }
+    B3O3OH4  { familyRoots ( borate );   }
+    B4O5OH4  { familyRoots ( borate );   }
+    CaBOH4   { familyRoots ( borate calcium );   }
+    MgBOH4   { familyRoots ( borate magnesium ); }
+
+    // --- halides ----------------------------------------------------------
+    Cl    { familyRoots ( chloride );   }
+    F     { familyRoots ( fluoride );   }
+    Br    { familyRoots ( bromide );    }
+    I     { familyRoots ( iodide );     }
+
+    // --- nitrogen ---------------------------------------------------------
+    NH4   { familyRoots ( ammonia );    }
+    NO3   { familyRoots ( nitrogen );   }
+    NO2   { familyRoots ( nitrogen );   }
+
+    // --- alkali / alkaline earth ------------------------------------------
+    Na    { familyRoots ( sodium );     }
+    K     { familyRoots ( potassium );  }
+    Li    { familyRoots ( lithium );    }
+    Cs    { familyRoots ( caesium );    }
+    Rb    { familyRoots ( rubidium );   }
+    Ca    { familyRoots ( calcium );    }
+    Mg    { familyRoots ( magnesium );  }
+    MgOH  { familyRoots ( magnesium );  }
+    Ba    { familyRoots ( barium );     }
+    Sr    { familyRoots ( strontium );  }
+
+    // --- transition / heavy metals ----------------------------------------
+    Fe    { familyRoots ( iron );       }
+    Fep3  { familyRoots ( iron );       }
+    Mn    { familyRoots ( manganese );  }
+    Mnp3  { familyRoots ( manganese );  }
+    Cu    { familyRoots ( copper );     }
+    Cup   { familyRoots ( copper );     }
+    Zn    { familyRoots ( zinc );       }
+    Cd    { familyRoots ( cadmium );    }
+    Pb    { familyRoots ( lead );       }
+    Al    { familyRoots ( aluminium );  }
+
+    // --- dissolved molecular gases ----------------------------------------
+    CH4   { familyRoots ( methane );    }
+    H2    { familyRoots ( hydrogen );   }
+    N2    { familyRoots ( nitrogen );   }
+    O2    { familyRoots ( oxygen );     }
+
+    // --- organics ---------------------------------------------------------
+    Tart  { familyRoots ( tartrate );   }
+    HTart { familyRoots ( tartrate );   }
+}
+
+// The CLOSED vocabulary of process topics.  A topic that is an unambiguous
+// consequence of the record type (gasLiquidEquilibrium -> gasDissolution,
+// ionExchangeEquilibrium -> ionExchange) is DERIVED, never written by hand.
+topicVocabulary
+(
+    acidBase
+    complexation
+    hydrolysis
+    gasDissolution
+    mineralDissolution
+    ionExchange
+    redox
+    waterDissociation
+);
