@@ -339,7 +339,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         std::cout << "\nReactive electrolyte equilibrium:\n"
                   << "  apparent components:";
         for (const auto& a : cfg_.apparent) std::cout << " " << a;
-        std::cout << "\n  true aqueous species:";
+        std::cout << "\n  model aqueous species:";
         for (const auto& row : srLast.rows) std::cout << " " << row.name;
         std::cout << "\n  volatile molecular species:";
         for (const auto idx : cfg_.volatiles)

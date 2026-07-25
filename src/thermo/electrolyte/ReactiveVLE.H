@@ -32,12 +32,12 @@ Description
     untouched, and no ion is ever written to a 0/ file.  The mandatory flow:
 
         apparent stream state (T, P, apparent totals)
-            -> expand to true aqueous species     (inside THIS class)
+            -> expand to model aqueous species     (inside THIS class)
             -> SIMULTANEOUS speciation + phase equilibrium
             -> collapse to apparent phase totals  (inside THIS class)
             -> apparent outlet streams
 
-    The true species (NH4+, H+, OH-, ...) exist only in the internal state
+    The model species (NH4+, H+, OH-, ...) exist only in the internal state
     and in the detailed report.  UNITS NEVER IMPLEMENT CHEMISTRY: a unit op
     calls ThermoPackage::equilibrate(), which delegates here.
 
@@ -63,7 +63,7 @@ Description
 
     COLLAPSE RULE (spike contract, refused when not closable).  Each
     non-solvent apparent component owns a unique MARKER ELEMENT (NH3 -> N);
-    every true species carrying that element collapses into that component's
+    every model species carrying that element collapses into that component's
     apparent total; the solvent absorbs the H/O residual.  Apparent totals
     are conserved exactly (the reactions conserve elements).  The builder
     REFUSES a chemistry set whose species cannot be mapped back this way.

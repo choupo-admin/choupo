@@ -1,24 +1,5 @@
-/*--------------------------------*- Choupo -*--------------------------------*\
-  chemistry/NH3aq.dat -- the aqueous AMMONIA IONISATION equilibrium: the
-  formation of the neutral dissolved NH3 species from the NH4+ master,
-
-      NH4+  =  NH3(aq) + H+          logK25 = -9.252
-
-  written in the catalogue's formation convention (species from masters):
-  NH3 = NH4+ - H+.  This is the record that makes ammonia a WEAK BASE in the
-  speciation network -- without it NH3(aq) has no acid-base chemistry and the
-  reactive VLE of NH3/water (ionisation reduces the molecular NH3 available
-  to volatilise) cannot be represented.
-
-  The gas-liquid (Henry) leg lives in its own record, chemistry/NH3.dat
-  (recordType gasLiquidEquilibrium) -- phase transfer and aqueous reaction
-  are DIFFERENT equilibria and keep different records (one fact, one home).
-
-  Filename note: NH3aq.dat because NH3.dat is the gas-liquid record; the
-  loader keys by the `species` field, never by the filename.
-\*-----------------------------------------------------------------------------*/
 recordType aqueousSpeciation;
 schemaVersion 1;
 
-species NH3; z 0; masters ( { ion NH4; nu 1; } { ion H; nu -1; } );
+species NH3aq; ion "NH3"; z 0; masters ( { ion NH4; nu 1; } { ion H; nu -1; } );
       logK25 -9.252; dH 52090; source "USGS PHREEQC phreeqc.dat (public domain): NH4+ = NH3 + H+, log_k -9.252, delta_h 12.48 kcal";
