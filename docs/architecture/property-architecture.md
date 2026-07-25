@@ -157,12 +157,26 @@ phenol: ionises in the liquid AND transfers to the vapour) has no coherent
 representation because the `role` enum conflates three axes and the
 speciation world is separate from the ThermoPackage.  Programme, in order:
 
-1. **Spike NH₃/water** (`[ROADMAP]`, next): UNIT-LOCAL speciation — streams
-   stay on the flowsheet/component basis on disk (the stream-state
-   constitution is untouched); inside the unit the state speciates and
-   chemical + phase equilibrium + electroneutrality solve SIMULTANEOUSLY
-   (nested numerics allowed; the convergence criterion is joint).  Validation
-   seed: `absorber01_NH3_water` (today Henry-only, no ionisation).  Acetic
+1. **Spike NH₃/water** `[WORKS]` (landed 2026-07-25): UNIT-LOCAL speciation —
+   streams stay on the flowsheet/component basis on disk (the stream-state
+   constitution is untouched; no ion ever reaches a 0/ or converged/ file);
+   inside the unit the state speciates and chemical + phase equilibrium +
+   electroneutrality solve SIMULTANEOUSLY (nested numerics — outer damped
+   Newton in the classical (V, y) flash coordinates over an inner
+   SpeciationSolver pass — with a JOINT residual acceptance, never
+   flash-once/speciate-once).  The engine: `electrolyte::ReactiveVLE`,
+   reached ONLY through `ThermoPackage::equilibrate()` (units implement no
+   chemistry; the flash delegates).  Grammar: the REACTIVE shape of
+   `electrolyteGammaPhi` — `aqueous { speciation { masters (...) } }` +
+   `volatiles (...)`, each volatile served by its gas-liquid record
+   (water's own record supplies the solvent VLE; no separate Antoine
+   wiring).  Collapse: marker-element contract (refused when not closable,
+   the ratified wording).  Reference: `steady/flash/flash09_nh3_water_reactive`
+   (pH solved 9.90, ionised fraction 0.45 %, V/F 0.192 at 368 K/1 atm,
+   joint residual 7e-11); idempotency (bubble-point boundary) and an
+   apparent-basis recycle validated.  Still open in this slice: davies rung
+   only (Pitzer joins later), ≤ 2 volatiles, TP flash only (no PH/duty),
+   absorber01 physics upgrade, warm-start cache.  Acetic
    acid is spike #2 (adds Raoult-volatile transfer + VAPOUR-phase
    dimerisation, deliberately kept out of the foundational spike).
 2. **Standard-state coherence gate**: declared convention ==

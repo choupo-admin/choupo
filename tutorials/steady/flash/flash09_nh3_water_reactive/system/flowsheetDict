@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash09_nh3_water_reactive -- the volatile weak electrolyte, done honestly.
+
+  Ammonia in water IONISES (NH3 + H2O <-> NH4+ + OH-) and VOLATILISES
+  (Henry) at the same time: the ionised fraction is unavailable to the
+  vapour, so speciation and phase split must be solved TOGETHER -- never
+  flash-once/speciate-once.  The flash unit implements NO chemistry: it
+  delegates to the package's reactive equilibrium (unit-local speciation,
+  property authority section 6b).  Streams -- including 0/ and converged/ --
+  carry ONLY the apparent components NH3 and water; the true species
+  (NH4+, H+, OH-) exist in the internal state and the report.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T 368.15 K;  P 1.0 atm; }
+    }
+);

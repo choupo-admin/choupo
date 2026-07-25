@@ -76,6 +76,31 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             + std::to_string(n) + ") differs from thermo components ("
             + std::to_string(thermo.n()) + ")");
 
+    // ---- REACTIVE package: delegate WHOLE equilibrium to the ThermoPackage.
+    //  The unit implements no chemistry (the ratified contract, section 6b):
+    //  a reactive-electrolyte package resolves speciation + phase transfer +
+    //  electroneutrality jointly inside equilibrate(); the flash receives the
+    //  APPARENT phase split.  Non-convergence throws there (never exit 0).
+    if (thermo.hasReactiveEquilibrium())
+    {
+        const auto r = thermo.equilibrate(in.T, in.P, in.F, in.z,
+                                          opts.verbosity);
+        sol.converged  = r.converged;
+        sol.V_over_F   = r.V_over_F;
+        sol.x          = r.xApp;
+        sol.y          = r.yApp;
+        sol.K.assign(n, 0.0);
+        for (std::size_t i = 0; i < n; ++i)
+            sol.K[i] = (r.xApp[i] > 0.0) ? r.yApp[i] / r.xApp[i] : 0.0;
+        sol.iterations = r.iterations;
+        sol.residual   = r.resPhaseMax;
+        sol.regime     = r.V_over_F > 0.0
+            ? "reactive electrolyte VLE (simultaneous speciation + phase"
+              " equilibrium; pH " + std::to_string(r.pH).substr(0, 5) + ")"
+            : "single liquid (reactive: subsaturated at T,P; fully speciated)";
+        return sol;
+    }
+
     // ----------------------------------------------------------------------
     //  Outer loop on composition.
     //

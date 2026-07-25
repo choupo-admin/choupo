@@ -14,11 +14,15 @@
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 #include "thermo/equationOfState/EquationOfState.H"
 
+#include "thermo/ElementComposition.H"
+#include "thermo/electrolyte/ReactiveVLE.H"
+
 #include <cmath>
 #include <filesystem>
 #include <iomanip>
 #include <iostream>
 #include <numeric>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 
@@ -418,6 +422,174 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
 
 
 
+// ---- REACTIVE electrolyte assembly (speciation-integration spike, section
+//      6b of the property authority).  The case declares, inside
+//      equilibrium { formulation electrolyteGammaPhi; }:
+//
+//          aqueous
+//          {
+//              activityModel { model davies; }     // this slice's rung
+//              speciation    { masters ( NH4 ); }  // aqueous master families
+//          }
+//          vapour    { fugacityModel idealGas; }
+//          volatiles ( NH3 water );                // gas-liquid records serve these
+//
+//      Streams stay on the APPARENT component basis; the package carries a
+//      ReactiveVLE engine the flash delegates to.  Every mapping is VERIFIED
+//      here (declare -> verify -> refuse): marker elements, master coverage,
+//      gas-liquid records -- the ratified refusal wording when the chemistry
+//      set cannot close the apparent basis.
+// ============================================================================
+static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
+                                              const Database& db,
+                                              const DictPtr& eq,
+                                              const DictPtr& aq)
+{
+    // (a) models of the two phases -- this slice serves davies + idealGas;
+    //     anything else refuses NAMED (never a silent downgrade).
+    std::string actModel = "davies";
+    {
+        const EntryValue& ev = aq->entryValue("activityModel");
+        if (std::holds_alternative<std::string>(ev))
+            actModel = std::get<std::string>(ev);
+        else
+            actModel = aq->subDict("activityModel")->lookupWord("model");
+    }
+    if (actModel != "davies")
+        throw std::runtime_error("thermophysicalPropertySystem: the REACTIVE"
+            " electrolyteGammaPhi slice serves activityModel davies (the"
+            " speciation kernel's rung); '" + actModel + "' joins in a later"
+            " slice -- declare davies or drop the speciation block.");
+    const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
+    if (vap != "idealGas")
+        throw std::runtime_error("thermophysicalPropertySystem: the reactive"
+            " electrolyte path serves vapour idealGas in this slice ('"
+            + vap + "' declared).");
+
+    // (b) apparent components (molecular records; overlays honoured).
+    const auto names = v2->lookupWordList("components");
+    std::vector<Component> comps;
+    comps.reserve(names.size());
+    std::size_t solventIdx = names.size();
+    for (const auto& cn : names)
+    {
+        if (cn == "water") solventIdx = comps.size();
+        comps.push_back(db.loadComponent(cn));
+    }
+    if (solventIdx == names.size())
+        absent("a water solvent", "reactive electrolyteGammaPhi components");
+
+    // (c) the apparent -> master mapping by MARKER ELEMENT (the spike's
+    //     collapse contract): each non-solvent apparent component must own a
+    //     unique non-H/O element; the declared master carrying that element
+    //     anchors its family.  Not closable -> the ratified refusal.
+    electrolyte::ReactiveVLEConfig cfg;
+    cfg.apparent   = names;
+    cfg.solventIdx = solventIdx;
+    cfg.solventMW  = comps[solventIdx].MW() * 1.0e-3;   // g/mol -> kg/mol
+    cfg.activityModel = actModel;
+    auto spDict = aq->subDict("speciation");
+    const auto masters = spDict->lookupWordList("masters");
+    std::set<std::string> markersSeen;
+    for (std::size_t i = 0; i < names.size(); ++i)
+    {
+        if (i == solventIdx) continue;
+        const auto ec = parseElementalFormula(comps[i].formula());
+        if (!ec.available)
+            throw std::runtime_error("reactive electrolyteGammaPhi: apparent"
+                " component '" + names[i] + "' has no parseable formula ("
+                + ec.reason + ") -- the marker-element collapse needs one.");
+        std::string marker;
+        for (const auto& [el, cnt] : ec.atoms)
+            if (el != "H" && el != "O")
+            {
+                if (!marker.empty())
+                    throw std::runtime_error("reactive electrolyteGammaPhi:"
+                        " apparent component '" + names[i] + "' carries TWO"
+                        " candidate marker elements (" + marker + ", " + el
+                        + ") -- the spike's collapse contract needs exactly"
+                        " one; generalised salt reconstruction is a later,"
+                        " deliberate slice.");
+                marker = el;
+            }
+        if (marker.empty())
+            throw std::runtime_error("reactive electrolyteGammaPhi: apparent"
+                " component '" + names[i] + "' has no non-H/O marker element"
+                " -- it cannot anchor an aqueous family distinct from the"
+                " solvent.");
+        if (!markersSeen.insert(marker).second)
+            throw std::runtime_error("ThermoPackage build refused: two"
+                " apparent components share the marker element '" + marker
+                + "' -- the chemistry set cannot map all true species back"
+                " to the declared apparent-component basis.");
+        // The declared master whose species formula carries the marker.
+        std::string masterOf;
+        for (const auto& m : masters)
+        {
+            auto rec = electrolyte::findIon(m);
+            if (!rec)
+                throw std::runtime_error("reactive electrolyteGammaPhi:"
+                    " declared master '" + m + "' has no species record"
+                    " (species/<name>.dat).");
+            const auto mec = parseElementalFormula([&]{
+                std::string f = rec->lookupWordOrDefault("formula", m);
+                while (!f.empty() && (f.back() == '+' || f.back() == '-'))
+                    f.pop_back();
+                return f; }());
+            if (mec.available && mec.atoms.count(marker))
+            { masterOf = m; break; }
+        }
+        if (masterOf.empty())
+            throw std::runtime_error("ThermoPackage build refused: chemistry"
+                " set cannot map all true species back to the declared"
+                " apparent-component basis -- no declared master carries the"
+                " marker element '" + marker + "' of apparent component '"
+                + names[i] + "'.");
+        cfg.families.push_back({ i, marker, masterOf });
+    }
+
+    // (d) volatiles: each is an apparent component served by a gas-liquid
+    //     record keyed by the component's FORMULA (water -> H2O).
+    for (const auto& vn : eq->found("volatiles")
+                              ? eq->lookupWordList("volatiles")
+                              : v2->lookupWordList("volatiles"))
+    {
+        std::size_t idx = names.size();
+        for (std::size_t i = 0; i < names.size(); ++i)
+            if (names[i] == vn) { idx = i; break; }
+        if (idx == names.size())
+            throw std::runtime_error("reactive electrolyteGammaPhi: volatile"
+                " '" + vn + "' is not a declared apparent component.");
+        cfg.volatiles.push_back(idx);
+        cfg.gasOf[idx] = comps[idx].formula().empty() ? vn
+                                                      : comps[idx].formula();
+    }
+    if (cfg.volatiles.empty())
+        throw std::runtime_error("reactive electrolyteGammaPhi: no volatiles"
+            " declared -- a reactive VLE with no transferable species is a"
+            " speciation-only problem (use the props speciate op).");
+
+    if (thermoAnnounce())
+        std::cout << "[v2 native] equilibrium electrolyteGammaPhi (REACTIVE"
+                     " speciation shape): aqueous davies speciation network +"
+                     " gas-liquid transfer records; ions excluded from the"
+                     " vapour; streams stay on the APPARENT component basis"
+                     " (unit-local speciation, section 6b).\n";
+
+    // (e) base molecular package (H, density, stream plumbing) + the engine.
+    //     The ReactiveVLE constructor re-verifies every record it will need
+    //     (gas-liquid entries, master coverage) -- assembly-time refusals.
+    ThermoPackage out;
+    auto idealAct = std::make_shared<Dictionary>("activityModel");
+    idealAct->insert("model", std::string("ideal"));
+    auto eosDict = std::make_shared<Dictionary>("equationOfState");
+    eosDict->insert("model", std::string("idealGas"));
+    out.assembleTwoPhase(names, idealAct, eosDict, "gammaPhi", db);
+    out.adoptReactiveEngine(
+        std::make_unique<electrolyte::ReactiveVLE>(std::move(cfg)));
+    return out;
+}
+
 // ============================================================================
 // THE case grammar: recordType thermophysicalPropertySystem, schemaVersion 2
 // -- physically-decomposed blocks (equilibrium / caloric / volumetric /
@@ -655,7 +827,15 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
         // The electrolyte world: aqueous Pitzer/eNRTL on the molality basis,
         // idealGas vapour (Raoult solvent VLE); the record-driven electrolyte
         // assembly consumes the chem OBJECT for its active salt.
+        //
+        // REACTIVE shape (speciation-integration spike, section 6b): an
+        // `aqueous { speciation {...} }` block declares the coupled
+        // chemical + phase equilibrium of volatile weak electrolytes --
+        // dispatched to its own assembly below, same formulation family
+        // (never a sixth formulation).
         auto aq = eq->subDict("aqueous");
+        if (aq->found("speciation"))
+            return buildReactiveElectrolyte(v2, db, eq, aq);
         auto am = aq->subDict("activityModel");
         const std::string model = am->lookupWord("model");
         if (model != "Pitzer" && model != "eNRTL")

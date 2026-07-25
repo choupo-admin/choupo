@@ -69,6 +69,7 @@ Description
 #include "PackageAudit.H"
 #include "activityCoefficient/ActivityModel.H"
 #include "electrolyte/ElectrolyteModel.H"
+#include "electrolyte/ReactiveVLE.H"
 #include "core/Dictionary.H"
 #include "core/Types.H"
 #include "equationOfState/EquationOfState.H"
@@ -128,6 +129,7 @@ public:
             mixtureSeed_        = std::move(o.mixtureSeed_);
             mixtureMembersByToken_ = std::move(o.mixtureMembersByToken_);
             auditFindings_      = std::move(o.auditFindings_);
+            reactive_           = std::move(o.reactive_);
             for (auto& p : phases_) if (p) p->rebindComponents(&components_);
         }
         return *this;
@@ -359,6 +361,19 @@ public:
     const EquationOfState&  eos()      const { return *eos_;      }
     bool                    hasEos()   const { return eos_ != nullptr; }
 
+    // ---- Reactive equilibrium (unit-local speciation; section 6b) ---------
+    //  Attached by the builder when the case declares the REACTIVE shape of
+    //  electrolyteGammaPhi (aqueous speciation + volatile molecular species).
+    //  UNITS NEVER IMPLEMENT CHEMISTRY: a unit op with a reactive package
+    //  calls equilibrate() and receives the APPARENT phase split; the true
+    //  species live only in the result's internal state (report-only).
+    void adoptReactiveEngine(std::unique_ptr<electrolyte::ReactiveVLE> e)
+    { reactive_ = std::move(e); }
+    bool hasReactiveEquilibrium() const { return reactive_ != nullptr; }
+    electrolyte::ReactiveVLEResult equilibrate(scalar T_K, scalar P_Pa,
+        scalar F, const sVector& zApparent, int verbosity) const
+    { return reactive_->solve(T_K, P_Pa, F, zApparent, verbosity); }
+
     // Minimum-parameter-set audit findings (per model x component x property:
     // MISSING / ESTIMATED / PLACEHOLDER), computed once at assembly.  Drives the
     // gap report + the result-JSON honesty surface.  See PackageAudit.H.
@@ -541,6 +556,9 @@ private:
     std::map<std::size_t, scalar>             mixtureSeed_;  // by component index
     std::map<std::string, std::map<std::string, scalar>> mixtureMembersByToken_;  // token -> {member:x}
     std::vector<AuditFinding>                 auditFindings_;
+    // Reactive coupled speciation+VLE engine (null for every non-reactive
+    // package; the flash delegates to it when present).
+    std::unique_ptr<electrolyte::ReactiveVLE> reactive_;
 };
 
 } // namespace Choupo
