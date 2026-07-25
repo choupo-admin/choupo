@@ -6,14 +6,14 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
-/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
-     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
-     is a decomposition that sums back to it exactly. ---*/
+/*---------------------------------------------------------------------------*\
+  solverDict  --  numerical strategy: the recycle plan (tear cuts + solver)
+                  and per-unit-op-type solver options
+\*---------------------------------------------------------------------------*/
 
-componentMolarFlows
-{
-    ethanol    15 kmol/h;
-}
-
-T               298.15 K;
-P               100000 Pa;
+// ---- Recycle plan: the tear CUTS + the outer solver (numerical
+//      strategy -- the topology stays in flowsheetDict) ----
+tearStreams    ( H2Recycle  TolueneRecycle );
+recycleSolver  Newton;        // one Jacobian over both tears -> captures the gas<->liquid coupling
+recycleTol     1e-6;
+recycleMaxIter 120;

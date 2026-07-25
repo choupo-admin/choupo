@@ -9,7 +9,7 @@
 /*---------------------------------------------------------------------------*\
   air01_heater_expand  --  showcase for TRACK A predefined-mixture expansion.
 
-  The thermoPackage lists `components ( air )`.  At load time the loader
+  The thermoPhysPropDict lists `components ( air )`.  At load time the loader
   splices `air` into N2 + O2 + Ar (see constant/thermoPhysPropDict).  A single
   heater then adds 5 kW to a 1 mol/s air stream at 1 bar, 298.15 K.  The air
   is gas (vf = 1), so the heater integrates the ideal-gas mixture H_ig over

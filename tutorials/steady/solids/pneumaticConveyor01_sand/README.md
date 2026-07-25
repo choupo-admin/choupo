@@ -46,7 +46,7 @@ vertical rise `dz`. Every velocity, the suspended density and the pressure drop
 are **results**. Particle density comes from the solid component's
 `solid { rho_p; }` (silica = 2650 kg/m³); the size from the inlet PSD (Sauter
 mean for the drag). The carrier-gas viscosity needs a `transport { model Chung; }`
-block in the thermoPackage (for the friction Reynolds numbers).
+block in the thermoPhysPropDict (for the friction Reynolds numbers).
 
 Note the source-stream solids are declared as **`solidFlows`** (mass flows, e.g.
 `silica 282 kg/h;`), the convention for a feed stream.

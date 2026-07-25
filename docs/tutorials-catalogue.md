@@ -127,3 +127,30 @@ annotated index of what each one demonstrates.
 | `ctrl08_prbs_ident` | **Runs under `choupoCtrl`.**  The classic system-identification input: a **PRBS** on T_in (320 ± 10 K) from a maximal-length Fibonacci LFSR — n = 4 registers, canonical taps (4 3) from the versioned `prbsTaps-1` table, DECLARED seed 1, period 2⁴−1 = 15 bits × 120 s.  The hand-derived sequence `000100110101111` is in the case header AND printed by the announce line — walk the LFSR yourself and compare.  Deterministic by construction (never runtime randomness): seed + taps reproduce the experiment bit for bit.  The initialiser VERIFIES the cycle length is exactly 2ⁿ−1 (taps `(4 2)` refuse aloud: cycle 6, a non-primitive polynomial) and refuses seed 0 (the LFSR fixed point).  Unlike ctrl06's single-frequency sine, the PRBS is broadband — one record carries a full low-order model fit. |
 | `ctrl09_stream_disturbance` | **Runs under `choupoCtrl`.**  The INLET-FIELD actuator: `actuator { unit reactor; inletField componentMolarFlow.compA; }` steps compA's molar flow 3.5→5.25×10⁻⁵ kmol/s at t = 600 s while compB's flow stays UNTOUCHED.  The inlet's authoritative state is the per-component flow vector, so F and z change by DERIVED arithmetic — golden-pinned to the hand values F = 6.75×10⁻⁵, z_A = 7/9, z_B = 2/9.  The sibling `moleFraction.<c>` semantics instead holds F and renormalises the others proportionally (validated [0,1], degenerate case refused, machine-precision sum check); both semantics announced at start-up.  `F_in` and `z_in_*` are first-class trajectory columns. |
 | `ctrl03_adaptive_disturbance` | **Runs under `choupoCtrl`.**  The SAME PID disturbance-rejection loop as `ctrl02`, but with **OPT-IN adaptive plant integration** (`timeStepping adaptive;`).  Demonstrates THE CONTROL SUBTLETY: the digital PID samples at the FIXED `deltaT = 1 s` grid (the sampler must NOT adapt), while BETWEEN samples — with the manipulated variable (jacket T) HELD — the stiff Rosenbrock23 integrator sub-steps the plant ODE with the step set by local error.  Two Δt, both correct.  Writes land on the clean 20 s grid; the closed-loop response matches the fixed-RK4 `ctrl02` sibling to ~7 significant figures (final T = 349.981 K, MV = 347.881 K), confirming adaptive stepping changes the integration cost, not the control. |
+
+## Regression-focused cases
+
+Every tutorial doubles as a regression test (golden-master KPIs), but the
+cases below exist PRIMARILY to guard a mechanism, a grammar, or a settled
+doctrine — their pedagogy is thin by design.  Students following the guides
+can skip them; developers touching the guarded seam must keep them green.
+(Curation audit 2026-07-25.)
+
+| Case | Guards |
+|---|---|
+| `steady/flash/flash04_molarFlows_input` | `componentMolarFlows` input grammar of the 0/ reader |
+| `steady/flash/flash05_ternary_massFlows` | `componentMassFlows` grammar (+ ternary MW conversion) |
+| `steady/flash/leaf01_flash` | leaf-node flowsheetDict form ("a unit op is a flowsheet of one") |
+| `steady/flowsheets/plant02_basename_twins` | stream-identity contract: top-level `feed` ≠ sector `A.feed` (forum #87-P0) |
+| `steady/flowsheets/recycle_autoinit_tear` | announced auto-seed of an unguessed tear (feed aggregate, never a magic constant) |
+| `steady/thermoTest/model1_lumped_evaporator` | electrolyte architecture validating system 1: NaCl as lumped molecular |
+| `steady/thermoTest/model2_pitzer_evaporator` | validating system 2: Pitzer single-salt VLE |
+| `steady/thermoTest/model3_enrtl_antisolvent_crystalliser` | validating system 3: eNRTL mixed-solvent |
+| `steady/thermoTest/model5_nrtl_flash` | validating system 5: molecular NRTL baseline (no ions) |
+| `steady/crystallisation/overlay02_nacl_calorimetric` | case-local calorimetric overlay on a standard component |
+| `props/electrolyte/composition01_nacl` | component-basis salt input (`composition { NaCl }`) → ion-totals expansion |
+| `props/electrolyte/overlay01_nacl_ksp` | partial deep-merge `overlayOf` (single logK25 recalibration) |
+| `batch/reactor/batch04_transient_dirs` | transient instant-directory mechanics (0.01/ 0.02/ …) |
+| `batch/adsorber/batch14_transport_only` | isolated transport verification (no isotherm coupling) |
+| `batch/adsorber/batch15_mesh_study` | mesh-convergence verification of the adsorber column |
+| `batch/adsorber/batch18_ergun_conservation` | mass conservation under the Ergun pressure-drop path |

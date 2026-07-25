@@ -15,13 +15,7 @@
 \end{tutscheme}
 \tutwhat{Electrodialysis stack: NaCl diluate desalination, 100 cell pairs}
 \begin{tutnarrative}
-ED01 NaCl desalination by electrodialysis
-
-An electrodialysis stack of 100 cell pairs desalinates a dilute NaCl diluate stream (0.1 mol/kg) against a more-concentrated concentrate (0.5 mol/kg). A specified stack current (BELOW the limiting current) drives Na+ through the CMX (cation-exchange) membranes and Cl- through the AMX (anion-exchange) membranes, OUT of the diluate and INTO the concentrate.
-
-diluateFeed $\to$ +-----------------+ $\to$ diluate (desalinated) | ED stack | concentrateFeed $\to$ | (CMX/AMX, N=100)| $\to$ concentrate (enriched) +-----------------+ | (power, energy wire) v rectifier (electricLoad)
-
-The stack PRINTS (verbosity 3) the Faraday transfer, the Nernst membrane potential from REAL Davies activities, the Cowan-Brown limiting current i\_lim (and i/i\_lim), the ohmic drop and the stack voltage/power.
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-2607 | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -56,11 +50,7 @@ The stack PRINTS (verbosity 3) the Faraday transfer, the Nernst membrane potenti
 \end{tutscheme}
 \tutwhat{Electrodialysis stack driven ABOVE its limiting current (loud warning)}
 \begin{tutnarrative}
-ED02 over-limiting current electrodialysis
-
-Same stack as ED01, but run on a MORE DILUTE diluate (0.02 mol/kg) at a LOW cross-flow velocity and a HIGH current. The diluate-side limiting current density i\_lim (Cowan-Brown) is small; the applied current density EXCEEDS it, so the stack runs in the OVER-LIMITING regime.
-
-Choupo does NOT silently clamp the current (the "no silent crutch" credo): it computes the unclamped Faraday transfer and prints a LOUD warning that i > i\_lim -- the diluate boundary layer is ion-depleted, water splitting / pH swings set in, and the real current efficiency would collapse. The student SEES the regime and the i/i\_lim ratio, then chooses to reduce the current or raise the flow / feed concentration.
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-2607 | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
 
 \end{tutnarrative}
 \begin{tutgolden}

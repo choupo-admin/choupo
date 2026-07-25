@@ -65,7 +65,3 @@ boundary
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
-tearStreams    ( H2Recycle  TolueneRecycle );
-recycleSolver  Newton;        // one Jacobian over both tears -> captures the gas<->liquid coupling
-recycleTol     1e-6;
-recycleMaxIter 120;

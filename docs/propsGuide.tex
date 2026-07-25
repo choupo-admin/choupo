@@ -1009,6 +1009,54 @@ coefficients $(a_{12},b_{12},a_{21},b_{21})$ plus a fixed $\alpha$ (often $0.3$)
 \end{equation}
 which cannot represent a liquid--liquid split (use NRTL when one is suspected).
 
+\subsection{Predicting without pairs: COSMO-SAC}\label{sec:cosmosac}
+
+NRTL and Wilson need a fitted pair --- somebody measured that binary.
+\textbf{COSMO-SAC} is the predictive alternative: the activity coefficients
+come from each compound's \emph{sigma profile} --- the histogram of screening
+charge density over its molecular surface, from a quantum-chemical
+calculation done \emph{once, elsewhere, at curation time} --- and no binary
+parameter exists at all.  Choupo implements the 2002 variant (Lin \&
+Sandler), following the NIST benchmark implementation, as a plain activity
+model: same interface as NRTL, selected the same way.
+
+A compound carries its profile in its own \file{.dat}, as one or more
+\emph{named parameter sets} (a compound may carry profiles from several
+public collections, each labelled with its source):
+
+\begin{lstlisting}[language=dict]
+cosmo
+{
+    VT2005            // set name = its source collection
+    {
+        variant       cosmoSAC2002;
+        source        "Mullins et al., IECR 45 (2006) 4389";
+        area          [-] 106.3;      // A^2
+        volume        [-] 118.8;      // A^3
+        sigmaProfile  ( ... );        // 51 points, -0.025..0.025 e/A^2
+    }
+}
+\end{lstlisting}
+
+The case selects the model and, when a compound carries more than one set,
+names which one:
+
+\begin{lstlisting}[language=dict]
+activityModel { model cosmoSAC;  source VT2005; }
+\end{lstlisting}
+
+A compound with a single set needs no \code{source} (its lone set is the
+default); a multi-set compound without one is a loud error, as is a missing
+\code{cosmo} block or a set whose declared \code{variant} does not match the
+implemented constants --- a profile is never silently combined with another
+variant's parameters.  The standard catalogue ships VT2005 sets for 77
+components.  Validation: a pure component gives $\ln\gamma = 0$ exactly, and
+the implementation is cross-checked bit-for-bit against an independent code
+on the same equations and profiles.  What Choupo deliberately does
+\emph{not} do is generate profiles (that is quantum chemistry, a curation
+act outside the simulator) or bulk-import thousands of compounds.  Reference
+case: \file{tutorials/props/molecular/cosmoSAC01\_water\_ethanol}.
+
 \subsection{The residual the fit minimises}
 
 The measurable is the bubble temperature.  At a fixed pressure $P$ and liquid

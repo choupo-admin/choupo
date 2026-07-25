@@ -8,9 +8,9 @@
 \*-----------------------------------------------------------------------------*/
 /*  ILLUSTRATIVE / SYNTHETIC DATA.  compA / compB / compC are NOT real
     species: they are artificial components (case-local constant/components/
-    + inline NRTL pairs in thermoPackage) deliberately tuned to guarantee a
+    + inline NRTL pairs in thermoPhysPropDict) deliberately tuned to guarantee a
     ternary VLLE region, so this case exercises the propertyScanTernary
-    classifier on a known-3-phase map.  Architecture (see thermoPackage):
+    classifier on a known-3-phase map.  Architecture (see thermoPhysPropDict):
     A and B mutually immiscible (LL gap on the A-B axis), C a volatile bridge
     soluble in both liquids.  At 350 K, 1 bar the equimolar feed gives
     vapour rich in C, L_alpha rich in A, L_beta rich in B.

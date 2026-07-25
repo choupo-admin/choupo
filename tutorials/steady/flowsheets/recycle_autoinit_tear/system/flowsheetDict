@@ -49,16 +49,10 @@
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
-tearStreams           ( recycle );
-recycleSolver          Newton;        // Newton on the tear variables (default);
                                       //   `Wegstein` for the fixed-point accelerator
-recycleTol             1e-5;
-recycleMaxIter         120;
 // Recycle problems with flash regime switching are best solved with
 // gentle / no acceleration.  Start with direct substitution (q ≡ 0)
 // and add Wegstein later if convergence is too slow.
-recycleWegsteinQmin    0.0;
-recycleWegsteinQmax    0.0;
 
 units
 (

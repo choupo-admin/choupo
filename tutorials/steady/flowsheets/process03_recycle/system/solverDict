@@ -13,3 +13,12 @@ isothermalFlash
     compositionTol      1e-6;
     maxOuterIter        50;
 }
+
+// ---- Recycle plan: the tear CUTS + the outer solver (numerical
+//      strategy -- the topology stays in flowsheetDict) ----
+tearStreams           ( recycle );
+recycleSolver          Newton;        // Newton on the tear variables (default);
+recycleTol             1e-5;
+recycleMaxIter         120;
+recycleWegsteinQmin    0.0;
+recycleWegsteinQmax    0.0;

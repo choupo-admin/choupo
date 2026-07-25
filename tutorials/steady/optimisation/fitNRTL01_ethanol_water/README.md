@@ -49,7 +49,7 @@ unit      bt01;                                             // unit reporting T_
 Four keywords (plus optional `maxIter`, `tolerance`, `fdStep`,
 `lambda0`).  The driver:
 
-1. locates the pair in `thermoPackage.activityModel.pairs` by name,
+1. locates the pair in `thermoPhysPropDict.activityModel.pairs` by name,
 2. reads the dataset (a two-column flat list of `xᵢ  Tᵢ`),
 3. finds the bubbleT unit's input stream from the flowsheetDict,
 4. for each LM step:

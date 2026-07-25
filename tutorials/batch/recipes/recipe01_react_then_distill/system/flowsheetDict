@@ -27,7 +27,7 @@
       conserved across the three vessels at every accepted step.  Starting from the converted mix (ethyl acetate + water +
       unreacted ethanol/acid), the still progressively strips the more
       volatile ethyl acetate + ethanol; pot composition follows the
-      Raoult y-x curve.  (The thermoPackage here uses ideal Raoult for
+      Raoult y-x curve.  (The thermoPhysPropDict here uses ideal Raoult for
       pedagogical simplicity.)
 
   This case demonstrates the recipe layer (v0.23): a list of

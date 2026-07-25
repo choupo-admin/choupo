@@ -2712,8 +2712,8 @@ int Flowsheet::solve(const DictPtr& dict,
                       << tears.size() << " tear stream(s)):\n"
                       << "   it    |Δtear|2     |F_tear|                      γ-info\n"
                       << "  ----  -----------  ----------\n";
-            const scalar qmin = dict->lookupScalarOrDefault("recycleWegsteinQmin", -1.0);
-            const scalar qmax = dict->lookupScalarOrDefault("recycleWegsteinQmax",  0.0);
+            const scalar qmin = recScalar("recycleWegsteinQmin", -1.0);
+            const scalar qmax = recScalar("recycleWegsteinQmax",  0.0);
             sVector x = packTears(tears, streams_);
             solver::Wegstein accel(x.size(), qmin, qmax);
             // Energy-tear values ride via unitKpis_ (plain successive

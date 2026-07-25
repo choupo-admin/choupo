@@ -184,7 +184,14 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
         const int interval = std::max(1, solutionCtl->writeInterval);
         SolutionControl ctl = *solutionCtl;   // capture by value for the closure
         // Recycle tolerance, for the instant header (read where the solver does).
-        const scalar recTol = flowsheetDict->lookupScalarOrDefault("recycleTol", 1.0e-5);
+        // recycleTol lives in solverDict (the numerical home) with the
+        // flowsheetDict as fallback -- the same precedence the solver's own
+        // recScalar uses, so the instant header always reports the tolerance
+        // the recycle loop actually ran with.
+        const scalar recTol =
+            (solverDict && solverDict->found("recycleTol"))
+            ? solverDict->lookupScalar("recycleTol")
+            : flowsheetDict->lookupScalarOrDefault("recycleTol", 1.0e-5);
 
         flowsheet.setInstantCallback(
             [&solWriter, interval, recTol]

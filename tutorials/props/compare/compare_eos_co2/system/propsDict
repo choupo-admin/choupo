@@ -34,7 +34,7 @@
   near 98 bar) before rising again; the SRK-vs-PR gap is the diagnostic a
   student should read off the overlay.
 
-  Each operation overrides the global thermoPackage with a different EoS
+  Each operation overrides the global thermoPhysPropDict with a different EoS
   via the `thermo {}` per-op block.  The three CSVs are independent, so
   the GUI overlays them on the same Plotly canvas (same X axis "P", same
   Y "Z").  The result is one figure with three curves, ready for the

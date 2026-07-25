@@ -7,16 +7,15 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  chemistryDict -- the case's ACTIVE-CHEMISTRY SELECTION (one home, ratified
-  2026-07-18): WHICH solid phases are admitted in the chemistry network.
-  Availability, not presence: the Ksp/dH facts live in the phase/component
-  records, and only an OPERATION (here the crystalliser) asks for saturation
-  or crystallisation.
+  solverDict  --  numerical strategy: the recycle plan (tear cuts + solver)
+                  and per-unit-op-type solver options
 \*---------------------------------------------------------------------------*/
-recordType    chemistrySystem;
-schemaVersion 1;
 
-equilibria
-{
-    solidPhases ( sylvite );
-}
+// ---- Recycle plan: the tear CUTS + the outer solver (numerical
+//      strategy -- the topology stays in flowsheetDict) ----
+tearStreams           ( recycle );
+recycleSolver          Newton;        // Newton on the tear variables (default)
+recycleTol             1e-5;
+recycleMaxIter         150;
+recycleWegsteinQmin    0.0;       // direct substitution (robust)
+recycleWegsteinQmax    0.0;

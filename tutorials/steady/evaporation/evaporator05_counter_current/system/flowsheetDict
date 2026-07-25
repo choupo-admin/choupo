@@ -82,14 +82,8 @@ variables
 // Stream STATE lives in 0/ (bin/choupo-init0); the designSpec knob is the
 // streams.<inlet>.F channel target declared in outerDict (forum #53).
 
-tearStreams            ( V1 V2 );
-recycleSolver          Wegstein;   // this case is tuned for damped Wegstein
                                    //   (the qmin below); `Newton` also converges
                                    //   it (the EO-flavoured tear solver, v0.76).
-recycleTol             1.0e-5;
-recycleMaxIter        120;
-recycleWegsteinQmin   -0.7;        // strong damping; counter-current
-recycleWegsteinQmax    0.0;        //   recycles can over-shoot.
 
 units
 (

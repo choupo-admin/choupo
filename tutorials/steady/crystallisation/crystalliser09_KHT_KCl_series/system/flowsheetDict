@@ -44,12 +44,6 @@
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
-tearStreams      ( recoveredEthanol );          // close the antisolvent loop
-recycleSolver     Newton;                       // Newton on the tear variables
-recycleTol        1e-5;
-recycleMaxIter    150;
-recycleWegsteinQmin  0.0;                        // gentle (phase-changing recycle): no acceleration
-recycleWegsteinQmax  0.0;
 
 units
 (

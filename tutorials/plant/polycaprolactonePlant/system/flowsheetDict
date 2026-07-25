@@ -120,11 +120,5 @@ boundary
     outlets  ( polymerMelt  condensate );
 }
 
-tearStreams           ( condensateRecycle );
-recycleSolver          Newton;        // Newton on the tear variables
-recycleTol             1e-5;
-recycleMaxIter         120;
 // Flash regime switching across the loop -> start with direct substitution
 // (gentle), no Wegstein acceleration.
-recycleWegsteinQmin    0.0;
-recycleWegsteinQmax    0.0;

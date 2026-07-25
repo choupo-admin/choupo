@@ -62,8 +62,8 @@
   2. TEAR THE LOOP WHERE INFORMATION FLOWS BACKWARD: one MASS tear (recycle,
      guessed then Newton-converged) and one ENERGY tear (hotEffluent -- the
      FEHE preheats the feed with the reactor's own product heat, so the
-     converter's outlet is needed upstream of the converter).  Both declared in
-     tearStreams; the solver announces every iteration.
+     converter's outlet is needed upstream of the converter).  Both declared
+     in solverDict tearStreams; the solver announces every iteration.
   3. LET THE EXOTHERM DO THE HEATING: the converter is ADIABATIC (mode
      adiabatic; T is a guess, not a spec) -- the reaction self-heats
      705 -> 848 K and the FEHE recycles that heat to light off the feed.  No
@@ -87,10 +87,6 @@
   cooling-water utility fluid (it is not a reaction species).
 \*---------------------------------------------------------------------------*/
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
-tearStreams        ( recycle  hotEffluent );
-recycleSolver       Newton;
-recycleTol          1e-5;
-recycleMaxIter      200;
 units
 (
     { name makeupComp;  type compressor;  in makeup;   outputs ( compMakeup );

@@ -6,20 +6,16 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
-/* recovery -- ethanol/water distillation recovery column.
-   Process model and operating configuration only.  (Thermodynamics: see
-   constant/thermoPhysPropDict.) */
-type        distillationColumn;
-model       simultaneous;
-operation
-{
-    nStages          20;
-    feedStage        10;
-    refluxRatio      2.0;
-    distillateRate   85 kmol/h;
-    feedQuality      1.0;
-    P                1.01325 bar;
-}
+/*---------------------------------------------------------------------------*\
+  solverDict  --  numerical strategy: the recycle plan (tear cuts + solver)
+                  and per-unit-op-type solver options
+\*---------------------------------------------------------------------------*/
 
-inputs   ( finalLiquor );
-outputs  ( recoveredEthanol  stillage );
+// ---- Recycle plan: the tear CUTS + the outer solver (numerical
+//      strategy -- the topology stays in flowsheetDict) ----
+tearStreams        ( condensate );
+recycleSolver       Wegstein;
+recycleWegsteinQmin 0.0;
+recycleWegsteinQmax 0.0;
+recycleTol          1e-6;
+recycleMaxIter      40;

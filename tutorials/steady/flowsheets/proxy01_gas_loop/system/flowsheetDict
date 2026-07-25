@@ -40,10 +40,6 @@
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
-tearStreams      ( recycle1  recycle2 );
-recycleSolver    Newton;
-recycleTol       1e-5;
-recycleMaxIter   150;
 
 units
 (

@@ -7,14 +7,15 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  Crystallizer09chatGPT / system/solverDict
-
-  Numerical properties of the solve -- NOT topology.  The recycle
-  `recoveredEthanol` (recovery -> cryst2) is one named edge in flowsheetDict;
-  that it is the TEAR (assumed + iterated) is a numerical fact, declared here.
+  solverDict  --  numerical strategy: the recycle plan (tear cuts + solver)
+                  and per-unit-op-type solver options
 \*---------------------------------------------------------------------------*/
 
-tearStreams      ( recoveredEthanol );
-recycleSolver     Newton;
-recycleTol        1e-5;
-recycleMaxIter    150;
+// ---- Recycle plan: the tear CUTS + the outer solver (numerical
+//      strategy -- the topology stays in flowsheetDict) ----
+tearStreams            ( V1 V2 );
+recycleSolver          Wegstein;   // this case is tuned for damped Wegstein
+recycleTol             1.0e-5;
+recycleMaxIter        120;
+recycleWegsteinQmin   -0.7;        // strong damping; counter-current
+recycleWegsteinQmax    0.0;        //   recycles can over-shoot.

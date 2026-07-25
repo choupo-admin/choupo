@@ -40,18 +40,12 @@
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
-tearStreams        ( condensate );
 // The loop is effectively a feed-forward chain: the condensate temperature is
 // SLAVED to the condenser pressure (= the turbine back-pressure, itself fixed
 // by the boiler outlet and the turbine W_shaft), and the flow is invariant
 // (closed loop, no makeup).  Direct substitution (Wegstein with q = 0) closes
 // such a slaved tear in a couple of passes; a Newton Jacobian is near-singular
 // in the slaved T direction.
-recycleSolver       Wegstein;
-recycleWegsteinQmin 0.0;
-recycleWegsteinQmax 0.0;
-recycleTol          1e-6;
-recycleMaxIter      40;
 
 units
 (

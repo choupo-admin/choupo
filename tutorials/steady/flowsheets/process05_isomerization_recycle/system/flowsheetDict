@@ -63,12 +63,6 @@
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
-tearStreams           ( recycle );
-recycleSolver          Newton;        // Newton on the tear variables (default)
-recycleTol             1e-5;
-recycleMaxIter         150;
-recycleWegsteinQmin    0.0;       // direct substitution (robust)
-recycleWegsteinQmax    0.0;
 
 units
 (

@@ -38,7 +38,7 @@ From the repo root:
 ```
 
 A composite plant curates **per sector** — each sector has its own `propsDict`
-and runs on its own (the `controlDict`/`thermoPackage` cascade UP the tree):
+and runs on its own (the `controlDict`/`thermoPhysPropDict` cascade UP the tree):
 
 ```bash
 ./choupoProps tutorials/plant/esterification2sector/REACTION    # sector 1 (kinetics)

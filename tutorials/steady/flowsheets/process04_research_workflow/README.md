@@ -3,7 +3,7 @@
 ## What this tutorial demonstrates
 
 The **research workflow** for managing thermodynamic parameters: instead
-of declaring NRTL `pairs (...)` inline in the `thermoPackage`, the case
+of declaring NRTL `pairs (...)` inline in the `thermoPhysPropDict`, the case
 declares only the model and lets the simulator load the parameters from
 a file inside the case directory.
 
@@ -20,7 +20,7 @@ process04_research_workflow/
 │   ├── controlDict
 │   └── flowsheetDict                    (ethanol/water flash at 355 K)
 └── constant/
-    ├── thermoPackage                    ("model NRTL;" only --- no inline pairs)
+    ├── thermoPhysPropDict                    ("model NRTL;" only --- no inline pairs)
     └── parameters/
         └── NRTL/
             └── ethanol-water.dat        case-local NRTL parameters
@@ -29,7 +29,7 @@ process04_research_workflow/
 ## Lookup order at runtime
 
 When the simulator builds the NRTL model and discovers there are no
-inline pairs in `thermoPackage`, it falls back to file lookup:
+inline pairs in `thermoPhysPropDict`, it falls back to file lookup:
 
 1. **Case-local** -- `<case>/constant/parameters/NRTL/ethanol-water.dat` ← used here
 2. **Standards**  -- `$CHOUPO_HOME/data/standards/parameters/NRTL/ethanol-water.dat`
