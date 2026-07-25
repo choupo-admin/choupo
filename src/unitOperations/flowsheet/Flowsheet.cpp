@@ -54,6 +54,7 @@ License
 // The dispatcher for unit-op types lives in UnitOperation::New().
 // The Flowsheet no longer needs to know about each derived class.
 
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <iomanip>
@@ -2335,6 +2336,25 @@ int Flowsheet::solve(const DictPtr& dict,
             tears.push_back(ct.qualifiedName);
     }
 
+    // ---- Sequential-plan validation (tear/order contract, 2026-07-25) ----
+    //  Runs the moment the tear list is FINAL and before any state work, so
+    //  an invalid plan refuses before seeding noise.  -init0 keeps its own
+    //  honest accounting (UNREACHED names the same problem in its phase);
+    //  --lint reports the findings merged with its own list at the bail.
+    std::vector<std::string> planFindings;
+    if (!init0_)
+        planFindings = validateSequentialPlan(tears, verbosity);
+    if (!init0_ && !lint_ && !planFindings.empty())
+    {
+        std::string msg = "Flowsheet: the declared unit order is not a valid "
+            "sequential plan:\n";
+        for (const auto& f : planFindings) msg += "  " + f + "\n";
+        msg += "The plan contract: every material input is a domain inlet, an "
+               "output of an EARLIER unit, or a declared tear closing a real "
+               "cycle.  See docs/ai/case-layout.md.";
+        throw std::runtime_error(msg);
+    }
+
     // ---- Auto-seed unguessed tears (honest feed propagation) -----------
     //  A tear named in `tearStreams` normally carries its own initial guess
     //  as a 0/ state file (process03_recycle does).  If the author
@@ -2469,7 +2489,7 @@ int Flowsheet::solve(const DictPtr& dict,
     //  regular path defers to execution time -- then stops.
     if (lint_)
     {
-        return runLint(units, verbosity, tears);
+        return runLint(units, verbosity, tears, planFindings);
     }
 
     // ---- Resolve RELATIVE bounds against the now-frozen feeds (Slice 3) -
@@ -2560,6 +2580,14 @@ int Flowsheet::solve(const DictPtr& dict,
         }
         return v;
     };
+
+    // The plan's convergence verdict (numerical honesty, 2026-07-25): a
+    // recycle loop that exhausts its iterations without meeting the tear
+    // tolerance is a FAILED solve -- the WARNING alone let a non-converged
+    // state return exit 0, get reported, and be written to converged/.
+    // Single-pass (tear-free) flowsheets are converged by construction; a
+    // unit that fails still throws (exit 2), as before.
+    bool planConverged = true;
 
     // ===================  Single-pass mode  =============================
     if (tears.empty() && feedbackEnergy.empty())
@@ -2962,6 +2990,8 @@ int Flowsheet::solve(const DictPtr& dict,
             if (it != streamBounds.end() && it->second.any && streams_.count(t))
                 checkBoundsAtSolution(streams_.at(t), it->second, t);
         }
+
+        planConverged = finalConverged;
     }
 
     // ---- Composite boundary outlets (fractal step 2): alias the chosen
@@ -3168,7 +3198,11 @@ int Flowsheet::solve(const DictPtr& dict,
         { return thermoFor(u->lookupWord("name"), u, thermo); });
     printModelBoundaries(modelBoundaries_, verbosity);
 
-    return 0;
+    // Non-zero on a non-converged recycle: the caller (runSimulation) maps
+    // this to result.converged = false, so reports and the converged/ writer
+    // are skipped and the process exits 1 -- the WARNING above names the
+    // failure; the exit code now agrees with it.
+    return planConverged ? 0 : 1;
 }
 
 // ===========================================================================
@@ -3375,6 +3409,255 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
 }
 
 // ===========================================================================
+//  Sequential-plan validation (the tear/order contract, settled 2026-07-25).
+//
+//  The solver executes the flattened unit list IN DECLARED ORDER -- it never
+//  topologically sorts.  Since the 0/ completeness contract pre-seeds EVERY
+//  stream into the registry, a unit that consumes a stream before its
+//  producer has run this sweep silently reads the 0/ seed: the historical
+//  "input stream not in registry" guard can no longer fire.  Two bug classes
+//  share that mechanism -- an undeclared recycle tear, and an acyclic
+//  flowsheet whose units are declared out of order -- and both used to
+//  produce a WRONG answer with exit 0.
+//
+//  The contract validated here (it subsumes "graph minus tears is acyclic",
+//  and additionally validates the order itself, which is what the solver
+//  actually consumes):
+//
+//    * every material input is (a) a domain inlet, (b) an output of an
+//      EARLIER unit, or (c) a declared tear;
+//    * every declared tear is a BACKWARD edge that closes a REAL material
+//      cycle (a forward tear needs no cut; a backward tear off any cycle is
+//      an order mistake being compensated by an artificial iteration).
+//
+//  Findings are COLLECTED and reported as one list, each remedy-bearing; an
+//  order mistake also gets a valid declaration order to paste.  A valid plan
+//  with tears ANNOUNCES its cycles and cuts -- the recycle structure is
+//  shown, never implicit.
+// ===========================================================================
+std::vector<std::string> Flowsheet::validateSequentialPlan(
+    const std::vector<std::string>& tears,
+    int verbosity) const
+{
+    std::vector<std::string> findings;
+    const std::size_t n = topology_.size();
+
+    // ---- Plan preconditions: one name per unit, one producer per stream.
+    //  (The subsumption argument -- order implies acyclicity -- needs the
+    //  single-producer property; a duplicate silently overwrites the first
+    //  producer's stream in the registry.)
+    std::map<std::string, std::size_t> producerIdx;   // stream -> producing unit
+    {
+        std::set<std::string> seen;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            const auto& fu = topology_[i];
+            if (!seen.insert(fu.name).second)
+                findings.push_back("DUPLICATE unit name '" + fu.name
+                    + "' -- unit names key the stream registry, KPIs and"
+                      " reports; two units cannot share one name.");
+            for (const auto& o : fu.outs)
+            {
+                auto [it, fresh] = producerIdx.emplace(o, i);
+                if (!fresh)
+                    findings.push_back("stream '" + o + "' is produced by"
+                        " BOTH '" + topology_[it->second].name + "' and '"
+                        + fu.name + "' -- the second silently overwrites the"
+                        " first; every stream has exactly one producer.");
+            }
+        }
+    }
+
+    // ---- Unit adjacency over ALL material edges (every consumer counts;
+    //      the first-consumer map is for file ownership, never for this).
+    std::vector<std::set<std::size_t>> adj(n);
+    for (std::size_t i = 0; i < n; ++i)
+        for (const auto& s : topology_[i].ins)
+        {
+            auto p = producerIdx.find(s);
+            if (p != producerIdx.end()) adj[p->second].insert(i);
+        }
+
+    // BFS path from -> to over adj (empty when unreachable).  Used both to
+    // decide "does this backward edge close a cycle?" (edge P->C is on a
+    // cycle iff C reaches P) and to NAME the cycle in the message.
+    auto pathBetween = [&](std::size_t from, std::size_t to)
+        -> std::vector<std::size_t>
+    {
+        std::vector<int> parent(n, -1);
+        std::vector<std::size_t> q{from};
+        parent[from] = static_cast<int>(from);
+        for (std::size_t qi = 0; qi < q.size(); ++qi)
+            for (std::size_t w : adj[q[qi]])
+                if (parent[w] < 0)
+                { parent[w] = static_cast<int>(q[qi]); q.push_back(w); }
+        if (from != to && parent[to] < 0) return {};
+        std::vector<std::size_t> path;
+        for (std::size_t v = to;; v = static_cast<std::size_t>(parent[v]))
+        { path.push_back(v); if (v == from) break; }
+        std::reverse(path.begin(), path.end());
+        return path;
+    };
+    auto cycleString = [&](const std::vector<std::size_t>& path,
+                           const std::string& tearStream)
+    {
+        // path is consumer..producer; the tear edge closes it back
+        std::string s;
+        for (std::size_t k = 0; k < path.size(); ++k)
+            s += (k ? " -> " : "") + topology_[path[k]].name;
+        s += " --" + tearStream + "--> " + topology_[path.front()].name;
+        return s;
+    };
+
+    // ---- The ordered walk: every non-tear input must already exist -------
+    const std::set<std::string> tearSet(tears.begin(), tears.end());
+    bool orderMistake = false;
+    std::set<std::string> produced;
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        for (const auto& s : topology_[i].ins)
+        {
+            if (tearSet.count(s)) continue;              // judged below
+            auto p = producerIdx.find(s);
+            if (p == producerIdx.end()) continue;        // domain inlet
+            if (produced.count(s))      continue;        // earlier output
+            // BACKWARD edge, undeclared: missing tear (edge on a cycle) or
+            // plain declaration-order mistake (edge acyclic).
+            const auto cyc = pathBetween(i, p->second);  // consumer ~> producer?
+            if (!cyc.empty())
+                findings.push_back("MISSING TEAR: stream '" + s
+                    + "' closes the material cycle  "
+                    + cycleString(cyc, s)
+                    + "  but is not declared a tear.  Declare it"
+                      " (solverDict: tearStreams ( " + s + " );) and give it"
+                      " a 0/ seed (bin/choupo-init0 derives one).");
+            else
+            {
+                findings.push_back("INVALID ORDER: unit '" + topology_[i].name
+                    + "' consumes stream '" + s + "' but is declared BEFORE"
+                      " its producer '" + topology_[p->second].name
+                    + "', and the edge lies on no cycle -- it would silently"
+                      " read the 0/ seed instead of the computed stream."
+                      "  This is a declaration-order mistake, not a recycle.");
+                orderMistake = true;
+            }
+        }
+        for (const auto& o : topology_[i].outs) produced.insert(o);
+    }
+
+    // ---- Declared-tear pass: each tear must be a backward edge on a real
+    //      cycle.  (Under the order criterion a redundant tear cannot exist:
+    //      every backward edge MUST be declared, and a forward one refuses.)
+    for (const auto& t : tears)
+    {
+        auto p = producerIdx.find(t);
+        std::vector<std::size_t> consumers;
+        for (std::size_t i = 0; i < n; ++i)
+            for (const auto& s : topology_[i].ins)
+                if (s == t) consumers.push_back(i);
+        if (p == producerIdx.end())
+        {
+            findings.push_back(consumers.empty()
+                ? "UNKNOWN TEAR: '" + t + "' is declared a tear but is not a"
+                  " stream of this graph (nothing produces or consumes it) --"
+                  " check the spelling in tearStreams."
+                : "INLET TEAR: '" + t + "' is declared a tear but has no"
+                  " producer -- it is a domain INLET, not a recycle; remove"
+                  " it from tearStreams.");
+            continue;
+        }
+        if (consumers.empty())
+        {
+            findings.push_back("UNCONSUMED TEAR: '" + t + "' is declared a"
+                " tear but no unit consumes it -- an outlet needs no cut;"
+                " remove it from tearStreams.");
+            continue;
+        }
+        // Backward consumers: declared at or before the producer's slot
+        // (a unit consuming its own output is a genuine 1-unit cycle).
+        std::vector<std::size_t> backward;
+        for (auto c : consumers) if (c <= p->second) backward.push_back(c);
+        if (backward.empty())
+        {
+            findings.push_back("FORWARD TEAR: '" + t + "' (producer '"
+                + topology_[p->second].name + "') is only consumed AFTER its"
+                " producer -- a forward stream needs no cut; remove it from"
+                " tearStreams.  (Deliberate lagging of a forward stream would"
+                " be a separate, explicit feature, never a tear.)");
+            continue;
+        }
+        bool onCycle = false;
+        for (auto c : backward)
+            if (!pathBetween(c, p->second).empty()) { onCycle = true; break; }
+        if (!onCycle)
+        {
+            findings.push_back("OFF-CYCLE TEAR: '" + t + "' points backwards"
+                " (producer '" + topology_[p->second].name + "' is declared"
+                " after consumer '" + topology_[backward.front()].name
+                + "') but lies on NO material cycle -- a declaration-order"
+                  " mistake compensated by an artificial iteration.  Fix the"
+                  " unit order instead of declaring a tear.");
+            orderMistake = true;
+        }
+    }
+
+    // ---- A valid order to paste, when the problem is (also) the order ----
+    //  Kahn over the graph MINUS the tear edges, preferring the author's own
+    //  declared order among the ready units, so the suggestion is minimal.
+    if (orderMistake)
+    {
+        std::vector<std::set<std::size_t>> fwd(n);
+        std::vector<std::size_t> indeg(n, 0);
+        for (std::size_t i = 0; i < n; ++i)
+            for (const auto& s : topology_[i].ins)
+            {
+                if (tearSet.count(s)) continue;
+                auto p = producerIdx.find(s);
+                if (p != producerIdx.end() && p->second != i
+                    && fwd[p->second].insert(i).second) ++indeg[i];
+            }
+        std::vector<std::size_t> order;
+        std::set<std::size_t> ready;
+        for (std::size_t i = 0; i < n; ++i) if (indeg[i] == 0) ready.insert(i);
+        while (!ready.empty())
+        {
+            const std::size_t v = *ready.begin();   // lowest declared index
+            ready.erase(ready.begin());
+            order.push_back(v);
+            for (auto w : fwd[v]) if (--indeg[w] == 0) ready.insert(w);
+        }
+        if (order.size() == n)
+        {
+            std::string s = "A valid declaration order:  ";
+            for (std::size_t k = 0; k < order.size(); ++k)
+                s += (k ? "  " : "") + topology_[order[k]].name;
+            findings.push_back(s);
+        }
+    }
+
+    // ---- Announce a valid recycle plan (glass-box: the cut is shown) -----
+    if (findings.empty() && !tears.empty() && verbosity >= 2)
+        for (const auto& t : tears)
+        {
+            auto p = producerIdx.find(t);
+            if (p == producerIdx.end()) continue;
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                const auto& ins = topology_[i].ins;
+                if (std::find(ins.begin(), ins.end(), t) == ins.end()
+                    || i > p->second) continue;
+                const auto cyc = pathBetween(i, p->second);
+                if (!cyc.empty())
+                    std::cout << "[plan] material recycle: tear '" << t
+                              << "' cuts  " << cycleString(cyc, t) << "\n";
+                break;
+            }
+        }
+
+    return findings;
+}
+
+// ===========================================================================
 //  choupo-lint -- validate the composed case WITHOUT solving it.
 //
 //  By the time solve() reaches the lint seam, the loud path has already
@@ -3391,10 +3674,14 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
 // ===========================================================================
 int Flowsheet::runLint(const std::vector<DictPtr>&     units,
                        int                             verbosity,
-                       const std::vector<std::string>& tears)
+                       const std::vector<std::string>& tears,
+                       const std::vector<std::string>& planFindings)
 {
     namespace fs = std::filesystem;
-    std::vector<std::string> findings;
+    // The sequential-plan verdict (duplicate names/producers, missing tears,
+    // order mistakes) was computed in solve() -- ONE home, shared with the
+    // normal run -- and is merged ahead of lint's own findings here.
+    std::vector<std::string> findings = planFindings;
 
     // ---- 0/ presence -------------------------------------------------------
     //  The completeness diff above only runs when a 0/ tree exists; a case
@@ -3421,14 +3708,9 @@ int Flowsheet::runLint(const std::vector<DictPtr>&     units,
         for (const auto& e : fs::directory_iterator("code"))
             if (e.path().extension() == ".cpp") { hasLocalCode = true; break; }
     std::size_t nWarnings = 0;
-    std::set<std::string> seenUnitNames;
     for (const auto& u : units)
     {
         const std::string uname = u->lookupWordOrDefault("name", "?");
-        if (!seenUnitNames.insert(uname).second)
-            findings.push_back("DUPLICATE unit name '" + uname + "' -- unit"
-                " names key the stream registry, KPIs and reports; two units"
-                " cannot share one name.");
         try { UnitOperation::New(u->lookupWordOrDefault("type", "")); }
         catch (const std::exception& e)
         {
@@ -3446,22 +3728,13 @@ int Flowsheet::runLint(const std::vector<DictPtr>&     units,
         }
     }
 
-    // ---- Duplicate producers ----------------------------------------------
-    //  Two units writing the same output stream: the second silently
-    //  overwrites the first in the registry -- an authoring error the solve
-    //  never reports.
+    // ---- Producer / first-consumer maps (roles print only -- duplicate
+    //      producers and names are the sequential-plan validator's job).
     std::map<std::string, std::string> producerOf, firstConsumerOf;
     for (const auto& fu : topology_)
     {
         for (const auto& o : fu.outs)
-        {
-            auto [it, fresh] = producerOf.emplace(o, fu.name);
-            if (!fresh)
-                findings.push_back("stream '" + o + "' is produced by BOTH '"
-                    + it->second + "' and '" + fu.name + "' -- the second"
-                    " would silently overwrite the first; every stream has"
-                    " exactly one producer.");
-        }
+            producerOf.emplace(o, fu.name);
         for (const auto& i : fu.ins)
             if (!firstConsumerOf.count(i)) firstConsumerOf[i] = fu.name;
     }

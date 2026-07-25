@@ -493,9 +493,10 @@ To learn a unit's order, read its \code{producedStreams()} in the source
 (\S\ref{sec:units}).
 
 \paragraph{Recycles: tear streams.}  A recycle is an ordinary stream
-whose producer sits downstream of its consumer.  Declare the
-cycle-breaking stream (and, optionally, the recycle solver knobs) at the
-top level of \file{flowsheetDict} (or in \file{solverDict}):
+whose producer sits downstream of its consumer.  The engine
+\emph{detects} the cycle itself --- what you declare is the \emph{cut}:
+which stream the recycle iteration tears.  Declare it (and, optionally,
+the recycle solver knobs) in \file{solverDict}:
 
 \begin{lstlisting}[language=dict]
 tearStreams        ( recycle );
@@ -511,6 +512,30 @@ converges quadratically; \code{Wegstein} keeps the classical
 fixed-point accelerator --- run both on
 \file{tutorials/steady/flowsheets/process03\_recycle} and compare the
 iteration counts.
+
+\paragraph{The sequential-plan contract.}  The solver executes the
+units \emph{in the order you declare them} --- it never reorders.
+Before anything runs, the plan is validated: every material input must
+be a domain inlet, an output of an \emph{earlier} unit, or a declared
+tear; and every declared tear must point backwards and close a real
+cycle.  A cycle with no declared tear refuses, naming the cycle and the
+\code{tearStreams} line to paste; an out-of-order acyclic flowsheet
+refuses with a valid declaration order to paste; a tear that cuts
+nothing real (forward, off-cycle, misspelled) refuses too.  When the
+plan is valid, the cut is announced in the log:
+
+\begin{lstlisting}
+[plan] material recycle: tear 'recycle' cuts  mixer01 -> reactor ->
+       separator -> split01 --recycle--> mixer01
+\end{lstlisting}
+
+Why so strict?  Because every stream is pre-seeded from \file{0/}, a
+unit that reads a stream before its producer has run would silently
+consume the \emph{initial guess} instead of the computed value --- a
+wrong answer with no error.  The validation makes that impossible.
+For the same honesty, a recycle that exhausts its iterations without
+converging now exits with status 1 and writes no \file{converged/} ---
+the directory's name is a promise.
 
 \paragraph{Sectors --- the fractal flowsheet.}  A big plant is
 organised as \emph{sectors} (composite sub-flowsheets), each a folder

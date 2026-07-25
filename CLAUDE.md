@@ -416,6 +416,29 @@ sha256 manifest; the runtime is FORBIDDEN the installation catalogue when sealed
 versioned `Choupo-2607` per `data/standards/CATALOGUE.dat`).  Full state:
 `memory/universal_solver_2026_07_06.md`.
 
+**Sequential-plan contract (tears + order) — SETTLED 2026-07-25, do NOT
+relitigate.**  The solver executes the flattened units IN DECLARED ORDER
+(never a silent topo-sort), and the 0/ completeness pre-seeding retired the
+old "input stream not in registry" guard — so an undeclared recycle tear AND
+an out-of-order acyclic flowsheet both silently read stale 0/ seeds (wrong
+answer, exit 0; both reproduced before the fix).  The contract, validated at
+the flatten seam in `Flowsheet::validateSequentialPlan` (shared by choupoSolve
++ choupo-lint; `-init0` keeps its own UNREACHED accounting): **every material
+input = domain inlet ∨ EARLIER unit's output ∨ declared tear; every declared
+tear = a backward edge closing a REAL cycle.**  This SUBSUMES "graph−tears is
+acyclic" and validates the order itself.  Six named refusals (MISSING TEAR
+with the cycle chain · INVALID ORDER with a paste-ready valid order · FORWARD
+/ OFF-CYCLE / UNKNOWN / INLET tear), findings collected, remedy-bearing; a
+valid recycle plan ANNOUNCES its cuts (`[plan]`, verbosity ≥ 2).  Cycle
+*detection* is the engine's job; tear *choice* stays the author's (energy
+heat-link feedback stays auto-detected — the asymmetry material/energy is in
+the declaration of the CUT, not the detection).  A non-converged recycle now
+returns **exit 1** and `converged/` is NOT written (the name is a contract).
+Corpus evidence: 14/14 tear cases already satisfy it, 158 flat cases have
+valid order, 0 redundant tears.  Deferred, named: `tearSelection auto`
+(Phase 2, solverDict, loud heuristic), `laggedStreams` (deliberate lag is a
+separate feature, never a tear), stream freshness marks (batch/ctrl future).
+
 **Stream-state directories + topological drill-in — RATIFIED 2026-07-06 (the
 constitutional spine; do NOT reopen the ontology unless a concrete case proves
 the contract fails).**  A stream's STATE lives in its OWN file on disk,

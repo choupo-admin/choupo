@@ -274,9 +274,31 @@ private:
     // The lint pass (called from solve() at the same seam as runInit0).
     // Collects EVERY finding into one list before refusing -- a lint tool
     // reports the whole state of the case, not just the first defect.
+    // `planFindings` carries the sequential-plan verdict computed in solve()
+    // (shared with the normal run), merged ahead of lint's own findings.
     int runLint(const std::vector<DictPtr>&     units,
                 int                             verbosity,
-                const std::vector<std::string>& tears);
+                const std::vector<std::string>& tears,
+                const std::vector<std::string>& planFindings);
+
+    // Sequential-plan validation (the tear/order contract, settled
+    // 2026-07-25).  The solver executes the flattened list IN DECLARED
+    // ORDER, and the 0/ completeness contract pre-seeds EVERY stream -- so
+    // a unit consuming a stream before its producer has run silently reads
+    // the 0/ seed (the old "not in registry" guard can no longer fire).
+    // This validation restores that protection statically:
+    //   every material input must be (a) a domain inlet, (b) an output of
+    //   an EARLIER unit, or (c) a declared tear; and every declared tear
+    //   must be a backward edge that closes a REAL material cycle.
+    // Subsumes "graph minus tears is acyclic" AND validates the order
+    // itself -- the thing the solver actually consumes.  Returns the
+    // findings (empty = valid); a valid plan with tears announces its
+    // cycles and cuts (glass-box).  Uses topology_, so it must run after
+    // the flatten step; skipped under -init0 (which keeps its own honest
+    // UNREACHED accounting).
+    std::vector<std::string> validateSequentialPlan(
+        const std::vector<std::string>& tears,
+        int                             verbosity) const;
 
     bool init0_      = false;
     bool init0Force_ = false;

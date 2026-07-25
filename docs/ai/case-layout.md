@@ -309,3 +309,26 @@ producer+consumer → INTERNAL; producer only → OUTLET, tears flagged) so you
 can confirm the graph says what you think it says before spending a solve.
 A case shipping its own `code/` gets a warning, not a refusal, for types
 only `bin/buildCode`'s case-local binary registers.
+
+## The sequential-plan contract (tears + declaration order)
+
+The solver executes the units **in the order you declare them** — it never
+reorders.  The engine detects material cycles itself; what you declare is the
+**cut**: which stream the recycle iteration tears.  The contract, enforced
+before anything runs (both by `choupoSolve` and `choupo-lint`):
+
+* every material input must be a **domain inlet**, an **output of an EARLIER
+  unit**, or a **declared tear**;
+* every declared tear must point **backwards** (consumer declared before its
+  producer) and close a **real cycle**.
+
+Violations refuse with a named, remedy-bearing finding: `MISSING TEAR` (shows
+the cycle and the `tearStreams` line to paste), `INVALID ORDER` (shows a valid
+declaration order to paste), `FORWARD TEAR` / `OFF-CYCLE TEAR` / `UNKNOWN
+TEAR` / `INLET TEAR` (a tear that cuts nothing real).  A valid recycle plan is
+announced: `[plan] material recycle: tear 'recycle' cuts mixer -> reactor ->
+separator -> split --recycle--> mixer`.  A recycle that does not converge
+exits **1** and `converged/` is not written.  The tear's initial guess lives
+in its `0/` file, like any other stream.  Declare `tearStreams` in
+`system/solverDict` (the numerical home); the flowsheetDict is still read for
+older cases.
