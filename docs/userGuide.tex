@@ -200,7 +200,10 @@ labour: \file{system/} says how the problem is organised,
 \file{constant/} carries the models and data, and --- in a steady case
 --- the \file{0/} directory carries the complete initial state of every
 stream, one file per stream, OpenFOAM-style.  The solver writes its
-answer to \file{converged/}.
+answer to \file{converged/}.  You will also meet the notation all of
+them are written in --- the \emph{dictionary} --- and the reasoning
+behind it: why a process is \emph{declared} rather than scripted, and
+why each fact gets exactly one home (\S\ref{sec:dict-language}).
 \end{whatyoulllearn}
 
 The tree below is a \emph{steady} (\code{choupoSolve}) case --- the most
@@ -229,7 +232,8 @@ caseName/
 |   |-- crystallisation      optional  crystallisation-kinetics library
 |   |-- dryingKinetics       optional  drying-curve library
 |   |-- components/          optional  case-local component overlays
-|   `-- propertyData/        optional  sealed data snapshot (self-contained cases)
+|   `-- propertyManifest     optional  sealed-case seal: the dependency closure
+|                                      + a sha256 per record (self-contained cases)
 |-- 0/                       REQUIRED (steady only)  initial stream state,
 |   |-- feed   liquid   vapor                        ONE FILE PER STREAM
 `-- (written by the run)
@@ -243,6 +247,151 @@ A standalone unit operation is just a \file{flowsheetDict} of length 1.
 There is no special ``single-unit'' mode --- one consistent case format
 for everything, from one flash drum to a multi-sector plant.
 \end{keyidea}
+
+\subsection{The dictionary: one notation for the whole simulator}\label{sec:dict-language}
+
+Every file named above --- \file{controlDict}, \file{flowsheetDict},
+\file{thermoPhysPropDict}, each stream's state file, the reaction
+library --- is written in the same small notation, the \emph{dictionary}.
+It is worth meeting the whole language at once, because there is very
+little of it: five constructs of grammar, and --- further down --- two
+keywords that mean more than they say.
+
+\begin{lstlisting}[language=dict]
+// a line comment; /* a block comment */ also works
+
+keyword       value;                  // (1) an entry: one keyword, one value
+                                      //     value = word, number, or "string"
+block                                 // (2) a sub-dictionary: a named group
+{
+    keyword   value;
+    nested    { keyword value; }      //     nesting is unlimited
+}
+names         ( alpha  beta  gamma ); // (3) a list of words or numbers
+things                                // (4) a list of sub-dictionaries
+(
+    { name a;  type flash; }          //     order is significant here
+    { name b;  type mixer; }
+);
+\end{lstlisting}
+
+That is the entire grammar: entries, sub-dictionaries, lists,
+lists-of-sub-dictionaries, comments.  A number may carry its unit
+(\code{P 1 bar;}) --- \S\ref{sec:units-suffixes} covers that.  There is
+no schema to register and no include mechanism; exactly two keywords do
+more than name a value, and you can read a case for a long time before
+meeting either:
+
+\begin{lstlisting}[language=dict]
+variables { A  17.0 m2; }        // name a value once...
+// ... then spend it wherever it belongs:
+units ( { name effect1;  operation { area $A; } }
+        { name effect2;  operation { area $A; } } );
+
+inherits  "../../../constant";   // (in a thermoPhysPropDict) build on the
+                                 // system declared at that folder
+\end{lstlisting}
+
+\noindent \code{variables} exists so that one physical quantity shared
+by several units --- the heat-transfer area common to three evaporator
+effects, say --- is written once and referenced, rather than copied
+three times and then edited twice.  It is the same one-fact-one-home
+rule as the file layout, applied inside a file.  \code{inherits} lets a
+sector's thermophysical system build on its plant's instead of repeating
+it (\S\ref{sec:thermo}).
+
+\paragraph{Why plain text, and why this notation.}  The format is
+deliberate, not incidental:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{A process change is a reviewable diff.}  Cases live in
+        version control beside the code.  ``What changed between the
+        run that worked and the one that didn't?'' is answered by
+        \code{git diff}, not by opening two projects side by side.
+  \item \textbf{Comments are first-class.}  In a teaching tool a case
+        file is half specification and half explanation --- the
+        tutorials carry their reasoning in the dict itself, next to the
+        number it justifies.  A format without native comments (JSON)
+        cannot do that; a general-purpose one (YAML, TOML) would force
+        \code{P 1 bar;} into either a bare string or a nested object.
+        The notation is domain-native: a chemical engineer's quantity,
+        with its unit, on one line.
+  \item \textbf{Nothing is hidden.}  There is no binary project file, no
+        cache that must agree with the text, no export step between what
+        you edit and what the solver reads.  The files in the folder are
+        the complete input --- which is the same glass-box promise the
+        solver makes about its iterations.
+  \item \textbf{It is writable by hand and by machine.}  The tutorials
+        were authored in a text editor; increasingly, cases are drafted
+        with an assistant's help.  Both produce the same artefact, and
+        \code{bin/choupo-lint} (\S\ref{sec:lint}) checks it before you
+        spend a solve.
+\end{itemize}
+
+\paragraph{A dictionary declares; it does not instruct.}  This is the
+deeper idea, and it is what makes the format a \emph{representation} of
+a process rather than a script that builds one.  A dict states what
+exists and what it is: \emph{there is a flash drum called
+\code{flash01}, fed by \code{feed}, held at 370\,K and 1\,bar}.  It
+never says what to do, in what order, or when.  You will not find a
+``run'' statement, a loop, or an \code{if} anywhere in a case --- and
+when you want a hundred runs, you do not write a loop either: you
+declare a sweep (\S\ref{sec:outer}), which is one more dictionary.
+
+The payoff is that a case has no single privileged reader.  The same
+declaration is consumed by the solver, by the browser GUI that draws the
+flowsheet, by the report objects that write the balances, and by
+\code{choupo-lint} which reads it and refuses to run it.  A script would
+have exactly one meaning --- whatever happens when you execute it.  A
+declaration has as many useful readings as you have tools.
+
+\paragraph{One question, one file.}  The division of labour across
+\file{system/}, \file{constant/} and \file{0/} follows a single rule:
+each fact has exactly one home.
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{The question} & \textbf{Its one home} \\
+\midrule
+What is connected to what?          & \file{system/flowsheetDict} --- topology, no numbers \\
+What are the stream numbers?        & \file{0/<stream>} --- one file per stream \\
+What are the substances and models? & \file{constant/thermoPhysPropDict} (+ libraries) \\
+How is this run organised?          & \file{system/controlDict} (+ the optional dicts) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent The rule is enforced, not merely recommended.  If a flow rate
+could be written both in \file{flowsheetDict} and in \file{0/}, the two
+could disagree --- and some code, somewhere, would have to pick a winner
+quietly.  So a \code{streams \{\}} block inside any \file{flowsheetDict}
+is refused with an error that names the file and points at
+\file{0/}, and a graph with more (or fewer) streams than state files is
+fatal \emph{before} the first iteration.  You are never one silent
+override away from simulating something other than what you wrote.
+
+\begin{keyidea}
+Because the state lives in files rather than in the topology,
+\file{converged/} comes out in exactly the same shape as \file{0/}.  A
+solution can therefore seed the next run, a sector can be lifted out of
+a plant and run on its own, and every number the engine touched is a
+file you can open, diff and version --- the same rule for the data as
+for the code.
+\end{keyidea}
+
+\paragraph{Inheritance: a dict you do not write is inherited.}  A case
+that omits \file{controlDict}, \file{constant/thermoPhysPropDict} or a
+reaction library inherits it from the folder above (up to six levels).
+This is what makes the fractal layout work: a sector of a plant carries
+only what is genuinely its own --- typically its \file{flowsheetDict}
+and, when its chemistry differs, its own thermophysical system --- and
+still runs as a case in its own right, borrowing the rest from the plant
+around it.  The one dict that is \emph{never} inherited is
+\file{flowsheetDict}: it \emph{is} the node, so a folder without one is
+not a case.  Inheritance is announced in the log, never silent --- each
+unit prints whether its thermodynamics were inherited or locally
+overridden.
 
 \subsection{\file{controlDict}}
 
