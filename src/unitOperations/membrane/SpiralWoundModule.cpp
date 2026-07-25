@@ -559,6 +559,61 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 in.totals[thermo.comp(soluteIdx[s]).name()]
                     = c_b[s] * 1.0e3 / rho;        // kmol/m3 -> mol/kg water
         const auto feedRes = specSolver->solve(in, verbosity);
+
+        // THE CHAIN BEHIND THE INDEX.  A saturation index is a five-step
+        // argument -- analytical total -> free ion + complexes -> gamma ->
+        // activity -> IAP against Ksp -- and printing only its last number
+        // makes a black box of the four steps that matter pedagogically.  The
+        // course teaches the climb; the report now shows it, once, for the
+        // feed, at the verbosity where Newton iterations are already visible.
+        if (verbosity >= 3)
+        {
+            std::cout << "\n  [chain] the saturation index, step by step"
+                         " (feed, T = " << T_in << " K)\n"
+                         "  [chain] 1. analytical totals -- what the water"
+                         " analysis measures, and what the stream conserves\n";
+            for (std::size_t s = 0; s < Ns; ++s)
+                if (in.totals.count(thermo.comp(soluteIdx[s]).name()))
+                    std::printf("  [chain]      %-8s %12.6e mol/kg water\n",
+                        thermo.comp(soluteIdx[s]).name().c_str(),
+                        in.totals.at(thermo.comp(soluteIdx[s]).name()));
+
+            std::cout << "  [chain] 2. speciation -- each total distributes"
+                         " over free ions and complexes\n"
+                         "  [chain] 3. gamma -- the declared aqueous model at"
+                         " this ionic strength\n"
+                         "  [chain] 4. activity = molality x gamma\n";
+            std::printf("  [chain]      %-10s %3s %14s %10s %14s\n",
+                        "species", "z", "molality", "gamma", "activity");
+            for (const auto& r : feedRes.rows)
+                if (r.molality > 1.0e-12)
+                    std::printf("  [chain]      %-10s %+3.0f %14.6e %10.4f"
+                                " %14.6e%s\n", r.name.c_str(), r.z,
+                                r.molality, r.gamma, r.activity,
+                                r.isMaster ? "   (master)" : "");
+            std::printf("  [chain]      I = %.4e mol/kg   a_w = %.5f  "
+                        " pH = %.3f\n", feedRes.I, feedRes.aw, feedRes.pH);
+
+            std::cout << "  [chain] 5. IAP against Ksp -- SI = log10(IAP/K),"
+                         " positive means it would precipitate\n";
+            for (const auto& m : scaleMinerals)
+            {
+                if (!feedRes.SI.count(m)) continue;
+                bool ok = false;
+                const double logK = specSolver->mineralLogK_T(m, T_in, ok);
+                const double si   = feedRes.SI.at(m);
+                if (ok)
+                    std::printf("  [chain]      %-10s log IAP %8.3f   log K"
+                                " %8.3f   SI %+7.3f\n",
+                                m.c_str(), si + logK, logK, si);
+                else
+                    std::printf("  [chain]      %-10s SI %+7.3f   (log K not"
+                                " available at this T)\n", m.c_str(), si);
+            }
+            std::cout << "  [chain] the same climb runs at every module exit,"
+                         " for the bulk AND the wall; the table below reports"
+                         " step 5 only.\n\n";
+        }
         for (const auto& m : scaleMinerals)
             if (!feedRes.SI.count(m))
                 throw std::runtime_error("spiralWoundModule scaling{}: mineral '"
