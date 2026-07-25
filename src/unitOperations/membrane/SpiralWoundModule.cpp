@@ -468,10 +468,34 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                       << "  [scaling] molalities from kmol/m3 at rho = " << rho
                       << " kg/m3 (dilute aqueous closure)\n";
 
-        // Optional aqueous-activity-model selection (default Davies, the only S1
-        // builtin; an unknown name is refused with the available list).
+        // THE AQUEOUS ACTIVITY MODEL IS THE CASE'S, NOT THIS UNIT'S.  A unit op
+        // never chooses thermodynamics: it reads what the case declared in
+        // `equilibrium { aqueous { activityModel { model …; } } }`.  The old
+        // `activityModel` key here, defaulting to Davies, was a hidden default
+        // -- it existed only because the grammar had no slot for a liquid-only
+        // electrolyte declaration.  The slot exists now, so the default goes:
+        // an undeclared case is REFUSED, naming the block it must add.
+        if (sc->found("activityModel"))
+            throw std::runtime_error(
+                "spiralWoundModule scaling: `activityModel` is no longer a unit"
+                " key -- the aqueous activity model belongs to the case, in"
+                " constant/thermoPhysPropDict:\n"
+                "    equilibrium { aqueous { activityModel { model davies; } } }\n"
+                "A unit op reads the declared chemistry; it never selects one.");
+
+        const auto& aqChem = thermo.aqueousChemistry();
+        if (!aqChem.declared || aqChem.activityModel.empty())
+            throw std::runtime_error(
+                "spiralWoundModule scaling refused: this case speciates its"
+                " brine but declares no aqueous chemistry.  Add to"
+                " constant/thermoPhysPropDict:\n"
+                "    equilibrium { aqueous { activityModel { model davies; } } }\n"
+                "(the declaration is independent of `formulation` -- a vessel"
+                " that computes no phase equilibrium still HAS an aqueous"
+                " solution).  No default is applied.");
+
         specSolver = std::make_unique<electrolyte::SpeciationSolver>(
-            sc->lookupWordOrDefault("activityModel", "davies"));
+            aqChem.activityModel);
 
         // Requested minerals must be in the catalogue ...
         for (const auto& m : scaleMinerals)

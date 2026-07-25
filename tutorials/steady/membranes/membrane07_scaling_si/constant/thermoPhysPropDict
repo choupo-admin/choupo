@@ -28,6 +28,14 @@ equilibrium
         standardState pureLiquid;
     }
 
+    // The liquid IS an aqueous electrolyte solution -- declared here, once,
+    // independently of the phase equilibrium above (this vessel computes no
+    // VLE).  The scaling audit READS this; it no longer picks a model itself.
+    aqueous
+    {
+        activityModel { model davies; }
+    }
+
     vapour
     {
         fugacityModel idealGas;

@@ -130,6 +130,7 @@ public:
             mixtureMembersByToken_ = std::move(o.mixtureMembersByToken_);
             auditFindings_      = std::move(o.auditFindings_);
             reactive_           = std::move(o.reactive_);
+            aqueous_            = std::move(o.aqueous_);
             for (auto& p : phases_) if (p) p->rebindComponents(&components_);
         }
         return *this;
@@ -361,6 +362,32 @@ public:
     const EquationOfState&  eos()      const { return *eos_;      }
     bool                    hasEos()   const { return eos_ != nullptr; }
 
+    // ---- Declared aqueous chemistry (INDEPENDENT of the formulation) ------
+    //  A case whose liquid IS an aqueous electrolyte solution declares that
+    //  ONCE -- `equilibrium { aqueous { ... } }` -- whether or not it also
+    //  computes a phase equilibrium.  Before this, the `aqueous` block was
+    //  readable only inside `formulation electrolyteGammaPhi`, which demands
+    //  `volatiles`; a liquid-only case (an RO vessel speciating its brine for
+    //  scaling) therefore had NO way to declare its chemistry, wrote the
+    //  harmless placeholder `gammaPhi / ideal`, and the unit invented an
+    //  activity model of its own.  That is how a hidden default is born: not
+    //  by carelessness, but by a grammar with no slot for the truth.
+    //
+    //  UNITS NEVER CHOOSE AN AQUEOUS ACTIVITY MODEL.  A unit needing aqueous
+    //  chemistry reads this; when nothing is declared it REFUSES, naming the
+    //  block the case must add.  Never a default, never a guess.
+    struct AqueousChemistry
+    {
+        bool                     declared = false;
+        std::string              activityModel;   // davies | Pitzer | eNRTL
+        std::vector<std::string> masters;         // the speciation network
+        std::vector<std::string> solidPhases;     // admitted (constant/chemistryDict)
+    };
+
+    void declareAqueousChemistry(AqueousChemistry a)
+    { aqueous_ = std::move(a); aqueous_.declared = true; }
+    const AqueousChemistry& aqueousChemistry() const { return aqueous_; }
+
     // ---- Reactive equilibrium (unit-local speciation; section 6b) ---------
     //  Attached by the builder when the case declares the REACTIVE shape of
     //  electrolyteGammaPhi (aqueous speciation + volatile molecular species).
@@ -559,6 +586,7 @@ private:
     // Reactive coupled speciation+VLE engine (null for every non-reactive
     // package; the flash delegates to it when present).
     std::unique_ptr<electrolyte::ReactiveVLE> reactive_;
+    AqueousChemistry                         aqueous_;
 };
 
 } // namespace Choupo

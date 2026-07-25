@@ -96,6 +96,9 @@ bool hasSpeciesMap(const DictPtr& rec) { return speciesMapOf(rec) != nullptr; }
 
 // ---- ELECTROLYTE path: assemble a PitzerSingleSalt directly from the unified
 //      substance records (no readFromDict, no loadSalt, no old catalogue) ----
+static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
+                                     const ChemistrySystem* chem);
+
 static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
                                       const Database& db,
                                       bool isENRTL,
@@ -598,6 +601,48 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
 // REFUSES loudly (never a decorative declaration).  The dispatch below
 // assembles each formulation directly from its authored sub-blocks.
 
+// THE aqueous-chemistry declaration, hoisted OUT of the formulation.
+//
+// `equilibrium { aqueous { ... } }` used to be readable only inside
+// `formulation electrolyteGammaPhi`, which demands `volatiles` -- so a
+// liquid-only electrolyte case (an RO vessel speciating its brine for a
+// scaling audit) had no way to declare its chemistry at all.  It wrote the
+// harmless placeholder `gammaPhi / ideal` and the unit op invented an
+// activity model of its own.  A hidden default is what a grammar with no slot
+// for the truth produces; the cure is the slot, not a rule against defaults.
+//
+// The declaration is now read for EVERY formulation, and the admitted solid
+// phases ride in from constant/chemistryDict (WHICH equilibria/phases belong
+// to this system) -- so a unit asking "what may precipitate here?" and "on
+// which activity model?" has ONE declared answer to read.
+ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& db,
+                                            const ChemistrySystem* chem)
+{
+    ThermoPackage out = buildV2Dispatch(v2, db, chem);
+
+    auto eq = v2->subDict("equilibrium");
+    const bool hasAq = eq->found("aqueous");
+    if (hasAq || (chem && !chem->solidPhases.empty()))
+    {
+        ThermoPackage::AqueousChemistry aq;
+        if (hasAq)
+        {
+            auto a = eq->subDict("aqueous");
+            if (a->found("activityModel"))
+                aq.activityModel =
+                    a->subDict("activityModel")->lookupWord("model");
+            if (a->found("speciation"))
+            {
+                auto sp = a->subDict("speciation");
+                if (sp->found("masters")) aq.masters = sp->lookupWordList("masters");
+            }
+        }
+        if (chem) aq.solidPhases = chem->solidPhases;
+        out.declareAqueousChemistry(std::move(aq));
+    }
+    return out;
+}
+
 ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db,
                                           const ChemistrySystem* chem)
 {
@@ -680,11 +725,14 @@ bool ThermoPackageBuilder::v2NativeFormulation(const DictPtr& v2)
     return false;
 }
 
-ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& db,
-                                            const ChemistrySystem* chem)
+// The formulation dispatch proper.  Wrapped by buildV2 below, which attaches
+// the DECLARED AQUEOUS CHEMISTRY -- a declaration that must not depend on
+// which phase equilibrium (if any) the case computes.
+static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
+                                     const ChemistrySystem* chem)
 {
     (void)chem;   // consumed by the electrolyte formulation only
-    if (!v2NativeFormulation(v2))
+    if (!ThermoPackageBuilder::v2NativeFormulation(v2))
         throw std::runtime_error("ThermoPackageBuilder::buildV2: this system's"
             " formulation/shape is not on the native path yet -- gate the"
             " call with v2NativeFormulation().");

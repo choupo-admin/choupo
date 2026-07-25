@@ -28,6 +28,11 @@ equilibrium
         standardState pureLiquid;
     }
 
+    aqueous
+    {
+        activityModel { model davies; }
+    }
+
     vapour
     {
         fugacityModel idealGas;

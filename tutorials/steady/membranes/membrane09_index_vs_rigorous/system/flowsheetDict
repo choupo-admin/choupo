@@ -107,7 +107,8 @@ units
         {
             minerals    ( calcite  gypsum );
             pH          7.0;                  // acid-dosed + controlled SWRO feed
-            activityModel davies;            // rigorous SI uses Davies activities
+            // the activity model is the CASE's -- constant/thermoPhysPropDict
+            //   equilibrium { aqueous { activityModel { model davies; } } }
         }
     }
 );
