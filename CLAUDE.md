@@ -356,7 +356,7 @@ idealMolecularVLE { components ( ethanol ); } }` -- authorisation is the
 block's presence, applying it to anything unlisted refuses, listing anything
 the classifier did not find nonionising refuses.  The molecular backbone
 (solvent + nonionising co-volatiles, ion-free x-basis) has TWO declared
-routes: the authorised ideal (gamma = 1) and **mixed-solvent v1**
+routes: the authorised ideal (gamma = 1) and **composite mixed-solvent electrolyte v1**
 (`activityModel { ionic davies; molecular NRTL; }`, built same-day on
 Vitor's order): the FULL curated NRTL pair prices the backbone (never a
 clandestine gammaInfinity constant), the solvent activity decomposes

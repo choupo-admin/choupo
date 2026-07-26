@@ -453,3 +453,26 @@ log announces the assembled formulation, each phase's model and reference
 rung (`[builder]`), and each engaged Henry pair with constants + source
 (`[henry]`).  Never mix two gamma-models or two EoS in one phase — one Gibbs
 surface per phase.
+
+## Glossary: the course's words for what the engine does
+
+Phase equilibrium is ONE equation, always: f̂ᵢV = f̂ᵢL per species.  Every
+Choupo formulation is an instance of it; this table maps the classroom
+vocabulary (standard states + conventions) onto the engine's declarations.
+
+| course concept | engine home |
+|---|---|
+| **Raoult / Lewis–Randall convention** (pure-liquid reference, γ→1 as x→1) | `gammaPhi` liquids (NRTL/Wilson/UNIQUAC/COSMO-SAC); the co-volatile leg of the reactive flash (`p = γ·x·psat`) |
+| **Henry convention** (infinite-dilution reference, γ*→1 as x→0) | `diluteSolution`; `parameters/Henry/` pairs; the network's gas-liquid records (molal basis) |
+| **unsymmetric convention** (solvent on Raoult + solutes on Henry, one liquid) | the reactive `electrolyteGammaPhi` shape — water on a_w, NH3/HAc on molal K's tied to the speciation network |
+| **standard states** (per-species reference choice) | the `ReferenceRung`s: solid · pure-liquid Raoult · aqueous-infinite-dilution · fused-salt |
+| **law of mass action on activities** | the SpeciationSolver (mass action + electroneutrality, pH solved) |
+| **mean-ionic activity, γ±** | Davies / Pitzer / eNRTL on molality |
+| **fugacity coefficient φ̂ from an EoS** | `phiPhi` (SRK, PC-SAFT) |
+| **ideal-solution approximation** | `approximations { idealMolecularVLE { components (...) } }` — authorised, delimited, announced |
+| **composite mixed-solvent electrolyte v1** | NRTL molecular backbone + Davies ions + multiplicative a_w — a COMPOSITE whose limits are PROVEN each sweep (`check_composite_limits`): x_co→0 recovers the aqueous electrolyte, I→0 recovers molecular NRTL, NRTL→0 recovers the authorised ideal |
+
+Rule of reading: when an announcement names a *convention* it is telling
+you which standard state a γ or K is referred to; when it names an
+*approximation* it is telling you which physics was deliberately, visibly
+neglected — and which named slice will replace it.

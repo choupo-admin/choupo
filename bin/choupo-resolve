@@ -145,7 +145,8 @@ def main():
                     / f"{a}-{b}.dat").exists():
                 nrtl_ok = False
     if electrolyte and nonionising and nrtl_ok:
-        print("[resolver] recommended: mixed-solvent v1 -- NRTL molecular"
+        print("[resolver] recommended: composite mixed-solvent electrolyte v1"
+              " -- NRTL molecular"
               " backbone (" + ", ".join(backbone) + ") + Davies ions"
               " (water-referenced; transfer term: named gap)")
     elif electrolyte and nonionising:

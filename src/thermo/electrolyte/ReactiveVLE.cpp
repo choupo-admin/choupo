@@ -282,7 +282,25 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     //  Residual per volatile (log form, dimensionless):
     //      R = ln a_dissolved(liquid after removal) - ln( K(T) * y P[atm] )
     //  One residual evaluation = one inner speciation solve.
-    const std::size_t nV = cfg_.volatiles.size();
+    //  ACTIVE volatiles: a TRACE-feed volatile (n_i ~ 0) has no phase split
+    //  to solve -- its log-residual legs would sit at -infinity and sink
+    //  the Newton (seen at the I -> 0 limit test).  It stays fully liquid
+    //  (vap = 0, exact to its own magnitude), announced, and the outer
+    //  system shrinks to the volatiles that are actually present.
+    std::vector<std::size_t> act;
+    {
+        scalar nAll = 0.0; for (auto q : n) nAll += q;
+        for (const auto appIdx : cfg_.volatiles)
+        {
+            if (n[appIdx] > 1.0e-8 * nAll) { act.push_back(appIdx); continue; }
+            if (verbosity >= 3)
+                std::cout << "  [reactive] volatile '" << cfg_.apparent[appIdx]
+                          << "': trace feed (n = " << n[appIdx]
+                          << ") -- excluded from the phase Newton, stays"
+                             " liquid\n";
+        }
+    }
+    const std::size_t nV = act.size();
     SpeciationResult srLast;
     // Unknowns: (ln V, softmax odds z_1..z_{m-1}) -- the CLASSICAL flash
     // coordinates, generalised to m volatiles (2026-07-26; the 2-volatile
@@ -302,14 +320,14 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         for (auto q : w) wSum += q;
         for (std::size_t k = 0; k < nV; ++k)
         {
-            const std::size_t idx = cfg_.volatiles[k];
+            const std::size_t idx = act[k];
             vap[idx] = std::min(V * w[k]/wSum, 0.9995 * n[idx]);
         }
     };
 
     //  The dimerising volatile (at most one in this slice) and its K_dim(T).
     std::size_t dimIdx = nApp; scalar Kd = 0.0;
-    for (const auto appIdx : cfg_.volatiles)
+    for (const auto appIdx : act)
     {
         if (cfg_.nonreactive.count(appIdx)) continue;
         const GasEntry* g = gasFor(appIdx);
@@ -335,7 +353,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     auto trueVapour = [&](const sVector& vap) -> TrueVap
     {
         scalar S = 0.0;
-        for (const auto appIdx : cfg_.volatiles)
+        for (const auto appIdx : act)
             if (appIdx != dimIdx) S += vap[appIdx];
         if (dimIdx == nApp) return { 0.0, 0.0, S };
         const scalar vd = vap[dimIdx];
@@ -375,7 +393,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         sVector r(nV);
         for (std::size_t k = 0; k < nV; ++k)
         {
-            const std::size_t idx = cfg_.volatiles[k];
+            const std::size_t idx = act[k];
             //  TRUE partial pressure of the transferring molecule [atm]:
             //  the dimerising volatile equilibrates through its MONOMER.
             const scalar tK = (idx == dimIdx) ? tv.tMono : vap[idx];
@@ -424,7 +442,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         std::vector<scalar> p(nV, 0.0);
         for (std::size_t k = 0; k < nV; ++k)
         {
-            const std::size_t idx = cfg_.volatiles[k];
+            const std::size_t idx = act[k];
             if (cfg_.nonreactive.count(idx))
             {
                 const std::size_t b = backbonePos(idx);

@@ -451,3 +451,35 @@ loudly.  The element balances (batch campaign, steady `elementBalance`
 report, choupoCtrl ledger, the `elementalComposition` props op) resolve
 formula-first and mark declared-with-unaccounted results PARTIAL.  Keep a
 sample's ultimate analysis in the case's `constant/components/` overlay.
+
+## The three questions a component record answers
+
+Every aqueous-relevant behaviour of a substance is a DECLARED FACT on its
+record — never inferred from its name, never listed per-case.  A student
+(or the ThermoResolver) asks a component exactly three questions:
+
+1. **Does it evaporate?**  `role` (`volatile` default / `solute` /
+   `nonvolatile` / `radical`) plus the presence of a vapour-pressure
+   correlation.  A `nonvolatile` salt has K = 0 in every flash by
+   declaration, not by magic.
+
+2. **Does it participate in the aqueous equilibrium speciation network?**
+   `aqueousSpeciation none;` is the curated fact that it does NOT (ethanol,
+   pKa ≈ 15.9 — negligible at this thermodynamic level);
+   `aqueousSpeciation <setName>;` names its canonical equilibrium set
+   (`ammonia`, `aceticAcid`, ...).  ABSENT means UNKNOWN: harmless in a
+   purely molecular case, REFUSED (with the curation remedy) inside an
+   electrolyte system.  Vapour-phase reactions (the acetic dimer) are NOT
+   part of this fact — they live on the gas-liquid records (phase purity).
+
+3. **Into what?**  `aqueousMapping ( { species X; nu n; } ... );` — the
+   typed, stoichiometric component→species bridge (a salt's legacy
+   `dissociatesTo` converts to the same structure at load).  This is the
+   ONLY crossing between the component and species identity spaces; name
+   identity is never assumed.
+
+The classifier (`src/thermo/SystemClassifier`, surfaced by
+`bin/choupo-resolve` and `choupo-lint`) reads exactly these three answers
+to classify a system — solvent (declared), apparent electrolyte, molecular
+reactive, molecular nonionising, UNKNOWN — and every conclusion is
+announced as a `[resolver]` line the student can check against the records.

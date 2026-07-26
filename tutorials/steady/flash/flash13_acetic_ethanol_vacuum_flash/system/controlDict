@@ -8,7 +8,7 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   flash13_acetic_ethanol_vacuum_flash -- the reactive flash that FLASHES,
-  now on the MIXED-SOLVENT v1 surface.
+  now on the COMPOSITE mixed-solvent electrolyte v1 surface.
 
   flash12's chemistry, volatile-rich (12 % ethanol), pulled to 0.65 atm at
   358.15 K.  The liquid declares `activityModel { ionic davies; molecular

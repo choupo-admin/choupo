@@ -780,7 +780,7 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             std::cout << "[resolver] liquid molecular backbone: NRTL (";
             for (std::size_t bi = 0; bi < bNames.size(); ++bi)
                 std::cout << (bi ? " " : "") << bNames[bi];
-            std::cout << ") -- curated pair records\n"
+            std::cout << ") -- curated pair records (composite mixed-solvent electrolyte v1)\n"
                          "[resolver] ions: Davies on water-referenced"
                          " molality (mixed-solvent transfer term: named"
                          " gap)\n";

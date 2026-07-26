@@ -44,10 +44,11 @@ equilibrium
     aqueous
     {
         solvent       water;                 // the DECLARED aqueous solvent
-        // mixed-solvent v1: Davies on the ions (water-referenced molality),
-        // the FULL curated NRTL pair on the molecular backbone (water,
-        // ethanol) -- never a gammaInfinity constant.  The network K's stay
-        // water-referenced; the transfer term is the named next slice.
+        // composite mixed-solvent electrolyte v1: Davies ions (water-referenced
+        // molality) + the FULL curated NRTL pair on the molecular backbone
+        // -- a COMPOSITE, not an integrated Gibbs surface: no ion-molecule
+        // cross terms, K's water-referenced (transfer term = named gap).
+        // Its limits are PROVEN by check_composite_limits every sweep.
         activityModel { ionic davies;  molecular NRTL; }
         speciation    { masters ( Acetate  NH4 ); }
     }
