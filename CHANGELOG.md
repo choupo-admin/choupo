@@ -25,12 +25,23 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
   diagnostics now cover 6 families (CH4 49%, O2 43%, N2 41%, H2 31%,
   CO2 29%, NH3 13% worst-dev -- independent primaries, findings not
   errors).
-* **D6 primary-review dossier**: `bin/curate/interim_review_dossier.py`
-  generates `generated/interimReviewDossier.md` -- coverage of the
-  gas-liquid families (comparable / one-home-only / identity-mismatched),
-  per-family T-scans with per-point validity marks (within / boundary /
-  EXTRAPOLATED / domain UNDECLARED), and the 47-record pending-primary
-  inventory.  Nothing promotes automatically.
+* **D6 primary-review dossier** (v2, six ratified corrections):
+  `bin/curate/interim_review_dossier.py` generates
+  `generated/interimReviewDossier.md` -- DISJOINT coverage categories
+  (A directly-comparable / B identities-differ (composite kept apart) /
+  C Sander-only / D network-only / E unresolved) with family vs
+  parameterisation totals; typed-identity resolution through DECLARED
+  mappings only (aceticAcid ~ CH3COOH via the Acetate+H bridge -> a 7th
+  comparable family at 28.6% worst dev; H2S = composite/fused, direct
+  comparison unavailable); route vocabulary (not everything is "Henry":
+  infinite-dilution solute / solvent vapour / reactive molecular /
+  composite); numeric validity marks with declared 5 K near-boundary
+  presentation tolerance (373.15 K IS outside 273-373); deviation
+  summaries split known-valid intersection vs full common scan range
+  (PHREEQC domains undeclared = curation debt, said so); structured
+  review metadata (reviewStatus/reviewReason/reviewOwner) preferred with
+  announced text-marker fallback, migrated on touch.  Nothing promotes
+  automatically.
 * **D3 ADR committed** (contract only): the standard-state transfer
   correction -- conceptual interface, Delta-mu-transfer output (never an
   ambiguous factor), named-gap present state, non-assumptions, and the

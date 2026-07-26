@@ -31,3 +31,10 @@ vapourDimerisation
     dH      -58500;
     source  "Chao & Zwolinski, J. Phys. Chem. Ref. Data 7 (1978) 363 (acetic acid vapour association) -- INTERIM: primary re-check pending (IST review)";
 }
+
+// Structured review metadata (D6 v2, 2026-07-26): preferred over the
+// free-text INTERIM marker above; records gain this block when touched or
+// reviewed (no mega-wave).  `reviewStatus interim;` blocks promotion.
+reviewStatus interim;
+reviewReason ( primarySourceRecheck );
+reviewOwner  IST;

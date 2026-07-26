@@ -98,6 +98,42 @@ def normGas(tok):
     return owners[0] if len(owners) == 1 else tok
 
 
+# Declared-mapping equivalence for the DISSOLVED token (D6 v2, 2026-07-26):
+# a dissolved species LABEL (`ion "..."` in the aqueous formation registry)
+# normalises to the component whose declared aqueousMapping master multiset
+# equals the species' declared masters (z = 0) -- the typed stoichiometric
+# bridge, never lexical similarity (aceticAcid ~ CH3COOH via Acetate+H).
+compMapping = {}
+for c in sorted((STD / "components").glob("*.dat")):
+    tc = strip(c.read_text())
+    am = re.findall(r'\{\s*species\s+([A-Za-z0-9_]+)\s*;\s*nu\s+(\d+)', tc)
+    if am:
+        compMapping[c.stem] = tuple(sorted((s, int(n)) for s, n in am))
+labelMasters = {}
+for c in sorted((STD / "chemistry").glob("*.dat")):
+    raw = c.read_text()
+    if "recordType aqueousSpeciation;" not in raw:
+        continue
+    tc = strip(raw)
+    ion = re.search(r'\bion\s+"([^"]+)"\s*;', tc)
+    z = re.search(r'\bz\s+(-?\d+)\s*;', tc)
+    ms = re.findall(r'\{\s*ion\s+([A-Za-z0-9_]+)\s*;\s*nu\s+(\d+)', tc)
+    if ion and (not z or int(z.group(1)) == 0) and ms:
+        labelMasters[ion.group(1)] = tuple(sorted((m, int(n))
+                                                  for m, n in ms))
+
+
+def normDissolved(tok):
+    if tok in compNames or "+" in tok:
+        return tok
+    masters = labelMasters.get(tok)
+    if masters:
+        owners = [c for c, m in compMapping.items() if m == masters]
+        if len(owners) == 1:
+            return owners[0]
+    return tok
+
+
 for p in sorted((STD / "chemistry").glob("*.dat")):
     if "recordType gasLiquidEquilibrium;" not in p.read_text():
         continue
@@ -110,16 +146,19 @@ for p in sorted((STD / "chemistry").glob("*.dat")):
     sv = re.search(r'^\s*solvent\s+(\S+)\s*;', t, re.M)
     src = re.search(r'source\s+"([^"]+)"', t)
     k25 = re.search(r'logK25\s+(-?[\d.eE+-]+)', t)
+    dHk = re.search(r'\bdH\s+(-?[\d.eE+-]+)\s*;', t)
     ana = re.search(r'analytic\s*\(\s*([^)]*)\)', t)
     if not (gs and ds and sv):
         bad.append(f"chemistry/{p.name}: declares a convention but not the"
                    f" full typed identity")
         continue
     params.append(dict(fam=(normGas(gs.group(1)),
-                            ds.group(1).strip('"'), sv.group(1)),
+                            normDissolved(ds.group(1).strip('"')),
+                            sv.group(1)),
                        conv=conv.group(1), src=(src.group(1) if src else "?"),
                        home=f"chemistry/{p.name}",
                        logK25=float(k25.group(1)) if k25 else None,
+                       dHk=float(dHk.group(1)) if dHk else None,
                        ana=[float(x) for x in ana.group(1).split()] if ana
                            else None))
 
@@ -160,6 +199,10 @@ for fam, qs in fams.items():
                                    + c[3]*math.log10(T) + c[4]/T**2
                                    + c[5]*T*T)
                     return b["logK25"] + f(T) - f(298.15)
+                if b.get("dHk") is not None:      # van't Hoff fallback
+                    return b["logK25"] \
+                        - (b["dHk"] / (math.log(10.0) * 8.314462618)) \
+                          * (1.0/T - 1.0/298.15)
                 return b["logK25"]
             def Hx_sander(T):
                 # ln H_xp = A + B/T with B = enthalpy/R (the pair records'
@@ -176,7 +219,7 @@ for fam, qs in fams.items():
             worst = max(r[3] for r in rows) if rows else float("nan")
             info.append(f"family {fam[0]}(g)={fam[1]}(aq) in {fam[2]}: "
                         f"{a['home']} vs {b['home']} -- worst rel dev "
-                        f"{worst:.1%} over common domain "
+                        f"{worst:.1%} over the common scan range "
                         f"(independent primaries: DIAGNOSTIC, not error)")
             sameSrc = a["src"].split("(")[0].strip() \
                       == b["src"].split("(")[0].strip()

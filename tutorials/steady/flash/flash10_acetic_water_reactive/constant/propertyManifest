@@ -35,9 +35,9 @@ propertyManifest
         "chemistry/aceticAcid-dissolution.dat"
         {
             type          imported;
-            sha256        "35ea9b9bdd988b35d6b690d6151ea6df4e623f53f2e8796b85c216c950cb9b69";
+            sha256        "b5d651fb9dcabe74aea935ef1126faa1420f6262ef264225b2f40c38ed82b7ac";
             origin        "data/standards/chemistry/aceticAcid-dissolution.dat";
-            originSha256  "4781c7fed253c25ef57c4b808c30e7427da18426f3c08af1722c4cfc56f68d37";
+            originSha256  "9ecd5a12f31ce7ed92276a31fac5a6cb5a69fab673d656b60fe7fe054087d44a";
             release       Choupo-2607;
         }
         "chemistry/water-dissociation.dat"

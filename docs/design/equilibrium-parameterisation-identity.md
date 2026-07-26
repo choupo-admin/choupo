@@ -103,3 +103,38 @@ The transfer-term grammar (D3 — contract only:
 unavailable -> named announced gap); any new folder layout for
 parameterisations; any migration of the existing 206 + 8 records.  Those
 start only after this design is exercised by the first migrated pair.
+
+## Addendum — executed + D6 v2 refinements (2026-07-26, ratified)
+
+The closed migration EXECUTED: 205 Henry pairs + 9 chemistry gas-liquid
+records canonical (`bin/curate/migrate_henry_identity.py`,
+`check_legacy_schema`); the legacy adapter lives at the loader boundary
+only.  Two rules added by the D6 v2 ratification:
+
+**Identity resolution through declared mappings.**  Two dissolved-side
+tokens are the SAME identity iff (a) they are token-equal after
+normalising gas tokens through the components' declared `formula`, or
+(b) one is a component and the other a species label whose declared
+`masters` multiset equals the component's declared `aqueousMapping`
+(z = 0) — the typed stoichiometric bridge (aceticAcid ~ CH3COOH via
+Acetate+H).  A dissolved side with several species ("H+ + HS-") is a
+COMPOSITE/FUSED equilibrium — never directly comparable; a future
+comparison decomposes thermodynamically through the molecular species'
+formation record, never lexically.  Anything else is UNRESOLVED and a
+curation finding.
+
+**Structured review metadata.**  Pending-primary status moves from
+free-text markers to record fields, migrated on touch/review (no
+mega-wave):
+
+    reviewStatus interim;
+    reviewReason ( primarySourceMissing | primarySourceRecheck
+                 | proxyValue | extrapolationPending );
+    reviewOwner  IST;
+
+The D6 dossier prefers the structured form, announces text-only
+detections as legacy fallback, and a record with `reviewStatus interim;`
+is not promotable.  Route vocabulary: gas-liquid parameterisations are
+NOT all "Henry" — Henry/infinite-dilution solute · condensable solvent
+vapour equilibrium · reactive molecular gas-liquid · composite
+gas-liquid + aqueous reaction.
