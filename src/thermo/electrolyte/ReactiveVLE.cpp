@@ -240,43 +240,79 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     //  One residual evaluation = one inner speciation solve.
     const std::size_t nV = cfg_.volatiles.size();
     SpeciationResult srLast;
-    // Unknowns: (ln V, logit y_1) -- the CLASSICAL flash coordinates.  The
-    // first cut used (v_1, v_2) directly and its Jacobian was near-singular
-    // at small V (the vapour RATIO carries all the sensitivity, the AMOUNT
-    // almost none -- det ~ 1e-4 and the step exploded).  With (V, y) the
-    // amount couples through liquid DEPLETION (strong, well-conditioned)
-    // and Sigma y = 1 is built into the parametrisation.
+    // Unknowns: (ln V, softmax odds z_1..z_{m-1}) -- the CLASSICAL flash
+    // coordinates, generalised to m volatiles (2026-07-26; the 2-volatile
+    // logit is the m = 2 special case).  The first cut used raw (v_1, v_2)
+    // and its Jacobian was near-singular at small V (the vapour RATIO
+    // carries all the sensitivity, the AMOUNT almost none); with (V, y) the
+    // amount couples through liquid DEPLETION and Sigma y = 1 is built into
+    // the parametrisation.  y_k = exp(z_k)/Sigma exp(z_j), z_m = 0 pinned.
     scalar nTot = 0.0; for (auto x : n) nTot += x;
     auto unpack = [&](const sVector& u, sVector& vap)
     {
         vap.assign(nApp, 0.0);
         const scalar V  = std::min(std::exp(u[0]), 0.999*nTot);
-        const scalar y1 = (nV == 2) ? 1.0/(1.0 + std::exp(-u[1])) : 1.0;
-        const scalar yk[2] = { y1, 1.0 - y1 };
+        std::vector<scalar> w(nV, 1.0);              // z_{m-1} = 0 reference
+        scalar wSum = 0.0;
+        for (std::size_t k = 0; k + 1 < nV; ++k) w[k] = std::exp(u[k+1]);
+        for (auto q : w) wSum += q;
         for (std::size_t k = 0; k < nV; ++k)
         {
             const std::size_t idx = cfg_.volatiles[k];
-            vap[idx] = std::min(V * yk[k], 0.9995 * n[idx]);
+            vap[idx] = std::min(V * w[k]/wSum, 0.9995 * n[idx]);
         }
     };
+
+    //  The dimerising volatile (at most one in this slice) and its K_dim(T).
+    std::size_t dimIdx = nApp; scalar Kd = 0.0;
     for (const auto appIdx : cfg_.volatiles)
     {
-        if (cfg_.nonreactive.count(appIdx))
-            throw std::runtime_error("ReactiveVLE: nonreactive molecular"
-                " volatile '" + cfg_.apparent[appIdx] + "' is priced by ideal"
-                " Raoult only in the saturation check (single-liquid regime)"
-                " in this slice.  A TWO-PHASE reactive flash carrying a"
-                " molecular co-volatile is a later, deliberate slice (the"
-                " mixed-solvent model) -- no silent approximation is run.");
-        if (gasFor(appIdx)->hasDimer)
-            throw std::runtime_error("ReactiveVLE: volatile '"
-                + cfg_.apparent[appIdx] + "' declares vapour dimerisation,"
-                  " which this slice prices only in the saturation check"
-                  " (single-liquid regime).  A TWO-PHASE reactive flash with"
-                  " a dimerising vapour re-weights the vapour mole balance"
-                  " (apparent moles = n_mono + 2 n_dim) and is a later,"
-                  " deliberate slice -- no silent approximation is run.");
+        if (cfg_.nonreactive.count(appIdx)) continue;
+        const GasEntry* g = gasFor(appIdx);
+        if (!g->hasDimer) continue;
+        if (dimIdx != nApp)
+            throw std::runtime_error("ReactiveVLE: two dimerising volatiles"
+                " -- this slice re-weights the vapour balance for ONE"
+                " (cross-association is a later, deliberate slice).");
+        dimIdx = appIdx;
+        Kd = std::pow(10.0, g->dimLogK25
+                 - (g->dimDH / (std::log(10.0) * 8.31446))
+                   * (1.0/T_K - 1.0/298.15));
     }
+
+    //  TRUE vapour composition under dimerisation: the apparent vaporised
+    //  moles of the dimerising volatile split as v_d = t_mono + 2 t_dim,
+    //  with the vapour-phase equilibrium p_dim = K_dim p_mono^2 (partial
+    //  pressures over the TRUE mole count tau = S + t_mono + t_dim, S = the
+    //  other volatiles' moles).  g(t_mono) = (v_d - t_mono)/2
+    //  - K_dim P t_mono^2 / tau is monotone with a bracketed sign change --
+    //  bisection is exact enough and never escapes (0, v_d].
+    struct TrueVap { scalar tMono, tDim, tau; };
+    auto trueVapour = [&](const sVector& vap) -> TrueVap
+    {
+        scalar S = 0.0;
+        for (const auto appIdx : cfg_.volatiles)
+            if (appIdx != dimIdx) S += vap[appIdx];
+        if (dimIdx == nApp) return { 0.0, 0.0, S };
+        const scalar vd = vap[dimIdx];
+        if (vd <= 0.0) return { 0.0, 0.0, S };
+        const scalar Patm = P_Pa / kAtm;
+        auto g = [&](scalar tm)
+        {
+            const scalar tau = S + tm + (vd - tm)/2.0;
+            return (vd - tm)/2.0 - Kd * Patm * tm*tm / std::max(tau, 1e-300);
+        };
+        scalar lo = 0.0, hi = vd;
+        for (int b = 0; b < 80; ++b)
+        {
+            const scalar mid = 0.5*(lo + hi);
+            (g(mid) > 0.0 ? lo : hi) = mid;
+        }
+        const scalar tm = 0.5*(lo + hi);
+        const scalar td = (vd - tm)/2.0;
+        return { tm, td, S + tm + td };
+    };
+
     auto residual = [&](const sVector& u) -> sVector
     {
         sVector vap; unpack(u, vap);
@@ -288,14 +324,28 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         try { speciate(vap, srLast); }
         catch (const std::exception&)
         { return sVector(nV, 1.0e6); }
-        scalar vTot = 0.0;
-        for (const auto appIdx : cfg_.volatiles) vTot += vap[appIdx];
+        const TrueVap tv = trueVapour(vap);
+        const scalar tau = std::max(tv.tau, 1.0e-300);
+        scalar lTot = 0.0;
+        for (std::size_t i = 0; i < nApp; ++i) lTot += n[i] - vap[i];
         sVector r(nV);
         for (std::size_t k = 0; k < nV; ++k)
         {
             const std::size_t idx = cfg_.volatiles[k];
-            const scalar y  = vap[idx] / std::max(vTot, 1.0e-300);
-            const scalar pA = y * P_Pa / kAtm;                    // [atm]
+            //  TRUE partial pressure of the transferring molecule [atm]:
+            //  the dimerising volatile equilibrates through its MONOMER.
+            const scalar tK = (idx == dimIdx) ? tv.tMono : vap[idx];
+            const scalar pA = (tK / tau) * P_Pa / kAtm;
+            if (cfg_.nonreactive.count(idx))
+            {
+                //  Authorised ideal molecular VLE: x * psat = p  (gamma = 1
+                //  within the one declared aqueous surface, announced).
+                const scalar x = (n[idx] - vap[idx]) / std::max(lTot, 1e-300);
+                const scalar pR = x * cfg_.psatOf.at(idx)(T_K) / kAtm;
+                r[k] = std::log(std::max(pR, 1.0e-300))
+                     - std::log(std::max(pA, 1.0e-300));
+                continue;
+            }
             const scalar K  = std::pow(10.0, gasLogK(*gasFor(idx), T_K));
             r[k] = std::log(std::max(dissolvedActivity(idx, srLast), 1.0e-300))
                  - std::log(std::max(K * pA, 1.0e-300));
@@ -312,26 +362,40 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     { scalar s = 0; for (auto v : r) s += v*v; return std::sqrt(s); };
     sVector u(nV, 0.0);
     u[0] = std::log(0.02 * nTot);
-    if (nV == 2)
     {
         // PHYSICAL seed: speciate the un-vaporised feed once and start the
-        // vapour ratio from the equilibrium partial pressures p_k = a_k/K_k
-        // -- the Raoult-like estimate the announce block already prints.  The
-        // old feed-RATIO seed put a barely-volatile solute (acetic acid,
-        // y ~ 1e-3) three decades from its solution and the damped Newton
-        // stalled against the near-dry cage.
+        // apparent vapour ratio from the equilibrium partial pressures --
+        // p_k = a_k/K_k for the network volatiles (the dimerising one adds
+        // 2 p_dim: two apparent moles ride each dimer), x*psat for the
+        // authorised molecular co-volatile.  The old feed-RATIO seed put a
+        // barely-volatile solute (acetic, y ~ 1e-3) three decades from its
+        // solution and the damped Newton stalled against the near-dry cage.
         sVector vap0(nApp, 0.0);
         speciate(vap0, srLast);
-        scalar p[2] = { 0.0, 0.0 };
-        for (std::size_t k = 0; k < 2; ++k)
+        std::vector<scalar> p(nV, 0.0);
+        scalar lT0 = 0.0; for (auto q : n) lT0 += q;
+        for (std::size_t k = 0; k < nV; ++k)
         {
             const std::size_t idx = cfg_.volatiles[k];
+            if (cfg_.nonreactive.count(idx))
+            {
+                p[k] = (n[idx]/lT0) * cfg_.psatOf.at(idx)(T_K) / kAtm;
+                continue;
+            }
             const scalar K = std::pow(10.0, gasLogK(*gasFor(idx), T_K));
             p[k] = dissolvedActivity(idx, srLast) / std::max(K, 1.0e-300);
+            if (idx == dimIdx)
+                p[k] += 2.0 * Kd * p[k] * p[k];      // apparent moles / dimer
         }
-        const scalar y1seed = std::min(1.0 - 1.0e-6, std::max(1.0e-6,
-            p[0] / std::max(p[0] + p[1], 1.0e-300)));
-        u[1] = std::log(y1seed/(1.0 - y1seed));
+        scalar pSum = 0.0; for (auto q : p) pSum += q;
+        for (std::size_t k = 0; k + 1 < nV; ++k)
+        {
+            const scalar yk = std::min(1.0 - 1e-6,
+                std::max(1e-9, p[k] / std::max(pSum, 1e-300)));
+            const scalar ym = std::min(1.0 - 1e-6,
+                std::max(1e-9, p[nV-1] / std::max(pSum, 1e-300)));
+            u[k+1] = std::log(yk / ym);              // odds vs the reference
+        }
     }
     const scalar uLo = -30.0, uHi = 30.0;
     sVector r = residual(u);
@@ -356,30 +420,48 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             for (std::size_t i = 0; i < nV; ++i)
                 J[i][j] = (rp[i] - r[i]) / h;
         }
-        // Solve J du = -r  (2x2 direct; general small-n Gauss otherwise)
+        // Solve J du = -r  (small-n Gauss with partial pivoting -- the
+        // outer system is m x m, m = number of volatiles).
         sVector du(nV, 0.0);
-        if (nV == 1) du[0] = -r[0] / J[0][0];
-        else if (nV == 2)
         {
-            const scalar det = J[0][0]*J[1][1] - J[0][1]*J[1][0];
-            if (std::abs(det) < 1.0e-300)
-                throw std::runtime_error("ReactiveVLE: singular outer"
-                    " Jacobian -- the phase-equilibrium system is"
-                    " degenerate at this state.");
-            du[0] = (-r[0]*J[1][1] + r[1]*J[0][1]) / det;
-            du[1] = (-r[1]*J[0][0] + r[0]*J[1][0]) / det;
+            std::vector<sVector> A = J;
+            sVector b(nV);
+            for (std::size_t i = 0; i < nV; ++i) b[i] = -r[i];
+            for (std::size_t c = 0; c < nV; ++c)
+            {
+                std::size_t piv = c;
+                for (std::size_t i2 = c+1; i2 < nV; ++i2)
+                    if (std::abs(A[i2][c]) > std::abs(A[piv][c])) piv = i2;
+                std::swap(A[c], A[piv]); std::swap(b[c], b[piv]);
+                if (std::abs(A[c][c]) < 1.0e-300)
+                    throw std::runtime_error("ReactiveVLE: singular outer"
+                        " Jacobian -- the phase-equilibrium system is"
+                        " degenerate at this state.");
+                for (std::size_t i2 = c+1; i2 < nV; ++i2)
+                {
+                    const scalar f = A[i2][c] / A[c][c];
+                    for (std::size_t j2 = c; j2 < nV; ++j2)
+                        A[i2][j2] -= f * A[c][j2];
+                    b[i2] -= f * b[c];
+                }
+            }
+            for (std::size_t i2 = nV; i2-- > 0; )
+            {
+                scalar s = b[i2];
+                for (std::size_t j2 = i2+1; j2 < nV; ++j2)
+                    s -= A[i2][j2] * du[j2];
+                du[i2] = s / A[i2][i2];
+            }
         }
-        else
-            throw std::runtime_error("ReactiveVLE: this slice solves up to"
-                " 2 volatiles (found " + std::to_string(nV) + ").");
         if (verbosity >= 4)
         {
-            std::cout << "    r  = (" << r[0] << (nV > 1 ? ", " : "")
-                      << (nV > 1 ? std::to_string(r[1]) : "") << ")\n    J  = ["
-                      << J[0][0] << (nV > 1 ? " " + std::to_string(J[0][1]) : "");
-            if (nV > 1) std::cout << "; " << J[1][0] << " " << J[1][1];
-            std::cout << "]\n    du = (" << du[0]
-                      << (nV > 1 ? ", " + std::to_string(du[1]) : "") << ")\n";
+            std::cout << "    r  = (";
+            for (std::size_t i2 = 0; i2 < nV; ++i2)
+                std::cout << (i2 ? ", " : "") << r[i2];
+            std::cout << ")\n    du = (";
+            for (std::size_t i2 = 0; i2 < nV; ++i2)
+                std::cout << (i2 ? ", " : "") << du[i2];
+            std::cout << ")\n";
         }
         // TRUST-REGION clamp before the line search: near the bubble point
         // the residual is almost flat along ln V (J00 ~ -V/L), so a raw
@@ -430,6 +512,27 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     }
     res.V_over_F     = vTot / (vTot + lTot);
     res.pEqSumAtm    = P_Pa / kAtm;      // two-phase: vapour partials sum to P
+    //  TRUE vapour bookkeeping at the answer: monomer/dimer partial
+    //  pressures, the co-volatile's contribution, and the dimer moles that
+    //  price the vapour-enthalpy correction (exact: h_dim = 2 h_mono + dH).
+    {
+        const TrueVap tvF = trueVapour(vap);
+        if (tvF.tau > 0.0)
+        {
+            if (dimIdx != nApp)
+            {
+                res.dimerOn   = true;
+                res.pMonoAtm  = tvF.tMono / tvF.tau * P_Pa / kAtm;
+                res.pDimerAtm = tvF.tDim  / tvF.tau * P_Pa / kAtm;
+                res.vapDimerMolPerMolFeed = tvF.tDim / std::max(nTot, 1e-300);
+                res.dimDH_J   = gasFor(dimIdx)->dimDH;
+            }
+            for (const auto appIdx : cfg_.volatiles)
+                if (cfg_.nonreactive.count(appIdx))
+                    res.pMolecularAtm[cfg_.apparent[appIdx]] =
+                        vap[appIdx] / tvF.tau * P_Pa / kAtm;
+        }
+    }
     res.trueState    = srLast;
     res.pH           = srLast.pH;
     res.resPhaseMax  = rMax;

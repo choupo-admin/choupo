@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  One isothermal VACUUM flash, four components, REAL vapour flow:
+
+      feed (2 HAc + 1 NH3 + 12 EtOH + 85 H2O, kmol/h)
+        -> [flash01, 358.15 K / 0.65 atm]
+        -> liquid (58.5 kmol/h, pH 4.88) + vapor (41.5 kmol/h)
+
+  The pressure sits mid-way through the ethanol depletion window (bubble
+  0.70 atm for this feed): enough vacuum to strip ethanol and water, not so
+  much that the liquid is wrung dry.  The vapour balance carries the acetic
+  dimer explicitly (v_HAc = t_mono + 2 t_dim, K_dim(T) van't Hoff) and the
+  buffer chemistry keeps the ammonia liquid-bound.  KPIs: pH, p_mono_atm,
+  p_dimer_atm, dimer_share, p_ethanol_atm, p_eq_sum_atm (= P, two-phase).
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T      358.15 K;  P 0.65 atm; }
+    }
+);

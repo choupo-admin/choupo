@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash13_acetic_ethanol_vacuum_flash -- the reactive flash that FLASHES.
+
+  flash12's chemistry with a volatile-rich feed (12 % ethanol) pulled under
+  vacuum: at 358.15 K / 0.65 atm the two-phase reactive slice solves the
+  COUPLED system -- speciation + electroneutrality + gas-liquid transfer +
+  the acetic vapour DIMER re-weighting the vapour mole balance (apparent
+  moles = n_mono + 2 n_dim) + ethanol's authorised ideal Raoult leg -- in
+  one Newton over (ln V, vapour-odds), 13 iterations, quadratic tail.
+
+  What the student sees: V/F = 0.415; ethanol enriches into the vapour
+  (y = 0.169 vs x_feed = 0.12); the BUFFER HOLDS THE AMMONIA -- 99.97 % of
+  the NH3 stays in the liquid as NH4+ (y_NH3 = 3e-4) while the molecular
+  acid escapes and the liquid pH rises 4.62 -> 4.88; the vapour dimer share
+  is 12 % and its association heat (-0.74 kW) is priced EXACTLY into the
+  duty (h_dim = 2 h_mono + dH).  Sum of vapour partials = P identically.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description  "Reactive VACUUM flash, two-phase: V/F = 0.42 at 358.15 K / 0.65 atm -- ethanol strips, the buffer holds the ammonia (y_NH3 = 3e-4), dimer re-weights the vapour balance, association heat priced";
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

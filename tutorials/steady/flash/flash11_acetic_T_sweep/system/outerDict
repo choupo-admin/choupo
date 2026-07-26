@@ -14,9 +14,10 @@
   publishes, never a number the driver computes for itself.
 
   The upper bound stays below saturation on purpose (368.15 K gives
-  sum p_eq = 0.836 atm < 1 atm): past the bubble point a dimerising
-  vapour re-weights the vapour mole balance and the engine REFUSES the
-  two-phase reactive flash by name (flash10's header documents it).
+  sum p_eq = 0.836 atm < 1 atm): this sweep's lesson is the SUBSATURATED
+  chemistry answering T.  Past the bubble point the dimer re-weights the
+  vapour mole balance -- the two-phase regime is its own lesson
+  (flash13_acetic_ethanol_vacuum_flash).
 \*---------------------------------------------------------------------------*/
 
 type        sweep;

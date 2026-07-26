@@ -82,6 +82,12 @@ struct FlashSolution
     // reactive package adds pH / p_eq_sum_atm / p_mono_atm / p_dimer_atm
     // so sweeps and outer drivers can read the chemistry acting with T).
     std::map<std::string, scalar> extraKpis;
+
+    // Vapour-dimerisation enthalpy correction [J per mol FEED]: the
+    // apparent (monomer-basis) vapour enthalpy plus this term is the TRUE
+    // vapour enthalpy (h_dim = 2 h_mono + dH exactly) -- added to the duty,
+    // announced, never silently monomer-priced.
+    scalar dimerHeat_J_per_molFeed = 0.0;
 };
 
 enum class OuterAccelerator { DirectSubstitution, Wegstein };

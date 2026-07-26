@@ -150,6 +150,14 @@ struct ReactiveVLEResult
     // Ideal-Raoult contribution of each authorised nonreactive molecular
     // volatile, [atm] -- KPI-bound as p_<component>_atm.
     std::map<std::string, scalar> pMolecularAtm;
+
+    // Two-phase dimer accounting (the re-weighted vapour balance,
+    // 2026-07-26): TRUE dimer moles per mole of FEED, and the association
+    // enthalpy [J/mol dimer] -- the vapour's true enthalpy is the apparent
+    // (monomer-basis) enthalpy plus tDim*dH exactly (h_dim = 2 h_mono + dH),
+    // so the flash duty is CORRECTED, never silently monomer-priced.
+    scalar vapDimerMolPerMolFeed = 0.0;
+    scalar dimDH_J               = 0.0;
 };
 
 class ReactiveVLE

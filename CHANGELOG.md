@@ -74,7 +74,19 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
   co-volatile (`p_ethanol_atm` KPI) -- three speciating actors, four
   volatiles, dimer priced, subsaturated, sealed; `choupo-resolve --draft`
   regenerates its declared dict from the feed.
-* Thirteen new curation gates in `runTests` (311 PASS / 0 FAIL).
+* **The two-phase reactive slice**: the coupled Newton generalises to n
+  volatiles ((ln V, softmax vapour odds); the 2-volatile logit is the m = 2
+  case), the acetic VAPOUR DIMER re-weights the vapour mole balance
+  explicitly (v_HAc = t_mono + 2 t_dim, monotone inner reduction) and its
+  association enthalpy is priced EXACTLY into the flash duty
+  (h_dim = 2 h_mono + dH, announced); the authorised molecular co-volatile
+  carries its ideal-Raoult leg inside the same Newton.  New tutorial
+  `flash13_acetic_ethanol_vacuum_flash`: V/F = 0.415 at 358.15 K/0.65 atm,
+  ethanol strips (y = 0.169), the buffer HOLDS the ammonia (y_NH3 = 3e-4,
+  99.97 % liquid-bound as NH4+), liquid pH rises 4.62 -> 4.88.  flash10/12
+  stay subsaturated by design (their single-liquid lessons); the stale
+  "refused" wording is swept.
+* Thirteen new curation gates in `runTests` (312 PASS / 0 FAIL).
 
 ## [Unreleased]
 

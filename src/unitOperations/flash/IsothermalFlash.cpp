@@ -101,6 +101,8 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         sol.extraKpis["p_eq_sum_atm"] = r.pEqSumAtm;
         for (const auto& [nm, pI] : r.pMolecularAtm)
             sol.extraKpis["p_" + nm + "_atm"] = pI;
+        sol.dimerHeat_J_per_molFeed =
+            r.vapDimerMolPerMolFeed * r.dimDH_J;
         if (r.dimerOn)
         {
             sol.extraKpis["p_mono_atm"]  = r.pMonoAtm;
@@ -1166,6 +1168,18 @@ int IsothermalFlash::solve(const DictPtr& dict,
                 H_in = thermo.Hliquid(T_feed, in.z, T_feed);   // sensible datum @ T_feed
         }
         Q_W = in.F * 1000.0 * (H_out - H_in);                // kmol/s -> mol/s; J/mol -> W
+        if (sol.dimerHeat_J_per_molFeed != 0.0)
+        {
+            //  Vapour dimerisation: the association enthalpy is EXACTLY
+            //  priceable on top of the apparent (monomer-basis) vapour
+            //  enthalpy -- included, announced.
+            Q_W += in.F * 1000.0 * sol.dimerHeat_J_per_molFeed;
+            if (opts.verbosity >= 2)
+                std::cout << "  [duty] vapour dimer association heat"
+                             " included: "
+                          << in.F * sol.dimerHeat_J_per_molFeed
+                          << " kW (h_dim = 2 h_mono + dH, exact)\n";
+        }
         Q_valid = std::isfinite(Q_W);
         if (!Q_valid) Q_gap = "enthalpy evaluated non-finite";
     }
