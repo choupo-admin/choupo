@@ -10,6 +10,39 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
 
 ## Choupo-dev (2026-07-25/26)
 
+* **D2 closed migration EXECUTED** (identity per parameterisation): all
+  205 `parameters/Henry/` pairs carry the typed identity (gasSpecies /
+  dissolvedSpecies / convention `Sander-Hxp-v1`) -- 204 by the audited
+  curation script `bin/curate/migrate_henry_identity.py` (deterministic,
+  idempotent, fail-closed; reactive/acid/base solutes via an explicit
+  reviewed exception table, never name similarity); the 9 chemistry
+  gas-liquid records are canonical schemaVersion 2 (gasSpecies /
+  dissolvedSpecies / solvent / convention `PHREEQC-gasMolal-v1`).  The
+  loader keeps a LEGACY ADAPTER strictly at its boundary (old external
+  cases convert in memory, announced, re-import recommended; never written
+  back); `check_legacy_schema` proves the dev corpus canonical (standards +
+  sealed mirrors); 13 sealed cases re-imported.  Cross-convention
+  diagnostics now cover 6 families (CH4 49%, O2 43%, N2 41%, H2 31%,
+  CO2 29%, NH3 13% worst-dev -- independent primaries, findings not
+  errors).
+* **D6 primary-review dossier**: `bin/curate/interim_review_dossier.py`
+  generates `generated/interimReviewDossier.md` -- coverage of the
+  gas-liquid families (comparable / one-home-only / identity-mismatched),
+  per-family T-scans with per-point validity marks (within / boundary /
+  EXTRAPOLATED / domain UNDECLARED), and the 47-record pending-primary
+  inventory.  Nothing promotes automatically.
+* **D3 ADR committed** (contract only): the standard-state transfer
+  correction -- conceptual interface, Delta-mu-transfer output (never an
+  ambiguous factor), named-gap present state, non-assumptions, and the
+  seven conditions for any future implementation
+  (`docs/design/standard-state-transfer-adr.md`).
+* **flash12 audit closed**: the thermoPhysPropDict now declares the
+  DELIBERATE pedagogical override (composite mixed-solvent v1 is available;
+  flash12 stays the ideal reference vs flash13) with a declared `reason`
+  announced by the resolver; aceticAcid.dat's obsolete dimerisation note
+  corrected (vapour association is not a pure-component property; it lives
+  on the gas-liquid record); subsaturated reactive KPIs announced as the
+  INCIPIENT vapour of the saturation check.
 * **choupo-lint** (`choupoSolve --lint`): validate a case without solving it.
 * **Sequential-plan contract**: declared order + tears validated at the
   flatten seam; six named refusals; non-converged recycle exits 1.

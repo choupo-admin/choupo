@@ -372,6 +372,30 @@ check_resolver_coherence.  Reference cases:
 `flash13_acetic_ethanol_vacuum_flash` (NRTL backbone, V/F 0.58 -- the gamma
 is the difference between a flash and no flash).
 
+### Equilibrium-parameterisation identity — D2 migration EXECUTED 2026-07-26 (do NOT relitigate)
+
+Identity is per curated PARAMETERISATION; the physical family is DERIVED
+from typed references (`gasSpecies`/`dissolvedSpecies`/`solvent`) + a
+versioned immutable convention profile (`conventions/Sander-Hxp-v1`,
+`PHREEQC-gasMolal-v1`) — full ADR
+`docs/design/equilibrium-parameterisation-identity.md`.  The CLOSED
+migration is DONE: all 205 `parameters/Henry/` pairs typed
+(`bin/curate/migrate_henry_identity.py` — deterministic, idempotent,
+fail-closed, explicit exception table for reactive/acid/base solutes,
+NEVER name/formula similarity), the 9 chemistry gas-liquid records are
+canonical `schemaVersion 2` (legacy `gas`/`dissolved` keys are GONE from
+the dev corpus).  The loader keeps a legacy adapter STRICTLY at its
+boundary (converted in memory, announced `[legacy] … re-import
+recommended`, never written back); `check_legacy_schema` refuses legacy
+schema anywhere in standards or sealed mirrors.  Cross-convention
+comparisons are curation DIAGNOSTICS (independent primaries = finding;
+same-source disagreement = the only error).  The D6 review dossier
+(`bin/curate/interim_review_dossier.py` → `generated/interimReviewDossier.md`)
+carries coverage + per-point validity marks; INTERIM promotion is Vítor's
+primary review ALONE.  The transfer-term contract (D3) is
+`docs/design/standard-state-transfer-adr.md` — contract only, no
+implementation authorised.
+
 ### COSMO / VT-2005 licence separation (EXECUTED 2026-07-26)
 
 The public tree ships NO VT-2005 values: every set is an external REFERENCE
