@@ -32,6 +32,7 @@ License
 #include "thermo/activityCoefficient/Wilson.H"
 #include "thermo/activityCoefficient/UNIFAC.H"
 #include "thermo/activityCoefficient/UNIQUAC.H"
+#include "thermo/vaporPressure/VaporPressureModel.H"
 
 namespace Choupo {
 

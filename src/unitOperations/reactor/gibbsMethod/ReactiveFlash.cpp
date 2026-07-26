@@ -34,6 +34,7 @@ License
 
 #include <cmath>
 #include "thermo/activityCoefficient/ActivityModel.H"
+#include "thermo/vaporPressure/VaporPressureModel.H"
 
 namespace Choupo {
 

@@ -37,8 +37,23 @@ License
 #include <filesystem>
 #include <stdexcept>
 #include <variant>
+#include "thermo/vaporPressure/VaporPressureModel.H"
+#include "thermo/heatCapacity/HeatCapacityModel.H"
 
 namespace Choupo {
+
+// ---- Out-of-line special members + model accessors (hygiene 5/6) -----------
+//  The correlation models are forward-declared in the header; everything
+//  that needs their complete types lives here.
+Component::Component()  = default;
+Component::~Component() = default;
+Component::Component(Component&&) noexcept            = default;
+Component& Component::operator=(Component&&) noexcept = default;
+
+const VaporPressureModel& Component::vp() const       { return *vp_; }
+const HeatCapacityModel&  Component::cpLiquid() const { return *cpLiq_; }
+const HeatCapacityModel&  Component::cpIdealGas() const { return *cpGas_; }
+const HeatCapacityModel&  Component::cpSolid() const  { return *cpSolid_; }
 
 Component Component::identity(const std::string& name, scalar MW,
                               const std::string& role)

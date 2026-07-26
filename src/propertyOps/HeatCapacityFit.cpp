@@ -40,6 +40,7 @@ License
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "thermo/heatCapacity/HeatCapacityModel.H"
 
 namespace Choupo {
 

@@ -35,6 +35,7 @@ License
 #include "thermo/Component.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/electrolyte/ElectrolyteModel.H"
+#include "thermo/heatCapacity/HeatCapacityModel.H"
 
 namespace Choupo {
 

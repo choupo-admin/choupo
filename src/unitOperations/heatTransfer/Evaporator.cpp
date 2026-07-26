@@ -38,6 +38,7 @@ License
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
+#include "thermo/vaporPressure/VaporPressureModel.H"
 
 namespace Choupo {
 

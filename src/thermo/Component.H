@@ -42,8 +42,6 @@ Description
 #include "core/Dictionary.H"
 #include "core/Origin.H"
 #include "core/Types.H"
-#include "vaporPressure/VaporPressureModel.H"
-#include "heatCapacity/HeatCapacityModel.H"
 
 #include <map>
 #include <memory>
@@ -53,10 +51,23 @@ Description
 
 namespace Choupo {
 
+// The correlation models a component holds by POINTER are forward-declared
+// (build hygiene 5/6): 174 translation units include Component.H and only
+// ~30 evaluate a correlation -- those include the model header themselves.
+class VaporPressureModel;
+class HeatCapacityModel;
+
 class Component
 {
 public:
-    Component() = default;
+    // Special members are OUT-OF-LINE (defined = default in the .cpp): the
+    // inline forms would need the fwd-declared members' dtors complete.
+    Component();
+    ~Component();
+    Component(Component&&) noexcept;
+    Component& operator=(Component&&) noexcept;
+    Component(const Component&)            = delete;
+    Component& operator=(const Component&) = delete;
 
     // Load from a dictionary representing a single component file.
     void readFromDict(const DictPtr& dict);
@@ -109,13 +120,13 @@ public:
 
     // ---- Pure-component models ---------------------------------------------
     bool   hasVaporPressure() const { return vp_ != nullptr; }
-    const VaporPressureModel& vp() const { return *vp_; }
+    const VaporPressureModel& vp() const;              // .cpp (fwd-decl model)
     bool   hasCpLiquid()   const { return cpLiq_  != nullptr; }
     bool   hasCpIdealGas() const { return cpGas_  != nullptr; }
     bool   hasCpSolid()    const { return cpSolid_ != nullptr; }
-    const HeatCapacityModel& cpLiquid()   const { return *cpLiq_; }
-    const HeatCapacityModel& cpIdealGas() const { return *cpGas_; }
-    const HeatCapacityModel& cpSolid()    const { return *cpSolid_; }
+    const HeatCapacityModel& cpLiquid()   const;       // .cpp
+    const HeatCapacityModel& cpIdealGas() const;       // .cpp
+    const HeatCapacityModel& cpSolid()    const;       // .cpp
 
     // ---- Non-volatile / dissolved-solute extensions ---------------
     // Solutes like NaCl, glucose, MgSO4 are loaded as Components but with

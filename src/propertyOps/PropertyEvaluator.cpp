@@ -40,6 +40,7 @@ License
 #include <string>
 #include <utility>
 #include "thermo/equationOfState/EquationOfState.H"
+#include "thermo/heatCapacity/HeatCapacityModel.H"
 
 namespace Choupo {
 namespace propertyOps {

@@ -38,6 +38,7 @@ License
 #include <iostream>
 #include <stdexcept>
 #include "thermo/electrolyte/ElectrolyteModel.H"
+#include "thermo/heatCapacity/HeatCapacityModel.H"
 
 namespace Choupo {
 

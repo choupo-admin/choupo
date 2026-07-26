@@ -62,6 +62,8 @@ License
 #include <stdexcept>
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/equationOfState/EquationOfState.H"
+#include "thermo/vaporPressure/VaporPressureModel.H"
+#include "thermo/heatCapacity/HeatCapacityModel.H"
 
 namespace Choupo {
 

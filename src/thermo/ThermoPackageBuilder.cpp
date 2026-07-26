@@ -28,6 +28,7 @@
 #include <sstream>
 #include <stdexcept>
 #include "thermo/activityCoefficient/ActivityModel.H"
+#include "thermo/vaporPressure/VaporPressureModel.H"
 
 namespace fs = std::filesystem;
 

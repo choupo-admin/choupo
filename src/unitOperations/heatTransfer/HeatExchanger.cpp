@@ -36,6 +36,7 @@ License
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
+#include "thermo/heatCapacity/HeatCapacityModel.H"
 
 namespace Choupo {
 
