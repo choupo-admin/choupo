@@ -44,7 +44,11 @@ equilibrium
     aqueous
     {
         solvent       water;                 // the DECLARED aqueous solvent
-        activityModel { model davies; }      // this slice's rung (announced)
+        // mixed-solvent v1: Davies on the ions (water-referenced molality),
+        // the FULL curated NRTL pair on the molecular backbone (water,
+        // ethanol) -- never a gammaInfinity constant.  The network K's stay
+        // water-referenced; the transfer term is the named next slice.
+        activityModel { ionic davies;  molecular NRTL; }
         speciation    { masters ( Acetate  NH4 ); }
     }
 
@@ -53,10 +57,3 @@ equilibrium
     volatiles ( aceticAcid  NH3  ethanol  water );
 }
 
-approximations
-{
-    idealMolecularVLE
-    {
-        components ( ethanol );              // delimited -- never global
-    }
-}

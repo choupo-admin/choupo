@@ -15,9 +15,11 @@
   the solved pH lands near pKa_HAc.  Ethanol carries the curated fact
   `aqueousSpeciation none;` -- the classifier finds it molecular and
   nonionising FROM THE RECORD (no case list, no name special-casing), the
-  recommended mixed-solvent model is announced unavailable, and its ideal
-  molecular VLE is explicitly AUTHORISED by the delimited approximations
-  block.  Everything announced; the unauthorised path refuses by name.
+  ideal molecular VLE is explicitly AUTHORISED by the delimited
+  approximations block -- DELIBERATELY: this case is the comparison pair
+  of flash13_acetic_ethanol_vacuum_flash, whose NRTL backbone (the
+  recommended mixed-solvent v1 route) triples the ethanol volatility.
+  Everything announced; the unauthorised path refuses by name.
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;

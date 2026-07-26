@@ -86,6 +86,20 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
   99.97 % liquid-bound as NH4+), liquid pH rises 4.62 -> 4.88.  flash10/12
   stay subsaturated by design (their single-liquid lessons); the stale
   "refused" wording is swept.
+* **Mixed-solvent v1 (same-day, on Vitor's order)**: the reactive liquid's
+  molecular backbone (solvent + nonionising co-volatiles, ion-free
+  x-basis) can declare the FULL curated NRTL pair --
+  `activityModel { ionic davies; molecular NRTL; }` -- never a
+  gammaInfinity constant.  Solvent activity decomposes multiplicatively
+  (a_w = gamma_w x_w * aw_ionic, no double counting); ions stay Davies on
+  water-referenced molality; the network K's stay water-referenced (the
+  transfer term is the NAMED next slice); an authorisation may not shadow
+  a declared model.  The sealed pair record rides the closure BECAUSE it
+  now has a reader.  flash13 moves onto the modelled route (gamma_EtOH =
+  2.97 triples the ideal volatility; V/F 0.415 -> 0.580; pH 5.03) and
+  flash12 stays the deliberate ideal-authorised comparison pair;
+  choupo-resolve recommends the modelled route whenever the backbone
+  pairs exist.
 * Thirteen new curation gates in `runTests` (312 PASS / 0 FAIL).
 
 ## [Unreleased]

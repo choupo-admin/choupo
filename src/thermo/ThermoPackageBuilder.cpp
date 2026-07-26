@@ -450,21 +450,37 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                                               const DictPtr& eq,
                                               const DictPtr& aq)
 {
-    // (a) models of the two phases -- this slice serves davies + idealGas;
-    //     anything else refuses NAMED (never a silent downgrade).
+    // (a) models of the two phases -- this slice serves ionic davies (the
+    //     speciation kernel's rung) + an OPTIONAL molecular backbone model
+    //     (mixed-solvent v1: `activityModel { ionic davies; molecular
+    //     NRTL; }`); anything else refuses NAMED (never a silent
+    //     downgrade).  The legacy single-word `model davies;` stays valid
+    //     (ionic davies, no molecular model).
     std::string actModel = "davies";
+    std::string molecularModel;                    // "" = none declared
     {
         const EntryValue& ev = aq->entryValue("activityModel");
         if (std::holds_alternative<std::string>(ev))
             actModel = std::get<std::string>(ev);
         else
-            actModel = aq->subDict("activityModel")->lookupWord("model");
+        {
+            auto am = aq->subDict("activityModel");
+            if      (am->found("model")) actModel = am->lookupWord("model");
+            else if (am->found("ionic")) actModel = am->lookupWord("ionic");
+            if (am->found("molecular"))
+                molecularModel = am->lookupWord("molecular");
+        }
     }
     if (actModel != "davies")
         throw std::runtime_error("thermophysicalPropertySystem: the REACTIVE"
-            " electrolyteGammaPhi slice serves activityModel davies (the"
+            " electrolyteGammaPhi slice serves ionic davies (the"
             " speciation kernel's rung); '" + actModel + "' joins in a later"
             " slice -- declare davies or drop the speciation block.");
+    if (!molecularModel.empty() && molecularModel != "NRTL")
+        throw std::runtime_error("thermophysicalPropertySystem: the molecular"
+            " backbone of the reactive slice serves NRTL ('"
+            + molecularModel + "' declared) -- the curated pair records live"
+            " in parameters/NRTL/.");
     const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
     if (vap != "idealGas")
         throw std::runtime_error("thermophysicalPropertySystem: the reactive"
@@ -533,22 +549,30 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                 " '" + w + "', which the classifier did not find to be a"
                 " molecular nonionising component of this system -- the"
                 " authorisation is delimited and may not reclassify.");
+        if (molecularModel == "NRTL")
+            throw std::runtime_error("approximations.idealMolecularVLE lists"
+                " '" + w + "' while the case ALSO declares `molecular NRTL;`"
+                " -- an authorisation may not shadow a declared model; drop"
+                " one of the two.");
     }
-    for (const auto& cc : sysc.components)
-        if (cc.kind == ComponentClassification::Kind::MolecularNonionising
-         && !idealMolecularVLE.count(cc.name))
-            throw std::runtime_error("ThermoResolver: recommended"
-                " mixed-solvent electrolyte model unavailable, and the ideal"
-                " molecular VLE approximation is NOT authorised for '"
-                + cc.name + "' -- authorise it explicitly (approximations {"
-                " idealMolecularVLE { components ( " + cc.name + " ); } })"
-                " or remove the component.");
-    if (thermoAnnounce())
+    if (molecularModel.empty())
+        for (const auto& cc : sysc.components)
+            if (cc.kind == ComponentClassification::Kind::MolecularNonionising
+             && !idealMolecularVLE.count(cc.name))
+                throw std::runtime_error("ThermoResolver: no molecular"
+                    " backbone model is declared (mixed-solvent v1:"
+                    " `activityModel { ionic davies; molecular NRTL; }`) and"
+                    " the ideal molecular VLE approximation is NOT authorised"
+                    " for '" + cc.name + "' -- declare the model, authorise"
+                    " the approximation (approximations { idealMolecularVLE {"
+                    " components ( " + cc.name + " ); } }), or remove the"
+                    " component.");
+    if (thermoAnnounce() && molecularModel.empty())
         for (const auto& cc : sysc.components)
             if (idealMolecularVLE.count(cc.name))
                 std::cout <<
                     "[resolver] recommended mixed-solvent electrolyte model"
-                    " unavailable\n"
+                    " not declared\n"
                     "[resolver] authorised approximation: ideal molecular VLE"
                     " for " << cc.name << "\n"
                     "[resolver] p_" << cc.name << " = x_" << cc.name
@@ -572,13 +596,14 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     {
         if (i == solventIdx) continue;
 
-        //  A MolecularNonionising component (authorised above) anchors NO
-        //  family: it stays in the liquid composition, the balances and the
-        //  enthalpy, and the VLE prices it by ideal Raoult on its OWN
-        //  curated psat -- gamma = 1 inside the ONE declared aqueous
-        //  surface (Davies ions + unit-gamma neutrals), never a clandestine
-        //  second model.
-        if (idealMolecularVLE.count(names[i]))
+        //  A MolecularNonionising component anchors NO family: it stays in
+        //  the liquid composition, the balances and the enthalpy, and its
+        //  VLE rides the molecular BACKBONE -- gamma = 1 when the ideal
+        //  approximation is authorised, or the declared molecular model
+        //  (mixed-solvent v1) when the case wires one.  Either way the
+        //  route was validated above; unauthorised+unmodelled has refused.
+        if (sysc.components[i].kind
+            == ComponentClassification::Kind::MolecularNonionising)
         {
             auto cp = std::make_shared<Component>(db.loadComponent(names[i]));
             cfg.nonreactive.insert(i);
@@ -693,6 +718,79 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
         cfg.families.push_back({ i, marker, SpeciesId(carrying[0]) });
     }
 
+    // (c2) the MOLECULAR BACKBONE (mixed-solvent v1, ratified 2026-07-26):
+    //      the declared solvent + the nonreactive molecular components on
+    //      the ion-free x-basis.  With `molecular NRTL;` declared the FULL
+    //      curated pair model is wired -- never a gammaInfinity constant --
+    //      and every backbone pair must have its parameters/NRTL/ record:
+    //      declare -> verify -> refuse.
+    cfg.backbone.push_back(solventIdx);
+    for (std::size_t i = 0; i < names.size(); ++i)
+        if (cfg.nonreactive.count(i)) cfg.backbone.push_back(i);
+    if (molecularModel == "NRTL")
+    {
+        std::vector<std::string> bNames;
+        for (auto b : cfg.backbone) bNames.push_back(names[b]);
+        auto bComps = std::make_shared<std::vector<Component>>();
+        for (const auto& bn : bNames)
+            bComps->push_back(db.loadComponent(bn));
+        auto activityDict = std::make_shared<Dictionary>("activity");
+        activityDict->insert("model", std::string("NRTL"));
+        std::vector<DictPtr> pairDicts;
+        for (std::size_t bi = 0; bi < bNames.size(); ++bi)
+            for (std::size_t bj = bi + 1; bj < bNames.size(); ++bj)
+            {
+                std::string a = bNames[bi], b = bNames[bj];
+                if (b < a) std::swap(a, b);
+                const std::string rel = "parameters/NRTL/" + a + "-" + b
+                                        + ".dat";
+                fs::path rec = records::resolveRecord(rel);
+                if (rec.empty() || !fs::exists(rec))
+                    throw std::runtime_error("thermophysicalPropertySystem:"
+                        " `molecular NRTL;` declared, but the backbone pair"
+                        " record data/standards/" + rel + " (or the sealed"
+                        " case-local constant/" + rel + ") does not exist --"
+                        " curate the pair or drop the molecular model.");
+                DictPtr r = Dictionary::fromFile(rec.string());
+                DictPtr coef = r->found("parameters") ? r->subDict("parameters")
+                                                      : r;
+                auto p = std::make_shared<Dictionary>(a + "-" + b);
+                for (const auto& k : coef->keys())
+                {
+                    const EntryValue& ev2 = coef->entryValue(k);
+                    if (std::holds_alternative<scalar>(ev2)
+                        || std::holds_alternative<std::string>(ev2))
+                        p->insert(k, ev2);
+                }
+                pairDicts.push_back(p);
+                if (thermoAnnounce())
+                    std::cout << "[builder] molecular backbone pair " << a
+                              << "-" << b << "  --- " << rec.string() << "\n";
+            }
+        activityDict->insert("pairs", EntryValue(pairDicts));
+        std::shared_ptr<ActivityModel> mm(
+            ActivityModel::New(activityDict, *bComps));
+        cfg.molecularGamma =
+            [mm, bComps](scalar T, const sVector& x) -> sVector
+            { return mm->gamma(T, x); };
+        if (thermoAnnounce())
+        {
+            std::cout << "[resolver] liquid molecular backbone: NRTL (";
+            for (std::size_t bi = 0; bi < bNames.size(); ++bi)
+                std::cout << (bi ? " " : "") << bNames[bi];
+            std::cout << ") -- curated pair records\n"
+                         "[resolver] ions: Davies on water-referenced"
+                         " molality (mixed-solvent transfer term: named"
+                         " gap)\n";
+            for (const auto& cc : sysc.components)
+                if (cc.kind
+                    == ComponentClassification::Kind::MolecularNonionising)
+                    std::cout << "[resolver] p_" << cc.name << " = gamma_NRTL"
+                              << " * x_" << cc.name << " * psat_" << cc.name
+                              << "(T)\n";
+        }
+    }
+
     // (d) volatiles: each is an apparent component served by a gas-liquid
     //     record keyed by the component's FORMULA (water -> H2O).
     for (const auto& vn : eq->found("volatiles")
@@ -774,8 +872,16 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
         {
             auto a = eq->subDict("aqueous");
             if (a->found("activityModel"))
+            {
+                auto am = a->subDict("activityModel");
+                // legacy `model <w>;` == mixed-solvent `ionic <w>;` -- the
+                // aqueous chemistry's model is the IONIC surface either way
+                // (the molecular backbone is phase VLE, not speciation).
                 aq.activityModel =
-                    a->subDict("activityModel")->lookupWord("model");
+                    am->found("model") ? am->lookupWord("model")
+                  : am->found("ionic") ? am->lookupWord("ionic")
+                                       : "davies";
+            }
             if (a->found("speciation"))
             {
                 auto sp = a->subDict("speciation");

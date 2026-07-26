@@ -144,13 +144,51 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         out = spec_->solve(in, 0);                    // quiet inner kernel
     };
 
-    // Activity of the DISSOLVED counterpart of a volatile: the solvent reads
-    // a_w; a family volatile reads its NEUTRAL molecular species row (the
-    // gas record's `dissolved` species -- e.g. NH3).
-    auto dissolvedActivity = [&](std::size_t appIdx,
-                                 const SpeciationResult& sr) -> scalar
+    // The MOLECULAR BACKBONE state of the liquid (mixed-solvent v1):
+    // ion-free mole fractions over (solvent + nonreactive co-volatiles) and
+    // their activity coefficients -- unit gammas without a declared model.
+    auto backboneState = [&](const sVector& vap, sVector& xB, sVector& gB)
     {
-        if (appIdx == cfg_.solventIdx) return sr.aw;
+        const std::size_t nB = cfg_.backbone.size();
+        xB.assign(std::max<std::size_t>(nB, 1), 1.0);
+        gB.assign(std::max<std::size_t>(nB, 1), 1.0);
+        if (nB == 0) return;
+        scalar s = 0.0;
+        for (std::size_t b = 0; b < nB; ++b)
+        {
+            xB[b] = std::max(n[cfg_.backbone[b]] - vap[cfg_.backbone[b]], 0.0);
+            s += xB[b];
+        }
+        if (s <= 0.0) return;
+        for (std::size_t b = 0; b < nB; ++b) xB[b] /= s;
+        if (cfg_.molecularGamma) gB = cfg_.molecularGamma(T_K, xB);
+    };
+    auto backbonePos = [&](std::size_t appIdx) -> std::size_t
+    {
+        for (std::size_t b = 0; b < cfg_.backbone.size(); ++b)
+            if (cfg_.backbone[b] == appIdx) return b;
+        return cfg_.backbone.size();
+    };
+
+    // Activity of the DISSOLVED counterpart of a volatile: the solvent reads
+    // its TOTAL activity -- the multiplicative decomposition
+    //     a_w = gamma_w(x_backbone) * x_w(backbone) * aw_ionic(speciation)
+    // (backbone factor = molecular mixture only; speciation aw = aqueous
+    // molalities only; no double counting; both factors 1 when absent) --
+    // a family volatile reads its NEUTRAL molecular species row (the gas
+    // record's `dissolved` species, e.g. NH3).
+    auto dissolvedActivity = [&](std::size_t appIdx,
+                                 const SpeciationResult& sr,
+                                 const sVector& xB,
+                                 const sVector& gB) -> scalar
+    {
+        if (appIdx == cfg_.solventIdx)
+        {
+            const std::size_t b = backbonePos(appIdx);
+            const scalar molecular =
+                (b < cfg_.backbone.size()) ? gB[b] * xB[b] : 1.0;
+            return molecular * sr.aw;
+        }
         const GasEntry* g = gasFor(appIdx);
         for (const auto& row : sr.rows)
             if (row.name == g->species) return row.activity;
@@ -171,29 +209,35 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         sVector v0(nApp, 0.0);
         SpeciationResult sr;
         speciate(v0, sr);
+        sVector xB0, gB0;
+        backboneState(v0, xB0, gB0);
         scalar pSum = 0.0;
         for (const auto appIdx : cfg_.volatiles)
         {
-            //  Authorised nonreactive molecular volatile: ideal Raoult on
-            //  its own curated psat, gamma = 1 inside the one declared
-            //  aqueous surface (announced at assembly by the resolver).
+            //  Nonreactive molecular volatile on the backbone: p = gamma *
+            //  x * psat -- gamma = 1 on the authorised ideal route, the
+            //  declared molecular model's value otherwise (announced).
             if (cfg_.nonreactive.count(appIdx))
             {
-                scalar nTot0 = 0.0; for (auto q : n) nTot0 += q;
-                const scalar xI = n[appIdx] / nTot0;
-                const scalar pI = xI * cfg_.psatOf.at(appIdx)(T_K) / kAtm;
+                const std::size_t b = backbonePos(appIdx);
+                const scalar xI = xB0[b], gI = gB0[b];
+                const scalar pI =
+                    gI * xI * cfg_.psatOf.at(appIdx)(T_K) / kAtm;
                 pSum += pI;
                 res.pMolecularAtm[cfg_.apparent[appIdx]] = pI;
                 if (verbosity >= 2)
                     std::cout << "  [reactive] " << cfg_.apparent[appIdx]
-                              << ": ideal molecular VLE (authorised): p = x *"
-                                 " psat = " << std::setprecision(4) << pI
-                              << " atm  (x = " << xI << ")\n";
+                              << ": molecular VLE: p = gamma * x * psat = "
+                              << std::setprecision(4) << pI
+                              << " atm  (gamma = " << gI << ", x = " << xI
+                              << (cfg_.molecularGamma ? ", NRTL backbone"
+                                                      : ", ideal authorised")
+                              << ")\n";
                 continue;
             }
             const GasEntry* g = gasFor(appIdx);
             const scalar K  = std::pow(10.0, gasLogK(*g, T_K));
-            const scalar pM = dissolvedActivity(appIdx, sr) / K;   // [atm]
+            const scalar pM = dissolvedActivity(appIdx, sr, xB0, gB0) / K;
             pSum += pM;
             // Carboxylic-acid VAPOUR DIMERISATION (2A = A2, K_dim = pD/pM^2):
             // at equilibrium over this liquid the dimer contributes its OWN
@@ -326,8 +370,8 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         { return sVector(nV, 1.0e6); }
         const TrueVap tv = trueVapour(vap);
         const scalar tau = std::max(tv.tau, 1.0e-300);
-        scalar lTot = 0.0;
-        for (std::size_t i = 0; i < nApp; ++i) lTot += n[i] - vap[i];
+        sVector xB, gB;
+        backboneState(vap, xB, gB);
         sVector r(nV);
         for (std::size_t k = 0; k < nV; ++k)
         {
@@ -338,16 +382,19 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             const scalar pA = (tK / tau) * P_Pa / kAtm;
             if (cfg_.nonreactive.count(idx))
             {
-                //  Authorised ideal molecular VLE: x * psat = p  (gamma = 1
-                //  within the one declared aqueous surface, announced).
-                const scalar x = (n[idx] - vap[idx]) / std::max(lTot, 1e-300);
-                const scalar pR = x * cfg_.psatOf.at(idx)(T_K) / kAtm;
+                //  Molecular backbone VLE: gamma * x * psat = p  (gamma = 1
+                //  on the authorised ideal route, the declared molecular
+                //  model's value otherwise -- one surface, announced).
+                const std::size_t b = backbonePos(idx);
+                const scalar pR = gB[b] * xB[b]
+                                * cfg_.psatOf.at(idx)(T_K) / kAtm;
                 r[k] = std::log(std::max(pR, 1.0e-300))
                      - std::log(std::max(pA, 1.0e-300));
                 continue;
             }
             const scalar K  = std::pow(10.0, gasLogK(*gasFor(idx), T_K));
-            r[k] = std::log(std::max(dissolvedActivity(idx, srLast), 1.0e-300))
+            r[k] = std::log(std::max(
+                       dissolvedActivity(idx, srLast, xB, gB), 1.0e-300))
                  - std::log(std::max(K * pA, 1.0e-300));
         }
         return r;
@@ -372,18 +419,21 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         // solution and the damped Newton stalled against the near-dry cage.
         sVector vap0(nApp, 0.0);
         speciate(vap0, srLast);
+        sVector xBs, gBs;
+        backboneState(vap0, xBs, gBs);
         std::vector<scalar> p(nV, 0.0);
-        scalar lT0 = 0.0; for (auto q : n) lT0 += q;
         for (std::size_t k = 0; k < nV; ++k)
         {
             const std::size_t idx = cfg_.volatiles[k];
             if (cfg_.nonreactive.count(idx))
             {
-                p[k] = (n[idx]/lT0) * cfg_.psatOf.at(idx)(T_K) / kAtm;
+                const std::size_t b = backbonePos(idx);
+                p[k] = gBs[b] * xBs[b] * cfg_.psatOf.at(idx)(T_K) / kAtm;
                 continue;
             }
             const scalar K = std::pow(10.0, gasLogK(*gasFor(idx), T_K));
-            p[k] = dissolvedActivity(idx, srLast) / std::max(K, 1.0e-300);
+            p[k] = dissolvedActivity(idx, srLast, xBs, gBs)
+                 / std::max(K, 1.0e-300);
             if (idx == dimIdx)
                 p[k] += 2.0 * Kd * p[k] * p[k];      // apparent moles / dimer
         }

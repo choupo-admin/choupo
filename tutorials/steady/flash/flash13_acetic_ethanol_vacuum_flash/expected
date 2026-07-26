@@ -2,20 +2,20 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 stream  feed                   F                0.0277777777778    1e-4
-stream  liquid                 F                0.0162440446477    1e-4
-stream  vapor                  F                0.01153373313      1e-4
-kpi     flash01                F_alpha          0.0162440446477    1e-4
-kpi     flash01                F_beta           0.01153373313      1e-4
+stream  liquid                 F                0.011654196993     1e-4
+stream  vapor                  F                0.0161235807848    1e-4
+kpi     flash01                F_alpha          0.011654196993     1e-4
+kpi     flash01                F_beta           0.0161235807848    1e-4
 kpi     flash01                F_in             0.0277777777778    1e-4
 kpi     flash01                P                65861.25           1e-4
-kpi     flash01                Q                479287.474508      1e-4
-kpi     flash01                Q_kW             479.287474508      1e-4
+kpi     flash01                Q                669288.026161      1e-4
+kpi     flash01                Q_kW             669.288026161      1e-4
 kpi     flash01                T                358.15             1e-4
-kpi     flash01                V_over_F         0.415214392681     1e-4
-kpi     flash01                dimer_share      0.12160372655      1e-4
-kpi     flash01                pH               4.88092878895      1e-4
-kpi     flash01                p_dimer_atm      0.000713612829878  1e-4
+kpi     flash01                V_over_F         0.580448908254     1e-4
+kpi     flash01                dimer_share      0.121262947986     1e-4
+kpi     flash01                pH               5.02590694419      1e-4
+kpi     flash01                p_dimer_atm      0.000709068539902  1e-4
 kpi     flash01                p_eq_sum_atm     0.65               1e-4
-kpi     flash01                p_ethanol_atm    0.110206488552     1e-4
-kpi     flash01                p_mono_atm       0.00515473389043   1e-4
+kpi     flash01                p_ethanol_atm    0.125738413815     1e-4
+kpi     flash01                p_mono_atm       0.00513829499263   1e-4
 kpi     flash01                phaseSet         0                  1e-4

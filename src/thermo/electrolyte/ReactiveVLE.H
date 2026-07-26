@@ -109,16 +109,31 @@ struct ReactiveVLEConfig
     std::string activityModel = "davies";       // spike rung (announced)
     scalar      solventMW     = 18.015e-3;      // kg/mol (for the kgw basis)
 
-    // NONREACTIVE MOLECULAR components (classifier: MolecularNonionising,
-    // AUTHORISED by the case's delimited approximations block, ratified
-    // 2026-07-26): part of the liquid composition, the balances and the
-    // enthalpy -- OUTSIDE the aqueous speciation network.  No family, no
-    // master, no gas-liquid record.  Their VLE in this slice is IDEAL
-    // RAOULT on the component's own curated psat (gamma = 1 within the ONE
-    // declared aqueous surface); the mixed-solvent model, when it exists,
-    // replaces this approximation integrally.
+    // NONREACTIVE MOLECULAR components (classifier: MolecularNonionising):
+    // part of the liquid composition, the balances and the enthalpy --
+    // OUTSIDE the aqueous speciation network.  No family, no master, no
+    // gas-liquid record.  Their VLE rides the MOLECULAR BACKBONE below:
+    // ideal Raoult (gamma = 1, authorised by the case's delimited
+    // approximations block) or the declared molecular activity model.
     std::set<std::size_t>                                 nonreactive;
     std::map<std::size_t, std::function<scalar(scalar)>> psatOf; // Pa(T[K])
+
+    // The liquid's MOLECULAR BACKBONE (mixed-solvent v1, ratified
+    // 2026-07-26): the declared solvent + the nonreactive molecular
+    // components, mole fractions on the ION-FREE basis.  When the case
+    // declares `activityModel { ionic davies; molecular NRTL; }` the
+    // builder wires `molecularGamma` (the FULL curated pair model -- never
+    // a gammaInfinity constant): p_co = gamma*x*psat, and the solvent's
+    // total activity DECOMPOSES multiplicatively,
+    //     a_w = gamma_w(x_backbone) * x_w(backbone) * aw_ionic(speciation)
+    // (the speciation aw knows only the aqueous molalities; the backbone
+    // factor knows only the molecular mixture -- no double counting).
+    // Ions stay Davies on WATER-REFERENCED molality and the network K's
+    // stay water-referenced: the mixed-solvent transfer term is a NAMED
+    // gap, announced.  Empty molecularGamma = gammas of 1 (the authorised
+    // ideal route; the backbone x-basis still applies).
+    std::vector<std::size_t>                       backbone;
+    std::function<sVector(scalar, const sVector&)> molecularGamma;
 };
 
 struct ReactiveVLEResult

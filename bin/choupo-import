@@ -490,6 +490,12 @@ def closure_of(pp_path, caseDir, std, AQ):
     reactive_shape = bool(
         re.search(r'\bformulation\s+electrolyteGammaPhi\s*;', t_nc)
         and re.search(r'\bspeciation\s*\{', t_nc))
+    # The mixed-solvent v1 backbone (`activityModel { ionic davies;
+    # molecular NRTL; }`) DOES read the NRTL pair records -- they ride the
+    # closure again.  The Henry-registry trace stays off for the reactive
+    # shape regardless (gas-liquid transfer is the chemistry records).
+    reactive_reads_nrtl = bool(
+        reactive_shape and re.search(r'\bmolecular\s+NRTL\s*;', t_nc))
     ms = re.search(r'\bsolvent\s+([A-Za-z0-9_+\-]+)\s*;', t_nc)
     if ms and reactive_shape:
         ms = None                  # declared aqueous solvent, not a Henry world
@@ -511,7 +517,7 @@ def closure_of(pp_path, caseDir, std, AQ):
     # pair, existence-guarded (only real catalogue pairs ride the closure).
     if (re.search(r'\belectrolyte\.[A-Za-z]+\s*;', t_nc)
         or re.search(r'\bformulation\s+electrolyteGammaPhi\s*;', t_nc)) \
-       and not reactive_shape:
+       and (not reactive_shape or reactive_reads_nrtl):
         for i in range(len(comps)):
             for j in range(i + 1, len(comps)):
                 a, b = sorted((comps[i], comps[j]))

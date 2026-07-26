@@ -351,11 +351,23 @@ is where the recommendation is born; the runtime NEVER chooses freely).
 Approximations are DELIMITED per component -- `approximations {
 idealMolecularVLE { components ( ethanol ); } }` -- authorisation is the
 block's presence, applying it to anything unlisted refuses, listing anything
-the classifier did not find nonionising refuses; ideal molecular VLE is ONE
-declared surface (Davies ions + unit-gamma neutrals + x*psat co-volatile),
-never a clandestine gammaInfinity read from NRTL (mixed-solvent replaces it
-integrally when it exists).  Gates: check_resolver_coherence.  Reference
-case: `tutorials/steady/flash/flash12_nh3_acetic_ethanol_reactive`.
+the classifier did not find nonionising refuses.  The molecular backbone
+(solvent + nonionising co-volatiles, ion-free x-basis) has TWO declared
+routes: the authorised ideal (gamma = 1) and **mixed-solvent v1**
+(`activityModel { ionic davies; molecular NRTL; }`, built same-day on
+Vitor's order): the FULL curated NRTL pair prices the backbone (never a
+clandestine gammaInfinity constant), the solvent activity decomposes
+multiplicatively (a_w = gamma_w*x_w * aw_ionic -- no double counting), ions
+stay Davies on water-referenced molality and the network K's stay
+water-referenced (the transfer term is the NAMED next slice).  An
+authorisation may not shadow a declared model (refused).  The TWO-PHASE
+reactive Newton is general (ln V + softmax vapour odds, n volatiles), the
+acetic vapour dimer re-weights the vapour balance (v = t_mono + 2 t_dim)
+with its association heat priced exactly into the duty.  Gates:
+check_resolver_coherence.  Reference cases:
+`flash12_nh3_acetic_ethanol_reactive` (ideal authorised, subsaturated) vs
+`flash13_acetic_ethanol_vacuum_flash` (NRTL backbone, V/F 0.58 -- the gamma
+is the difference between a flash and no flash).
 
 ### COSMO / VT-2005 licence separation (EXECUTED 2026-07-26)
 

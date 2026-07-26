@@ -11,11 +11,11 @@
 
       feed (2 HAc + 1 NH3 + 12 EtOH + 85 H2O, kmol/h)
         -> [flash01, 358.15 K / 0.65 atm]
-        -> liquid (58.5 kmol/h, pH 4.88) + vapor (41.5 kmol/h)
+        -> liquid (42.0 kmol/h, pH 5.03) + vapor (58.0 kmol/h)
 
-  The pressure sits mid-way through the ethanol depletion window (bubble
-  0.70 atm for this feed): enough vacuum to strip ethanol and water, not so
-  much that the liquid is wrung dry.  The vapour balance carries the acetic
+  On the NRTL backbone the feed's bubble pressure is ~1.1 atm (gamma_EtOH
+  = 2.97 triples the ideal ethanol volatility): 0.65 atm strips well over
+  half the feed without wringing the liquid dry.  The vapour balance carries the acetic
   dimer explicitly (v_HAc = t_mono + 2 t_dim, K_dim(T) van't Hoff) and the
   buffer chemistry keeps the ammonia liquid-bound.  KPIs: pH, p_mono_atm,
   p_dimer_atm, dimer_share, p_ethanol_atm, p_eq_sum_atm (= P, two-phase).
