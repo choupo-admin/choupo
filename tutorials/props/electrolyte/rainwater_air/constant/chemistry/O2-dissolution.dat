@@ -1,7 +1,15 @@
 // [imported] origin "data/standards/chemistry/O2-dissolution.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 recordType gasLiquidEquilibrium;
-schemaVersion 1;
+schemaVersion 2;
 
-gas O2; reaction "O2(g) = O2"; dissolved "O2";
+// Equilibrium-parameterisation identity (ADR 2026-07-26, D2 migration wave):
+// typed physical family + versioned convention profile.  The Sander H_xp
+// pair parameters/Henry/O2-water.dat is an INDEPENDENT PRIMARY of the same
+// family -- cross-convention DIAGNOSTIC.
+gasSpecies       O2;
+dissolvedSpecies O2;
+solvent          water;
+convention       PHREEQC-gasMolal-v1;
+
+reaction "O2(g) = O2";
       logK25 -2.8983; analytic ( -7.5001 0.0078981 0 0 200270 ); source "USGS PHREEQC phreeqc.dat (public domain); primary not stated in db";
-

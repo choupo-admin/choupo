@@ -59,3 +59,7 @@ liquidHeatCapacity
 
 // Friendly-name aliases (resolved to this file via the generated ALIASES index).
 aliases ( nitrogen );
+
+// ---- Aqueous-speciation FACT (substance-level, classifier-read) ----
+// dissolved nitrogen: neutral master, no aqueous equilibria.
+aqueousSpeciation  none;

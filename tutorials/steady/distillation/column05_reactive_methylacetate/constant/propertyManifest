@@ -27,17 +27,17 @@ propertyManifest
         "components/aceticAcid.dat"
         {
             type          imported;
-            sha256        "58990c332aa63c6b629a60482235dfab63d58b03eb3b76e71b7ad8d9128d99ce";
+            sha256        "a879008c21b019ea83fb7910e54d5bc6247d2cfb8dfd20fdc8c8a70bccb2fe36";
             origin        "data/standards/components/aceticAcid.dat";
-            originSha256  "6f5305e2398a076a5267d782503fde6561400b3af20297dd771ca26d85dc9ec7";
+            originSha256  "335a69b7611e08ac3c6f9747a891c5583b6081ff3823be83959c0c6f0b264b72";
             release       Choupo-2607;
         }
         "components/methanol.dat"
         {
             type          imported;
-            sha256        "f1cfd0c2fbded83247a41bdb1dc85c671b60761d33029bae0371454accd122bf";
+            sha256        "f4b3b4a89ee1656fda2d90a02f8c0617dafbee4a2d56f877ae78b64495b8cd56";
             origin        "data/standards/components/methanol.dat";
-            originSha256  "13b9dac75770c73cf0937a52aaeb12f9a556cbe4fae90290788811eb4095bb68";
+            originSha256  "41c13937c873a9d22baba60c0389112f922cf5e9c9ce8bc50c54a0023a1badde";
             release       Choupo-2607;
         }
         "components/methylAcetate.dat"

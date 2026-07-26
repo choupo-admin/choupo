@@ -316,8 +316,12 @@ def closure_of(pp_path, caseDir, std, AQ):
                     continue
                 kind = m.group(1)
                 if kind == "gasLiquidEquilibrium":
-                    g = re.search(r'\bgas\s+([A-Za-z0-9_]+)\s*;', txt)
-                    d = re.search(r'\bdissolved\s+"?([A-Za-z0-9_]+)"?\s*;', txt)
+                    # canonical keys first (D2 identity wave); pre-identity
+                    # gas/dissolved keys stay readable at this boundary only
+                    g = (re.search(r'\bgasSpecies\s+([A-Za-z0-9_]+)\s*;', txt)
+                         or re.search(r'\bgas\s+([A-Za-z0-9_]+)\s*;', txt))
+                    d = (re.search(r'\bdissolvedSpecies\s+"?([A-Za-z0-9_]+)"?\s*;', txt)
+                         or re.search(r'\bdissolved\s+"?([A-Za-z0-9_]+)"?\s*;', txt))
                     entries.append((f.name, kind,
                                     d.group(1) if d else None,
                                     {g.group(1)} if g else set(), set()))

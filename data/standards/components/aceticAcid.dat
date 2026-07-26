@@ -1,7 +1,10 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Acetic Acid  (CH3COOH, C2H4O2, CAS 64-19-7)
-  Note: vapour-phase dimerisation is neglected here (would require
-        a chemical-association EoS).  Adequate for LLE tutorial.
+  Note: vapour-phase dimerisation is not a pure-component property and is
+        therefore not declared in this component record.  Reactive VLE
+        formulations may activate the curated vapour-association
+        equilibrium from chemistry/ (aceticAcid-dissolution.dat's
+        vapourDimerisation block).
   Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
            coefficients (marked 'individual literature value' at the block),
            Cp polynomials and the ideal-gas formation datum -- primary

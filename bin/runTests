@@ -617,6 +617,21 @@ PYEOF
     fi
     rm -f /tmp/efgate.$$
 
+    # Legacy-schema gate (D2 closed migration): no pre-identity gas-liquid
+    # schema in the dev corpus -- standards chemistry records canonical
+    # (schemaVersion 2 + typed identity), Henry pairs identity-complete,
+    # sealed tutorial mirrors re-imported.  The loader's legacy adapter is
+    # for OLD EXTERNAL cases only (announced, converted in memory).
+    if "$ROOT/bin/curate/check_legacy_schema.py" > /tmp/lsgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "legacy-schema-gate" "$(head -1 /tmp/lsgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_legacy_schema.py)\n" "legacy-schema-gate"
+        cat /tmp/lsgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lsgate.$$
+
     # Composite-limits gate: the composite mixed-solvent electrolyte v1
     # surface must RECOVER its pure constituents at the limits (x_co -> 0,
     # I -> 0, NRTL -> ideal) -- proven on live solver probes, never assumed.

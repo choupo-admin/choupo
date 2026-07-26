@@ -210,11 +210,17 @@ AqueousGraph AqueousGraph::build()
         }
         else if (rt == "gasLiquidEquilibrium")
         {
-            rx.product = d->lookupWordOrDefault("dissolved", "");
+            //  Canonical keys first (D2 identity wave); the pre-identity
+            //  gas/dissolved keys stay readable at this boundary only.
+            rx.product = d->found("dissolvedSpecies")
+                       ? d->lookupWord("dissolvedSpecies")
+                       : d->lookupWordOrDefault("dissolved", "");
             rx.logK25  = d->lookupScalarOrDefault("logK25", 0.0);
             rx.hasDH   = d->found("dH");
             if (rx.hasDH) rx.dH = d->lookupScalar("dH");
-            rx.masters.emplace_back(d->lookupWordOrDefault("gas", ""), 1.0);
+            rx.masters.emplace_back(d->found("gasSpecies")
+                                    ? d->lookupWord("gasSpecies")
+                                    : d->lookupWordOrDefault("gas", ""), 1.0);
         }
         else if (rt == "ionExchangeEquilibrium")
         {

@@ -35,9 +35,9 @@ propertyManifest
         "chemistry/aceticAcid-dissolution.dat"
         {
             type          imported;
-            sha256        "31b17248a11384c0335d5cd2b3b3c91f34ebe6bb40023a8a9e3d3d97ec577023";
+            sha256        "35ea9b9bdd988b35d6b690d6151ea6df4e623f53f2e8796b85c216c950cb9b69";
             origin        "data/standards/chemistry/aceticAcid-dissolution.dat";
-            originSha256  "6c688d89f9daf29b4b42625b37f67ae46d2f6c7bdd180797404ecc9bc662318b";
+            originSha256  "4781c7fed253c25ef57c4b808c30e7427da18426f3c08af1722c4cfc56f68d37";
             release       Choupo-2607;
         }
         "chemistry/water-dissociation.dat"
@@ -51,17 +51,17 @@ propertyManifest
         "chemistry/water-vapour-equilibrium.dat"
         {
             type          imported;
-            sha256        "e09b9def9172b3cbb2c977d5b92019e666ac2f2fea31d95b7c90e934adeaa818";
+            sha256        "1e2fb4e578408215405c1f92be96668f552dfe84815e339737455587019928a3";
             origin        "data/standards/chemistry/water-vapour-equilibrium.dat";
-            originSha256  "c77100c2bab3383aafaef0405eb85dbd823d3c4f023d0575d864761cbbd60614";
+            originSha256  "1127150b975b47357c5ee8866260191042a6b6783835cc0d79aad5caaffaf91a";
             release       Choupo-2607;
         }
         "components/aceticAcid.dat"
         {
             type          imported;
-            sha256        "b73b13598fe82730559b4dd1d2c03f1565b8ab5d56f71405bb33723d6793b6a1";
+            sha256        "a879008c21b019ea83fb7910e54d5bc6247d2cfb8dfd20fdc8c8a70bccb2fe36";
             origin        "data/standards/components/aceticAcid.dat";
-            originSha256  "04a8cd6c3125c500e755a75a92153a0d14d86cddc0dc702f65bd34d5879f075e";
+            originSha256  "335a69b7611e08ac3c6f9747a891c5583b6081ff3823be83959c0c6f0b264b72";
             release       Choupo-2607;
         }
         "components/water.dat"

@@ -27,9 +27,9 @@ propertyManifest
         "components/CO2.dat"
         {
             type          imported;
-            sha256        "33a99432a12a5431da19493588c73fa5b9d3f8b897e9cbb796b57d51ae8ded9f";
+            sha256        "953a60000c47c1c6b8f32833054ae4dfe5e698a8549eda895c14975ea749468a";
             origin        "data/standards/components/CO2.dat";
-            originSha256  "6b092466e5da6b47d27dbed354401acf51563dd65b6adda01d70bfcc199b243c";
+            originSha256  "e915e756c25ac1ee67cb47b2e7c4571b25669e49cde9b4127c7f9cd1774c6881";
             release       Choupo-2607;
         }
         "components/water.dat"
@@ -43,9 +43,9 @@ propertyManifest
         "parameters/Henry/CO2-water.dat"
         {
             type          imported;
-            sha256        "2fd7594a5bd9fede6c2bff22c5f56034b2743b52aa018619b677b3e38c87bb61";
+            sha256        "396bfb068ce13041314d89a47c65750a904a56babfa9038424999b627b8ab8fa";
             origin        "data/standards/parameters/Henry/CO2-water.dat";
-            originSha256  "ee71250649db663e601b50d037d6461bb27a684d68c9ac65bae91e8430f9ab75";
+            originSha256  "363762cbf10092dce98b6eb0821e4277eae487340187c5f3b8b49bc92484a715";
             release       Choupo-2607;
         }
     }

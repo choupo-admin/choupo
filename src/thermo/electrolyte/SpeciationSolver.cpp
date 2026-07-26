@@ -265,7 +265,21 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                     if (e->lookupWordOrDefault("recordType", "")
                         != "gasLiquidEquilibrium") continue;
                     GasEntry g;
-                    g.gas     = e->lookupWord("gas");
+                    //  Canonical schema (D2 identity wave, 2026-07-26):
+                    //  gasSpecies / dissolvedSpecies / solvent / convention.
+                    //  The pre-identity keys (gas / dissolved) are accepted
+                    //  at THIS boundary only -- converted to the canonical
+                    //  in-memory representation, announced, never written
+                    //  back.  Legacy schema accepted for migration only.
+                    const bool legacyKeys = !e->found("gasSpecies");
+                    if (legacyKeys)
+                        std::cerr << "[legacy] " << f.string()
+                                  << ": pre-identity gas-liquid schema"
+                                     " (gas/dissolved) -- legacy record"
+                                     " converted in memory; re-import"
+                                     " recommended.\n";
+                    g.gas = legacyKeys ? e->lookupWord("gas")
+                                       : e->lookupWord("gasSpecies");
                     if (e->found("vapourDimerisation"))
                     {
                         auto vd = e->subDict("vapourDimerisation");
@@ -274,7 +288,9 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                         g.dimDH     = vd->lookupScalarOrDefault("dH", 0.0);
                         g.dimSource = vd->lookupWordOrDefault("source", "undeclared");
                     }
-                    const std::string dissolved = e->lookupWord("dissolved");
+                    const std::string dissolved = legacyKeys
+                        ? e->lookupWord("dissolved")
+                        : e->lookupWord("dissolvedSpecies");
                     g.species = dissolved;
                     for (const auto& rec : records)
                         if (rec->lookupWordOrDefault("ion", "") == dissolved)

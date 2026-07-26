@@ -1,8 +1,11 @@
 // [imported] origin "data/standards/components/aceticAcid.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Acetic Acid  (CH3COOH, C2H4O2, CAS 64-19-7)
-  Note: vapour-phase dimerisation is neglected here (would require
-        a chemical-association EoS).  Adequate for LLE tutorial.
+  Note: vapour-phase dimerisation is not a pure-component property and is
+        therefore not declared in this component record.  Reactive VLE
+        formulations may activate the curated vapour-association
+        equilibrium from chemistry/ (aceticAcid-dissolution.dat's
+        vapourDimerisation block).
   Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
            coefficients (marked 'individual literature value' at the block),
            Cp polynomials and the ideal-gas formation datum -- primary
@@ -73,3 +76,12 @@ cosmo
         installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
     }
 }
+
+// ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----
+// The canonical set of aqueous speciation equilibria this component
+// participates in (HAc = Ac- + H+, pKa 4.756).  The VAPOUR dimerisation
+// 2 HAc(g) = (HAc)2(g) is a vapour-phase reaction and deliberately NOT
+// part of this fact (it lives on the gas-liquid record).  The typed
+// bridge delivers the acetate family total, HAc = Acetate- + H+.
+aqueousSpeciation  aceticAcid;
+aqueousMapping ( { species Acetate; nu 1; } { species H; nu 1; } );

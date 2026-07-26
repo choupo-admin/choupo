@@ -26,6 +26,13 @@
 solute      piperidine;
 solvent     water;
 
+// Equilibrium-parameterisation identity (ADR 2026-07-26, D2 migration wave):
+// typed physical family + versioned convention profile.  Identity only --
+// no coefficient or domain touched.
+gasSpecies        piperidine;
+dissolvedSpecies  piperidine;
+convention        Sander-Hxp-v1;
+
 model       vantHoff;
 H_ref       1.9847e+04 Pa;
 T_ref       298.15 K;

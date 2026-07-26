@@ -25,11 +25,15 @@
   (2 HAc(g) = (HAc)2(g)) lives on the gas-liquid record -- deliberately NOT
   inside aqueousSpeciation.
 
-  The recommended mixed-solvent electrolyte model is UNAVAILABLE; ethanol's
-  VLE is therefore the ideal molecular approximation, AUTHORISED below --
-  delimited to the listed components, announced when exercised, refused for
-  anything unlisted.  One declared liquid surface: Davies ions, unit-gamma
-  neutrals, ethanol gamma = 1 with p = x * psat(T).
+  The composite mixed-solvent electrolyte v1 is AVAILABLE and is the
+  resolver recommendation for this system (flash13 runs it, with the full
+  curated ethanol-water NRTL pair on the backbone).  This tutorial
+  DELIBERATELY overrides that recommendation with the authorised ideal
+  molecular VLE approximation for ethanol, so that flash12 stays the ideal
+  REFERENCE case for comparison with flash13 -- delimited to the listed
+  components, announced when exercised, refused for anything unlisted.
+  One declared liquid surface: Davies ions, unit-gamma neutrals, ethanol
+  gamma = 1 with p = x * psat(T).
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
@@ -58,5 +62,6 @@ approximations
     idealMolecularVLE
     {
         components ( ethanol );              // delimited -- never global
+        reason "ideal reference case for comparison with flash13";
     }
 }

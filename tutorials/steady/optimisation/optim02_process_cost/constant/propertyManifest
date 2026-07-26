@@ -43,17 +43,17 @@ propertyManifest
         "components/aceticAcid.dat"
         {
             type          imported;
-            sha256        "58990c332aa63c6b629a60482235dfab63d58b03eb3b76e71b7ad8d9128d99ce";
+            sha256        "a879008c21b019ea83fb7910e54d5bc6247d2cfb8dfd20fdc8c8a70bccb2fe36";
             origin        "data/standards/components/aceticAcid.dat";
-            originSha256  "6f5305e2398a076a5267d782503fde6561400b3af20297dd771ca26d85dc9ec7";
+            originSha256  "335a69b7611e08ac3c6f9747a891c5583b6081ff3823be83959c0c6f0b264b72";
             release       Choupo-2607;
         }
         "components/ethanol.dat"
         {
             type          imported;
-            sha256        "25704673ff648d48ef05974bd7ad652f35beaa410187f384615fa19f0bd23f9a";
+            sha256        "74deafe861d657881887071276552fc99b4b5a7f17135cb683508a090686f9a9";
             origin        "data/standards/components/ethanol.dat";
-            originSha256  "1be8e1de2b588af92cac31bac811deddf23f4d06efa420a819b4e8f3c1e0d016";
+            originSha256  "29609267bbcd43a09d915f94aaead90bc1fd9907314209e6a95ecf8e587cb93b";
             release       Choupo-2607;
         }
         "components/ethylAcetate.dat"

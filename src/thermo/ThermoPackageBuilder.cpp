@@ -539,13 +539,17 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     //      refuses listing a component the classifier did not find
     //      MolecularNonionising (an authorisation must not reclassify).
     std::set<std::string> idealMolecularVLE;
+    std::string approximationReason;     // optional declared justification
     if (v2->found("approximations"))
     {
         auto ap = v2->subDict("approximations");
         if (ap->found("idealMolecularVLE"))
-            for (const auto& w : ap->subDict("idealMolecularVLE")
-                                   ->lookupWordList("components"))
+        {
+            auto im = ap->subDict("idealMolecularVLE");
+            for (const auto& w : im->lookupWordList("components"))
                 idealMolecularVLE.insert(w);
+            approximationReason = im->lookupWordOrDefault("reason", "");
+        }
     }
     for (const auto& w : idealMolecularVLE)
     {
@@ -577,18 +581,33 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                     " the approximation (approximations { idealMolecularVLE {"
                     " components ( " + cc.name + " ); } }), or remove the"
                     " component.");
-    if (thermoAnnounce() && molecularModel.empty())
+    //  The approximation is a DELIBERATE case override of the recommended
+    //  composite mixed-solvent electrolyte v1 route -- announced as such
+    //  (flash12 audit, 2026-07-26), with the case's declared reason when it
+    //  carries one.  The builder never selects the approximation because it
+    //  believes the recommended model unavailable: authorisation is the
+    //  block's presence, nothing else.
+    if (thermoAnnounce() && molecularModel.empty()
+        && !idealMolecularVLE.empty())
+    {
+        std::cout << "[resolver] case overrides recommendation: composite"
+                     " mixed-solvent electrolyte v1\n"
+                     "[resolver]     -> electrolyteGammaPhi + ideal molecular"
+                     " VLE for";
+        for (const auto& cc : sysc.components)
+            if (idealMolecularVLE.count(cc.name))
+                std::cout << " " << cc.name;
+        std::cout << "\n";
+        if (!approximationReason.empty())
+            std::cout << "[resolver] reason: " << approximationReason << "\n";
         for (const auto& cc : sysc.components)
             if (idealMolecularVLE.count(cc.name))
                 std::cout <<
-                    "[resolver] recommended mixed-solvent electrolyte model"
-                    " not declared\n"
-                    "[resolver] authorised approximation: ideal molecular VLE"
-                    " for " << cc.name << "\n"
                     "[resolver] p_" << cc.name << " = x_" << cc.name
                     << " * psat_" << cc.name << "(T)\n"
                     "[resolver] " << cc.name << "-" << solventName
                     << " liquid nonideality neglected\n";
+    }
 
     // (c) the apparent -> master mapping by MARKER ELEMENT (the spike's
     //     collapse contract): each non-solvent apparent component must own a

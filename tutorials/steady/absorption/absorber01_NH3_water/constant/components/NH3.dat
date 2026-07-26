@@ -97,3 +97,11 @@ cosmo
         installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
     }
 }
+
+// ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----
+// The canonical set of aqueous speciation equilibria this component
+// participates in (NH3 + H2O = NH4+ + OH-); vapour-phase reactions are
+// NOT part of this fact.  The typed component->species bridge delivers
+// the family total in the PHREEQC master convention, NH3 = NH4+ - H+.
+aqueousSpeciation  ammonia;
+aqueousMapping ( { species NH4; nu 1; } { species H; nu -1; } );

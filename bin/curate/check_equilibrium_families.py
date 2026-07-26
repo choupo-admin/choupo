@@ -71,6 +71,7 @@ for p in sorted((STD / "parameters" / "Henry").glob("*.dat")):
                    f" not the full typed identity (gasSpecies/"
                    f"dissolvedSpecies/solvent)")
         continue
+    # pair identity is declared on component-level names already
     params.append(dict(fam=(gs.group(1), ds.group(1), sv.group(1)),
                        conv=conv.group(1), src=(src.group(1) if src else "?"),
                        home=f"parameters/Henry/{p.name}",
@@ -78,14 +79,35 @@ for p in sorted((STD / "parameters" / "Henry").glob("*.dat")):
                        dH=float(dH.group(1)) if dH else None,
                        Tlo=float(Tr.group(1)) if Tr else 273.0,
                        Thi=float(Tr.group(2)) if Tr else 373.0))
-for p in sorted((STD / "chemistry").glob("*-dissolution.dat")):
+# Family normalisation through DECLARED component facts only: a gas token
+# that is some component's declared `formula` (uniquely) maps to that
+# component's name -- the gasOf contract's formula key (H2O -> water,
+# C2H4O2 -> aceticAcid).  Never element/similarity inference.
+formulaOf = {}
+for c in sorted((STD / "components").glob("*.dat")):
+    m = re.search(r'^\s*formula\s+(\S+)\s*;', strip(c.read_text()), re.M)
+    if m:
+        formulaOf.setdefault(m.group(1), []).append(c.stem)
+compNames = {c.stem for c in (STD / "components").glob("*.dat")}
+
+
+def normGas(tok):
+    if tok in compNames:
+        return tok
+    owners = formulaOf.get(tok, [])
+    return owners[0] if len(owners) == 1 else tok
+
+
+for p in sorted((STD / "chemistry").glob("*.dat")):
+    if "recordType gasLiquidEquilibrium;" not in p.read_text():
+        continue
     t = strip(p.read_text())
     conv = re.search(r'\bconvention\s+(\S+)\s*;', t)
     if not conv:
         continue
     gs = re.search(r'\bgasSpecies\s+(\S+)\s*;', t)
-    ds = re.search(r'\bdissolvedSpecies\s+(\S+)\s*;', t)
-    sv = re.search(r'\bsolvent\s+(\S+)\s*;', t)
+    ds = re.search(r'\bdissolvedSpecies\s+("[^"]+"|\S+)\s*;', t)
+    sv = re.search(r'^\s*solvent\s+(\S+)\s*;', t, re.M)
     src = re.search(r'source\s+"([^"]+)"', t)
     k25 = re.search(r'logK25\s+(-?[\d.eE+-]+)', t)
     ana = re.search(r'analytic\s*\(\s*([^)]*)\)', t)
@@ -93,7 +115,8 @@ for p in sorted((STD / "chemistry").glob("*-dissolution.dat")):
         bad.append(f"chemistry/{p.name}: declares a convention but not the"
                    f" full typed identity")
         continue
-    params.append(dict(fam=(gs.group(1), ds.group(1), sv.group(1)),
+    params.append(dict(fam=(normGas(gs.group(1)),
+                            ds.group(1).strip('"'), sv.group(1)),
                        conv=conv.group(1), src=(src.group(1) if src else "?"),
                        home=f"chemistry/{p.name}",
                        logK25=float(k25.group(1)) if k25 else None,

@@ -43,7 +43,8 @@ ReactiveVLE::ReactiveVLE(ReactiveVLEConfig cfg)
         if (!gasFor(appIdx))
             throw std::runtime_error("ReactiveVLE: volatile apparent component '"
                 + cfg_.apparent.at(appIdx) + "' has NO gas-liquid equilibrium"
-                " record (chemistry/, recordType gasLiquidEquilibrium, gas '"
+                " record (chemistry/, recordType gasLiquidEquilibrium,"
+                " gasSpecies '"
                 + (cfg_.gasOf.count(appIdx) ? cfg_.gasOf.at(appIdx)
                                             : cfg_.apparent.at(appIdx))
                 + "') -- curate the record (PHREEQC"
@@ -271,9 +272,25 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             res.diagnostic = "single liquid (sum of equilibrium partial"
                 " pressures " + std::to_string(pSum) + " atm below P)";
             if (verbosity >= 2)
+            {
+                //  The dimer observables above belong to the INCIPIENT
+                //  vapour of the saturation check -- no vapour stream
+                //  actually formed (flash12 audit, 2026-07-26).
+                if (res.dimerOn)
+                    std::cout << "  [saturation] incipient vapour"
+                                 " (saturation check, no phase formed):"
+                                 " p_mono = " << std::setprecision(4)
+                              << res.pMonoAtm << " atm, p_dimer = "
+                              << res.pDimerAtm << " atm, dimer_share = "
+                              << (res.pMonoAtm + res.pDimerAtm > 0.0
+                                  ? res.pDimerAtm
+                                    / (res.pMonoAtm + res.pDimerAtm) : 0.0)
+                              << "\n";
                 std::cout << "  [reactive] subsaturated liquid at (T,P):"
-                             " no vapour phase forms (sum p_eq = "
+                             " no vapour phase forms at the specified"
+                             " pressure (sum p_eq = "
                           << std::setprecision(4) << pSum << " atm)\n";
+            }
             return res;
         }
     }

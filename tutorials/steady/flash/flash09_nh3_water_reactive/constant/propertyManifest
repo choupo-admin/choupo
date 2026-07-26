@@ -27,9 +27,9 @@ propertyManifest
         "chemistry/NH3-dissolution.dat"
         {
             type          imported;
-            sha256        "29b13f1d4182749cb0e26d21c8a9936f21f6f2678dfd9eb48dcdc629a89ac18b";
+            sha256        "f576c10a9dbcfd18d43dc0b62a2b95688efb4da456cdc38ca8203b98342ed8dc";
             origin        "data/standards/chemistry/NH3-dissolution.dat";
-            originSha256  "9ea2231c5e7bb8f0feff979d30af14b2a09fde355427067cbde978faa9411df8";
+            originSha256  "e707768f135e63f59a24e0a7c629ddd09e8aee1d80822b5be5358f829f88a495";
             release       Choupo-2607;
         }
         "chemistry/NH3aq-formation.dat"
@@ -51,9 +51,9 @@ propertyManifest
         "chemistry/water-vapour-equilibrium.dat"
         {
             type          imported;
-            sha256        "e09b9def9172b3cbb2c977d5b92019e666ac2f2fea31d95b7c90e934adeaa818";
+            sha256        "1e2fb4e578408215405c1f92be96668f552dfe84815e339737455587019928a3";
             origin        "data/standards/chemistry/water-vapour-equilibrium.dat";
-            originSha256  "c77100c2bab3383aafaef0405eb85dbd823d3c4f023d0575d864761cbbd60614";
+            originSha256  "1127150b975b47357c5ee8866260191042a6b6783835cc0d79aad5caaffaf91a";
             release       Choupo-2607;
         }
         "components/NH3.dat"

@@ -26,6 +26,13 @@
 solute      dimethoxyethane12;
 solvent     water;
 
+// Equilibrium-parameterisation identity (ADR 2026-07-26, D2 migration wave):
+// typed physical family + versioned convention profile.  Identity only --
+// no coefficient or domain touched.
+gasSpecies        dimethoxyethane12;
+dissolvedSpecies  dimethoxyethane12;
+convention        Sander-Hxp-v1;
+
 model       vantHoff;
 H_ref       3.9517e+04 Pa;
 T_ref       298.15 K;

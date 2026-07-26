@@ -26,6 +26,13 @@
 solute      heptanol1;
 solvent     water;
 
+// Equilibrium-parameterisation identity (ADR 2026-07-26, D2 migration wave):
+// typed physical family + versioned convention profile.  Identity only --
+// no coefficient or domain touched.
+gasSpecies        heptanol1;
+dissolvedSpecies  heptanol1;
+convention        Sander-Hxp-v1;
+
 model       vantHoff;
 H_ref       1.4232e+05 Pa;
 T_ref       298.15 K;

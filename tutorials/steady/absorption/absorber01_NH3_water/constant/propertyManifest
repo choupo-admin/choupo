@@ -27,17 +27,17 @@ propertyManifest
         "components/N2.dat"
         {
             type          imported;
-            sha256        "920a4cb07f76f0b2455f3809fcefe7dcf41ce1a6492853cd6d2d7a5c287da324";
+            sha256        "e93db0086808d43cd56a11e106684c3ba2eecca97fe4f868785b583abf1bf645";
             origin        "data/standards/components/N2.dat";
-            originSha256  "4792bef415c18fc04a56e17937a799cdd248c394fc1cc40c4da32b25546e78d1";
+            originSha256  "46b71b3c92a062a28ec38512c0325dc6b6b3918d7c135a7b19a4fa1b2fe1964c";
             release       Choupo-2607;
         }
         "components/NH3.dat"
         {
             type          imported;
-            sha256        "729f1d3b61a77b24a12a7d611ced10f938ea2c4cebf57ad1b3ef25e8798544e6";
+            sha256        "2a16e30cf92075739dbddbd86fe2a9e0a7c116d5e27a3d9a26365f2dfc9be077";
             origin        "data/standards/components/NH3.dat";
-            originSha256  "473ee474cf038e68a8fd31c39d7e00a87f222a8ca5fb2cd71ec2db8d984c35c5";
+            originSha256  "72f8d77fc506d3f3c33f7ac7982e720015164f511fef10f5e20fdcb7ba8c195e";
             release       Choupo-2607;
         }
         "components/water.dat"
@@ -51,9 +51,9 @@ propertyManifest
         "parameters/Henry/NH3-water.dat"
         {
             type          imported;
-            sha256        "bc98cdfdacdb227f258ec5373d7705134b762e4ef1c864d94f8fea0fdfbde8d5";
+            sha256        "189b9f796ba80ff4a5dfee372417f61401a911c7f3ef6c48a2814e6cca31b6e8";
             origin        "data/standards/parameters/Henry/NH3-water.dat";
-            originSha256  "420a3445e9d2e5c00ddee3750d7a04c4f6875397f930ac2980bfa00793d436fd";
+            originSha256  "9bde3a89acf084e816cc277ce7e16b6a418c280cabf036286ee4da193a901c1e";
             release       Choupo-2607;
         }
     }

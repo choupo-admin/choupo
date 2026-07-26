@@ -27,9 +27,9 @@ propertyManifest
         "components/aceticAcid.dat"
         {
             type          imported;
-            sha256        "58990c332aa63c6b629a60482235dfab63d58b03eb3b76e71b7ad8d9128d99ce";
+            sha256        "a879008c21b019ea83fb7910e54d5bc6247d2cfb8dfd20fdc8c8a70bccb2fe36";
             origin        "data/standards/components/aceticAcid.dat";
-            originSha256  "6f5305e2398a076a5267d782503fde6561400b3af20297dd771ca26d85dc9ec7";
+            originSha256  "335a69b7611e08ac3c6f9747a891c5583b6081ff3823be83959c0c6f0b264b72";
             release       Choupo-2607;
         }
     }

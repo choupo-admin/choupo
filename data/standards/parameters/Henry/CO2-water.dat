@@ -24,6 +24,13 @@
 solute      CO2;
 solvent     water;
 
+// Equilibrium-parameterisation identity (ADR 2026-07-26, D2 migration wave):
+// typed physical family + versioned convention profile.  Identity only --
+// no coefficient or domain touched.
+gasSpecies        CO2;
+dissolvedSpecies  CO2;
+convention        Sander-Hxp-v1;
+
 model       vantHoff;
 H_ref       1.64e8 Pa;          // = 1640 bar at 298.15 K
 T_ref       298.15 K;

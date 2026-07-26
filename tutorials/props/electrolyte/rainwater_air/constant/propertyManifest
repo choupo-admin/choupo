@@ -27,9 +27,9 @@ propertyManifest
         "chemistry/CO2-dissolution.dat"
         {
             type          imported;
-            sha256        "c163491ef715fddff52c43491850c0ef0adc316f3f8f6bf87b5c0c40026cd817";
+            sha256        "983e95a8c5ed8760792f36ce2861ca3687d380f21da2621bca37106eace0cfa5";
             origin        "data/standards/chemistry/CO2-dissolution.dat";
-            originSha256  "e6d229793ee2675940c8f883e5220e85f39cfbc21ba183e379001d4e26028b82";
+            originSha256  "5ef7de6a6144c281f04c4b01c7f45f2c16edeb1075f3e78a76179f5d03dfabaf";
             release       Choupo-2607;
         }
         "chemistry/CO2aq-formation.dat"
@@ -51,17 +51,17 @@ propertyManifest
         "chemistry/N2-dissolution.dat"
         {
             type          imported;
-            sha256        "dfed47c530fbe85654a824387692760800683801285959850d3541e6f670f8d8";
+            sha256        "52bfd8720fd1d6ab9daa085ee13e7b05fa4104ccb3bb5965222673f53afc4270";
             origin        "data/standards/chemistry/N2-dissolution.dat";
-            originSha256  "fe2451b1ac18ffb4c9e00fc035bd1444055c642117edef19adbac3bdba3cb95a";
+            originSha256  "89754020a3fdc9971bd064fdaa50af205e2a41788eb4402e17ad429b9cd7b0ed";
             release       Choupo-2607;
         }
         "chemistry/O2-dissolution.dat"
         {
             type          imported;
-            sha256        "64b712b39bf5127fc0b77c1c76f2ac122653ad30aa6969f7ebc780b34f71cc6c";
+            sha256        "273998c6c552addfe9ac3b9f1d6f64610f0ce7047e985457497ebfcd04b2b8ac";
             origin        "data/standards/chemistry/O2-dissolution.dat";
-            originSha256  "2cbf6d214f9d7d2e8f4a6cef3235f12bbf1de11ea5efa80df300c3e80bd53dd7";
+            originSha256  "d7dd9c9ef0ec213ea66b2e44b63bcd6dfdc8e8c8c10f4e3b77a6156fb7034d22";
             release       Choupo-2607;
         }
         "chemistry/water-dissociation.dat"

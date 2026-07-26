@@ -1,7 +1,16 @@
 // [imported] origin "data/standards/chemistry/water-vapour-equilibrium.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 recordType gasLiquidEquilibrium;
-schemaVersion 1;
+schemaVersion 2;
 
-gas H2O; reaction "H2O(g) = H2O"; dissolved "H2O";
+// Equilibrium-parameterisation identity (ADR 2026-07-26, D2 migration wave):
+// typed physical family + versioned convention profile.  gasSpecies is the
+// gas-phase key of the gasOf contract (the component's declared formula:
+// water -> H2O).  No Sander pair exists for the solvent itself -- single
+// parameterisation, no cross-convention diagnostic.
+gasSpecies       H2O;
+dissolvedSpecies H2O;
+solvent          water;
+convention       PHREEQC-gasMolal-v1;
+
+reaction "H2O(g) = H2O";
       logK25 1.506; dH -44030; analytic ( -16.5066 -0.0020013 2710.7 3.7646 0 2.24e-06 ); source "USGS PHREEQC phreeqc.dat (public domain); primary not stated in db";
-

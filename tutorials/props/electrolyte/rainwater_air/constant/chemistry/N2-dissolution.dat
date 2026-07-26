@@ -1,7 +1,15 @@
 // [imported] origin "data/standards/chemistry/N2-dissolution.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 recordType gasLiquidEquilibrium;
-schemaVersion 1;
+schemaVersion 2;
 
-gas N2; reaction "N2(g) = N2"; dissolved "N2";
+// Equilibrium-parameterisation identity (ADR 2026-07-26, D2 migration wave):
+// typed physical family + versioned convention profile.  The Sander H_xp
+// pair parameters/Henry/N2-water.dat is an INDEPENDENT PRIMARY of the same
+// family -- cross-convention DIAGNOSTIC.
+gasSpecies       N2;
+dissolvedSpecies N2;
+solvent          water;
+convention       PHREEQC-gasMolal-v1;
+
+reaction "N2(g) = N2";
       logK25 -3.1864; analytic ( -58.453 0.001818 3199 17.909 -27460 ); source "USGS PHREEQC phreeqc.dat (public domain); primary not stated in db";
-

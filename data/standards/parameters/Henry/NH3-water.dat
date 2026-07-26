@@ -23,6 +23,13 @@
 solute      NH3;
 solvent     water;
 
+// Equilibrium-parameterisation identity (ADR 2026-07-26, D2 migration wave):
+// typed physical family + versioned convention profile.  Identity only --
+// no coefficient or domain touched.
+gasSpecies        NH3;
+dissolvedSpecies  NH3;
+convention        Sander-Hxp-v1;
+
 model       vantHoff;
 H_ref       9.9e4 Pa;             // = 0.99 bar at 298.15 K
 T_ref       298.15 K;
