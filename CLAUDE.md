@@ -330,7 +330,10 @@ identity has ONE home (species/ file XOR inline `z`/`ion`), and all sealed
 cases were re-imported.  The `aq` suffix STAYS (interim lexical-disambiguation
 rule: a derived neutral homonymous with a component -- CaCO3aq vs the salt
 CaCO3 -- while RECORD references are bare strings); removal waits for typed
-record references.  Gates: check_species_identity, check_aq_disambiguation,
+record references, and typed means END-TO-END (ratified 2026-07-26): the
+typing must survive intact from the loader to the runtime with NO
+intermediate conversion through bare strings -- data files gaining typed
+references alone does NOT unlock removal.  Gates: check_species_identity, check_aq_disambiguation,
 check_typed_identifiers.
 
 ### ThermoResolver / SystemClassifier (RATIFIED three-way 2026-07-26, do NOT relitigate)

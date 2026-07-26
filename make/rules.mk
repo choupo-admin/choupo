@@ -11,8 +11,22 @@
 #      ./choupoSolve tutorials/<case>
 # =============================================================================
 
-# Object & dependency emission
-$(BUILD)/src/%.o: src/%.cpp
+# Flag stamps (see compiler.mk): minting a stamp clears its stale siblings,
+# so a flag change ripples exactly as far as it must -- objects for the
+# compile stamp, links for the link stamp.
+$(COMPILE_STAMP):
+	@mkdir -p $(BUILD)
+	@rm -f $(BUILD)/.stamp-cxx-*
+	@touch $@
+
+$(LINK_STAMP):
+	@mkdir -p $(BUILD)
+	@rm -f $(BUILD)/.stamp-ld-*
+	@touch $@
+
+# Object & dependency emission (every object depends on the COMPILE stamp:
+# changing the compiler or a compile flag rebuilds them all)
+$(BUILD)/src/%.o: src/%.cpp $(COMPILE_STAMP)
 	@mkdir -p $(@D)
 	@printf "  CXX   %s\n" $<
 	@$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@

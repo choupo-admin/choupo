@@ -60,7 +60,6 @@ ifeq ($(PLATFORM),win64MinGW)
     LIB_DEP    := $(LIB_OBJS)           # link the objects directly (static)
     LIB_LINK   := $(LIB_OBJS)
 else
-    CXXFLAGS   += -fPIC                 # position-independent code for the .so
     LIBCHOUPO := $(BUILD)/libchoupo.so
     LIB_DEP    := $(LIBCHOUPO)
     # rpath '$ORIGIN' --- the binary finds libchoupo.so in its OWN dir
@@ -103,10 +102,10 @@ all: gitversion $(SYMLINK_SOLVE) $(SYMLINK_BATCH) $(SYMLINK_CTRL) $(SYMLINK_PROP
 lib: $(LIB_DEP) $(SOLVE_MAIN)
 
 ifneq ($(LIBCHOUPO),)
-$(LIBCHOUPO): $(LIB_OBJS)
+$(LIBCHOUPO): $(LIB_OBJS) $(LINK_STAMP)
 	@mkdir -p $(@D)
 	@printf "  SO    %s\n" $@
-	@$(CXX) -shared -o $@ $^ $(LDFLAGS)
+	@$(CXX) -shared -o $@ $(filter %.o,$^) $(LDFLAGS)
 endif
 
 $(SYMLINK_SOLVE): $(BINARY_SOLVE)
@@ -125,22 +124,22 @@ $(SYMLINK_PROPS): $(BINARY_PROPS)
 	@ln -sfn $(BINARY_PROPS) $(SYMLINK_PROPS)
 	@printf "  -->   %s -> %s\n" $(SYMLINK_PROPS) $(BINARY_PROPS)
 
-$(BINARY_SOLVE): $(SOLVE_OBJS) $(LIB_DEP)
+$(BINARY_SOLVE): $(SOLVE_OBJS) $(LIB_DEP) $(LINK_STAMP)
 	@mkdir -p $(@D)
 	@printf "  LD    %s\n" $@
 	@$(CXX) $(CXXFLAGS) -o $@ $(SOLVE_OBJS) $(LIB_LINK) $(LDFLAGS)
 
-$(BINARY_BATCH): $(BATCH_OBJS) $(LIB_DEP)
+$(BINARY_BATCH): $(BATCH_OBJS) $(LIB_DEP) $(LINK_STAMP)
 	@mkdir -p $(@D)
 	@printf "  LD    %s\n" $@
 	@$(CXX) $(CXXFLAGS) -o $@ $(BATCH_OBJS) $(LIB_LINK) $(LDFLAGS)
 
-$(BINARY_CTRL): $(CTRL_OBJS) $(LIB_DEP)
+$(BINARY_CTRL): $(CTRL_OBJS) $(LIB_DEP) $(LINK_STAMP)
 	@mkdir -p $(@D)
 	@printf "  LD    %s\n" $@
 	@$(CXX) $(CXXFLAGS) -o $@ $(CTRL_OBJS) $(LIB_LINK) $(LDFLAGS)
 
-$(BINARY_PROPS): $(PROPS_OBJS) $(LIB_DEP)
+$(BINARY_PROPS): $(PROPS_OBJS) $(LIB_DEP) $(LINK_STAMP)
 	@mkdir -p $(@D)
 	@printf "  LD    %s\n" $@
 	@$(CXX) $(CXXFLAGS) -o $@ $(PROPS_OBJS) $(LIB_LINK) $(LDFLAGS)

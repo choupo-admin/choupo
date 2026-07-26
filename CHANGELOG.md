@@ -100,6 +100,21 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
   flash12 stays the deliberate ideal-authorised comparison pair;
   choupo-resolve recommends the modelled route whenever the backbone
   pairs exist.
+* **Build-hygiene campaign (6 commits, ChatGPT-audited plan)**: the
+  incremental build now means what it says.  UnitProfile split out of
+  UnitOperation.H; UnitOperation.H forward-declares ThermoPackage
+  (fan-out 95 -> 54 TUs); ThermoPackage.H stops dragging 14 model
+  headers (ActivityModel 136 -> 29, EquationOfState -> 21,
+  SpeciationSolver -> 13, Phase -> 11, ReactiveVLE -> 5 TUs);
+  Component.H stops dragging the correlation models
+  (VaporPressureModel 177 -> 31, HeatCapacityModel 177 -> 29).  NATIVE
+  FLAG STAMPS, split: a compile-flag change rebuilds all 261 objects, a
+  LINK-flag change re-links 5 artefacts and recompiles NOTHING (both
+  proven by dry-run counts; the old build silently reused stale objects
+  on any flag change).  Instruments: bin/checkHeaderSelfContained
+  (runTests gate, 304/304) + bin/checkCompileFanout (informational .d
+  report, no arbitrary limits).  Touch-matrix proof: one .cpp -> 1 CXX +
+  5 links; goldens byte-identical across all six commits.
 * Thirteen new curation gates in `runTests` (312 PASS / 0 FAIL).
 
 ## [Unreleased]
