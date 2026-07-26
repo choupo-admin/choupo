@@ -1864,6 +1864,66 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \end{tutgolden}
 
 \clearpage
+\tutentry{flash09\_nh3\_water\_reactive}{tutorials/steady/flash/flash09\_nh3\_water\_reactive}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (flash01) at (0.0,-0.0) {\textbf{flash01}\\[-1pt]{\tiny isothermalFlash}};
+  \draw[->] ($(flash01.west)+(-1.05,0.00)$) -- ($(flash01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(flash01.east)+(0,-0.17)$) -- ($(flash01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {liquid};
+  \draw[->] ($(flash01.east)+(0,0.17)$) -- ($(flash01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapor};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Reactive NH3/water flash: SIMULTANEOUS aqueous speciation (NH4+/H+/OH-, pH solved) + VLE at 368 K, 1 atm -- ions never reach the vapour or the streams}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-2607 | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{liquid}{F}{0.0224533469427}
+\goldrow{stream}{vapor}{F}{0.00532443083505}
+\goldrow{kpi}{flash01}{F\_alpha}{0.0224533469427}
+\goldrow{kpi}{flash01}{F\_beta}{0.00532443083505}
+\goldrow{kpi}{flash01}{F\_in}{0.0277777777778}
+\goldrow{kpi}{flash01}{P}{101325}
+\goldrow{kpi}{flash01}{Q}{196140.321917}
+\goldrow{kpi}{flash01}{Q\_kW}{196.140321917}
+\goldrow{kpi}{flash01}{T}{368.15}
+\goldrow{kpi}{flash01}{V\_over\_F}{0.191679510062}
+\goldrow{kpi}{flash01}{phaseSet}{0}
+\end{tutgolden}
+
+\clearpage
+\tutentry{flash10\_acetic\_water\_reactive}{tutorials/steady/flash/flash10\_acetic\_water\_reactive}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (flash01) at (0.0,-0.0) {\textbf{flash01}\\[-1pt]{\tiny isothermalFlash}};
+  \draw[->] ($(flash01.west)+(-1.05,0.00)$) -- ($(flash01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(flash01.east)+(0,-0.17)$) -- ($(flash01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {liquid};
+  \draw[->] ($(flash01.east)+(0,0.17)$) -- ($(flash01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapor};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Reactive acetic acid/water flash: SIMULTANEOUS aqueous speciation (Acetate-/H+/OH-, pH solved) + VLE -- the weak ACID mirror of flash09; ions never reach the vapour or the streams}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-2607 | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{liquid}{F}{0.0277777777778}
+\goldrow{stream}{vapor}{F}{0}
+\goldrow{kpi}{flash01}{F\_alpha}{0.0277777777778}
+\goldrow{kpi}{flash01}{F\_beta}{0}
+\goldrow{kpi}{flash01}{F\_in}{0.0277777777778}
+\goldrow{kpi}{flash01}{P}{101325}
+\goldrow{kpi}{flash01}{Q}{0}
+\goldrow{kpi}{flash01}{Q\_kW}{0}
+\goldrow{kpi}{flash01}{T}{368.15}
+\goldrow{kpi}{flash01}{V\_over\_F}{0}
+\goldrow{kpi}{flash01}{phaseSet}{0}
+\end{tutgolden}
+
+\clearpage
 \tutentry{flash10\_ch4propane\_pcsaft}{tutorials/steady/flash/flash10\_ch4propane\_pcsaft}
 \tutwhat{PC-SAFT phi-phi binary flash, CH4/propane at 273.15 K / 20 bar, kij = 0 (announced): the PREDICTIVE baseline of the SAFT world -- K = phi\_L/phi\_V from ONE a\_res surface at its two density roots. Sanity anchor carried by the case itself: propane's curated Antoine gives Psat(273.15 K) = 4.7 bar, so the Raoult-magnitude K\_propane \textasciitilde{} 0.24 -- the PC-SAFT K\_propane = 0.32 sits near it (the deviation IS the fugacity correction of a liquid holding \textasciitilde{}11\% dissolved CH4, visible); K\_CH4 >> 1 (supercritical light key). The published-kij refinement is a NAMED follow-up: it needs the cited pair record (data/standards/parameters/PCSAFT/), never an invented number.}
 \begin{tutnarrative}

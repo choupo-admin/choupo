@@ -74,7 +74,7 @@ Choupo/
 ├── bin/                        runCase, runTests, runGui, runSite, listCases, devGui, llmctx, …
 ├── data/standards/             components/ materials/ membranes/ utilities/ + pair catalogues
 ├── src/                        C++ source (see §4)
-└── tutorials/                  284 runnable cases under steady/ batch/ ctrl/ props/ plant/ (see §8)
+└── tutorials/                  318 runnable cases under steady/ batch/ ctrl/ props/ plant/ (see §8)
 ```
 
 ### Git & release conventions
@@ -304,6 +304,44 @@ NEVER route its enthalpy through the ideal-gas reference** (`h_pure_ig` /
 derivation, so single-source (arity-1) controls.  Full rationale: the
 `salt-crystallisation-enthalpy-2026-06-29` forum + [`docs/ai/energy.md`](docs/ai/energy.md).
 
+### Aqueous chemistry: declared by the case, read by the units (settled 2026-07-25/26, do NOT relitigate)
+
+The `equilibrium { aqueous { activityModel {…} speciation {…} } }` block is
+readable with ANY formulation (it left `electrolyteGammaPhi`'s ownership) --
+a liquid-only electrolyte case declares its chemistry there.  A model's name
+may appear in exactly THREE places: the case declaration (process units READ
+it or refuse -- `ThermoPackage::speciateAqueous()` / `speciator()`; no unit
+constructs chemistry or defaults a model), a props-BENCH op (the model is the
+experiment's subject), or a model-prescribed internal (DSPM-DE's Davies,
+announced).  Solid phases: `constant/chemistryDict` says WHICH exist; the
+unit only holds policy (`reportMinerals`).  Gates: check_no_unit_chemistry,
+unit-chemistry in runTests.
+
+### Typed identifiers + the F2 rename (EXECUTED 2026-07-26, three-way ratified)
+
+`ComponentId` / `SpeciesId` / `SolidId` (core/Identifiers.H) are strong types
+with NO implicit conversion; the component->species crossing goes ONLY through
+the declared stoichiometric bridge (`aqueousMapping (…)` on the component, or
+`dissociatesTo` converted at load -- NEVER name identity).  The F2 campaign is
+DONE: p/m charge mangles are gone (CaOH, FeOH3, MgSO4_2), redox is roman
+(FeII/FeIII, CuI/CuII, MnII/MnIII), chemistry/ files are named by REACTION
+(`CaOH-formation.dat`, `CO2-dissolution.dat`, `water-dissociation.dat`),
+identity has ONE home (species/ file XOR inline `z`/`ion`), and all sealed
+cases were re-imported.  The `aq` suffix STAYS (interim lexical-disambiguation
+rule: a derived neutral homonymous with a component -- CaCO3aq vs the salt
+CaCO3 -- while RECORD references are bare strings); removal waits for typed
+record references.  Gates: check_species_identity, check_aq_disambiguation,
+check_typed_identifiers.
+
+### COSMO / VT-2005 licence separation (EXECUTED 2026-07-26)
+
+The public tree ships NO VT-2005 values: every set is an external REFERENCE
+(`licence externalRestricted; installed false;` + full citation).  The user's
+own copy installs via `bin/choupo-import-cosmo` into `data/local/cosmo/`
+(gitignored); absent, CosmoSac refuses by name with the install command.
+cosmoSAC01 regresses on SYNTHETIC teaching surrogates (labelled GPL).
+Gate: check_cosmo_scrub (0 restricted values, enforced).
+
 ### Electrolyte activity selector keys — `pitzer` ≠ `pitzerHMW` (settled 2026-06-29, A3, do NOT re-clash)
 
 Two DIFFERENT Pitzer engines now carry two DISTINCT factory keys (the old
@@ -358,7 +396,7 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   `bin/curate/release_inventory.py` → `generated/releaseInventory.json`
   (consumed by the homepage + `/models`; a `runTests` gate fails when stale).
   Do NOT hand-maintain these numbers; the current release (Choupo-2607) is:
-* **284 runnable tutorial cases** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
+* **318 runnable tutorial cases** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
   `bin/runTests` validates them via golden-master KPI + NaN/inf guard + the
   doctrine + release-inventory gates (0 FAIL, 0 KNOWN-BROKEN; deliberate EXPECTED-FAILs).
 * **247 components** (incl. the combustion library — GRI-Mech 3.0 + Burcat sulfur/chlorine/soot-PAH/low-T/NOx families) + **41 aqueous species/ions** (one `recordType modelSpecies` file per species, `species/<name>.dat`),

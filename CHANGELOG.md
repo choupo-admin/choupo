@@ -8,6 +8,39 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
 (`Choupo-dev`); `main` is always the latest stable release.
 **Choupo-2607** is the first version.
 
+## Choupo-dev (2026-07-25/26)
+
+* **choupo-lint** (`choupoSolve --lint`): validate a case without solving it.
+* **Sequential-plan contract**: declared order + tears validated at the
+  flatten seam; six named refusals; non-converged recycle exits 1.
+* **Reactive electrolyte VLE** (section 6b, unit-local): NH3/water spike
+  (flash09) and the acetic mirror (flash10) -- simultaneous speciation +
+  phase equilibrium, streams stay apparent, pH solved; acetic adds VAPOUR
+  DIMERISATION priced in the saturation check (Chao & Zwolinski 1978).
+* **Aqueous chemistry declared once, read by units**: `aqueous {}` readable
+  with any formulation; `ThermoPackage::speciateAqueous()`; units never
+  choose or construct chemistry (membrane, ED, ion exchanger migrated);
+  `chemistryDict` owns the admitted solids, units keep only policy.
+* **The SI shows its work**: the membrane scaling audit prints the full
+  chain (totals -> free+complexes -> gamma -> activity -> IAP vs Ksp).
+* **Chemical-family views from the engine**: `choupoProps --family iron`,
+  `--aqueous-graph`; navigation ontology in `metadata/` (outside the sealed
+  tree), mediator-aware family propagation.
+* **Typed identifiers**: ComponentId/SpeciesId/SolidId strong types; the
+  component->species bridge is declared and stoichiometric (aqueousMapping /
+  dissociatesTo); lexical crossings are compile errors.
+* **F2 identifier campaign EXECUTED**: p/m charge mangles gone, redox in
+  roman numerals (FeII/FeIII, CuI/CuII, MnII/MnIII), chemistry/ files named
+  by reaction, identity single-homed, 42 aqueous sealed cases re-imported.
+  The `aq` suffix stays as the interim lexical disambiguator.
+* **VT-2005 licence separation**: the public tree ships references, never
+  the values; `bin/choupo-import-cosmo` installs the user's own copy into
+  gitignored `data/local/cosmo/`; cosmoSAC01 regresses on synthetic
+  teaching surrogates.  Sealed-mirror sweep: 276+ cases re-imported.
+* **Sealing leak fixed**: PitzerHMW pair enumeration obeyed the sealed
+  closure (it read the installation catalogue unconditionally).
+* Eleven new curation gates in `runTests` (307 PASS / 0 FAIL).
+
 ## [Unreleased]
 
 ## [Choupo-2607] — 2026-07-14, consolidated 2026-07-19
