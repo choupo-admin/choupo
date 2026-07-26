@@ -1,0 +1,62 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The package the ThermoResolver recommends for this system -- persisted,
+  reviewable, sealed (the resolver materialises; the runtime classifies the
+  sealed system, VERIFIES this declaration and executes it, announcing any
+  divergence).
+
+  Classification (from canonical component FACTS, never from names):
+      water        declared aqueous solvent      (a_w-based VLE)
+      aceticAcid   molecular reactive            (aqueousSpeciation aceticAcid)
+      NH3          molecular reactive            (aqueousSpeciation ammonia)
+      ethanol      molecular condensable,        (aqueousSpeciation none)
+                   nonionising
+
+  Aqueous network: HAc-formation + NH3aq-formation + water-dissociation on
+  masters ( Acetate NH4 ); the acid-base coupling NH3 + HAc = NH4+ + Ac-
+  emerges from the shared H+.  Vapour-phase reaction: the acetic dimer
+  (2 HAc(g) = (HAc)2(g)) lives on the gas-liquid record -- deliberately NOT
+  inside aqueousSpeciation.
+
+  The recommended mixed-solvent electrolyte model is UNAVAILABLE; ethanol's
+  VLE is therefore the ideal molecular approximation, AUTHORISED below --
+  delimited to the listed components, announced when exercised, refused for
+  anything unlisted.  One declared liquid surface: Davies ions, unit-gamma
+  neutrals, ethanol gamma = 1 with p = x * psat(T).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( aceticAcid  NH3  ethanol  water );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+
+    aqueous
+    {
+        solvent       water;                 // the DECLARED aqueous solvent
+        activityModel { model davies; }      // this slice's rung (announced)
+        speciation    { masters ( Acetate  NH4 ); }
+    }
+
+    vapour    { fugacityModel idealGas; }
+
+    volatiles ( aceticAcid  NH3  ethanol  water );
+}
+
+approximations
+{
+    idealMolecularVLE
+    {
+        components ( ethanol );              // delimited -- never global
+    }
+}

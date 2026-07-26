@@ -333,6 +333,30 @@ CaCO3 -- while RECORD references are bare strings); removal waits for typed
 record references.  Gates: check_species_identity, check_aq_disambiguation,
 check_typed_identifiers.
 
+### ThermoResolver / SystemClassifier (RATIFIED three-way 2026-07-26, do NOT relitigate)
+
+Components are classified from CANONICAL RECORD FACTS -- never from names,
+never from ad-hoc case lists (`spectators`/`molecularVolatiles`/
+`nonreactiveMolecularComponents` were all REJECTED).  The substance-level
+fact is **`aqueousSpeciation none|<setName>;`** (participation in the aqueous
+EQUILIBRIUM SPECIATION network only -- vapour reactions like the acetic dimer
+stay on the gas-liquid records, phase purity); ABSENT = UNKNOWN, refused
+inside an electrolyte system with the curation remedy.
+`src/thermo/SystemClassifier` classifies (solvent = the DECLARED
+`aqueous { solvent ...; }`, default water -- no `if (name == "water")`
+anywhere); the reactive builder announces every `[resolver]` conclusion,
+verifies the persisted declaration and refuses impossible ones.  The
+recommended package is PERSISTED in the case (`bin/choupo-resolve [--draft]`
+is where the recommendation is born; the runtime NEVER chooses freely).
+Approximations are DELIMITED per component -- `approximations {
+idealMolecularVLE { components ( ethanol ); } }` -- authorisation is the
+block's presence, applying it to anything unlisted refuses, listing anything
+the classifier did not find nonionising refuses; ideal molecular VLE is ONE
+declared surface (Davies ions + unit-gamma neutrals + x*psat co-volatile),
+never a clandestine gammaInfinity read from NRTL (mixed-solvent replaces it
+integrally when it exists).  Gates: check_resolver_coherence.  Reference
+case: `tutorials/steady/flash/flash12_nh3_acetic_ethanol_reactive`.
+
 ### COSMO / VT-2005 licence separation (EXECUTED 2026-07-26)
 
 The public tree ships NO VT-2005 values: every set is an external REFERENCE

@@ -99,6 +99,8 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         // (dissolution AND -- when declared -- vapour dimerisation).
         sol.extraKpis["pH"]           = r.pH;
         sol.extraKpis["p_eq_sum_atm"] = r.pEqSumAtm;
+        for (const auto& [nm, pI] : r.pMolecularAtm)
+            sol.extraKpis["p_" + nm + "_atm"] = pI;
         if (r.dimerOn)
         {
             sol.extraKpis["p_mono_atm"]  = r.pMonoAtm;

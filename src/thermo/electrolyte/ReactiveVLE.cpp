@@ -29,11 +29,24 @@ ReactiveVLE::ReactiveVLE(ReactiveVLEConfig cfg)
     //  is checked HERE, with the curation remedy in the message.
     for (const auto appIdx : cfg_.volatiles)
     {
+        //  An authorised nonreactive molecular volatile needs its own psat
+        //  correlation instead of a gas-liquid record.
+        if (cfg_.nonreactive.count(appIdx))
+        {
+            if (!cfg_.psatOf.count(appIdx))
+                throw std::runtime_error("ReactiveVLE: nonreactive molecular"
+                    " volatile '" + cfg_.apparent.at(appIdx) + "' has no"
+                    " curated pure-component psat correlation -- the ideal"
+                    " Raoult approximation cannot be priced.");
+            continue;
+        }
         if (!gasFor(appIdx))
             throw std::runtime_error("ReactiveVLE: volatile apparent component '"
                 + cfg_.apparent.at(appIdx) + "' has NO gas-liquid equilibrium"
                 " record (chemistry/, recordType gasLiquidEquilibrium, gas '"
-                + cfg_.gasOf.at(appIdx) + "') -- curate the record (PHREEQC"
+                + (cfg_.gasOf.count(appIdx) ? cfg_.gasOf.at(appIdx)
+                                            : cfg_.apparent.at(appIdx))
+                + "') -- curate the record (PHREEQC"
                 " PHASES convention, a = K * p[atm]) before declaring it"
                 " volatile.");
     }
@@ -161,6 +174,23 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         scalar pSum = 0.0;
         for (const auto appIdx : cfg_.volatiles)
         {
+            //  Authorised nonreactive molecular volatile: ideal Raoult on
+            //  its own curated psat, gamma = 1 inside the one declared
+            //  aqueous surface (announced at assembly by the resolver).
+            if (cfg_.nonreactive.count(appIdx))
+            {
+                scalar nTot0 = 0.0; for (auto q : n) nTot0 += q;
+                const scalar xI = n[appIdx] / nTot0;
+                const scalar pI = xI * cfg_.psatOf.at(appIdx)(T_K) / kAtm;
+                pSum += pI;
+                res.pMolecularAtm[cfg_.apparent[appIdx]] = pI;
+                if (verbosity >= 2)
+                    std::cout << "  [reactive] " << cfg_.apparent[appIdx]
+                              << ": ideal molecular VLE (authorised): p = x *"
+                                 " psat = " << std::setprecision(4) << pI
+                              << " atm  (x = " << xI << ")\n";
+                continue;
+            }
             const GasEntry* g = gasFor(appIdx);
             const scalar K  = std::pow(10.0, gasLogK(*g, T_K));
             const scalar pM = dissolvedActivity(appIdx, sr) / K;   // [atm]
@@ -230,6 +260,14 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         }
     };
     for (const auto appIdx : cfg_.volatiles)
+    {
+        if (cfg_.nonreactive.count(appIdx))
+            throw std::runtime_error("ReactiveVLE: nonreactive molecular"
+                " volatile '" + cfg_.apparent[appIdx] + "' is priced by ideal"
+                " Raoult only in the saturation check (single-liquid regime)"
+                " in this slice.  A TWO-PHASE reactive flash carrying a"
+                " molecular co-volatile is a later, deliberate slice (the"
+                " mixed-solvent model) -- no silent approximation is run.");
         if (gasFor(appIdx)->hasDimer)
             throw std::runtime_error("ReactiveVLE: volatile '"
                 + cfg_.apparent[appIdx] + "' declares vapour dimerisation,"
@@ -238,6 +276,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                   " a dimerising vapour re-weights the vapour mole balance"
                   " (apparent moles = n_mono + 2 n_dim) and is a later,"
                   " deliberate slice -- no silent approximation is run.");
+    }
     auto residual = [&](const sVector& u) -> sVector
     {
         sVector vap; unpack(u, vap);

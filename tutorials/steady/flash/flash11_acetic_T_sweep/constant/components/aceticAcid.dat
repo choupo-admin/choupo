@@ -73,3 +73,12 @@ cosmo
         installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
     }
 }
+
+// ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----
+// The canonical set of aqueous speciation equilibria this component
+// participates in (HAc = Ac- + H+, pKa 4.756).  The VAPOUR dimerisation
+// 2 HAc(g) = (HAc)2(g) is a vapour-phase reaction and deliberately NOT
+// part of this fact (it lives on the gas-liquid record).  The typed
+// bridge delivers the acetate family total, HAc = Acetate- + H+.
+aqueousSpeciation  aceticAcid;
+aqueousMapping ( { species Acetate; nu 1; } { species H; nu 1; } );

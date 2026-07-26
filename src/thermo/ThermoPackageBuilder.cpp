@@ -15,6 +15,7 @@
 #include "thermo/equationOfState/EquationOfState.H"
 
 #include "thermo/ElementComposition.H"
+#include "thermo/SystemClassifier.H"
 #include "thermo/electrolyte/ReactiveVLE.H"
 
 #include <cmath>
@@ -470,18 +471,90 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             " electrolyte path serves vapour idealGas in this slice ('"
             + vap + "' declared).");
 
-    // (b) apparent components (molecular records; overlays honoured).
+    // (b) apparent components (molecular records; overlays honoured).  The
+    //     aqueous solvent is DECLARED (`aqueous { solvent <name>; }`,
+    //     defaulting to water as the aqueous formulation's reference) -- the
+    //     classifier never recognises a solvent by name.
     const auto names = v2->lookupWordList("components");
+    const std::string solventName =
+        aq->found("solvent") ? aq->lookupWord("solvent") : "water";
     std::vector<Component> comps;
     comps.reserve(names.size());
     std::size_t solventIdx = names.size();
     for (const auto& cn : names)
     {
-        if (cn == "water") solventIdx = comps.size();
+        if (cn == solventName) solventIdx = comps.size();
         comps.push_back(db.loadComponent(cn));
     }
     if (solventIdx == names.size())
-        absent("a water solvent", "reactive electrolyteGammaPhi components");
+        absent("the declared aqueous solvent '" + solventName + "'",
+               "reactive electrolyteGammaPhi components");
+
+    // (b2) CLASSIFY the system from canonical component facts (the
+    //      ThermoResolver contract, ratified 2026-07-26): every conclusion
+    //      announced, an UNKNOWN molecular component refused with the
+    //      curation remedy.  No name is special-cased anywhere below.
+    const SystemClassification sysc =
+        classifySystem(comps, names, solventName);
+    if (!sysc.refusals.empty())
+    {
+        std::string msg = "ThermoResolver refused the system:";
+        for (const auto& r : sysc.refusals) msg += "\n  " + r;
+        throw std::runtime_error(msg);
+    }
+    if (thermoAnnounce())
+        for (const auto& line : sysc.report)
+            std::cout << line << "\n";
+
+    // (b3) the AUTHORISED-approximation profile (delimited, never global):
+    //      `approximations { idealMolecularVLE { components ( ... ); } }`.
+    //      The block's presence is the authorisation; the builder refuses
+    //      the approximation for any component not explicitly listed, and
+    //      refuses listing a component the classifier did not find
+    //      MolecularNonionising (an authorisation must not reclassify).
+    std::set<std::string> idealMolecularVLE;
+    if (v2->found("approximations"))
+    {
+        auto ap = v2->subDict("approximations");
+        if (ap->found("idealMolecularVLE"))
+            for (const auto& w : ap->subDict("idealMolecularVLE")
+                                   ->lookupWordList("components"))
+                idealMolecularVLE.insert(w);
+    }
+    for (const auto& w : idealMolecularVLE)
+    {
+        bool ok = false;
+        for (const auto& cc : sysc.components)
+            if (cc.name == w
+             && cc.kind == ComponentClassification::Kind::MolecularNonionising)
+                ok = true;
+        if (!ok)
+            throw std::runtime_error("approximations.idealMolecularVLE lists"
+                " '" + w + "', which the classifier did not find to be a"
+                " molecular nonionising component of this system -- the"
+                " authorisation is delimited and may not reclassify.");
+    }
+    for (const auto& cc : sysc.components)
+        if (cc.kind == ComponentClassification::Kind::MolecularNonionising
+         && !idealMolecularVLE.count(cc.name))
+            throw std::runtime_error("ThermoResolver: recommended"
+                " mixed-solvent electrolyte model unavailable, and the ideal"
+                " molecular VLE approximation is NOT authorised for '"
+                + cc.name + "' -- authorise it explicitly (approximations {"
+                " idealMolecularVLE { components ( " + cc.name + " ); } })"
+                " or remove the component.");
+    if (thermoAnnounce())
+        for (const auto& cc : sysc.components)
+            if (idealMolecularVLE.count(cc.name))
+                std::cout <<
+                    "[resolver] recommended mixed-solvent electrolyte model"
+                    " unavailable\n"
+                    "[resolver] authorised approximation: ideal molecular VLE"
+                    " for " << cc.name << "\n"
+                    "[resolver] p_" << cc.name << " = x_" << cc.name
+                    << " * psat_" << cc.name << "(T)\n"
+                    "[resolver] " << cc.name << "-" << solventName
+                    << " liquid nonideality neglected\n";
 
     // (c) the apparent -> master mapping by MARKER ELEMENT (the spike's
     //     collapse contract): each non-solvent apparent component must own a
@@ -498,6 +571,21 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     for (std::size_t i = 0; i < names.size(); ++i)
     {
         if (i == solventIdx) continue;
+
+        //  A MolecularNonionising component (authorised above) anchors NO
+        //  family: it stays in the liquid composition, the balances and the
+        //  enthalpy, and the VLE prices it by ideal Raoult on its OWN
+        //  curated psat -- gamma = 1 inside the ONE declared aqueous
+        //  surface (Davies ions + unit-gamma neutrals), never a clandestine
+        //  second model.
+        if (idealMolecularVLE.count(names[i]))
+        {
+            auto cp = std::make_shared<Component>(db.loadComponent(names[i]));
+            cfg.nonreactive.insert(i);
+            cfg.psatOf[i] =
+                [cp](scalar T) { return cp->vp().Psat_Pa(T); };
+            continue;
+        }
 
         //  The DECLARED bridge anchors the family when the component carries
         //  one (`aqueousMapping` / `dissociatesTo`, the typed contract): its
@@ -618,6 +706,9 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             throw std::runtime_error("reactive electrolyteGammaPhi: volatile"
                 " '" + vn + "' is not a declared apparent component.");
         cfg.volatiles.push_back(idx);
+        //  A nonreactive molecular volatile rides its own psat (ideal
+        //  Raoult, authorised) -- no gas-liquid record, so no gas key.
+        if (cfg.nonreactive.count(idx)) continue;
         cfg.gasOf[idx] = comps[idx].formula().empty() ? vn
                                                       : comps[idx].formula();
     }

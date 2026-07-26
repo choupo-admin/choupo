@@ -151,6 +151,20 @@ void Component::readFromDict(const DictPtr& d)
                 { SpeciesId(ion), d2t->lookupScalar(ion) });
     }
 
+    // Aqueous-speciation FACT (substance-level, classifier-read; ratified
+    // 2026-07-26): `aqueousSpeciation none;` = curated fact that the
+    // component does NOT join the aqueous equilibrium speciation network;
+    // `aqueousSpeciation <setName>;` names its canonical equilibrium set.
+    // ABSENT = UNKNOWN -- the classifier refuses an unknown molecular
+    // component inside an electrolyte system (with the curation remedy).
+    // Vapour-phase reactions (acetic dimerisation) are NOT part of this
+    // fact -- they stay on the vapour/gas-liquid records.
+    if (d->found("aqueousSpeciation"))
+    {
+        aqueousSpeciationDeclared_ = true;
+        aqueousSpeciation_ = d->lookupWord("aqueousSpeciation");
+    }
+
     // Role / category ----------------------------------------------
     // `role <word>;` -- volatile (default) / solute / nonvolatile / radical.
     if (d->found("nonvolatile"))

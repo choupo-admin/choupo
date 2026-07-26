@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash12_nh3_acetic_ethanol_reactive -- the weak base MEETS the weak acid,
+  with a molecular co-volatile watching: the ThermoResolver's reference case.
+
+  Four apparent components, one liquid: ammonia (pKa 9.25) neutralises half
+  of the acetic acid (pKa 4.76) into AMMONIUM ACETATE -- a buffer forms and
+  the solved pH lands near pKa_HAc.  Ethanol carries the curated fact
+  `aqueousSpeciation none;` -- the classifier finds it molecular and
+  nonionising FROM THE RECORD (no case list, no name special-casing), the
+  recommended mixed-solvent model is announced unavailable, and its ideal
+  molecular VLE is explicitly AUTHORISED by the delimited approximations
+  block.  Everything announced; the unauthorised path refuses by name.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description  "Reactive 4-component flash: NH3 + HAc neutralise into an ammonium-acetate buffer (pH ~ pKa_HAc); ethanol classified nonionising from its record fact, ideal VLE authorised; subsaturated at 358.15 K";
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

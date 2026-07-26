@@ -75,8 +75,10 @@ Description
 #include "core/Types.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
 
+#include <functional>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -106,6 +108,17 @@ struct ReactiveVLEConfig
 
     std::string activityModel = "davies";       // spike rung (announced)
     scalar      solventMW     = 18.015e-3;      // kg/mol (for the kgw basis)
+
+    // NONREACTIVE MOLECULAR components (classifier: MolecularNonionising,
+    // AUTHORISED by the case's delimited approximations block, ratified
+    // 2026-07-26): part of the liquid composition, the balances and the
+    // enthalpy -- OUTSIDE the aqueous speciation network.  No family, no
+    // master, no gas-liquid record.  Their VLE in this slice is IDEAL
+    // RAOULT on the component's own curated psat (gamma = 1 within the ONE
+    // declared aqueous surface); the mixed-solvent model, when it exists,
+    // replaces this approximation integrally.
+    std::set<std::size_t>                                 nonreactive;
+    std::map<std::size_t, std::function<scalar(scalar)>> psatOf; // Pa(T[K])
 };
 
 struct ReactiveVLEResult
@@ -133,6 +146,10 @@ struct ReactiveVLEResult
     scalar pMonoAtm  = 0.0;
     scalar pDimerAtm = 0.0;
     bool   dimerOn   = false;
+
+    // Ideal-Raoult contribution of each authorised nonreactive molecular
+    // volatile, [atm] -- KPI-bound as p_<component>_atm.
+    std::map<std::string, scalar> pMolecularAtm;
 };
 
 class ReactiveVLE

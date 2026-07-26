@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  One isothermal flash, four components, two aqueous families + one
+  authorised molecular co-volatile:
+
+      feed (2 HAc + 1 NH3 + 1 EtOH + 96 H2O, kmol/h)
+        -> [flash01, 358.15 K / 1 atm]  -> liquid (everything) + vapor (0)
+
+  The chemistry does the interesting work in the LIQUID: NH3 + HAc ->
+  NH4+ + Ac- consumes the base completely (K = Ka_HAc/Ka_NH4 ~ 10^4.5),
+  leaving an equimolar Ac-/HAc buffer at pH ~ 4.6.  The saturation check
+  prices each volatile over THAT speciated liquid -- ionised acid and
+  ammonium are unavailable to the vapour, the acetic dimer is priced, and
+  ethanol contributes x*psat (authorised ideal).  KPIs: pH, p_eq_sum_atm,
+  p_mono_atm / p_dimer_atm / dimer_share, p_ethanol_atm.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T      358.15 K;  P 1.0 atm; }
+    }
+);

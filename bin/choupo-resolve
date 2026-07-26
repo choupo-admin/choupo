@@ -1,0 +1,186 @@
+#!/usr/bin/env python3
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+# -----------------------------------------------------------------------------
+#     SPDX-License-Identifier: GPL-3.0-or-later
+# =============================================================================
+"""choupo-resolve -- the ThermoResolver's curation-time face (ratified 2026-07-26).
+
+Reads the case FEED (0/ inlet component names) and the CANONICAL component
+facts (data/standards/components/: `aqueousSpeciation`, the typed
+`aqueousMapping` bridge, `role`), classifies the system, and:
+
+  * default: prints the classification REPORT (what was read, what was
+    concluded, what is missing) -- the same [resolver] lines the runtime
+    announces;
+  * --draft: additionally prints a RECOMMENDED `constant/thermoPhysPropDict`
+    the author reviews and promotes (never written to disk by this tool --
+    materialising the declaration is the author's deliberate act, keeping
+    the case reviewable and sealed).
+
+The runtime never resolves freely: it classifies the sealed system, VERIFIES
+the persisted declaration, executes it, and announces divergences.  This tool
+is where the recommendation is BORN; `bin/choupo-lint` is where the declared
+case is checked without solving.
+"""
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+STD = ROOT / "data" / "standards" / "components"
+
+
+def strip_comments(t):
+    t = re.sub(r'/\*.*?\*/', '', t, flags=re.S)
+    return re.sub(r'//.*$', '', t, flags=re.M)
+
+
+def component_facts(name):
+    """(exists, aqueousSpeciation|None, mapping[(species,nu)], role)."""
+    p = STD / (name + ".dat")
+    if not p.exists():
+        return False, None, [], "volatile"
+    t = strip_comments(p.read_text())
+    spec = re.search(r'^\s*aqueousSpeciation\s+(\S+)\s*;', t, re.M)
+    role = re.search(r'^\s*role\s+(\S+)\s*;', t, re.M)
+    mapping = []
+    m = re.search(r'aqueousMapping\s*\((.*?)\)\s*;', t, re.S)
+    if m:
+        for e in re.finditer(r'\{\s*species\s+(\S+)\s*;\s*nu\s+(-?[\d.]+)\s*;\s*\}',
+                             m.group(1)):
+            mapping.append((e.group(1), float(e.group(2))))
+    return True, (spec.group(1) if spec else None), mapping, \
+        (role.group(1) if role else "volatile")
+
+
+def feed_components(case):
+    """Component names from the case's 0/ inlet files (componentMolarFlows /
+    componentMassFlows blocks), first file that carries one."""
+    zero = case / "0"
+    names = []
+    for f in sorted(zero.iterdir()) if zero.is_dir() else []:
+        t = strip_comments(f.read_text(errors="replace"))
+        m = re.search(r'component(?:Molar|Mass)Flows\s*\{(.*?)\}', t, re.S)
+        if not m:
+            continue
+        for line in m.group(1).splitlines():
+            w = line.split()
+            if w and re.match(r'^\w+$', w[0]):
+                names.append(w[0])
+        if names:
+            return names
+    return names
+
+
+def main():
+    args = [a for a in sys.argv[1:]]
+    draft = "--draft" in args
+    args = [a for a in args if a != "--draft"]
+    if len(args) != 1:
+        sys.stderr.write("usage: choupo-resolve [--draft] <caseDir>\n")
+        sys.exit(2)
+    case = Path(args[0]).resolve()
+    names = feed_components(case)
+    if not names:
+        sys.stderr.write("choupo-resolve: no componentMolarFlows/"
+                         "componentMassFlows block found under 0/ -- author"
+                         " the feed first (the resolver reads the system"
+                         " from it).\n")
+        sys.exit(1)
+
+    solvent = "water"      # the aqueous formulation's declared solvent default
+    classes, masters, nonionising, unknown, reactive = {}, [], [], [], []
+    for n in names:
+        exists, spec, mapping, role = component_facts(n)
+        if not exists:
+            classes[n] = "NOT IN CATALOGUE (data/standards/components/)"
+            unknown.append(n)
+        elif n == solvent:
+            classes[n] = "declared aqueous solvent (activity-based VLE)"
+        elif spec and spec != "none":
+            classes[n] = f"molecular reactive (aqueousSpeciation {spec})"
+            reactive.append(n)
+            for sp, nu in mapping:
+                if sp not in ("H", "OH") and nu > 0 and sp not in masters:
+                    masters.append(sp)
+        elif spec == "none":
+            classes[n] = "molecular condensable, nonionising in aqueous" \
+                         " speciation"
+            nonionising.append(n)
+        elif mapping:
+            classes[n] = "apparent electrolyte (typed bridge)"
+            for sp, nu in mapping:
+                if sp not in ("H", "OH") and nu > 0 and sp not in masters:
+                    masters.append(sp)
+        elif role == "nonvolatile":
+            classes[n] = "nonvolatile"
+        else:
+            classes[n] = "aqueous-speciation fact ABSENT (UNKNOWN)"
+            unknown.append(n)
+
+    electrolyte = bool(masters)
+    for n in names:
+        print(f"[resolver] {n}: {classes[n]}")
+    if electrolyte and unknown:
+        print("[resolver] REFUSAL: unknown component(s) inside an electrolyte"
+              " system: " + ", ".join(unknown)
+              + " -- curate `aqueousSpeciation none;` or"
+                " `aqueousSpeciation <setName>;` on the record(s)")
+        sys.exit(1)
+    if electrolyte and nonionising:
+        print("[resolver] recommended mixed-solvent electrolyte model"
+              " unavailable")
+        for n in nonionising:
+            print(f"[resolver] approximation REQUIRED: ideal molecular VLE"
+                  f" for {n} (authorise it in the draft below)")
+
+    if not draft:
+        return
+
+    vol = [n for n in names]      # all condensables volatile in this shape
+    print("\n// ---- recommended constant/thermoPhysPropDict"
+          " (review + promote) ----")
+    print("recordType    thermophysicalPropertySystem;")
+    print("schemaVersion 2;")
+    print()
+    print("components    ( " + "  ".join(names) + " );")
+    print()
+    print("equilibrium")
+    print("{")
+    if electrolyte:
+        print("    formulation electrolyteGammaPhi;")
+        print()
+        print("    aqueous")
+        print("    {")
+        print(f"        solvent       {solvent};")
+        print("        activityModel { model davies; }")
+        print("        speciation    { masters ( " + "  ".join(masters)
+              + " ); }")
+        print("    }")
+        print()
+        print("    vapour    { fugacityModel idealGas; }")
+        print()
+        print("    volatiles ( " + "  ".join(vol) + " );")
+    else:
+        print("    formulation gammaPhi;   // molecular system: pick the"
+              " activity model with the curated pairs")
+    print("}")
+    if electrolyte and nonionising:
+        print()
+        print("approximations")
+        print("{")
+        print("    idealMolecularVLE")
+        print("    {")
+        print("        components ( " + "  ".join(nonionising) + " );")
+        print("    }")
+        print("}")
+
+
+if __name__ == "__main__":
+    main()

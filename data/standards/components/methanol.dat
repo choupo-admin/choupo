@@ -82,3 +82,8 @@ cosmo
         installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
     }
 }
+
+// ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----
+// Curated fact: methanol does NOT participate in the aqueous speciation
+// network at this thermodynamic level (pKa ~ 15.5 -- negligible).
+aqueousSpeciation  none;

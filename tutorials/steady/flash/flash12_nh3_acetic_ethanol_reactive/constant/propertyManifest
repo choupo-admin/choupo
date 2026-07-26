@@ -32,6 +32,22 @@ propertyManifest
             originSha256  "3a3360d5ce2c31f63faa492dc748aa8c2039d35e6be81c54c7d653b77bd37506";
             release       Choupo-2607;
         }
+        "chemistry/NH3-dissolution.dat"
+        {
+            type          imported;
+            sha256        "29b13f1d4182749cb0e26d21c8a9936f21f6f2678dfd9eb48dcdc629a89ac18b";
+            origin        "data/standards/chemistry/NH3-dissolution.dat";
+            originSha256  "9ea2231c5e7bb8f0feff979d30af14b2a09fde355427067cbde978faa9411df8";
+            release       Choupo-2607;
+        }
+        "chemistry/NH3aq-formation.dat"
+        {
+            type          imported;
+            sha256        "c09a9ec014a58780d832ec127aab07cca1a238664f82639dba2dd921ff5a390b";
+            origin        "data/standards/chemistry/NH3aq-formation.dat";
+            originSha256  "f43c6c55272c53be048a52794d358ba19ecb0ddaf59c78eee193b8bf7459d75a";
+            release       Choupo-2607;
+        }
         "chemistry/aceticAcid-dissolution.dat"
         {
             type          imported;
@@ -56,6 +72,14 @@ propertyManifest
             originSha256  "c77100c2bab3383aafaef0405eb85dbd823d3c4f023d0575d864761cbbd60614";
             release       Choupo-2607;
         }
+        "components/NH3.dat"
+        {
+            type          imported;
+            sha256        "2a16e30cf92075739dbddbd86fe2a9e0a7c116d5e27a3d9a26365f2dfc9be077";
+            origin        "data/standards/components/NH3.dat";
+            originSha256  "72f8d77fc506d3f3c33f7ac7982e720015164f511fef10f5e20fdcb7ba8c195e";
+            release       Choupo-2607;
+        }
         "components/aceticAcid.dat"
         {
             type          imported;
@@ -64,12 +88,36 @@ propertyManifest
             originSha256  "04a8cd6c3125c500e755a75a92153a0d14d86cddc0dc702f65bd34d5879f075e";
             release       Choupo-2607;
         }
+        "components/ethanol.dat"
+        {
+            type          imported;
+            sha256        "74deafe861d657881887071276552fc99b4b5a7f17135cb683508a090686f9a9";
+            origin        "data/standards/components/ethanol.dat";
+            originSha256  "29609267bbcd43a09d915f94aaead90bc1fd9907314209e6a95ecf8e587cb93b";
+            release       Choupo-2607;
+        }
         "components/water.dat"
         {
             type          imported;
             sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
             origin        "data/standards/components/water.dat";
             originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
+            release       Choupo-2607;
+        }
+        "parameters/Henry/NH3-water.dat"
+        {
+            type          imported;
+            sha256        "bc98cdfdacdb227f258ec5373d7705134b762e4ef1c864d94f8fea0fdfbde8d5";
+            origin        "data/standards/parameters/Henry/NH3-water.dat";
+            originSha256  "420a3445e9d2e5c00ddee3750d7a04c4f6875397f930ac2980bfa00793d436fd";
+            release       Choupo-2607;
+        }
+        "parameters/NRTL/ethanol-water.dat"
+        {
+            type          imported;
+            sha256        "c5cbfeff3ae15e0c5162cce367bab36a57b1cf3103d1c18b62b1207b66db293e";
+            origin        "data/standards/parameters/NRTL/ethanol-water.dat";
+            originSha256  "58fd0be3d81822788156fe593270b2e9900fa2b533fa3f88b33415fc18320ac5";
             release       Choupo-2607;
         }
         "species/Acetate.dat"
@@ -86,6 +134,14 @@ propertyManifest
             sha256        "5f7f840a1531361ef597c17d69da45c4688596c5f7e1b53b9cb4e6f9d452dac3";
             origin        "data/standards/species/H.dat";
             originSha256  "5f7f840a1531361ef597c17d69da45c4688596c5f7e1b53b9cb4e6f9d452dac3";
+            release       Choupo-2607;
+        }
+        "species/NH4.dat"
+        {
+            type          imported;
+            sha256        "f332c2b2fb562681f41c6cf3830327999d5a607b2c3d46d4a3e834c3261fa65b";
+            origin        "data/standards/species/NH4.dat";
+            originSha256  "f332c2b2fb562681f41c6cf3830327999d5a607b2c3d46d4a3e834c3261fa65b";
             release       Choupo-2607;
         }
         "species/OH.dat"

@@ -589,6 +589,20 @@ PYEOF
     fi
     rm -f /tmp/csgate.$$
 
+    # Resolver-coherence gate: the aqueousSpeciation facts on standards
+    # components must agree with the bridges and the chemistry catalogue
+    # (a lying fact misclassifies a system silently), and vapour reactions
+    # stay off the aqueous records (phase purity, ratified 2026-07-26).
+    if "$ROOT/bin/curate/check_resolver_coherence.py" > /tmp/rcgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "resolver-coherence-gate" "$(head -1 /tmp/rcgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_resolver_coherence.py)\n" "resolver-coherence-gate"
+        cat /tmp/rcgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rcgate.$$
+
     # Sealed-corpus gate: every top-level case carries constant/propertyManifest
     # -- the student finds a hashed copy of every record the case uses INSIDE
     # the case.  The two live-overlay demos are exempt by design (their lesson

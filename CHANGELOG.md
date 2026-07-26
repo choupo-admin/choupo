@@ -54,7 +54,27 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
   a component's `aqueousMapping` FIRST; element-marker inference stays only
   as the unambiguous legacy fallback (two masters carrying the same marker
   now refuse by name, pointing at the typed bridge).
-* Twelve new curation gates in `runTests` (309 PASS / 0 FAIL).
+* **ThermoResolver / SystemClassifier (ratified three-way 2026-07-26)**:
+  components carry the substance-level FACT `aqueousSpeciation none|<set>;`
+  (vapour reactions deliberately excluded); `classifySystem` reads facts --
+  never names, never case lists -- and classifies solvent (DECLARED, no
+  `if water`), apparent electrolytes, molecular reactives, molecular
+  nonionising, UNKNOWN (refused inside electrolyte systems, curation remedy
+  named).  The recommended package is PERSISTED in the case; the runtime
+  classifies the sealed system, verifies the declaration and announces --
+  `bin/choupo-resolve [--draft]` is where the recommendation is born, and
+  choupo-lint surfaces the report.  Approximations are DELIMITED:
+  `approximations { idealMolecularVLE { components ( ... ); } }` -- the
+  builder refuses the approximation for anything unlisted and refuses
+  listing anything the classifier did not find nonionising.  New gate:
+  `check_resolver_coherence` (facts vs bridges vs chemistry; phase purity).
+* **New tutorial `flash12_nh3_acetic_ethanol_reactive`** (the resolver's
+  reference case): NH3 + HAc neutralise into an ammonium-acetate buffer
+  (pH 4.62 ~ pKa_HAc) with ethanol as an authorised ideal-Raoult molecular
+  co-volatile (`p_ethanol_atm` KPI) -- three speciating actors, four
+  volatiles, dimer priced, subsaturated, sealed; `choupo-resolve --draft`
+  regenerates its declared dict from the feed.
+* Thirteen new curation gates in `runTests` (311 PASS / 0 FAIL).
 
 ## [Unreleased]
 

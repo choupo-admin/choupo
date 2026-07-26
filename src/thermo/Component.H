@@ -209,6 +209,13 @@ public:
     const std::vector<SpeciesStoich>& aqueousMapping() const
     { return aqueousMapping_; }
 
+    // Aqueous-speciation FACT (see the .cpp parse note): "none" = curated
+    // non-participant; "<setName>" = its canonical equilibrium set; when
+    // !aqueousSpeciationDeclared() the fact is UNKNOWN (absence-tolerant in
+    // molecular systems, refused by the classifier in electrolyte ones).
+    bool aqueousSpeciationDeclared() const { return aqueousSpeciationDeclared_; }
+    const std::string& aqueousSpeciation() const { return aqueousSpeciation_; }
+
     bool   hasElectrolyteSpec()  const { return hasElec_; }
     const std::string& electrolyteCation() const { return elecCation_; }
     const std::string& electrolyteAnion()  const { return elecAnion_; }
@@ -429,6 +436,8 @@ private:
     bool        hasElec_  = false;       // salt carries an electrolyte{} block
     std::string elecCation_, elecAnion_; // ion names, derived from dissociatesTo
     std::vector<SpeciesStoich> aqueousMapping_;  // the typed bridge (see accessor)
+    bool        aqueousSpeciationDeclared_ = false;  // fact present on record
+    std::string aqueousSpeciation_;                  // "none" | <setName>
     scalar      relPermittivity_ = 0.0;  // dielectric constant (mixed-solvent eNRTL)
 
     // Transport: Fuller diffusion volume Σv; 0 if not declared.

@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/components/ethanol.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Ethanol  (C2H6O, CAS 64-17-5)
   Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
