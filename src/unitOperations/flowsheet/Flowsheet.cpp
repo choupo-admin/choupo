@@ -62,6 +62,11 @@ License
 #include <memory>
 #include <set>
 #include <stdexcept>
+#include "thermo/pureFluid/PureFluidModel.H"
+#include "thermo/electrolyte/ElectrolyteModel.H"
+#include "thermo/electrolyte/ReactiveVLE.H"
+#include "thermo/activityCoefficient/ActivityModel.H"
+#include "thermo/equationOfState/EquationOfState.H"
 
 namespace Choupo {
 

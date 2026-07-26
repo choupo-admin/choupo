@@ -39,6 +39,7 @@ License
 #include <iostream>
 #include <stdexcept>
 #include <vector>
+#include "thermo/activityCoefficient/ActivityModel.H"
 
 namespace Choupo {
 

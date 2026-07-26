@@ -60,6 +60,8 @@ License
 #include "thermo/ThermoPackageBuilder.H"
 
 #include <stdexcept>
+#include "thermo/activityCoefficient/ActivityModel.H"
+#include "thermo/equationOfState/EquationOfState.H"
 
 namespace Choupo {
 

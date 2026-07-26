@@ -38,6 +38,9 @@ License
 #include <iostream>
 #include <limits>
 #include <stdexcept>
+#include "thermo/electrolyte/ReactiveVLE.H"
+#include "thermo/activityCoefficient/ActivityModel.H"
+#include "thermo/equationOfState/EquationOfState.H"
 
 namespace Choupo {
 

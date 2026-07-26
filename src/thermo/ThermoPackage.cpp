@@ -28,6 +28,25 @@ License
 
 #include "ThermoPackage.H"
 
+// The concrete model families the interface only forward-declares (build
+// hygiene 4/6): the bodies that dereference them live HERE, where the
+// types are complete.
+#include "Database.H"
+#include "SurfaceTensionModel.H"
+#include "activityCoefficient/ActivityModel.H"
+#include "electrolyte/ElectrolyteModel.H"
+#include "electrolyte/ReactiveVLE.H"
+#include "electrolyte/SpeciationSolver.H"
+#include "equationOfState/EquationOfState.H"
+#include "phase/Phase.H"
+#include "pureFluid/PureFluidModel.H"
+#include "transport/TransportModel.H"
+#include "transport/ThermalConductivityModel.H"
+#include "transport/DiffusivityModel.H"
+#include "transport/LiquidViscosityModel.H"
+#include "transport/LiquidConductivityModel.H"
+#include "transport/LiquidDiffusivityModel.H"
+
 #include "PackageAudit.H"
 #include "ThermoAnnounce.H"   // load-phase announcement gate (verbosity contract)
 #include "activityCoefficient/Wilson.H"
@@ -52,6 +71,90 @@ License
 #include <stdexcept>
 
 namespace Choupo {
+
+// ---- Out-of-line special members + fwd-decl-type bodies (hygiene 4/6) ------
+//  Custom MOVE: a LiquidPhase borrows `&components_` for its reference
+//  fugacity, so a default member-wise move would leave the moved-in phases
+//  pointing at the SOURCE's emptied vector -> a dangling read in fEffective.
+//  Move every member, then re-point the phases at THIS vector.  Copy stays
+//  deleted (phases_ holds unique_ptr).  KEEP THE MEMBER LIST IN SYNC with
+//  the data members if any are added.
+ThermoPackage::ThermoPackage() = default;
+ThermoPackage::ThermoPackage(ThermoPackage&& o) noexcept { *this = std::move(o); }
+ThermoPackage::~ThermoPackage() = default;
+ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
+{
+    if (this != &o)
+    {
+        components_          = std::move(o.components_);
+        phases_             = std::move(o.phases_);
+        activity_           = std::move(o.activity_);
+        eos_                = std::move(o.eos_);
+        transport_          = std::move(o.transport_);
+        thermalConductivity_= std::move(o.thermalConductivity_);
+        diffusivity_        = std::move(o.diffusivity_);
+        liquidViscosity_    = std::move(o.liquidViscosity_);
+        liquidConductivity_ = std::move(o.liquidConductivity_);
+        liquidDiffusivity_  = std::move(o.liquidDiffusivity_);
+        surfaceTension_     = std::move(o.surfaceTension_);
+        solventName_        = std::move(o.solventName_);
+        declaredSolutes_    = std::move(o.declaredSolutes_);
+        vleWorld_           = std::move(o.vleWorld_);
+        pureFluid_          = std::move(o.pureFluid_);
+        mixtureSeed_        = std::move(o.mixtureSeed_);
+        mixtureMembersByToken_ = std::move(o.mixtureMembersByToken_);
+        auditFindings_      = std::move(o.auditFindings_);
+        reactive_           = std::move(o.reactive_);
+        aqueous_            = std::move(o.aqueous_);
+        speciator_          = std::move(o.speciator_);
+        for (auto& p : phases_) if (p) p->rebindComponents(&components_);
+    }
+    return *this;
+}
+
+const Phase& ThermoPackage::phase(std::size_t k) const
+{ return *phases_.at(k); }
+
+bool ThermoPackage::hasElectrolyte() const
+{ return activity_ && activity_->asElectrolyte() != nullptr; }
+
+const ElectrolyteModel& ThermoPackage::electrolyte() const
+{ return *activity_->asElectrolyte(); }
+
+const EquationOfState& ThermoPackage::eos() const
+{ return *eos_; }
+
+const PureFluidModel& ThermoPackage::pureFluid(std::size_t i) const
+{ return *pureFluid_.at(i); }
+
+electrolyte::SpeciationResult
+ThermoPackage::speciateAqueous(const electrolyte::SpeciationInput& in,
+                               int verbosity) const
+{
+    return speciator().solve(in, verbosity);
+}
+
+const electrolyte::SpeciationSolver& ThermoPackage::speciator() const
+{
+    if (!aqueous_.declared || aqueous_.activityModel.empty())
+        throw std::runtime_error("ThermoPackage::speciateAqueous refused:"
+            " this case declares no aqueous chemistry.  Add to"
+            " constant/thermoPhysPropDict:\n"
+            "    equilibrium { aqueous { activityModel { model davies; } } }\n"
+            "(independent of `formulation`).  No default is applied.");
+    if (!speciator_)
+        speciator_ = std::make_unique<electrolyte::SpeciationSolver>(
+            aqueous_.activityModel);
+    return *speciator_;
+}
+
+void ThermoPackage::adoptReactiveEngine(
+    std::unique_ptr<electrolyte::ReactiveVLE> e)
+{ reactive_ = std::move(e); }
+
+electrolyte::ReactiveVLEResult ThermoPackage::equilibrate(scalar T_K,
+    scalar P_Pa, scalar F, const sVector& zApparent, int verbosity) const
+{ return reactive_->solve(T_K, P_Pa, F, zApparent, verbosity); }
 
 // Pure-fluid routing helper (defined below): returns the component index to
 // route through when the phase is effectively pure in a flagged component;

@@ -33,6 +33,7 @@ License
 #include "thermo/Component.H"
 
 #include <cmath>
+#include "thermo/activityCoefficient/ActivityModel.H"
 
 namespace Choupo {
 

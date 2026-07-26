@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iomanip>
 #include <stdexcept>
+#include "thermo/activityCoefficient/ActivityModel.H"
 
 namespace Choupo {
 

@@ -39,6 +39,7 @@ License
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include "thermo/equationOfState/EquationOfState.H"
 
 namespace Choupo {
 namespace propertyOps {

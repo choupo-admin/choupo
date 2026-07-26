@@ -30,8 +30,10 @@ License
 #include "core/Constants.H"
 #include "thermo/ThermoPackage.H"
 
+#include <cmath>
 #include <iomanip>
 #include <iostream>
+#include "thermo/equationOfState/EquationOfState.H"
 
 namespace Choupo {
 

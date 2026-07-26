@@ -27,6 +27,7 @@
 #include <set>
 #include <sstream>
 #include <stdexcept>
+#include "thermo/activityCoefficient/ActivityModel.H"
 
 namespace fs = std::filesystem;
 

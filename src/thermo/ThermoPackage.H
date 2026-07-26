@@ -66,32 +66,44 @@ Description
 
 #include "Component.H"
 #include "core/Identifiers.H"
-#include "Database.H"
 #include "PackageAudit.H"
-#include "activityCoefficient/ActivityModel.H"
-#include "electrolyte/ElectrolyteModel.H"
-#include "electrolyte/ReactiveVLE.H"
-#include "electrolyte/SpeciationSolver.H"
 #include "core/Dictionary.H"
 #include "core/Types.H"
-#include "equationOfState/EquationOfState.H"
-#include "phase/Phase.H"
-#include "pureFluid/PureFluidModel.H"
-#include "SurfaceTensionModel.H"
-#include "transport/TransportModel.H"
-#include "transport/ThermalConductivityModel.H"
-#include "transport/DiffusivityModel.H"
-#include "transport/LiquidViscosityModel.H"
-#include "transport/LiquidConductivityModel.H"
-#include "transport/LiquidDiffusivityModel.H"
 
 #include <map>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace Choupo {
+
+// The model families this interface holds by POINTER are forward-declared
+// (build hygiene 4/6): 136 translation units include ThermoPackage.H, and
+// none of them needs the concrete model headers to talk to the package.
+// The .cpp defines the destructor, moves and every body that dereferences
+// one of these, where the types are complete.
+class ActivityModel;
+class Database;
+class DiffusivityModel;
+class ElectrolyteModel;
+class EquationOfState;
+class LiquidConductivityModel;
+class LiquidDiffusivityModel;
+class LiquidViscosityModel;
+class Phase;
+class PureFluidModel;
+class SurfaceTensionModel;
+class ThermalConductivityModel;
+class TransportModel;
+namespace electrolyte {
+class  ReactiveVLE;
+class  SpeciationSolver;
+struct ReactiveVLEResult;
+struct SpeciationInput;
+struct SpeciationResult;
+}
 
 // Which bulk phase a density() request refers to.  The caller knows the phase
 // from the stream's vapour fraction -- density() does NOT guess it.
@@ -100,7 +112,8 @@ enum class DensityPhase { Liquid, Vapour };
 class ThermoPackage
 {
 public:
-    ThermoPackage() = default;
+    ThermoPackage();       // out-of-line (= default in the .cpp): the inline
+                           //   form would need the members' dtors complete
     // Custom MOVE: a LiquidPhase borrows `&components_` for its reference
     // fugacity, so a default member-wise move would leave the moved-in phases
     // pointing at the SOURCE's emptied vector -> a dangling read in fEffective
@@ -108,36 +121,9 @@ public:
     // returned).  Move every member, then re-point the phases at THIS vector.
     // Copy stays deleted (phases_ holds unique_ptr).  KEEP THE MEMBER LIST BELOW
     // IN SYNC with the data members if any are added.
-    ThermoPackage(ThermoPackage&& o) noexcept { *this = std::move(o); }
-    ThermoPackage& operator=(ThermoPackage&& o) noexcept
-    {
-        if (this != &o)
-        {
-            components_          = std::move(o.components_);
-            phases_             = std::move(o.phases_);
-            activity_           = std::move(o.activity_);
-            eos_                = std::move(o.eos_);
-            transport_          = std::move(o.transport_);
-            thermalConductivity_= std::move(o.thermalConductivity_);
-            diffusivity_        = std::move(o.diffusivity_);
-            liquidViscosity_    = std::move(o.liquidViscosity_);
-            liquidConductivity_ = std::move(o.liquidConductivity_);
-            liquidDiffusivity_  = std::move(o.liquidDiffusivity_);
-            surfaceTension_     = std::move(o.surfaceTension_);
-            solventName_        = std::move(o.solventName_);
-            declaredSolutes_    = std::move(o.declaredSolutes_);
-            vleWorld_           = std::move(o.vleWorld_);
-            pureFluid_          = std::move(o.pureFluid_);
-            mixtureSeed_        = std::move(o.mixtureSeed_);
-            mixtureMembersByToken_ = std::move(o.mixtureMembersByToken_);
-            auditFindings_      = std::move(o.auditFindings_);
-            reactive_           = std::move(o.reactive_);
-            aqueous_            = std::move(o.aqueous_);
-            speciator_          = std::move(o.speciator_);
-            for (auto& p : phases_) if (p) p->rebindComponents(&components_);
-        }
-        return *this;
-    }
+    ThermoPackage(ThermoPackage&& o) noexcept;
+    ThermoPackage& operator=(ThermoPackage&& o) noexcept;
+    ~ThermoPackage();      // out-of-line: unique_ptr members of fwd-declared types
 
     // ThermoPackageBuilder seam: adopt an already-assembled electrolyte
     // package (components + activity + EoS) without re-reading any data
@@ -195,7 +181,7 @@ public:
 
     // ----- Phase access (multi-phase generalisation) ---------------------
     std::size_t       nPhases()                       const { return phases_.size(); }
-    const Phase&      phase(std::size_t k)            const { return *phases_.at(k); }
+    const Phase&      phase(std::size_t k)            const;   // .cpp (fwd-decl Phase)
     std::size_t       phaseIndexByName(const std::string& name) const;
     std::vector<std::size_t> phasesOfType(const std::string& typeName) const;
 
@@ -358,11 +344,9 @@ public:
     // over activity_, null for molecular cases.  (This MI bridge is Workstream
     // A2's target; the construction-time configure/setMolarVolumes downcasts are
     // gone -- models self-configure from the components in their constructors.)
-    bool hasElectrolyte() const
-    { return activity_ && activity_->asElectrolyte() != nullptr; }
-    const ElectrolyteModel& electrolyte() const
-    { return *activity_->asElectrolyte(); }
-    const EquationOfState&  eos()      const { return *eos_;      }
+    bool hasElectrolyte() const;                        // .cpp (ActivityModel)
+    const ElectrolyteModel& electrolyte() const;        // .cpp
+    const EquationOfState&  eos()      const;           // .cpp
     bool                    hasEos()   const { return eos_ != nullptr; }
 
     // ---- Declared aqueous chemistry (INDEPENDENT of the formulation) ------
@@ -426,27 +410,13 @@ public:
     //  unit.  Refuses when the case declared no aqueous chemistry: a missing
     //  declaration is an error to be fixed, never a default to be applied.
     electrolyte::SpeciationResult
-    speciateAqueous(const electrolyte::SpeciationInput& in, int verbosity) const
-    {
-        return speciator().solve(in, verbosity);
-    }
+    speciateAqueous(const electrolyte::SpeciationInput& in,
+                    int verbosity) const;               // .cpp
 
     //- The speciation engine itself, for the queries that are not one solve
     //  (mineral molar masses, K(T) read-outs).  Same refusal, same single
     //  source of the model.
-    const electrolyte::SpeciationSolver& speciator() const
-    {
-        if (!aqueous_.declared || aqueous_.activityModel.empty())
-            throw std::runtime_error("ThermoPackage::speciateAqueous refused:"
-                " this case declares no aqueous chemistry.  Add to"
-                " constant/thermoPhysPropDict:\n"
-                "    equilibrium { aqueous { activityModel { model davies; } } }\n"
-                "(independent of `formulation`).  No default is applied.");
-        if (!speciator_)
-            speciator_ = std::make_unique<electrolyte::SpeciationSolver>(
-                aqueous_.activityModel);
-        return *speciator_;
-    }
+    const electrolyte::SpeciationSolver& speciator() const;   // .cpp
 
     // ---- Reactive equilibrium (unit-local speciation; section 6b) ---------
     //  Attached by the builder when the case declares the REACTIVE shape of
@@ -454,12 +424,10 @@ public:
     //  UNITS NEVER IMPLEMENT CHEMISTRY: a unit op with a reactive package
     //  calls equilibrate() and receives the APPARENT phase split; the true
     //  species live only in the result's internal state (report-only).
-    void adoptReactiveEngine(std::unique_ptr<electrolyte::ReactiveVLE> e)
-    { reactive_ = std::move(e); }
+    void adoptReactiveEngine(std::unique_ptr<electrolyte::ReactiveVLE> e);
     bool hasReactiveEquilibrium() const { return reactive_ != nullptr; }
     electrolyte::ReactiveVLEResult equilibrate(scalar T_K, scalar P_Pa,
-        scalar F, const sVector& zApparent, int verbosity) const
-    { return reactive_->solve(T_K, P_Pa, F, zApparent, verbosity); }
+        scalar F, const sVector& zApparent, int verbosity) const;   // .cpp
 
     // Minimum-parameter-set audit findings (per model x component x property:
     // MISSING / ESTIMATED / PLACEHOLDER), computed once at assembly.  Drives the
@@ -555,8 +523,7 @@ public:
     // is a pure-water method).  Mirrors the electrolyte per-role branch.
     bool                     hasPureFluid(std::size_t i) const
     { return pureFluid_.count(i) > 0; }
-    const PureFluidModel&    pureFluid(std::size_t i) const
-    { return *pureFluid_.at(i); }
+    const PureFluidModel&    pureFluid(std::size_t i) const;   // .cpp
     // True iff component i carries essentially all of the phase (x_i >= thr).
     static bool isEffectivelyPure(const sVector& z, std::size_t i,
                                   scalar thr = 0.999);

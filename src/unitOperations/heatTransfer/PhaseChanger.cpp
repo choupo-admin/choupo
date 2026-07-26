@@ -37,6 +37,7 @@ License
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
+#include "thermo/pureFluid/PureFluidModel.H"
 
 namespace Choupo {
 
