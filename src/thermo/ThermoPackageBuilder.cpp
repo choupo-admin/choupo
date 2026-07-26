@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <iostream>
 #include <numeric>
+#include <algorithm>
 #include <set>
 #include <sstream>
 #include <stdexcept>
@@ -497,6 +498,48 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     for (std::size_t i = 0; i < names.size(); ++i)
     {
         if (i == solventIdx) continue;
+
+        //  The DECLARED bridge anchors the family when the component carries
+        //  one (`aqueousMapping` / `dissociatesTo`, the typed contract): its
+        //  master is the mapped species that appears in the case's declared
+        //  masters list (H/OH are mediators, never declared masters, so they
+        //  fall out naturally).  Element-marker inference below stays as the
+        //  fallback for components without a bridge -- and refuses on any
+        //  ambiguity instead of picking by declaration order.
+        if (comps[i].hasAqueousMapping())
+        {
+            std::string masterOf;
+            for (const auto& ms : comps[i].aqueousMapping())
+            {
+                const std::string& key = ms.species.key;
+                if (std::find(masters.begin(), masters.end(), key)
+                        == masters.end())
+                    continue;
+                if (!masterOf.empty() && masterOf != key)
+                    throw std::runtime_error("reactive electrolyteGammaPhi:"
+                        " component '" + names[i] + "' bridges to TWO declared"
+                        " masters (" + masterOf + ", " + key + ") -- one"
+                        " apparent component carries ONE family total; split"
+                        " the component or drop one master from the case's"
+                        " speciation { masters (...) }.");
+                masterOf = key;
+            }
+            if (masterOf.empty())
+                throw std::runtime_error("reactive electrolyteGammaPhi:"
+                    " component '" + names[i] + "' declares an aqueousMapping,"
+                    " but none of its mapped species is a declared master --"
+                    " add its family master to speciation { masters (...) }"
+                    " (mediators H/OH cannot anchor a family).");
+            // generic lookup: a master may be NEUTRAL (dissolved Ethanol,
+            // O2(aq)) -- findIon is the ion-physics wrapper, not this seam
+            if (!electrolyte::findAqueousSpecies(masterOf))
+                throw std::runtime_error("reactive electrolyteGammaPhi:"
+                    " declared master '" + masterOf + "' has no species record"
+                    " (species/<name>.dat).");
+            cfg.families.push_back({ i, std::string(), SpeciesId(masterOf) });
+            continue;
+        }
+
         const auto ec = parseElementalFormula(comps[i].formula());
         if (!ec.available)
             throw std::runtime_error("reactive electrolyteGammaPhi: apparent"
@@ -525,11 +568,13 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                 " apparent components share the marker element '" + marker
                 + "' -- the chemistry set cannot map all true species back"
                 " to the declared apparent-component basis.");
-        // The declared master whose species formula carries the marker.
-        std::string masterOf;
+        // The declared master whose species formula carries the marker --
+        //  refusing when MORE THAN ONE does (inference may never pick by
+        //  declaration order; the typed bridge exists for exactly that case).
+        std::vector<std::string> carrying;
         for (const auto& m : masters)
         {
-            auto rec = electrolyte::findIon(m);
+            auto rec = electrolyte::findAqueousSpecies(m);
             if (!rec)
                 throw std::runtime_error("reactive electrolyteGammaPhi:"
                     " declared master '" + m + "' has no species record"
@@ -542,15 +587,22 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                     f.pop_back();
                 return f; }());
             if (mec.available && mec.atoms.count(marker))
-            { masterOf = m; break; }
+                carrying.push_back(m);
         }
-        if (masterOf.empty())
+        if (carrying.empty())
             throw std::runtime_error("ThermoPackage build refused: chemistry"
                 " set cannot map all true species back to the declared"
                 " apparent-component basis -- no declared master carries the"
                 " marker element '" + marker + "' of apparent component '"
                 + names[i] + "'.");
-        cfg.families.push_back({ i, marker, SpeciesId(masterOf) });
+        if (carrying.size() > 1)
+            throw std::runtime_error("reactive electrolyteGammaPhi: two"
+                " declared masters (" + carrying[0] + ", " + carrying[1]
+                + ") carry the marker element '" + marker + "' of apparent"
+                " component '" + names[i] + "' -- element inference cannot"
+                " tell them apart; declare the typed bridge on the component"
+                " (aqueousMapping ( { species <master>; nu 1; } );).");
+        cfg.families.push_back({ i, marker, SpeciesId(carrying[0]) });
     }
 
     // (d) volatiles: each is an apparent component served by a gas-liquid

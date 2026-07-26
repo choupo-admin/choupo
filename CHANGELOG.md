@@ -50,6 +50,10 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
   dimer share falls).  The water-analysis charge-imbalance advisory no
   longer fires on stoichiometric (component-derived) totals -- a neutral
   acid delivered as its conjugate-base master is balanced by construction.
+* **Declared bridges anchor reactive families**: the reactive builder reads
+  a component's `aqueousMapping` FIRST; element-marker inference stays only
+  as the unambiguous legacy fallback (two masters carrying the same marker
+  now refuse by name, pointing at the typed bridge).
 * Twelve new curation gates in `runTests` (309 PASS / 0 FAIL).
 
 ## [Unreleased]
