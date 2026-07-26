@@ -189,6 +189,13 @@ struct GasEntry
     double      dH     = 0.0;                         // [J/mol]
     KTcorrection kt;                                  // analytic K(T) (optional)
     std::string source;
+    // Optional VAPOUR DIMERISATION of the gas (carboxylic acids):
+    //   2 A(g) = A2(g),   K_dim = p_dim / p_mono^2   [atm^-1]
+    // read from the record's `vapourDimerisation { logK25; dH; source; }`.
+    bool        hasDimer   = false;
+    double      dimLogK25  = 0.0;
+    double      dimDH      = 0.0;                     // [J/mol] (van't Hoff)
+    std::string dimSource;
 };
 
 struct MineralEntry

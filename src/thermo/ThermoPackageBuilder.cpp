@@ -535,7 +535,9 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                     " declared master '" + m + "' has no species record"
                     " (species/<name>.dat).");
             const auto mec = parseElementalFormula([&]{
-                std::string f = rec->lookupWordOrDefault("formula", m);
+                // the bridged species row exposes its formula as `ion`
+                std::string f = rec->lookupWordOrDefault("ion",
+                                rec->lookupWordOrDefault("formula", m));
                 while (!f.empty() && (f.back() == '+' || f.back() == '-'))
                     f.pop_back();
                 return f; }());

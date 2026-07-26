@@ -266,6 +266,14 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                         != "gasLiquidEquilibrium") continue;
                     GasEntry g;
                     g.gas     = e->lookupWord("gas");
+                    if (e->found("vapourDimerisation"))
+                    {
+                        auto vd = e->subDict("vapourDimerisation");
+                        g.hasDimer  = true;
+                        g.dimLogK25 = vd->lookupScalar("logK25");
+                        g.dimDH     = vd->lookupScalarOrDefault("dH", 0.0);
+                        g.dimSource = vd->lookupWordOrDefault("source", "undeclared");
+                    }
                     const std::string dissolved = e->lookupWord("dissolved");
                     g.species = dissolved;
                     for (const auto& rec : records)

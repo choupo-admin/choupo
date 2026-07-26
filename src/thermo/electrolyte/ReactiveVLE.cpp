@@ -158,8 +158,26 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         scalar pSum = 0.0;
         for (const auto appIdx : cfg_.volatiles)
         {
-            const scalar K = std::pow(10.0, gasLogK(*gasFor(appIdx), T_K));
-            pSum += dissolvedActivity(appIdx, sr) / K;   // [atm]
+            const GasEntry* g = gasFor(appIdx);
+            const scalar K  = std::pow(10.0, gasLogK(*g, T_K));
+            const scalar pM = dissolvedActivity(appIdx, sr) / K;   // [atm]
+            pSum += pM;
+            // Carboxylic-acid VAPOUR DIMERISATION (2A = A2, K_dim = pD/pM^2):
+            // at equilibrium over this liquid the dimer contributes its OWN
+            // partial pressure.  Announced below; van't Hoff in T.
+            if (g->hasDimer)
+            {
+                const scalar Kd = std::pow(10.0, g->dimLogK25
+                    - (g->dimDH / (std::log(10.0) * 8.31446))
+                      * (1.0/T_K - 1.0/298.15));
+                const scalar pD = Kd * pM * pM;
+                pSum += pD;
+                if (verbosity >= 2)
+                    std::cout << "  [reactive] " << cfg_.apparent[appIdx]
+                              << " vapour dimerisation ON: p_mono = " << pM
+                              << " atm, p_dimer = " << pD << " atm (K_dim = "
+                              << Kd << " atm^-1; " << g->dimSource << ")\n";
+            }
         }
         if (pSum * kAtm <= P_Pa)
         {
@@ -204,10 +222,26 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             vap[idx] = std::min(V * yk[k], 0.9995 * n[idx]);
         }
     };
+    for (const auto appIdx : cfg_.volatiles)
+        if (gasFor(appIdx)->hasDimer)
+            throw std::runtime_error("ReactiveVLE: volatile '"
+                + cfg_.apparent[appIdx] + "' declares vapour dimerisation,"
+                  " which this slice prices only in the saturation check"
+                  " (single-liquid regime).  A TWO-PHASE reactive flash with"
+                  " a dimerising vapour re-weights the vapour mole balance"
+                  " (apparent moles = n_mono + 2 n_dim) and is a later,"
+                  " deliberate slice -- no silent approximation is run.");
     auto residual = [&](const sVector& u) -> sVector
     {
         sVector vap; unpack(u, vap);
-        speciate(vap, srLast);
+        // A TRIAL point may be unphysical (a step that nearly dries the
+        // solvent sends molalities -> infinity and the Davies fixed point
+        // diverges).  A diverging trial is NOT a failed solve: return a huge
+        // residual so the damped outer Newton backtracks away from it.  Only
+        // a divergence AT the accepted solution surfaces as a real refusal.
+        try { speciate(vap, srLast); }
+        catch (const std::exception&)
+        { return sVector(nV, 1.0e6); }
         scalar vTot = 0.0;
         for (const auto appIdx : cfg_.volatiles) vTot += vap[appIdx];
         sVector r(nV);
@@ -234,8 +268,23 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     u[0] = std::log(0.02 * nTot);
     if (nV == 2)
     {
-        const scalar z1 = n[cfg_.volatiles[0]] / nTot;
-        const scalar y1seed = std::min(0.95, std::max(0.05, 3.0*z1));
+        // PHYSICAL seed: speciate the un-vaporised feed once and start the
+        // vapour ratio from the equilibrium partial pressures p_k = a_k/K_k
+        // -- the Raoult-like estimate the announce block already prints.  The
+        // old feed-RATIO seed put a barely-volatile solute (acetic acid,
+        // y ~ 1e-3) three decades from its solution and the damped Newton
+        // stalled against the near-dry cage.
+        sVector vap0(nApp, 0.0);
+        speciate(vap0, srLast);
+        scalar p[2] = { 0.0, 0.0 };
+        for (std::size_t k = 0; k < 2; ++k)
+        {
+            const std::size_t idx = cfg_.volatiles[k];
+            const scalar K = std::pow(10.0, gasLogK(*gasFor(idx), T_K));
+            p[k] = dissolvedActivity(idx, srLast) / std::max(K, 1.0e-300);
+        }
+        const scalar y1seed = std::min(1.0 - 1.0e-6, std::max(1.0e-6,
+            p[0] / std::max(p[0] + p[1], 1.0e-300)));
         u[1] = std::log(y1seed/(1.0 - y1seed));
     }
     const scalar uLo = -30.0, uHi = 30.0;
@@ -285,6 +334,21 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             if (nV > 1) std::cout << "; " << J[1][0] << " " << J[1][1];
             std::cout << "]\n    du = (" << du[0]
                       << (nV > 1 ? ", " + std::to_string(du[1]) : "") << ")\n";
+        }
+        // TRUST-REGION clamp before the line search: near the bubble point
+        // the residual is almost flat along ln V (J00 ~ -V/L), so a raw
+        // Newton step can multiply V by e^30 and slam into the near-dry
+        // cage, where every backtracked trial is worse and the solve stalls.
+        // Capping each component of du at 2 (one step never scales V or the
+        // vapour-ratio odds by more than e^2 ~ 7.4x) keeps the iteration
+        // inside the region where the FD Jacobian means something.
+        scalar duInf = 0.0;
+        for (std::size_t j = 0; j < nV; ++j)
+            duInf = std::max(duInf, std::abs(du[j]));
+        if (duInf > 2.0)
+        {
+            const scalar sc = 2.0 / duInf;   // SCALE, never clip per-component
+            for (std::size_t j = 0; j < nV; ++j) du[j] *= sc;
         }
         // Backtracking line search on |r| with the u-cage applied per trial.
         scalar lambda = 1.0;

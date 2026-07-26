@@ -72,6 +72,7 @@ speciesNavigation
 
     // --- nitrogen ---------------------------------------------------------
     NH4   { familyRoots ( ammonia );    }
+    Acetate { familyRoots ( acetate );  }
     NO3   { familyRoots ( nitrogen );   }
     NO2   { familyRoots ( nitrogen );   }
 
