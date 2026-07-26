@@ -598,9 +598,30 @@ def closure_of(pp_path, caseDir, std, AQ):
         # else: a gas-side process component that merely SHARES a species
         # name (N2 in a Brayton) -- no aqueous chemistry, no species seal.
 
+    # ---- REACTIVE electrolyteGammaPhi (section 6b): the declared speciation
+    #      masters ARE aqueous seeds, and every volatile's gas-liquid record
+    #      (keyed by the COMPONENT FORMULA -- the gasOf contract) must seal.
+    tppd_txt = t_nc
+    for m in re.finditer(r'speciation\s*\{[^}]*masters\s*\(([^)]*)\)', tppd_txt, re.S):
+        for w in m.group(1).split():
+            ions.add(w)
+            speciates = True
+    reactive_gas_formulas = set()
+    if re.search(r'speciation\s*\{', tppd_txt)             and re.search(r'\bvolatiles\s*\(', tppd_txt):
+        for m in re.finditer(r'\bvolatiles\s*\(([^)]*)\)', tppd_txt):
+            for comp in m.group(1).split():
+                cf = std / "components" / (comp + ".dat")
+                if cf.exists():
+                    fm = re.search(r'^formula\s+"?([A-Za-z0-9()]+)"?\s*;',
+                                   cf.read_text(), re.M)
+                    reactive_gas_formulas.add(fm.group(1) if fm else comp)
+                else:
+                    reactive_gas_formulas.add(comp)
+
     if speciates or nonlocal_flags["speciates"]:
         # ---- SEEDS (Codex seal-audit): what the case actually introduces ----
         seeds = set(ions)                          # flowsheet/single-salt ions
+        seeds |= reactive_gas_formulas             # seed the gas records too
         has_exchange = "exchange" in op_types \
                        or nonlocal_flags.get("exchange", False)
         # composition { NaCl 2.0 mol/kg; } -> the component's ion map
@@ -854,8 +875,24 @@ def app_binary(root, caseDir):
 
 def validate_staged(root, staged):
     """Run the staged case with the standards catalogue HIDDEN (no
-    CHOUPO_HOME, cwd outside the repo) -- the sealed contract's own test."""
+    CHOUPO_HOME, cwd outside the repo) -- the sealed contract's own test.
+
+    Two case KINDS change what "passes" means (mirroring runTests):
+      * `.expect-nonconvergence` -- a deliberate refusal-teaching case: a
+        NON-ZERO exit is the intended behaviour, so validation accepts it
+        (what matters is that the refusal fired from the SEALED closure);
+      * a `code/` case compiles its OWN user types -- the stock binary
+        cannot run it (unknown type by design).  Validation builds it via
+        bin/buildCode first, exactly as runTests does."""
     binary = app_binary(root, staged)
+    expectFail = (Path(staged) / ".expect-nonconvergence").exists()
+    if (Path(staged) / "code").is_dir():
+        b = subprocess.run([str(root / "bin" / "buildCode"), str(staged)],
+                           capture_output=True, text=True, timeout=600)
+        if b.returncode != 0:
+            die("validation: buildCode FAILED for the staged code/ case --"
+                " nothing was installed.\n" + b.stdout[-800:] + b.stderr[-400:])
+        binary = Path(staged) / "code" / ".build" / "choupoCase"
     env = {k: v for k, v in __import__("os").environ.items()
            if k != "CHOUPO_HOME"}
     try:
@@ -869,6 +906,10 @@ def validate_staged(root, staged):
                            timeout=300)
     except subprocess.TimeoutExpired:
         die("validation TIMED OUT (300 s) -- nothing was installed")
+    if r.returncode != 0 and expectFail:
+        print("  validation: staged case REFUSED as designed"
+              " (.expect-nonconvergence) with the catalogue hidden")
+        return
     if r.returncode != 0:
         tail = "\n".join((r.stdout + "\n" + r.stderr).splitlines()[-25:])
         die("validation FAILED: the staged sealed case does not run with the"

@@ -589,6 +589,20 @@ PYEOF
     fi
     rm -f /tmp/csgate.$$
 
+    # Sealed-corpus gate: every top-level case carries constant/propertyManifest
+    # -- the student finds a hashed copy of every record the case uses INSIDE
+    # the case.  The two live-overlay demos are exempt by design (their lesson
+    # IS the un-sealed overlay against the evolving catalogue).
+    if "$ROOT/bin/curate/check_sealed_corpus.py" > /tmp/scgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "sealed-corpus-gate" "$(head -1 /tmp/scgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_sealed_corpus.py)\n" "sealed-corpus-gate"
+        cat /tmp/scgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/scgate.$$
+
     # Element-balance gate (steady): a reacting boundary changes species but
     # closes per atom; an impossible formula refuses ONLY the elemental claim.
     if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then
