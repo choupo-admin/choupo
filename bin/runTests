@@ -544,6 +544,21 @@ PYEOF
     fi
     rm -f /tmp/ucgate.$$
 
+    # Typed-identifier gate: ComponentId/SpeciesId/SolidId are strong types and
+    # the compiler forbids the implicit crossing; this refuses the shortcut a
+    # compiler cannot see -- laundering a component name into species space
+    # through .name()/.key -- and proves every bridge-unit case declares its
+    # component->species mappings.
+    if "$ROOT/bin/curate/check_typed_identifiers.py" > /tmp/tidgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "typed-identifier-gate" "$(head -1 /tmp/tidgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_typed_identifiers.py)\n" "typed-identifier-gate"
+        cat /tmp/tidgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/tidgate.$$
+
     # Element-balance gate (steady): a reacting boundary changes species but
     # closes per atom; an impossible formula refuses ONLY the elemental claim.
     if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then

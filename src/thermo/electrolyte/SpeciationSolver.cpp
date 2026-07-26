@@ -595,8 +595,9 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
     // -- unknown masters: the totals with something in them --------------------
     std::vector<std::string> mast;        // names (std::map order: deterministic)
     std::vector<double>      mtot, mz;    // totals + charges
-    for (const auto& [name, tot] : in.totals)
+    for (const auto& [id, tot] : in.totals)
     {
+        const std::string& name = id.key;   // typed boundary -> internal key
         if (tot <= 0.0)
         {
             if (verbosity >= 2)

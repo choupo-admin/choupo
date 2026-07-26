@@ -41,6 +41,7 @@ License
 
 #pragma once
 
+#include "../../core/Identifiers.H"
 #include "thermo/Database.H"
 #include "thermo/RecordResolver.H"
 #include "thermo/ThermoAnnounce.H"
@@ -360,8 +361,9 @@ inline DictPtr findPitzerPair(const std::string& cation, const std::string& anio
     return nullptr;
 }
 
-inline int ionCharge(const std::string& species)
+inline int ionCharge(const SpeciesId& id)
 {
+    const std::string& species = id.key;
     auto i = findIon(species);
     if (!i)
         throw std::runtime_error("electrolyte: ion '" + species
@@ -381,8 +383,8 @@ inline double ionMW(const std::string& species)
 // cation/anion species keys.  Throws (loudly) if either ion or the pair is absent.
 inline PitzerSingleSalt loadSalt(const std::string& cation, const std::string& anion)
 {
-    const int zc = ionCharge(cation);          // > 0
-    const int za = ionCharge(anion);           // < 0
+    const int zc = ionCharge(SpeciesId(cation));   // > 0 (declared ref)
+    const int za = ionCharge(SpeciesId(anion));    // < 0 (declared ref)
     if (zc <= 0 || za >= 0)
         throw std::runtime_error("electrolyte: '" + cation + "' must be a cation and '"
             + anion + "' an anion (check ions.dat charges)");
@@ -547,7 +549,7 @@ inline DictPtr findENRTLPair(const std::string& cation, const std::string& anion
 
 inline ENRTLSingleSalt loadENRTL(const std::string& cation, const std::string& anion)
 {
-    const int zc = ionCharge(cation), za = ionCharge(anion);
+    const int zc = ionCharge(SpeciesId(cation)), za = ionCharge(SpeciesId(anion));
     if (zc <= 0 || za >= 0)
         throw std::runtime_error("eNRTL: '" + cation + "' must be a cation and '"
             + anion + "' an anion (check ion charges)");

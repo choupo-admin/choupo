@@ -135,7 +135,7 @@ scalar daviesGammaConc(int z, scalar I_molL, scalar A)
 // A single ion in the DSPM-DE problem.
 struct Ion
 {
-    std::string name;     // species key (Na, Cl, SO4, ...)
+    SpeciesId name;       // TYPED species id (declared FK of its salt)
     int    z = 0;         // signed charge
     scalar r = 0.0;       // ion radius [m]
     scalar D = 0.0;       // free-solution D0 [m^2/s]
@@ -220,8 +220,10 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
                   "ion-by-ion and needs the salt's ion decomposition.  Add the "
                   "block to its component .dat, or use a salt that carries one "
                   "(NaCl, CaCl2, MgSO4).");
-        const std::string cat = comp.electrolyteCation();
-        const std::string an  = comp.electrolyteAnion();
+        // Declared FK from the component record (derived from dissociatesTo)
+        // -- typed at the point of read, per the loader contract.
+        const SpeciesId cat{comp.electrolyteCation()};
+        const SpeciesId an {comp.electrolyteAnion()};
         const int zc = electrolyte::ionCharge(cat);     // > 0
         const int za = electrolyte::ionCharge(an);      // < 0
         // electroneutral stoichiometry M_{nu_c} X_{nu_a}: nu_c*zc = nu_a*|za|.

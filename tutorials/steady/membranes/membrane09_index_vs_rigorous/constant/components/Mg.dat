@@ -19,3 +19,7 @@ formula        "Mg+2";
 MW             24.305;          // g/mol  (= kg/kmol), from ions.dat
 role        nonvolatile;
 dissociation   1;              // already an ion: 1 particle/mol
+
+// Bridge to the aqueous master species of the same spelling -- two
+// identity spaces, one DECLARED crossing (identifier typing, 2026-07-25).
+aqueousMapping ( { species Mg; nu 1; } );

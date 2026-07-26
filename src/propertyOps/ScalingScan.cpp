@@ -191,7 +191,8 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
     // at k == 0 below); columns LSI, StiffDavis, RSI appended after the SI_<m>.
     bool   doIndices = false;
     double logK_calcite_T = 0.0;
-    const bool hasCaHCO3 = feed.totals.count("Ca") && feed.totals.count("HCO3");
+    const bool hasCaHCO3 = feed.totals.count(SpeciesId("Ca"))
+                    && feed.totals.count(SpeciesId("HCO3"));
 
     std::ofstream csv(dict->subDict("output")->lookupWord("file"));
     if (!csv.is_open())
@@ -272,8 +273,8 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
         {
             // Concentration proxy = concentrated molality [mol/kg] ~ mol/L
             // (dilute aqueous; honest approximation announced in the header).
-            const double cCa   = inRaw.totals.at("Ca");
-            const double cHCO3 = inRaw.totals.at("HCO3");
+            const double cCa   = inRaw.totals.at(SpeciesId("Ca"));
+            const double cHCO3 = inRaw.totals.at(SpeciesId("HCO3"));
             const auto ix = electrolyte::ScalingIndices::compute(
                 raw.pH, cCa, cHCO3, raw.I, feed.T, logK_calcite_T);
             csv << "," << ix.LSI << "," << ix.stiffDavis << "," << ix.RSI;

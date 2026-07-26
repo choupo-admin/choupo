@@ -203,7 +203,7 @@ void readExchange(const DictPtr& dict, electrolyte::SpeciationInput& in,
     // off, but a resin whose form ion is absent gets flagged for the student).
     bool anyPresent = false;
     for (const auto& r : in.exchange.network)
-        if (in.totals.count(r.ion) && in.totals.at(r.ion) > 0.0)
+        if (in.totals.count(SpeciesId(r.ion)) && in.totals.at(SpeciesId(r.ion)) > 0.0)
             anyPresent = true;
     if (!anyPresent)
         throw std::runtime_error("exchange: none of the exchange.dat cations ("

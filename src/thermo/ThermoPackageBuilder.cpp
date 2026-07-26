@@ -548,7 +548,7 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                 " apparent-component basis -- no declared master carries the"
                 " marker element '" + marker + "' of apparent component '"
                 + names[i] + "'.");
-        cfg.families.push_back({ i, marker, masterOf });
+        cfg.families.push_back({ i, marker, SpeciesId(masterOf) });
     }
 
     // (d) volatiles: each is an apparent component served by a gas-liquid
@@ -638,6 +638,18 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
             }
         }
         if (chem) aq.solidPhases = chem->solidPhases;
+
+        // THE BRIDGE: each component's DECLARED aqueous mapping (its
+        // `aqueousMapping` block, or `dissociatesTo` converted at load),
+        // collected here so the two identity spaces meet in exactly one
+        // audited seam.  No declaration, no bridge -- and a unit that needs
+        // one refuses by component name.  (Existence of each target species
+        // is enforced at the use boundary -- findAqueousSpecies /
+        // SpeciationSolver -- where the case's sealed closure is the law.)
+        for (const auto& c : out.components())
+            if (c.hasAqueousMapping())
+                aq.aqueousMapping[ComponentId(c.name())] = c.aqueousMapping();
+
         out.declareAqueousChemistry(std::move(aq));
     }
     return out;

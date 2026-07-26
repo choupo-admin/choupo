@@ -42,11 +42,11 @@ ReactiveVLE::ReactiveVLE(ReactiveVLEConfig cfg)
         bool masterKnown = false;
         for (const auto& r : spec_->reactions())
             for (const auto& [m, nu] : r.masters)
-                if (m == fam.master) { masterKnown = true; break; }
+                if (m == fam.master.key) { masterKnown = true; break; }
         if (!masterKnown)
             throw std::runtime_error("ReactiveVLE: apparent component '"
                 + cfg_.apparent.at(fam.apparentIdx) + "' maps to master '"
-                + fam.master + "', but NO speciation record references that"
+                + fam.master.key + "', but NO speciation record references that"
                 " master -- the chemistry set cannot map the family's true"
                 " species back to the declared apparent-component basis.");
     }

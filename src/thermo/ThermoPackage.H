@@ -65,6 +65,7 @@ Description
 #pragma once
 
 #include "Component.H"
+#include "core/Identifiers.H"
 #include "Database.H"
 #include "PackageAudit.H"
 #include "activityCoefficient/ActivityModel.H"
@@ -384,6 +385,33 @@ public:
         std::string              activityModel;   // davies | Pitzer | eNRTL
         std::vector<std::string> masters;         // the speciation network
         std::vector<std::string> solidPhases;     // admitted (constant/chemistryDict)
+
+        // THE component -> aqueous-species bridge, stoichiometric and
+        // DECLARED (a component's `aqueousMapping` block, or its legacy
+        // `dissociatesTo` converted at load; never name identity).  Built
+        // once by the ThermoPackageBuilder, validated against the species
+        // registry -- the ONLY place the two identity spaces meet.
+        std::map<ComponentId, std::vector<SpeciesStoich>> aqueousMapping;
+
+        //- The bridge for a unit that requires a one-to-one component: its
+        //  single master species.  Refuses, by name, a component with no
+        //  declared mapping or with a multi-species one.
+        const SpeciesId& singleMaster(const ComponentId& c) const
+        {
+            auto it = aqueousMapping.find(c);
+            if (it == aqueousMapping.end() || it->second.empty())
+                throw std::runtime_error("aqueousMapping: component '" + c.key
+                    + "' declares no aqueous mapping.  Add to its component"
+                      " record:\n    aqueousMapping ( { species " + c.key
+                    + "; nu 1; } );\n(or a dissociatesTo block for a salt)."
+                      "  No name-identity fallback is applied.");
+            if (it->second.size() > 1)
+                throw std::runtime_error("aqueousMapping: component '" + c.key
+                    + "' maps to " + std::to_string(it->second.size())
+                    + " species -- this operation needs a single-master"
+                      " component (feed the ions, not the salt).");
+            return it->second.front().species;
+        }
     };
 
     void declareAqueousChemistry(AqueousChemistry a)

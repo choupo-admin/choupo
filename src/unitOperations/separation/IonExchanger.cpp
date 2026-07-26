@@ -122,13 +122,15 @@ int IonExchanger::solve(const DictPtr& dict,
     {
         if (i == iWater) continue;
         if (z_in[i] <= 0.0) continue;
-        const std::string nm = thermo.comp(i).name();
-        if (!electrolyte::findAqueousSpecies(nm))
-            throw std::runtime_error("ionExchanger: component '" + nm + "' has "
+        // component -> species through the DECLARED bridge, never by name.
+        const SpeciesId sp = thermo.aqueousChemistry().singleMaster(
+            ComponentId(thermo.comp(i).name()));
+        if (!electrolyte::findAqueousSpecies(sp.key))
+            throw std::runtime_error("ionExchanger: species '" + sp.key + "' has "
                 "no row in ions.dat -- the softener needs an IONIC water "
                 "analysis (master ions Ca, Mg, Na, K, Cl, SO4, HCO3, ... + "
                 "water, with the electrolyte catalogue in constant/electrolyte/).");
-        in.totals[nm] = (z_in[i] / z_water) * molesWaterPerKg;   // mol/kg water
+        in.totals[sp] = (z_in[i] / z_water) * molesWaterPerKg;   // mol/kg water
     }
     if (in.totals.empty())
         throw std::runtime_error("ionExchanger: the inlet carries no ions -- a "

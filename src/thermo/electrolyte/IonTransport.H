@@ -42,6 +42,7 @@ Description
 
 #pragma once
 
+#include "../../core/Identifiers.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 
 #include <stdexcept>
@@ -51,8 +52,9 @@ namespace Choupo {
 namespace electrolyte {
 
 // Effective (Stokes/hydrated) ion radius [m].
-inline scalar ionRadius(const std::string& species)
+inline scalar ionRadius(const SpeciesId& id)
 {
+    const std::string& species = id.key;
     auto row = findAqueousSpecies(species);
     if (!row)
         throw std::runtime_error("ion-transport tier: ion '" + species
@@ -69,8 +71,9 @@ inline scalar ionRadius(const std::string& species)
 }
 
 // Infinite-dilution (Nernst) diffusion coefficient [m2/s], 25 C.
-inline scalar ionD0(const std::string& species)
+inline scalar ionD0(const SpeciesId& id)
 {
+    const std::string& species = id.key;
     auto row = findAqueousSpecies(species);
     if (!row)
         throw std::runtime_error("ion-transport tier: ion '" + species

@@ -861,7 +861,7 @@ double PitzerHMW::verify(int verbosity, const std::set<std::string>* onlyIons)
             // Charges from ions.dat; skip a pair whose ions are not catalogued
             // (a few exotic complex ions in pairs.dat have no ions.dat row).
             int zc = 0, za = 0;
-            try { zc = ionCharge(cation); za = ionCharge(anion); }
+            try { zc = ionCharge(SpeciesId(cation)); za = ionCharge(SpeciesId(anion)); }
             catch (const std::exception&) { continue; }
             if (zc <= 0 || za >= 0) continue;
 

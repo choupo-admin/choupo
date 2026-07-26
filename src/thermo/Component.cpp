@@ -128,6 +128,26 @@ void Component::readFromDict(const DictPtr& d)
     else
         nu_ = d->lookupScalarOrDefault("dissociation", 1.0);
 
+    // The component -> aqueous-species bridge, TYPED AT LOAD (the loader
+    // contract of the 2026-07-25 identifier-typing decision): the general
+    // `aqueousMapping ( { species X; nu n; } ... )` block wins; a salt's
+    // `dissociatesTo` converts to the same typed structure.  No block, no
+    // bridge -- name identity is never assumed.
+    if (d->found("aqueousMapping"))
+    {
+        for (const auto& e : d->lookupDictList("aqueousMapping"))
+            aqueousMapping_.push_back(
+                { SpeciesId(e->lookupWord("species")),
+                  e->lookupScalarOrDefault("nu", 1.0) });
+    }
+    else if (d->found("dissociatesTo"))
+    {
+        auto d2t = d->subDict("dissociatesTo");
+        for (const auto& ion : d2t->keys())
+            aqueousMapping_.push_back(
+                { SpeciesId(ion), d2t->lookupScalar(ion) });
+    }
+
     // Role / category ----------------------------------------------
     // `role <word>;` -- volatile (default) / solute / nonvolatile / radical.
     if (d->found("nonvolatile"))
@@ -565,7 +585,7 @@ void Component::readFromDict(const DictPtr& d)
         {
             for (const auto& ion : d2t->keys())
             {
-                const int z = electrolyte::ionCharge(ion);
+                const int z = electrolyte::ionCharge(SpeciesId(ion));
                 if      (z > 0) elecCation_ = ion;
                 else if (z < 0) elecAnion_  = ion;
             }

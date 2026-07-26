@@ -38,6 +38,7 @@ Description
 
 #pragma once
 
+#include "../core/Identifiers.H"
 #include "core/Dictionary.H"
 #include "core/Origin.H"
 #include "core/Types.H"
@@ -199,6 +200,15 @@ public:
     // `electrolyte { cation; anion; }` input is gone); the ion names resolve in
     // species/<name>.dat + parameters/Pitzer/.  Intrinsic salt chemistry,
     // declared once -- the electrolyte ActivityModel (pitzer) reads it.
+    // ---- The component -> aqueous-species bridge (TYPED at load) ----------
+    //  From the record's `aqueousMapping ( { species X; nu n; } ... )`, or its
+    //  legacy `dissociatesTo { X n; }` converted at load.  NEVER inferred from
+    //  the name -- a component with neither block has NO aqueous mapping, and
+    //  a unit that needs one refuses by name (AqueousChemistry::singleMaster).
+    bool hasAqueousMapping() const { return !aqueousMapping_.empty(); }
+    const std::vector<SpeciesStoich>& aqueousMapping() const
+    { return aqueousMapping_; }
+
     bool   hasElectrolyteSpec()  const { return hasElec_; }
     const std::string& electrolyteCation() const { return elecCation_; }
     const std::string& electrolyteAnion()  const { return elecAnion_; }
@@ -418,6 +428,7 @@ private:
 
     bool        hasElec_  = false;       // salt carries an electrolyte{} block
     std::string elecCation_, elecAnion_; // ion names, derived from dissociatesTo
+    std::vector<SpeciesStoich> aqueousMapping_;  // the typed bridge (see accessor)
     scalar      relPermittivity_ = 0.0;  // dielectric constant (mixed-solvent eNRTL)
 
     // Transport: Fuller diffusion volume Σv; 0 if not declared.

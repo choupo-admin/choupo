@@ -405,6 +405,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     bool   scalePHsolve = false;
     scalar scalePH      = 7.0;
     const electrolyte::SpeciationSolver* specSolver = nullptr;
+    std::vector<SpeciesId> masterOfSolute;   // the declared bridge, per solute
     std::vector<scalar> audRecovery, audI, audPH;            // per-module rows
     std::map<std::string, std::vector<scalar>> audSIbulk, audSIwall;
     // Industry calcite indices (LSI / Stiff-Davis / Ryznar), bulk + wall -- the
@@ -550,13 +551,22 @@ int SpiralWoundModule::solve(const DictPtr& dict,
 
         // ... and resolvable from the FEED analysis.  This pre-solve also
         // lets the speciation honesty header + Davies advisories speak once.
+        // THE component -> species crossing, once, through the DECLARED
+        // bridge (each component's aqueousMapping / dissociatesTo) -- never
+        // by name identity.  A solute with no declared mapping is refused
+        // here by name, before any physics runs.
+        masterOfSolute.resize(Ns);
+        for (std::size_t s = 0; s < Ns; ++s)
+            masterOfSolute[s] = thermo.aqueousChemistry().singleMaster(
+                ComponentId(thermo.comp(soluteIdx[s]).name()));
+
         electrolyte::SpeciationInput in;
         in.solvePH = scalePHsolve;
         in.pH      = scalePH;
         in.T       = T_in;
         for (std::size_t s = 0; s < Ns; ++s)
             if (c_b[s] > 1.0e-30)
-                in.totals[thermo.comp(soluteIdx[s]).name()]
+                in.totals[masterOfSolute[s]]
                     = c_b[s] * 1.0e3 / rho;        // kmol/m3 -> mol/kg water
         const auto feedRes = specSolver->solve(in, verbosity);
 
@@ -573,10 +583,10 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                          "  [chain] 1. analytical totals -- what the water"
                          " analysis measures, and what the stream conserves\n";
             for (std::size_t s = 0; s < Ns; ++s)
-                if (in.totals.count(thermo.comp(soluteIdx[s]).name()))
+                if (in.totals.count(masterOfSolute[s]))
                     std::printf("  [chain]      %-8s %12.6e mol/kg water\n",
-                        thermo.comp(soluteIdx[s]).name().c_str(),
-                        in.totals.at(thermo.comp(soluteIdx[s]).name()));
+                        masterOfSolute[s].key.c_str(),
+                        in.totals.at(masterOfSolute[s]));
 
             std::cout << "  [chain] 2. speciation -- each total distributes"
                          " over free ions and complexes\n"
@@ -803,7 +813,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 in.T       = T_in;
                 for (std::size_t s = 0; s < Ns; ++s)
                     if (conc[s] > 1.0e-30)
-                        in.totals[thermo.comp(soluteIdx[s]).name()]
+                        in.totals[masterOfSolute[s]]
                             = conc[s] * 1.0e3 / rho;    // kmol/m3 -> mol/kg w
                 return specSolver->solve(in, 0);        // advisories still log
             };

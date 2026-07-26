@@ -71,6 +71,7 @@ Description
 
 #pragma once
 
+#include "../../core/Identifiers.H"
 #include "core/Types.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
 
@@ -94,7 +95,7 @@ struct ReactiveVLEConfig
     {
         std::size_t apparentIdx = 0;
         std::string marker;                      // e.g. "N"
-        std::string master;                      // e.g. "NH4"
+        SpeciesId   master;                      // e.g. "NH4"
     };
     std::vector<Family> families;
 

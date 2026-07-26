@@ -54,7 +54,8 @@ constexpr scalar MW_WATER_KG = 0.0180153;   // kg/mol (molality closure; matches
 // One channel's ionic state, derived ONCE per pass from a stream.
 struct ChannelState
 {
-    std::vector<std::string> ion;        // species key (Na, Cl, ...)
+    std::vector<SpeciesId>   ion;        // TYPED species ids (via the declared bridge)
+    std::vector<std::size_t> compIdx;    // the component each row came from
     std::vector<scalar>      z;          // charge
     std::vector<scalar>      m;          // molality [mol/kg water]
     std::vector<scalar>      gamma;      // Davies activity coefficient
@@ -133,13 +134,17 @@ ChannelState buildChannel(const ThermoPackage& thermo, const sVector& z,
     {
         if (i == iWater) continue;
         if (z[i] <= 0.0) continue;
-        const std::string nm = thermo.comp(i).name();
-        if (!electrolyte::findAqueousSpecies(nm))
-            throw std::runtime_error("electrodialysisStack: component '" + nm
+        // The component -> species crossing goes through the DECLARED bridge
+        // (aqueousMapping / dissociatesTo), never by name identity.
+        const SpeciesId sp = thermo.aqueousChemistry().singleMaster(
+            ComponentId(thermo.comp(i).name()));
+        if (!electrolyte::findAqueousSpecies(sp.key))
+            throw std::runtime_error("electrodialysisStack: species '" + sp.key
                 + "' has no row in ions.dat -- electrodialysis needs an IONIC "
                   "water analysis (Na, Cl, ... + water)");
-        ch.ion.push_back(nm);
-        ch.z.push_back(static_cast<scalar>(electrolyte::ionCharge(nm)));
+        ch.ion.push_back(sp);
+        ch.compIdx.push_back(i);
+        ch.z.push_back(static_cast<scalar>(electrolyte::ionCharge(sp)));
         ch.m.push_back((z[i] / z_water) * molesWaterPerKg);   // mol/kg water
     }
     if (ch.ion.empty())
@@ -153,7 +158,9 @@ ChannelState buildChannel(const ThermoPackage& thermo, const sVector& z,
 
     // Davies gammas, frozen for the pass (the reused electrolyte interface).
     electrolyte::IonState st;
-    st.name = ch.ion; st.molality = ch.m; st.charge = ch.z; st.I = ch.I; st.T = T;
+    st.name.clear();
+    for (const auto& s : ch.ion) st.name.push_back(s.key);
+    st.molality = ch.m; st.charge = ch.z; st.I = ch.I; st.T = T;
     auto res = act.evaluate(st, T);
     ch.gamma.resize(ch.m.size());
     for (std::size_t k = 0; k < ch.m.size(); ++k) ch.gamma[k] = res.gamma(ch.z[k]);
@@ -355,10 +362,9 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     // demin ratio = dn_salt / n_salt_in_diluate.
     // The diluate salt INFLOW [mol/s of equivalents removed basis]:
     //   n_in_i = F_dil[kmol/s]*1000 * (z_frac_i)   -- per ion mole flow.
-    auto diluateIonInflow = [&](const std::string& nm) -> scalar
+    auto diluateIonInflow = [&](std::size_t compIdx) -> scalar
     {
-        const std::size_t i = thermo.indexOf(nm);
-        return dil.F * 1000.0 * dil.z[i];   // mol/s
+        return dil.F * 1000.0 * dil.z[compIdx];   // mol/s
     };
 
     scalar I = 0.0;
@@ -374,12 +380,12 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
             throw std::runtime_error("electrodialysisStack: targetDemin must be "
                 "in (0, 1); got " + std::to_string(target));
         // Use the FIRST cation as the reference counter-ion for the demin target.
-        std::string refIon;
+        SpeciesId refIon = chD.ion.front();
+        std::size_t refK = 0;
         for (std::size_t k = 0; k < chD.ion.size(); ++k)
-            if (chD.z[k] > 0) { refIon = chD.ion[k]; break; }
-        if (refIon.empty()) refIon = chD.ion.front();
+            if (chD.z[k] > 0) { refIon = chD.ion[k]; refK = k; break; }
         const scalar z_ref = static_cast<scalar>(electrolyte::ionCharge(refIon));
-        const scalar n_in  = diluateIonInflow(refIon);   // mol/s
+        const scalar n_in  = diluateIonInflow(chD.compIdx[refK]);   // mol/s
         // demin(I) = (xi I N)/(|z| F) / n_in - target = 0  (linear -> direct, but
         // solved via Newton-1D to KEEP the glass-box solver visible).
         auto f  = [&](scalar Icur) {
@@ -398,7 +404,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         I = r.x; solvedI = true;
         recordResidual(std::abs(r.residual));
         if (verbosity >= 3)
-            std::cout << "  [solve I] targetDemin " << target << " on ion " << refIon
+            std::cout << "  [solve I] targetDemin " << target << " on ion " << refIon.key
                       << "  ->  I = " << I << " A  (Newton, " << r.iterations
                       << " it, residual " << std::scientific << r.residual
                       << std::fixed << ")\n";
@@ -426,11 +432,10 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     // (cannot remove more than is present -- announce if it binds).
     bool capBound = false;
     scalar removedRef = 0.0, refInflow = 0.0;
-    std::string refIonName;
+    SpeciesId refIonSp;
     for (std::size_t k = 0; k < chD.ion.size(); ++k)
     {
-        const std::string nm = chD.ion[k];
-        const std::size_t i  = thermo.indexOf(nm);
+        const std::size_t i = chD.compIdx[k];
         const scalar zmag    = std::abs(chD.z[k]);
         scalar dn = electrochem::faradayMolarRate(I, zmag, xi)
                   * static_cast<scalar>(N);            // mol/s for THIS ion
@@ -439,8 +444,8 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         const scalar dn_kmol = dn / 1000.0;            // kmol/s
         FzD[i] -= dn_kmol;
         FzC[i] += dn_kmol;
-        if (refIonName.empty() && chD.z[k] > 0)
-        { refIonName = nm; removedRef = dn; refInflow = avail; }
+        if (refIonSp.key.empty() && chD.z[k] > 0)
+        { refIonSp = chD.ion[k]; removedRef = dn; refInflow = avail; }
     }
 
     // Re-mole-fraction the two product streams (water unchanged; F constant --
@@ -467,7 +472,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     // ~ xi by construction unless capped; report the capped value.
     const scalar curEff = (I > 0.0)
         ? (removedRef * std::abs(static_cast<scalar>(electrolyte::ionCharge(
-              refIonName.empty() ? chD.ion.front() : refIonName)))
+              refIonSp.key.empty() ? chD.ion.front() : refIonSp)))
            * electrochem::Faraday) / (I * static_cast<scalar>(N))
         : 0.0;
 
@@ -525,7 +530,8 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         std::cout << "  P=U*I    = " << std::setprecision(3) << (W_electric/1000.0)
                   << " kW  (W_electric, on the energy wire)\n";
         std::cout << "  demin    = " << std::setprecision(4) << (100.0*demin)
-                  << " %  (ion " << (refIonName.empty()?chD.ion.front():refIonName)
+                  << " %  (ion " << (refIonSp.key.empty()
+                        ? chD.ion.front().key : refIonSp.key)
                   << ")\n";
         std::cout << "  spec.E   = " << std::setprecision(4) << specEnergy
                   << " kWh/m3 diluate\n";

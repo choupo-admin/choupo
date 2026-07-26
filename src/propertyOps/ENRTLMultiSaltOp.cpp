@@ -54,8 +54,8 @@ int ENRTLMultiSaltOp::run(const DictPtr& dict, const ThermoPackage&, int verbosi
     {
         const std::string cat = s->lookupWord("cation");
         const std::string an  = s->lookupWord("anion");
-        const int zc = electrolyte::ionCharge(cat);
-        const int za = electrolyte::ionCharge(an);
+        const int zc = electrolyte::ionCharge(SpeciesId(cat));
+        const int za = electrolyte::ionCharge(SpeciesId(an));
         if (zc <= 0 || za >= 0)
             throw std::runtime_error("enrtlMultiSalt: '" + cat + "' must be a cation and '"
                 + an + "' an anion");

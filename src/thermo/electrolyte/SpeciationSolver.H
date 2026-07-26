@@ -137,6 +137,7 @@ Description
 
 #pragma once
 
+#include "../../core/Identifiers.H"
 #include <array>
 #include <map>
 #include <memory>
@@ -243,7 +244,7 @@ struct ExchangeSpec
 
 struct SpeciationInput
 {
-    std::map<std::string, double> totals;   // master ion -> total molality [mol/kg w]
+    std::map<SpeciesId, double> totals;     // master species -> total molality [mol/kg w]
     double pH = 7.0;                        // used when !solvePH (the given-pH closure)
     bool   solvePH = false;                 // `pH solve;` -- H+ joins the unknowns,
                                             //   electroneutrality joins the equations

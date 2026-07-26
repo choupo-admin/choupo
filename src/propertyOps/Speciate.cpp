@@ -126,7 +126,7 @@ electrolyte::SpeciationInput readAnalysis(const DictPtr& dict)
         {
             auto t = dict->subDict(key);
             for (const auto& k : t->keys())
-                in.totals[k] = totalAsMolality(t, k);
+                in.totals[SpeciesId(k)] = totalAsMolality(t, k);
         }
 
     // COMPOSITION (roadmap Phase B): the analysis given as FORMULA-UNIT SALTS
@@ -171,7 +171,7 @@ electrolyte::SpeciationInput readAnalysis(const DictPtr& dict)
                     throw std::runtime_error("composition." + salt + ": ion '" + ion
                         + "' not found in species/aqueous (needed for the charge balance).");
                 netCharge += nu * iRec->lookupScalar("z");
-                in.totals[ion] += m * nu;
+                in.totals[SpeciesId(ion)] += m * nu;
             }
             if (std::fabs(netCharge) > 1e-9)
                 throw std::runtime_error("composition." + salt + ": speciesMap is NOT "
