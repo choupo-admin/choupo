@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash11_acetic_T_sweep -- the same reactive flash as flash10, but the
+  temperature specification is OWNED by system/outerDict: the sweep driver
+  rewrites units[0].operation.T pass by pass (setScalarAtPath -- the dict
+  IS the schema) and records the flash's reactive KPIs at each point.
+  Topology, chemistry, and feed are identical to
+  flash10_acetic_water_reactive; see that case's header for the physics
+  and for why the two-phase corner is refused.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T      368.15 K;  P 1.0 atm; }
+    }
+);

@@ -236,7 +236,19 @@ if [ "$RUNNER" != "$APP" ]; then
     RUN_BIN="$CASE_ABS/code/.build/choupoCase"
 else
     echo "  binary: $APP"
-    RUN_BIN="$APP"
+    # Resolve via PATH (etc/bashrc sourced) when available; otherwise fall
+    # back to the repo-root symlink next to this script's parent, so a bare
+    # `bin/runCase` works from any environment (gates, CI, fresh shells).
+    if command -v "$APP" >/dev/null 2>&1; then
+        RUN_BIN="$APP"
+    else
+        RUN_BIN="$(cd "$(dirname "$0")/.." && pwd)/$APP"
+        if [ ! -x "$RUN_BIN" ]; then
+            echo "runCase: '$APP' is neither on PATH nor built at $RUN_BIN" >&2
+            echo "         (build with 'make all', or source etc/bashrc)" >&2
+            exit 1
+        fi
+    fi
 fi
 
 if [ -n "$APPEND" ]; then

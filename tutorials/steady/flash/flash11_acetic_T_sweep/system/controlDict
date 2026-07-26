@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash11_acetic_T_sweep --- flash10's chemistry with the temperature MOVING.
+
+  The reactive acetic/water flash (flash10_acetic_water_reactive) is an
+  isothermal (T,P) flash: T is the SPECIFICATION, not a result.  This case
+  sweeps that specification across the SUBSATURATED window, 328.15 ->
+  368.15 K, so the student sees temperature act through BOTH van't Hoff
+  legs at once:
+
+    * gas-liquid dissolution (dH = -51.5 kJ/mol): K falls as T rises, so
+      every equilibrium partial pressure -- and their sum p_eq_sum_atm --
+      CLIMBS toward P;
+    * vapour dimerisation (dH = -58.5 kJ/mol): K_dim falls FASTER, so the
+      dimer share of the acid's vapour FALLS as T rises even while the
+      absolute p_dimer_atm grows with the monomer that feeds it.
+
+  The responses are the flash's reactive KPIs (pH, p_eq_sum_atm,
+  p_mono_atm, p_dimer_atm, dimer_share) -- published by the unit, read by
+  the sweep driver, one CSV row per temperature.  The sweep deliberately
+  STOPS below saturation: a two-phase reactive flash with a dimerising
+  vapour is REFUSED by name (see flash10's header), and this case never
+  asks for it.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Reactive acetic/water flash: T swept 328->368 K in the subsaturated window (p_eq climbs, dimer share falls, pH drifts)";
+
+verbosity     2;          // the sweep prints one line per point; Newton detail off

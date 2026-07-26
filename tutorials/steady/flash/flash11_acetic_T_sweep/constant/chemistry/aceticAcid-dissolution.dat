@@ -1,0 +1,22 @@
+// [imported] origin "data/standards/chemistry/aceticAcid-dissolution.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+recordType gasLiquidEquilibrium;
+schemaVersion 1;
+
+// Acetic acid gas-liquid transfer (gas key = the component formula,
+// the gasOf contract: water -> H2O, aceticAcid -> C2H4O2) (Henry-type, PHREEQC convention
+// a(dissolved) = K * p[atm]):  HAc(g) = HAc(aq).
+// K25 from Sander (2015) Compilation of Henry's law constants, ACP 15,
+// 4399 (acetic acid, Hcp ~ 4.1e3 M/atm -> logK25 3.61); dH from the same
+// compilation's d(ln H)/d(1/T) ~ 6200 K -> -51.5 kJ/mol (exothermic).
+gas C2H4O2; reaction "CH3COOH(g) = CH3COOH"; dissolved "CH3COOH";
+      logK25 3.61; dH -51500; source "Sander, R. (2015) Atmos. Chem. Phys. 15, 4399 (CC-BY 3.0): acetic acid Hcp ~ 4.1e3 M/atm at 298 K, d(lnH)/d(1/T) ~ 6200 K";
+
+// VAPOUR dimerisation of acetic acid (the carboxylic-acid signature):
+//   2 CH3COOH(g) = (CH3COOH)2(g),  K_dim = p_D/p_M^2 [atm^-1]
+// K25 ~ 1.4e3 atm^-1 (logK25 3.146), dH ~ -58.5 kJ/mol.
+vapourDimerisation
+{
+    logK25  3.146;
+    dH      -58500;
+    source  "Chao & Zwolinski, J. Phys. Chem. Ref. Data 7 (1978) 363 (acetic acid vapour association) -- INTERIM: primary re-check pending (IST review)";
+}

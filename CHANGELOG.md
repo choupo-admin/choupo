@@ -39,7 +39,18 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
   teaching surrogates.  Sealed-mirror sweep: 276+ cases re-imported.
 * **Sealing leak fixed**: PitzerHMW pair enumeration obeyed the sealed
   closure (it read the installation catalogue unconditionally).
-* Eleven new curation gates in `runTests` (307 PASS / 0 FAIL).
+* **Sealed corpus**: every top-level tutorial carries
+  `constant/propertyManifest` + hashed record copies (283 sealed, 2
+  live-overlay demos exempt by design; `check_sealed_corpus` gate).
+* **Reactive chemistry is KPI-bound**: the reactive flash publishes `pH`,
+  `p_eq_sum_atm` and -- when a volatile dimerises -- `p_mono_atm`,
+  `p_dimer_atm`, `dimer_share`, so sweeps and outer drivers read the
+  chemistry acting with T.  New tutorial `flash11_acetic_T_sweep` (T swept
+  328->368 K inside the subsaturated window: total volatility climbs, the
+  dimer share falls).  The water-analysis charge-imbalance advisory no
+  longer fires on stoichiometric (component-derived) totals -- a neutral
+  acid delivered as its conjugate-base master is balanced by construction.
+* Twelve new curation gates in `runTests` (309 PASS / 0 FAIL).
 
 ## [Unreleased]
 

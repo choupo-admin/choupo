@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Sweep the flash TEMPERATURE across the SUBSATURATED window and read the
+  chemistry answering: both K(T) legs are van't Hoff, so p_eq_sum_atm
+  climbs toward P while dimer_share falls.  Credo-compliant: ONE knob
+  moves, the physics answers -- and every response is a KPI the unit
+  publishes, never a number the driver computes for itself.
+
+  The upper bound stays below saturation on purpose (368.15 K gives
+  sum p_eq = 0.836 atm < 1 atm): past the bubble point a dimerising
+  vapour re-weights the vapour mole balance and the engine REFUSES the
+  two-phase reactive flash by name (flash10's header documents it).
+\*---------------------------------------------------------------------------*/
+
+type        sweep;
+
+parameter
+{
+    target    units[0].operation.T;
+    range     ( 328.15  368.15 );          // K -- all subsaturated (no bubble)
+    nPoints   21;                          // 2 K steps
+}
+
+responses
+(
+    flash01.p_eq_sum_atm   // total equilibrium volatility, climbs toward P
+    flash01.p_mono_atm     // acid monomer partial pressure
+    flash01.p_dimer_atm    // acid dimer partial pressure (2 HAc = (HAc)2)
+    flash01.dimer_share    // p_dimer/(p_mono+p_dimer): FALLS as T rises
+    flash01.pH             // the speciated liquid's pH (weak-acid answer)
+    flash01.Q_kW           // duty to hold each T (feed enters at 368.15 K)
+);
+
+report
+{
+    format    csv;
+    file      sweep_aceticT.csv;
+}

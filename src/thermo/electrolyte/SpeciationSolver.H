@@ -255,6 +255,14 @@ struct SpeciationInput
     double pH = 7.0;                        // used when !solvePH (the given-pH closure)
     bool   solvePH = false;                 // `pH solve;` -- H+ joins the unknowns,
                                             //   electroneutrality joins the equations
+    // The totals came from NEUTRAL apparent components via the declared
+    // stoichiometric bridge (ReactiveVLE), not from a lab water analysis.
+    // A neutral acid delivered as its conjugate-base master LOOKS 200%
+    // imbalanced to the PHREEQC convention (H/OH are excluded from analysis
+    // sums), yet the feed is charge-balanced by construction -- the solved
+    // pH is the weak-acid answer, not an absorbed lab error.  When true the
+    // imbalance announce/advisory does not apply (noted at verbosity >= 3).
+    bool   stoichiometricTotals = false;
     // `atmosphere { pCO2 4.2e-4 atm; O2 0.2095 atm; ... }` -- OPEN system:
     // (gas name, partial pressure [atm]) per listed gas; each pins its
     // dissolved species by Henry and replaces that species' master mole

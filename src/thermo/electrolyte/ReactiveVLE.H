@@ -121,6 +121,18 @@ struct ReactiveVLEResult
     scalar resSpeciation = 0.0;    // inner Newton residual at acceptance
     std::string diagnostic;
     int    iterations = 0;
+
+    // The (T,P)-ACTING observables of the saturation pre-check, [atm]: the
+    // sum of equilibrium partial pressures over the fully speciated liquid,
+    // and -- when a volatile declares vapour dimerisation -- its
+    // monomer/dimer split.  These are what a temperature sweep reads (the
+    // flash publishes them as KPIs): both K(T) legs are van't Hoff in T, so
+    // pEqSum climbs and the dimer share falls as T rises.  In a TWO-PHASE
+    // result pEqSum equals P by construction (the vapour partials sum to P).
+    scalar pEqSumAtm = 0.0;
+    scalar pMonoAtm  = 0.0;
+    scalar pDimerAtm = 0.0;
+    bool   dimerOn   = false;
 };
 
 class ReactiveVLE

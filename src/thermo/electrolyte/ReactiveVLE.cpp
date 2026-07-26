@@ -120,6 +120,9 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         SpeciationInput in;
         in.T = T_K;
         in.solvePH = true;                            // electroneutrality ON
+        in.stoichiometricTotals = true;               // bridge-derived, not a
+                                                      //   lab analysis
+
         for (const auto& fam : cfg_.families)
         {
             const scalar liq = n[fam.apparentIdx] - vap[fam.apparentIdx];
@@ -172,6 +175,9 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                       * (1.0/T_K - 1.0/298.15));
                 const scalar pD = Kd * pM * pM;
                 pSum += pD;
+                res.dimerOn   = true;
+                res.pMonoAtm  = pM;
+                res.pDimerAtm = pD;
                 if (verbosity >= 2)
                     std::cout << "  [reactive] " << cfg_.apparent[appIdx]
                               << " vapour dimerisation ON: p_mono = " << pM
@@ -179,6 +185,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                               << Kd << " atm^-1; " << g->dimSource << ")\n";
             }
         }
+        res.pEqSumAtm = pSum;
         if (pSum * kAtm <= P_Pa)
         {
             scalar nTot = 0.0; for (auto x : n) nTot += x;
@@ -383,6 +390,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         res.xApp[i] = lTot > 0 ? (n[i]-vap[i])/lTot : 0.0;
     }
     res.V_over_F     = vTot / (vTot + lTot);
+    res.pEqSumAtm    = P_Pa / kAtm;      // two-phase: vapour partials sum to P
     res.trueState    = srLast;
     res.pH           = srLast.pH;
     res.resPhaseMax  = rMax;

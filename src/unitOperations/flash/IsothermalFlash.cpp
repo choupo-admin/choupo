@@ -94,6 +94,19 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             sol.K[i] = (r.xApp[i] > 0.0) ? r.yApp[i] / r.xApp[i] : 0.0;
         sol.iterations = r.iterations;
         sol.residual   = r.resPhaseMax;
+        // The chemistry's own observables, KPI-bound: sweeps and outer
+        // drivers read these to SEE T act through both van't Hoff legs
+        // (dissolution AND -- when declared -- vapour dimerisation).
+        sol.extraKpis["pH"]           = r.pH;
+        sol.extraKpis["p_eq_sum_atm"] = r.pEqSumAtm;
+        if (r.dimerOn)
+        {
+            sol.extraKpis["p_mono_atm"]  = r.pMonoAtm;
+            sol.extraKpis["p_dimer_atm"] = r.pDimerAtm;
+            sol.extraKpis["dimer_share"] =
+                (r.pMonoAtm + r.pDimerAtm > 0.0)
+                    ? r.pDimerAtm / (r.pMonoAtm + r.pDimerAtm) : 0.0;
+        }
         sol.regime     = r.V_over_F > 0.0
             ? "reactive electrolyte VLE (simultaneous speciation + phase"
               " equilibrium; pH " + std::to_string(r.pH).substr(0, 5) + ")"
@@ -1299,6 +1312,8 @@ int IsothermalFlash::solve(const DictPtr& dict,
           (opts.phaseSet == PhaseSet::VLLE) ? 2.0
       : (opts.phaseSet == PhaseSet::LL  ) ? 1.0
                                           : 0.0;  // 0 VL / 1 LL / 2 VLLE
+    for (const auto& [k, v] : sol.extraKpis)
+        kpis_[k] = v;
 
     return sol.converged ? 0 : 1;
 }

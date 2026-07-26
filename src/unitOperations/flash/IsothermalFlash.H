@@ -46,6 +46,7 @@ Description
 #include "unitOperations/UnitOperation.H"
 
 #include <functional>
+#include <map>
 #include <string>
 
 namespace Choupo {
@@ -76,6 +77,11 @@ struct FlashSolution
     bool    threePhase = false;
     scalar  betaVapor  = 0.0;
     sVector xVapor;
+
+    // Path-specific observables published verbatim as unit KPIs (the
+    // reactive package adds pH / p_eq_sum_atm / p_mono_atm / p_dimer_atm
+    // so sweeps and outer drivers can read the chemistry acting with T).
+    std::map<std::string, scalar> extraKpis;
 };
 
 enum class OuterAccelerator { DirectSubstitution, Wegstein };

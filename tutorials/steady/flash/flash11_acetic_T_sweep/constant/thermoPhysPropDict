@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The REACTIVE shape of electrolyteGammaPhi (speciation-integration spike):
+  aqueous davies speciation network (masters + chemistry/ records: HAc (chemistry/HAc-formation.dat)
+  ionisation, OH autoprotolysis) + gas-liquid transfer records for the
+  volatiles (chemistry/aceticAcid-dissolution.dat, chemistry/water-vapour-equilibrium.dat -- water VLE rides the
+  SAME record family; no separate Antoine wiring).  Ions are excluded from
+  the vapour by construction; streams stay on the apparent basis.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( aceticAcid  water );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+
+    aqueous
+    {
+        activityModel { model davies; }     // this slice's rung (announced)
+        speciation    { masters ( Acetate ); }  // the acetic family's master
+    }
+
+    vapour    { fugacityModel idealGas; }
+
+    volatiles ( aceticAcid  water );
+}

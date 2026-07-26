@@ -7,16 +7,30 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  flash09_nh3_water_reactive -- the volatile weak electrolyte, done honestly.
+  flash10_acetic_water_reactive -- the volatile weak ACID, done honestly.
 
-  Ammonia in water IONISES (aceticAcid + H2O <-> NH4+ + OH-) and VOLATILISES
-  (Henry) at the same time: the ionised fraction is unavailable to the
-  vapour, so speciation and phase split must be solved TOGETHER -- never
-  flash-once/speciate-once.  The flash unit implements NO chemistry: it
-  delegates to the package's reactive equilibrium (unit-local speciation,
-  property authority section 6b).  Streams -- including 0/ and converged/ --
-  carry ONLY the apparent components aceticAcid and water; the true species
-  (NH4+, H+, OH-) exist in the internal state and the report.
+  Acetic acid in water IONISES (CH3COOH <-> CH3COO- + H+, pKa 4.756) and
+  VOLATILISES at the same time -- and its VAPOUR DIMERISES (2 HAc = (HAc)2,
+  carboxylic hydrogen bonding), so even the saturation check must price the
+  dimer's own partial pressure.  Speciation and phase behaviour are solved
+  TOGETHER: the flash unit implements no chemistry, it delegates to the
+  package's reactive equilibrium (unit-local speciation, section 6b).
+  Streams -- 0/ and converged/ included -- carry ONLY the apparent
+  components aceticAcid and water; the true species (CH3COO-, H+, OH-)
+  exist in the internal state and the report.
+
+  THE OPERATING POINT IS DELIBERATELY SUBSATURATED (T fixed at 368.15 K,
+  1 atm; sum p_eq = 0.836 atm < P): the honest regime for a dilute,
+  barely-volatile acid on the Davies rung.  The unit is an ISOTHERMAL
+  (T,P) flash -- T is the specification, not a result.  Temperature still
+  ACTS, through BOTH van't Hoff legs (dissolution dH = -51.5 kJ/mol,
+  dimerisation dH = -58.5 kJ/mol), and the flash publishes what it moves
+  as KPIs: pH, p_eq_sum_atm, p_mono_atm, p_dimer_atm, dimer_share.
+  flash11_acetic_T_sweep sweeps T across the subsaturated window so the
+  student SEES the total volatility climb while the dimer share falls.
+  A TWO-PHASE reactive flash with a dimerising vapour re-weights the
+  vapour mole balance (apparent moles = n_mono + 2 n_dim) and is REFUSED
+  by name -- a later, deliberate slice, never a silent approximation.
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
