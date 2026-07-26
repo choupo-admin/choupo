@@ -28,6 +28,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EvaporativeDryer.H"
+#include "thermo/ThermoPackage.H"
 
 #include <algorithm>
 #include <cmath>

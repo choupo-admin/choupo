@@ -30,6 +30,7 @@ License
 #include "CrystallisationHeat.H"
 #include "core/Advisory.H"
 #include "solver/NewtonRaphson.H"
+#include "thermo/ThermoPackage.H"
 
 #include <cmath>
 #include <limits>

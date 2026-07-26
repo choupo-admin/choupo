@@ -28,6 +28,7 @@ License
 
 #include "Cyclone.H"
 #include "cycloneModel/CycloneModel.H"
+#include "thermo/ThermoPackage.H"
 
 #include <cmath>
 #include <iomanip>

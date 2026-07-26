@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "GasSolidSplitter.H"
+#include "thermo/ThermoPackage.H"
 
 #include <cmath>
 #include <iomanip>

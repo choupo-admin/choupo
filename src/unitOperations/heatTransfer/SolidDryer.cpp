@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SolidDryer.H"
+#include "thermo/ThermoPackage.H"
 
 #include <algorithm>
 #include <cmath>

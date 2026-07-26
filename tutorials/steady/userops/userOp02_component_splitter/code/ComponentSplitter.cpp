@@ -3,6 +3,7 @@
 \*---------------------------------------------------------------------------*/
 
 #include "ComponentSplitter.H"
+#include "thermo/ThermoPackage.H"
 
 #include <iomanip>
 #include <iostream>

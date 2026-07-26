@@ -32,6 +32,7 @@ License
 #include "propertyOps/Exchange.H"                     // propertyOps::readExchange
 #include "thermo/electrolyte/SaltFromCatalogue.H"     // findIon, ionMW
 #include "thermo/electrolyte/SpeciationSolver.H"
+#include "thermo/ThermoPackage.H"
 
 #include <cmath>
 #include <iomanip>

@@ -30,6 +30,7 @@ License
 
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "materials/MaterialRegistry.H"
+#include "thermo/ThermoPackage.H"
 
 #include <cmath>
 #include <iomanip>

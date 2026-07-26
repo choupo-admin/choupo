@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "BagFilter.H"
+#include "thermo/ThermoPackage.H"
 
 #include <cmath>
 #include <iomanip>

@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "MultiStreamHX.H"
+#include "thermo/ThermoPackage.H"
 
 #include <algorithm>
 #include <cmath>

@@ -31,6 +31,7 @@ License
 #include "core/Constants.H"
 #include "thermo/adsorbent/Adsorbent.H"
 #include "thermo/adsorbent/AdsorbentRegistry.H"
+#include "thermo/ThermoPackage.H"
 
 #include <algorithm>
 #include <cmath>

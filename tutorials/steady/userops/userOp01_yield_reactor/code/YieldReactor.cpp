@@ -3,6 +3,7 @@
 \*---------------------------------------------------------------------------*/
 
 #include "YieldReactor.H"
+#include "thermo/ThermoPackage.H"
 
 #include <iomanip>
 #include <iostream>

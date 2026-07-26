@@ -40,6 +40,7 @@ License
 #include "thermo/membrane/Membrane.H"
 #include "thermo/membrane/MembraneRegistry.H"
 #include "transport/TransportModel.H"
+#include "thermo/ThermoPackage.H"
 
 #include <algorithm>
 #include <cmath>

@@ -28,6 +28,7 @@ License
 
 #include "Absorber.H"
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
+#include "thermo/ThermoPackage.H"
 
 #include <cmath>
 #include <iomanip>

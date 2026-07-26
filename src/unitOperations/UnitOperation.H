@@ -53,7 +53,6 @@ Description
 #include "core/Dictionary.H"
 #include "core/Types.H"
 #include "streams/ProcessStream.H"
-#include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitProfile.H"
 
 #include <functional>
@@ -64,6 +63,12 @@ Description
 #include <vector>
 
 namespace Choupo {
+
+// The unit-op interface passes the thermodynamics BY REFERENCE only -- a
+// forward declaration keeps ThermoPackage.H (and everything it drags) out
+// of the 95-unit include fan-out; each .cpp that actually CALLS package
+// methods includes thermo/ThermoPackage.H itself (build hygiene 3/6).
+class ThermoPackage;
 
 class UnitOperation
 {
