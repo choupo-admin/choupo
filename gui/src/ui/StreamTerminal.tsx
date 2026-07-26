@@ -288,6 +288,9 @@ export function StreamTerminal({ data, selected }: NodeProps) {
 // The flow is the TOTAL of the fluid AND the solid phase (F_solid_mass /
 // the solid moles): a crystalliser's `crystals` product is PURE solid
 // (fluid F = 0), so a fluid-only label would read 0 and hide the product.
+// ZERO IS DATA, "—" IS ABSENCE: a stream a loaded RUN resolved to zero
+// flow (a subsaturated flash's empty vapour) reads "0", never "—" --
+// the dash is reserved for a value nobody has computed or authored yet.
 function formatFlowFor(
   flow: FlowUnit,
   resolved: { F: number; F_mass?: number; F_solid_mass?: number; F_solid?: number } | undefined,
@@ -297,6 +300,7 @@ function formatFlowFor(
     const fluid = resolved?.F_mass;
     const si = fluid === undefined ? undefined : fluid + (resolved?.F_solid_mass ?? 0);
     if (si !== undefined && Number.isFinite(si) && si > 0) return `${formatFlow(si, flow)} ${flow}`;
+    if (si !== undefined && Number.isFinite(si)) return `0 ${flow}`;
     // Pre-run on a mass basis we cannot know kg/h (it needs the molar mass the
     // solver computes) -- but the AUTHORED molar flow IS known, so show it
     // honestly in kmol/h rather than "—": a feed input is always visible.
@@ -306,7 +310,8 @@ function formatFlowFor(
   }
   const fluid = resolved?.F ?? scalarToSI(stream?.F);
   const si = fluid === undefined ? undefined : fluid + (resolved?.F_solid ?? 0);
-  if (si === undefined || !Number.isFinite(si) || si <= 0) return "—";
+  if (si === undefined || !Number.isFinite(si)) return "—";
+  if (si <= 0) return resolved !== undefined ? `0 ${flow}` : "—";
   return `${formatFlow(si, flow)} ${flow}`;
 }
 

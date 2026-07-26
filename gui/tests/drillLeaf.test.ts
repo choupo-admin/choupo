@@ -5,22 +5,46 @@
   STATE lives in 0/<stream> (the plant run materialised it).  Regression guard:
   after the leaves gained inputs/outputs, readLeaf read only boundary and never
   0/ -> the drilled unit showed no streams and no input values.
+
+  Fixtures are INLINE (the original fixture tutorial was deleted in a curation
+  wave and the test silently rotted): the leaf dicts below mirror the dignified
+  form (system/flowsheetDict of a one-unit leaf) without depending on any
+  curated tutorial surviving under its historical name.
 \*---------------------------------------------------------------------------*/
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { parse, toJson } from "../src/dict/index.js";
 import type { JsonDict } from "../src/dict/index.js";
 import { flowsheetToGraph } from "../src/case/toGraph.js";
 
-const HERE = fileURLToPath(new URL(".", import.meta.url));
-const UNIT = join(HERE, "..", "..", "tutorials", "steady", "crystallisation",
-  "Crystallizer09chatGPT", "unitOperations");
+const LEAVES: Record<string, string> = {
+  cryst2: `
+units
+(
+    {
+        name        cryst2;
+        type        crystalliser;
+        inputs      ( freshEthanol  liquor1  recoveredEthanol );
+        outputs     ( KCl_cake  finalLiquor );
+        operation   { T 298.15 K; }
+    }
+);
+`,
+  recovery: `
+units
+(
+    {
+        name        recovery;
+        type        distillationColumn;
+        inputs      ( finalLiquor );
+        outputs     ( recoveredEthanol  stillage );
+        operation   { stages 12; refluxRatio 2.0; }
+    }
+);
+`,
+};
 
 function leaf(u: string): JsonDict {
-  return toJson(parse(readFileSync(join(UNIT, u, "system", "flowsheetDict"), "utf8"),
-    { sourceName: u })) as JsonDict;
+  return toJson(parse(LEAVES[u]!, { sourceName: u })) as JsonDict;
 }
 const streamData = (g: ReturnType<typeof flowsheetToGraph>, name: string) =>
   (g.nodes.find((n) => n.id === "stream:" + name)?.data as
