@@ -8,9 +8,9 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   The REACTIVE shape of electrolyteGammaPhi (speciation-integration spike):
-  aqueous davies speciation network (masters + chemistry/ records: NH3aq
+  aqueous davies speciation network (masters + chemistry/ records: NH3aq (chemistry/NH3aq-formation.dat)
   ionisation, OH autoprotolysis) + gas-liquid transfer records for the
-  volatiles (chemistry/NH3.dat, chemistry/H2O.dat -- water VLE rides the
+  volatiles (chemistry/NH3-dissolution.dat, chemistry/water-vapour-equilibrium.dat -- water VLE rides the
   SAME record family; no separate Antoine wiring).  Ions are excluded from
   the vapour by construction; streams stay on the apparent basis.
 \*---------------------------------------------------------------------------*/

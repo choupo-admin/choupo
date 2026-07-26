@@ -1,45 +1,52 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
+# GOLDEN CHANGE, F2 re-import 2026-07-26: the sealed closure now includes the
+# ammonia ionisation record (chemistry/NH3aq-formation.dat, added to standards
+# by the NH3/water spike AFTER this case was sealed).  NH4+ therefore speciates
+# as the weak acid it is, and the mixed-solution pH drops from the inert-salt
+# ~7.07 to ~4.8-4.9 -- consistent with pH = (pKa - log m_NH4)/2, pKa 9.25.
+# SI_halite moves in the 5th decimal (ionic-strength coupling).  The previous
+# golden reflected an INCOMPLETE chemistry set, not different physics.
 # kind   name      key         expected        reltol
-diag    farelo_NaCl_pure       I                6.15               1e-4
-diag    farelo_NaCl_pure       SI_halite        0.0168246          1e-4
-diag    farelo_NaCl_pure       aw               0.751868           1e-4
-diag    farelo_NaCl_pure       gamma_Cl         1.0105             1e-4
-diag    farelo_NaCl_pure       gamma_Na         1.0105             1e-4
-diag    farelo_NaCl_pure       m_Cl             6.15               1e-4
-diag    farelo_NaCl_pure       m_Na             6.15               1e-4
-diag    farelo_NaCl_pure       pH               7.11704            1e-4
-diag    farelo_NaCl_nh4_093    I                6.43               1e-4
-diag    farelo_NaCl_nh4_093    SI_halite        -0.022236          1e-4
-diag    farelo_NaCl_nh4_093    SI_salammoniac   -0.705926          1e-4
-diag    farelo_NaCl_nh4_093    aw               0.746426           1e-4
-diag    farelo_NaCl_nh4_093    gamma_NH4        0.59147            1e-4
-diag    farelo_NaCl_nh4_093    gamma_Na         1.04074            1e-4
-diag    farelo_NaCl_nh4_093    m_NH4            0.93               1e-4
-diag    farelo_NaCl_nh4_093    m_Na             5.5                1e-4
-diag    farelo_NaCl_nh4_093    pH               7.07501            1e-4
-diag    farelo_NaCl_nh4_187    I                6.87               1e-4
-diag    farelo_NaCl_nh4_187    SI_halite        -0.0282442         1e-4
-diag    farelo_NaCl_nh4_187    SI_salammoniac   -0.387625          1e-4
-diag    farelo_NaCl_nh4_187    aw               0.734217           1e-4
-diag    farelo_NaCl_nh4_187    gamma_NH4        0.593259           1e-4
-diag    farelo_NaCl_nh4_187    gamma_Na         1.0942             1e-4
-diag    farelo_NaCl_nh4_187    m_NH4            1.87               1e-4
-diag    farelo_NaCl_nh4_187    m_Na             5                  1e-4
-diag    farelo_NaCl_nh4_187    pH               7.0428             1e-4
-diag    farelo_NaCl_nh4_280    I                7.75               1e-4
-diag    farelo_NaCl_nh4_280    SI_halite        0.0765938          1e-4
-diag    farelo_NaCl_nh4_280    SI_salammoniac   -0.146174          1e-4
-diag    farelo_NaCl_nh4_280    aw               0.702073           1e-4
-diag    farelo_NaCl_nh4_280    gamma_NH4        0.600106           1e-4
-diag    farelo_NaCl_nh4_280    gamma_Na         1.22222            1e-4
-diag    farelo_NaCl_nh4_280    m_NH4            2.8                1e-4
-diag    farelo_NaCl_nh4_280    m_Na             4.95               1e-4
-diag    farelo_NaCl_nh4_280    pH               7.04131            1e-4
-diag    farelo_NH4Cl_pure      I                7.35               1e-4
-diag    farelo_NH4Cl_pure      SI_salammoniac   -7.77991e-05       1e-4
-diag    farelo_NH4Cl_pure      aw               0.771879           1e-4
-diag    farelo_NH4Cl_pure      gamma_Cl         0.564773           1e-4
-diag    farelo_NH4Cl_pure      gamma_NH4        0.564773           1e-4
-diag    farelo_NH4Cl_pure      m_Cl             7.35               1e-4
-diag    farelo_NH4Cl_pure      m_NH4            7.35               1e-4
-diag    farelo_NH4Cl_pure      pH               6.709              1e-4
+diag    farelo_NaCl_pure       I                6.15             1e-4
+diag    farelo_NaCl_pure       SI_halite        0.0168246        1e-4
+diag    farelo_NaCl_pure       aw               0.751868         1e-4
+diag    farelo_NaCl_pure       gamma_Cl         1.0105           1e-4
+diag    farelo_NaCl_pure       gamma_Na         1.0105           1e-4
+diag    farelo_NaCl_pure       m_Cl             6.15             1e-4
+diag    farelo_NaCl_pure       m_Na             6.15             1e-4
+diag    farelo_NaCl_pure       pH               7.11704          1e-4
+diag    farelo_NaCl_nh4_093    I                6.42998          1e-4
+diag    farelo_NaCl_nh4_093    SI_halite        -0.022239        1e-4
+diag    farelo_NaCl_nh4_093    SI_salammoniac   -0.70594         1e-4
+diag    farelo_NaCl_nh4_093    aw               0.746427         1e-4
+diag    farelo_NaCl_nh4_093    gamma_NH4        0.591469         1e-4
+diag    farelo_NaCl_nh4_093    gamma_Na         1.04074          1e-4
+diag    farelo_NaCl_nh4_093    m_NH4            0.929973         1e-4
+diag    farelo_NaCl_nh4_093    m_Na             5.5              1e-4
+diag    farelo_NaCl_nh4_093    pH               4.94046          1e-4
+diag    farelo_NaCl_nh4_187    I                6.86996          1e-4
+diag    farelo_NaCl_nh4_187    SI_halite        -0.0282484       1e-4
+diag    farelo_NaCl_nh4_187    SI_salammoniac   -0.387637        1e-4
+diag    farelo_NaCl_nh4_187    aw               0.734217         1e-4
+diag    farelo_NaCl_nh4_187    gamma_NH4        0.593259         1e-4
+diag    farelo_NaCl_nh4_187    gamma_Na         1.0942           1e-4
+diag    farelo_NaCl_nh4_187    m_NH4            1.86996          1e-4
+diag    farelo_NaCl_nh4_187    m_Na             5                1e-4
+diag    farelo_NaCl_nh4_187    pH               4.79255          1e-4
+diag    farelo_NaCl_nh4_280    I                7.74995          1e-4
+diag    farelo_NaCl_nh4_280    SI_halite        0.0765883        1e-4
+diag    farelo_NaCl_nh4_280    SI_salammoniac   -0.146185        1e-4
+diag    farelo_NaCl_nh4_280    aw               0.702074         1e-4
+diag    farelo_NaCl_nh4_280    gamma_NH4        0.600105         1e-4
+diag    farelo_NaCl_nh4_280    gamma_Na         1.22221          1e-4
+diag    farelo_NaCl_nh4_280    m_NH4            2.79995          1e-4
+diag    farelo_NaCl_nh4_280    m_Na             4.95             1e-4
+diag    farelo_NaCl_nh4_280    pH               4.72741          1e-4
+diag    farelo_NH4Cl_pure      I                7.34995          1e-4
+diag    farelo_NH4Cl_pure      SI_salammoniac   -8.35532e-05     1e-4
+diag    farelo_NH4Cl_pure      aw               0.771879         1e-4
+diag    farelo_NH4Cl_pure      gamma_Cl         0.564774         1e-4
+diag    farelo_NH4Cl_pure      gamma_NH4        0.564773         1e-4
+diag    farelo_NH4Cl_pure      m_Cl             7.34995          1e-4
+diag    farelo_NH4Cl_pure      m_NH4            7.34994          1e-4
+diag    farelo_NH4Cl_pure      pH               4.42514          1e-4

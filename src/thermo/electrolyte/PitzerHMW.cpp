@@ -812,13 +812,14 @@ static std::vector<std::pair<std::string, std::string>> enumeratePitzerPairs()
             out.emplace_back(p->lookupWord("cation"), p->lookupWord("anion"));
         return out;                       // overlay XOR: case wins WHOLE
     }
-    const fs::path dir = fs::path(Database::currentRoot())
-                       / "standards" / "parameters" / "Pitzer" / "pairs";
-    if (fs::exists(dir))
+    // ONE resolver (F2 audit find, 2026-07-26): this enumeration pointed at
+    // the STANDARDS directory unconditionally, so a SEALED case's verify()
+    // silently read the installation catalogue -- the exact leak the sealing
+    // contract forbids.  Surfaced by the standards-hidden proof of the F2
+    // campaign; scanRecordDir carries the sealed/local/merge semantics every
+    // other record consumer already obeys.
     {
-        std::vector<fs::path> files;
-        for (const auto& e : fs::directory_iterator(dir))
-            if (e.path().extension() == ".dat") files.push_back(e.path());
+        auto files = Choupo::records::scanRecordDir("parameters/Pitzer/pairs");
         std::sort(files.begin(), files.end());     // deterministic logs only
         for (const auto& f : files)
         {

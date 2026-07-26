@@ -20,7 +20,7 @@ propertyManifest
 {
     sealed             true;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-18";
+    importedAt         "2026-07-26";
     importerVersion    "2";
     records
     {
@@ -37,196 +37,196 @@ propertyManifest
             type          adopted;
             adoptedAt     "2026-07-18";
         }
-        "chemistry/CO2aq.dat"
+        "chemistry/CO2aq-formation.dat"
         {
             type          imported;
-            sha256        "207bc9b34b45f27b05956791f992977f2e76d7b7af1ac33139de8b11f954bf65";
-            origin        "data/standards/chemistry/CO2aq.dat";
+            sha256        "064dc1f8695407573153f7cb94b62bfbeb9dcade879e4a92f5ebe300d072d701";
+            origin        "data/standards/chemistry/CO2aq-formation.dat";
             originSha256  "23b5195333523b65f320ef9d0362539449fecf0fd48ad1520b3728c54bec07a6";
             release       Choupo-2607;
         }
-        "chemistry/CO3.dat"
+        "chemistry/CO3-formation.dat"
         {
             type          imported;
-            sha256        "15011b35ac9218da8616a6f523ad45cc4b7a5cc69e3d56e8f7f8dfa5ad6549ec";
-            origin        "data/standards/chemistry/CO3.dat";
-            originSha256  "99cf2548b67de3a9bd931e46c1d84624d3d9223ea56043e94a06682d39456377";
+            sha256        "9a448314ee47c7f34ebbe4f54abb3db49d19d77e80404d00e4d1694b0a23bb50";
+            origin        "data/standards/chemistry/CO3-formation.dat";
+            originSha256  "d08e8abdea3dfaaa57ed2fed4204f8be4a6aeda5712a75c6963be0569dd5fc90";
             release       Choupo-2607;
         }
-        "chemistry/CaCO3aq.dat"
+        "chemistry/Ca-ion-exchange.dat"
         {
             type          imported;
-            sha256        "86c8e56c167b9286545292982c95207b804ac04c07e6ad62fa525026efa562cf";
-            origin        "data/standards/chemistry/CaCO3aq.dat";
-            originSha256  "d65869964df0c6c174da21eb6e0e551040a73b454410b828fd757b9775b5446e";
-            release       Choupo-2607;
-        }
-        "chemistry/CaHCO3p.dat"
-        {
-            type          imported;
-            sha256        "deea061bedad51062e9a327acfa2c3021313e173fed4f1277eda9405c0581eb2";
-            origin        "data/standards/chemistry/CaHCO3p.dat";
-            originSha256  "cf8ef674841e34460b031e77fd5a93999342a0d78b1fd14ea7afa9c5d1946543";
-            release       Choupo-2607;
-        }
-        "chemistry/CaHSO4p.dat"
-        {
-            type          imported;
-            sha256        "9bce08f294401213d876a3970f5f8cfb2eeb5f7512b855081f07e3606ec3cfe5";
-            origin        "data/standards/chemistry/CaHSO4p.dat";
-            originSha256  "f4995bc1ae5b53fca9b68e9c53a0c79e0fee1acbe6398c73df05d206aadfd24f";
-            release       Choupo-2607;
-        }
-        "chemistry/CaOHp.dat"
-        {
-            type          imported;
-            sha256        "518a9d73d5f6901b1ff968acb12d6874fa68f5359d33663afe696c1c37668cc7";
-            origin        "data/standards/chemistry/CaOHp.dat";
-            originSha256  "b3b026dfc724a7ec147ec9d32628bd6f092c49dc5080a5c06de906add4d41a06";
-            release       Choupo-2607;
-        }
-        "chemistry/CaSO4aq.dat"
-        {
-            type          imported;
-            sha256        "fba6d7c56e836ea1245d81da3e7b612a006dc1acf13b620e3c8bf874a5b178ca";
-            origin        "data/standards/chemistry/CaSO4aq.dat";
-            originSha256  "fede9052ea4954257a3f20306e1a63e49b4fc69da1bc9f65054c072d668a1fb5";
-            release       Choupo-2607;
-        }
-        "chemistry/CaX2.dat"
-        {
-            type          imported;
-            sha256        "e0b1bd63bd9b9564bc2eac94a5d11c7a0261607388ff4787198940281d2391a1";
-            origin        "data/standards/chemistry/CaX2.dat";
+            sha256        "0114686df9c8ea98a852bf6c64bb7f3008af1cb8dc941de8493d4ddfb3f89533";
+            origin        "data/standards/chemistry/Ca-ion-exchange.dat";
             originSha256  "b3408ca65ad77bcf3dffe63ed2f7e773a18c82cce3402adbafdf8725835f02ac";
             release       Choupo-2607;
         }
-        "chemistry/HClaq.dat"
+        "chemistry/CaCO3aq-formation.dat"
         {
             type          imported;
-            sha256        "baa3e883e995601ae4d23a7d2db30019c49342aec56be6a0b9a1538e8b057fd1";
-            origin        "data/standards/chemistry/HClaq.dat";
+            sha256        "0f3d77e578eaabb7a0073f8181e56a98f99adf1f28abf4fcb9aeb09165ee6896";
+            origin        "data/standards/chemistry/CaCO3aq-formation.dat";
+            originSha256  "d65869964df0c6c174da21eb6e0e551040a73b454410b828fd757b9775b5446e";
+            release       Choupo-2607;
+        }
+        "chemistry/CaHCO3-formation.dat"
+        {
+            type          imported;
+            sha256        "7be778742d068475ac4cb74c3c67d0004a2d6543a31ba9546b650ab43e5dc4e8";
+            origin        "data/standards/chemistry/CaHCO3-formation.dat";
+            originSha256  "acbb11a29a1fe38d2eb8576b113dbdba6d902f45e7d848b0a2e4eb3c96a1606c";
+            release       Choupo-2607;
+        }
+        "chemistry/CaHSO4-formation.dat"
+        {
+            type          imported;
+            sha256        "dc0f77056d3d19ab732f38f9439dc885bcecae2b4b4b5d32839fe5ef1747f34d";
+            origin        "data/standards/chemistry/CaHSO4-formation.dat";
+            originSha256  "d5c682825f74e31a3412cb46946e1ffc2dcacb09cb3f543bb5ff5759e8cb7b15";
+            release       Choupo-2607;
+        }
+        "chemistry/CaOH-formation.dat"
+        {
+            type          imported;
+            sha256        "8c8be3fc1304c147832d011f5999d5c50fc858d106648d103733a1b063f9e2d4";
+            origin        "data/standards/chemistry/CaOH-formation.dat";
+            originSha256  "03c61792ff1ac35086e0b13bd1a0463b586cc9c8b48e82974813366d39725e8f";
+            release       Choupo-2607;
+        }
+        "chemistry/CaSO4aq-formation.dat"
+        {
+            type          imported;
+            sha256        "dad15a54a048f4187ec1ec8821aede0b7a7c77f5381f52748db68d556990328c";
+            origin        "data/standards/chemistry/CaSO4aq-formation.dat";
+            originSha256  "fede9052ea4954257a3f20306e1a63e49b4fc69da1bc9f65054c072d668a1fb5";
+            release       Choupo-2607;
+        }
+        "chemistry/HClaq-formation.dat"
+        {
+            type          imported;
+            sha256        "4c262f9df29d4ea214bd16617a21c049a19211dd49dff58a02a1db7be766ed3c";
+            origin        "data/standards/chemistry/HClaq-formation.dat";
             originSha256  "e70d4c457da73f31c948ae7af7cf3b1410998ce5e6f640019ff9fa874f84c627";
             release       Choupo-2607;
         }
-        "chemistry/HSO4.dat"
+        "chemistry/HSO4-formation.dat"
         {
             type          imported;
-            sha256        "d0ae29911828fad4a66b35bf45b636cbb25236b88ae412108421baf31eecd38c";
-            origin        "data/standards/chemistry/HSO4.dat";
-            originSha256  "2549107187df205008a854ec774b7e759e658b3ba7ea4a12fa562764328b42e6";
+            sha256        "0268b5a04da57a26870d3f31534680f1433868eda73c8d6dfa873c181179b377";
+            origin        "data/standards/chemistry/HSO4-formation.dat";
+            originSha256  "9b26fc402711ff03cdc371589aea48083a5c42a0e75a483359018ab7d873bb89";
             release       Choupo-2607;
         }
-        "chemistry/KHCO3aq.dat"
+        "chemistry/K-ion-exchange.dat"
         {
             type          imported;
-            sha256        "3cbcc65e0d1ebeb9731537d5bcdd0a44c5deb4b211bbd48227a1b717a36863aa";
-            origin        "data/standards/chemistry/KHCO3aq.dat";
-            originSha256  "327c60475ecc130172f45c238e445e30f1e8dc60d5348a735621aa76e2bea5d8";
-            release       Choupo-2607;
-        }
-        "chemistry/KSO4m.dat"
-        {
-            type          imported;
-            sha256        "6280cf31b641e4f6fc5bca844259f857ac8a26bca6d913ce6fe6f40ac0cf9a2e";
-            origin        "data/standards/chemistry/KSO4m.dat";
-            originSha256  "f65e2c55991cff13ae9487c88709bce42b4fbee90737d2f91218f7badface67f";
-            release       Choupo-2607;
-        }
-        "chemistry/KX.dat"
-        {
-            type          imported;
-            sha256        "d0da417f21e4375320da7666d5704d9e62ab45834d9083fd47fbadae2f1d22a2";
-            origin        "data/standards/chemistry/KX.dat";
+            sha256        "a9efebb26ccca02d29dacc551cc19913f7511a3600849079eb9236a0bff7a41b";
+            origin        "data/standards/chemistry/K-ion-exchange.dat";
             originSha256  "3895851418daf25df2dca396acd6c6dba1a7bc6b00f71d7bb9a18c95d94d67d6";
             release       Choupo-2607;
         }
-        "chemistry/MgCO3aq.dat"
+        "chemistry/KHCO3aq-formation.dat"
         {
             type          imported;
-            sha256        "11861dd9b8f0c2f75e366bcd3e95dfc41fb0a264827507aea9f25789e0abd351";
-            origin        "data/standards/chemistry/MgCO3aq.dat";
-            originSha256  "341786a1f57918463f7ad58a8fad4ec00591e1ce3a34d4840b9d0a0537733715";
+            sha256        "6c2f514818ff7294fef3bfd393662c23815e990329b152de9f3664a18454918e";
+            origin        "data/standards/chemistry/KHCO3aq-formation.dat";
+            originSha256  "327c60475ecc130172f45c238e445e30f1e8dc60d5348a735621aa76e2bea5d8";
             release       Choupo-2607;
         }
-        "chemistry/MgHCO3p.dat"
+        "chemistry/KSO4-formation.dat"
         {
             type          imported;
-            sha256        "4138bb98c862fc031c7641fa6175aadbb36dc2775f410c9da019806ae338cd52";
-            origin        "data/standards/chemistry/MgHCO3p.dat";
-            originSha256  "249131b4148f74bb56187c77565f6aedf7aba957b121215b4348bfd394fbf563";
+            sha256        "80b7a846d4d1838bbeb4e624391817cf8268ea11ea7427f604cd9192033b812a";
+            origin        "data/standards/chemistry/KSO4-formation.dat";
+            originSha256  "3208d571b1b4e343d181779241a8986135ca1bd367f31ac928bf5099427bbbc1";
             release       Choupo-2607;
         }
-        "chemistry/MgOH.dat"
+        "chemistry/Mg-ion-exchange.dat"
         {
             type          imported;
-            sha256        "ca01cb579aff9a739aa3c905649b878c97e37dcc97f87befb9ee11e5ec716120";
-            origin        "data/standards/chemistry/MgOH.dat";
-            originSha256  "169465100fb9c967eea22cb7088335ee8b4e753006efd407ab355179a9c63cfb";
-            release       Choupo-2607;
-        }
-        "chemistry/MgSO42m2.dat"
-        {
-            type          imported;
-            sha256        "f01b3f0ad376353b9fa11d15231fa6f83486df4194fdc43b948322da603f595b";
-            origin        "data/standards/chemistry/MgSO42m2.dat";
-            originSha256  "19f8a1cc9def75770bb82d1f1e77ffe221b0097848310f7de41dc30b57fddd89";
-            release       Choupo-2607;
-        }
-        "chemistry/MgSO4aq.dat"
-        {
-            type          imported;
-            sha256        "6d5963dd5a36dff0804913bc3ada06b0200761a0453c32972559e8b3de38976e";
-            origin        "data/standards/chemistry/MgSO4aq.dat";
-            originSha256  "13c2b3d5b664c64aef8045348c49db5c2c06b29708349a65ae24be8be9948315";
-            release       Choupo-2607;
-        }
-        "chemistry/MgX2.dat"
-        {
-            type          imported;
-            sha256        "5b084f3b9e05ebd33a292b2d2ea67203d00784b433764f29db6d4d57fd07c380";
-            origin        "data/standards/chemistry/MgX2.dat";
+            sha256        "d8fc6f5a41a71f3e08d43ef8fbb371c83469fd2da60ff639c7fdbb3aa2e7edbb";
+            origin        "data/standards/chemistry/Mg-ion-exchange.dat";
             originSha256  "cc2d30a8b318f985ff0a4a10c887e88c73495d8fc928d0835993affcf6f51c42";
             release       Choupo-2607;
         }
-        "chemistry/Na2SO4aq.dat"
+        "chemistry/MgCO3aq-formation.dat"
         {
             type          imported;
-            sha256        "c795090d78011df58f92e0d2e55b59abb96da9f5c1160e3f9218a7386d0ceb80";
-            origin        "data/standards/chemistry/Na2SO4aq.dat";
-            originSha256  "377f875701c8369336e33d5a767f109461079e6e71e84417dff1c5b96eaa3465";
+            sha256        "9823b7d41535a8f03bc1954aeec32409a41508cd129ac34ebff6ba79e509e2bf";
+            origin        "data/standards/chemistry/MgCO3aq-formation.dat";
+            originSha256  "341786a1f57918463f7ad58a8fad4ec00591e1ce3a34d4840b9d0a0537733715";
             release       Choupo-2607;
         }
-        "chemistry/NaHCO3aq.dat"
+        "chemistry/MgHCO3-formation.dat"
         {
             type          imported;
-            sha256        "62b886a994e3a363a24c19edabf93d47a5410751bb5fd9c90639da8ebcc00a17";
-            origin        "data/standards/chemistry/NaHCO3aq.dat";
-            originSha256  "194407c5d0ca494c9b4bc392cd6a2e150459450cdca1650b115bc41d7bfe5918";
+            sha256        "d70ab1d289eebd8f261ac0dd6e9fc5f089325f08203a5585f1a07f489da76c20";
+            origin        "data/standards/chemistry/MgHCO3-formation.dat";
+            originSha256  "f389fb25b8fce6d94ea90829c186175fd3e77a3c9464a106091f28ac423c1b23";
             release       Choupo-2607;
         }
-        "chemistry/NaSO4m.dat"
+        "chemistry/MgOH-formation.dat"
         {
             type          imported;
-            sha256        "b6ab96c615bd26b3f23281605fff44b11589ecd24a2d327cd23e0e0f07f84f07";
-            origin        "data/standards/chemistry/NaSO4m.dat";
-            originSha256  "8c58f7f691b472254986e8da559ca8570ceb487d566d9e0f67158ff673ae73c9";
+            sha256        "215a8df020aad20a033eafa362bd81adfaa6fd051f6cc00c7f2f477aba0503ee";
+            origin        "data/standards/chemistry/MgOH-formation.dat";
+            originSha256  "3e17eac75fa141b539429632fc25f260b556d1d75ba421d760d59a8cd00b2893";
             release       Choupo-2607;
         }
-        "chemistry/NaX.dat"
+        "chemistry/MgSO4_2-formation.dat"
         {
             type          imported;
-            sha256        "56d15639f4ebd55195dc3312b6ec8bc25edff22c3aa8eed788c3edf4fcaeb677";
-            origin        "data/standards/chemistry/NaX.dat";
+            sha256        "eb4fb7a485be363f1353451feeeabda2d772e0bad74d523b8ce8d9742b2823e0";
+            origin        "data/standards/chemistry/MgSO4_2-formation.dat";
+            originSha256  "35a5e0cce9a2fad740531a5d3b178ec82b570106aa86aee6b6d5db9cb9d75d54";
+            release       Choupo-2607;
+        }
+        "chemistry/MgSO4aq-formation.dat"
+        {
+            type          imported;
+            sha256        "a5a7288e6903ab72128b42058c1fd3afbe82ebbbb80bca838b33e473b4838c11";
+            origin        "data/standards/chemistry/MgSO4aq-formation.dat";
+            originSha256  "13c2b3d5b664c64aef8045348c49db5c2c06b29708349a65ae24be8be9948315";
+            release       Choupo-2607;
+        }
+        "chemistry/Na-ion-exchange.dat"
+        {
+            type          imported;
+            sha256        "3174d08d6774ddc5a63f527aeb4a6407224da42c2b086f438ce370c01fa0e021";
+            origin        "data/standards/chemistry/Na-ion-exchange.dat";
             originSha256  "d0fde4d1386a2cbe5c32546cc5241cd4ae85326933a5910a06306835760d33ad";
             release       Choupo-2607;
         }
-        "chemistry/OH.dat"
+        "chemistry/Na2SO4aq-formation.dat"
         {
             type          imported;
-            sha256        "16add81a1c933df74c7c95b9e0025c67fc328cb5b4384574648cb941db3fee77";
-            origin        "data/standards/chemistry/OH.dat";
-            originSha256  "cba7a99b2e7653565af572b3841d8a19471977883addf7dfb7f9efd2800877f5";
+            sha256        "b5e5fad634c76c3bf1c7cc061cdb501f4724ef587885e8224a2de9fbe0d90454";
+            origin        "data/standards/chemistry/Na2SO4aq-formation.dat";
+            originSha256  "377f875701c8369336e33d5a767f109461079e6e71e84417dff1c5b96eaa3465";
+            release       Choupo-2607;
+        }
+        "chemistry/NaHCO3aq-formation.dat"
+        {
+            type          imported;
+            sha256        "39643dcb8be0f8046dfc26b16f66607e95aa46d16ec94bc2e7ca942b20ddfed4";
+            origin        "data/standards/chemistry/NaHCO3aq-formation.dat";
+            originSha256  "194407c5d0ca494c9b4bc392cd6a2e150459450cdca1650b115bc41d7bfe5918";
+            release       Choupo-2607;
+        }
+        "chemistry/NaSO4-formation.dat"
+        {
+            type          imported;
+            sha256        "279a9823071519caee1cba716a2c3f0e8203ef3f43e9deb8dfc3cd4b7244ef74";
+            origin        "data/standards/chemistry/NaSO4-formation.dat";
+            originSha256  "b190de99fb6196aed034c4daf0d6fe2e207c1a37002e94625a7ab3c2160ea10a";
+            release       Choupo-2607;
+        }
+        "chemistry/water-dissociation.dat"
+        {
+            type          imported;
+            sha256        "63a8e7d2c83deda7eb1b6254cb7788b180acc12bde7d9b0400fb440e8e11463f";
+            origin        "data/standards/chemistry/water-dissociation.dat";
+            originSha256  "b2ae1698798cd472c4e75d1c4b186e1ac762852b40512a998ba247a22a0b9a80";
             release       Choupo-2607;
         }
         "components/CaCO3.dat"
@@ -242,7 +242,7 @@ propertyManifest
             type          imported;
             sha256        "b9a5c29fe3ac7fe4afd33a54616a9e022087644000c8b225abee367f5901121a";
             origin        "data/standards/components/CaSO4.dat";
-            originSha256  "bc804838119b08800cd450a3dfdbee1db6b06ed81ab13a13bb779f7930350697";
+            originSha256  "7b7bfcd09873a5b2d5cbedbd4ee09cd5c0d6b484b59fc09ec11e570cde6ca018";
             release       Choupo-2607;
         }
         "components/Cl.dat"
@@ -263,7 +263,7 @@ propertyManifest
             type          imported;
             sha256        "948921576fb473812b8871dc290dfad0d226f4e9af00d98c56c1b6bb2743c5dd";
             origin        "data/standards/components/KCl.dat";
-            originSha256  "491c5612018e89bade1d64f70a8ad4accc06b7f61f97aa059ea3419904e8d94f";
+            originSha256  "e16d3a40f3015de367900496163c722ee430ce10de8dc83a09a851c2bf119e25";
             release       Choupo-2607;
         }
         "components/Na2SO4.dat"
@@ -279,7 +279,7 @@ propertyManifest
             type          imported;
             sha256        "443cb05462b9f13c6f6fa3e074f208e7c8893d32a3f046f1b2acfcf95f72d9d0";
             origin        "data/standards/components/NaCl.dat";
-            originSha256  "0f643a72c278b9e7b8736f7f7f0728ffa46648a11435b794f605e8530244e235";
+            originSha256  "024195bd057f66c752e229c0c3c40b6276bb50bfbc8ca282f3b4f0f7dbf07072";
             release       Choupo-2607;
         }
         "components/NaHCO3.dat"
@@ -327,7 +327,7 @@ propertyManifest
             type          imported;
             sha256        "2b63c9e2c32a52defc5b992d330f287c9e62c32eae59829eaecdf228ccd93a0f";
             origin        "data/standards/components/calciumHydroxide.dat";
-            originSha256  "b75612f4ad8df0fd27a086f2b6089efc770a2114d75bd193a4f8cfb79c45b56c";
+            originSha256  "9d603ded0d3913c8a84a701629ebd45af12f87b45dba5bb241f733de7248c7ec";
             release       Choupo-2607;
         }
         "components/carnallite.dat"
@@ -343,7 +343,7 @@ propertyManifest
             type          imported;
             sha256        "dafa3396aa5a935c9294817aa2d0eea83082688a0fd678992238e61a83d3d486";
             origin        "data/standards/components/dolomite.dat";
-            originSha256  "8592b115ffff7ad786f1c5d290085517e60bed6aeb56f1396ce9a5d174d2e5c1";
+            originSha256  "917515fe85cb6634858ccc1381f93d817fbe9a9168f49b043191a84fbfecbea7";
             release       Choupo-2607;
         }
         "components/epsomite.dat"

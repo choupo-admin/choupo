@@ -1,7 +1,0 @@
-// [imported] origin "data/standards/chemistry/CaSO4aq.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species CaSO4aq; ion "CaSO4"; z 0; masters ( { ion Ca; nu 1; } { ion SO4; nu 1; } );
-      logK25 2.14; dH 24400; analytic ( 1.478 0.00829 -538.2 ); source "USGS PHREEQC phreeqc.dat (public domain)";
-

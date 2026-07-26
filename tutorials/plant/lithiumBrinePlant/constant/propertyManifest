@@ -20,7 +20,7 @@ propertyManifest
 {
     sealed             true;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-18";
+    importedAt         "2026-07-26";
     importerVersion    "2";
     records
     {
@@ -61,7 +61,7 @@ propertyManifest
             type          imported;
             sha256        "8f75cffc43bc124781c49f08b1d83ae3270a114218dc82d8d201f70e941afe50";
             origin        "data/standards/components/LiCl.dat";
-            originSha256  "d1e84c6baf03d5970ed82b9058f4e9c042283327993811160630826fe3789b43";
+            originSha256  "d7bc42d6e8b9c80e35b6d34f8b8c414fe5d73647d657ed306b2fca17f61d9aa5";
             release       Choupo-2607;
         }
         "components/N2.dat"

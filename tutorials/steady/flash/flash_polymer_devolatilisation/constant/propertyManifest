@@ -9,14 +9,18 @@
   claim types:  imported = installed + hash-verified copy;
                 adopted  = authored record explicitly adopted at
                            import time (never installed, never
-                           hash-enforced, never removed).
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
 \*----------------------------------------------------------*/
 
 propertyManifest
 {
     sealed             true;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-17";
+    importedAt         "2026-07-26";
     importerVersion    "2";
     records
     {

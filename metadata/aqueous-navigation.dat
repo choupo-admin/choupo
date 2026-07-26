@@ -28,9 +28,9 @@
   (topic hydrolysis), and H2O = H + OH -- where water itself is the subject --
   lands in `water`.
 
-  Species ids here are the CURRENT catalogue keys (schema v1), including the
-  historical opaque ones (Fep3, Cup, Mnp3).  They are renamed only by the
-  ratified F2 campaign; this file follows the registry, it never leads it.
+  Species ids here are the catalogue keys AFTER the F2 rename campaign
+  (redox by roman numeral: FeII/FeIII, CuI/CuII, MnII/MnIII); this file
+  follows the registry, it never leads it.
 \*-----------------------------------------------------------------------------*/
 recordType    aqueousNavigationOntology;
 schemaVersion 1;
@@ -88,12 +88,12 @@ speciesNavigation
     Sr    { familyRoots ( strontium );  }
 
     // --- transition / heavy metals ----------------------------------------
-    Fe    { familyRoots ( iron );       }
-    Fep3  { familyRoots ( iron );       }
-    Mn    { familyRoots ( manganese );  }
-    Mnp3  { familyRoots ( manganese );  }
-    Cu    { familyRoots ( copper );     }
-    Cup   { familyRoots ( copper );     }
+    FeII    { familyRoots ( iron );       }
+    FeIII  { familyRoots ( iron );       }
+    MnII    { familyRoots ( manganese );  }
+    MnIII  { familyRoots ( manganese );  }
+    CuII    { familyRoots ( copper );     }
+    CuI   { familyRoots ( copper );     }
     Zn    { familyRoots ( zinc );       }
     Cd    { familyRoots ( cadmium );    }
     Pb    { familyRoots ( lead );       }

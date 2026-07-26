@@ -20,56 +20,56 @@ propertyManifest
 {
     sealed             true;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-18";
+    importedAt         "2026-07-26";
     importerVersion    "2";
     records
     {
-        "chemistry/CO2.dat"
+        "chemistry/CO2-dissolution.dat"
         {
             type          imported;
-            sha256        "49e826521c7aa7f1e2743a174257ba1e0f09ffb1feda8e2c34297a50e73e6ca6";
-            origin        "data/standards/chemistry/CO2.dat";
-            originSha256  "a8cd30514ca704dcd9d79394792061c84087fcbb69ef6fb3c1408224963128d6";
+            sha256        "c163491ef715fddff52c43491850c0ef0adc316f3f8f6bf87b5c0c40026cd817";
+            origin        "data/standards/chemistry/CO2-dissolution.dat";
+            originSha256  "e6d229793ee2675940c8f883e5220e85f39cfbc21ba183e379001d4e26028b82";
             release       Choupo-2607;
         }
-        "chemistry/CO2aq.dat"
+        "chemistry/CO2aq-formation.dat"
         {
             type          imported;
-            sha256        "207bc9b34b45f27b05956791f992977f2e76d7b7af1ac33139de8b11f954bf65";
-            origin        "data/standards/chemistry/CO2aq.dat";
+            sha256        "064dc1f8695407573153f7cb94b62bfbeb9dcade879e4a92f5ebe300d072d701";
+            origin        "data/standards/chemistry/CO2aq-formation.dat";
             originSha256  "23b5195333523b65f320ef9d0362539449fecf0fd48ad1520b3728c54bec07a6";
             release       Choupo-2607;
         }
-        "chemistry/CO3.dat"
+        "chemistry/CO3-formation.dat"
         {
             type          imported;
-            sha256        "15011b35ac9218da8616a6f523ad45cc4b7a5cc69e3d56e8f7f8dfa5ad6549ec";
-            origin        "data/standards/chemistry/CO3.dat";
-            originSha256  "99cf2548b67de3a9bd931e46c1d84624d3d9223ea56043e94a06682d39456377";
+            sha256        "9a448314ee47c7f34ebbe4f54abb3db49d19d77e80404d00e4d1694b0a23bb50";
+            origin        "data/standards/chemistry/CO3-formation.dat";
+            originSha256  "d08e8abdea3dfaaa57ed2fed4204f8be4a6aeda5712a75c6963be0569dd5fc90";
             release       Choupo-2607;
         }
-        "chemistry/N2.dat"
+        "chemistry/N2-dissolution.dat"
         {
             type          imported;
-            sha256        "d239ed48215ba9b59e4af8ccb635e840b40ffdae790bf215857277ff88cb45e1";
-            origin        "data/standards/chemistry/N2.dat";
-            originSha256  "b4b2145d07cd3413535a1535ea813ece6f2b489d6c06827c3fb363147747f042";
+            sha256        "dfed47c530fbe85654a824387692760800683801285959850d3541e6f670f8d8";
+            origin        "data/standards/chemistry/N2-dissolution.dat";
+            originSha256  "fe2451b1ac18ffb4c9e00fc035bd1444055c642117edef19adbac3bdba3cb95a";
             release       Choupo-2607;
         }
-        "chemistry/O2.dat"
+        "chemistry/O2-dissolution.dat"
         {
             type          imported;
-            sha256        "0c11c018f6597a0088120705cff49e6c0d9acfea5355e7d77f766ad35bb33fa0";
-            origin        "data/standards/chemistry/O2.dat";
-            originSha256  "564026b80b5123f91cab65cfa185fa3b688851f06f3c7496f1a12f593af412fe";
+            sha256        "64b712b39bf5127fc0b77c1c76f2ac122653ad30aa6969f7ebc780b34f71cc6c";
+            origin        "data/standards/chemistry/O2-dissolution.dat";
+            originSha256  "2cbf6d214f9d7d2e8f4a6cef3235f12bbf1de11ea5efa80df300c3e80bd53dd7";
             release       Choupo-2607;
         }
-        "chemistry/OH.dat"
+        "chemistry/water-dissociation.dat"
         {
             type          imported;
-            sha256        "16add81a1c933df74c7c95b9e0025c67fc328cb5b4384574648cb941db3fee77";
-            origin        "data/standards/chemistry/OH.dat";
-            originSha256  "cba7a99b2e7653565af572b3841d8a19471977883addf7dfb7f9efd2800877f5";
+            sha256        "63a8e7d2c83deda7eb1b6254cb7788b180acc12bde7d9b0400fb440e8e11463f";
+            origin        "data/standards/chemistry/water-dissociation.dat";
+            originSha256  "b2ae1698798cd472c4e75d1c4b186e1ac762852b40512a998ba247a22a0b9a80";
             release       Choupo-2607;
         }
         "components/water.dat"

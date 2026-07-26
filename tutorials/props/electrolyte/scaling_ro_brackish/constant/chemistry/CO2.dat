@@ -1,7 +1,0 @@
-// [imported] origin "data/standards/chemistry/CO2.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
-recordType gasLiquidEquilibrium;
-schemaVersion 1;
-
-gas CO2; reaction "CO2(g) = CO2"; dissolved "CO2";
-      logK25 -1.468; dH -19982.8; analytic ( 10.5624 -0.023547 -3972.8 0 587460 1.9194e-05 ); Tc 304.2; Pc 72.86; omega 0.225; source "USGS PHREEQC phreeqc.dat (public domain); primary not stated in db";
-

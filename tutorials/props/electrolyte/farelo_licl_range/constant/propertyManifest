@@ -20,24 +20,24 @@ propertyManifest
 {
     sealed             true;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-18";
+    importedAt         "2026-07-26";
     importerVersion    "2";
     records
     {
-        "chemistry/HClaq.dat"
+        "chemistry/HClaq-formation.dat"
         {
             type          imported;
-            sha256        "baa3e883e995601ae4d23a7d2db30019c49342aec56be6a0b9a1538e8b057fd1";
-            origin        "data/standards/chemistry/HClaq.dat";
+            sha256        "4c262f9df29d4ea214bd16617a21c049a19211dd49dff58a02a1db7be766ed3c";
+            origin        "data/standards/chemistry/HClaq-formation.dat";
             originSha256  "e70d4c457da73f31c948ae7af7cf3b1410998ce5e6f640019ff9fa874f84c627";
             release       Choupo-2607;
         }
-        "chemistry/OH.dat"
+        "chemistry/water-dissociation.dat"
         {
             type          imported;
-            sha256        "16add81a1c933df74c7c95b9e0025c67fc328cb5b4384574648cb941db3fee77";
-            origin        "data/standards/chemistry/OH.dat";
-            originSha256  "cba7a99b2e7653565af572b3841d8a19471977883addf7dfb7f9efd2800877f5";
+            sha256        "63a8e7d2c83deda7eb1b6254cb7788b180acc12bde7d9b0400fb440e8e11463f";
+            origin        "data/standards/chemistry/water-dissociation.dat";
+            originSha256  "b2ae1698798cd472c4e75d1c4b186e1ac762852b40512a998ba247a22a0b9a80";
             release       Choupo-2607;
         }
         "components/LiCl.dat"
@@ -45,7 +45,7 @@ propertyManifest
             type          imported;
             sha256        "8f75cffc43bc124781c49f08b1d83ae3270a114218dc82d8d201f70e941afe50";
             origin        "data/standards/components/LiCl.dat";
-            originSha256  "b633e869a1f7018025fac9dcc502d54f6a2631342b10f8870ccfa3516c7bb004";
+            originSha256  "d7bc42d6e8b9c80e35b6d34f8b8c414fe5d73647d657ed306b2fca17f61d9aa5";
             release       Choupo-2607;
         }
         "components/lithiumChlorideH2O.dat"

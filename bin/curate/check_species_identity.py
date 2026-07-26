@@ -2,11 +2,12 @@
 """Species identity gate -- coherence now, no new opacity later.
 
 The ratified aqueous architecture (docs/architecture) says chemical truth lives
-in explicit fields and is NEVER inferred from an identifier.  The catalogue is
-not there yet: ~40 historical keys carry ASCII phase/charge suffixes (CO2aq,
-CaOHp, FeOH3m) and six species declare their charge in two places.  Migrating
-them is the F2 campaign, deliberately deferred -- so this gate does NOT fail
-retroactively.  It does three things instead:
+in explicit fields and is NEVER inferred from an identifier.  The F2 campaign
+(2026-07-26) delivered it: the p/m charge mangles are gone (CaOH, FeOH3,
+MgSO4_2), redox pairs carry roman numerals (FeII/FeIII, CuI/CuII, MnII/MnIII),
+chemistry files are named by their REACTION, and identity has one home.  What
+remains pinned is the `aq` class, kept by the interim lexical-disambiguation
+rule until record references are typed.  This gate now holds that line:
 
   1. PROSPECTIVE  -- a NEW opaque identifier is refused.  The historical set is
                      pinned in HISTORICAL_OPAQUE below; anything outside it that
@@ -34,20 +35,17 @@ STD = ROOT / "data" / "standards"
 # derived neutral species homonymous with a component (check_aq_disambiguation
 # enforces that requirement; the two gates must agree).  Any other new opaque
 # name is a regression.
+# After F2 commit 2 the p/m/redox mangles are GONE from standards; what
+# remains pinned is the `aq` class -- kept by the ratified interim
+# lexical-disambiguation rule (six of these shadow a feedable component;
+# check_aq_disambiguation enforces the requirement).  SEALED CASE COPIES may
+# still carry pre-F2 keys until their re-import; this gate reads standards.
 HISTORICAL_OPAQUE = {
-    # species/ -- redox disambiguation
-    "Fep3", "Cup", "Mnp3",
-    # chemistry/ -- PHREEQC-derived phase (aq) and charge (p/m) suffixes
-    "BaCO3aq", "BaHCO3p", "BaOHp", "CO2aq", "CaCO3aq", "CaHCO3p", "CaHSO4p",
-    "CaOHp", "CaSO4aq", "FeCO3aq", "FeClp", "FeFp", "FeHCO3p", "FeHSO4p",
-    "FeOH2aq", "FeOH3m", "FeOHp", "FeSO4aq", "H2SiO4m2", "H3SiO4m", "HClaq",
-    "HF2m", "HFaq", "KFaq", "KHCO3aq", "KSO4m", "MgCO3aq", "MgFp", "MgHCO3p",
-    # 2026-07-26: required by the aq rule (H3PO4 collides with the component)
-    "H3PO4aq",
-    "MgSO42m2", "MgSO4aq", "MnCO3aq", "MnCl2aq", "MnCl3m", "MnClp", "MnFp",
-    "MnHCO3p", "MnOH3m", "MnOHp", "MnSO4aq", "NH3aq", "Na2SO4aq", "NaFaq",
-    "NaHCO3aq", "NaSO4m", "SiF6m2", "SrCO3aq", "SrHCO3p", "SrOHp", "SrSO4aq",
-    # species/ -- borate/tartrate complexes named after their formula
+    "BaCO3aq", "CO2aq", "CaCO3aq", "CaSO4aq", "FeCO3aq", "FeOH2aq", "FeSO4aq",
+    "H3PO4aq", "HClaq", "HFaq", "KFaq", "KHCO3aq", "MgCO3aq", "MgSO4aq",
+    "MnCO3aq", "MnCl2aq", "MnSO4aq", "NH3aq", "Na2SO4aq", "NaFaq", "NaHCO3aq",
+    "SrCO3aq", "SrSO4aq",
+    # complexes named after their formula (no phase/charge mangle)
     "CaBOH4", "MgBOH4", "B3O3OH4", "B4O5OH4", "BOH4", "HTart",
 }
 
