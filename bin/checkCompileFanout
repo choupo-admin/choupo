@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+# -----------------------------------------------------------------------------
+#     SPDX-License-Identifier: GPL-3.0-or-later
+# =============================================================================
+"""checkCompileFanout -- how many translation units rebuild when a header moves.
+
+Reads the .d dependency files the native build already writes (-MMD -MP) and
+reports, for every src/ header, the number of .o files that depend on it --
+the COMPILE FAN-OUT.  Touching a header recompiles exactly its fan-out, so
+this list IS the incremental-build bill of materials, measured, never
+guessed.
+
+Informational by design (no hard limit yet): run it before and after a
+dependency-cutting refactor and compare.  Usage:
+
+    bin/checkCompileFanout            # top 25
+    bin/checkCompileFanout --all      # every header
+"""
+import re
+import sys
+from collections import Counter
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+BUILDS = sorted((ROOT / "build").glob("*")) if (ROOT / "build").is_dir() else []
+build = next((b for b in BUILDS if b.is_dir() and "Debug" not in b.name), None)
+
+if build is None:
+    sys.stderr.write("checkCompileFanout: no build/<PLATFORM>/ directory --"
+                     " run `make all` first (the .d files are the input).\n")
+    sys.exit(1)
+
+deps = list(build.rglob("*.d"))
+if not deps:
+    sys.stderr.write(f"checkCompileFanout: no .d files under {build} --"
+                     " run `make all` first.\n")
+    sys.exit(1)
+
+fan = Counter()
+for d in deps:
+    text = d.read_text(errors="replace").replace("\\\n", " ")
+    # every prerequisite that lives under src/ and is a header
+    for tok in set(re.findall(r'(?:^|\s)(\S*src/\S+?\.H)(?=\s|$)', text)):
+        rel = tok[tok.index("src/") + 4:]
+        fan[rel] += 1
+
+total = len(deps)
+rows = fan.most_common(None if "--all" in sys.argv else 25)
+w = max(len(h) for h, _ in rows) if rows else 10
+print(f"compile fan-out over {total} translation units"
+      f" (build: {build.name}):")
+for h, n in rows:
+    print(f"  {h:<{w}}  {n:>4}/{total}")

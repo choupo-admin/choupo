@@ -589,6 +589,19 @@ PYEOF
     fi
     rm -f /tmp/csgate.$$
 
+    # Header self-containment gate: every src/**/*.H compiles ALONE with the
+    # project flags (g++ -fsyntax-only) -- a header that only works through
+    # an accidental transitive include couples the build graph invisibly.
+    if "$ROOT/bin/checkHeaderSelfContained" > /tmp/hscgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "header-selfcontained-gate" "$(tail -1 /tmp/hscgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/checkHeaderSelfContained)\n" "header-selfcontained-gate"
+        cat /tmp/hscgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/hscgate.$$
+
     # Resolver-coherence gate: the aqueousSpeciation facts on standards
     # components must agree with the bridges and the chemistry catalogue
     # (a lying fact misclassifies a system silently), and vapour reactions

@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+# -----------------------------------------------------------------------------
+#     SPDX-License-Identifier: GPL-3.0-or-later
+# =============================================================================
+#
+# checkHeaderSelfContained -- every public header must compile ALONE.
+#
+# "Headers compile in isolation" is a CLAUDE.md style rule; this makes it a
+# measured fact.  For each src/**/*.H a one-line stub
+#     #include "<header>"
+#     int main() { return 0; }
+# is compiled with the project's own flags (-std=c++17 -Isrc, syntax only).
+# A header that only compiles thanks to an ACCIDENTAL transitive include in
+# some particular .cpp fails here -- exactly the rot that couples the build
+# graph and makes central-header edits recompile the world.
+#
+# Exit 1 on any failure (each printed with its first compiler error lines).
+set -u
+cd "$(dirname "$0")/.."
+
+tmpd=$(mktemp -d); trap 'rm -rf "$tmpd"' EXIT
+export tmpd
+
+run_one() {
+    f="$1"
+    stub="$tmpd/$(printf '%s' "$f" | tr '/' '_').cpp"
+    printf '#include "%s"\nint main() { return 0; }\n' "${f#src/}" > "$stub"
+    if ! g++ -std=c++17 -Isrc -fsyntax-only "$stub" 2> "$stub.err"; then
+        {
+            echo "FAIL  $f"
+            sed -n '1,4p' "$stub.err" | sed 's/^/      /'
+        } >> "$tmpd/failures"
+    fi
+}
+export -f run_one
+
+find src -name '*.H' -print0 | sort -z \
+    | xargs -0 -P"$(nproc)" -I{} bash -c 'run_one "$@"' _ {}
+
+total=$(find src -name '*.H' | wc -l)
+if [ -s "$tmpd/failures" ]; then
+    nf=$(grep -c '^FAIL' "$tmpd/failures")
+    echo "header self-containment: $nf of $total headers do NOT compile alone:"
+    cat "$tmpd/failures"
+    exit 1
+fi
+echo "header self-containment: $total/$total headers compile in isolation"

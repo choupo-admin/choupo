@@ -31,6 +31,7 @@ License
 #include "thermo/Component.H"
 #include "thermo/ThermoPackage.H"
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
