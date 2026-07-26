@@ -72,6 +72,16 @@ CosmoSac::CosmoSac(const DictPtr& dict, const std::vector<Component>& comps)
                 + "' declares model/variant '" + cs.model + "/" + cs.variant + "', but only "
                   "COSMOSAC variant 2002 is implemented (do not mix a profile with the wrong "
                   "variant's constants).");
+        if (cs.sigmaProfile.empty())
+            throw std::runtime_error("cosmoSAC: component '" + c.name()
+                + "' set '" + set + "' is an EXTERNAL REFERENCE (licence"
+                  " externalRestricted; installed false) -- the public tree"
+                  " ships no VT-2005 values, whose redistribution is not"
+                  " confirmed.  Install your own copy of the profile:\n"
+                  "    bin/choupo-import-cosmo " + set + " " + c.name()
+                + " <your-profile-file>\n"
+                  "which writes data/local/cosmo/" + set + "/" + c.name()
+                + ".dat (gitignored, yours).  No fallback is applied.");
         if (static_cast<int>(cs.sigmaProfile.size()) != NGRID)
             throw std::runtime_error("cosmoSAC: component '" + c.name() + "' set '" + set
                 + "' sigmaProfile has " + std::to_string(cs.sigmaProfile.size())

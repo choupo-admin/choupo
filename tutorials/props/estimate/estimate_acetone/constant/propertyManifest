@@ -27,9 +27,9 @@ propertyManifest
         "components/acetone.dat"
         {
             type          imported;
-            sha256        "9d45652c82863c0eb2f68319d30993fb330c653e0571652ca57381fb42e79287";
+            sha256        "0a0488c4a07118f8e46626438273655abf54245269f4086d7cf88bb31a3c75b9";
             origin        "data/standards/components/acetone.dat";
-            originSha256  "e5d6d9b2c6e507f35f0a3fddebcae08d2f9938b6133ddb50ffc4bab59d7863d7";
+            originSha256  "d41785404ac76a1e0ff9ba1d631331c132db7a975fc6f7a71a0f85c790a72f71";
             release       Choupo-2607;
         }
     }

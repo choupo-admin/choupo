@@ -27,9 +27,9 @@ propertyManifest
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "c519c526610a3f9d96b4d5c0a76c3c8213c1c557f55aea4ab3c99a2ad5b73b7a";
+            sha256        "40e103e2789866404b1b53cb3f7aa83ebbcc0fcc7d9054d6b517db51e9bbb3bb";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "2c8a6755f1fa1ee90be3c0797ca4726c0af72687e0fa62a66ddd35c3c85a6892";
+            originSha256  "47601243b330ce3a5b50cf5006627ed4adb352e66745237dbcd6eaca1bc46ffe";
             release       Choupo-2607;
         }
     }

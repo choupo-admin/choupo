@@ -40,9 +40,9 @@ propertyManifest
         "components/H2O2.dat"
         {
             type          imported;
-            sha256        "7e68b129170eb7aaf15f13cfe199e6c3d4f1d63cf2c9db062fe159f036bc48ed";
+            sha256        "9716a2a1a3cd22b3c101d2d86158fd4cbee059260ef3d011a54819c4372d0fe3";
             origin        "data/standards/components/H2O2.dat";
-            originSha256  "005b4eb35acde55f17caf2d69541b3f186249eff3bfe8d35414899e756e04344";
+            originSha256  "13d571eb720a98461be4797263527733955d5c8bb9ac42e420bda16c7e9d2355";
             release       Choupo-2607;
         }
         "components/HO2.dat"

@@ -1,0 +1,122 @@
+#!/usr/bin/env python3
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -----------------------------------------------------------------------------
+#     SPDX-License-Identifier: GPL-3.0-or-later
+# =============================================================================
+"""choupo-import-cosmo -- install a COSMO sigma profile YOU own into data/local.
+
+The public catalogue ships COSMO sets as EXTERNAL REFERENCES only (`licence
+externalRestricted; installed false;`): the VT-2005 database's redistribution
+status is not confirmed, so Choupo names the dataset and cites it, but carries
+none of its values.  This importer takes a profile file the user obtained
+legitimately (e.g. from the usnistgov/COSMOSAC bundle) and installs it in the
+PRIVATE, gitignored tier:
+
+    data/local/cosmo/<set>/<component>.dat
+
+which the component loader reads when the referenced set is not installed.
+Nothing this tool writes is ever committed; data/local is yours.
+
+Usage:
+    choupo-import-cosmo <set> <component> <profileFile> --area A --volume V
+    choupo-import-cosmo VT2005 water VT2005-1076-PROF.txt --area 43.26928 --volume 25.73454
+
+Accepted profile formats:
+  * two columns  "sigma  p(sigma)"  (the usnistgov VT2005-*-PROF.txt layout;
+    comment lines starting with # ignored);
+  * one value per line (51 p(sigma) values in grid order).
+
+Validation (refuse loudly, never guess): exactly 51 points on the
+-0.025..0.025 e/A^2 grid (step 0.001, tolerance 1e-9 when sigmas are given);
+non-negative p(sigma); area/volume positive.
+"""
+import sys
+from pathlib import Path
+
+NGRID, SIG0, DSIG = 51, -0.025, 0.001
+
+
+def die(msg):
+    sys.stderr.write("choupo-import-cosmo: " + msg + "\n")
+    sys.exit(1)
+
+
+def main():
+    args = sys.argv[1:]
+    area = volume = None
+    pos = []
+    i = 0
+    while i < len(args):
+        if args[i] == "--area":
+            i += 1
+            area = float(args[i])
+        elif args[i] == "--volume":
+            i += 1
+            volume = float(args[i])
+        else:
+            pos.append(args[i])
+        i += 1
+    if len(pos) != 3:
+        die("usage: choupo-import-cosmo <set> <component> <profileFile>"
+            " --area A --volume V")
+    setName, comp, profFile = pos
+    if area is None or volume is None or area <= 0 or volume <= 0:
+        die("--area and --volume are required and must be positive"
+            " (the cavity surface/volume of the SAME dataset entry)")
+
+    src = Path(profFile)
+    if not src.exists():
+        die("profile file not found: " + profFile)
+
+    sigmas, ps = [], []
+    for line in src.read_text().splitlines():
+        s = line.strip()
+        if not s or s.startswith("#"):
+            continue
+        cols = s.split()
+        if len(cols) >= 2:
+            sigmas.append(float(cols[0]))
+            ps.append(float(cols[1]))
+        else:
+            ps.append(float(cols[0]))
+    if len(ps) != NGRID:
+        die(f"profile has {len(ps)} points, expected {NGRID}"
+            f" (the {SIG0}..{-SIG0} e/A^2 grid, step {DSIG})")
+    if sigmas:
+        for k, s in enumerate(sigmas):
+            want = SIG0 + DSIG * k
+            if abs(s - want) > 1e-9:
+                die(f"sigma[{k}] = {s}, expected {want:.3f} -- wrong grid")
+    if any(p < 0 for p in ps):
+        die("negative p(sigma) value -- not a sigma profile")
+
+    root = Path(__file__).resolve().parents[1]
+    dst = root / "data" / "local" / "cosmo" / setName
+    dst.mkdir(parents=True, exist_ok=True)
+    out = dst / (comp + ".dat")
+    body = [
+        "// Installed by bin/choupo-import-cosmo -- the USER'S copy of an",
+        "// externally licensed dataset entry.  data/local is gitignored:",
+        "// this file is never redistributed by Choupo.",
+        f"// source file: {src.name}",
+        f"area    {area};",
+        f"volume  {volume};",
+        "sigmaProfile",
+        "(",
+    ]
+    body += [f"    {p:.8g}" for p in ps]
+    body += [");", ""]
+    out.write_text("\n".join(body))
+    print(f"installed: {out.relative_to(root)}  ({NGRID} points,"
+          f" area {area}, volume {volume})")
+
+
+if __name__ == "__main__":
+    main()

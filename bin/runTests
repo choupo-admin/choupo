@@ -574,6 +574,21 @@ PYEOF
     fi
     rm -f /tmp/aqgate.$$
 
+    # Cosmo-scrub gate: the public tree ships NO externally-restricted values.
+    # A COSMO set is an external REFERENCE (licence externalRestricted;
+    # installed false) or carries an open-licence profile (the synthetic
+    # teaching surrogates); a VT-2005 profile anywhere in data/ or tutorials/
+    # is redistribution and fails here.
+    if "$ROOT/bin/curate/check_cosmo_scrub.py" > /tmp/csgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "cosmo-scrub-gate" "$(head -1 /tmp/csgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_cosmo_scrub.py)\n" "cosmo-scrub-gate"
+        cat /tmp/csgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/csgate.$$
+
     # Element-balance gate (steady): a reacting boundary changes species but
     # closes per atom; an impossible formula refuses ONLY the elemental claim.
     if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then

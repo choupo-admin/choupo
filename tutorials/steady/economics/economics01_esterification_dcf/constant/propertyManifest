@@ -43,33 +43,33 @@ propertyManifest
         "components/aceticAcid.dat"
         {
             type          imported;
-            sha256        "f032b664de1fd3fc3bcfd2c638dc5dc8a53e0f174816cb27b190901c751f4b14";
+            sha256        "58990c332aa63c6b629a60482235dfab63d58b03eb3b76e71b7ad8d9128d99ce";
             origin        "data/standards/components/aceticAcid.dat";
-            originSha256  "de0ce86e5131c78a8ef5267eea5b4b97710d075f3693986ac37a67da4e9d01a0";
+            originSha256  "6f5305e2398a076a5267d782503fde6561400b3af20297dd771ca26d85dc9ec7";
             release       Choupo-2607;
         }
         "components/ethanol.dat"
         {
             type          imported;
-            sha256        "08cfc7f17e278dc27dc5a183744db5289150d711d12c36946a09344e2f4ce8f9";
+            sha256        "25704673ff648d48ef05974bd7ad652f35beaa410187f384615fa19f0bd23f9a";
             origin        "data/standards/components/ethanol.dat";
-            originSha256  "9823e1d6972bbbdd9b76f91e4bbe928c6e157d468336fd9475a9b054502bab4b";
+            originSha256  "1be8e1de2b588af92cac31bac811deddf23f4d06efa420a819b4e8f3c1e0d016";
             release       Choupo-2607;
         }
         "components/ethylAcetate.dat"
         {
             type          imported;
-            sha256        "a2c71d6c37e680e4e08ba88f122619b45362579119343fbfdd1f958c20aa53e0";
+            sha256        "76ae06b7a29934ba7d2cfbf322c5ac7aad4a2d7605e8f3c5adea0164ccc6371f";
             origin        "data/standards/components/ethylAcetate.dat";
-            originSha256  "c290327d4efac571808290744d702571325838506cf64384ab32f7afdc3c79c1";
+            originSha256  "635adb496feb0fccbfecf7bf30ce19356687c14615feec781b8a172e8dfcdfbb";
             release       Choupo-2607;
         }
         "components/water.dat"
         {
             type          imported;
-            sha256        "590702adfd0a04f54318ed97140943d672afd4f9c0526aeac5d31dbca1fcfc63";
+            sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
             origin        "data/standards/components/water.dat";
-            originSha256  "7d1996853ccc57b14e5dccf6febb031bf4b6683db7c18ef5622a80da3317a421";
+            originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
             release       Choupo-2607;
         }
     }

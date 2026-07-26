@@ -31,7 +31,10 @@ License
 #include "thermo/ElementComposition.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // electrolyte::ionCharge (dissociatesTo -> cation/anion)
 
+#include "thermo/Database.H"
+
 #include <cmath>
+#include <filesystem>
 #include <stdexcept>
 #include <variant>
 
@@ -562,6 +565,29 @@ void Component::readFromDict(const DictPtr& d)
             cs.volume  = s->lookupScalarOrDefault("volume", 0.0);
             if (s->found("sigmaProfile"))
                 cs.sigmaProfile = s->lookupList("sigmaProfile");
+            // LICENCE SEPARATION (VT-2005 scrub, 2026-07-26): a set marked
+            // `installed false;` ships as an external REFERENCE -- the public
+            // tree carries no values whose redistribution is unconfirmed.
+            // The user's own copy, installed by bin/choupo-import-cosmo,
+            // lives in data/local/cosmo/<set>/<component>.dat (gitignored)
+            // and is loaded here when present.  Absent -> the set stays
+            // profile-less and the CosmoSac model refuses BY NAME at use.
+            if (s->lookupWordOrDefault("installed", "true") == "false"
+                && cs.sigmaProfile.empty())
+            {
+                namespace fs = std::filesystem;
+                const fs::path lp = fs::path(Database::currentRoot())
+                    / "local" / "cosmo" / setName / (name_ + ".dat");
+                if (fs::exists(lp))
+                {
+                    auto ld = Dictionary::fromFile(lp.string());
+                    cs.area   = ld->lookupScalar("area");
+                    cs.volume = ld->lookupScalar("volume");
+                    cs.sigmaProfile = ld->lookupList("sigmaProfile");
+                    cs.source += "  [local install: data/local/cosmo/"
+                               + setName + "/" + name_ + ".dat -- UNVERIFIED]";
+                }
+            }
             cosmoSets_[setName] = std::move(cs);
         }
     }

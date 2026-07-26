@@ -27,33 +27,33 @@ propertyManifest
         "components/nButane.dat"
         {
             type          imported;
-            sha256        "dad54766edff74e39d07d5095e879bfb840b781566998390072b00744f52372d";
+            sha256        "eadeb9c6de933a835751a34833f78c69baf198843dba4d0ec3472d43c689146a";
             origin        "data/standards/components/nButane.dat";
-            originSha256  "5b7a497ce4149a00fe9bf3b69cb7ffc5f6b8677478aa5f8269ad54dec9cc8716";
+            originSha256  "443936a019163698684601440d0cdd64551378c60916c3ddca87882734b5735b";
             release       Choupo-2607;
         }
         "components/nHexane.dat"
         {
             type          imported;
-            sha256        "9a688efb8432a80830daf7436007db07154d3f735aaaed86e0272b649f166a37";
+            sha256        "d59eabf9e5ddde8c5c350f4d9d7f7184d62a563f53758a6cac6249ee2826d0dd";
             origin        "data/standards/components/nHexane.dat";
-            originSha256  "ebc11cf9e63b85a2742daf6126aed3ed226982d4f816e4d36b91ea052721a706";
+            originSha256  "634759305340e6b7ab62f0b95a82fc4ac47226383d7105c86d67f0f88650fccb";
             release       Choupo-2607;
         }
         "components/nPentane.dat"
         {
             type          imported;
-            sha256        "6bea4286fe5f750e61707870c51bab1fd7166ca9cdf31ad8f0a0fbcd1b4fb6c0";
+            sha256        "a54a465d30aaf6773a362ef04b9ae2f4fa0e39b1be9ea5cda1e78ee5f96d4020";
             origin        "data/standards/components/nPentane.dat";
-            originSha256  "5bfdee117d336e83ad4b85813cca8ae024c70c73d8a3d63a89262a1f0a3a8743";
+            originSha256  "6eb27d3348cf4f5bb9818f0c03066884812747a5de15e33eb8794f329fcc6ead";
             release       Choupo-2607;
         }
         "components/propane.dat"
         {
             type          imported;
-            sha256        "68cc2725ed82f671e099134cc85df5e2204dfe22df5f527b59758bf48d726040";
+            sha256        "055da1b110a0c9b19428803a0db06fc355f70af1b04a25dba82b1138452e45f9";
             origin        "data/standards/components/propane.dat";
-            originSha256  "83ed398c59981bd6b08bfa3c9279304df9a019441661328621f7ff1ecf093a66";
+            originSha256  "81e92fe29b86769095ff94427ed7656f73776d502a9d6b9583c9790423376e35";
             release       Choupo-2607;
         }
     }

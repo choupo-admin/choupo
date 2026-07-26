@@ -27,25 +27,25 @@ propertyManifest
         "components/isopentane.dat"
         {
             type          imported;
-            sha256        "2cfbb0b51245e211d26fbe31cb3ff1d819dc7405e6269b918124bb23d721b240";
+            sha256        "6c4d8af0d679b3377ada1262629f393f467235907a744d44d550233096716d2e";
             origin        "data/standards/components/isopentane.dat";
-            originSha256  "c95bcdfca53437b5d8bbe16df80ee6e64b8efc5dfef1ef03f618825f041904d7";
+            originSha256  "cbed89ee600f5e725f411b91abf2313938a2195550ac6d6b76297bc1ac7982a1";
             release       Choupo-2607;
         }
         "components/nButane.dat"
         {
             type          imported;
-            sha256        "dad54766edff74e39d07d5095e879bfb840b781566998390072b00744f52372d";
+            sha256        "eadeb9c6de933a835751a34833f78c69baf198843dba4d0ec3472d43c689146a";
             origin        "data/standards/components/nButane.dat";
-            originSha256  "5b7a497ce4149a00fe9bf3b69cb7ffc5f6b8677478aa5f8269ad54dec9cc8716";
+            originSha256  "443936a019163698684601440d0cdd64551378c60916c3ddca87882734b5735b";
             release       Choupo-2607;
         }
         "components/nPentane.dat"
         {
             type          imported;
-            sha256        "6bea4286fe5f750e61707870c51bab1fd7166ca9cdf31ad8f0a0fbcd1b4fb6c0";
+            sha256        "a54a465d30aaf6773a362ef04b9ae2f4fa0e39b1be9ea5cda1e78ee5f96d4020";
             origin        "data/standards/components/nPentane.dat";
-            originSha256  "5bfdee117d336e83ad4b85813cca8ae024c70c73d8a3d63a89262a1f0a3a8743";
+            originSha256  "6eb27d3348cf4f5bb9818f0c03066884812747a5de15e33eb8794f329fcc6ead";
             release       Choupo-2607;
         }
     }

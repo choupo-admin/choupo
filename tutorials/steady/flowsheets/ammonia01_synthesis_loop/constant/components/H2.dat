@@ -6,14 +6,13 @@
   overlay hashes) is recorded in constant/propertyManifest.
 \*----------------------------------------------------------*/
 
-/* Case-local OVERLAY -- the ROLE SWITCH only.  In THIS loop H2 is a
-   supercritical SOLUTE in liquid NH3; flipping role makes the K-value take the
-   Henry path.  THE PHYSICS ("o sumo") lives in the PAIR catalogue:
-       data/standards/parameters/Henry/H2-NH3.dat
-       H_ref 1.18e9 Pa (298 K) . dH_diss +13.6 kJ/mol . v_inf 24 cm3/mol (KK)
-       fitted to Wiebe & Tremearne 1934 (50-1000 atm, ~2%); the run log
-       announces it as [henry].  Everything else (MW, Tc, Pc, omega, Cp...)
-       merges from the standard H2.dat -- this file is deliberately a delta. */
+/*----------------------------------------------------------*\
+  constant/components/H2.dat -- MERGED sealed record: the standards base with
+  this case's partial overlay applied top-level (Choupo-2607 release).
+  Materialised by bin/choupo-import so the sealed case reads ONE
+  complete record with the catalogue hidden; provenance (base +
+  overlay hashes) is recorded in constant/propertyManifest.
+\*----------------------------------------------------------*/
 
 name  H2;
 
@@ -67,63 +66,8 @@ cosmo
         model       COSMOSAC;
         variant     "2002";
         source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0383-PROF.txt bundled in usnistgov/COSMOSAC; CAS 1333-74-0";
-        license     "VT-2005 database (Mullins et al., IECR 45 (2006) 4389); academic/non-commercial redistribution status REQUIRES REVIEW -- NOT confirmed public domain";
-        area        27.37216;
-        volume      13.10017;
-        sigmaProfile
-        (
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.545316868188471
-            1.27928667476266
-            4.67360104497315
-            0.214475412075706
-            4.87691776134562
-            2.34606223865439
-            2.67976962463690
-            8.79133144284190
-            1.96539893252119
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-            0.000000000000000E+000
-        );
+        licence     externalRestricted;   
+        installed   false;
     }
 }
 

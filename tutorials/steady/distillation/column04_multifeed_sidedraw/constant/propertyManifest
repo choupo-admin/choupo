@@ -27,25 +27,25 @@ propertyManifest
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "c519c526610a3f9d96b4d5c0a76c3c8213c1c557f55aea4ab3c99a2ad5b73b7a";
+            sha256        "40e103e2789866404b1b53cb3f7aa83ebbcc0fcc7d9054d6b517db51e9bbb3bb";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "2c8a6755f1fa1ee90be3c0797ca4726c0af72687e0fa62a66ddd35c3c85a6892";
+            originSha256  "47601243b330ce3a5b50cf5006627ed4adb352e66745237dbcd6eaca1bc46ffe";
             release       Choupo-2607;
         }
         "components/oXylene.dat"
         {
             type          imported;
-            sha256        "4288956a831b758a4deb22d82240b16a6ee494c2814796d46a44cbe6b503cb7c";
+            sha256        "1c4ba7b9e08eb4b2fce12ddeea1af718a372afe19c5c8da4777f476ded02e7e7";
             origin        "data/standards/components/oXylene.dat";
-            originSha256  "2d22570f5f0df182001ad543039fff8ff8d6f98a95165fd91765fbd39075ea98";
+            originSha256  "5e1dc2dd5844ba0da9ae4e99b5c90445d313f65e6319ab2317ba9e8a6918a7cf";
             release       Choupo-2607;
         }
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "f095f059d077230ee0f40d43fb6c297b04a2ac7343395b47aa08281f34fa1114";
+            sha256        "d23b38ad2884c71a25bef5fe81ee357ca01958c35c7ce0c53798b1b538d78b00";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "52985496b0d12015d184c2f223c20d723aa3c4275f830bb91856fc99f3ca29cb";
+            originSha256  "758ad991ac14740952ba42bc88269a8d96ec22f6c516b8092cb9d79f859b112c";
             release       Choupo-2607;
         }
     }

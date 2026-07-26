@@ -47,9 +47,9 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "590702adfd0a04f54318ed97140943d672afd4f9c0526aeac5d31dbca1fcfc63";
+            sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
             origin        "data/standards/components/water.dat";
-            originSha256  "7d1996853ccc57b14e5dccf6febb031bf4b6683db7c18ef5622a80da3317a421";
+            originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
             release       Choupo-2607;
         }
         "species/Ca.dat"

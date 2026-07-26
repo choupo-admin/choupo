@@ -27,9 +27,9 @@ propertyManifest
         "components/H2.dat"
         {
             type          imported;
-            sha256        "d8ff0adb52de155aa6ae6a4b6cae0215c2ac100a6e09c0fb9ede028b278229e5";
+            sha256        "d92b5e32785923b44dfa911d0d217830a68c15e56045801731d5a6639994b681";
             origin        "data/standards/components/H2.dat";
-            originSha256  "5c94ad2306ce46027919eb69e2fa0e8605e39955f07c47c06a3b829962feb183";
+            originSha256  "2ef3f8ee84aac5d93008bd77e9cc72af7a76b484badd01bdcf75a2e2f72456b5";
             release       Choupo-2607;
         }
         "components/N2.dat"
@@ -43,9 +43,9 @@ propertyManifest
         "components/NH3.dat"
         {
             type          imported;
-            sha256        "74a33222bcf705fa0b8ba5156a88e6386c385e47fcef3de0e7342f9493b1d325";
+            sha256        "729f1d3b61a77b24a12a7d611ced10f938ea2c4cebf57ad1b3ef25e8798544e6";
             origin        "data/standards/components/NH3.dat";
-            originSha256  "80410925ff5cdca14a73845c002901df5dde4161584ffca03d0b9ea6bd1c8b13";
+            originSha256  "473ee474cf038e68a8fd31c39d7e00a87f222a8ca5fb2cd71ec2db8d984c35c5";
             release       Choupo-2607;
         }
     }

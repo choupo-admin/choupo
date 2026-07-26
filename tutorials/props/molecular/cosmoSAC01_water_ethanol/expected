@@ -1,11 +1,17 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
+# GOLDEN CHANGE, VT-2005 licence separation 2026-07-26: the shipped sigma
+# profiles are now SYNTHETIC teaching surrogates (Gaussian, class-shaped,
+# GPL) -- the VT-2005 values were removed from the public tree because their
+# redistribution is not confirmed.  The engine is unchanged; qualitative
+# behaviour (pure -> lnGamma = 0 exact; water/hexane strongly non-ideal)
+# holds.  Real profiles: bin/choupo-import-cosmo -> data/local/cosmo/VT2005/.
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-diag    pure_water             n_failures       0                  1e-4
-diag    pure_water             n_points         2                  1e-4
-diag    bin_wet                n_failures       0                  1e-4
-diag    bin_wet                n_points         2                  1e-4
-diag    ternary                n_failures       0                  1e-4
-diag    ternary                n_points         2                  1e-4
-diag    water_hexane           n_failures       0                  1e-4
-diag    water_hexane           n_points         2                  1e-4
+diag    pure_water             n_failures       0                1e-4
+diag    pure_water             n_points         2                1e-4
+diag    bin_wet                n_failures       0                1e-4
+diag    bin_wet                n_points         2                1e-4
+diag    ternary                n_failures       0                1e-4
+diag    ternary                n_points         2                1e-4
+diag    water_hexane           n_failures       0                1e-4
+diag    water_hexane           n_points         2                1e-4

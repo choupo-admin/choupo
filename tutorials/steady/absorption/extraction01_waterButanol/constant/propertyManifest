@@ -27,17 +27,17 @@ propertyManifest
         "components/nButanol.dat"
         {
             type          imported;
-            sha256        "4574927cfd775522295d94233f80c22f4d6bbe3e96402bbfeb8b98a1e8c30763";
+            sha256        "f16b2959c232439683bba8f7d1e6ecee36cfee43ff877588b6b4f7185afce6f3";
             origin        "data/standards/components/nButanol.dat";
-            originSha256  "d91500a22de9db6ac667718843a7cc8bd9702aeac387171dcf6b9223a561a9bf";
+            originSha256  "b1827231bdd4a57233826cf81c59a2eaf000867cdd6e6c4a899da0fbf2070444";
             release       Choupo-2607;
         }
         "components/water.dat"
         {
             type          imported;
-            sha256        "590702adfd0a04f54318ed97140943d672afd4f9c0526aeac5d31dbca1fcfc63";
+            sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
             origin        "data/standards/components/water.dat";
-            originSha256  "7d1996853ccc57b14e5dccf6febb031bf4b6683db7c18ef5622a80da3317a421";
+            originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
             release       Choupo-2607;
         }
     }

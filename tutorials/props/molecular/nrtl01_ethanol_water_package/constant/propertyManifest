@@ -27,17 +27,17 @@ propertyManifest
         "components/ethanol.dat"
         {
             type          imported;
-            sha256        "08cfc7f17e278dc27dc5a183744db5289150d711d12c36946a09344e2f4ce8f9";
+            sha256        "25704673ff648d48ef05974bd7ad652f35beaa410187f384615fa19f0bd23f9a";
             origin        "data/standards/components/ethanol.dat";
-            originSha256  "9823e1d6972bbbdd9b76f91e4bbe928c6e157d468336fd9475a9b054502bab4b";
+            originSha256  "1be8e1de2b588af92cac31bac811deddf23f4d06efa420a819b4e8f3c1e0d016";
             release       Choupo-2607;
         }
         "components/water.dat"
         {
             type          imported;
-            sha256        "590702adfd0a04f54318ed97140943d672afd4f9c0526aeac5d31dbca1fcfc63";
+            sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
             origin        "data/standards/components/water.dat";
-            originSha256  "7d1996853ccc57b14e5dccf6febb031bf4b6683db7c18ef5622a80da3317a421";
+            originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
             release       Choupo-2607;
         }
         "parameters/NRTL/ethanol-water.dat"
