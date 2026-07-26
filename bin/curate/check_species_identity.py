@@ -11,10 +11,11 @@ retroactively.  It does three things instead:
   1. PROSPECTIVE  -- a NEW opaque identifier is refused.  The historical set is
                      pinned in HISTORICAL_OPAQUE below; anything outside it that
                      looks like a mangled name is a regression.
-  2. COHERENCE    -- for the six species whose identity is declared twice
-                     (`charge` in species/, `z` inline in the reaction), the two
-                     must agree.  This is the whole reason F2 can wait: the
-                     duplication is watched, so a silent drift is impossible.
+  2. SINGLE HOME  -- F2 commit 1 gave identity one home: a species owning
+                     species/<id>.dat carries charge THERE and its STANDARDS
+                     reaction record may not redeclare `z`/`ion`.  (Sealed
+                     case COPIES may still carry the legacy inline form; the
+                     loader verifies coherence at load and refuses mismatch.)
   3. FORMULA      -- the charge parsed from `formula` must equal the declared
                      charge.  Curation-time cross-check only: the formula is
                      never a runtime source of charge.
@@ -102,15 +103,13 @@ for sid in sorted(set(species) | set(inline)):
                    f"`formula`/`charge`, never in the key.  Historical keys are "
                    f"pinned in this gate and are not a licence to mint more.")
 
-# ---- 2. coherence of the doubly-declared identities ------------------------
+# ---- 2. single identity home in the STANDARDS tree -------------------------
 dual = sorted(set(species) & set(inline))
 for sid in dual:
-    c, _, pc = species[sid]
-    z, _, pz = inline[sid]
-    if c != z:
-        bad.append(f"'{sid}' DIVERGED: charge {c:+d} in {pc.relative_to(ROOT)} "
-                   f"but z {z:+d} in {pz.relative_to(ROOT)} -- one fact, two "
-                   f"homes, now inconsistent.  This is the F2 trigger.")
+    _, _, pz = inline[sid]
+    bad.append(f"'{sid}' declares identity TWICE: species/{sid}.dat owns it, "
+               f"yet {pz.relative_to(ROOT)} redeclares z/ion -- F2 commit 1 "
+               f"gave identity one home; drop the inline fields.")
 
 # ---- 3. formula vs declared charge -----------------------------------------
 for sid, (c, f, p) in sorted(species.items()):
@@ -141,6 +140,6 @@ if bad:
     sys.exit(1)
 
 print(f"species identity gate: {len(species)} species + {len(inline)} inline "
-      f"identities; {len(dual)} doubly-declared and coherent; "
+      f"identities; single-home enforced (0 standards duplicates); "
       f"{len(HISTORICAL_OPAQUE)} historical keys pinned, 0 new")
 sys.exit(0)

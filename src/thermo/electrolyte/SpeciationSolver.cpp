@@ -194,7 +194,36 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
         {
             SpeciationReaction r;
             r.species = e->lookupWord("species");
-            r.z       = e->lookupScalar("z");
+            // IDENTITY HAS ONE HOME (F2 commit 1).  A species that owns its
+            // own species/<id>.dat carries charge/formula THERE; its reaction
+            // record only refers to it.  A derived species with no identity
+            // file declares `z` (and `ion`) inline -- that inline block IS its
+            // identity.  Both present (legacy sealed copies) is tolerated but
+            // VERIFIED: a mismatch is the arity failure, refused by name.
+            if (e->found("z"))
+            {
+                r.z = e->lookupScalar("z");
+                if (DictPtr rec = rawSpeciesRecord(r.species))
+                {
+                    const double zOwn = rec->lookupScalar("charge");
+                    if (static_cast<int>(zOwn) != static_cast<int>(r.z))
+                        throw std::runtime_error("speciation: '" + r.species
+                            + "' declares z " + std::to_string(int(r.z))
+                            + " in its reaction record but its identity file"
+                              " says " + std::to_string(int(zOwn))
+                            + " -- one fact, two homes, now inconsistent.");
+                }
+            }
+            else
+            {
+                DictPtr rec = rawSpeciesRecord(r.species);
+                if (!rec)
+                    throw std::runtime_error("speciation: '" + r.species
+                        + "' declares no `z` and owns no identity record"
+                          " (species/" + r.species + ".dat) -- a species"
+                          " needs exactly one identity home.");
+                r.z = rec->lookupScalar("charge");
+            }
             r.masters = readMasters(e);
             r.nuWater = e->lookupScalarOrDefault("nuWater", 0.0);
             r.logK25  = e->lookupScalar("logK25");
