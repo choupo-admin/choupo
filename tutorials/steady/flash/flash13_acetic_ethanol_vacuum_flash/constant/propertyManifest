@@ -104,22 +104,6 @@ propertyManifest
             originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
             release       Choupo-2607;
         }
-        "parameters/Henry/NH3-water.dat"
-        {
-            type          imported;
-            sha256        "bc98cdfdacdb227f258ec5373d7705134b762e4ef1c864d94f8fea0fdfbde8d5";
-            origin        "data/standards/parameters/Henry/NH3-water.dat";
-            originSha256  "420a3445e9d2e5c00ddee3750d7a04c4f6875397f930ac2980bfa00793d436fd";
-            release       Choupo-2607;
-        }
-        "parameters/NRTL/ethanol-water.dat"
-        {
-            type          imported;
-            sha256        "c5cbfeff3ae15e0c5162cce367bab36a57b1cf3103d1c18b62b1207b66db293e";
-            origin        "data/standards/parameters/NRTL/ethanol-water.dat";
-            originSha256  "58fd0be3d81822788156fe593270b2e9900fa2b533fa3f88b33415fc18320ac5";
-            release       Choupo-2607;
-        }
         "species/Acetate.dat"
         {
             type          imported;
