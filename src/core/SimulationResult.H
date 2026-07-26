@@ -50,7 +50,8 @@ Description
 #include "core/Types.H"
 #include "streams/ProcessStream.H"
 #include "thermo/SaturationCurves.H"
-#include "unitOperations/UnitOperation.H"
+#include "unitOperations/UnitProfile.H"   // profiles only -- never the
+                                          //   unit-op hierarchy (build hygiene)
 
 #include <map>
 #include <set>

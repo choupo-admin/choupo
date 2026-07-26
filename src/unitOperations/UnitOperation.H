@@ -54,6 +54,7 @@ Description
 #include "core/Types.H"
 #include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"
+#include "unitOperations/UnitProfile.H"
 
 #include <functional>
 #include <map>
@@ -63,26 +64,6 @@ Description
 #include <vector>
 
 namespace Choupo {
-
-// 1-D internal profile of a unit op (PFR axial sweep, distillation
-// stage table, etc.).  The first column named by `xAxis` is the
-// independent variable; the GUI plots every other column against it.
-//
-// `markers` are vertical annotations the unit wants the GUI to draw,
-// each anchored at a position along the xAxis.  Used e.g. by the
-// distillation column to mark the feed stage.
-struct ProfileMarker
-{
-    scalar         x;       // position along the unit's xAxis
-    std::string    label;
-};
-
-struct UnitProfile
-{
-    std::string                                  xAxis;       // e.g. "V" or "stage"
-    std::map<std::string, std::vector<scalar>>   columns;
-    std::vector<ProfileMarker>                   markers;
-};
 
 class UnitOperation
 {
