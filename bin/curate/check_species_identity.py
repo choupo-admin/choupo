@@ -28,8 +28,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 STD = ROOT / "data" / "standards"
 
-# The historical keys, pinned.  This list may SHRINK (F2 migrates them) but must
-# never grow: a new entry means a new opaque name was minted.
+# The historical keys, pinned.  This list may SHRINK (F2 migrates them); it may
+# GROW only when the interim aq-disambiguation rule REQUIRES a suffix -- a
+# derived neutral species homonymous with a component (check_aq_disambiguation
+# enforces that requirement; the two gates must agree).  Any other new opaque
+# name is a regression.
 HISTORICAL_OPAQUE = {
     # species/ -- redox disambiguation
     "Fep3", "Cup", "Mnp3",
@@ -38,6 +41,8 @@ HISTORICAL_OPAQUE = {
     "CaOHp", "CaSO4aq", "FeCO3aq", "FeClp", "FeFp", "FeHCO3p", "FeHSO4p",
     "FeOH2aq", "FeOH3m", "FeOHp", "FeSO4aq", "H2SiO4m2", "H3SiO4m", "HClaq",
     "HF2m", "HFaq", "KFaq", "KHCO3aq", "KSO4m", "MgCO3aq", "MgFp", "MgHCO3p",
+    # 2026-07-26: required by the aq rule (H3PO4 collides with the component)
+    "H3PO4aq",
     "MgSO42m2", "MgSO4aq", "MnCO3aq", "MnCl2aq", "MnCl3m", "MnClp", "MnFp",
     "MnHCO3p", "MnOH3m", "MnOHp", "MnSO4aq", "NH3aq", "Na2SO4aq", "NaFaq",
     "NaHCO3aq", "NaSO4m", "SiF6m2", "SrCO3aq", "SrHCO3p", "SrOHp", "SrSO4aq",

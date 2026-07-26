@@ -559,6 +559,21 @@ PYEOF
     fi
     rm -f /tmp/tidgate.$$
 
+    # aq-disambiguation gate: while RECORD identifiers are bare strings, a
+    # derived neutral aqueous species homonymous with a component must carry
+    # `aq` -- six such collisions exist today (CaCO3, CO2, NH3, ...).  The
+    # suffix is a functional disambiguator, not decoration; its removal is
+    # the F2 campaign, one closed transaction, never piecemeal.
+    if "$ROOT/bin/curate/check_aq_disambiguation.py" > /tmp/aqgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "aq-disambiguation-gate" "$(head -1 /tmp/aqgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_aq_disambiguation.py)\n" "aq-disambiguation-gate"
+        cat /tmp/aqgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/aqgate.$$
+
     # Element-balance gate (steady): a reacting boundary changes species but
     # closes per atom; an impossible formula refuses ONLY the elemental claim.
     if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then
