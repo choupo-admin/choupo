@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  conventions/PHREEQC-gasMolal-v1.dat -- a VERSIONED, IMMUTABLE convention
+  profile (equilibrium-parameterisation identity ADR, ratified 2026-07-26).
+
+  The operational convention of the aqueous speciation network's gas-liquid
+  records (PHREEQC PHASES): molality-scale activity of the dissolved
+  species, a_i = K(T) * p_i[atm], water-referenced infinite-dilution
+  standard state, anchored-analytic/van't Hoff temperature forms.
+\*-----------------------------------------------------------------------------*/
+recordType    conventionProfile;
+schemaVersion 1;
+
+name                 PHREEQC-gasMolal-v1;
+gasStandardState     idealGas;
+compositionBasis     molality;
+referencePressure    101325 Pa;
+temperatureForm      anchoredAnalyticOrVantHoff;
+solventReference     aqueousInfiniteDilution;
+source               "USGS PHREEQC PHASES convention (public domain)";

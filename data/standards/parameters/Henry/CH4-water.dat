@@ -15,6 +15,16 @@
 solute      CH4;
 solvent     water;
 
+// Equilibrium-parameterisation identity (ADR 2026-07-26): typed physical
+// family + versioned convention profile.  The PHREEQC-convention analytic
+// in chemistry/CH4-dissolution.dat is an INDEPENDENT PRIMARY of the same
+// family (wider T domain) -- the registry derives the relation from these
+// typed references; the cross-convention gate compares them as a
+// curation DIAGNOSTIC, never as an automatic error.
+gasSpecies        CH4;
+dissolvedSpecies  CH4;
+convention        Sander-Hxp-v1;
+
 model       vantHoff;
 H_ref       4.13e9 Pa;             // = 41,300 bar at 298.15 K
 T_ref       298.15 K;

@@ -42,7 +42,7 @@ STD = ROOT / "data" / "standards"
 # still carry pre-F2 keys until their re-import; this gate reads standards.
 HISTORICAL_OPAQUE = {
     "BaCO3aq", "CO2aq", "CaCO3aq", "CaSO4aq", "FeCO3aq", "FeOH2aq", "FeSO4aq",
-    "H3PO4aq", "HClaq", "HFaq", "KFaq", "KHCO3aq", "MgCO3aq", "MgSO4aq",
+    "H2Saq", "H3PO4aq", "HClaq", "HFaq", "KFaq", "KHCO3aq", "MgCO3aq", "MgSO4aq",
     "MnCO3aq", "MnCl2aq", "MnSO4aq", "NH3aq", "Na2SO4aq", "NaFaq", "NaHCO3aq",
     "SrCO3aq", "SrSO4aq",
     # complexes named after their formula (no phase/charge mangle)

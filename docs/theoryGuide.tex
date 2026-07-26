@@ -770,6 +770,69 @@ log in CLAUDE.md~§14 for the current state.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{One equation, many declarations: the map}\label{ch:theory-map}
+
+\begin{whatyoulllearn}
+Every phase-equilibrium computation in this simulator is ONE equation ---
+$\hat f_i^V = \hat f_i^L$ for each species --- dressed in different,
+explicitly declared standard states.  This section is the map between the
+vocabulary of the thermodynamics course (conventions, standard states,
+activity, fugacity) and the declarations a case file carries.  Read it
+once and every formulation name in the engine becomes an instance of
+something you already know.
+\end{whatyoulllearn}
+
+Phase equilibrium demands equal fugacities.  The vapour side is
+$\hat f_i^V = y_i \hat\varphi_i P$ (ideal gas: $\hat\varphi_i = 1$).  For
+the liquid the course teaches two \emph{conventions}, distinguished only
+by the reference (standard) state chosen per species:
+
+\begin{description}
+\item[Raoult / Lewis--Randall convention] (pure-liquid reference,
+  $\gamma_i \to 1$ as $x_i \to 1$):
+  $\hat f_i^L = x_i\,\gamma_i\,P^{\mathrm{sat}}_i(T)$ --- the natural
+  choice for condensable components.
+\item[Henry convention] (infinite-dilution reference,
+  $\gamma_i^* \to 1$ as $x_i \to 0$):
+  $\hat f_i^L = x_i\,\gamma_i^*\,H_i$, or in the molal form used by the
+  aqueous network, $a_i = m_i \gamma_i^{(m)}$ with $a_i = K(T)\,p_i$ ---
+  the natural choice for dissolved solutes.
+\end{description}
+
+The \emph{unsymmetric convention} uses both at once in one liquid: the
+solvent on Raoult, the solutes on Henry.  That is not a trick --- it is
+the textbook treatment of electrolyte and dilute-solute systems, and it
+is exactly what the reactive flash implements: water through its
+activity ($a_w$), ammonia and acetic acid through molal gas--liquid
+constants tied to the speciation network (mass action + charge balance,
+pH solved), a molecular co-volatile through $\gamma\,x\,P^{\mathrm{sat}}$.
+
+\begin{center}
+\begin{tabular}{lll}
+\textbf{course concept} & \textbf{engine declaration} & \textbf{tutorial} \\
+\hline
+Raoult + $\gamma(x)$              & \texttt{gammaPhi} (NRTL, Wilson, \dots) & flash01--03 \\
+$\hat\varphi$ from an EoS          & \texttt{phiPhi} (SRK, PC-SAFT)          & flash09\_n2ch4 \\
+Henry, dilute solute               & \texttt{diluteSolution}; Henry pairs    & flash08 \\
+$\gamma_\pm$ on molality           & \texttt{electrolyteGammaPhi}            & crystallisers \\
+law of mass action, pH             & the speciation network                  & flash09--13 \\
+unsymmetric convention             & the reactive shape                      & flash09--13 \\
+ideal-solution approximation       & \texttt{approximations\{\}} (delimited) & flash12 \\
+composite mixed-solvent v1         & \texttt{ionic davies; molecular NRTL;}  & flash13 \\
+\hline
+\end{tabular}
+\end{center}
+
+Two reading rules make every run header self-explaining.  When an
+announcement names a \emph{convention}, it is telling you which standard
+state a $\gamma$ or a $K$ refers to.  When it names an
+\emph{approximation}, it is telling you which physics was deliberately,
+visibly neglected --- and which named slice will replace it.  Nothing in
+the engine selects a model silently: the case declares, the run
+announces, and the limits of every composite treatment are proven by
+automated tests, not assumed.
+
+% ---------------------------------------------------------------------
 \section{Notation, units, and basis}
 
 \begin{whatyoulllearn}

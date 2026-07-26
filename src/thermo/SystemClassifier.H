@@ -35,6 +35,9 @@ Description
                               aqueous equilibrium speciation network
         MolecularNonionising  `aqueousSpeciation none;` -- curated fact of
                               non-participation at this level
+        HenrySolute           role solute + `aqueousSpeciation none;` --
+                              a dissolved gas (Henry convention), never a
+                              Raoult backbone member
         Nonvolatile           role nonvolatile (solids, salts-as-feed)
         Unknown               NO aqueous-speciation fact on the record
 
@@ -68,6 +71,9 @@ struct ComponentClassification
         ApparentElectrolyte,
         MolecularReactive,
         MolecularNonionising,
+        HenrySolute,          // role solute + aqueousSpeciation none: a
+                              //   dissolved gas on the Henry route -- NOT a
+                              //   backbone co-volatile (no psat leg)
         Nonvolatile,
         Unknown
     };

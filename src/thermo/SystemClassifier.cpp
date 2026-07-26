@@ -25,8 +25,8 @@ SystemClassification classifySystem(const std::vector<Component>& comps,
         if (names[i] == declaredSolvent)
         {
             cc.kind = Kind::AqueousSolvent;
-            cc.note = names[i] + ": declared aqueous solvent"
-                      " (activity-based VLE, a_w * psat)";
+            cc.note = names[i] + ": declared aqueous solvent -- Raoult"
+                      " convention (a_w * psat)";
         }
         else if (c.aqueousSpeciationDeclared()
                  && c.aqueousSpeciation() != "none")
@@ -34,13 +34,25 @@ SystemClassification classifySystem(const std::vector<Component>& comps,
             cc.kind = Kind::MolecularReactive;
             cc.speciationSet = c.aqueousSpeciation();
             cc.note = names[i] + ": molecular reactive (aqueousSpeciation "
-                      + cc.speciationSet + ")";
+                      + cc.speciationSet + ") -- Henry convention, molal,"
+                      " tied to the network";
+        }
+        else if (c.aqueousSpeciationDeclared() && c.role() == "solute")
+        {
+            //  A dissolved gas: nonionising, but its VLE home is the
+            //  gas-liquid record (Henry convention) -- classifying it onto
+            //  the Raoult backbone would price it by a psat it may not
+            //  even have (supercritical CH4).
+            cc.kind = Kind::HenrySolute;
+            cc.note = names[i] + ": dissolved-gas solute -- Henry"
+                      " convention (gas-liquid record), nonionising";
         }
         else if (c.aqueousSpeciationDeclared())        // == "none"
         {
             cc.kind = Kind::MolecularNonionising;
             cc.note = names[i] + ": molecular condensable, nonionising in"
-                      " aqueous speciation";
+                      " aqueous speciation -- Raoult convention on the"
+                      " backbone";
         }
         else if (c.hasAqueousMapping())
         {

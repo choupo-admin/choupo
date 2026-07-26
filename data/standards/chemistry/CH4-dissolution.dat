@@ -1,6 +1,10 @@
 recordType gasLiquidEquilibrium;
 schemaVersion 1;
 
+// Equilibrium-parameterisation identity (ADR 2026-07-26): see the note in
+// parameters/Henry/CH4-water.dat -- same physical family, independent
+// primary, PHREEQC molal convention.
+gasSpecies CH4; dissolvedSpecies CH4; solvent water; convention PHREEQC-gasMolal-v1;
 gas CH4; reaction "CH4(g) = CH4"; dissolved "CH4";
       logK25 -2.8; analytic ( 10.44 -0.00765 -6669 0 1014000 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: CH4 solubilities 25 - 100 C";
 

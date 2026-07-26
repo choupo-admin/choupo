@@ -520,6 +520,14 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
         for (const auto& r : sysc.refusals) msg += "\n  " + r;
         throw std::runtime_error(msg);
     }
+    for (const auto& cc : sysc.components)
+        if (cc.kind == ComponentClassification::Kind::HenrySolute)
+            throw std::runtime_error("ThermoResolver: '" + cc.name
+                + "' is a dissolved-gas solute (Henry convention) -- wiring"
+                  " a nonionising gas through the REACTIVE shape's"
+                  " gas-liquid records is a later, deliberate slice; today"
+                  " give it a speciation set (if it reacts) or use the"
+                  " diluteSolution world.");
     if (thermoAnnounce())
         for (const auto& line : sysc.report)
             std::cout << line << "\n";

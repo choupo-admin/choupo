@@ -115,6 +115,25 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
   (runTests gate, 304/304) + bin/checkCompileFanout (informational .d
   report, no arbitrary limits).  Touch-matrix proof: one .cpp -> 1 CXX +
   5 links; goldens byte-identical across all six commits.
+* **Counsel wave (three-way ratified 2026-07-26 evening)**: the composite
+  proves its limits (check_composite_limits: x_co->0, I->0, NRTL->0, live
+  solver probes -- the I->0 probe exposed and fixed a real trace-volatile
+  defect in the outer Newton); honest naming (composite mixed-solvent
+  electrolyte v1) everywhere; announcements speak the COURSE's language
+  (Raoult/Henry conventions named per component); theoryGuide gains the
+  chapter-map ("One equation, many declarations"); docs/ai gains the
+  three-questions section + the standard-states glossary.  D2 DESIGN
+  materialised and EXERCISED on the first pair (CH4-water): versioned
+  immutable convention profiles (Sander-Hxp-v1, PHREEQC-gasMolal-v1),
+  typed parameterisation identity, and the equilibrium-family gate whose
+  cross-convention DIAGNOSTIC immediately quantified a real 49 % high-T
+  divergence between the Sander extrapolation and the PHREEQC analytic
+  (evidence for the INTERIM primary reviews).  D4 first tranche:
+  aqueousSpeciation facts for the dissolved gases (CH4/O2/N2/H2 none,
+  CO2 carbonate, H2S sulfide -- with the missing H2Saq-formation record
+  curated when the coherence gate refused an empty set); the classifier
+  gains the HenrySolute class (a dissolved gas is never a Raoult backbone
+  member; reactive-shape wiring is a named later slice).
 * Thirteen new curation gates in `runTests` (312 PASS / 0 FAIL).
 
 ## [Unreleased]

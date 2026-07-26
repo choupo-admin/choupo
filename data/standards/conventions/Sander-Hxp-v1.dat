@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  conventions/Sander-Hxp-v1.dat -- a VERSIONED, IMMUTABLE convention profile
+  (equilibrium-parameterisation identity ADR, ratified 2026-07-26).
+
+  The convention of Sander's Henry compilation as adopted by the
+  parameters/Henry/ pair records: pressure/mole-fraction Henry constant,
+  p_i = H_xp * x_i, ideal-gas standard state, van't Hoff temperature form.
+  A record declares `convention Sander-Hxp-v1;` and overrides only what
+  deviates; the resolver can print the fully expanded form.  Once
+  published this profile NEVER changes -- corrections mint a -v2.
+\*-----------------------------------------------------------------------------*/
+recordType    conventionProfile;
+schemaVersion 1;
+
+name                 Sander-Hxp-v1;
+gasStandardState     idealGas;
+compositionBasis     liquidMoleFraction;
+referencePressure    101325 Pa;
+temperatureForm      vantHoff;
+solventReference     pureLiquid;
+source               "Sander, R. (2015) Atmos. Chem. Phys. 15, 4399 (H_xp form)";

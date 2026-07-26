@@ -46,3 +46,8 @@ idealGasHeatCapacity
     coefficients  (31.94   1.436e-3   2.432e-5   -1.176e-8);
     Trange        (250  1500);
 }
+
+// ---- Aqueous-speciation FACT (substance-level, classifier-read) ----
+// H2S(aq) = HS- + H+: the sulfide set, master HS.
+aqueousSpeciation  sulfide;
+aqueousMapping ( { species HS; nu 1; } { species H; nu 1; } );

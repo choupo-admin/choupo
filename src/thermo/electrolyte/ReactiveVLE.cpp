@@ -229,7 +229,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                     std::cout << "  [reactive] " << cfg_.apparent[appIdx]
                               << ": molecular VLE: p = gamma * x * psat = "
                               << std::setprecision(4) << pI
-                              << " atm  (gamma = " << gI << ", x = " << xI
+                              << " atm  (Raoult convention; gamma = " << gI << ", x = " << xI
                               << (cfg_.molecularGamma ? ", NRTL backbone"
                                                       : ", ideal authorised")
                               << ")\n";
