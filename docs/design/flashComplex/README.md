@@ -69,7 +69,7 @@ measured is the one that should be stored.
 | layer | today | must become |
 |---|---|---|
 | **data** | fused H₂S record; NH₄HCO₃ absent; benzene–ethanol NRTL absent | decomposed H₂S record (both parents cited); NH₄HCO₃ solubility curated from primary; the missing NRTL pair curated |
-| **grammar** | chemistryDict v1 = solids list; masters-only declaration | chemistryDict v2: full declared system, explicit stoichiometry, phase tags, declared-and-verified constants; `phases` block with admission rules |
+| **grammar** | chemistry assembled from `aqueousSpeciation` facts; no per-reaction declaration visible | chemistry travels WITH the component (`aqueousChemistry { introduces … reactions … }`), cross-family reactions in `complexes/`, `standardGibbs { authority … }` per reaction, `phases` block with declared approximations |
 | **engine** | 2-phase reactive Newton (V + aqueous); LL Gibbs separate; solids only in crystalliser units | one multiphase reactive flash: V + 2 liquids + N solids, saturation as **complementarity** (solid present ⇔ SI = 0, else SI < 0 and amount 0) — an active-set/phase-stability layer over the reactive Newton |
 | **announce** | `chemical reactions: 3 (network in force)` | the full `[chemistry]` block above — system printed before solving, both directions explained, closure counted |
 | **GUI** | no chemistry surface | a Chemistry tab rendering the same structured object |
@@ -77,69 +77,68 @@ measured is the one that should be stored.
 
 ## Curation shopping list (before it can ever run)
 
-- [ ] `H2S-physical-dissolution` record (decomposed, INTERIM, both parents cited)
-- [ ] `NH4HCO3` solubility from primary (Trypuć & Kiełkowska, J. Chem. Eng. Data) — the pKsp −0.25 here is order-of-magnitude only
-- [ ] benzene–ethanol NRTL pair (public-licence primary)
-- [ ] benzene component: role/`aqueousSpeciation none` facts
-- [ ] species records: N2aq, H2Saq (exists), CO2aq label check, HAc2 (vapour dimer identity)
+- [ ] **`CaHCO3-formation` in `data/standards/` is CORRUPT** — `logK25 −4.059;
+      dH 158117.5` against its own cited source (`log_k 1.106,
+      delta_h 2.69 kcal`) and its siblings (Mg/Sr/Ba at ≈ +1.0).  Caught by
+      `bin/curate/check_family_outliers.py`.  Fixing it re-seals ~34 cases →
+      its own reviewed wave.  `complexes/CaHCO3-formation.dat` here already
+      carries the corrected value and the full evidence.
+- [ ] `NH4HCO3` solubility from primary (Trypuć & Kiełkowska, J. Chem. Eng.
+      Data) — the `logK25 0.25` drafted here is order-of-magnitude only
+- [ ] benzene–ethanol NRTL pair (public-licence primary) — deliberately not
+      drafted, see `constant/parameters/NRTL/benzene-ethanol.CURATION-REQUIRED.md`
+- [ ] aqueous formation data (`hfAq`, `sAq`) for the neutral secondary
+      species — CO2aq, NH3aq, H2Saq, HAc, N2aq — and for the three complex
+      products.  Without them the species-thermodynamics **cross-check is
+      unavailable**: only 3 of 59 curated reactions can be checked today
+      (and one of those three, HSO4-formation, disagrees by 5.8 kJ/mol).
+- [ ] the H₂S physical constant (−0.94, decomposed in `components/H2S.dat`)
+      promoted to a standards record with both parents cited
 - [ ] operating-window check: does (T, P, feed) sit where BOTH solids are at
-      saturation and both liquids form?  (tune T/P/feed when solvable)
+      saturation and both liquids form?  (tune when solvable)
 
-## Self-contained (Vítor, 2026-07-27): the data lives IN the case
+## Self-contained: the data lives IN the case
 
-`constant/` mirrors every record the declaration references — components,
-species, chemistry — even though most also live in `data/standards/` (the
-sealed-corpus doctrine: the student finds the WHOLE system in one folder).
-Records that do NOT exist in standards yet are DRAFTS, loudly marked
-(`reviewStatus interim;`): `components/NH4HCO3.dat` (solubility order-of-
-magnitude only) and `chemistry/H2S-physical-dissolution.dat` (the
-decomposed constant, both parents cited).  The benzene–ethanol NRTL pair
-is deliberately NOT drafted — a placeholder with invented coefficients
-would be a fabricated record (`parameters/NRTL/
-benzene-ethanol.CURATION-REQUIRED.md`).  The `propertyManifest` (sha256
-seal) is minted by `bin/choupo-import` at graduation, when the case first
-runs.
+`constant/` carries every record the declaration references — components,
+species, complexes, parameters — so the student finds the whole system in one
+folder (the sealed-corpus doctrine).  Records that do not exist in standards
+yet are DRAFTS, loudly marked `reviewStatus interim;`.  The `propertyManifest`
+(sha256 seal) is minted by `bin/choupo-import` at graduation, when the case
+first runs.
 
-A free verification example the mirrors expose: the student declares
-calcite as the Ksp form (CaCO₃ = Ca²⁺ + CO₃²⁻, pKsp 8.48) while the
-catalogue record (`components/CaCO3.dat` solidPhases) stores the PHREEQC
-acid form (CaCO₃ + H⁺ = Ca²⁺ + HCO₃⁻, logK 1.879) — and the two agree
-exactly through the bicarbonate step: −8.48 + 10.33 = 1.85 ≈ 1.879.  The
-declared-and-verified layer must do THIS conversion, not string matching.
+A verification the mirrors expose for free: the case declares calcite in the
+**Ksp form** the course teaches (CaCO₃ = Ca²⁺ + CO₃²⁻, pKsp 8.450) while the
+catalogue stores the PHREEQC **acid form** (CaCO₃ + H⁺ = Ca²⁺ + HCO₃⁻,
+log K 1.879) — and they agree exactly through the bicarbonate step:
+−8.450 + 10.329 = 1.879.  The declared-and-verified layer must do *this*
+conversion, never a string match.
 
-## Open design questions (the passo-a-passo)
+## Design questions — where they landed
 
-- **Q1 — phase tags:** every stoichiometry term carries `phase …;` explicitly
-  (as drafted).  Keep fully explicit, or default `aqueous` and tag only the
-  exceptions?  (Explicit = pedagogical; default = terser dicts.)
-- **Q2 — admission rules:** `admits ( ethanol )` as drafted treats phase
-  membership as a declared approximation (announced, delimited).  Right home
-  and right name?  Alternative: `members ( benzene ethanol )` listing
-  everything including the solvent.
-- **Q3 — formable solids:** must NH₄HCO₃ appear in `components ( … )` even
-  though it is never fed, or is the `phases` entry + chemistryDict record
-  enough identity?  (Today's doctrine: streams carry components — a cake
-  outlet stream needs the component to exist.)
-- **Q4 — the Raoult legs:** the K-bearing equilibria live in chemistryDict;
-  the γ·x·psat legs live with the models.  Should the chemistryDict list
-  them anyway (structure only, no constant) so the student sees ONE complete
-  ladder — or is the split (constants vs models) itself the lesson?
-- **Q5 — declared constants:** pK declared-and-verified in every entry (as
-  drafted), or optional (declare structure always, values only when the
-  course wants the cross-check exercise)?
-- **Q6 — SETTLED (Vítor, 2026-07-27): the unit stays `isothermalFlash`.**
-  A new type would force gatekeeping classifications (which components
-  "may" run in which flash) and split the flash world in two.  A flash
-  holds T and P and splits into whatever phases the DECLARED thermo world
-  admits; the repertoire grows in the `thermoPhysPropDict` formulation
-  (the `phases` block), never in the unit.  One flash to teach, forever.
+Full reasoning in [`DESIGN_DECISIONS.md`](DESIGN_DECISIONS.md).
+
+| | question | outcome |
+|---|---|---|
+| **Q1** | phase tags on every stoichiometric term? | **kept explicit** — the term reads as physics, not as a lookup |
+| **Q2** | how a liquid phase declares who may join it | **`members` + `approximation { excludes … reason … }`** — an approximation should name what it leaves out |
+| **Q3** | must a formable solid be listed as a component? | **dissolved** by `componentDiscovery fromFeedAndDeclaredPhases` — the list is gone |
+| **Q4** | do the Raoult legs belong in the chemistry ladder? | **no** — they carry no K, so they stay with the phase models; but each component now *says so* in a `vapourLiquidEquilibrium` block |
+| **Q5** | declared-and-verified constants? | the constant lives inside `standardGibbs` with its `authority`; the cross-check against species data is automatic, no separate ceremony |
+| **Q6** | a new `multiphaseReactiveFlash` unit type? | **no** (Vítor) — a flash is a flash; the phase repertoire grows in the formulation, never in the unit |
+
+### Still open — one seam
+
+The projection of the converged aqueous state back onto stream components is
+**not unique**: with c cations and a anions the salt representation has
+exactly **(c−1)(a−1) degrees of freedom** (K⁺/Na⁺ × Cl⁻/SO₄²⁻ → 1 dof; a real
+brine → 9).  The physics is unaffected — elements and charge are what cross
+the boundary, and the next unit re-speciates — but the *labels* are a choice,
+and a choice must be declared.  Needs: a declared projection convention, plus
+a loud refusal when the declared component set cannot span the ion totals
+(a "cross" salt precipitated that nobody declared).
 
 ## Relations
 
-- `docs/design/equilibrium-parameterisation-identity.md` — typed identity +
-  convention profiles (the H₂S decomposition executes its D6 finding).
-- `docs/design/standard-state-transfer-adr.md` — NOT triggered here
-  (water-solvent aqueous phase); the organic phase's NRTL is symmetric-
-  convention and self-contained.
-- CLAUDE.md §aqueous chemistry / §fractal units — the declared-system v2
-  grammar must subsume, never fork, the settled doctrine.
+- [`../equilibrium-parameterisation-identity.md`](../equilibrium-parameterisation-identity.md) — typed identity + convention profiles
+- [`../standard-state-transfer-adr.md`](../standard-state-transfer-adr.md) — the mixed-solvent transfer term (contract only; not triggered by this case)
+- `CLAUDE.md` §aqueous chemistry, §ThermoResolver — the doctrine this must extend, never fork
