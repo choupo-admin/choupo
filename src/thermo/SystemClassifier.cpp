@@ -50,9 +50,18 @@ SystemClassification classifySystem(const std::vector<Component>& comps,
         else if (c.aqueousSpeciationDeclared())        // == "none"
         {
             cc.kind = Kind::MolecularNonionising;
-            cc.note = names[i] + ": molecular condensable, nonionising in"
-                      " aqueous speciation -- Raoult convention on the"
-                      " backbone";
+            //  Nonionising says what it does in the SPECIATION network.  What
+            //  it does in the LIQUID is a second fact, and for a permanent gas
+            //  the two point different ways: it is nonionising AND it has no
+            //  pure liquid to reference, so it is not a backbone co-volatile
+            //  and the note must not claim Raoult (2026-07-27).
+            cc.note = names[i] + (c.isNoncondensable()
+                      ? ": permanent gas (noncondensable), nonionising in"
+                        " aqueous speciation -- Henry rung through its"
+                        " gas-liquid record, not the Raoult backbone"
+                      : ": molecular condensable, nonionising in"
+                        " aqueous speciation -- Raoult convention on the"
+                        " backbone");
         }
         else if (c.hasAqueousMapping())
         {

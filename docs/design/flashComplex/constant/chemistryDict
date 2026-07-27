@@ -15,14 +15,24 @@
   first.  Which polymorph forms is a KINETIC question this case does not
   model, so it is settled by declaration and said out loud.
 
-  NH4HCO3 is admitted although it is never fed -- that is the point: a solid
-  the student never wrote can enter the answer.  It is also the record that
-  REFUSES today, for want of a curated equilibrium (see NH4HCO3.dat).
+  NH4HCO3 is NOT admitted, and the reason is the whole point of the record:
+  its equilibrium is not curated.  Admitting a solid means offering the
+  solver a phase it may drive to SI = 0; offering it one whose solubility
+  product is an order of magnitude read off a solubility table is offering it
+  a number, not a phase.  The record stays (NH4HCO3.dat, `equilibrium {
+  status curationRequired; requires ( logK25 ); }`) as the named debt, with
+  both remedies written down -- curate the solid formation datum, or curate a
+  measured Ksp with its primary citation.  It goes back in the list the day
+  one of them lands, and not before.
+
+  Note what this does NOT weaken: "a solid the student never wrote can enter
+  the answer" still holds, and calcite is not the demonstration -- calcite is
+  FED.  The demonstration waits on the datum.
 \*---------------------------------------------------------------------------*/
 recordType    chemistrySystem;
 schemaVersion 1;
 
 equilibria
 {
-    solidPhases ( calcite  ammoniumBicarbonate );
+    solidPhases ( calcite );
 }

@@ -36,6 +36,15 @@ formula     NH4HCO3;
 CAS         1066-33-7;
 
 MW          79.056;            // kg/kmol
+// NO `role` KEY.  Role is a property of the (component, phase) PAIR, not of
+// the substance, and a design record is where the new form is written -- the
+// record-form gate refuses it here and only counts it on the legacy corpus.
+//
+// Worth knowing if this component is ever put back into a case basis: with no
+// role it defaults to `volatile`, and the engine then stops on a MISSING
+// VAPOUR PRESSURE -- a generic coverage complaint that MASKS the refusal this
+// file exists to raise.  The fix is the (component, phase) role migration,
+// not a key here (2026-07-27).
 
 solid
 {

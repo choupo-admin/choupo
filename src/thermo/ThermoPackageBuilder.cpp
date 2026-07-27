@@ -705,10 +705,53 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             == ComponentClassification::Kind::MolecularNonionising)
         {
             auto cp = std::make_shared<Component>(db.loadComponent(names[i]));
-            cfg.nonreactive.insert(i);
-            cfg.psatOf[i] =
-                [cp](scalar T) { return cp->vp().Psat_Pa(T); };
-            continue;
+            //  ...UNLESS it is a PERMANENT GAS.  The molecular backbone is a
+            //  liquid mixture priced on the Lewis-Randall pure-liquid
+            //  reference, and a species above its critical temperature has no
+            //  pure liquid to reference: putting nitrogen there evaluates its
+            //  Antoine correlation at 313 K against a Trange of (50, 126) and
+            //  a critical temperature of 126 K -- an extrapolation of 190
+            //  degrees past the point where the curve stops meaning anything,
+            //  reported as a partial pressure.  A permanent gas dissolves by
+            //  HENRY's law, which in this shape is its gas-liquid record, and
+            //  if it carries none the ReactiveVLE constructor refuses it by
+            //  name with the curation remedy (2026-07-27).
+            //
+            //  `noncondensable true;` is a curated component fact, not an
+            //  inference from Tc -- the record states it (N2, O2, CO2).
+            //  It REFUSES rather than routing itself: the Henry rung for a
+            //  nonionising dissolved gas inside the REACTIVE shape is the
+            //  slice this builder already names when it meets a `role solute`
+            //  component, and meeting the same physics by a different fact
+            //  does not make it built.  What is missing is small and specific
+            //  -- the gas's DISSOLVED amount has to enter the speciation as a
+            //  total, and the only record naming that species is its own
+            //  gas-liquid record (`dissolvedSpecies N2`), which the solver
+            //  reads and this builder does not.  Writing the bridge a second
+            //  time on the component would be a second home for one fact, and
+            //  the coherence gate says so in as many words: a bridge IS
+            //  participation, and `aqueousSpeciation none` would then be
+            //  lying (2026-07-27).
+            if (cp->isNoncondensable())
+                throw std::runtime_error("reactive electrolyteGammaPhi: '"
+                    + names[i] + "' is a PERMANENT GAS (noncondensable) in a"
+                    " reactive aqueous system.  It cannot ride the molecular"
+                    " backbone -- that prices a liquid on the pure-component"
+                    " (Raoult) reference, and a species above its critical"
+                    " temperature has no pure liquid to reference: its Antoine"
+                    " correlation would be extrapolated far past the point"
+                    " where it means anything.  Its home is the HENRY rung"
+                    " through its gas-liquid record, and carrying a dissolved"
+                    " gas's total through the reactive speciation is a NAMED,"
+                    " unbuilt slice (the same one `role solute` refuses"
+                    " above).  Remedy today: drop the permanent gas from the"
+                    " component set, or use the diluteSolution world.");
+            {
+                cfg.nonreactive.insert(i);
+                cfg.psatOf[i] =
+                    [cp](scalar T) { return cp->vp().Psat_Pa(T); };
+                continue;
+            }
         }
 
         //  THE DECLARED BRIDGE, read as the stoichiometric VECTOR it is

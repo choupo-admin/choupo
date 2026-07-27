@@ -249,6 +249,12 @@ void Component::readFromDict(const DictPtr& d)
                 " volatile / solute / nonvolatile / radical");
     }
 
+    //  `noncondensable true;` -- a permanent gas.  A curated FACT, not an
+    //  inference from Tc: the record states it, the GUI catalogue has read it
+    //  for a long time, and now the property builder does too.
+    if (d->found("noncondensable"))
+        noncondensable_ = (d->lookupWord("noncondensable") == "true");
+
     const bool needsVP = (role_ == "volatile" || role_ == "solute");
     if (needsVP && !d->found("vaporPressure"))
         // A Joback ESTIMATE leaves vaporPressure as a declared GAP (commented

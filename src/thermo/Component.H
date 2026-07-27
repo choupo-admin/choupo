@@ -227,6 +227,15 @@ public:
     bool aqueousSpeciationDeclared() const { return aqueousSpeciationDeclared_; }
     const std::string& aqueousSpeciation() const { return aqueousSpeciation_; }
 
+    // `noncondensable true;` -- a PERMANENT gas: above its critical
+    // temperature at any condition the case describes, so it has no pure
+    // liquid to reference and cannot be a member of a liquid mixture priced
+    // on the Lewis-Randall (Raoult) basis.  Its dissolution is Henry's law,
+    // which in the reactive shape is its gas-liquid record.  The fact was
+    // curated on N2/O2/CO2 and read by the GUI catalogue long before the
+    // property builder consulted it (2026-07-27).
+    bool   isNoncondensable() const { return noncondensable_; }
+
     bool   hasElectrolyteSpec()  const { return hasElec_; }
     const std::string& electrolyteCation() const { return elecCation_; }
     const std::string& electrolyteAnion()  const { return elecAnion_; }
@@ -414,6 +423,7 @@ private:
     // Populated by readFromDict from either `role <word>;` directly or from
     // the legacy `nonvolatile true;` shortcut.
     std::string role_ = "volatile";
+    bool        noncondensable_ = false;
 
     // Ebulioscopic / cryoscopic constants: solvent-only.
     scalar      K_b_ = 0.0;               // [K·kg/mol]

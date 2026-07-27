@@ -42,7 +42,19 @@
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
 
-components    ( CO2  CaCO3  H2S  N2  NH3  NH4HCO3  aceticAcid  benzene  ethanol  water );
+//  NH4HCO3 is NOT here, and the basis-rank test is what said so.  Its column
+//  in the component -> master map is exactly NH3's column plus CO2's
+//  (NH4+ and HCO3-, both already carried), so a basis containing all three
+//  has a degree of freedom: once dissolved, one mole of ammonium bicarbonate
+//  and one mole each of ammonia and carbon dioxide are the SAME species
+//  state, and no report could say which the student meant.  The engine
+//  refused it by name, with that arithmetic, before this line was written.
+//
+//  Which is the right answer, and the record's own words say why: the solid
+//  "is NEVER FED -- it APPEARS if the NH3 + CO2 loading crosses saturation".
+//  A phase that appears is an ADMITTED SOLID (constant/chemistryDict), not a
+//  fed component.  The phase set is a RESULT, not an input.
+components    ( CO2  CaCO3  H2S  N2  NH3  aceticAcid  benzene  ethanol  water );
 
 equilibrium
 {
@@ -51,11 +63,20 @@ equilibrium
     aqueous
     {
         // composite mixed-solvent electrolyte v1: Davies ions (water-referenced
-        // molality) + the curated NRTL pairs on the molecular backbone -- a
-        // COMPOSITE with proven limits, not an integrated Gibbs surface: no
-        // ion-molecule cross terms, K's water-referenced (the mixed-solvent
-        // transfer term is a NAMED gap, docs/design/standard-state-transfer-adr.md).
-        activityModel { ionic davies;  molecular NRTL; }
+        // molality) + the molecular backbone on UNIFAC -- a COMPOSITE with
+        // proven limits, not an integrated Gibbs surface: no ion-molecule
+        // cross terms, K's water-referenced (the mixed-solvent transfer term
+        // is a NAMED gap, docs/design/standard-state-transfer-adr.md).
+        //
+        // UNIFAC, not NRTL, and the reason is the SECOND LIQUID.  A regressed
+        // pair is better physics wherever one exists -- and for water-benzene
+        // one does not, in this catalogue or in any honest reading of the
+        // system: there is no miscible mixture to regress.  Group contribution
+        // PREDICTS the immiscibility that a missing pair would silently price
+        // as ideal, and a silently ideal water-benzene pair is precisely the
+        // wrong answer this case exists to refuse.  It is an ESTIMATE, and the
+        // run says so on every line (Vitor, 2026-07-27).
+        activityModel { ionic davies;  molecular UNIFAC; }
     }
 
     //  THE SECOND LIQUID.  20 kmol/h of benzene against 60 of water: they do
@@ -84,7 +105,7 @@ equilibrium
     {
         solvent  benzene;
         members  ( benzene  ethanol );
-        activityModel NRTL;          // must MATCH the aqueous backbone: the
+        activityModel UNIFAC;        // must MATCH the aqueous backbone: the
                                      // coupling is an equality of ACTIVITY
         reason
             "pedagogical organic phase: only ethanol is admitted beside the
@@ -114,22 +135,52 @@ equilibrium
   (IsothermalFlash's PhaseSet::VLLE, with a passing tutorial) -- what the
   engine had never done is BOTH at once.
 
-  WHAT STILL STOPS THIS CASE is DATA, and naming it is the point of a design
-  driver.  Three debts, in the order the engine hits them:
+  WHAT WAS CLEARED on 2026-07-27, and what is left.
 
-    1. NH4HCO3 carries no vapour-pressure block and no curated equilibrium.
-       The engine refuses by name.  It is in `components` because the case is
-       about carbonate chemistry; it needs curating or removing, and that is
-       a decision, not an oversight.
-    2. The molecular backbone is declared NRTL and three of its pairs do not
-       exist in the public catalogue (benzene-water, benzene-ethanol,
-       aceticAcid-water).  `declare -> verify -> refuse` will say so.  The
-       alternatives are curating them or declaring UNIFAC, which predicts the
-       water-benzene split without a regressed pair -- flash17 does exactly
-       that.  Vitor's call: a curated pair is better physics where it exists,
-       and here it does not.
-    3. H2S and CaCO3 ride records this case mirrors locally; those are sound,
-       but the case is not yet sealed end-to-end.
+  CLEARED, each by the engine naming its own objection:
+
+    1. UNIFAC on the backbone (Vitor's call).  Three NRTL pairs the backbone
+       needs do not exist in the public catalogue, and for water-benzene none
+       ever will honestly: there is no miscible mixture to regress.  Group
+       contribution PREDICTS the immiscibility a missing pair would silently
+       price as ideal.  Backbone: UNIFAC (water benzene ethanol).
+    2. NH4HCO3 is out of `components`, and the BASIS-RANK TEST is what said
+       so -- its column is exactly NH3's plus CO2's, so the basis carried a
+       degree of freedom and the engine refused it before anyone reasoned
+       about it.  A solid that is never fed is an admitted solid phase, not a
+       fed component.  It is not admitted either, because its equilibrium is
+       not curated: see NH4HCO3.dat and constant/chemistryDict.
+    3. NH4HCO3 also defaulted to `role volatile` and stopped the case on a
+       MISSING VAPOUR PRESSURE -- a generic complaint masking the refusal the
+       record exists to raise.  Now `role nonvolatile;`.
+    4. N2 was being priced on the RAOULT BACKBONE: an Antoine correlation
+       with Trange (50, 126) evaluated at 308 K, 180 degrees above nitrogen's
+       critical temperature -- a partial pressure read off a curve a long way
+       past where it means anything.  A permanent gas has no pure liquid to
+       reference.  The engine now REFUSES it by name instead.
+
+  WHAT IS LEFT is ONE NAMED SLICE: the Henry rung for a nonionising dissolved
+  gas inside the reactive shape.  The builder already refuses a `role solute`
+  component for exactly this reason; nitrogen reaches the same wall by a
+  different fact (`noncondensable true`).  What is missing is small and
+  specific -- the gas's DISSOLVED amount must enter the speciation as a total,
+  and the only record naming that species is its own gas-liquid record
+  (`dissolvedSpecies N2`), which the solver reads and the builder does not.
+
+  Writing that bridge a second time on the component looks tempting and is
+  wrong: it is a second home for one fact, and check_resolver_coherence says
+  so in as many words -- a bridge IS participation, so `aqueousSpeciation
+  none;` would then be lying.  It was tried on 2026-07-27 and the gate caught
+  it the same hour.
+
+  Everything downstream of that wall was reached and works: with N2 taken out
+  of the basis the case assembles completely, masters derive (Acetate Ca HCO3
+  HS NH4), the basis is full rank, the second liquid is PRESENT at 95.1 %
+  benzene, calcite precipitates 139.8 mg/kg to SI = 0.000 and the pH solves at
+  6.78.  The outer flash Newton then still does not converge on this feed --
+  a nearly-insoluble inert beside a strongly coupled weak-electrolyte system
+  is a harder flash than the seed was built for (flash17 has no inert).  Two
+  named slices, then, and both are solver work, not data.
 
   THE APPROXIMATION, now that the solver has landed.  What is excluded from the
   organic phase is not the ~0.2 mol% of water benzene really holds -- that is
