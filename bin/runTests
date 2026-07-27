@@ -720,6 +720,21 @@ PYEOF
     fi
     rm -f /tmp/brgate.$$
 
+    # Second-liquid gate: the reactive three-phase answer really carries two
+    # liquids, and the activity equality that ties them holds at the answer.
+    # No golden-master KPI can see this -- the two liquids leave as ONE
+    # apparent stream, so a case that silently reverted to one liquid would
+    # produce byte-identical stream numbers.
+    if "$ROOT/bin/curate/check_two_liquids.py" > /tmp/tlgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "second-liquid-gate" "$(head -1 /tmp/tlgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_two_liquids.py)\n" "second-liquid-gate"
+        cat /tmp/tlgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/tlgate.$$
+
     if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "element-balance-gate" "$(head -1 /tmp/ebgate.$$)"
         pass=$((pass+1))

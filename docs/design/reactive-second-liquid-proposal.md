@@ -1,11 +1,12 @@
 # Proposal — a second liquid phase on the reactive path
 
-**Status: PROPOSAL, with §10 implemented.** The blocker this document named
-in §7 turned out not to exist; §10 records what was found and what shipped
-because of it. Everything else here is still a proposal.
+**Status: IMPLEMENTED (2026-07-27).** Read §14 first — it records what
+shipped and, more usefully, the four defects that made the three earlier
+attempts fail. §§3.1–3.2 are superseded (§11), the flat design was wrong
+(§11.4), and the nested shape of §12 was right from the start; what stopped
+it was numerics, not structure. §10 shipped earlier the same day.
 
-**Was: PROPOSAL. Nothing here is implemented.** For alignment before any
-code, per the house rule.
+Reference case: `tutorials/steady/flash/flash17_two_liquids_reactive`.
 
 **Driven by:** `docs/design/flashComplex/` — the design driver's remaining
 blocker, now that general salt reconstruction has shipped.
@@ -547,3 +548,120 @@ composition the inner minimisation fixes.
 
 That is the next thing to look at, with fresh effort. The corpus is untouched:
 321 PASS, no-organic path byte-exact under all three attempts.
+
+
+## 14. FOURTH attempt: SOLVED (2026-07-27)
+
+It converges. `flash17_two_liquids_reactive` is in the corpus: vapour + a
+speciated aqueous liquid + a benzene-rich organic liquid, at 313.15 K and
+0.35 atm, |r|max = 2e-15 with the liquid-liquid activity equality itself at
+2e-15.
+
+```
+[phases] declared second liquid on the feed: PRESENT
+         (G/RT single = 0.185347, split = -0.155488)
+[phases] organic composition: x_benzene = 0.9488  x_ethanol = 0.0512
+[reactive] seed: Rachford-Rice, V/F = 0.0510   |r|2: flat 3.777e-02, RR 3.405e-02
+[reactive] outer 9   |r|2 = 8.199e-15
+
+second liquid (organic): 1.6772 % of the backbone liquid moles
+  component      x_org      x_aq      ln(a_org/a_aq)
+  benzene     0.961018  0.001606         -2.41e-15
+  ethanol     0.038982  0.067707         -4.66e-15
+V/F = 0.323966   pH = 2.891   SUM p_eq = P exactly
+```
+
+### 14.1 What was actually wrong — none of it was the shape
+
+§13 guessed a rank-deficient Jacobian. That was wrong. The nested shape of
+§12 was right all along; **four separate defects** were sitting on top of it,
+and each one alone was enough to stall the solve.
+
+**(a) The inner split was minimised, not solved.** Nelder-Mead on the Gibbs
+energy converges to a few digits. Those digits are the input to a
+finite-difference outer Jacobian with h = 1e-6, so the outer gradient was
+noise. Fixed by splitting the two jobs the way the molecular path already
+splits them: Gibbs **decides** whether the phase exists, a Newton on
+`ln(γ_org x_org) − ln(γ_aq x_aq) = 0` **solves** it, to 1e-13. Precision in
+the inner solve is not a refinement here; it is the difference between a
+gradient and a random number.
+
+**(b) The residual fell back to one liquid when the split failed.** Silently.
+That is the §12.3 discontinuity coming back through the side door, and it is
+worse than a discontinuity: the first build of this slice reported |r| =
+7.7e-10 on a state whose organic phase did not exist — a one-liquid answer
+under a two-liquid declaration. Now a trial that does not admit the phase set
+being solved is reported unphysical, exactly as a diverging speciation is,
+and the outer line search backtracks off it.
+
+**(c) The per-component cage was a ceiling.** `vap_i ≤ 0.9995·n_i` reads like
+a guard against a vanishing liquid. It is not: a component whose equilibrium
+leaves 0.03 % of itself in the liquid — benzene stripped into the vapour —
+**cannot reach its own answer**, and the residual goes flat against the cap
+with every volatile's leg uniformly short. Uniformly positive, similar in
+size, immovable. That is what §13.1 saw and read as rank deficiency. It is
+now 1 − 1e-10.
+
+**(d) The seed set the ratio and never the amount.** V started at a flat 2 %
+of the feed. For a feed far above its bubble point the residual barely
+responds to the amount at small V — the sensitivity is all in the ratio — so
+the linear solve sends V *down*, and the iteration walks to zero with every
+leg stuck at ln(Σp_eq/P). Now Rachford-Rice on the equilibrium K's supplies a
+second seed and **the better of the two starts the Newton**. Neither
+dominates: RR rescues a feed well above its bubble point; the flat 2 %
+rescues one whose K's are steep, where RR overshoots and drives a solute's
+liquid to nothing. flash13 is exactly that second case, and a seed that
+breaks a passing case to fix a failing one is not an improvement.
+
+### 14.2 The pre-check, which §13.1 named and was right about
+
+It computed Σp_eq with the SINGLE-liquid model before any split. For this
+feed that gives benzene a mole fraction near 1e-4 against a γ near 1e3 and a
+partial pressure of ~16 atm, for a liquid whose real benzene pressure is
+0.23. Such a pre-check waves every case through into a Newton hunting a
+vapour that is not there. It now uses the declared phases, and the same feed
+at 0.36 atm correctly returns a **subsaturated two-liquid state with no
+vapour at all** (Σp_eq = 0.357 atm).
+
+### 14.3 Phase appearance and disappearance
+
+The phase set is decided outside the Newton and **re-tested at the answer**.
+A pass that converges somewhere its own phase set is not the stable one hands
+the new set to the next pass; a pass that fails to converge at all hands over
+too, because for a fixed phase set that usually means the root is on the
+other side of the boundary. Later passes **continue from where the previous
+one stopped** rather than re-seeding — a point on the boundary is the best
+start the configuration across it will ever get.
+
+Swept in P at 313.15 K, the feed goes:
+
+| P [atm] | phases | V/F |
+|---|---|---|
+| 0.36 | 2 liquids, no vapour (subsaturated) | 0 |
+| 0.35 | **vapour + aqueous + organic** | 0.324 |
+| 0.345 | organic gone during the flash, announced | 0.342 |
+| 0.30 | vapour + aqueous | 0.365 |
+| 0.15 | vapour + aqueous | 0.587 |
+
+Monotone, and the phase transitions are announced in both directions.
+
+### 14.4 What the split does NOT change
+
+The stream table. The two liquids leave as ONE apparent liquid, exactly as
+the ions do: internal state, reported in full, never persisted. So the outer
+Newton keeps its dimension, and every reactive case that declares no organic
+phase takes a path indistinguishable from the one it took before this
+existed. That was the mitigation named in §4 and it held: the corpus is
+green.
+
+### 14.5 Bugs found on the way, both real and both fixed
+
+* **`bin/choupo-import` could not seal ANY reactive case.** It detected the
+  reactive shape by the `speciation {}` block, which was retired on 2026-07-27
+  when masters became derived. With the block gone the shape stopped being
+  recognised, so the chemistry/ and species/ records never entered the
+  closure, and the validation run failed with the catalogue hidden. Now
+  derived from the component facts, the same way the builder derives it.
+  (This is the "refuses to re-seal" symptom named earlier and left unchased.)
+* **The backbone announced "NRTL backbone" whatever the model was.** A
+  hardcoded string, printed while a UNIFAC γ did the work.

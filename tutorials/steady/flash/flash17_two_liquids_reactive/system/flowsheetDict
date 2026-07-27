@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  One isothermal flash, four components, THREE phases:
+
+      feed (60 H2O + 20 benzene + 8 EtOH + 0.1 HAc, kmol/h)
+        -> [flash01, 313.15 K / 0.35 atm]
+        -> liquid (59.6 kmol/h: aqueous + organic) + vapor (28.5 kmol/h)
+
+  The two liquids leave as ONE apparent liquid stream.  That is deliberate
+  and it is the same contract the speciation already lives under: the split
+  is INTERNAL state -- reported in full, never persisted -- exactly as the
+  ions are.  A stream file carries apparent components; it does not carry
+  phases, and it does not carry species.
+
+  KPIs: V/F, pH, p_benzene_atm, p_ethanol_atm, p_eq_sum_atm (= P, two-phase),
+  p_mono_atm / p_dimer_atm / dimer_share (the acetic vapour dimer).
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T      313.15 K;  P 0.35 atm; }
+    }
+);

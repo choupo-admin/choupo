@@ -372,6 +372,37 @@ check_resolver_coherence.  Reference cases:
 `flash13_acetic_ethanol_vacuum_flash` (NRTL backbone, V/F 0.58 -- the gamma
 is the difference between a flash and no flash).
 
+### The SECOND LIQUID on the reactive path — SOLVED 2026-07-27 (do NOT relitigate the shape)
+
+Chemistry and two liquids AT ONCE: the reactive path carried one liquid, the
+molecular path carried two and no chemistry, and the fork is now closed.  A
+case declares `equilibrium { organic { solvent …; members ( … ); activityModel
+…; reason "…"; } }`; the split resolves INSIDE each residual evaluation of the
+outer vapour Newton (mathematically simultaneous, numerically nested — the same
+posture as the speciation), by a Newton on the equality of ACTIVITY
+`ln(γ_org x_org) = ln(γ_aq x_aq)` to 1e-13.  **Gibbs DECIDES, the Newton
+SOLVES** — a Nelder-Mead answer is noise under the outer FD Jacobian.  Both
+liquids MUST share the molecular model (two models make the residual measure
+their disagreement, refused).  **The split does NOT change the stream table**:
+the two liquids leave as ONE apparent liquid, internal state like the ions,
+so the outer Newton keeps its dimension and the no-organic path is
+byte-identical.  Phase appearance/disappearance is an OUTER decision, tested
+on the feed, re-tested at the answer, announced both ways, with later passes
+CONTINUING from the previous one; a trial that does not admit the phase set
+being solved is reported unphysical (no silent fallback to one liquid — that
+reports a one-liquid answer under a two-liquid declaration).  Three numerics
+fixes rode with it and matter to every reactive case: the per-component cage
+was a CEILING at `0.9995*n` (a component that must almost entirely vaporise
+could not reach its answer, and the flat residual reads exactly like a
+rank-deficient Jacobian), the saturation pre-check computed Σp_eq on ONE
+liquid when two were declared (benzene at 16 atm instead of 0.23), and the
+seed set the vapour RATIO but never the AMOUNT — now Rachford-Rice on the
+equilibrium K's runs beside the flat 2 % seed and **the better of the two
+starts the Newton** (neither dominates).  Reference case:
+`flash17_two_liquids_reactive` (V/F 0.324, organic 1.68 % of the backbone
+liquid at 96 % benzene, pH 2.89, |r| 2e-15).  Full record incl. the three
+failed designs: [`docs/design/reactive-second-liquid-proposal.md`](docs/design/reactive-second-liquid-proposal.md) §14.
+
 ### Equilibrium-parameterisation identity — D2 migration EXECUTED 2026-07-26 (do NOT relitigate)
 
 Identity is per curated PARAMETERISATION; the physical family is DERIVED

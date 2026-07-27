@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/components/benzene.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Benzene  (C6H6, CAS 71-43-2)
   Sources:   constants (Tc/Pc/omega/MW/Tb) + vapour pressure cross-checked

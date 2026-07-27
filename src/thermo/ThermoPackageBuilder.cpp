@@ -923,25 +923,6 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             if (!organicReason.empty())
                 std::cout << "[resolver] reason: " << organicReason << "\n";
         }
-        //  ---- AND THE HONEST REFUSAL WHILE THE SOLVER DOES NOT SERVE IT ---
-        //  The declaration above is validated; the OUTER NEWTON does not yet
-        //  carry the organic phase's unknowns.  Accepting a well-formed
-        //  declaration and then computing an answer WITHOUT that phase is
-        //  the worst outcome available here: the author declared a second
-        //  liquid, the report names two liquids' worth of components, and
-        //  the numbers came from one.  So it refuses, by name, saying
-        //  exactly how far the implementation has got.
-        //
-        //  This refusal is DELETED, not weakened, when the solver lands.
-        throw std::runtime_error("thermophysicalPropertySystem: the `organic`"
-            " second liquid is DECLARED and its declaration is valid, but the"
-            " reactive solver does not yet carry its unknowns -- the outer"
-            " Newton solves vapour + ONE liquid today.  Running would give an"
-            " answer computed WITHOUT the phase you declared, which is worse"
-            " than stopping.  Remedy: drop the `organic` block (the case then"
-            " runs as a vapour + aqueous system), or wait for the solver"
-            " slice (docs/design/reactive-second-liquid-proposal.md).");
-
         for (const auto& mn : organicMembers)
             cfg.organic.members.push_back(std::size_t(
                 std::find(names.begin(), names.end(), mn) - names.begin()));
@@ -1063,6 +1044,7 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
         }
     }
 
+    cfg.molecularModelName = molecularModel;
     cfg.backbone.push_back(solventIdx);
     for (std::size_t i = 0; i < names.size(); ++i)
         if (cfg.nonreactive.count(i)) cfg.backbone.push_back(i);

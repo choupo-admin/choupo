@@ -193,6 +193,11 @@ struct ReactiveVLEConfig
     // ideal route; the backbone x-basis still applies).
     std::vector<std::size_t>                       backbone;
     std::function<sVector(scalar, const sVector&)> molecularGamma;
+    //  The NAME of that model, for the announcements.  A glass box that says
+    //  "NRTL backbone" while a UNIFAC gamma is doing the work is telling the
+    //  student the wrong thing about the number in front of them; the label
+    //  used to be a hardcoded string (found 2026-07-27).
+    std::string                                    molecularModelName;
 };
 
 struct ReactiveVLEResult

@@ -1,0 +1,71 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Classification (from canonical component FACTS, never from names):
+      water        declared aqueous solvent      (a_w-based VLE)
+      aceticAcid   molecular reactive            (aqueousSpeciation aceticAcid)
+      benzene      molecular condensable,        (aqueousSpeciation none)
+                   nonionising
+      ethanol      molecular condensable,        (aqueousSpeciation none)
+                   nonionising
+
+  TWO liquid phases are declared.  The `organic` block is read, classified
+  and validated -- its members must be nonionising, its activity model must
+  match the aqueous backbone's, its solvent must be one of its own members --
+  and then SOLVED: the split resolves inside each residual evaluation of the
+  outer vapour Newton, by an equality of activity across the two liquids,
+  which is the same posture this class already takes toward the speciation
+  (mathematically simultaneous, numerically nested).  Phase APPEARANCE and
+  DISAPPEARANCE are decided outside that Newton and re-tested at the answer,
+  never branched on inside the function being differentiated.
+
+  UNIFAC on both liquids, and the sameness is not a convenience.  The
+  coupling is gamma_aq * x_aq = gamma_org * x_org, an equality of ACTIVITY,
+  so the same physical state must give the same gamma on both sides; two
+  different models would make the residual measure their disagreement
+  instead of the distance from equilibrium.  UNIFAC also happens to be the
+  honest choice here: a regressed benzene-water pair prices a miscibility
+  that this system does not have, and the group contribution predicts the
+  split without one.  It is an ESTIMATE and the run says so on every line.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( aceticAcid  benzene  ethanol  water );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+
+    aqueous
+    {
+        // Davies ions (water-referenced molality) + the molecular backbone
+        // (water + benzene + ethanol, ion-free x-basis) on UNIFAC.
+        activityModel { ionic davies;  molecular UNIFAC; }
+    }
+
+    organic
+    {
+        solvent  benzene;
+        members  ( benzene  ethanol );
+        activityModel UNIFAC;        // MUST match the aqueous backbone
+
+        reason
+            "the water-benzene immiscibility that causes the split is
+             DECLARED here, not computed: only ethanol is admitted beside
+             the benzene, so its partition rests on two binaries with no
+             ternary term.  The ~0.2 mol% of water a real benzene phase
+             holds is excluded too, and that is the small one.";
+    }
+
+    vapour    { fugacityModel idealGas; }
+
+    volatiles ( aceticAcid  benzene  ethanol  water );
+}

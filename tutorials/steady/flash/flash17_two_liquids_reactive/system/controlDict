@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash17_two_liquids_reactive -- CHEMISTRY AND TWO LIQUIDS AT ONCE.
+
+  Until this case the engine offered one or the other.  The reactive path
+  (speciation, electroneutrality, a solved pH, admitted solids) carried ONE
+  liquid; the molecular path carried up to two liquids and no chemistry.  A
+  benzene/water feed with a weak acid in it needs both, and this is the case
+  that has both: vapour + a SPECIATED aqueous liquid + a benzene-rich organic
+  liquid, solved together at 313.15 K and 0.35 atm.
+
+  WHAT THE STUDENT SEES
+
+      V/F = 0.324                       -- a third of the feed leaves as vapour
+      organic = 1.68 % of the backbone liquid moles, 96 % benzene
+      ln(a_org / a_aq) = 2e-15          -- the equality that TIES the two
+                                           liquids, printed, not assumed
+      pH = 2.89                         -- the acetic acid speciating in the
+                                           aqueous phase, unaffected by the
+                                           organic one holding no water
+
+  The organic phase is small and it decides everything.  Without it the same
+  20 kmol/h of benzene sits in the aqueous backbone at a mole fraction near
+  1e-4 with an activity coefficient near 1e3, and the equilibrium pressure of
+  that liquid comes out near 16 atm instead of 0.36 -- so the saturation
+  pre-check waves the case into a Newton looking for a vapour that is not
+  there.  Two liquids are not a refinement here; they are the difference
+  between a right answer and a wrong one.
+
+  WHERE IT SITS.  The feed's three-phase bubble pressure is 0.357 atm, so
+  0.36 atm gives a SUBSATURATED two-liquid state with no vapour at all, and
+  below about 0.347 atm the vapour has stripped enough benzene that the
+  organic liquid disappears and the case becomes an ordinary reactive flash.
+  This case sits between those, in the window where all three phases exist.
+  Move P and the phase set follows -- announced, both ways.
+
+  THE APPROXIMATION, declared and announced every run: the organic phase's
+  membership is DECLARED, not computed.  What is excluded is not the ~0.2
+  mol% of water benzene really holds; it is that the water-benzene
+  immiscibility CAUSING the split is asserted rather than predicted, so
+  ethanol's partition between the liquids rests on two binaries with no
+  ternary term.  UNIFAC prices both liquids -- the same model on both sides,
+  because the coupling is an equality of ACTIVITY and two models would make
+  the residual measure their disagreement instead of the distance from
+  equilibrium.  UNIFAC is PREDICTIVE, an estimate: no pair was regressed for
+  this system, and the run says so.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description  "Reactive flash with TWO liquids: vapour + speciated aqueous + benzene-rich organic at 313.15 K / 0.35 atm -- V/F = 0.324, organic 1.7 % of the liquid, pH 2.89";
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

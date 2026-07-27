@@ -491,9 +491,23 @@ def closure_of(pp_path, caseDir, std, AQ):
     # is ever consulted.  Sealing unused pairs would contradict the manifest
     # contract ("every record the case USES") and mislead the reader into
     # thinking the surface is NRTL -- so both traces below skip this shape.
+    #  The reactive shape is DERIVED from the component facts, exactly as the
+    #  builder derives it: a component declaring `aqueousSpeciation <setName>`
+    #  (not `none`) puts the case in the reactive speciation shape.  It used to
+    #  be read off the `speciation {}` block, which no longer exists.
+    def declares_speciation():
+        for c in comps:
+            loc = walk_up_local("components/" + c + ".dat")
+            for ctext in (read(std / "components" / (c + ".dat")) or "",
+                          (read(loc) or "") if loc else ""):
+                m2 = re.search(r'\baqueousSpeciation\s+([A-Za-z0-9_]+)\s*;',
+                               ctext)
+                if m2 and m2.group(1) != "none":
+                    return True
+        return False
     reactive_shape = bool(
         re.search(r'\bformulation\s+electrolyteGammaPhi\s*;', t_nc)
-        and re.search(r'\bspeciation\s*\{', t_nc))
+        and (re.search(r'\bspeciation\s*\{', t_nc) or declares_speciation()))
     # The mixed-solvent v1 backbone (`activityModel { ionic davies;
     # molecular NRTL; }`) DOES read the NRTL pair records -- they ride the
     # closure again.  The Henry-registry trace stays off for the reactive
@@ -541,7 +555,12 @@ def closure_of(pp_path, caseDir, std, AQ):
         pt = re.sub(r'/\*.*?\*/', '', pt, flags=re.S)
         pt = re.sub(r'(^|\s)//.*$', '', pt, flags=re.M)
         unifac_texts.append(pt)
+    #  `molecular UNIFAC;` (the mixed-solvent backbone) and a second liquid's
+    #  `activityModel UNIFAC;` select the same singleton tables by a different
+    #  keyword -- both must ride the closure or the sealed case refuses.
     if any(re.search(r'\bmodel\s+UNIFAC\s*;', x)
+           or re.search(r'\bmolecular\s+UNIFAC\s*;', x)
+           or re.search(r'\bactivityModel\s+UNIFAC\s*;', x)
            or re.search(r'\bactivity\.UNIFAC\b', x) for x in unifac_texts):
         want("parameters/UNIFAC/groups.dat")
         want("parameters/UNIFAC/interactions.dat")
@@ -624,13 +643,37 @@ def closure_of(pp_path, caseDir, std, AQ):
     # ---- REACTIVE electrolyteGammaPhi (section 6b): the declared speciation
     #      masters ARE aqueous seeds, and every volatile's gas-liquid record
     #      (keyed by the COMPONENT FORMULA -- the gasOf contract) must seal.
+    #      MASTERS ARE DERIVED, not declared (2026-07-27): the `speciation {
+    #      masters ( ... ) }` block was retired -- a master a component's own
+    #      `aqueousMapping` already names is not a setting -- and the importer
+    #      kept looking for it.  With the block gone the shape stopped being
+    #      recognised, `speciates` stayed false, and every reactive case sealed
+    #      WITHOUT its chemistry/ and species/ records; the validation run then
+    #      failed with the catalogue hidden and nothing was installed.  So the
+    #      importer derives the same way the builder does: from the component
+    #      FACTS.
     tppd_txt = t_nc
+    for c in comps:
+        for ctext in (read(std / "components" / (c + ".dat")) or "",
+                      (read(walk_up_local("components/" + c + ".dat")) or "")
+                      if walk_up_local("components/" + c + ".dat") else ""):
+            am = re.search(r'\baqueousSpeciation\s+([A-Za-z0-9_]+)\s*;', ctext)
+            if not am or am.group(1) == "none":
+                continue
+            speciates = True
+            mp = re.search(r'\baqueousMapping\s*\(', ctext)
+            if mp:
+                body = block(ctext[mp.start():], "aqueousMapping") or ""
+                for sp in re.findall(r'\bspecies\s+([A-Za-z0-9_]+)\s*;', body):
+                    ions.add(sp)
+    #      Legacy form: a case that still carries the declared block reads the
+    #      same masters from it (converted at the loader boundary).
     for m in re.finditer(r'speciation\s*\{[^}]*masters\s*\(([^)]*)\)', tppd_txt, re.S):
         for w in m.group(1).split():
             ions.add(w)
             speciates = True
     reactive_gas_formulas = set()
-    if re.search(r'speciation\s*\{', tppd_txt)             and re.search(r'\bvolatiles\s*\(', tppd_txt):
+    if speciates and re.search(r'\bvolatiles\s*\(', tppd_txt):
         for m in re.finditer(r'\bvolatiles\s*\(([^)]*)\)', tppd_txt):
             for comp in m.group(1).split():
                 cf = std / "components" / (comp + ".dat")

@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The benzene is 23 mol% of the feed and the water 68 %: far past any
+  solubility, so the two liquids are not a marginal effect to be teased out
+  of a stability test -- they are the obvious physical state of this mixture,
+  which is what a first case demonstrating them should be.
+
+  Ethanol at 9 mol% partitions between them.  It is also the co-solvent that
+  would CLOSE the miscibility gap above ~40 mol%; at this loading two liquids
+  still exist, and the declared model does not know why.  That limit is the
+  approximation named in controlDict, made visible by a component whose
+  amount matters.
+
+  Acetic acid is a trace: enough to speciate and set a pH, not enough to
+  matter to the split.  It is here so the case is REACTIVE -- without it the
+  aqueous phase would have no chemistry and this would be an ordinary
+  three-phase molecular flash, which the engine could already do.
+\*---------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    water          60.0  kmol/h;
+    benzene        20.0  kmol/h;
+    ethanol         8.0  kmol/h;
+    aceticAcid      0.1  kmol/h;
+}
+T               313.15 K;
+P               35464 Pa;

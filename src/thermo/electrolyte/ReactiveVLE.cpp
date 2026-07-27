@@ -186,30 +186,299 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         if (!traced) { traced = true; innerVerbosity = 0; announceClosure = false; }
     };
 
-    // The MOLECULAR BACKBONE state of the liquid (mixed-solvent v1):
-    // ion-free mole fractions over (solvent + nonreactive co-volatiles) and
-    // their activity coefficients -- unit gammas without a declared model.
-    auto backboneState = [&](const sVector& vap, sVector& xB, sVector& gB)
-    {
-        const std::size_t nB = cfg_.backbone.size();
-        xB.assign(std::max<std::size_t>(nB, 1), 1.0);
-        gB.assign(std::max<std::size_t>(nB, 1), 1.0);
-        if (nB == 0) return;
-        scalar s = 0.0;
-        for (std::size_t b = 0; b < nB; ++b)
-        {
-            xB[b] = std::max(n[cfg_.backbone[b]] - vap[cfg_.backbone[b]], 0.0);
-            s += xB[b];
-        }
-        if (s <= 0.0) return;
-        for (std::size_t b = 0; b < nB; ++b) xB[b] /= s;
-        if (cfg_.molecularGamma) gB = cfg_.molecularGamma(T_K, xB);
-    };
     auto backbonePos = [&](std::size_t appIdx) -> std::size_t
     {
         for (std::size_t b = 0; b < cfg_.backbone.size(); ++b)
             if (cfg_.backbone[b] == appIdx) return b;
         return cfg_.backbone.size();
+    };
+    const std::size_t nBk = cfg_.backbone.size();
+    auto gammaOf = [&](const sVector& x) -> sVector
+    {
+        if (cfg_.molecularGamma) return cfg_.molecularGamma(T_K, x);
+        return sVector(std::max<std::size_t>(nBk, 1), 1.0);
+    };
+    auto backboneMoles = [&](const sVector& vap) -> sVector
+    {
+        sVector nBl(std::max<std::size_t>(nBk, 1), 0.0);
+        for (std::size_t b = 0; b < nBk; ++b)
+            nBl[b] = std::max(n[cfg_.backbone[b]] - vap[cfg_.backbone[b]], 0.0);
+        return nBl;
+    };
+
+    //  ---- THE LIQUID STATE, one phase or two -------------------------------
+    //  The MOLECULAR BACKBONE (mixed-solvent v1) is the ion-free mixture of
+    //  the solvent and the nonreactive co-volatiles.  When the case declares a
+    //  second liquid, that mixture is what SPLITS: the aqueous liquid keeps
+    //  the whole backbone (and the ions), the organic one holds the declared
+    //  members only.  Both are priced by the SAME molecular model, because the
+    //  coupling is an equality of ACTIVITY.
+    //
+    //  What the split does NOT do is change the stream table.  The two liquids
+    //  leave as ONE apparent liquid, exactly as the speciation's ions leave as
+    //  apparent components: an internal state, reported, never persisted.  So
+    //  the outer Newton keeps its dimension and every reactive case that
+    //  declares no organic phase takes a path indistinguishable from the one
+    //  it took before this existed.
+    struct LiquidState
+    {
+        sVector xAq, gAq;              // aqueous backbone, ion-free x
+        sVector xOrg, gOrg;            // organic phase, same indexing
+        sVector nAq, nOrg;             // the amounts behind those fractions
+        bool    split = false;
+    };
+    std::vector<std::size_t> orgPos;                 // backbone positions
+    for (const auto m : cfg_.organic.members)
+    {
+        const std::size_t b = backbonePos(m);
+        if (b < nBk) orgPos.push_back(b);
+    }
+    const std::size_t nOrgM = orgPos.size();
+
+    auto singleLiquid = [&](const sVector& nBl, LiquidState& ls)
+    {
+        ls = LiquidState{};
+        ls.xAq.assign(std::max<std::size_t>(nBk, 1), 1.0);
+        ls.gAq.assign(std::max<std::size_t>(nBk, 1), 1.0);
+        ls.nAq = nBl;
+        if (nBk == 0) return;
+        scalar s = 0.0;
+        for (std::size_t b = 0; b < nBk; ++b) s += nBl[b];
+        if (s <= 0.0) return;
+        for (std::size_t b = 0; b < nBk; ++b) ls.xAq[b] = nBl[b]/s;
+        ls.gAq = gammaOf(ls.xAq);
+    };
+
+    //  Gibbs energy of a liquid state, in RT units and per the amounts given:
+    //  G/RT = SUM n_i ln(gamma_i x_i).  It is what decides whether the second
+    //  liquid is worth having -- a converged split that does not LOWER it is a
+    //  root of the equality equations without being the equilibrium.
+    auto gibbsOf = [&](const LiquidState& ls) -> scalar
+    {
+        scalar g = 0.0;
+        for (std::size_t b = 0; b < nBk; ++b)
+        {
+            if (ls.nAq[b] > 0.0)
+                g += ls.nAq[b]
+                   * std::log(std::max(ls.gAq[b]*ls.xAq[b], 1.0e-300));
+            if (ls.split && !ls.nOrg.empty() && ls.nOrg[b] > 0.0)
+                g += ls.nOrg[b]
+                   * std::log(std::max(ls.gOrg[b]*ls.xOrg[b], 1.0e-300));
+        }
+        return g;
+    };
+
+    //  The split itself: unknowns t_j = ln(organic moles of member j),
+    //  equations the equality of activity across the two liquids.  A Newton,
+    //  NOT a minimisation -- the minimisation is what DECIDES the phase
+    //  (below); once the basin is known the equalities are smooth and solve to
+    //  machine precision, and that precision is what the OUTER finite-
+    //  difference Jacobian needs.  A loosely-converged inner solve is noise in
+    //  the outer gradient and the outer descent dies on it.
+    auto splitFrom = [&](const sVector& nBl, const sVector& seedOrg,
+                         LiquidState& lsOut) -> bool
+    {
+        const std::size_t M = nOrgM;
+        if (M == 0) return false;
+        sVector t(M);
+        for (std::size_t j = 0; j < M; ++j)
+            t[j] = std::log(std::max(seedOrg[j], 1.0e-14));
+        auto eval = [&](const sVector& tv, sVector& f, LiquidState& ls) -> bool
+        {
+            ls = LiquidState{};
+            ls.nOrg.assign(nBk, 0.0);
+            ls.nAq = nBl;
+            for (std::size_t j = 0; j < M; ++j)
+            {
+                const std::size_t b = orgPos[j];
+                ls.nOrg[b] = std::min(std::exp(tv[j]), 0.999999*nBl[b]);
+                ls.nAq[b]  = nBl[b] - ls.nOrg[b];
+            }
+            scalar sA = 0.0, sO = 0.0;
+            for (std::size_t b = 0; b < nBk; ++b)
+            { sA += ls.nAq[b]; sO += ls.nOrg[b]; }
+            if (sA <= 1.0e-300 || sO <= 1.0e-300) return false;
+            ls.xAq.assign(nBk, 0.0); ls.xOrg.assign(nBk, 0.0);
+            for (std::size_t b = 0; b < nBk; ++b)
+            { ls.xAq[b] = ls.nAq[b]/sA; ls.xOrg[b] = ls.nOrg[b]/sO; }
+            ls.gAq  = gammaOf(ls.xAq);
+            ls.gOrg = gammaOf(ls.xOrg);
+            ls.split = true;
+            f.assign(M, 0.0);
+            for (std::size_t j = 0; j < M; ++j)
+            {
+                const std::size_t b = orgPos[j];
+                f[j] = std::log(std::max(ls.gOrg[b]*ls.xOrg[b], 1.0e-300))
+                     - std::log(std::max(ls.gAq [b]*ls.xAq [b], 1.0e-300));
+            }
+            return true;
+        };
+        auto nrm = [](const sVector& v)
+        { scalar s = 0.0; for (auto q : v) s += q*q; return std::sqrt(s); };
+        sVector f; LiquidState ls;
+        if (!eval(t, f, ls)) return false;
+        scalar fn = nrm(f);
+        for (int itS = 0; itS < 200 && fn > 1.0e-13; ++itS)
+        {
+            std::vector<sVector> J(M, sVector(M, 0.0));
+            for (std::size_t jc = 0; jc < M; ++jc)
+            {
+                const scalar h = 1.0e-7 * std::max(1.0, std::abs(t[jc]));
+                sVector tp = t; tp[jc] += h;
+                sVector fp; LiquidState lp;
+                if (!eval(tp, fp, lp)) return false;
+                for (std::size_t ir = 0; ir < M; ++ir)
+                    J[ir][jc] = (fp[ir] - f[ir]) / h;
+            }
+            sVector dt(M, 0.0);
+            {
+                std::vector<sVector> A = J;
+                sVector b2(M);
+                for (std::size_t i2 = 0; i2 < M; ++i2) b2[i2] = -f[i2];
+                bool singular = false;
+                for (std::size_t c = 0; c < M && !singular; ++c)
+                {
+                    std::size_t piv = c;
+                    for (std::size_t i2 = c+1; i2 < M; ++i2)
+                        if (std::abs(A[i2][c]) > std::abs(A[piv][c])) piv = i2;
+                    std::swap(A[c], A[piv]); std::swap(b2[c], b2[piv]);
+                    if (std::abs(A[c][c]) < 1.0e-300) { singular = true; break; }
+                    for (std::size_t i2 = c+1; i2 < M; ++i2)
+                    {
+                        const scalar fac = A[i2][c] / A[c][c];
+                        for (std::size_t j2 = c; j2 < M; ++j2)
+                            A[i2][j2] -= fac * A[c][j2];
+                        b2[i2] -= fac * b2[c];
+                    }
+                }
+                if (singular) break;
+                for (std::size_t i2 = M; i2-- > 0; )
+                {
+                    scalar s = b2[i2];
+                    for (std::size_t j2 = i2+1; j2 < M; ++j2)
+                        s -= A[i2][j2] * dt[j2];
+                    dt[i2] = s / A[i2][i2];
+                }
+            }
+            for (auto& d : dt) d = std::max(-3.0, std::min(3.0, d));
+            scalar lam = 1.0; bool ok = false;
+            for (int lsr = 0; lsr < 24; ++lsr, lam *= 0.5)
+            {
+                sVector tt(M);
+                for (std::size_t j = 0; j < M; ++j) tt[j] = t[j] + lam*dt[j];
+                sVector ft; LiquidState lt;
+                if (!eval(tt, ft, lt)) continue;
+                const scalar ftn = nrm(ft);
+                if (ftn < fn) { t = tt; f = ft; ls = lt; fn = ftn; ok = true; break; }
+            }
+            if (!ok) break;
+        }
+        if (fn > 1.0e-9) return false;
+        //  The TRIVIAL root: two phases of the same composition is one phase
+        //  wearing two names, and it satisfies every equality exactly.  It is
+        //  the K = 1 saddle this repository already documents on the molecular
+        //  path, and it is rejected here by inspection, not by luck.
+        scalar dmax = 0.0;
+        for (const auto b : orgPos)
+            dmax = std::max(dmax, std::abs(ls.xOrg[b] - ls.xAq[b]));
+        if (dmax < 1.0e-6) return false;
+        lsOut = ls;
+        return true;
+    };
+
+    //  The seeds.  DETERMINISTIC, and deliberately not warm-started from the
+    //  previous outer trial: a residual that remembers where the solver came
+    //  from is path-dependent, and a path-dependent residual has no finite-
+    //  difference Jacobian worth the name.
+    auto splitBest = [&](const sVector& nBl, LiquidState& lsOut) -> bool
+    {
+        bool found = false;
+        LiquidState best; scalar gBest = 0.0;
+        for (const scalar frac : { 0.99, 0.90, 0.50, 0.10 })
+        {
+            sVector seed(nOrgM);
+            for (std::size_t j = 0; j < nOrgM; ++j)
+                seed[j] = frac * nBl[orgPos[j]];
+            LiquidState ls;
+            if (!splitFrom(nBl, seed, ls)) continue;
+            const scalar g = gibbsOf(ls);
+            if (!found || g < gBest) { found = true; best = ls; gBest = g; }
+        }
+        if (found) lsOut = best;
+        return found;
+    };
+
+    //  ---- THE PHASE DECISION, taken ONCE ------------------------------------
+    //  Whether the declared second liquid EXISTS is decided on the feed, and
+    //  the phase set is then held for the whole solve.  Deciding it inside the
+    //  residual puts a step discontinuity in the function the outer Newton
+    //  differentiates, and a residual with a step in it has no descent
+    //  direction anywhere near the step.  This is the order the molecular path
+    //  already uses: the stability test decides, then the solve runs.
+    bool twoLiquids = false;
+    auto splitWanted = [&](const sVector& vap, LiquidState& two,
+                           scalar& g1, scalar& g2, bool& got) -> bool
+    {
+        got = false; g1 = 0.0; g2 = 0.0;
+        if (nOrgM == 0) return false;
+        const sVector nBl = backboneMoles(vap);
+        LiquidState one; singleLiquid(nBl, one);
+        g1 = gibbsOf(one);
+        got = splitBest(nBl, two);
+        if (!got) return false;
+        g2 = gibbsOf(two);
+        return g2 < g1 - 1.0e-10*std::max(1.0, std::abs(g1));
+    };
+    auto announcePhases = [&](const char* where, const sVector& vap)
+    {
+        if (verbosity < 2 || nOrgM == 0) return;
+        LiquidState two; scalar g1 = 0.0, g2 = 0.0; bool got = false;
+        const bool want = splitWanted(vap, two, g1, g2, got);
+        std::cout << "  [phases] declared second liquid " << where << ": "
+                  << (want ? "PRESENT" : "ABSENT");
+        if (got)
+            std::cout << "  (G/RT single = " << std::fixed
+                      << std::setprecision(6) << g1 << ", split = " << g2 << ")";
+        else
+            std::cout << "  (no non-trivial split exists there)";
+        std::cout << "\n";
+        if (want)
+        {
+            std::cout << "  [phases] organic composition:";
+            for (std::size_t j = 0; j < nOrgM; ++j)
+                std::cout << " x_" << cfg_.apparent[cfg_.backbone[orgPos[j]]]
+                          << " = " << std::setprecision(4)
+                          << two.xOrg[orgPos[j]];
+            std::cout << "\n";
+        }
+    };
+    if (nOrgM > 0)
+    {
+        LiquidState two; scalar g1 = 0.0, g2 = 0.0; bool got = false;
+        twoLiquids = splitWanted(sVector(nApp, 0.0), two, g1, g2, got);
+        announcePhases("on the feed", sVector(nApp, 0.0));
+        if (verbosity >= 2)
+            std::cout << "  [phases] the phase set is FIXED for each Newton"
+                         " pass -- appearance is an OUTER decision, never a"
+                         " branch inside the differentiated residual -- and"
+                         " re-tested at the answer\n";
+    }
+
+    //  The liquid state at a trial vaporisation, under the phase set CURRENTLY
+    //  being solved.  Returns false when the trial does not admit that phase
+    //  set -- and there is NO silent fallback to one liquid.  A fallback is a
+    //  step in the residual, which is the discontinuity the phase loop exists
+    //  to keep out of the differentiated path, and it is worse than that: it
+    //  lets a pass converge to a ONE-liquid root while reporting two.  That is
+    //  exactly what happened on the first build of this slice -- |r| = 7.7e-10
+    //  on a state whose organic phase did not exist.
+    auto liquidState = [&](const sVector& vap, LiquidState& ls) -> bool
+    {
+        const sVector nBl = backboneMoles(vap);
+        if (twoLiquids && !splitBest(nBl, ls))
+        { singleLiquid(nBl, ls); return false; }
+        if (!twoLiquids) singleLiquid(nBl, ls);
+        return true;
     };
 
     // Activity of the DISSOLVED counterpart of a volatile: the solvent reads
@@ -219,18 +488,28 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     // molalities only; no double counting; both factors 1 when absent) --
     // a family volatile reads its NEUTRAL molecular species row (the gas
     // record's `dissolved` species, e.g. NH3).
+    //
+    //  With a second liquid present a backbone component is priced by THE
+    //  LIQUID IT LIVES IN.  At the converged split the two are equal by
+    //  construction, so this is not a change of physics -- it is a change of
+    //  arithmetic: benzene through the aqueous side is a mole fraction near
+    //  1e-4 times a gamma near 1e3, the same number computed the worst way.
+    auto molecularActivity = [&](std::size_t appIdx,
+                                 const LiquidState& ls) -> scalar
+    {
+        const std::size_t b = backbonePos(appIdx);
+        if (b >= nBk) return 1.0;
+        if (ls.split)
+            for (const auto ob : orgPos)
+                if (ob == b) return ls.gOrg[b] * ls.xOrg[b];
+        return ls.gAq[b] * ls.xAq[b];
+    };
     auto dissolvedActivity = [&](std::size_t appIdx,
                                  const SpeciationResult& sr,
-                                 const sVector& xB,
-                                 const sVector& gB) -> scalar
+                                 const LiquidState& ls) -> scalar
     {
         if (appIdx == cfg_.solventIdx)
-        {
-            const std::size_t b = backbonePos(appIdx);
-            const scalar molecular =
-                (b < cfg_.backbone.size()) ? gB[b] * xB[b] : 1.0;
-            return molecular * sr.aw;
-        }
+            return molecularActivity(appIdx, ls) * sr.aw;
         const GasEntry* g = gasFor(appIdx);
         for (const auto& row : sr.rows)
             if (row.name == g->species) return row.activity;
@@ -251,8 +530,15 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         sVector v0(nApp, 0.0);
         SpeciationResult sr;
         speciate(v0, sr);
-        sVector xB0, gB0;
-        backboneState(v0, xB0, gB0);
+        //  THE PHASES DECLARED, not the phases convenient.  This sum decides
+        //  whether a vapour exists at all, and computing it on a SINGLE liquid
+        //  when the case declares two is not a small error: benzene held in a
+        //  water-rich backbone shows a mole fraction near 1e-4 against a gamma
+        //  in the hundreds, and the product is a partial pressure of tens of
+        //  atmospheres for a liquid whose real benzene pressure is a fifth of
+        //  one.  Such a pre-check waves every case through into a Newton
+        //  hunting a vapour that is not there (2026-07-27).
+        LiquidState ls0; (void)liquidState(v0, ls0);
         scalar pSum = 0.0;
         for (const auto appIdx : cfg_.volatiles)
         {
@@ -262,7 +548,11 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             if (cfg_.nonreactive.count(appIdx))
             {
                 const std::size_t b = backbonePos(appIdx);
-                const scalar xI = xB0[b], gI = gB0[b];
+                bool inOrg = false;
+                if (ls0.split)
+                    for (const auto ob : orgPos) if (ob == b) inOrg = true;
+                const scalar xI = inOrg ? ls0.xOrg[b] : ls0.xAq[b];
+                const scalar gI = inOrg ? ls0.gOrg[b] : ls0.gAq[b];
                 const scalar pI =
                     gI * xI * cfg_.psatOf.at(appIdx)(T_K) / kAtm;
                 pSum += pI;
@@ -272,14 +562,16 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                               << ": molecular VLE: p = gamma * x * psat = "
                               << std::setprecision(4) << pI
                               << " atm  (Raoult convention; gamma = " << gI << ", x = " << xI
-                              << (cfg_.molecularGamma ? ", NRTL backbone"
-                                                      : ", ideal authorised")
+                              << (cfg_.molecularGamma
+                                  ? ", " + cfg_.molecularModelName + " backbone"
+                                  : std::string(", ideal authorised"))
+                              << (inOrg ? ", ORGANIC liquid" : "")
                               << ")\n";
                 continue;
             }
             const GasEntry* g = gasFor(appIdx);
             const scalar K  = std::pow(10.0, gasLogK(*g, T_K));
-            const scalar pM = dissolvedActivity(appIdx, sr, xB0, gB0) / K;
+            const scalar pM = dissolvedActivity(appIdx, sr, ls0) / K;
             pSum += pM;
             // Carboxylic-acid VAPOUR DIMERISATION (2A = A2, K_dim = pD/pM^2):
             // at equilibrium over this liquid the dimer contributes its OWN
@@ -379,7 +671,16 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         for (std::size_t k = 0; k < nV; ++k)
         {
             const std::size_t idx = act[k];
-            vap[idx] = std::min(V * w[k]/wSum, 0.9995 * n[idx]);
+            //  The per-component cage keeps a liquid amount from reaching
+            //  exactly zero (logs and mole fractions need it).  It used to sit
+            //  at 0.9995*n, which is not a guard but a CEILING: a component
+            //  whose equilibrium leaves 0.03 % of itself in the liquid -- a
+            //  benzene stripped into the vapour, say -- cannot reach its own
+            //  answer, and the residual goes flat against the cap with every
+            //  volatile's leg uniformly short.  That is a stall with no
+            //  descent direction, and it looks exactly like a rank-deficient
+            //  Jacobian while being nothing of the kind (2026-07-27).
+            vap[idx] = std::min(V * w[k]/wSum, (1.0 - 1.0e-10) * n[idx]);
         }
     };
 
@@ -446,8 +747,13 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         { return sVector(nV, 1.0e6); }
         const TrueVap tv = trueVapour(vap);
         const scalar tau = std::max(tv.tau, 1.0e-300);
-        sVector xB, gB;
-        backboneState(vap, xB, gB);
+        //  A trial that does not admit the phase set being solved is reported
+        //  unphysical, exactly as a diverging speciation is: the damped outer
+        //  Newton backtracks away from it, and if the ANSWER lies on the other
+        //  side of the phase boundary the outer phase loop -- not a branch in
+        //  here -- moves the whole configuration there.
+        LiquidState ls;
+        if (!liquidState(vap, ls)) return sVector(nV, 1.0e6);
         sVector r(nV);
         for (std::size_t k = 0; k < nV; ++k)
         {
@@ -461,8 +767,10 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                 //  Molecular backbone VLE: gamma * x * psat = p  (gamma = 1
                 //  on the authorised ideal route, the declared molecular
                 //  model's value otherwise -- one surface, announced).
-                const std::size_t b = backbonePos(idx);
-                const scalar pR = gB[b] * xB[b]
+                //  With two liquids the activity comes from the phase the
+                //  component LIVES in; the equality of activity across the
+                //  split makes that the same number, computed well.
+                const scalar pR = molecularActivity(idx, ls)
                                 * cfg_.psatOf.at(idx)(T_K) / kAtm;
                 r[k] = std::log(std::max(pR, 1.0e-300))
                      - std::log(std::max(pA, 1.0e-300));
@@ -470,7 +778,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             }
             const scalar K  = std::pow(10.0, gasLogK(*gasFor(idx), T_K));
             r[k] = std::log(std::max(
-                       dissolvedActivity(idx, srLast, xB, gB), 1.0e-300))
+                       dissolvedActivity(idx, srLast, ls), 1.0e-300))
                  - std::log(std::max(K * pA, 1.0e-300));
         }
         return r;
@@ -484,6 +792,33 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     auto norm2 = [](const sVector& r)
     { scalar s = 0; for (auto v : r) s += v*v; return std::sqrt(s); };
     sVector u(nV, 0.0);
+    sVector r;
+    scalar  rn = 0.0;
+    int     it = 0;
+
+    //  ---- THE PHASE-CONFIGURATION LOOP -------------------------------------
+    //  A phase set decided on the FEED can be wrong at the ANSWER: this flash
+    //  strips benzene into the vapour, and past some V/F the organic liquid it
+    //  started with no longer exists.  Holding the decision would then report a
+    //  one-liquid answer under a two-liquid declaration -- or, worse, let the
+    //  split quietly fail inside the residual and call the fallback a solution.
+    //
+    //  So the decision is OUTSIDE the Newton, and taken again at the answer:
+    //  each pass solves a smooth problem with a fixed phase set, and a pass
+    //  that ends somewhere its own phase set is not the stable one hands the
+    //  new set to the next pass.  Announced, both ways.  This is the standard
+    //  structure; what it must never become is a branch inside the residual.
+    for (int phasePass = 0; ; ++phasePass)
+    {
+    //  Pass 0 seeds from the feed; a LATER pass continues from where the
+    //  previous one stopped.  A pass that ran out of descent did so pressed
+    //  against the phase boundary, and a point on the boundary is the best
+    //  start the configuration on the other side of it will ever get -- far
+    //  better than seeding the same feed twice and expecting a different
+    //  answer.  This is continuation, and it is why the passes are ordered.
+    if (phasePass == 0)
+    {
+    u.assign(nV, 0.0);
     u[0] = std::log(0.02 * nTot);
     {
         // PHYSICAL seed: speciate the un-vaporised feed once and start the
@@ -493,41 +828,182 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         // authorised molecular co-volatile.  The old feed-RATIO seed put a
         // barely-volatile solute (acetic, y ~ 1e-3) three decades from its
         // solution and the damped Newton stalled against the near-dry cage.
-        sVector vap0(nApp, 0.0);
-        speciate(vap0, srLast);
-        sVector xBs, gBs;
-        backboneState(vap0, xBs, gBs);
-        std::vector<scalar> p(nV, 0.0);
-        for (std::size_t k = 0; k < nV; ++k)
+        //
+        //  The equilibrium partial pressures of the liquid at a given total
+        //  vaporised amount, with the vapour composition brought to its own
+        //  fixed point there.  SUM p_eq = P is the two-phase condition itself,
+        //  so this function is the saturation criterion as a function of V.
+        auto eqPressures = [&](const sVector& vap, std::vector<scalar>& p)
+                           -> bool
         {
-            const std::size_t idx = act[k];
-            if (cfg_.nonreactive.count(idx))
+            SpeciationResult sr;
+            try { speciate(vap, sr); }
+            catch (const std::exception&) { return false; }
+            LiquidState ls;
+            if (!liquidState(vap, ls)) return false;
+            p.assign(nV, 0.0);
+            for (std::size_t k = 0; k < nV; ++k)
             {
-                const std::size_t b = backbonePos(idx);
-                p[k] = gBs[b] * xBs[b] * cfg_.psatOf.at(idx)(T_K) / kAtm;
-                continue;
+                const std::size_t idx = act[k];
+                if (cfg_.nonreactive.count(idx))
+                {
+                    p[k] = molecularActivity(idx, ls)
+                         * cfg_.psatOf.at(idx)(T_K) / kAtm;
+                    continue;
+                }
+                const scalar K = std::pow(10.0, gasLogK(*gasFor(idx), T_K));
+                p[k] = dissolvedActivity(idx, sr, ls)
+                     / std::max(K, 1.0e-300);
+                if (idx == dimIdx)
+                    p[k] += 2.0*Kd*p[k]*p[k];        // apparent moles / dimer
             }
-            const scalar K = std::pow(10.0, gasLogK(*gasFor(idx), T_K));
-            p[k] = dissolvedActivity(idx, srLast, xBs, gBs)
-                 / std::max(K, 1.0e-300);
-            if (idx == dimIdx)
-                p[k] += 2.0 * Kd * p[k] * p[k];      // apparent moles / dimer
-        }
-        scalar pSum = 0.0; for (auto q : p) pSum += q;
-        for (std::size_t k = 0; k + 1 < nV; ++k)
+            return true;
+        };
+        //  ---- SEED THE AMOUNT, not just the ratio -----------------------
+        //  V used to start at a flat 2 % of the feed.  For a feed only just
+        //  above its bubble point that is close enough; for one well above it
+        //  -- a mixture whose equilibrium pressure is three times the
+        //  specified P -- it is not, and the failure is not a slow
+        //  convergence but a WRONG DIRECTION: at small V the residual barely
+        //  responds to the amount (the sensitivity lives in the ratio), the
+        //  linear solve sends V down instead of up, and the iteration walks
+        //  to V = 0 with every leg of the residual stuck at ln(SUM p_eq / P).
+        //  Uniformly positive, similar in size, and immovable -- which reads
+        //  like a rank-deficient Jacobian and is really a bad seed.
+        //
+        //  The second seed is the TEXTBOOK one: K_i from the equilibrium
+        //  partial pressures over the current liquid, then Rachford-Rice for
+        //  the vapour fraction.  RR is monotone in psi, so it brackets and
+        //  never wanders, which a successive substitution on the vapour
+        //  composition emphatically does -- put the whole vapour into the most
+        //  volatile species, collapse its liquid, put none there next round.
+        //
+        //  BOTH seeds are then tried and the better one starts the Newton.
+        //  Neither dominates: RR rescues a feed far above its bubble point,
+        //  where 2 % walks the wrong way; the flat 2 % rescues a feed whose
+        //  K's are steep, where RR overshoots and drives a solute's liquid to
+        //  nothing (flash13 does exactly that, and a seed that breaks a
+        //  passing case to fix a failing one is not an improvement).  Trying
+        //  two costs one residual evaluation and is deterministic.
+        std::vector<scalar> p(nV, 0.0);
+        std::vector<scalar> pFeed;
+        scalar psiRR = 0.0;
         {
-            const scalar yk = std::min(1.0 - 1e-6,
-                std::max(1e-9, p[k] / std::max(pSum, 1e-300)));
-            const scalar ym = std::min(1.0 - 1e-6,
-                std::max(1e-9, p[nV-1] / std::max(pSum, 1e-300)));
-            u[k+1] = std::log(yk / ym);              // odds vs the reference
+            const scalar Patm = P_Pa / kAtm;
+            sVector vapS(nApp, 0.0);
+            scalar psi = 0.0;
+            bool seeded = false;
+            for (int round = 0; round < 6; ++round)
+            {
+                std::vector<scalar> pr;
+                if (!eqPressures(vapS, pr)) break;
+                if (round == 0) { pFeed = pr; p = pr; }
+                //  K_i = y_i/x_i with y_i = p_i^eq/P over the CURRENT liquid.
+                scalar liqTot = 0.0;
+                for (std::size_t i = 0; i < nApp; ++i)
+                    liqTot += n[i] - vapS[i];
+                if (liqTot <= 0.0) break;
+                sVector K(nApp, 0.0);
+                for (std::size_t k = 0; k < nV; ++k)
+                {
+                    const std::size_t idx = act[k];
+                    const scalar xL = (n[idx] - vapS[idx]) / liqTot;
+                    if (xL <= 0.0) { K[idx] = 1.0e6; continue; }
+                    K[idx] = (pr[k]/Patm) / xL;
+                }
+                //  Rachford-Rice: f(psi) = SUM z_i (K_i-1)/(1+psi(K_i-1)),
+                //  monotone decreasing -- bisection on [0, 1) is exact enough
+                //  for a seed and cannot leave the bracket.
+                auto rr = [&](scalar ps)
+                {
+                    scalar s = 0.0;
+                    for (std::size_t i = 0; i < nApp; ++i)
+                    {
+                        const scalar z = n[i]/nTot, km1 = K[i] - 1.0;
+                        s += z*km1 / (1.0 + ps*km1);
+                    }
+                    return s;
+                };
+                scalar lo = 0.0, hi = 0.999;
+                if (rr(lo) <= 0.0) { psi = 0.0; seeded = true; break; }
+                scalar psiR = hi;
+                if (rr(hi) < 0.0)
+                {
+                    for (int b = 0; b < 80; ++b)
+                    {
+                        const scalar mid = 0.5*(lo + hi);
+                        (rr(mid) > 0.0 ? lo : hi) = mid;
+                    }
+                    psiR = 0.5*(lo + hi);
+                }
+                psi = seeded ? 0.5*(psi + psiR) : psiR;   // under-relaxed
+                seeded = true;
+                const scalar V = psi * nTot;
+                for (std::size_t k = 0; k < nV; ++k)
+                {
+                    const std::size_t idx = act[k];
+                    const scalar km1 = K[idx] - 1.0;
+                    const scalar xi = (n[idx]/nTot) / (1.0 + psi*km1);
+                    vapS[idx] = std::min(V * K[idx] * xi / std::max(psi, 1e-300)
+                                         * psi, (1.0 - 1.0e-10)*n[idx]);
+                }
+                p = pr;
+            }
+            if (seeded && psi > 1.0e-12) psiRR = psi;
+        }
+        //  Build the two candidates -- same odds construction, different
+        //  amount and different liquid behind the ratio -- and keep the one
+        //  the residual prefers.
+        auto oddsFrom = [&](const std::vector<scalar>& pv, sVector& uc)
+        {
+            scalar pSum = 0.0; for (auto q : pv) pSum += q;
+            for (std::size_t k = 0; k + 1 < nV; ++k)
+            {
+                const scalar yk = std::min(1.0 - 1e-6,
+                    std::max(1e-9, pv[k] / std::max(pSum, 1e-300)));
+                const scalar ym = std::min(1.0 - 1e-6,
+                    std::max(1e-9, pv[nV-1] / std::max(pSum, 1e-300)));
+                uc[k+1] = std::log(yk / ym);         // odds vs the reference
+            }
+        };
+        sVector uFlat(nV, 0.0);
+        uFlat[0] = std::log(0.02 * nTot);
+        oddsFrom(pFeed.empty() ? p : pFeed, uFlat);
+        u = uFlat;
+        if (psiRR > 1.0e-12)
+        {
+            sVector uRR(nV, 0.0);
+            uRR[0] = std::log(psiRR * nTot);
+            oddsFrom(p, uRR);
+            const scalar nFlat = norm2(residual(uFlat));
+            const scalar nRR   = norm2(residual(uRR));
+            const bool takeRR  = nRR < nFlat;
+            if (takeRR) u = uRR;
+            if (verbosity >= 3)
+                std::cout << "  [reactive] seed: "
+                          << (takeRR ? "Rachford-Rice, V/F = " : "flat 2 % (RR"
+                              " rejected), RR gave V/F = ")
+                          << std::fixed << std::setprecision(4) << psiRR
+                          << "   |r|2: flat " << std::scientific
+                          << std::setprecision(3) << nFlat << ", RR " << nRR
+                          << "\n";
         }
     }
+    }
     const scalar uLo = -30.0, uHi = 30.0;
-    sVector r = residual(u);
-    scalar rn = norm2(r);
+    r  = residual(u);
+    //  The Rachford-Rice seed knows the vapour-liquid K's and nothing about
+    //  the liquid-liquid boundary, so with the second liquid ON it can land
+    //  beyond it -- on the wall, where every residual is the unphysical
+    //  marker, the finite-difference Jacobian is identically zero and the
+    //  linear solve reports a singular system.  Walk the amount back until
+    //  the seed is inside the configuration being solved.  A Newton cannot
+    //  start on the wall; it can start just inside it.
+    for (int b = 0; b < 80 && !r.empty() && r[0] >= 1.0e5; ++b)
+    { u[0] -= 0.25; r = residual(u); }
+    rn = norm2(r);
     bool convergedOuter = false;
-    int  it = 0;
+    it = 0;
     const int maxIt = 60;
     for (; it < maxIt && !convergedOuter; ++it)
     {
@@ -587,6 +1063,14 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             std::cout << ")\n    du = (";
             for (std::size_t i2 = 0; i2 < nV; ++i2)
                 std::cout << (i2 ? ", " : "") << du[i2];
+            std::cout << ")\n    vaporised fraction = (";
+            {
+                sVector vd; unpack(u, vd);
+                for (std::size_t i2 = 0; i2 < nV; ++i2)
+                    std::cout << (i2 ? ", " : "")
+                              << cfg_.apparent[act[i2]] << " "
+                              << vd[act[i2]]/std::max(n[act[i2]], 1e-300);
+            }
             std::cout << ")\n";
         }
         // TRUST-REGION clamp before the line search: near the bubble point
@@ -619,6 +1103,51 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         }
         if (!accepted)
             break;                       // stalled -- joint check decides
+    }
+
+    //  ---- Is the phase set still the right one HERE? -----------------------
+    //  Two ways a pass can be wrong about its own phase set.  It can CONVERGE
+    //  somewhere that set is not the stable one -- then the answer names the
+    //  next configuration.  Or it can fail to converge at all, which for a
+    //  fixed phase set usually means the root is on the OTHER side of the phase
+    //  boundary and the iteration is pressed against it: the residual stops
+    //  descending while every trial across the boundary is refused.  Both are
+    //  the same instruction, "solve the other configuration", and neither is a
+    //  branch inside the residual.
+    if (nOrgM == 0 || phasePass >= 3) break;
+    {
+        const bool solved = rn < 1.0e-7;
+        sVector vapT; unpack(u, vapT);
+        LiquidState two; scalar g1 = 0.0, g2 = 0.0; bool got = false;
+        const bool want = splitWanted(vapT, two, g1, g2, got);
+        if (solved && want == twoLiquids) break;
+        const bool next = solved ? want : !twoLiquids;
+        if (verbosity >= 2)
+        {
+            if (!solved)
+                std::cout << "  [phases] pass " << phasePass << " did not"
+                             " converge with the second liquid "
+                          << (twoLiquids ? "ON" : "OFF")
+                          << " (|r|2 = " << std::scientific
+                          << std::setprecision(3) << rn << std::fixed
+                          << ") -- the root is not inside this phase"
+                             " configuration\n";
+            else
+                std::cout << "  [phases] the answer of pass " << phasePass
+                          << " is NOT stable under its own phase set: the"
+                             " organic liquid "
+                          << (want ? "APPEARS" : "DISAPPEARS") << " there"
+                          << " (G/RT single = " << std::fixed
+                          << std::setprecision(6) << g1
+                          << (got ? ", split = " + std::to_string(g2)
+                                  : std::string(", no non-trivial split"))
+                          << ")\n";
+            std::cout << "  [phases] re-solving with the second liquid "
+                      << (next ? "ON" : "OFF") << "\n";
+        }
+        if (next == twoLiquids) break;             // nothing left to try
+        twoLiquids = next;
+    }
     }
 
     // ---- JOINT acceptance: re-evaluate EVERYTHING at the answer -----------
@@ -694,6 +1223,43 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                   << "\n  electroneutrality: enforced (pH solved = "
                   << std::fixed << std::setprecision(3) << srLast.pH << ")"
                   << "\n  representation written to streams: apparent\n";
+        if (twoLiquids)
+        {
+            //  The second liquid at the ANSWER, not at the feed: how much of
+            //  the liquid it is, what it holds, and the activity equality that
+            //  ties it to the aqueous phase.  That last column is the one to
+            //  read -- it is the equilibrium itself, printed, and if it is not
+            //  zero the split is not converged whatever the outer residual says.
+            LiquidState lsA; (void)liquidState(vap, lsA);
+            if (!lsA.split)
+                throw std::runtime_error("ReactiveVLE: the declared second"
+                    " liquid was PRESENT on the feed but its split does not"
+                    " converge at the accepted state -- the answer would be a"
+                    " one-liquid answer reported under a two-liquid"
+                    " declaration.  No partial answer is returned.");
+            scalar sA = 0.0, sO = 0.0;
+            for (std::size_t b = 0; b < nBk; ++b)
+            { sA += lsA.nAq[b]; if (!lsA.nOrg.empty()) sO += lsA.nOrg[b]; }
+            std::cout << "  second liquid (organic): " << std::fixed
+                      << std::setprecision(4)
+                      << (sO / std::max(sA + sO, 1.0e-300) * 100.0)
+                      << " % of the backbone liquid moles\n"
+                         "    component      x_org      x_aq     "
+                         " ln(a_org/a_aq)\n";
+            for (const auto b : orgPos)
+                std::cout << "    " << std::left << std::setw(12)
+                          << cfg_.apparent[cfg_.backbone[b]] << std::right
+                          << std::setw(10) << std::setprecision(6)
+                          << lsA.xOrg[b] << std::setw(10) << lsA.xAq[b]
+                          << std::setw(14) << std::scientific
+                          << std::setprecision(2)
+                          << (std::log(std::max(lsA.gOrg[b]*lsA.xOrg[b],1e-300))
+                            - std::log(std::max(lsA.gAq [b]*lsA.xAq [b],1e-300)))
+                          << std::fixed << "\n";
+            std::cout << "    (both liquids leave as ONE apparent liquid"
+                         " stream -- the split is internal state, like the"
+                         " speciation)\n";
+        }
         if (verbosity >= 2)
         {
             std::cout << "  true-state table (molality / gamma / activity):\n";

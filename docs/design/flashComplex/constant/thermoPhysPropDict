@@ -64,9 +64,15 @@ equilibrium
     //  Declaring it is not optional bookkeeping.  WITHOUT this block the
     //  system has one liquid, and that liquid would swallow the benzene as
     //  though water and benzene were miscible -- a silently wrong answer the
-    //  moment the case's remaining data debt is paid.  WITH it, the engine
-    //  refuses by name until the solver carries the phase.  A refusal is the
-    //  correct output here; a number would not be.
+    //  moment the case's remaining data debt is paid.
+    //
+    //  The SOLVER now carries this phase (2026-07-27): the split resolves
+    //  inside each residual evaluation of the outer vapour Newton by an
+    //  equality of activity, and phase appearance/disappearance is decided
+    //  outside it and re-tested at the answer.  See
+    //  tutorials/steady/flash/flash17_two_liquids_reactive, which is the
+    //  same physics on four components and passes.  What still stops THIS
+    //  case is its own data debt, listed at the foot of this file.
     //
     //  members is EXPLICIT.  What a phase admits is a modelling decision the
     //  author owns, and the exclusion that matters is not the ~0.2 mol% of
@@ -94,26 +100,38 @@ equilibrium
 /*---------------------------------------------------------------------------*\
   WHERE THIS CASE STOPS, and why that is the right place.
 
-  The grammar above is COMPLETE: three phases are declared, the organic one
-  is read, classified and validated (its members must be nonionising, its
-  activity model must match the aqueous backbone's, its solvent must be one
-  of its own members).  What is missing is the SOLVER: the reactive outer
-  Newton carries vapour + ONE liquid, so it has no unknowns for the organic
-  phase's amount and composition.
+  The grammar above is COMPLETE and the SOLVER now serves it: chemistry and
+  two liquids at once, which is the fork this case exists to close.  That
+  landed on 2026-07-27 and it is demonstrated, passing, by
+  tutorials/steady/flash/flash17_two_liquids_reactive -- vapour + a speciated
+  aqueous liquid + a benzene-rich organic liquid, the same physics on four
+  components.
 
   An earlier version of this note said a second liquid "has no slot in this
   grammar".  That was wrong twice over.  It is wrong now, because the slot is
   twenty lines above.  And it was wrong then, because the engine has resolved
   vapour + two liquids by direct Gibbs minimisation for a long time
   (IsothermalFlash's PhaseSet::VLLE, with a passing tutorial) -- what the
-  engine has never done is BOTH at once.  Chemistry with one liquid, or two
-  liquids with no chemistry; this case needs the two together, and that is
-  the fork it exists to close.
+  engine had never done is BOTH at once.
 
-  So the case refuses, by name, rather than running without the phase it
-  declares.  Contract: docs/design/reactive-second-liquid-proposal.md.
+  WHAT STILL STOPS THIS CASE is DATA, and naming it is the point of a design
+  driver.  Three debts, in the order the engine hits them:
 
-  THE APPROXIMATION, when the solver lands.  What is excluded from the
+    1. NH4HCO3 carries no vapour-pressure block and no curated equilibrium.
+       The engine refuses by name.  It is in `components` because the case is
+       about carbonate chemistry; it needs curating or removing, and that is
+       a decision, not an oversight.
+    2. The molecular backbone is declared NRTL and three of its pairs do not
+       exist in the public catalogue (benzene-water, benzene-ethanol,
+       aceticAcid-water).  `declare -> verify -> refuse` will say so.  The
+       alternatives are curating them or declaring UNIFAC, which predicts the
+       water-benzene split without a regressed pair -- flash17 does exactly
+       that.  Vitor's call: a curated pair is better physics where it exists,
+       and here it does not.
+    3. H2S and CaCO3 ride records this case mirrors locally; those are sound,
+       but the case is not yet sealed end-to-end.
+
+  THE APPROXIMATION, now that the solver has landed.  What is excluded from the
   organic phase is not the ~0.2 mol% of water benzene really holds -- that is
   the small one.  The large one is that the water-benzene IMMISCIBILITY which
   CAUSES the split is declared here rather than computed, so ethanol's
