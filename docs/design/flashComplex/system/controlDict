@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  DESIGN DRIVER CASE -- does not run yet       |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flashComplex -- the case the architecture must grow to serve (design
+  driver, 2026-07-26).  FIVE phases in one vessel:
+
+      vapour          N2 (inert, guarantees V > 0) + CO2 + NH3 + H2O +
+                      ethanol + benzene
+      aqueous liquid  water solvent, full carbonate + ammonia networks,
+                      Ca+2, dissolved ethanol / N2
+      organic liquid  benzene solvent; by DECLARED admission only ethanol
+                      may join it (water/ion exclusion = announced
+                      approximation)
+      solid           calcite CaCO3        (fed, may dissolve or grow)
+      solid           NH4HCO3              (NOT fed -- appears if NH3+CO2
+                                            loading crosses saturation)
+
+  The two solids share the carbonate ladder: one pH couples both
+  saturation indices, the gas-phase CO2 moves them, the ammonia buffers
+  the pH.  Nothing in this case is decorative.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description  "FlashComplex design driver: 5-phase reactive flash -- vapour + two liquids (declared admission) + two carbonate-coupled precipitates, N2 inert";
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    elementBalance { }
+}

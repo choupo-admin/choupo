@@ -1,0 +1,75 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  flashComplex/constant/thermoPhysPropDict -- PHASES + MODELS (draft         |
+|  grammar, design driver 2026-07-26/27)                                      |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  What is NEW here and does not exist in the engine yet:
+
+    * an explicit `phases` block -- the case DECLARES which phases may
+      exist; the solver decides which ones ACTUALLY form (a phase in the
+      declaration whose amount solves to zero is a result, printed as 0);
+    * a per-liquid-phase ADMISSION rule: `admits ( ... )` names the only
+      components allowed to join a phase besides its solvent.  An
+      admission rule is a DECLARED APPROXIMATION (the approximations
+      doctrine: authorised by presence, delimited, announced, refused for
+      anything unlisted) -- e.g. real benzene holds ~0.2% water and a
+      little HAc; excluding them is a pedagogical simplification the run
+      must SAY it is making;
+    * solids listed as phases (their equilibria live in chemistryDict).
+
+  The components stay ONE global set (the settled doctrine); phases select
+  from it, they never redefine it.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( water  benzene  ethanol  N2  CO2  NH3  H2S  aceticAcid
+                CaCO3 );
+//  NH4HCO3 is NOT a component of the feed -- it is a solid PHASE that may
+//  form from the aqueous inventory.  Open design question Q3: does a
+//  formable solid need to be listed here at all, or only in `phases`?
+
+equilibrium
+{
+    formulation multiphaseReactive;      // the target formulation (new)
+
+    phases
+    {
+        vapour
+        {
+            fugacityModel  idealGas;
+            //  members: every volatile the classifier admits -- N2, CO2,
+            //  NH3, H2S, HAc (+ its dimer), H2O, ethanol, benzene
+        }
+
+        aqueousLiquid
+        {
+            solvent        water;              // the DECLARED aqueous solvent
+            activityModel  { ionic davies;  molecular NRTL; }
+            speciation     { masters ( Ca  NH4  HCO3  HS  Acetate ); }
+            //  members: water + the ionic network + the molecular
+            //  dissolved forms (CO2aq, NH3aq, H2Saq, HAc, ethanol, N2aq)
+        }
+
+        organicLiquid
+        {
+            solvent        benzene;
+            admits         ( ethanol );        // ONLY ethanol may join --
+                                               // the declared admission rule
+            activityModel  { molecular NRTL; } // benzene-ethanol pair
+            approximationNote
+              "water, HAc and dissolved gases EXCLUDED from the organic
+               phase by declaration -- announced at every run; the real
+               benzene phase holds ~0.2% water and partitions HAc";
+        }
+
+        solid calcite             { component CaCO3;    }
+        solid ammoniumBicarbonate { component NH4HCO3;  }
+    }
+
+    //  Volatility is decided per component by the classifier from record
+    //  FACTS (aqueousSpeciation, role) exactly as today -- this list is
+    //  the case's declaration, verified against the classification:
+    volatiles ( N2  CO2  NH3  H2S  aceticAcid  ethanol  water  benzene );
+}

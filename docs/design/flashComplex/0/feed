@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  flashComplex/0/feed -- the authored inlet                                  |
+\*-----------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    water          60.0  kmol/h;
+    benzene        20.0  kmol/h;
+    ethanol         8.0  kmol/h;
+    N2              5.0  kmol/h;    // inert -- guarantees a vapour phase
+    CO2             4.0  kmol/h;
+    NH3             6.0  kmol/h;
+    H2S             1.0  kmol/h;
+    aceticAcid      2.0  kmol/h;
+    CaCO3           0.5  kmol/h;    // fed as suspended solid, may dissolve
+}
+T               308.15 K;
+P               2.0 atm;

@@ -1,0 +1,5 @@
+/*  flashComplex/0/organicLiquid -- initial estimate (choupo-init0 will materialise
+    a physical seed once the engine serves this case) */
+componentMolarFlows { water 0.0 kmol/h; }
+T               308.15 K;
+P               2.0 atm;

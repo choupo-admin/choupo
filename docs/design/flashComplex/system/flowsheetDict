@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  flashComplex/system/flowsheetDict -- topology only (state lives in 0/)     |
+\*-----------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        flash01;
+        type        multiphaseReactiveFlash;    // DOES NOT EXIST YET -- this
+                                                // case is its specification
+        in          feed;
+        outputs     ( vapor  aqueousLiquid  organicLiquid
+                      calciteCake  bicarbonateCake );
+
+        operation   { T 308.15 K;  P 2.0 atm; }
+    }
+);
