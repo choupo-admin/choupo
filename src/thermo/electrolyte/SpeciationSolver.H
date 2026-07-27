@@ -317,7 +317,7 @@ struct SpeciationResult
     std::vector<std::string>      vantHoffK;// entries using constant-dH van't Hoff
     std::vector<std::string>      extrapolated;  // analytic used beyond its fitted
                                             //   range (announced, never silent)
-    bool                          daviesExceeded = false;  // I above ~0.7 mol/kg
+    bool                          daviesExceeded = false;  // I above ~0.5 mol/kg
 
     // Equilibrium precipitation (only when SpeciationInput::equilibrate set).
     // mineral -> n_p [mol transferred to the solid per kg water]; an ALLOWED

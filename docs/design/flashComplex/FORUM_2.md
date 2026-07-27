@@ -192,6 +192,18 @@ um valor inventado.
 - a divisão da escada do CO₂ — a física está certa, só a frase sobre ela
   é que estava.
 
+## Estado dos achados do PRIMEIRO fórum
+
+O achado 1 daquela sessão — a banda de silêncio do Davies — está **fechado**
+(commit desta série). O limiar desceu de 0.7 para 0.5, que é o valor que a
+própria mensagem sempre declarou.
+
+Impacto medido sobre os 24 casos do corpus que usam Davies: **um** caso muda
+de comportamento, `props/electrolyte/pitzer_calcite_brine` a **I = 0.66** —
+exactamente dentro da banda, exactamente o caso que a objecção previu. Os
+outros dois que já avisavam (`composition01_nacl`, `overlay01_nacl_ksp`, ambos
+a I = 2.00) continuam a avisar. Nenhum golden se moveu: 318 PASS.
+
 ## Ordem proposta
 
 1. **Achado 3** — subtração de uma linha em `H2CO3-formation.dat` e

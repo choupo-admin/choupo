@@ -1870,7 +1870,15 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
     // -- honesty: Davies beyond its range is INDICATIVE, and we say so ----------
     // (Pitzer HMW is built for exactly this high-I regime -- the advisory is a
     // Davies-only caveat, so it never fires when Pitzer is the active model.)
-    if (I > 0.7 && activityName_ == "davies")
+    //
+    // THE THRESHOLD IS THE ONE THE MESSAGE CLAIMS (corrected 2026-07-27).  It
+    // guarded 0.7 while stating a ~0.5 trust range in its own text, which left
+    // a SILENCE BAND at 0.5 - 0.7 -- and that is exactly where the corpus's
+    // own seawater case lives (I = 0.682714).  A case in the band printed a
+    // quotable number with no caveat at all.  Either the guard comes down to
+    // what the message says, or the message goes up to what the guard does;
+    // the two cannot disagree, and the honest direction is to guard sooner.
+    if (I > 0.5 && activityName_ == "davies")
     {
         out.daviesExceeded = true;
         std::ostringstream msg;
