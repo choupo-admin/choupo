@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Reactive flash that PRECIPITATES: the calcite/carbonate basis of flash14 fed past saturation, with calcite admitted -- the speciation drives SI to 0 and the freed proton drops the pH from 7.06 to 6.32";
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

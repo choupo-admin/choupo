@@ -1,0 +1,165 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-07-27";
+    importerVersion    "2";
+    records
+    {
+        "chemistry/CO2-dissolution.dat"
+        {
+            type          imported;
+            sha256        "983e95a8c5ed8760792f36ce2861ca3687d380f21da2621bca37106eace0cfa5";
+            origin        "data/standards/chemistry/CO2-dissolution.dat";
+            originSha256  "5ef7de6a6144c281f04c4b01c7f45f2c16edeb1075f3e78a76179f5d03dfabaf";
+            release       Choupo-2607;
+        }
+        "chemistry/CO2aq-formation.dat"
+        {
+            type          imported;
+            sha256        "064dc1f8695407573153f7cb94b62bfbeb9dcade879e4a92f5ebe300d072d701";
+            origin        "data/standards/chemistry/CO2aq-formation.dat";
+            originSha256  "23b5195333523b65f320ef9d0362539449fecf0fd48ad1520b3728c54bec07a6";
+            release       Choupo-2607;
+        }
+        "chemistry/CO3-formation.dat"
+        {
+            type          imported;
+            sha256        "9a448314ee47c7f34ebbe4f54abb3db49d19d77e80404d00e4d1694b0a23bb50";
+            origin        "data/standards/chemistry/CO3-formation.dat";
+            originSha256  "d08e8abdea3dfaaa57ed2fed4204f8be4a6aeda5712a75c6963be0569dd5fc90";
+            release       Choupo-2607;
+        }
+        "chemistry/CaCO3aq-formation.dat"
+        {
+            type          imported;
+            sha256        "0f3d77e578eaabb7a0073f8181e56a98f99adf1f28abf4fcb9aeb09165ee6896";
+            origin        "data/standards/chemistry/CaCO3aq-formation.dat";
+            originSha256  "d65869964df0c6c174da21eb6e0e551040a73b454410b828fd757b9775b5446e";
+            release       Choupo-2607;
+        }
+        "chemistry/CaHCO3-formation.dat"
+        {
+            type          imported;
+            sha256        "16d8d9973567ea04e9929ea4920a6298ce7b449c504e5e3bf3f6fdf8f818fd5a";
+            origin        "data/standards/chemistry/CaHCO3-formation.dat";
+            originSha256  "a189218fb472c3f7273e984854b05380fb57f81d050c8424fe33cbedb1c77298";
+            release       Choupo-2607;
+        }
+        "chemistry/CaOH-formation.dat"
+        {
+            type          imported;
+            sha256        "8c8be3fc1304c147832d011f5999d5c50fc858d106648d103733a1b063f9e2d4";
+            origin        "data/standards/chemistry/CaOH-formation.dat";
+            originSha256  "03c61792ff1ac35086e0b13bd1a0463b586cc9c8b48e82974813366d39725e8f";
+            release       Choupo-2607;
+        }
+        "chemistry/water-dissociation.dat"
+        {
+            type          imported;
+            sha256        "63a8e7d2c83deda7eb1b6254cb7788b180acc12bde7d9b0400fb440e8e11463f";
+            origin        "data/standards/chemistry/water-dissociation.dat";
+            originSha256  "b2ae1698798cd472c4e75d1c4b186e1ac762852b40512a998ba247a22a0b9a80";
+            release       Choupo-2607;
+        }
+        "chemistry/water-vapour-equilibrium.dat"
+        {
+            type          imported;
+            sha256        "1e2fb4e578408215405c1f92be96668f552dfe84815e339737455587019928a3";
+            origin        "data/standards/chemistry/water-vapour-equilibrium.dat";
+            originSha256  "1127150b975b47357c5ee8866260191042a6b6783835cc0d79aad5caaffaf91a";
+            release       Choupo-2607;
+        }
+        "components/CO2.dat"
+        {
+            type          imported;
+            sha256        "953a60000c47c1c6b8f32833054ae4dfe5e698a8549eda895c14975ea749468a";
+            origin        "data/standards/components/CO2.dat";
+            originSha256  "e915e756c25ac1ee67cb47b2e7c4571b25669e49cde9b4127c7f9cd1774c6881";
+            release       Choupo-2607;
+        }
+        "components/CaCO3.dat"
+        {
+            type          merged;
+            sha256        "531c5c853099982afc184de0c7d6193c6370c9fd60916ebda9ed5ee96dbb7d53";
+            origin        "data/standards/components/CaCO3.dat";
+            originSha256  "711508fdee41cdcdbde9b8cd9817d55f2c5c49c0b2c96372079ca56bef2257ac";
+            overlaySha256 "dfd6de63acc4bd359eb3e1cec682a8fefe355c0403e17571381849c004177618";
+            release       Choupo-2607;
+        }
+        "components/calciumHydroxide.dat"
+        {
+            type          imported;
+            sha256        "2b63c9e2c32a52defc5b992d330f287c9e62c32eae59829eaecdf228ccd93a0f";
+            origin        "data/standards/components/calciumHydroxide.dat";
+            originSha256  "9d603ded0d3913c8a84a701629ebd45af12f87b45dba5bb241f733de7248c7ec";
+            release       Choupo-2607;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
+            origin        "data/standards/components/water.dat";
+            originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
+            release       Choupo-2607;
+        }
+        "species/CO3.dat"
+        {
+            type          imported;
+            sha256        "22c12d5a838fc0b0c10fb8dbfbbbc3147bb68c06ba62ce799c138c8f939e7d90";
+            origin        "data/standards/species/CO3.dat";
+            originSha256  "22c12d5a838fc0b0c10fb8dbfbbbc3147bb68c06ba62ce799c138c8f939e7d90";
+            release       Choupo-2607;
+        }
+        "species/Ca.dat"
+        {
+            type          imported;
+            sha256        "a0143701d19a8cd92f81e60d1eda6a84caf97d8e045969bbee5a75ddb9bd4cbd";
+            origin        "data/standards/species/Ca.dat";
+            originSha256  "a0143701d19a8cd92f81e60d1eda6a84caf97d8e045969bbee5a75ddb9bd4cbd";
+            release       Choupo-2607;
+        }
+        "species/H.dat"
+        {
+            type          imported;
+            sha256        "5f7f840a1531361ef597c17d69da45c4688596c5f7e1b53b9cb4e6f9d452dac3";
+            origin        "data/standards/species/H.dat";
+            originSha256  "5f7f840a1531361ef597c17d69da45c4688596c5f7e1b53b9cb4e6f9d452dac3";
+            release       Choupo-2607;
+        }
+        "species/HCO3.dat"
+        {
+            type          imported;
+            sha256        "fa092d8333300568a4de38d72d9253bf46a677a9de05e3c08eede5c73990be23";
+            origin        "data/standards/species/HCO3.dat";
+            originSha256  "fa092d8333300568a4de38d72d9253bf46a677a9de05e3c08eede5c73990be23";
+            release       Choupo-2607;
+        }
+        "species/OH.dat"
+        {
+            type          imported;
+            sha256        "28ff219ee9665fceed266e921d37f5e1603213f9fc69ed39b9135526c884ab85";
+            origin        "data/standards/species/OH.dat";
+            originSha256  "28ff219ee9665fceed266e921d37f5e1603213f9fc69ed39b9135526c884ab85";
+            release       Choupo-2607;
+        }
+    }
+}

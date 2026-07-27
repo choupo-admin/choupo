@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  WHICH solid phases this system may form.  Availability, not presence:       |
+|  whether calcite actually appears is the ANSWER, and here it does.           |
+|                                                                              |
+|  Only calcite is admitted.  Aragonite is declared in the component record    |
+|  but left out: it is the more soluble polymorph, so at equilibrium calcite   |
+|  is the stable one, and admitting both without a nucleation rule would let   |
+|  the arithmetic pick.  Which polymorph forms FIRST is kinetics, which this   |
+|  calculation cannot see -- said out loud rather than modelled.               |
+\*-----------------------------------------------------------------------------*/
+recordType    chemistrySystem;
+schemaVersion 1;
+
+equilibria
+{
+    solidPhases ( calcite );
+}

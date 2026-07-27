@@ -134,6 +134,23 @@ struct ReactiveVLEConfig
     std::set<std::size_t>                                 nonreactive;
     std::map<std::size_t, std::function<scalar(scalar)>> psatOf; // Pa(T[K])
 
+    //  ---- ADMITTED SOLID PHASES (from constant/chemistryDict) -------------
+    //  The minerals this system may PRECIPITATE, passed straight through to
+    //  the speciation kernel's `equilibrate` list.  EMPTY = the path this
+    //  class has always taken, byte-identical by construction.
+    //
+    //  It is availability, not presence: whether any of them actually forms
+    //  is the answer.  And the answer is a thermodynamic CEILING -- SI driven
+    //  to 0, infinite time, no nucleation barrier -- never a deposition rate.
+    //
+    //  Note what does NOT change: the APPARENT basis.  Dissolved CaCO3 and
+    //  solid CaCO3 are the same flowsheet component, so precipitation moves
+    //  nothing between components; it moves material between PHASES inside
+    //  the bottoms.  What it does change, and materially, is the speciation
+    //  the rest of the flash sees -- the ions removed from solution stop
+    //  buffering, and the H+ leg of a carbonate dissolution moves the pH.
+    std::vector<std::string> admittedSolids;
+
     //  ---- THE SECOND LIQUID (declared, not discovered) --------------------
     //  A benzene-rich organic phase alongside the aqueous one.  EMPTY means
     //  no second liquid was declared, and the solver must then take a path

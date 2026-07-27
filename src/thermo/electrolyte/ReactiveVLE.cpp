@@ -178,6 +178,9 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         //  verbosity so the closure can print its ACTIVATION TRACE once: the
         //  student sees which equilibria the assembly put in the problem and
         //  why, instead of a bare count.
+        //  Ask for precipitation when the case admits solids.  Empty list =
+        //  the kernel's phase-free path, untouched.
+        in.equilibrate = cfg_.admittedSolids;
         in.announceClosure = announceClosure;
         out = spec_->solve(in, innerVerbosity);
         if (!traced) { traced = true; innerVerbosity = 0; announceClosure = false; }

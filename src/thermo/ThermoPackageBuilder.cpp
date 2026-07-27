@@ -466,7 +466,8 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
 static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                                               const Database& db,
                                               const DictPtr& eq,
-                                              const DictPtr& aq)
+                                              const DictPtr& aq,
+                                              const ChemistrySystem* chem)
 {
     // (a) models of the two phases -- this slice serves ionic davies (the
     //     speciation kernel's rung) + an OPTIONAL molecular backbone model
@@ -1038,6 +1039,30 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                       << " -- the converged state reads back uniquely\n";
     }
 
+    //  ---- THE ADMITTED SOLIDS reach the kernel (2026-07-27) ---------------
+    //  constant/chemistryDict says WHICH solid phases this system may form;
+    //  the speciation kernel already precipitates them, multi-mineral, with
+    //  an active-set complementarity and the H+ leg fed back.  Until now the
+    //  reactive flash simply never asked -- it recorded the list and reported
+    //  saturation indices climbing past zero while forming nothing.
+    //
+    //  The list is passed through UNFILTERED and UNTRUNCATED: every phase the
+    //  case admits, in the order it declared them, because the kernel serves
+    //  them together.  (The single-salt Pitzer adapter is the one that can
+    //  only carry one, and it refuses a longer list rather than picking.)
+    if (chem && chem->present && !chem->solidPhases.empty())
+    {
+        cfg.admittedSolids = chem->solidPhases;
+        if (thermoAnnounce())
+        {
+            std::cout << "[chemistry] admitted solid phase(s):";
+            for (const auto& s : cfg.admittedSolids) std::cout << " " << s;
+            std::cout << " -- they may precipitate to their SI = 0 ceiling."
+                         "  A CEILING, not a deposition rate: infinite time,"
+                         " no nucleation barrier.\n";
+        }
+    }
+
     cfg.backbone.push_back(solventIdx);
     for (std::size_t i = 0; i < names.size(); ++i)
         if (cfg.nonreactive.count(i)) cfg.backbone.push_back(i);
@@ -1537,42 +1562,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
         }
         if (reactiveShape)
         {
-            //  A DECLARED SOLID THAT NOTHING EQUILIBRATES (2026-07-27).
-            //  The SpeciationSolver DOES precipitate, and several minerals at
-            //  once, with an active-set complementarity -- but it only does so
-            //  for the minerals a caller puts in `SpeciationInput::equilibrate`,
-            //  and today the only caller that fills that field is the
-            //  `speciate` props op, from an explicit `minerals ( ... )` list.
-            //  ReactiveVLE never sets it.
-            //
-            //  So on this path a chemistryDict's solidPhases are recorded in
-            //  the package and then never asked for: the case would report
-            //  saturation indices climbing past zero and form nothing, which
-            //  is a wrong answer with an exit code of 0.  Same disease as an
-            //  organic phase declared and not solved, and it gets the same
-            //  treatment -- refuse, and say exactly what is missing.
-            //
-            //  No corpus case is affected: of the reactive cases, none carries
-            //  a chemistryDict.
-            if (chem && chem->present && !chem->solidPhases.empty())
-            {
-                std::string all;
-                for (const auto& s : chem->solidPhases)
-                    all += (all.empty() ? "" : ", ") + s;
-                throw std::runtime_error("thermophysicalPropertySystem:"
-                    " constant/chemistryDict admits solid phase(s) (" + all
-                    + ") but the REACTIVE path never asks the speciation to"
-                    " equilibrate them -- it would report their saturation"
-                    " indices and form nothing, so a supersaturated answer"
-                    " would come back as if it were an equilibrium one."
-                    "  (The speciation kernel itself precipitates, multi-"
-                    "mineral, with active-set complementarity; what is missing"
-                    " is the reactive flash asking it to.)  Remedy: drop the"
-                    " chemistryDict to run the case without precipitation, or"
-                    " use a `speciate` props op, whose `minerals ( ... )` list"
-                    " does reach the kernel.");
-            }
-            return buildReactiveElectrolyte(v2, db, eq, aq);
+            return buildReactiveElectrolyte(v2, db, eq, aq, chem);
         }
         auto am = aq->subDict("activityModel");
         const std::string model = am->lookupWord("model");
