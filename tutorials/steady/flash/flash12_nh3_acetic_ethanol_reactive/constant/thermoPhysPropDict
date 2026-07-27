@@ -47,9 +47,7 @@ equilibrium
 
     aqueous
     {
-        solvent       water;                 // the DECLARED aqueous solvent
         activityModel { model davies; }      // this slice's rung (announced)
-        speciation    { masters ( Acetate  NH4 ); }
     }
 
     vapour    { fugacityModel idealGas; }

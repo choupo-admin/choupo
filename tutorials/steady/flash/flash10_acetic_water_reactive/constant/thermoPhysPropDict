@@ -27,7 +27,6 @@ equilibrium
     aqueous
     {
         activityModel { model davies; }     // this slice's rung (announced)
-        speciation    { masters ( Acetate ); }  // the acetic family's master
     }
 
     vapour    { fugacityModel idealGas; }

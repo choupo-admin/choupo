@@ -20,7 +20,6 @@ components ( water );
 
 aqueousProperties
 {
-    solvent water;
 
     activityCoefficients
     {

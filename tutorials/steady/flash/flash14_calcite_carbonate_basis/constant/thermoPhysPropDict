@@ -54,7 +54,6 @@ equilibrium
     aqueous
     {
         activityModel { model davies; }
-        speciation    { masters ( Ca  HCO3 ); }
     }
 
     vapour    { fugacityModel idealGas; }

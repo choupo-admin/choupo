@@ -24,7 +24,6 @@ components ( water LiCl );
 
 aqueousProperties
 {
-    solvent water;
 
     activityCoefficients
     {

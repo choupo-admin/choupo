@@ -59,7 +59,6 @@ equilibrium
     aqueous
     {
         activityModel { model davies; }
-        speciation    { masters ( Cl  K  Na  SO4 ); }
     }
 
     vapour    { fugacityModel idealGas; }

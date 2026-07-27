@@ -31,7 +31,6 @@ equilibrium
 
     aqueous
     {
-        solvent            water;
         apparentComponents ( NaCl );    // stream carries the salt; the model
                                         //   activates its ions (dissociatesTo)
         activityModel

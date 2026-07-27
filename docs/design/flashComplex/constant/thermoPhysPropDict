@@ -50,14 +50,12 @@ equilibrium
 
     aqueous
     {
-        solvent       water;                 // the DECLARED aqueous solvent
         // composite mixed-solvent electrolyte v1: Davies ions (water-referenced
         // molality) + the curated NRTL pairs on the molecular backbone -- a
         // COMPOSITE with proven limits, not an integrated Gibbs surface: no
         // ion-molecule cross terms, K's water-referenced (the mixed-solvent
         // transfer term is a NAMED gap, docs/design/standard-state-transfer-adr.md).
         activityModel { ionic davies;  molecular NRTL; }
-        speciation    { masters ( Acetate  Ca  HCO3  HS  NH4 ); }
     }
 
     vapour    { fugacityModel idealGas; }

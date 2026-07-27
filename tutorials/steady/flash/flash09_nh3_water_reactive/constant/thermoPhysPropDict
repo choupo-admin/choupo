@@ -27,7 +27,6 @@ equilibrium
     aqueous
     {
         activityModel { model davies; }     // this slice's rung (announced)
-        speciation    { masters ( NH4 ); }  // the ammonia family's master
     }
 
     vapour    { fugacityModel idealGas; }

@@ -643,8 +643,52 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     cfg.solventIdx = solventIdx;
     cfg.solventMW  = comps[solventIdx].MW() * 1.0e-3;   // g/mol -> kg/mol
     cfg.activityModel = actModel;
-    auto spDict = aq->subDict("speciation");
-    const auto masters = spDict->lookupWordList("masters");
+    //  ---- THE MASTERS ARE DERIVED, NOT DECLARED (2026-07-27) --------------
+    //  A master is the species that anchors a family's total.  WHICH species
+    //  that is was already decided, twice over, before any case is written:
+    //  the catalogue wrote CO3 as formed FROM HCO3 (and not the reverse,
+    //  because carbonate is a vanishing minority at neutral pH), and each
+    //  component declares the bridge that says which family it joins.
+    //
+    //  So the set is exactly the union of the components' declared
+    //  `aqueousMapping` targets, less H and OH -- the mediators every family
+    //  shares, which anchor none.  Checked against the corpus before the
+    //  change: SEVEN of seven cases that declared `masters` derive to the
+    //  identical list.
+    //
+    //  Declaring it as well was the `introduces` sin -- a list derivable from
+    //  what is already written is redundant or a trap, because the day it
+    //  disagrees with the derivation nothing says which wins.  Worse, the
+    //  builder was already doing the derivation: its refusals ("declared
+    //  master X has no species record", "component bridges to TWO declared
+    //  masters") were it checking whether a human had retyped correctly a
+    //  list it could compute.  So the field is REFUSED, not merely ignored:
+    //  no dual reader, no fallback.
+    std::vector<std::string> masters;
+    {
+        if (aq->found("speciation")
+            && aq->subDict("speciation")->found("masters"))
+            throw std::runtime_error("thermophysicalPropertySystem: `speciation"
+                " { masters ( ... ); }` is RETIRED -- the master set is DERIVED"
+                " from the components' declared aqueousMapping bridges (the"
+                " union of their target species, less the H/OH mediators)."
+                "  Declaring it as well gives one fact two homes.  Remove the"
+                " speciation block; the run announces the derived set.");
+        std::set<std::string> u;
+        for (std::size_t i = 0; i < names.size(); ++i)
+            if (comps[i].hasAqueousMapping())
+                for (const auto& ms : comps[i].aqueousMapping())
+                    if (ms.species.key != "H" && ms.species.key != "OH")
+                        u.insert(ms.species.key);
+        masters.assign(u.begin(), u.end());
+        if (thermoAnnounce())
+        {
+            std::cout << "[chemistry] masters DERIVED from the declared"
+                         " component bridges:";
+            for (const auto& m : masters) std::cout << " " << m;
+            std::cout << "\n";
+        }
+    }
     std::set<std::string> markersSeen;
     for (std::size_t i = 0; i < names.size(); ++i)
     {
@@ -1461,7 +1505,37 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
         // dispatched to its own assembly below, same formulation family
         // (never a sixth formulation).
         auto aq = eq->subDict("aqueous");
+
+        //  THE REACTIVE SHAPE IS DERIVED FROM A FACT (2026-07-27), not
+        //  selected by the presence of a block.  A system is reactive when a
+        //  component DECLARES that it joins an aqueous speciation network --
+        //  `aqueousSpeciation <setName>;`, the canonical substance-level fact
+        //  the classifier already reads.  Nothing else can decide it: a case
+        //  cannot make a salt reactive by writing a block, nor make ammonia
+        //  unreactive by omitting one.
+        //
+        //  Checked over the corpus before the change: 22 electrolyteGammaPhi
+        //  cases, and the split is exact -- every case that declared a
+        //  `speciation` block has at least one component carrying the fact,
+        //  and every case without one has none.  The block was a second name
+        //  for something already written on the substances.
         if (aq->found("speciation"))
+            throw std::runtime_error("thermophysicalPropertySystem: the"
+                " `aqueous { speciation { ... } }` block is RETIRED.  Which"
+                " species anchor the families, and whether the system is"
+                " reactive at all, are DERIVED from the components' own"
+                " declared facts (`aqueousSpeciation` and `aqueousMapping`)"
+                " -- writing them here gives one fact two homes.  Remove the"
+                " block; the run announces what it derived.");
+
+        bool reactiveShape = false;
+        for (const auto& cn : v2->lookupWordList("components"))
+        {
+            const Component c = db.loadComponent(cn);
+            if (c.aqueousSpeciationDeclared() && c.aqueousSpeciation() != "none")
+            { reactiveShape = true; break; }
+        }
+        if (reactiveShape)
             return buildReactiveElectrolyte(v2, db, eq, aq);
         auto am = aq->subDict("activityModel");
         const std::string model = am->lookupWord("model");
