@@ -342,3 +342,88 @@ student should be able to produce by changing one word.
 * The rest of the proposal — the outer Newton's extra unknowns, the backbone
   equality residuals, the phase-vanishes handling, the ion refusal — is
   unchanged and still unimplemented.
+
+
+---
+
+## 11. Section 3.1 is WRONG, and here is the evidence (2026-07-27)
+
+The proposal said the outer Newton "gains unknowns": `ln L_org` plus the
+organic composition. That was implemented, in full, and **it does not
+converge**. The implementation was reverted rather than committed; what
+follows is what it cost and what it proved, because a disproved design with
+evidence is worth more than a broken implementation.
+
+### 11.1 What was built
+
+* the builder factored into ONE `buildMolecularGamma(memberNames, model)`,
+  so the aqueous backbone and the organic phase are constructed by the same
+  wiring — the "same model on both liquids" rule becomes structural instead
+  of a promise;
+* `unpack` extended to `[ln V, z₁…z_{nV−1}, ln L, w₁…w_{nOrg−1}]` — the
+  organic phase in exactly the vapour's coordinates, an amount in logs and a
+  softmax over member odds;
+* aqueous totals and the backbone state both computed from `n − vap − org`;
+* one activity-equality residual per organic member,
+  `ln(γ_org x_org) − ln(γ_aq x_aq)`;
+* every branch gated on `nOrg == 0`, and the **no-organic path verified
+  byte-exact** on flash09–16.
+
+### 11.2 What it does
+
+On the spike (water + benzene + ethanol + acetic acid, UNIFAC on both
+liquids, 313.15 K, 0.6 atm) the Newton stalls immediately and the line search
+rejects every step:
+
+```
+outer 0  |r|2 = 4.166  aceticAcid=0.326  benzene=-0.912  ethanol=2.406
+                       water=0.115  LL:benzene=-2.466  LL:ethanol=2.129
+outer 3  |r|2 = 4.062  aceticAcid=0.325  benzene=-0.901  ethanol=2.372
+                       water=0.084  LL:benzene=-2.606  LL:ethanol=1.777
+```
+
+Six unknowns, six residuals, and the state barely moves between iterations.
+
+### 11.3 Two real findings on the way, both worth keeping
+
+**A volatile with two liquids must be priced by the liquid it LIVES in.**
+Writing benzene's vapour balance through the aqueous backbone means a product
+of a mole fraction near 10⁻⁴ and a UNIFAC γ near 10³ — arithmetically the
+same equilibrium, numerically hopeless. Declaration should decide: a
+component listed in the organic `members` is priced there. This was
+implemented and it changed the residuals without fixing the stall, so it is
+necessary and not sufficient.
+
+**A segfault from an over-broad edit.** Renaming `nV → nU` across the Newton
+block also caught the *vapour seed* loop, which indexes `act[k]` and is sized
+by the number of volatiles, not by the unknown vector. Worth recording
+because the failure was a crash, not a wrong number — the cheap kind.
+
+### 11.4 Why the design is wrong
+
+The molecular path does not solve two liquids with a Newton. It solves them
+by **direct Gibbs minimisation** (`PhaseSet::VLLE`), with multi-start seeding,
+and the reason is written in this repository's own known-limitations list: an
+LL split on a symmetric γ-model collapses to the K = 1 saddle under
+Newton/successive-substitution. The proposal bolted an LL split onto a Newton
+built for gas-liquid transfer, and got the failure the corpus already
+documents.
+
+**The likely right shape is nested, not flat**: keep the outer Newton on the
+vapour, and solve the liquid-liquid split *inside* each residual evaluation by
+the same Gibbs minimisation the molecular path already uses — the same
+posture the class already takes toward speciation ("mathematically
+simultaneous, numerically nested"). The speciation is nested; the LL split
+should be too.
+
+That is a different slice from the one this document proposed, and it needs
+its own alignment before code. §3.1 and §3.2 above should be read as
+superseded.
+
+### 11.5 State
+
+`flashComplex` is unchanged: it declares its organic phase, the declaration is
+validated by four refusals, and the case stops with the honest message that
+the solver does not carry the phase. That refusal is now known to be correct
+for a deeper reason than "not implemented yet" — the implementation it named
+was tried and is the wrong one.
