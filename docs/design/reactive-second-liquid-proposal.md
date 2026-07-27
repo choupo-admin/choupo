@@ -487,3 +487,63 @@ throughout — 321 PASS, and the no-organic path was verified byte-exact under
 both attempts, so the gating held.
 
 `flashComplex` still stops at its honest refusal.
+
+
+## 13. Third attempt: phase decision lifted out. Best yet, still not converged
+
+§12's lead was that the "phase does not exist" guard sat inside the function
+the Newton differentiates. It was lifted: the split is tested ONCE on the
+un-vaporised feed, the phase set is then FIXED for the solve, and the run
+announces which way it went —
+
+```
+[phases] declared second liquid: PRESENT (Gibbs split found on the feed)
+         -- solved with a fixed phase set
+```
+
+That is the right structure and it is the order the molecular path uses
+(Michelsen TPD decides, then the minimisation runs). It helped:
+
+| attempt | outer residual |
+|---|---|
+| flat, organic unknowns in the Newton | 4.166 → 4.062, stuck |
+| nested Gibbs split | 1.025 → 0.710 |
+| nested + phase decision lifted out | **0.712 → 0.575, smooth descent** |
+
+But it converges to a **local minimum of the residual norm, not to a root**:
+0.5766 → 0.5749 → 0.5747, steps dying out at |r| ≈ 0.575.
+
+### 13.1 What the residual vector says, and the hypothesis it killed
+
+All four volatile residuals are positive and of similar size:
+
+```
+aceticAcid=0.235  benzene=0.359  ethanol=0.330  water=0.194
+```
+
+Uniformly positive reads as "the liquid wants a higher total pressure than it
+has" — i.e. subsaturation, with the Newton pushing V toward a zero it can
+only approach. That hypothesis is attractive because the pre-check that
+decides whether a vapour exists computes the partial-pressure sum with the
+SINGLE-liquid model, before any organic split; with benzene moved into an
+organic phase its partial pressure falls a long way, so the pre-check can wave
+a case through into a Newton for a vapour that is not there. **That pre-check
+does need to account for the declared phases, independently of everything
+else here.**
+
+But it is not the explanation. Lowering the pressure — which must cure
+subsaturation — makes it *worse*: |r| goes 0.575 at 0.6 atm to 2.29 at
+0.25 atm to 2.73 at 0.20 atm. So the stall is not the vapour running out.
+
+### 13.2 State
+
+Three designs built and reverted in one sitting. The structure is now right
+and the numerics are not: the outer iteration reaches a point where the
+residual norm has no descent direction but is not zero, which points at a
+rank-deficient Jacobian rather than at a bad step — two of the four
+residuals are probably near-parallel functions of the unknowns once both
+benzene and ethanol are priced through the same organic phase whose
+composition the inner minimisation fixes.
+
+That is the next thing to look at, with fresh effort. The corpus is untouched:
+321 PASS, no-organic path byte-exact under all three attempts.
