@@ -384,7 +384,18 @@ component basis and the species basis — the same seam the basis-reconciliation
 roadmap item names, carrying the instruction *build a vertical spike
 end-to-end through all layers before any mass migration*.
 
-**The second named gap: a second liquid phase.** `equilibrium { … }` declares one
+**The second named gap: a second liquid phase — and the earlier wording of it
+was wrong.** This section used to say there was "no slot in the grammar" for
+a second liquid. Reading the code says otherwise: `IsothermalFlash` carries a
+`PhaseSet` with a working `VLLE` (vapour + two liquids by direct Gibbs
+minimisation, with a passing tutorial). What exists is a **fork**, not a
+hole — `IsothermalFlash::solve` returns early for a reactive package, so the
+whole `phaseSet` machinery belongs to the molecular path alone. The engine
+offers chemistry with one liquid, or two liquids with no chemistry, and this
+case needs both. Proposal:
+[`../reactive-second-liquid-proposal.md`](../reactive-second-liquid-proposal.md).
+
+**The original wording, kept because it is still right about the physics:** `equilibrium { … }` declares one
 liquid surface plus a vapour. There is no slot for a benzene-rich organic
 liquid, and designing that slot is what this case exists to drive. Until it
 exists the case cannot run, and `constant/thermoPhysPropDict` says so in place
