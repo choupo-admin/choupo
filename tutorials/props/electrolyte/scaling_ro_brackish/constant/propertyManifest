@@ -20,7 +20,7 @@ propertyManifest
 {
     sealed             true;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-26";
+    importedAt         "2026-07-27";
     importerVersion    "2";
     records
     {
@@ -59,9 +59,9 @@ propertyManifest
         "chemistry/CaHCO3-formation.dat"
         {
             type          imported;
-            sha256        "7be778742d068475ac4cb74c3c67d0004a2d6543a31ba9546b650ab43e5dc4e8";
+            sha256        "16d8d9973567ea04e9929ea4920a6298ce7b449c504e5e3bf3f6fdf8f818fd5a";
             origin        "data/standards/chemistry/CaHCO3-formation.dat";
-            originSha256  "acbb11a29a1fe38d2eb8576b113dbdba6d902f45e7d848b0a2e4eb3c96a1606c";
+            originSha256  "a189218fb472c3f7273e984854b05380fb57f81d050c8424fe33cbedb1c77298";
             release       Choupo-2607;
         }
         "chemistry/CaHSO4-formation.dat"
