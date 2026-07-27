@@ -1,5 +1,6 @@
-/*  flashComplex/0/vapour -- initial estimate.  choupo-init0 materialises a
-    physical seed by propagation once the engine serves this case.  */
+/*  flashComplex/0/vapour -- initial estimate for the overhead stream.
+    choupo-init0 materialises a physical seed by propagation from the feed
+    once the engine serves this case.  */
 initialGuess    auto;
 T               308.15 K;
 P               2.0 atm;

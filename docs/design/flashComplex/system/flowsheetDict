@@ -1,22 +1,39 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
 |  flashComplex/system/flowsheetDict -- topology only (state lives in 0/)      |
 \*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  TWO OUTLETS.  A flash drum has a vapour line at the top and a bottoms line
+  at the bottom -- that is the equipment, and the topology describes the
+  equipment.
+
+  An earlier draft of this file declared FIVE outlets, one per phase the
+  solver resolves inside the vessel.  That confused what the SOLVER computes
+  with what the EQUIPMENT has.  The five phases are real and every one of
+  them is reported, but they leave through two nozzles: the vapour, and the
+  bottoms carrying the aqueous liquid, the organic liquid and both solids
+  together.
+
+  Whoever needs them apart puts a decanter and a filter downstream, and those
+  are units with their own records -- not extra nozzles on a drum.  The
+  internal phase split is a RESULT, reported in the bottoms stream's own
+  file; it is not topology.
+
+  NO NEW UNIT TYPE (settled 2026-07-27).  A flash holds T and P and splits
+  into whatever phases the declared thermo world admits.  A
+  `multiphaseReactiveFlash` would force gatekeeping classifications -- which
+  components "may" enter which flash -- and give the student two flashes to
+  learn instead of one.  The phase repertoire grows in the formulation
+  declared by constant/thermoPhysPropDict, never in the unit.
+\*---------------------------------------------------------------------------*/
 
 units
 (
     {
         name        flash01;
         type        isothermalFlash;
-        //  Q6 SETTLED (Vitor, 2026-07-27): NO new unit type.  A flash holds
-        //  T and P and splits into whatever phases the DECLARED thermo world
-        //  admits.  A `multiphaseReactiveFlash` would force gatekeeping
-        //  classifications (which components "may" enter which flash) and
-        //  give the student two flashes to learn.  The phase repertoire
-        //  grows in the thermoPhysPropDict formulation, never in the unit.
 
         in          feed;
-        outputs     ( vapour  aqueous  organic
-                      calciteCake  bicarbonateCake );
+        outputs     ( vapour  bottoms );
 
         operation   { T 308.15 K;  P 2.0 atm; }
     }

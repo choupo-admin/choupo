@@ -1,90 +1,87 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-|  flashComplex/constant/thermoPhysPropDict                                    |
-|  The PHASES and the MODELS.  The CHEMISTRY is not here: it comes with the    |
-|  components (see constant/components/*.dat and constant/complexes/).         |
+|  flashComplex/constant/thermoPhysPropDict  --  DESIGN DRAFT.                 |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  ONE equilibrium condition, everywhere:      sum(nu_i * mu_i) = 0
+  The declared property system.  It says WHICH components, WHICH formulation
+  and WHICH models -- and nothing else.  Three things people expect to find
+  here and which live elsewhere, each for the same reason (one home):
 
-  Homogeneous reactions, phase transfer and precipitation are the SAME
-  condition applied to different stoichiometries.  What varies is only how
-  each mu_i is built:
+    * the CHEMISTRY (which equilibria exist) -- it comes with the components
+      and the records in constant/chemistry/;
+    * WHICH SOLID PHASES are admitted -- constant/chemistryDict;
+    * the REFERENCE RUNG of each phase -- it is a consequence of the
+      property method, not an independent choice.  Selecting the formulation
+      settles the activity model, the standard states and the Henry treatment
+      TOGETHER.  This is the one-knob rule, and it is why there is no
+      per-component reference-state field anywhere in this case.
 
-      mu_i = mu_i^0(T,P, standard state)  +  R T ln a_i
+  Classification (from canonical component FACTS, never from names):
+      water        declared aqueous solvent      (a_w-based VLE)
+      CO2          molecular reactive            (aqueousSpeciation carbonate)
+      NH3          molecular reactive            (aqueousSpeciation ammonia)
+      H2S          molecular reactive            (aqueousSpeciation sulfide)
+      aceticAcid   molecular reactive            (aqueousSpeciation aceticAcid)
+      N2           molecular condensable,        (aqueousSpeciation none)
+                   nonionising -- soluble, never ionising
+      ethanol      molecular condensable,        (aqueousSpeciation none)
+                   nonionising
+      benzene      molecular condensable,        (aqueousSpeciation none)
+                   nonionising
+      CaCO3        nonvolatile solid             (calcite / aragonite)
+      NH4HCO3      nonvolatile solid             (REFUSES -- see its record)
 
-  and how the standard part is obtained -- from a MEASURED equilibrium
-  constant or from SPECIES standard-state data.  Every reaction declares
-  which, and the engine cross-checks whenever both exist.
+  MASTERS.  Five, one per family the feed reaches: Acetate (acetic), HCO3
+  (carbonate), HS (sulfide), NH4 (ammonia), Ca (calcium).  Each is the
+  MAJORITY species of its family at the pH this case reaches -- a master that
+  is a vanishing minority (CO3-2, NH3(aq)) conditions the solve badly.  H+
+  is shared by every family and is what couples them: this is where the
+  acid-base competition between the ammonia and the two acids emerges,
+  without any reaction being written for it.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 3;
+schemaVersion 2;
 
-//  No `components ( ... )` list: the components come from the feed and from
-//  the solids the phases declare.  A component that is never fed and never
-//  named by a phase cannot appear -- there is nothing to forget.
+components    ( CO2  CaCO3  H2S  N2  NH3  NH4HCO3  aceticAcid  benzene  ethanol  water );
 
 equilibrium
 {
+    formulation electrolyteGammaPhi;
 
-
-    phases
+    aqueous
     {
-        vapour
-        {
-            type          gas;
-            fugacityModel idealGas;
-            //  members: every component with a vapour standard state, plus
-            //  the vapour species its chemistry introduces (the acetic dimer)
-        }
-
-        aqueous
-        {
-            type          liquid;
-            solvent       water;
-
-            activityModel
-            {
-                ions      Davies;      // water-referenced molality
-                molecules NRTL;        // ion-free molecular backbone
-            }
-            //  composite mixed-solvent electrolyte v1: a COMPOSITE with
-            //  proven limits, not an integrated Gibbs surface.  The
-            //  mixed-solvent transfer term is a NAMED gap
-            //  (docs/design/standard-state-transfer-adr.md).
-        }
-
-        organic
-        {
-            type          liquid;
-            solvent       benzene;
-            members       ( benzene  ethanol );
-            activityModel NRTL;
-
-            approximation
-            {
-                excludes ( water  CO2  NH3  H2S  aceticAcid );
-                reason
-                    "pedagogical benzene-ethanol organic phase: real benzene
-                     holds ~0.2 mol% water and partitions acetic acid.  The
-                     exclusion is DECLARED, announced at every run, and
-                     refused for anything not listed here.";
-            }
-        }
-
-        calcite
-        {
-            type          solid;
-            component     CaCO3;
-            standardState pureSolid;      // a_solid = 1, declared not implied
-        }
-
-        ammoniumBicarbonate
-        {
-            type          solid;
-            component     NH4HCO3;
-            standardState pureSolid;
-        }
+        solvent       water;                 // the DECLARED aqueous solvent
+        // composite mixed-solvent electrolyte v1: Davies ions (water-referenced
+        // molality) + the curated NRTL pairs on the molecular backbone -- a
+        // COMPOSITE with proven limits, not an integrated Gibbs surface: no
+        // ion-molecule cross terms, K's water-referenced (the mixed-solvent
+        // transfer term is a NAMED gap, docs/design/standard-state-transfer-adr.md).
+        activityModel { ionic davies;  molecular NRTL; }
+        speciation    { masters ( Acetate  Ca  HCO3  HS  NH4 ); }
     }
+
+    vapour    { fugacityModel idealGas; }
+
+    volatiles ( CO2  H2S  N2  NH3  aceticAcid  benzene  ethanol  water );
 }
 
+/*---------------------------------------------------------------------------*\
+  THE NAMED GAP OF THIS DRAFT -- the reason the case exists.
+
+  A SECOND LIQUID PHASE (benzene-rich, admitting ethanol) has no slot in this
+  grammar: `equilibrium` declares ONE liquid surface plus a vapour.  Designing
+  that slot is what this draft is for, and until it exists the case CANNOT
+  RUN.  Writing a placeholder here that quietly collapsed the organic phase
+  into the aqueous one would be the exact failure the grammar was rebuilt to
+  prevent -- a hidden default filling a slot the grammar lacks.
+
+  When the slot is designed it must also carry the approximation HONESTLY.
+  The exclusion that matters is NOT the ~0.2 mol% of water benzene really
+  holds; it is that water-benzene IMMISCIBILITY -- the thing that CAUSES the
+  split -- would be declared rather than computed, leaving ethanol's partition
+  to two independent binaries (ethanol-water, ethanol-benzene) with no
+  ternary term.  A tie-line from that is an arithmetic coincidence between
+  two pairs, not a tie-line of the ternary.  And ethanol is a co-solvent:
+  above ~40 mol% it closes the miscibility gap altogether.  At the ~9 mol%
+  of this feed two phases still exist, but the model does not know why.
+\*---------------------------------------------------------------------------*/

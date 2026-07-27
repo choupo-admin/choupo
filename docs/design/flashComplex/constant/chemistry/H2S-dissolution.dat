@@ -1,0 +1,32 @@
+recordType gasLiquidEquilibrium;
+schemaVersion 2;
+
+// CASE-LOCAL OVERRIDE of data/standards/chemistry/H2S-dissolution.dat.
+//
+// The catalogue record is FUSED -- H2S(g) = H+ + HS-, logK25 -7.93 -- with
+// the Henry step and the first dissociation in one number.  This case runs a
+// two-phase reactive flash, which needs the MOLECULAR species H2Saq on both
+// sides of the interface, so it needs the two rungs apart.  They are
+// separated by thermodynamic decomposition against chemistry/H2Saq-formation.dat,
+// never by relabelling the fused record:
+//
+//     H2S(g) = H2S(aq)   logK25 = -7.93 - (-6.994) = -0.94
+//
+// Sanity: more soluble than CO2 (-1.468), as it must be, and consistent with
+// Sander's H_cp ~ 0.087 M/atm.  Using BOTH this record and the fused one
+// would give the same relation two homes; the fused record is therefore not
+// mirrored into this case.
+//
+// The SECOND dissociation (HS- = S-2 + H+) is deliberately ABSENT: its pK is
+// contested across ~7 log units (12..19) and modern PHREEQC dropped S-2
+// entirely.  A stated curation decision, not an oversight.
+gasSpecies       H2S;
+dissolvedSpecies H2S;
+solvent          water;
+convention       PHREEQC-gasMolal-v1;
+
+reaction "H2S(g) = H2S";
+      authority derivedFromReactions; logK25 -0.94; source "DERIVED: USGS PHREEQC phreeqc.dat fused record H2S(g) = H+ + HS- (logK25 -7.93) minus chemistry/H2Saq-formation.dat (logK25 -6.994 written as the dissociation); cross-check Sander (2015) Atmos. Chem. Phys. 15, 4399, H_cp ~ 0.087 M/atm.";
+      reviewStatus interim;
+      reviewReason ( proxyValue );
+      reviewOwner  IST;

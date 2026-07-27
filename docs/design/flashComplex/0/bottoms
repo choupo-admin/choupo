@@ -1,0 +1,10 @@
+/*  flashComplex/0/bottoms -- initial estimate for the bottoms stream: the
+    aqueous liquid, the organic liquid and both solids leaving together.
+    choupo-init0 materialises a physical seed by propagation from the feed
+    once the engine serves this case.
+
+    The PHASE SPLIT inside this stream is a result, written back here by the
+    solver; it is not seeded by hand and it is not topology.  */
+initialGuess    auto;
+T               308.15 K;
+P               2.0 atm;

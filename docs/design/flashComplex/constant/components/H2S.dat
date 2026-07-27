@@ -1,81 +1,51 @@
-/*--------------------------------*- Choupo -*--------------------------------*\
-|  H2S -- volatile weak acid.  DESIGN DRAFT (flashComplex).                    |
-\*-----------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*\
-  THE FUSED-RECORD DECOMPOSITION (D6 dossier finding, executed here)
-  ------------------------------------------------------------------
-  The geochemical catalogues store H2S transfer FUSED with its first
-  dissociation:   H2S(g) = H+ + HS-,  log K = -7.93.  That is a DIFFERENT
-  physical family from the molecular Henry constant, so the two are not
-  directly comparable.  The physical (molecular) dissolution is recovered
-  by explicit thermodynamic decomposition, never by label:
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Hydrogen sulfide  (H2S, CAS 7783-06-4)  --  DESIGN DRAFT.
+  Added mid-flight in this case, together with acetic acid.
 
-      H2S(g) = H2S(aq)   log K = -7.93 - (-6.994) = -0.94
+  Volatile weak acid.  Its rungs live in chemistry/:
+      H2S(g)   = H2S(aq)       H2S-dissolution.dat  (CASE-LOCAL: the
+                               catalogue record is FUSED with the first
+                               dissociation; see that file's header)
+      HS- + H+ = H2S(aq)       H2Saq-formation.dat  (pKa1 6.994)
 
-  Sanity: more soluble than CO2 (-1.468), as it must be; consistent with
-  Sander's H_cp ~ 0.087 M/atm.  INTERIM until curated as its own record
-  with both parents cited.
+  Master: HS-.  Feeding H2S RELEASES a proton, hence nu(H) = +1 -- the
+  opposite sign to ammonia, and the reason the two together buffer this case.
 
-  The SECOND dissociation (HS- = S-2 + H+) is DELIBERATELY ABSENT: its pK
-  is contested across the literature by ~7 units (12..19) and modern
-  PHREEQC dropped S-2 entirely.  Its absence is a stated curation
-  decision, not an oversight.
+  Values mirrored from data/standards/components/H2S.dat.
 \*---------------------------------------------------------------------------*/
-recordType    component;
-schemaVersion 3;
 
 name        H2S;
-formula     "H2S";
+formula     H2S;
 CAS         7783-06-4;
-MW          34.081 g/mol;
-standardStates
+
+MW 34.082;
+Tc          373.40;
+Pc          89.63;
+omega       0.090;
+Tb          213.60;
+HvapTb      18670;
+Vliq        3.49e-5;
+
+standardThermochemistry
 {
-    vapour  { dHf_298 -20630 J/mol;  s_298 205.79 J/mol/K; }
+    dHf_298    -20630.0;        // J/mol  -- ideal-gas reference
+    s_298      205.79;          // J/(mol*K)
 }
 
-aqueousChemistry
+vaporPressure
 {
-
-    reactions
-    (
-        {
-            name      hydrogenSulfideDissolution;
-            equation "H2S(g) = H2S(aq)";
-            stoichiometry
-            (
-                { species H2S;    phase vapour;   nu -1; }
-                { species H2Saq;  phase aqueous;  nu  1; }
-            );
-                            authority  measuredK;
-                measuredK
-                {
-                    logK25   -0.94;
-                    convention PHREEQC-gasMolal-v1;
-                    source   "DERIVED: fused PHREEQC record (-7.93) minus Ka1
-                              (-6.994); both parents cited in the header";
-                    reviewStatus interim;
-                    reviewReason ( proxyValue );
-                }
-            }
-        }
-
-        {
-            name      sulfideFirstDissociation;
-            equation "H2S(aq) = H+ + HS-";
-            stoichiometry
-            (
-                { species H2Saq;  phase aqueous;  nu -1; }
-                { species H;      phase aqueous;  nu  1; }
-                { species HS;     phase aqueous;  nu  1; }
-            );
-                            authority  measuredK;
-                measuredK
-                {
-                    logK25   -6.994;
-                    dH        22175 J/mol;
-                    source   "USGS PHREEQC phreeqc.dat (public domain)";
-                }
-            }
-        }
-    );
+    model         Antoine;
+    coefficients  (4.22883   806.62   -25.770);
+    Trange        (188  340);
 }
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (31.94   1.436e-3   2.432e-5   -1.176e-8);
+    Trange        (250  1500);
+}
+
+
+aqueousSpeciation  sulfide;
+aqueousMapping ( { species HS; nu 1; } { species H; nu 1; } );

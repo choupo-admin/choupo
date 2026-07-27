@@ -1,26 +1,28 @@
-# `species/` — identity and standard-state data, ONE home each
+# `constant/species/` — nine model species
 
-A species record carries what the species IS (name, presentation formula,
-charge, MW) and its standard-state thermodynamics when curated.  It never
-carries an equilibrium constant: constants belong to reactions.
+One typed file per species, mirrored verbatim from `data/standards/species/`.
+Each carries what a *reaction record cannot*: the species' own standard-state
+data (`hfAq`, `sAq`, the Criss-Cobble averaged partial molal heat capacity)
+and, where curated, its transport radius and limiting diffusivity.
 
-## Why the identifiers are `H`, `HCO3`, `Ca` — and not `H_p1`, `HCO3_m1`
+That is the whole membership rule. A species is here **iff** it has
+independent data of its own. The derived neutrals and complexes of this case
+— `CO2aq`, `H2CO3`, `NH3aq`, `HAc`, `H2Saq`, `CaHCO3`, `CaCO3aq`, `CaOH` —
+are each defined completely by the reaction that forms them, and declare
+their identity inline in that record. Giving them a file here would create a
+second home for a charge and a formula, and the two would drift.
 
-The charge-mangled form was considered and rejected (it was also REMOVED
-from this corpus in the F2 campaign, 2026-07-26).  The problem it aims to
-solve — telling the sodium ion apart from sodium metal — is already solved,
-and more strongly, by the type system: `ComponentId`, `SpeciesId` and
-`SolidId` are strong types with no implicit conversion, so the confusion is
-a compile error, not a naming convention.
+| species | family | master? |
+|---|---|---|
+| `H` | — | shared by every family; what couples them |
+| `OH` | water | derived (`water-dissociation.dat`) |
+| `HCO3` | carbonate | **master** |
+| `CO3` | carbonate | derived |
+| `Ca` | calcium | **master** |
+| `NH4` | ammonia | **master** |
+| `Acetate` | acetic | **master** |
+| `HS` | sulfide | **master** |
+| `N2` | — | dissolved inert; no ionisation |
 
-The readability the mangled form wants is delivered by the **presentation
-formula**, which every record carries:
-
-```
-name     HCO3;
-formula  "HCO3-";      <- what the student reads, everywhere
-charge   -1;
-```
-
-Renaming would cost 41 species records, 59 chemistry records and every
-sealed case, to buy readability that the `formula` field already provides.
+The masters are declared in `constant/thermoPhysPropDict`; this directory
+does not rank its own contents.

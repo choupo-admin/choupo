@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  flashComplex/constant/chemistryDict  --  DESIGN DRAFT.                      |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The case's ACTIVE-CHEMISTRY SELECTION: WHICH solid phases are admitted.
+  AVAILABILITY, not presence -- whether either solid actually appears is the
+  answer, not the input.  The Ksp/dH facts live in the component records
+  (CaCO3.dat solidPhases, NH4HCO3.dat solidPhases); only an operation asks
+  for saturation.
+
+  CaCO3 is fed as a suspended solid and admitted as CALCITE only.  Aragonite
+  is declared in the component record but NOT admitted here: it is the more
+  soluble polymorph (logK 1.993 vs 1.879), so admitting both without a
+  nucleation rule lets the solver pick whichever the arithmetic reaches
+  first.  Which polymorph forms is a KINETIC question this case does not
+  model, so it is settled by declaration and said out loud.
+
+  NH4HCO3 is admitted although it is never fed -- that is the point: a solid
+  the student never wrote can enter the answer.  It is also the record that
+  REFUSES today, for want of a curated equilibrium (see NH4HCO3.dat).
+\*---------------------------------------------------------------------------*/
+recordType    chemistrySystem;
+schemaVersion 1;
+
+equilibria
+{
+    solidPhases ( calcite  ammoniumBicarbonate );
+}

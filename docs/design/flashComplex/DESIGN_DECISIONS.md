@@ -1,67 +1,278 @@
-# flashComplex — design decisions (2026-07-27)
+# flashComplex — design decisions
 
-This draft **merges** the chemical-potential proposal reviewed on 2026-07-27
-with the doctrine already settled in this repository.  Vítor's judgement was
-that the proposal's dictionary reads better than the earlier Choupo draft —
-that judgement is accepted, and the proposal's *form* is the base here.  What
-follows is every place the merge changed something, and why.
-
-Nothing here is code.  The case still does not run.
+*Draft opened 2026-07-27. This document tracks the case's design, including
+the parts of it that were reversed. Nothing here is engine code; the case
+still does not run, and the reasons it does not are the deliverable.*
 
 ---
 
-## Adopted from the proposal (its form is better)
+## 1. What the case is
 
-| adopted | why |
+One `isothermalFlash` at 308.15 K and 2 atm, with **two outlets** — a vapour
+line and a bottoms line — resolving **five phases** inside the vessel:
+
+| phase | contents |
 |---|---|
-| **chemistry travels with the component** | `CO2.dat` now reads like a textbook page about CO₂: the species it brings, its three equilibria, its sources.  The earlier draft scattered the same information across six files the student had to hunt for. |
-| **`equilibriumCondition zeroAffinity`** | states the physics (Σνᵢμᵢ = 0) instead of a number.  Homogeneous reaction, phase transfer and precipitation become the *same* condition on different stoichiometries. |
-| **`componentDiscovery fromFeedAndDeclaredPhases`** | kills the `components ( … )` list, and with it the question "must a solid that is never fed be listed?" (Q3).  It cannot be forgotten because it is not written. |
-| **`approximation { excludes (…) reason "…" }`** | clearer than the earlier `admits (…)`: it names what is being *left out*, which is the honest direction for an approximation. |
-| **`reporting { … }` block** | makes the glass-box output a declared property of the case, not a verbosity accident. |
-| **no student-authored `chemistryDict`** | settled: the closure assembles, the `[chemistry]` block prints.  See the evidence below. |
+| vapour | N₂ (inert, guarantees V > 0) + CO₂ + NH₃ + H₂S + H₂O + ethanol + benzene + acetic acid (with its dimer) |
+| aqueous liquid | water solvent; full carbonate, ammonia, sulfide and acetate networks; Ca²⁺; dissolved ethanol and N₂ |
+| organic liquid | benzene solvent; by declared admission, only ethanol may join it |
+| solid | calcite CaCO₃ — fed as a suspension, may dissolve or grow |
+| solid | NH₄HCO₃ — never fed; appears if the NH₃ + CO₂ loading crosses saturation |
 
-## Changed, with reasons
+The two solids share the carbonate ladder: one pH couples both saturation
+indices, the gas-phase CO₂ moves them, and the ammonia buffers the pH.
+Nothing in this case is decorative.
 
-### 1. Equilibrium constants stay storable as primary data
+**Two outlets, not five.** An earlier draft declared one outlet per phase.
+That confused what the *solver* resolves with what the *equipment* has: a
+flash drum has a vapour nozzle and a bottoms nozzle, and the aqueous liquid,
+the organic liquid and both solids leave together through the second one.
+Separating them needs a decanter and a filter — units with their own records.
+The internal phase split is a **result**, reported in the bottoms stream's own
+file. It is not topology.
 
-The proposal's decision list says *"no K(T), pK, logK, Ksp or Henry
-correlation is stored as primary data"* — everything derived from species
-standard-state thermodynamics.  Its own §6.2 contradicts this by allowing
-`equilibriumSource explicitK`; the merge keeps §6.2 and drops the ban.
+---
 
-The reason is precision.  `K = exp(−ΔrG°/RT)` with RT = 2.48 kJ/mol at 298 K,
-so small errors in ΔGf are large errors in K.  Calcite:
+## 2. The rewrite of 2026-07-27, and what it reversed
 
-| route | pKsp |
+The first draft of these dictionaries was written from the *shape* of an
+external proposal rather than from the corpus. It parsed, it read well, and
+it was wrong in a way no gate caught — because the 25 `check_*` gates guard
+`data/standards/` and `tutorials/`, and this draft lives in `docs/design/`,
+the one directory with no net. The rewrite translates the design **into** the
+corpus form. Six things changed.
+
+### 2.1 Chemistry left the component records
+
+The first draft put each component's equilibria inside its own `.dat`, in an
+invented `aqueousChemistry { reactions ( … ) }` block. It reads beautifully —
+`CO2.dat` became a textbook page about CO₂ — and it is the wrong home.
+
+A reaction coupling two families belongs to neither of them. `Ca²⁺ + HCO₃⁻ =
+CaHCO₃⁺` is not a fact about calcium carbonate and not a fact about carbon
+dioxide; putting it in one makes that component claim the other's family, and
+putting it in both gives one value two homes. This is the same axiom that
+keeps NRTL and Henry parameters in pair tables rather than inside substances,
+applied to reactions instead of parameters.
+
+So chemistry lives in `constant/chemistry/`, **one file per reaction**, named
+by the reaction. The component record keeps only the two lines that say which
+network it joins and how it maps onto that network's masters:
+
+```
+aqueousSpeciation  carbonate;
+aqueousMapping ( { species HCO3; nu 1; } { species H; nu 1; } );
+```
+
+The payoff is visible in the count: of the fifteen reaction records this case
+reaches, **thirteen are byte-for-byte mirrors of the curated catalogue**. Only
+two are new. Under the first draft all fifteen would have been re-authored
+inside component files, and every one of them would have been a fresh chance
+to drift from the catalogue.
+
+The rewrite proved the point immediately: mirroring instead of re-authoring
+caught six pure-component constants the first draft had **invented** — H₂S's
+critical temperature, acentric factor, boiling point, liquid molar volume and
+its entire Antoine set, plus acetic acid's latent heat. Every one of them was
+plausible and every one was wrong.
+
+### 2.2 `chemistry/aqueousComplexes/` was flattened
+
+The first draft gave the cross-family ion pairs their own subfolder. The
+argument against it is one of its own contents: is `CaOH-formation.dat` an
+acid-base reaction or a complexation? Both readings are defensible, so every
+author filing it has to guess and every reader has to guess the same way.
+
+This repeats a mistake the project already corrected once — `components/` was
+kept physically flat (settled 2026-06-07) because a record can belong to
+several categories at once and the kind already lives inside the file. The
+subfolder is gone; `chemistry/` is flat, and the physics that groups reactions
+is a query, not a directory.
+
+### 2.3 Six ceremony fields were deleted
+
+`equilibriumCondition zeroAffinity`, `componentDiscovery
+fromFeedAndDeclaredPhases`, `crossCheck`, `introduces`, `reporting { … }` and
+`formulation`-as-written each had exactly one possible value. Vítor's test:
+*a hi-fi amplifier has one volume knob* — **a field with only one possible
+value is not a setting, it is doctrine written in the wrong place.** Say it
+once in the docs and delete the field.
+
+`introduces` was worse than redundant. It listed the species a component
+brings, which is derivable from its reactions' stoichiometry — so the day the
+two disagreed, nothing said which one wins.
+
+One of the six was reinstated on inspection: **`formulation` is a real knob**,
+carrying six distinct values across the corpus (`gammaPhi`, `gammaGamma`,
+`phiPhi`, `electrolyteGammaPhi`, `diluteSolution`, `consistent`). It had been
+listed as ceremony in `check_record_form.py`, which would have failed the
+first design draft that used the actual manifest form. Fixed in the gate, with
+the corpus counts recorded beside it.
+
+### 2.4 `role` came off the components — and the engine noticed
+
+Vítor's ruling: **role is a property of the (component, phase) pair, not of
+the substance.** Water is the solvent of the aqueous phase and would be a
+solute in an organic one; storing that on the substance is a category error.
+
+Removing it produced a concrete engine finding within seconds of the first
+lint. `src/thermo/Component.cpp:198` defaults `role_` to `volatile` and then
+refuses any volatile component with no `vaporPressure` block:
+
+```
+ERROR: Component 'NH4HCO3': no 'vaporPressure' block.
+```
+
+The refusal is correct in form — named component, named field, remedy stated —
+and it asks the *substance* a question only the (component, phase) pair can
+answer. The case already answers it: `constant/thermoPhysPropDict` declares
+
+```
+volatiles ( CO2  H2S  N2  NH3  aceticAcid  benzene  ethanol  water );
+```
+
+and NH₄HCO₃ and CaCO₃ are correctly absent. The datum the engine needs exists
+in the right home, one layer above where it is being read.
+
+This is the design driver working as intended: a ruling made in conversation
+now has a running counter-example. **No engine change is made here** — the
+retirement of `role` is a named roadmap item (property-architecture 6b.3) and
+91 records still carry it. The finding is recorded, not acted on.
+
+### 2.5 Derived species lost their files
+
+Identity has one home. A derived neutral or complex declares its charge and
+formula **inline** in the record that forms it (`ion "H2CO3"; z 0;`); it gets a
+file under `constant/species/` only if it carries independent standard-state
+data. The first draft wrote eighteen species files where nine were warranted —
+`CO2aq`, `H2CO3`, `NH3aq`, `HAc`, `H2Saq`, `CaHCO3`, `CaCO3aq` and `CaOH` are
+each defined completely by their formation reaction.
+
+### 2.6 The components list came back
+
+The first draft deleted `components ( … )` on the grounds that a list which is
+not written cannot be forgotten. But the manifest is the case's *declaration*
+of its property system, and the sealed-case contract rests on it. The corpus
+form has it; the draft now has it.
+
+---
+
+## 3. Decisions that survived the rewrite
+
+### 3.1 Equilibrium constants stay storable as primary data
+
+There is one equilibrium condition, Σνᵢμᵢ = 0. The standard part Σνᵢμᵢ° can be
+parameterised either by a measured K or by species standard-state data,
+because **`Σνμ° = −RT ln K` is an identity, not an approximation** — the two
+are measurements of one quantity, not rival theories.
+
+The case for keeping measured K is precision. With RT = 2.48 kJ/mol at 298 K,
+small errors in ΔGf are large errors in K:
+
+| route to calcite pKsp | value |
 |---|---|
 | from ΔGf: (−553.58) + (−527.81) − (−1129.1) = +47.71 kJ/mol | **8.36** |
 | measured | **8.45** |
 
 A 0.7 kJ/mol accumulation across three ΔGf values — entirely typical — is a
-32 % error in the solubility product.  To match the measured precision
-(±0.02) every ΔGf would need ±0.06 kJ/mol, which does not exist for aqueous
-ions.  Worse, the chain of evidence often runs the other way: ΔGf(acetate,
-aq) was itself obtained *from* the measured pKa, so deriving the pKa back
-from it is a circle with added noise.  Single-ion standard properties are
-also not measurable at all — they exist only relative to a convention
-(here `protonZero`, declared in `species/H.dat`).
+32 % error in the solubility product. Matching the measured precision (±0.02)
+would need each ΔGf to ±0.06 kJ/mol, which does not exist for aqueous ions.
+Worse, the evidence often runs the other way: ΔGf(acetate, aq) was itself
+obtained *from* the measured pKa, so deriving the pKa back from it is a circle
+with added noise. And single-ion standard properties are not measurable at all
+— they exist only relative to a declared convention.
 
-This also matches doctrine already settled here: the salt-formation decision
+This matches doctrine already settled here: the salt-formation decision
 (2026-06-29) derives a solid's formation enthalpy *from* the measured heat of
 solution, because the reaction quantity is the better-measured one.
 
-**The merge keeps both routes and makes the relation explicit.**  There is one
-equilibrium condition; the standard part Σνᵢμᵢ° can be parameterised either by
-a measured K (`authority measuredK`) or by species data
-(`authority speciesData`), because `Σνμ° = −RT ln K` is an identity, not an
-approximation.  Every reaction declares its authority; when both exist the
-engine prints both and the difference.
+### 3.2 Authority is declared per reaction, never by reaction type
 
-### 2. The cross-check is not decoration — it already finds a defect
+The authority is a property of the **data available for that reaction**, not
+of its category. A badly measured acid-base constant with well-reconciled
+species should follow the species.
 
-Running that comparison over today's catalogue (van 't Hoff `dH` in the K
-record versus Σν·hfAq from the species records):
+Both industrial simulators do exactly this — Aspen's Chemistry lets each
+reaction choose K-vs-Gibbs, DWSIM's reaction sets the same — two independent
+implementations arriving at it without contact.
+
+Where the rewrite differs from the first draft is in **how often the field is
+written**. The first draft put `authority measuredK` on every reaction. A
+record carrying its own measured `logK25` got that number from a measurement
+of its own reaction; there is nothing to declare, and writing it fifteen times
+is fourteen copies of the same word. The field now appears on exactly the two
+records whose number came from somewhere else:
+
+* `chemistry/H2CO3-formation.dat` — `derivedFromReactions`, the ladder split;
+* `chemistry/H2S-dissolution.dat` — `derivedFromReactions`, the fused-record
+  decomposition.
+
+The third value, `speciesData`, has no instance in this case. `NH4HCO3.dat`
+would have been it, and instead it refuses (§3.4) — which is the more honest
+outcome, since declaring an authority whose data does not exist is a promise
+the record cannot keep.
+
+### 3.3 The CO₂ ladder is split — Vítor's ruling, 2026-07-27
+
+The first draft kept the aggregate CO₂\* and explained it in a box. Vítor
+overruled: *"pode ficar CO₂ dissolvido e H₂CO₃; o CO₂ dissolvido calcula-se com
+a constante de Henry."* The split shipped.
+
+Four rungs, one record each:
+
+```
+CO2(g)        = CO2(aq)        CO2-dissolution.dat    Henry
+CO2(aq) + H2O = H+ + HCO3-     CO2aq-formation.dat    aggregate, MEASURED
+H+ + HCO3-    = H2CO3          H2CO3-formation.dat    DERIVED
+HCO3-         = H+ + CO3-2     CO3-formation.dat      pK2
+```
+
+Two facts the aggregate cannot show, and which the split buys for one record:
+
+1. true carbonic acid is **0.13 %** of dissolved carbon (K_hyd ≈ 1.3 × 10⁻³)
+   but is a **moderately strong acid, pKa 3.47** — the famous 6.35 is weak
+   only because almost none of the CO₂ has hydrated;
+2. that hydration is the **kinetic bottleneck** of CO₂ absorption
+   (k ≈ 0.04 s⁻¹ at 25 °C) — the reason carbonic anhydrase exists in blood and
+   the reason capture plants use amine promoters rather than plain water.
+
+**Arity.** K_hyd · Ka(H₂CO₃) = K₁\*, so only **two of the three** may be
+primary. The aggregate is what every experiment measures — no analytical
+method separates CO₂(aq) from H₂CO₃ — so it and K_hyd are the primaries and
+pKa(H₂CO₃) = −6.352 + 2.886 = **3.466** derives. The aggregate behaviour is
+exact by construction: the split changes what the student *sees*, never what
+the experiment *says*.
+
+The derivation rides in the record's `source` string, which is the corpus's
+own idiom for a re-baselined value (`CaHCO3-formation.dat` documents its
+`11.435 − 10.329 = 1.106` the same way). One home, auditable.
+
+### 3.4 Missing data is a named refusal
+
+`NH4HCO3.dat` is the exemplar and it is the reason the case cannot run even
+once the second-liquid slot exists. Both its species are already in the
+network, so one number would close it — and neither route to that number is
+available:
+
+* the **solid formation datum** is not in the catalogue;
+* the **measured solubility product** exists only as an order of magnitude
+  read off the ~220 g/L (25 °C) solubility, logK₂₅ ≈ 0.25 — a full log unit of
+  uncertainty on a solid whose *presence or absence* changes the phase set.
+
+So the record stores neither and refuses, naming both remedies. It does not
+quietly run on the weak number and it does not silently drop the solid.
+Compare `CaCO3.dat`, where every constant is measured to 0.01 log units.
+
+The same discipline applied to the pair tables: `constant/parameters/`
+contains no `.dat` files at all, and its README names the four missing pairs
+(`benzene-ethanol`, `aceticAcid-water`, `benzene-water`, against the one
+curated `ethanol-water`) rather than letting a γ = 1 fallback price a strongly
+non-ideal backbone as ideal.
+
+### 3.5 The cross-check already finds a defect
+
+Comparing the van 't Hoff `dH` in each K record against Σν·hfAq from the
+species records:
 
 | reaction | dH stored | Σν·hf | diff | error in log K at 358 K |
 |---|---|---|---|---|
@@ -70,228 +281,94 @@ record versus Σν·hfAq from the species records):
 | **HSO4-formation** | 16 108 | **21 930** | **−5 822** | **0.171** ⚠ |
 
 Only **3 of 59** reactions are checkable, because the neutral secondary
-species (CO2aq, NH3aq, H2Saq, HAc…) carry no formation datum.  That is the
-quantified curation debt, and it is why every such species record in this
-draft says `status curationRequired` with the consequence spelled out.
+species carry no formation datum. That is the quantified curation debt.
 
-### 3. Cross-family reactions get their own home — `constant/chemistry/aqueousComplexes/`
+The fatal cut stays **unset** in the first pass, deliberately. A threshold set
+before the distribution of real disagreements is known would let the gate
+choose which cases die — HSO4 at 5.8 kJ/mol would take the sulfate cases with
+it. Measure first, then set fatal.
 
-The proposal's own open-questions list asks *"how the catalogue deduplicates
-species referenced by more than one component file"*.  This is that problem,
-and it is not hypothetical: the reachability closure over this case activates
-three calcium ion pairs
+### 3.6 No new unit type
 
-```
-Ca2+ + HCO3-  = CaHCO3+
-Ca2+ + CO3-2  = CaCO3(aq)
-Ca2+ + H2O    = CaOH+ + H+
-```
+A flash holds T and P and splits into whatever phases the declared thermo
+world admits. A `multiphaseReactiveFlash` would force gatekeeping
+classifications — which components *may* enter which flash — and give the
+student two flashes to learn. The phase repertoire grows in the formulation,
+never in the unit.
 
-which belong to **neither** `CaCO3.dat` nor `CO2.dat`.  Putting them in one of
-them makes that component silently claim the other's family; putting them in
-both gives the value two homes (the arity sin).  They live in `chemistry/aqueousComplexes/`,
-exactly as pair-dependent *parameters* (NRTL, Wilson, Henry) live in a pair
-catalogue rather than inside a component — the same axiom applied to
-reactions.
+### 3.7 Identifiers stay `H`, `HCO3`, `Ca`
 
-### 4. Species identifiers stay `H`, `HCO3`, `Ca` — not `H_p1`, `HCO3_m1`
+The mangled form (`H_p1`, `HCO3_m1`) was removed by the F2 campaign
+(2026-07-26). The problem it solves is already solved more strongly by strong
+typing — `ComponentId` / `SpeciesId` / `SolidId` with no implicit conversion,
+so the confusion is a compile error. The readability it wants is delivered by
+the `formula` field every record carries. Renaming would cost 41 species
+records, 59 chemistry records and every sealed case.
 
-The mangled form was removed from this corpus by the F2 campaign
-(2026-07-26).  The problem it solves — telling Na⁺ from sodium metal — is
-already solved more strongly by strong typing (`ComponentId` / `SpeciesId` /
-`SolidId`, no implicit conversion, so the confusion is a compile error).  The
-readability it wants is delivered by the presentation formula every record
-carries (`formula "HCO3-"`).  Renaming would cost 41 species records, 59
-chemistry records and every sealed case, to buy what the `formula` field
-already gives.
-
-### 5. CO₂ keeps the aggregate species — and explains itself
-
-The proposal splits dissolved CO₂ into explicit H₂CO₃ with three reactions.
-The physics does not allow that split with the tabulated constants:
-
-```
-K_hyd = [H2CO3]/[CO2(aq)] ~ 1.3e-3        (0.13 % of dissolved CO2)
-pKa(true H2CO3)           ~ 3.45
-pK1(aggregate CO2*)        = 3.45 + 2.89 = 6.34   (measured 6.352)
-```
-
-Every tabulated pK₁ = 6.35 — including the catalogue's — belongs to the
-**aggregate** CO₂* = CO₂(aq) + H₂CO₃, because no analytical method separates
-them.  Declaring explicit H₂CO₃ while keeping 6.35 is wrong physics; declaring
-it correctly needs both K_hyd and pKa(H₂CO₃) curated from primaries plus a
-re-curation of the whole carbonate ladder (the proposal's own `H2CO3.dat`
-says `status curationRequired`, which would block the case indefinitely).
-
-The merge keeps the aggregate, **names it honestly**, and prints the box
-above in `CO2.dat`: the student gets the textbook picture *and* the convention
-the numbers actually obey.  That is more glass-box than either alternative.
-The explicit variant is named as legitimate future work, not drafted.
+New hard rule, kept: **no human-facing output shows a bare internal
+identifier** — every equation, table and message uses the presentation formula
+with its phase, `H+(aq)`, `CO3-2(aq)`.
 
 ---
 
-## The evidence that settled auto-assembly
+## 4. Findings this case has produced
 
-Seeded with this case's master species and fed gases, the reachability
-closure over the curated network activates **15 equilibria** and brings in
-**10 species nobody wrote**:
-
-```
-aqueous:  CO2aq  CO3  CaCO3aq  CaHCO3  CaOH  H2Saq  HAc  NH3aq  OH
-gas-liquid: CO2  NH3  H2S  N2  aceticAcid  water
-```
-
-The first hand-written draft of this case — written by someone who knew the
-chemistry — declared **6** aqueous reactions.  The closure finds **9**.  The
-three missed were the calcium ion pairs above, which sequester free Ca²⁺ and
-therefore change how much calcite dissolves.
-
-Hand declaration is not more rigorous than assembly; it is less.  What
-assembly lacks is not correctness but **visibility** — which is what the
-`[chemistry]` block is for, and it is output, not architecture.
-
-## Catalogue defect found while drafting
-
-`data/standards/chemistry/CaHCO3-formation.dat` holds `logK25 −4.059;
-dH 158117.5` where its own cited source (phreeqc.dat) holds `log_k 1.106,
-delta_h 2.69 kcal`.  The siblings confirm it is out of family:
-
-| pair | log K₂₅ | dH [J/mol] |
+| # | finding | status |
 |---|---|---|
-| MgHCO₃⁺ | +1.07 | 3 305 |
-| SrHCO₃⁺ | +1.18 | 25 313 |
-| BaHCO₃⁺ | +0.98 | 23 263 |
-| **CaHCO₃⁺** | **−4.06** | **158 118** |
+| 1 | `CaHCO3-formation.dat` held `logK25 −4.059; dH 158117.5` against its own cited source's `1.106 / 2.69 kcal`, and sat 51 and 12 MADs from its Mg/Sr/Ba siblings | **CORRECTED** in standards; the family-outlier gate now catches the class |
+| 2 | Davies warns at I > 0.7 while its own message claims a ~0.5 domain — a silence band where the corpus's own seawater case (I = 0.682714) lives | confirmed in `SpeciationSolver.cpp`; one-line fix, **not yet made** |
+| 3 | pH is printed with no scale declared; at I = 0.68 the free/total/NBS scales differ by 0.1–0.3 units | confirmed; **not yet fixed** |
+| 4 | `role` is read at substance level (`Component.cpp:198`) where the phase membership in `volatiles ( … )` already answers it | **new, this rewrite** (§2.4) |
+| 5 | `formulation` was listed as a single-valued ceremony field in `check_record_form.py`; it has six values | **fixed in the gate** |
+| 6 | constants FLAT in T are used far from 25 °C (`ksp_temperature` sweeps to 80 °C) with no refusal boundary | confirmed; **named, not fixed** |
+| 7 | hand-declared chemistry is *less* rigorous than assembly — the first hand-written draft declared 6 aqueous reactions where the reachability closure finds 9, missing exactly the three calcium ion pairs that sequester Ca²⁺ and change how much calcite dissolves | settled: assembly, with an activation trace for visibility |
 
-Consequence: the pair effectively never forms → free Ca²⁺ overestimated →
-calcite saturation overestimated; and the absurd dH swings log K by +4.6
-units between 298 and 358 K.  **The standards record is not edited by this
-draft** — correcting it re-seals ~34 cases and belongs to its own reviewed
-wave.  `chemistry/aqueousComplexes/CaHCO3-formation.dat` uses the corrected value and carries
-the full evidence in its header.
-
-This class of error is mechanically detectable (a value that is orders of
-magnitude away from its chemical family) and is proposed as a curation gate.
+Finding 7 is the one that changed the architecture. What assembly lacks is not
+correctness but **visibility** — and visibility is output, not architecture.
+Hence the `[chemistry]` activation trace, which prints every equilibrium the
+closure switched on and every one it left unreachable.
 
 ---
 
-## Consolidation round (2026-07-27, after the three-way review)
+## 5. Still open
 
-### 6. Authority is declared per REACTION, never by reaction type
+**The named gap: a second liquid phase.** `equilibrium { … }` declares one
+liquid surface plus a vapour. There is no slot for a benzene-rich organic
+liquid, and designing that slot is what this case exists to drive. Until it
+exists the case cannot run, and `constant/thermoPhysPropDict` says so in place
+of a placeholder — a placeholder that quietly folded the organic phase into
+the aqueous one would be the exact failure the grammar was rebuilt to prevent.
 
-The earlier text leaned towards "measured K is primary for aqueous
-equilibria".  That is wrong as a rule: the authority is a property of the
-**data available for that reaction**, not of its category.  A badly measured
-acid-base constant with well-reconciled species should follow the species.
+When the slot is designed, the approximation must be declared **honestly**.
+The first draft announced the exclusion of ~0.2 mol% of water from the organic
+phase. That is the small one. The large one is that water–benzene
+immiscibility — *the thing that causes the split* — is declared rather than
+computed, leaving ethanol's partition to two independent binaries with no
+ternary term. A tie-line from that is an arithmetic coincidence between two
+pairs, not a tie-line of the ternary. And ethanol is a co-solvent: above
+~40 mol% it closes the miscibility gap altogether. At this feed's ~9 mol% two
+phases still exist, but the model does not know why.
 
-Both exemplars are now in the case:
+**The apparent projection.** Projecting the converged aqueous state back onto
+stream components is non-unique — exactly (c−1)(a−1) degrees of freedom for c
+cations and a anions. The physics is unaffected, since elements and charge are
+what cross the boundary, but the *labels* are a choice and a choice must be
+declared. Needs a declared convention plus a loud refusal when the declared
+component set cannot span the ion totals.
 
-* `components/CO2.dat` — `authority measuredK` everywhere (every constant
-  measured to ~0.01 log units);
-* `components/NH4HCO3.dat` — `authority speciesData`, because the only
-  measured constant there is an order of magnitude read off a solubility.
-  The solid's formation datum does not exist yet, so the engine **refuses**
-  rather than falling back to the weaker number.  The refusal is spelled out
-  in `EXPECTED_OUTPUT.md` §4.
+**The stream's three levels** (`EXPECTED_OUTPUT.md` §5) remain
+**constitutional, not local**: putting species into a stream file contradicts
+the ratified contract that no ion reaches a `0/` or `converged/` file. That is
+the roadmap item carrying the instruction *build a vertical spike end-to-end
+before any mass migration*. It must not travel in the same wave as the cheap
+local items, or an argument about where the HSO₄ enthalpy lives becomes
+hostage to a change in the constitution of streams.
 
-### 7. `consistencyCheck` — and why the fatal cut stays unset in the first pass
+Reassurance for it: the 300+ molecular tutorials do not move. For a
+non-reactive case the three levels coincide, so the new form is additive.
 
-The hybrid failure mode is not hypothetical: **Choupo does it today.**  The
-K's come from the PHREEQC records, the enthalpies from the species `hfAq`,
-and nothing checks that they agree — the HSO4-formation disagreement of
-5.8 kJ/mol is exactly that defect, live in the corpus.
-
-`components/CO2.dat` carries the exemplar on `bicarbonateDissociation`
-(the reaction where both routes exist and agree to 49 J/mol).  Tolerances:
-
-```
-warningToleranceLogK      0.05;
-warningToleranceEnthalpy  1000 J/mol;
-fatalToleranceLogK        unset;      // deliberately
-fatalToleranceEnthalpy    unset;
-```
-
-A fatal cut set before the distribution of real disagreements is known would
-let the gate choose which cases die — HSO4 at 5.8 kJ/mol would take the
-sulfate cases with it.  Measure first over the 3 checkable reactions (and
-the ~56 more as their data lands), then set fatal.
-
-### 8. `chemistry/aqueousComplexes/`, and where the sub-foldering stops
-
-The name is adopted: it says *what* the home is for, not merely that its
-contents are "complex".  But the extrapolation to `acidBase/`, `redox/`,
-`mineralEquilibria/` is **not** adopted, because it repeats a mistake this
-project already corrected: `components/` was kept physically FLAT (settled
-2026-06-07) precisely because a record can belong to several categories, the
-kind already lives inside the file (`recordType`), and browsability is a
-*view* problem.
-
-The test fails inside this very case: `CaOH+` formation is a hydrolysis — is
-it acid-base or complexation?  `aqueousComplexes/` survives that test because
-its criterion is **structural** (belongs to no single component), not a
-chemical taxonomy.
-
-### 9. The stream: elements are the INVARIANT, not the carrier
-
-The reviewed proposal made `elementMolarFlows + netCharge` "the fundamental
-level transported between operations", with species passing only as an
-initial guess.  That loses information which cannot be recovered: C, H and O
-are equally benzene, ethanol and acetate, and no equilibrium relates them.
-
-The corrected form (`EXPECTED_OUTPUT.md` §5) splits the state by role:
-
-* `speciesMolarFlows.reacting` — the network re-solves this distribution
-  downstream from its element+charge totals; here it is a warm start;
-* `speciesMolarFlows.passThrough` — nothing relates these to anything, so the
-  numbers **are** the answer and must cross the boundary intact;
-* `materialInventory` (elements + charge + enthalpy) — the invariant every
-  boundary audits, and what a mixer adds;
-* `inputLedger` — historical, never confused with the state.
-
-### 10. The apparent projection is optional, declared, reporting-only
-
-No universal cation/anion pairing convention.  A case that wants an
-apparent-component report declares the basis; the output states that the
-representation is not unique; and a basis that cannot span the conserved
-inventory is a **refusal** with the missing representational component named
-(`EXPECTED_OUTPUT.md` §4, §6).
-
-### 11. Identifiers: internal short, presentation always
-
-Kept as `H`, `HCO3`, `Ca` (F2 stands).  New hard rule: **no human-facing
-output may show a bare internal identifier** — every equation, table and
-message uses the presentation formula with the phase: `H+(aq)`, `CO3-2(aq)`.
-A third naming scheme (`hydron`, `bicarbonate`) buys nothing the `formula`
-field does not already give.
-
-### 12. Sequencing: these do not travel together
-
-Items 6, 7, 8, 11 and the activation trace are cheap and local — announces,
-metadata, a gate.  Item 9 is **constitutional**: putting species in a stream
-file contradicts the ratified contract that no ion reaches a `0/` or
-`converged/` file, and it is precisely the roadmap item carrying the
-instruction *build via a vertical spike end-to-end before any mass
-migration*.  If they ship in one wave, an argument about where the HSO4
-enthalpy lives becomes hostage to a change in the constitution of streams.
-
-Reassurance for that item: the 300+ molecular tutorials do not move.  For a
-non-reactive case the three levels coincide — what they write today **is**
-the `inputLedger` — so the new form is additive, not a migration.
-
-## Still open
-
-- **Q1** phase tags: kept fully explicit on every stoichiometric term.
-- **Q2** settled: `members` + `approximation { excludes … reason … }`.
-- **Q3** settled by `componentDiscovery`.
-- **Q4** settled: the Raoult legs carry no K, so they stay with the phase
-  models — but each component now *says so* in a `vapourLiquidEquilibrium`
-  block, so the student never wonders where the water vapour came from.
-- **Q5** settled: the constant is declared inside `standardGibbs` with its
-  authority; there is no separate "declare and verify" ceremony.
-- **Q6** settled: no new unit type; `isothermalFlash` stays.
-- **Open**: the projection of the converged aqueous state back onto stream
-  components (non-unique by (c−1)(a−1) degrees of freedom for c cations and
-  a anions) needs a declared convention plus a loud refusal when the declared
-  component set cannot span the ion totals.  Physics is unaffected — elements
-  and charge are what cross the boundary — but the *labels* are a choice, and
-  a choice must be declared.
+**Two solids sharing an ion.** Calcite and NH₄HCO₃ share the carbonate. Near
+the point where both are saturated the active set can oscillate and the matrix
+conditions badly. With one solid this is trivial; with two coupled ones it is
+not, and there is no anti-cycling rule or smooth reformulation in the design
+yet. Named for when the implementation reaches it.

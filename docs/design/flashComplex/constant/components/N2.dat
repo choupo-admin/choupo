@@ -1,44 +1,58 @@
-/*--------------------------------*- Choupo -*--------------------------------*\
-|  N2 -- the INERT.  Its job in this case is to guarantee a vapour phase       |
-|  exists at every condition, so "no vapour formed" can never be confused      |
-|  with "the run failed".  DESIGN DRAFT.                                       |
-\*-----------------------------------------------------------------------------*/
-recordType    component;
-schemaVersion 3;
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Nitrogen  (N2, CAS 7727-37-9)  --  DESIGN DRAFT.
+
+  The INERT.  Its job in this case is to guarantee that a vapour phase
+  exists at every condition swept, so that "no vapour formed" can never be
+  confused with "the run failed".
+
+  INERT DOES NOT MEAN INSOLUBLE.  N2 dissolves, and its dissolution is
+  priced like any other (chemistry/N2-dissolution.dat).  What it does not do
+  is IONISE -- and that is exactly what `aqueousSpeciation none;` says.  The
+  fact is about the speciation NETWORK, not about solubility: a component
+  can be `none` and still have a Henry rung.  Conflating the two is the
+  mistake this line exists to prevent.
+
+  Values mirrored from data/standards/components/N2.dat.
+\*---------------------------------------------------------------------------*/
 
 name        N2;
-formula     "N2";
+formula     N2;
 CAS         7727-37-9;
-MW          28.0134 g/mol;
-standardStates
+noncondensable true;
+
+MW          28.013;
+Tc          126.20;
+Pc          33.98;
+omega       0.039;
+Tb          77.35;
+HvapTb      5577;
+Vliq        3.46e-5;
+
+standardThermochemistry
 {
-    vapour  { dHf_298 0 J/mol; s_298 191.61 J/mol/K; }
+    dHf_298   0.0;              // J/mol  -- element in its standard state
+    s_298     191.610;          // J/(mol*K)  -- third-law absolute
 }
 
-//  INERT does NOT mean insoluble: the dissolution is priced like any other.
-aqueousChemistry
+vaporPressure
 {
-    speciation none;
-
-    reactions
-    (
-        {
-            name      nitrogenDissolution;
-            equation "N2(g) = N2(aq)";
-            stoichiometry
-            (
-                { species N2;    phase vapour;   nu -1; }
-                { species N2aq;  phase aqueous;  nu  1; }
-            );
-                            authority  measuredK;
-                measuredK
-                {
-                    logK25   -3.1864;
-                    analytic ( -58.453 0.001818 3199 17.909 -27460 );
-                    convention PHREEQC-gasMolal-v1;
-                    source   "USGS PHREEQC phreeqc.dat (public domain)";
-                }
-            }
-        }
-    );
+    model         Antoine;
+    coefficients  (3.7362   264.651   -6.788);
+    Trange        (50  126);
 }
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (31.15   -1.357e-2   2.680e-5   -1.168e-8);
+    Trange        (250  1500);
+}
+
+// Physically extrapolated stub: N2 is a gas at every condition of this case.
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (56.0);
+}
+
+aqueousSpeciation  none;

@@ -36,9 +36,14 @@ ROOT = Path(__file__).resolve().parents[2]
 
 #  Keys whose only possible value is the one written: doctrine, not setting.
 #  Each maps to the one place the doctrine belongs.
+#  NOT here, though an earlier version of this gate said so: `formulation`.
+#  It carries SIX distinct values across the corpus (gammaPhi, gammaGamma,
+#  phiPhi, electrolyteGammaPhi, diluteSolution, consistent), so it is a real
+#  knob and listing it would have failed the first design draft that used the
+#  actual manifest form.  Every key below was checked against the corpus and
+#  occurs ZERO times -- they are invented fields, not corpus fields.
 CEREMONY = {
     "equilibriumCondition": "always zero affinity -- state it once in the docs",
-    "formulation":          "one value today; if it ever branches, revisit",
     "componentDiscovery":   "one value; the rule belongs in the docs",
     "crossCheck":           "automatic whenever both routes exist",
     "introduces":           "derivable from the reactions' stoichiometry",

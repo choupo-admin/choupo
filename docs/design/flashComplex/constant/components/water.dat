@@ -1,52 +1,67 @@
-/*--------------------------------*- Choupo -*--------------------------------*\
-|  water -- the aqueous solvent.  DESIGN DRAFT (flashComplex).                 |
-\*-----------------------------------------------------------------------------*/
-recordType    component;
-schemaVersion 3;
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Water  (H2O, CAS 7732-18-5)  --  DESIGN DRAFT, flashComplex.
+
+  What this draft is testing: the component record carries IDENTITY,
+  PURE-COMPONENT constants and ONE formation datum.  It carries NO
+  reactions -- water's autoprotolysis lives in chemistry/water-dissociation.dat,
+  where a reaction has one home and can be shared by every case that reaches
+  it.  Putting it here would make water own an equilibrium that belongs to the
+  aqueous phase, and would give it two homes the day a second case needed it.
+
+  ONE formation datum.  dHf_298 is the IDEAL-GAS value.  The liquid is NOT
+  stored: Component::h_formation derives it as h_ig - Hvap, and the check is
+  arithmetic -- -241826 - 40660 = -282486 J/mol at Tb, -285830 at 298 K
+  through the Cp path.  Storing both would inherit ~0.7 kJ/mol of scatter
+  where the calorimetry at Tb measures ~0.1, and would drift the day one of
+  the two is revised.
+
+  Values mirrored from data/standards/components/water.dat (Antoine fit valid
+  273-373 K only; above ~373 K use steam tables / IAPWS).
+\*---------------------------------------------------------------------------*/
 
 name        water;
-formula     "H2O";
+formula     H2O;
 CAS         7732-18-5;
-MW          18.0153 g/mol;
-standardStates
+
+MW          18.015;
+Tc          647.14;
+Pc          220.64;
+omega       0.3449;
+Tb          373.15;
+HvapTb      40660;
+Vliq        1.807e-5;
+
+standardThermochemistry
 {
-    liquid  { dHf_298 -285830 J/mol;  s_298  69.95 J/mol/K; }
-    vapour  { dHf_298 -241830 J/mol;  s_298 188.84 J/mol/K; }
+    dHf_298   -241826.0;        // J/mol  -- ideal-gas reference
+    s_298     188.834;          // J/(mol*K)  -- third-law absolute
 }
 
-aqueousChemistry
+vaporPressure
 {
-
-    reactions
-    (
-        {
-            name      waterAutoprotolysis;
-            equation "H2O = H+ + OH-";
-            stoichiometry
-            (
-                { species water;  phase aqueous;  nu -1; }
-                { species H;      phase aqueous;  nu  1; }
-                { species OH;     phase aqueous;  nu  1; }
-            );
-                            authority  measuredK;
-                measuredK
-                {
-                    logK25   -14.0;
-                    dH        56400 J/mol;
-                    analytic ( 293.29227 0.1360833 -10576.913 -123.73158 0 -6.996455e-05 );
-                    source   "USGS PHREEQC phreeqc.dat (public domain)";
-                }
-            }
-        }
-    );
+    model         Antoine;
+    coefficients  (5.40221   1838.675   -31.737);
+    Trange        (273  373);
 }
 
-//  The solvent's own VLE is the Raoult leg (a_w * psat), NOT a K-bearing
-//  equilibrium: it lives with the phase MODEL in thermoPhysPropDict.  Stated
-//  here so the student is not left wondering where the water vapour went.
-vapourLiquidEquilibrium
+idealGasHeatCapacity
 {
-    route      raoultSolvent;         // p_w = a_w * psat_w(T)
-    note       "activity of the solvent from the declared aqueous activity
-                model; no equilibrium constant is involved";
+    model         polynomial;
+    coefficients  (32.243   1.924e-3   1.0555e-5   -3.596e-9);
+    Trange        (200  1500);
 }
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (75.5);
+    Trange        (273  373);
+}
+
+uniquac { r 0.9200; q 1.4000; }
+
+// The solvent takes no part in the speciation NETWORK as a solute: it is the
+// medium.  Its autoprotolysis is a network reaction with its own record, and
+// its VLE is the Raoult leg (p_w = a_w * psat) declared by the phase's
+// property method -- not an equilibrium constant.
+aqueousSpeciation  none;

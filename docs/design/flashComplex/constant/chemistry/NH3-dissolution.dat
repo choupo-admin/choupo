@@ -1,0 +1,14 @@
+recordType gasLiquidEquilibrium;
+schemaVersion 2;
+
+// Equilibrium-parameterisation identity (ADR 2026-07-26, D2 migration wave):
+// typed physical family + versioned convention profile.  The Sander H_xp
+// pair parameters/Henry/NH3-water.dat is an INDEPENDENT PRIMARY of the same
+// family (physical molecular solubility) -- cross-convention DIAGNOSTIC.
+gasSpecies       NH3;
+dissolvedSpecies NH3;
+solvent          water;
+convention       PHREEQC-gasMolal-v1;
+
+reaction "NH3(g) = NH3";
+      logK25 1.7966; analytic ( -18.758 0.0003367 2511.3 4.8619 39.192 ); source "USGS PHREEQC phreeqc.dat (public domain); primary not stated in db";

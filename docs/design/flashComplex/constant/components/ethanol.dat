@@ -1,33 +1,57 @@
-/*--------------------------------*- Choupo -*--------------------------------*\
-|  ethanol -- molecular condensable; joins BOTH liquids.  DESIGN DRAFT.        |
-\*-----------------------------------------------------------------------------*/
-recordType    component;
-schemaVersion 3;
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Ethanol  (C2H6O, CAS 64-17-5)  --  DESIGN DRAFT.
+
+  The component that joins BOTH liquids and the vapour: it is the only
+  species this case admits into the organic phase besides benzene, and it is
+  the one whose partition the student is asked to read.
+
+  `aqueousSpeciation none;` is the curated FACT the classifier reads: ethanol
+  takes part in no acid-base, complexation or precipitation equilibrium at
+  any pH this case reaches.  It is therefore a molecular condensable on the
+  Raoult backbone of whichever liquid it sits in -- never a Henry solute,
+  never an ion.  The classifier concludes this from the declared fact and
+  announces it; it never concludes it from the name.
+
+  Values mirrored from data/standards/components/ethanol.dat.
+\*---------------------------------------------------------------------------*/
 
 name        ethanol;
-formula     "C2H6O";
+formula     C2H6O;
 CAS         64-17-5;
-MW          46.068 g/mol;
-standardStates
+
+MW          46.069;
+Tc          513.92;
+Pc          61.48;
+omega       0.6490;
+Tb          351.44;
+HvapTb      38560;
+Vliq        5.850e-5;
+
+standardThermochemistry
 {
-    liquid  { dHf_298 -277690 J/mol; s_298 160.7 J/mol/K; }
-    vapour  { dHf_298 -234800 J/mol; s_298 281.6 J/mol/K; }
+    dHf_298   -234950.0;        // J/mol  -- ideal-gas reference
+    s_298     281.620;          // J/(mol*K)  -- third-law absolute
 }
 
-//  The curated FACT the classifier reads: ethanol takes part in NO aqueous
-//  speciation equilibrium.  It is a molecular condensable on the Raoult
-//  backbone of every liquid phase that admits it -- never a Henry solute,
-//  never an ion.
-aqueousChemistry
+vaporPressure
 {
-    speciation none;
-    note "nonionising: no acid-base, complexation or precipitation
-          equilibrium in water at any pH this case reaches";
+    model         Antoine;
+    coefficients  (5.37229   1670.409   -40.191);
+    Trange        (273  369);
 }
 
-vapourLiquidEquilibrium
+idealGasHeatCapacity
 {
-    route  raoultBackbone;        // p = gamma * x * psat(T)
-    note   "gamma from the declared molecular activity model of whichever
-            liquid phase it sits in (NRTL in both here)";
+    model         polynomial;
+    coefficients  (9.014   0.2141   -8.39e-5   1.373e-9);
+    Trange        (200  1500);
 }
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (112.3);
+    Trange        (280  351);
+}
+
+aqueousSpeciation  none;

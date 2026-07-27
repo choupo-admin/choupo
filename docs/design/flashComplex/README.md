@@ -22,20 +22,24 @@ The two solids share the carbonate ladder (common-ion coupling); the four
 families (carbonate, ammonia, sulfide, acetate) share the H⁺; the gas phase
 moves both through the Henry legs.  Nothing is decorative.
 
-## Where each thing is declared (merged form, 2026-07-27)
+## Where each thing is declared (rewritten into the corpus form, 2026-07-27)
 
 | what | where | note |
 |---|---|---|
 | the substances the student feeds | `0/feed` | only what was introduced before mixing — never ions |
-| the chemistry each substance brings | `constant/components/<name>.dat` | species it introduces + its own equilibria, with sources |
-| reactions that couple TWO families (ion pairs) | `constant/chemistry/aqueousComplexes/` | they belong to no single component — the pair axiom |
+| the topology | `system/flowsheetDict` | **two** outlets — a flash drum has a vapour nozzle and a bottoms nozzle; the phase split is a result |
+| which network each substance joins, and how it maps onto that network's masters | `constant/components/<name>.dat` | two lines: `aqueousSpeciation` + `aqueousMapping` — never the reactions themselves |
+| every reaction | `constant/chemistry/`, flat, one file per reaction | 13 of the 15 are byte-exact mirrors of the curated catalogue; a reaction is curated once and referenced |
+| which solid phases are admitted | `constant/chemistryDict` | availability, not presence — whether they appear is the answer |
 | species identity + standard-state data | `constant/species/` | one home each; never an equilibrium constant |
 | phases, models, approximations | `constant/thermoPhysPropDict` | the phases that MAY exist; the solver decides which do |
 | the assembled system | printed at run time | the `[chemistry]` block with an ACTIVATION REASON per entry — see [`EXPECTED_OUTPUT.md`](EXPECTED_OUTPUT.md) |
 | the converged stream | `converged/<name>` | three levels: species (what travels) · elements+charge (what balances) · inputLedger (what was fed) |
 
-There is **no student-authored `chemistryDict`**: the reachability closure
-assembles the system from the components fed, and the run prints it.  This is
+The student authors **no reactions**: the reachability closure assembles the
+system from the components fed, and the run prints it.  (`chemistryDict` is
+not chemistry — it declares which solid phases are *admitted*, which is a
+modelling choice, not a fact about the substances.)  This is
 not a convenience — it is more correct.  See `DESIGN_DECISIONS.md`: the
 hand-written first draft of this very case missed three calcium ion pairs
 that change how much calcite dissolves.
@@ -70,7 +74,7 @@ measured is the one that should be stored.
 | layer | today | must become |
 |---|---|---|
 | **data** | fused H₂S record; NH₄HCO₃ absent; benzene–ethanol NRTL absent | decomposed H₂S record (both parents cited); NH₄HCO₃ solubility curated from primary; the missing NRTL pair curated |
-| **grammar** | chemistry assembled from `aqueousSpeciation` facts; no per-reaction declaration visible | chemistry travels WITH the component (`aqueousChemistry { introduces … reactions … }`), cross-family reactions in `chemistry/aqueousComplexes/`, `standardGibbs { authority … }` per reaction, `phases` block with declared approximations |
+| **grammar** | one liquid surface plus a vapour; no slot for a second liquid phase | a declared **second liquid phase** with its membership and its approximation — the one named gap that stops this case running |
 | **engine** | 2-phase reactive Newton (V + aqueous); LL Gibbs separate; solids only in crystalliser units | one multiphase reactive flash: V + 2 liquids + N solids, saturation as **complementarity** (solid present ⇔ SI = 0, else SI < 0 and amount 0) — an active-set/phase-stability layer over the reactive Newton |
 | **announce** | `chemical reactions: 3 (network in force)` | the full `[chemistry]` block above — system printed before solving, both directions explained, closure counted |
 | **GUI** | no chemistry surface | a Chemistry tab rendering the same structured object |
@@ -78,16 +82,17 @@ measured is the one that should be stored.
 
 ## Curation shopping list (before it can ever run)
 
-- [ ] **`CaHCO3-formation` in `data/standards/` is CORRUPT** — `logK25 −4.059;
+- [x] **`CaHCO3-formation` in `data/standards/` was CORRUPT** — `logK25 −4.059;
       dH 158117.5` against its own cited source (`log_k 1.106,
-      delta_h 2.69 kcal`) and its siblings (Mg/Sr/Ba at ≈ +1.0).  Caught by
-      `bin/curate/check_family_outliers.py`.  Fixing it re-seals ~34 cases →
-      its own reviewed wave.  `chemistry/aqueousComplexes/CaHCO3-formation.dat` here already
-      carries the corrected value and the full evidence.
-- [ ] `NH4HCO3` solubility from primary (Trypuć & Kiełkowska, J. Chem. Eng.
-      Data) — the `logK25 0.25` drafted here is order-of-magnitude only
-- [ ] benzene–ethanol NRTL pair (public-licence primary) — deliberately not
-      drafted, see `constant/parameters/NRTL/benzene-ethanol.CURATION-REQUIRED.md`
+      delta_h 2.69 kcal`) and its siblings (Mg/Sr/Ba at ≈ +1.0).  **Corrected**;
+      `bin/curate/check_family_outliers.py` now catches the class.
+- [ ] `NH4HCO3` — either the solid formation datum, or a solubility product
+      from primary (Trypuć & Kiełkowska, J. Chem. Eng. Data).  The
+      order-of-magnitude `logK25 ≈ 0.25` is deliberately **not stored**: see
+      `constant/components/NH4HCO3.dat`, which refuses instead.
+- [ ] four NRTL pairs — `benzene-ethanol`, `aceticAcid-water`, `benzene-water`
+      (`ethanol-water` is curated).  Deliberately not drafted; see
+      `constant/parameters/README.md`.
 - [ ] aqueous formation data (`hfAq`, `sAq`) for the neutral secondary
       species — CO2aq, NH3aq, H2Saq, HAc, N2aq — and for the three complex
       products.  Without them the species-thermodynamics **cross-check is
@@ -131,9 +136,9 @@ Full reasoning in [`DESIGN_DECISIONS.md`](DESIGN_DECISIONS.md).
 |---|---|---|
 | **Q1** | phase tags on every stoichiometric term? | **kept explicit** — the term reads as physics, not as a lookup |
 | **Q2** | how a liquid phase declares who may join it | **`members` + `approximation { excludes … reason … }`** — an approximation should name what it leaves out |
-| **Q3** | must a formable solid be listed as a component? | **dissolved** by `componentDiscovery fromFeedAndDeclaredPhases` — the list is gone |
-| **Q4** | do the Raoult legs belong in the chemistry ladder? | **no** — they carry no K, so they stay with the phase models; but each component now *says so* in a `vapourLiquidEquilibrium` block |
-| **Q5** | declared-and-verified constants? | the constant lives inside `standardGibbs` with its `authority`; the cross-check against species data is automatic, no separate ceremony |
+| **Q3** | must a formable solid be listed as a component? | **yes** — `components ( … )` stays.  `componentDiscovery` was tried and withdrawn: it was a field with one possible value, and the manifest *is* the case's declaration of its property system |
+| **Q4** | do the Raoult legs belong in the chemistry ladder? | **no** — they carry no K, so they stay with the phase models.  The `vapourLiquidEquilibrium` block that said so on each component was withdrawn: it restated doctrine per substance |
+| **Q5** | declared-and-verified constants? | the constant lives in the reaction's own record; the cross-check against species data is automatic.  `authority` is written **only** where the number came from another reaction — twice in this case, not fifteen times |
 | **Q6** | a new `multiphaseReactiveFlash` unit type? | **no** (Vítor) — a flash is a flash; the phase repertoire grows in the formulation, never in the unit |
 
 ### Still open — one seam

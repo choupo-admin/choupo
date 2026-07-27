@@ -1,24 +1,55 @@
-/*--------------------------------*- Choupo -*--------------------------------*\
-|  benzene -- the ORGANIC solvent.  DESIGN DRAFT.                              |
-\*-----------------------------------------------------------------------------*/
-recordType    component;
-schemaVersion 3;
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Benzene  (C6H6, CAS 71-43-2)  --  DESIGN DRAFT.
+
+  The ORGANIC solvent -- the component whose immiscibility with water is
+  what makes a second liquid phase possible in this case.
+
+  Note what is NOT declared here: benzene's (small, real) water solubility.
+  The organic phase of this case is imposed by DECLARATION, with its
+  membership and its exclusions written in constant/thermoPhysPropDict.
+  That approximation is stated where the phase is defined, because it is a
+  property of the phase model, not of the substance.
+
+  Values mirrored from data/standards/components/benzene.dat.
+\*---------------------------------------------------------------------------*/
 
 name        benzene;
-formula     "C6H6";
+formula     C6H6;
 CAS         71-43-2;
-MW          78.114 g/mol;
-standardStates
+
+MW          78.114;
+Tc          562.05;
+Pc          48.95;
+omega       0.2103;
+Tb          353.24;
+HvapTb      30720;
+Vliq        8.943e-5;
+
+standardThermochemistry
 {
-    liquid  { dHf_298  49080 J/mol; s_298 173.3 J/mol/K; }
-    vapour  { dHf_298  82930 J/mol; s_298 269.3 J/mol/K; }
+    dHf_298   82930.0;          // J/mol  -- ideal-gas reference
+    s_298     269.310;          // J/(mol*K)  -- third-law absolute
 }
 
-aqueousChemistry
+vaporPressure
 {
-    speciation none;
-    note "nonionising; its real (small) water solubility is EXCLUDED by the
-          declared organic-phase approximation -- see thermoPhysPropDict";
+    model         Antoine;
+    coefficients  (4.01814   1203.835   -53.226);
+    Trange        (287.7  354.07);
 }
 
-vapourLiquidEquilibrium { route raoultBackbone; }
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (-31.368   0.4746   -3.117e-4   8.523e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (135.4);
+    Trange        (278  350);
+}
+
+aqueousSpeciation  none;

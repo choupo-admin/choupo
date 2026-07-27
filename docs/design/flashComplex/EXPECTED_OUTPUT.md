@@ -22,26 +22,27 @@ components fed, and it must show its work, or the assembly is magic.
 [chemistry] activation trace (why each entry is in the problem)
 
   water-autoprotolysis          component water declares it
-  carbonicFirstDissociation     component CO2 declares it
-  bicarbonateDissociation       component CO2 declares it
-  ammoniumDissociation          component NH3 declares it
-  sulfideFirstDissociation      component H2S declares it
-  aceticDissociation            component aceticAcid declares it
-  calciteDissolution            component CaCO3 declares it
+  CO2aq-formation               reachable from component CO2
+  H2CO3-formation               reachable via CO2aq-formation  [derived]
+  CO3-formation                 reachable from component CO2
+  NH3aq-formation               reachable from component NH3
+  H2Saq-formation               reachable from component H2S
+  HAc-formation                 reachable from component aceticAcid
+  calcite dissolution           component CaCO3, solidPhases
 
-  CaHCO3-formation              SHARED (chemistry/aqueousComplexes/)
+  CaHCO3-formation              cross-family (chemistry/)
       Ca+2(aq)    reachable from component CaCO3
       HCO3-(aq)   reachable from component CO2
       aqueous phase admits CaHCO3+(aq)
       -> activated: it couples two families, so it belongs to neither
          component; the closure found it, not the author
 
-  CaCO3aq-formation             SHARED (chemistry/aqueousComplexes/)
+  CaCO3aq-formation             cross-family (chemistry/)
       Ca+2(aq)    reachable from component CaCO3
       CO3-2(aq)   reachable via bicarbonateDissociation
       -> activated
 
-  CaOH-formation                SHARED (chemistry/aqueousComplexes/)
+  CaOH-formation                cross-family (chemistry/)
       Ca+2(aq)    reachable from component CaCO3
       H2O         solvent of the aqueous phase
       -> activated
@@ -67,7 +68,8 @@ fed — never because the catalogue happens to hold it.
 
 [chemistry] aqueous equilibria at 308.15 K
   (1) H2O = H+(aq) + OH-(aq)                          pK = 13.68  [measuredK]
-  (2) CO2*(aq) + H2O = H+(aq) + HCO3-(aq)             pK =  6.31  [measuredK]
+  (2) CO2(aq) + H2O = H+(aq) + HCO3-(aq)              pK =  6.31  [measuredK]
+  (2b) H+(aq) + HCO3-(aq) = H2CO3(aq)             log K =  3.47  [derived]
   (3) HCO3-(aq) = H+(aq) + CO3-2(aq)                  pK = 10.22  [measuredK]
   (4) NH4+(aq) = NH3(aq) + H+(aq)                     pK =  9.05  [measuredK]
   (5) H2S(aq) = H+(aq) + HS-(aq)                      pK =  6.94  [measuredK]
@@ -76,9 +78,13 @@ fed — never because the catalogue happens to hold it.
   (8) Ca+2(aq) + CO3-2(aq) = CaCO3(aq)            log K =  3.15  [measuredK]
   (9) Ca+2(aq) + H2O = CaOH+(aq) + H+(aq)         log K = -12.78 [measuredK]
 
-[chemistry] CO2*(aq) is an AGGREGATE species:  CO2(aq) + H2CO3(aq)
-            the tabulated pK1 belongs to the sum -- true H2CO3 is ~0.13 % of
-            it (pKa 3.45); 3.45 + 2.89 = 6.34 recovers the tabulated 6.352
+[chemistry] the carbonate ladder is SPLIT: reaction (2) is the AGGREGATE the
+            experiment measures (no method separates CO2(aq) from H2CO3), and
+            (2b) is DERIVED from it -- 6.352 + (-2.886) = 3.466.  True H2CO3
+            is ~0.13 % of dissolved carbon and a MODERATELY STRONG acid
+            (pKa 3.47); the famous pK1 6.35 is weak only because almost none
+            of the CO2 has hydrated.  That hydration is the kinetic
+            bottleneck of CO2 absorption (k ~ 0.04 1/s at 25 C).
 
 [chemistry] every equation checked before solving:
             charge balance OK (9/9), element balance OK (9/9)
@@ -102,13 +108,20 @@ Species appear in equations **only** in presentation form with the phase —
                                                        (560 J/mol, 0.016 logK)
   bicarbonateDissociation         measuredK      OK    dH 14899 vs 14850
                                                        (49 J/mol, 0.001 logK)
-  carbonicFirstDissociation       measuredK      UNAVAILABLE
-      -> CO2*(aq) carries no aqueous formation datum (curationRequired)
-  ammoniumDissociation            measuredK      UNAVAILABLE  (NH3aq)
-  sulfideFirstDissociation        measuredK      UNAVAILABLE  (H2Saq)
-  aceticDissociation              measuredK      UNAVAILABLE  (HAc)
-  calciteDissolution              measuredK      OK
-  ammoniumBicarbonateDissolution  speciesData    REFUSED -- see below
+  CO2aq-formation                 (measured)     UNAVAILABLE
+      -> CO2(aq) carries no aqueous formation datum (curationRequired)
+  H2CO3-formation                 derivedFrom-   n/a: its parents are the
+                                  Reactions      check (6.352 - 2.886)
+  NH3aq-formation                 (measured)     UNAVAILABLE  (NH3aq)
+  H2Saq-formation                 (measured)     UNAVAILABLE  (H2Saq)
+  HAc-formation                   (measured)     UNAVAILABLE  (HAc)
+  calcite dissolution             (measured)     OK
+  ammoniumBicarbonate             --             REFUSED: no authority is
+                                                 declarable, see below
+
+[thermo] `authority` is printed only where it was WRITTEN -- twice.  A record
+         carrying its own measured logK25 got that number from a measurement
+         of its own reaction; there is nothing to declare.
 
 [thermo] cross-check coverage: 3 of 9 aqueous reactions.  The 6 unavailable
          are the quantified curation debt, not a silent pass.
@@ -159,23 +172,44 @@ where only one exists the absence is announced.
 
 ## 5. The stream, at three levels
 
-A converged stream file (`converged/aqueous`), showing what each level is
-**for**.  Note the correction to the naive form: elements are the
-**invariant that balances**, not the carrier — C, H and O cannot tell benzene
-from ethanol from acetate, so identity must travel as species.
+A converged stream file (`converged/bottoms`), showing what each level is
+**for**.  Two corrections are folded in, and the second one was mine.
+
+**Elements are the invariant that balances, not the carrier.** C, H and O
+cannot tell benzene from ethanol from acetate, and no equilibrium relates
+them, so identity must travel as species. That correction stands.
+
+**The split is not `reacting` / `passThrough`.** That was the replacement I
+proposed, and it repeats the same family of error: it conflates two
+independent axes. Ethanol does not react — and it partitions between three
+phases, so its distribution *must* be re-solved downstream. Calling it
+*pass through* invites someone to carry it intact and never re-solve it. The
+only true pass-through would be a species confined to one phase with no
+chemistry, and not even N₂ is that, because it dissolves.
+
+The axis that matters is **conserved vs re-solved**:
+
+* **what is conserved** — the totals (per component, or per element and
+  charge, according to whether the family is reactive): these cross the
+  boundary as *data*;
+* **what is re-solved** — the distribution over species **and over phases**:
+  this crosses as a *warm start*, always.
+
+Ethanol has a conserved total and a re-solved distribution. An ion has a
+conserved family total and a re-solved distribution. Neither is pass-through.
 
 ```
 /* converged/aqueous -- written by the solver */
 
-//  (1) WHAT TRAVELS.  The physical state, per phase, in species.
-//      Split by role, because they are not the same kind of thing:
-//        * reacting: the network re-solves this distribution downstream
-//          from its element+charge totals -- here it is a warm start;
-//        * passThrough: no equilibrium relates these to anything, so the
-//          numbers ARE the answer and must survive the boundary intact.
-speciesMolarFlows
+//  (1) WHAT IS RE-SOLVED.  The physical state, per phase, in species -- a
+//      WARM START for the next unit, never an answer to be carried intact.
+//      Everything here is re-solved downstream: the ions because the network
+//      redistributes them, the neutrals because they re-partition between
+//      the phases.  The distinction that matters is against level (2), which
+//      is conserved; it is not a distinction WITHIN this level.
+speciesDistribution
 {
-    reacting
+    aqueous
     {
         H         1.02e-5;   OH        3.11e-4;
         Ca        4.40e-3;   CaHCO3    9.10e-4;   CaCO3aq  2.20e-4;  CaOH  1.1e-8;
@@ -185,15 +219,20 @@ speciesMolarFlows
         HAc       0.06;      Acetate   1.94;
         // unit: kmol/h
     }
-    passThrough
-    {
         water    58.9;   ethanol  1.83;   N2aq  2.1e-3;
     }
+    organic
+    {
+        benzene  19.4;   ethanol  6.11;
+    }
+    calcite  { CaCO3  0.31; }
+    //  ethanol appears in BOTH liquids.  That is exactly why there is no
+    //  `passThrough` bucket: a species that does not react still moves.
 }
 
-//  (2) WHAT MUST BALANCE.  The invariant, written for audit -- every unit
-//      boundary checks it, and it is what a mixer adds.  It is NOT what
-//      identifies the molecules.
+//  (2) WHAT IS CONSERVED.  The invariant, written for audit -- every unit
+//      boundary checks it, and it is what a mixer adds.  This is the level
+//      that crosses as DATA.  It is NOT what identifies the molecules.
 materialInventory
 {
     elementMolarFlows { H 121.7;  O 71.4;  C 8.06;  N 6.00;  S 1.00;  Ca 0.0055; }

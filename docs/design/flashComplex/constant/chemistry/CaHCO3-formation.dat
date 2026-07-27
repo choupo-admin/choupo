@@ -1,0 +1,6 @@
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species CaHCO3; ion "CaHCO3+"; z +1; masters ( { ion Ca; nu 1; } { ion HCO3; nu 1; } );
+      logK25 1.106; dH 11255; source "USGS PHREEQC phreeqc.dat (public domain): Ca+2 + CO3-2 + H+ = CaHCO3+, log_k 11.435, delta_h 2.69 kcal, re-baselined onto the HCO3 master (11.435 - 10.329 = 1.106)";
+

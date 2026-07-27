@@ -1,69 +1,58 @@
-/*--------------------------------*- Choupo -*--------------------------------*\
-|  NH4HCO3 -- ammonium bicarbonate.  NEVER FED: this solid APPEARS if the      |
-|  NH3 + CO2 loading crosses saturation.  DESIGN DRAFT -- every value below    |
-|  is INTERIM, pending primary curation.  The case cannot run until it is.     |
-\*-----------------------------------------------------------------------------*/
-recordType    component;
-schemaVersion 3;
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Ammonium bicarbonate (NH4HCO3).  CAS 1066-33-7.
+  DESIGN DRAFT -- and the REFUSAL EXEMPLAR of this case.
+
+  NEVER FED.  This solid APPEARS if the NH3 + CO2 loading crosses saturation.
+  A component the student never wrote can therefore enter the answer, which
+  is the point: the phase set is a RESULT, not an input.
+
+  WHY THIS FILE REFUSES.  Both of its species are already in the network --
+  NH4+ from the ammonia set, HCO3- from the carbonate set -- so the solid's
+  equilibrium is fully determined by ONE more number.  That number is not
+  curated, and neither route to it is available:
+
+    * the SOLID FORMATION DATUM (which would give the equilibrium to the
+      precision of the calorimetry) is not in the catalogue;
+    * the MEASURED solubility product is available only as an order of
+      magnitude read off the ~220 g/L (25 C) solubility -- logK25 ~ 0.25,
+      which is a full log unit of uncertainty on a solid whose appearance
+      or absence changes the whole answer.
+
+  So the case REFUSES, by name, with the remedy stated.  It does not quietly
+  run on the order-of-magnitude number, and it does not silently drop the
+  solid.  Compare CaCO3.dat, where every constant is measured to 0.01 log
+  units: the authority for an equilibrium is a property of the DATA available
+  for THAT reaction, never of the reaction's category.
+
+  Curation remedy, either one:
+    (a) curate the solid formation datum (dHf_298, s_298, referenceState
+        pureSolid) from a primary source, and the equilibrium follows; or
+    (b) curate a measured solubility product with its primary citation, and
+        declare it in solidPhases below.
+\*---------------------------------------------------------------------------*/
 
 name        NH4HCO3;
-formula     "NH4HCO3";
-MW          79.056 g/mol;
-defaultPhase ammoniumBicarbonate;
+formula     NH4HCO3;
+CAS         1066-33-7;
 
-standardStates
+MW          79.056;            // kg/kmol
+
+solid
+{
+    rho_p   1580.0;            // particle density [kg/m^3] -- INTERIM (CRC)
+}
+
+// NO standardThermochemistry BLOCK.  Not an omission: the datum is not
+// curated, and writing a placeholder would be worse than refusing.  The
+// engine names this file and this field when it stops.
+
+solidPhases
 {
     ammoniumBicarbonate
     {
-        physical  { rho_p 1580 kg/m^3; }     // CRC, INTERIM
-        source    "INTERIM -- formation datum not curated";
+        dissolutionReaction { masters ( { ion NH4; nu 1; } { ion HCO3; nu 1; } ); }
+        equilibrium { status curationRequired; requires ( logK25 ); note "order-of-magnitude estimate logK25 ~ 0.25 from the ~220 g/L (25 C) solubility is NOT stored: a value with a log unit of uncertainty, on a solid whose presence changes the phase set, is not a value.  Primary pending -- Trypuc & Kielkowska, J. Chem. Eng. Data."; }
     }
-}
-
-aqueousChemistry
-{
-                             // already introduced by NH3 and CO2
-
-    reactions
-    (
-        {
-            name      ammoniumBicarbonateDissolution;
-            equation "NH4HCO3(s) = NH4+ + HCO3-";
-            stoichiometry
-            (
-                { species NH4HCO3; phase ammoniumBicarbonate; nu -1; }
-                { species NH4;     phase aqueous;             nu  1; }
-                { species HCO3;    phase aqueous;             nu  1; }
-            );
-
-            //  THE speciesData EXEMPLAR.  Here the measured constant is the
-            //  WEAK one: 0.25 is an order of magnitude read off a solubility,
-            //  while the solid's formation datum -- once curated -- gives the
-            //  equilibrium to the precision of the calorimetry.  So the
-            //  authority is the SPECIES route, and because that datum does
-            //  not exist yet the engine REFUSES rather than quietly running
-            //  on the order-of-magnitude number.  (Compare CO2.dat, where
-            //  every constant is measured to 0.01 log units and the
-            //  authority is measuredK.  Authority is a property of the DATA
-            //  for THIS reaction -- never of the reaction's category.)
-                            authority  speciesData;
-
-                //  refusal expected today:
-                //    NH4HCO3(ammoniumBicarbonate) carries no formation datum
-                //    -> curate it, or declare `authority measuredK` and
-                //       accept the order-of-magnitude constant explicitly.
-
-                measuredK
-                {
-                    logK25    0.25;      // ORDER OF MAGNITUDE ONLY, from the
-                                         // ~220 g/L (25 C) solubility
-                    source   "INTERIM: primary pending (Trypuc & Kielkowska,
-                              J. Chem. Eng. Data)";
-                    reviewStatus interim;
-                }
-            }
-        }
-    );
 }
 
 reviewStatus interim;

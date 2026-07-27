@@ -1,0 +1,31 @@
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+// TRUE molecular carbonic acid -- the rung the aggregate CO2* hides.
+//
+// The catalogues store ONE constant for dissolved carbon,
+//     CO2(aq) + H2O = H+ + HCO3-,   pK1* = 6.352
+// because no analytical method separates CO2(aq) from H2CO3.  Splitting it
+// costs one record and buys two facts the aggregate cannot show:
+//
+//   (1) H2CO3 is 0.13 % of dissolved carbon (K_hyd = 1.3e-3) but is a
+//       MODERATELY STRONG acid, pKa 3.47 -- the famous 6.35 is weak only
+//       because almost none of the CO2 has hydrated;
+//   (2) that hydration is the KINETIC bottleneck of CO2 absorption
+//       (k_fwd ~ 0.04 1/s at 25 C) -- the reason carbonic anhydrase exists
+//       in blood and the reason capture plants use amine promoters rather
+//       than plain water.
+//
+// ARITY.  K_hyd * Ka(H2CO3) = K1*, so only TWO of the three may be primary.
+// The aggregate is what the experiment measures, so it and K_hyd are the
+// primaries and THIS constant derives -- the split changes what the student
+// SEES, never what the experiment SAYS.  Same idiom as CaHCO3-formation.dat:
+// the arithmetic rides in `source`, so the value has one home and is
+// auditable.  `authority` is written because this record did NOT get its
+// number from a measurement of its own reaction; a record carrying its own
+// measured logK25 needs no such declaration.
+species H2CO3; ion "H2CO3"; z 0; masters ( { ion H; nu 1; } { ion HCO3; nu 1; } );
+      authority derivedFromReactions; logK25 3.466; source "DERIVED on these same masters: chemistry/CO2aq-formation.dat carries the measured AGGREGATE logK25 6.352 (USGS PHREEQC phreeqc.dat, public domain) and the hydration K_hyd = [H2CO3]/[CO2aq] = 1.30e-3 gives logK -2.886; 6.352 + (-2.886) = 3.466 = pKa of true carbonic acid. INTERIM: the literature hydration range 1.3-1.7e-3 spans 0.1 log units, which moves this pKa between 3.47 and 3.57 -- the AGGREGATE is unaffected, being pinned by pK1*. Primary curation of K_hyd pending.";
+      reviewStatus interim;
+      reviewReason ( primarySourceRecheck );
+      reviewOwner  IST;
