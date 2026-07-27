@@ -1,0 +1,17 @@
+recordType gasLiquidEquilibrium;
+schemaVersion 2;
+
+// Equilibrium-parameterisation identity (ADR 2026-07-26, D2 migration wave):
+// typed physical family + versioned convention profile.  COMPOSITE record
+// (Henry + first acid dissociation FUSED, the PHREEQC phases form): the
+// dissolved side is the ion pair, so this is a DIFFERENT physical family
+// from the molecular pair parameters/Henry/H2S-water.dat -- no direct
+// cross-convention comparison (the molecular link goes through
+// chemistry/H2Saq-formation.dat).
+gasSpecies       H2S;
+dissolvedSpecies "H+ + HS-";
+solvent          water;
+convention       PHREEQC-gasMolal-v1;
+
+reaction "H2S(g) = H+ + HS-";
+      logK25 -7.93; dH 9100; analytic ( -45.07 -0.02418 0 17.9205 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: H2S solubilities, 0 - 300 C, 1 - 987 atm, Jiang et al., 2020, CG 555, 119816";

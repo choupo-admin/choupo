@@ -84,6 +84,28 @@ no K and live with the phase models — see open question Q4.
 - [ ] operating-window check: does (T, P, feed) sit where BOTH solids are at
       saturation and both liquids form?  (tune T/P/feed when solvable)
 
+## Self-contained (Vítor, 2026-07-27): the data lives IN the case
+
+`constant/` mirrors every record the declaration references — components,
+species, chemistry — even though most also live in `data/standards/` (the
+sealed-corpus doctrine: the student finds the WHOLE system in one folder).
+Records that do NOT exist in standards yet are DRAFTS, loudly marked
+(`reviewStatus interim;`): `components/NH4HCO3.dat` (solubility order-of-
+magnitude only) and `chemistry/H2S-physical-dissolution.dat` (the
+decomposed constant, both parents cited).  The benzene–ethanol NRTL pair
+is deliberately NOT drafted — a placeholder with invented coefficients
+would be a fabricated record (`parameters/NRTL/
+benzene-ethanol.CURATION-REQUIRED.md`).  The `propertyManifest` (sha256
+seal) is minted by `bin/choupo-import` at graduation, when the case first
+runs.
+
+A free verification example the mirrors expose: the student declares
+calcite as the Ksp form (CaCO₃ = Ca²⁺ + CO₃²⁻, pKsp 8.48) while the
+catalogue record (`components/CaCO3.dat` solidPhases) stores the PHREEQC
+acid form (CaCO₃ + H⁺ = Ca²⁺ + HCO₃⁻, logK 1.879) — and the two agree
+exactly through the bicarbonate step: −8.48 + 10.33 = 1.85 ≈ 1.879.  The
+declared-and-verified layer must do THIS conversion, not string matching.
+
 ## Open design questions (the passo-a-passo)
 
 - **Q1 — phase tags:** every stoichiometry term carries `phase …;` explicitly
@@ -104,10 +126,12 @@ no K and live with the phase models — see open question Q4.
 - **Q5 — declared constants:** pK declared-and-verified in every entry (as
   drafted), or optional (declare structure always, values only when the
   course wants the cross-check exercise)?
-- **Q6 — the unit type:** `multiphaseReactiveFlash` as a NEW unit type (as
-  drafted), or grow `isothermalFlash` until it subsumes this?  A new type
-  keeps the existing flash simple and teachable; growing one type avoids a
-  zoo.
+- **Q6 — SETTLED (Vítor, 2026-07-27): the unit stays `isothermalFlash`.**
+  A new type would force gatekeeping classifications (which components
+  "may" run in which flash) and split the flash world in two.  A flash
+  holds T and P and splits into whatever phases the DECLARED thermo world
+  admits; the repertoire grows in the `thermoPhysPropDict` formulation
+  (the `phases` block), never in the unit.  One flash to teach, forever.
 
 ## Relations
 

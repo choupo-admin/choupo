@@ -159,10 +159,14 @@ gasLiquid
     {
         name           N2dissolution;
         //  N2(g) = N2(aq)   (the inert is NOT insoluble -- it is priced)
+        //  NOTE the same token on both sides: in this grammar identity is
+        //  the TYPED PAIR (species, phase) -- the catalogue's dissolved-N2
+        //  label is plain "N2", and the phase tag does the disambiguation
+        //  the aq-suffix does for bare-string record references.
         stoichiometry
         (
             { species N2;     phase gas;      nu -1; }
-            { species N2aq;   phase aqueous;  nu  1; }
+            { species N2;     phase aqueous;  nu  1; }
         );
         logK           -3.1864;
     }

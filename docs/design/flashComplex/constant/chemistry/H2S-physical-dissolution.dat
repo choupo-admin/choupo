@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  H2S PHYSICAL (molecular) dissolution -- DRAFT record, design driver.
+  DECOMPOSED from the catalogue's FUSED record (chemistry/
+  H2S-dissolution.dat: H2S(g) = H+ + HS-, logK25 -7.93) minus the first
+  acid dissociation (chemistry/H2Saq-formation.dat: logK25 6.994 as the
+  FORMATION HS- + H+ = H2Saq, i.e. Ka1 = -6.994):
+
+      H2S(g) = H2S(aq)      logK25 = -7.93 + 6.994 = -0.94
+
+  Sanity: more soluble than CO2 (-1.468) as it must be; consistent with
+  Sander's Hcp ~ 0.087 M/atm.  This executes the D6 dossier finding: the
+  fused constant and the molecular Henry are comparable ONLY through this
+  explicit thermodynamic decomposition, never by label.
+\*---------------------------------------------------------------------------*/
+recordType gasLiquidEquilibrium;
+schemaVersion 2;
+
+gasSpecies       H2S;
+dissolvedSpecies H2Saq;
+solvent          water;
+convention       PHREEQC-gasMolal-v1;
+
+reaction "H2S(g) = H2S(aq)";
+      logK25 -0.94; source "DERIVED (this file): fused PHREEQC record minus Ka1; both parents cited above -- INTERIM, pending curation as a standards record";
+
+reviewStatus interim;
+reviewReason ( proxyValue );
+reviewOwner  IST;

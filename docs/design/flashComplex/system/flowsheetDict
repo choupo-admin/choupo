@@ -6,8 +6,13 @@ units
 (
     {
         name        flash01;
-        type        multiphaseReactiveFlash;    // DOES NOT EXIST YET -- this
-                                                // case is its specification
+        type        isothermalFlash;            // Q6 SETTLED (Vitor,
+        // 2026-07-27): NO new unit type.  A flash is a flash -- hold T
+        // and P, split into whatever phases the DECLARED thermo world
+        // admits.  The phase repertoire grows in the thermoPhysPropDict
+        // formulation, never in the unit -- so no gatekeeping
+        // classifications deciding which components "may" enter which
+        // flash, and only one flash to teach.
         in          feed;
         outputs     ( vapor  aqueousLiquid  organicLiquid
                       calciteCake  bicarbonateCake );
