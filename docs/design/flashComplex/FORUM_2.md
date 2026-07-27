@@ -194,6 +194,21 @@ um valor inventado.
 
 ## Estado dos achados do PRIMEIRO fórum
 
+O achado 2 daquela sessão — o pH impresso sem escala declarada — está
+**fechado**. `AqueousActivity::pHScale()` é **virtual pura**: um modelo novo
+declara a sua convenção de ião único ou não compila. Não há default, porque
+um default deixaria um modelo herdar em silêncio a convenção de outro.
+
+Os dois modelos declaram-se: Davies dá `log10 g = -A z^2 (…)`, função só da
+carga, portanto `g_H = g_Na = g_Cl` — é escala **livre** por construção. O
+HMW regride contra coeficientes médios, e a divisão de ião único é a que a
+parameterização implica.
+
+O sentido perigoso é o outro, e está tratado: quando o caso **impõe** um pH,
+o output diz que esse número está a ser **lido** naquela escala — e que a
+leitura de um eléctrodo é NBS. Um aluno que escreva o pH medido no laboratório
+vê agora que o motor não o está a ler como ele o mediu.
+
 O achado 1 daquela sessão — a banda de silêncio do Davies — está **fechado**
 (commit desta série). O limiar desceu de 0.7 para 0.5, que é o valor que a
 própria mensagem sempre declarou.

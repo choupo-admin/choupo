@@ -303,6 +303,13 @@ struct SpeciationResult
     double                        aw = 1.0; // water activity (phi = 1 approx.)
     double                        A  = 0.51;// Davies A at the run T
     double                        pH = 7.0; // echoed (given) or SOLVED (electroneutrality)
+    //  WHICH pH.  A pH is -log10(gamma_H * m_H), so it is only defined once
+    //  the single-ion convention of gamma_H is named -- and that convention
+    //  is the ACTIVE activity model's (AqueousActivity::pHScale).  Carried
+    //  here so no consumer has to guess, and so the number can never be
+    //  reported bare.  At I = 0.68 the free / total / NBS scales differ by
+    //  0.1 - 0.3 units.
+    std::string                   pHScale;
     double                        imbalancePct = 0.0;  // feed charge imbalance %
                                             //   (PHREEQC convention; solvePH only)
     std::map<std::string, double> SI;       // mineral -> log10(IAP/K)  (available only;

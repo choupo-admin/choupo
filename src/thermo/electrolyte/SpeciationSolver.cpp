@@ -1753,6 +1753,11 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         r.activity = solveH ? r.gamma * r.molality : a_H;  // given mode: exact echo
         r.isMaster = true;
         out.pH = solveH ? -std::log10(r.activity) : in.pH;
+        //  The number is only defined once its convention is named -- and the
+        //  convention is the ACTIVE model's, never a hardcoded default.  This
+        //  holds in BOTH directions: a GIVEN pH is being READ on this scale,
+        //  which is the more dangerous case (a meter reading is NBS).
+        out.pHScale = activity_ ? activity_->pHScale() : std::string();
         out.rows.push_back(std::move(r));
     }
     for (const auto& a : act)
@@ -1902,6 +1907,11 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                           << out.imbalancePct << "% absorbed";
             std::cout << ")\n" << std::defaultfloat;
         }
+        if (!out.pHScale.empty())
+            std::cout << "  speciation: pH scale = " << out.pHScale
+                      << (solveH ? "\n"
+                                 : "  -- the GIVEN pH is READ on this scale;"
+                                   " a meter reading is NBS\n");
         std::cout << "  speciation: " << out.rows.size() << " species, I = "
                   << std::scientific << std::setprecision(4) << out.I
                   << " mol/kg, a_w = " << std::fixed << std::setprecision(5)

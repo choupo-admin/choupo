@@ -157,6 +157,18 @@ public:
     // The activity model's registered name (e.g. "davies").
     virtual const std::string& modelName() const = 0;
 
+    // THE pH SCALE THIS MODEL DEFINES.  PURE VIRTUAL, deliberately: a pH is
+    // -log10(gamma_H * m_H), so the number a model reports is meaningless
+    // without the single-ion convention its gamma_H rides on -- and single-ion
+    // activity coefficients are NOT measurable, they exist only relative to a
+    // convention.  At I = 0.68 the free, total and NBS scales differ by 0.1 to
+    // 0.3 units, more than many differences this project treats as
+    // significant.  A default here would let a new model inherit somebody
+    // else's convention silently, so there is none: declare it or do not
+    // compile.  (Choupo doctrine everywhere else too -- the case declares its
+    // convention and the engine reads it, never the reverse.)
+    virtual const std::string& pHScale() const = 0;
+
     // Freeze the per-ion activity coefficients for the current pass state.
     virtual ActivityResult evaluate(const IonState& st, double T) const = 0;
 

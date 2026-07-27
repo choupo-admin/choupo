@@ -328,6 +328,13 @@ const std::string& PitzerHMW::modelName() const
     return n;
 }
 
+const std::string& PitzerHMW::pHScale() const
+{
+    static const std::string s =
+        "free H+ activity, single-ion convention of the HMW parameterisation";
+    return s;
+}
+
 // ----------------------------------------------------------------------------
 ActivityResult PitzerHMW::evaluate(const IonState& st, double T) const
 {

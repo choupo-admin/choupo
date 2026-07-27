@@ -55,6 +55,19 @@ public:
         return n;
     }
 
+    //  Davies gives log10 g_i = -A z_i^2 (...), a function of CHARGE ALONE:
+    //  every singly-charged ion gets the same gamma, so g_H = g_Na = g_Cl by
+    //  construction.  That IS the single-ion convention, and it is why the pH
+    //  below is a FREE-scale activity -- free H+, not total (H+ plus HSO4-,
+    //  HF and other proton complexes) and not the operational NBS scale a
+    //  meter reports against standard buffers.
+    const std::string& pHScale() const override
+    {
+        static const std::string s =
+            "free H+ activity, Davies charge-symmetric single-ion convention";
+        return s;
+    }
+
     ActivityResult evaluate(const IonState& st, double T) const override
     {
         // 0.51 at 25 C, scaled in T by the same eps_w(T)/rho_w(T) factor as the

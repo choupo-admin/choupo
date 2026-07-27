@@ -104,6 +104,12 @@ class PitzerHMW : public AqueousActivity
 public:
     const std::string& modelName() const override;
 
+    //  The HMW parameters are regressed against MEAN activity coefficients
+    //  and osmotic data; the individual-ion gammas the model then yields
+    //  carry the single-ion split implicit in that parameterisation.  Named,
+    //  not defaulted -- see AqueousActivity::pHScale.
+    const std::string& pHScale() const override;
+
     // Freeze the per-ion Pitzer gammas for the pass state (full molality + name
     // + charge vectors).  Fills BOTH gamma(z) (charge-keyed fallback, used for
     // species absent from pairs.dat) and gammaNamed(name, z) (the per-identity
