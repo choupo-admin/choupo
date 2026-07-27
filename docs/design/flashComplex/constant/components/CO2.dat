@@ -25,7 +25,9 @@
 
   An explicit-H2CO3 variant is legitimate but needs BOTH K_hyd and
   pKa(H2CO3) curated from primaries, and a re-curation of the whole
-  carbonate ladder.  Named, not drafted.
+  carbonate ladder.  Named, not drafted -- see the machine-readable
+  `meaning { aggregate ... splitVariantRequires ... }` block in
+  species/CO2aq.dat, which is what the run prints and what a gate reads.
 \*---------------------------------------------------------------------------*/
 recordType    component;
 schemaVersion 3;
@@ -132,8 +134,27 @@ aqueousChemistry
                     analytic ( -107.8871 -0.03252849 5151.79 38.92561 -563713.9 );
                     source   "USGS PHREEQC phreeqc.dat (public domain)";
                 }
-                crossCheck speciesData;        // PASSES today: 14899 stored
-                                               // vs 14850 from species (49 J)
+                //  THE BOTH-ROUTES EXEMPLAR.  Every species in this
+                //  reaction (HCO3-, H+, CO3-2) carries a curated formation
+                //  datum, so the standard part can ALSO be built from
+                //  species data -- and the two must agree.
+                consistencyCheck
+                {
+                    compare ( measuredK  speciesData  reactionEnthalpy );
+
+                    //  FIRST PASS IS WARNING-ONLY, deliberately.  Setting a
+                    //  fatal cut before the distribution of real
+                    //  disagreements is known would let the gate choose
+                    //  which cases die: HSO4-formation sits at 5.8 kJ/mol
+                    //  today and would take the sulfate cases with it.
+                    //  Measure first, then set fatal.
+                    warningToleranceLogK      0.05;
+                    warningToleranceEnthalpy  1000 J/mol;
+                    fatalToleranceLogK        unset;
+                    fatalToleranceEnthalpy    unset;
+                }
+                //  today's result:  dH  14899 (measured) vs 14850 (species)
+                //                   diff 49 J/mol = 0.001 in log K at 358 K
             }
         }
     );

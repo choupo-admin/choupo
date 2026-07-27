@@ -28,10 +28,11 @@ moves both through the Henry legs.  Nothing is decorative.
 |---|---|---|
 | the substances the student feeds | `0/feed` | only what was introduced before mixing — never ions |
 | the chemistry each substance brings | `constant/components/<name>.dat` | species it introduces + its own equilibria, with sources |
-| reactions that couple TWO families (ion pairs) | `constant/complexes/` | they belong to no single component — the pair axiom |
+| reactions that couple TWO families (ion pairs) | `constant/chemistry/aqueousComplexes/` | they belong to no single component — the pair axiom |
 | species identity + standard-state data | `constant/species/` | one home each; never an equilibrium constant |
 | phases, models, approximations | `constant/thermoPhysPropDict` | the phases that MAY exist; the solver decides which do |
-| the assembled system | printed at run time | the `[chemistry]` block — no file shows the union |
+| the assembled system | printed at run time | the `[chemistry]` block with an ACTIVATION REASON per entry — see [`EXPECTED_OUTPUT.md`](EXPECTED_OUTPUT.md) |
+| the converged stream | `converged/<name>` | three levels: species (what travels) · elements+charge (what balances) · inputLedger (what was fed) |
 
 There is **no student-authored `chemistryDict`**: the reachability closure
 assembles the system from the components fed, and the run prints it.  This is
@@ -69,7 +70,7 @@ measured is the one that should be stored.
 | layer | today | must become |
 |---|---|---|
 | **data** | fused H₂S record; NH₄HCO₃ absent; benzene–ethanol NRTL absent | decomposed H₂S record (both parents cited); NH₄HCO₃ solubility curated from primary; the missing NRTL pair curated |
-| **grammar** | chemistry assembled from `aqueousSpeciation` facts; no per-reaction declaration visible | chemistry travels WITH the component (`aqueousChemistry { introduces … reactions … }`), cross-family reactions in `complexes/`, `standardGibbs { authority … }` per reaction, `phases` block with declared approximations |
+| **grammar** | chemistry assembled from `aqueousSpeciation` facts; no per-reaction declaration visible | chemistry travels WITH the component (`aqueousChemistry { introduces … reactions … }`), cross-family reactions in `chemistry/aqueousComplexes/`, `standardGibbs { authority … }` per reaction, `phases` block with declared approximations |
 | **engine** | 2-phase reactive Newton (V + aqueous); LL Gibbs separate; solids only in crystalliser units | one multiphase reactive flash: V + 2 liquids + N solids, saturation as **complementarity** (solid present ⇔ SI = 0, else SI < 0 and amount 0) — an active-set/phase-stability layer over the reactive Newton |
 | **announce** | `chemical reactions: 3 (network in force)` | the full `[chemistry]` block above — system printed before solving, both directions explained, closure counted |
 | **GUI** | no chemistry surface | a Chemistry tab rendering the same structured object |
@@ -81,7 +82,7 @@ measured is the one that should be stored.
       dH 158117.5` against its own cited source (`log_k 1.106,
       delta_h 2.69 kcal`) and its siblings (Mg/Sr/Ba at ≈ +1.0).  Caught by
       `bin/curate/check_family_outliers.py`.  Fixing it re-seals ~34 cases →
-      its own reviewed wave.  `complexes/CaHCO3-formation.dat` here already
+      its own reviewed wave.  `chemistry/aqueousComplexes/CaHCO3-formation.dat` here already
       carries the corrected value and the full evidence.
 - [ ] `NH4HCO3` solubility from primary (Trypuć & Kiełkowska, J. Chem. Eng.
       Data) — the `logK25 0.25` drafted here is order-of-magnitude only
@@ -112,6 +113,15 @@ catalogue stores the PHREEQC **acid form** (CaCO₃ + H⁺ = Ca²⁺ + HCO₃⁻
 log K 1.879) — and they agree exactly through the bicarbonate step:
 −8.450 + 10.329 = 1.879.  The declared-and-verified layer must do *this*
 conversion, never a string match.
+
+## The output is part of the design
+
+[`EXPECTED_OUTPUT.md`](EXPECTED_OUTPUT.md) specifies what the run must print:
+the closure's **activation reason** for every equilibrium (a reaction enters
+because a path exists from what was fed — never because the catalogue holds
+it), the equations in course form, the standard-Gibbs authority and
+cross-check per reaction, the two named refusals, the three-level stream, and
+the optional apparent-component projection.
 
 ## Design questions — where they landed
 

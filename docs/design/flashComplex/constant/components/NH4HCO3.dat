@@ -40,17 +40,34 @@ aqueousChemistry
                 { species HCO3;    phase aqueous;             nu  1; }
             );
             equilibriumCondition zeroAffinity;
+
+            //  THE speciesData EXEMPLAR.  Here the measured constant is the
+            //  WEAK one: 0.25 is an order of magnitude read off a solubility,
+            //  while the solid's formation datum -- once curated -- gives the
+            //  equilibrium to the precision of the calorimetry.  So the
+            //  authority is the SPECIES route, and because that datum does
+            //  not exist yet the engine REFUSES rather than quietly running
+            //  on the order-of-magnitude number.  (Compare CO2.dat, where
+            //  every constant is measured to 0.01 log units and the
+            //  authority is measuredK.  Authority is a property of the DATA
+            //  for THIS reaction -- never of the reaction's category.)
             standardGibbs
             {
-                authority  measuredK;
+                authority  speciesData;
+
+                //  refusal expected today:
+                //    NH4HCO3(ammoniumBicarbonate) carries no formation datum
+                //    -> curate it, or declare `authority measuredK` and
+                //       accept the order-of-magnitude constant explicitly.
+
                 measuredK
                 {
                     logK25    0.25;      // ORDER OF MAGNITUDE ONLY, from the
                                          // ~220 g/L (25 C) solubility
                     source   "INTERIM: primary pending (Trypuc & Kielkowska,
                               J. Chem. Eng. Data)";
+                    reviewStatus interim;
                 }
-                crossCheck none;         // no species datum to compare against
             }
         }
     );

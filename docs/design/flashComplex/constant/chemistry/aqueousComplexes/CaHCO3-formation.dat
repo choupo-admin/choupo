@@ -36,6 +36,20 @@
 recordType    complexFormation;
 schemaVersion 3;
 
+//  The STANDARDS record this one supersedes carries a suspect value.  Marked
+//  machine-readably so no case can consume it as if validated, and so the
+//  curation report picks it up without a human remembering:
+supersedes
+{
+    record  "data/standards/chemistry/CaHCO3-formation.dat";
+    status  suspectedBadData;
+    reason  "logK25 -4.059 / dH 158117.5 contradict the record's own cited
+             source (phreeqc.dat: log_k 1.106, delta_h 2.69 kcal) and sit 51
+             and 12 median-absolute-deviations from the Mg/Sr/Ba siblings";
+    fix     "own reviewed wave: verify source, units, reaction direction and
+             sign, correct, re-seal the ~34 affected cases, run the suite";
+}
+
 name        CaHCO3;
 equation   "Ca+2 + HCO3- = CaHCO3+";
 stoichiometry

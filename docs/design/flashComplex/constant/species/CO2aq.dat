@@ -2,11 +2,28 @@ recordType    modelSpecies;
 schemaVersion 3;
 
 name        CO2aq;
-formula     "CO2";
+formula     "CO2*";
 charge      0;
 MW          44.010 g/mol;
 phase       aqueous;
 standardState infiniteDilutionMolality;
+
+//  This species is an AGGREGATE, and says so in a form the engine can read
+//  (so the output can print it and a gate can refuse anyone who uses the
+//  aggregate's constant with a split species).
+meaning
+{
+    aggregate ( "CO2(aq)"  "H2CO3(aq)" );
+
+    reason
+        "the tabulated first carbonate dissociation constant (pK1 = 6.352)
+         is DEFINED for CO2* = CO2(aq) + H2CO3(aq); no analytical method
+         separates them.  True H2CO3 is ~0.13 % of dissolved CO2
+         (K_hyd ~ 1.3e-3) and has pKa ~ 3.45; the two pictures reconcile
+         exactly: 3.45 + log(1/K_hyd) = 6.34.";
+
+    splitVariantRequires ( hydrationConstant  trueCarbonicAcidPKa );
+}
 
 aqueousThermo
 {
@@ -14,6 +31,6 @@ aqueousThermo
     required ( hfAq  sAq );
     note "no aqueous formation datum curated -> the reactions that use this
           species cannot be cross-checked against species thermodynamics.
-          The engine must ANNOUNCE the missing cross-check, never skip it
+          The engine ANNOUNCES the missing cross-check, never skips it
           silently.";
 }

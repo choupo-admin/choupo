@@ -74,7 +74,7 @@ species (CO2aq, NH3aq, H2Saq, HAc…) carry no formation datum.  That is the
 quantified curation debt, and it is why every such species record in this
 draft says `status curationRequired` with the consequence spelled out.
 
-### 3. Cross-family reactions get their own home — `constant/complexes/`
+### 3. Cross-family reactions get their own home — `constant/chemistry/aqueousComplexes/`
 
 The proposal's own open-questions list asks *"how the catalogue deduplicates
 species referenced by more than one component file"*.  This is that problem,
@@ -89,7 +89,7 @@ Ca2+ + H2O    = CaOH+ + H+
 
 which belong to **neither** `CaCO3.dat` nor `CO2.dat`.  Putting them in one of
 them makes that component silently claim the other's family; putting them in
-both gives the value two homes (the arity sin).  They live in `complexes/`,
+both gives the value two homes (the arity sin).  They live in `chemistry/aqueousComplexes/`,
 exactly as pair-dependent *parameters* (NRTL, Wilson, Henry) live in a pair
 catalogue rather than inside a component — the same axiom applied to
 reactions.
@@ -167,13 +167,116 @@ Consequence: the pair effectively never forms → free Ca²⁺ overestimated →
 calcite saturation overestimated; and the absurd dH swings log K by +4.6
 units between 298 and 358 K.  **The standards record is not edited by this
 draft** — correcting it re-seals ~34 cases and belongs to its own reviewed
-wave.  `complexes/CaHCO3-formation.dat` uses the corrected value and carries
+wave.  `chemistry/aqueousComplexes/CaHCO3-formation.dat` uses the corrected value and carries
 the full evidence in its header.
 
 This class of error is mechanically detectable (a value that is orders of
 magnitude away from its chemical family) and is proposed as a curation gate.
 
 ---
+
+## Consolidation round (2026-07-27, after the three-way review)
+
+### 6. Authority is declared per REACTION, never by reaction type
+
+The earlier text leaned towards "measured K is primary for aqueous
+equilibria".  That is wrong as a rule: the authority is a property of the
+**data available for that reaction**, not of its category.  A badly measured
+acid-base constant with well-reconciled species should follow the species.
+
+Both exemplars are now in the case:
+
+* `components/CO2.dat` — `authority measuredK` everywhere (every constant
+  measured to ~0.01 log units);
+* `components/NH4HCO3.dat` — `authority speciesData`, because the only
+  measured constant there is an order of magnitude read off a solubility.
+  The solid's formation datum does not exist yet, so the engine **refuses**
+  rather than falling back to the weaker number.  The refusal is spelled out
+  in `EXPECTED_OUTPUT.md` §4.
+
+### 7. `consistencyCheck` — and why the fatal cut stays unset in the first pass
+
+The hybrid failure mode is not hypothetical: **Choupo does it today.**  The
+K's come from the PHREEQC records, the enthalpies from the species `hfAq`,
+and nothing checks that they agree — the HSO4-formation disagreement of
+5.8 kJ/mol is exactly that defect, live in the corpus.
+
+`components/CO2.dat` carries the exemplar on `bicarbonateDissociation`
+(the reaction where both routes exist and agree to 49 J/mol).  Tolerances:
+
+```
+warningToleranceLogK      0.05;
+warningToleranceEnthalpy  1000 J/mol;
+fatalToleranceLogK        unset;      // deliberately
+fatalToleranceEnthalpy    unset;
+```
+
+A fatal cut set before the distribution of real disagreements is known would
+let the gate choose which cases die — HSO4 at 5.8 kJ/mol would take the
+sulfate cases with it.  Measure first over the 3 checkable reactions (and
+the ~56 more as their data lands), then set fatal.
+
+### 8. `chemistry/aqueousComplexes/`, and where the sub-foldering stops
+
+The name is adopted: it says *what* the home is for, not merely that its
+contents are "complex".  But the extrapolation to `acidBase/`, `redox/`,
+`mineralEquilibria/` is **not** adopted, because it repeats a mistake this
+project already corrected: `components/` was kept physically FLAT (settled
+2026-06-07) precisely because a record can belong to several categories, the
+kind already lives inside the file (`recordType`), and browsability is a
+*view* problem.
+
+The test fails inside this very case: `CaOH+` formation is a hydrolysis — is
+it acid-base or complexation?  `aqueousComplexes/` survives that test because
+its criterion is **structural** (belongs to no single component), not a
+chemical taxonomy.
+
+### 9. The stream: elements are the INVARIANT, not the carrier
+
+The reviewed proposal made `elementMolarFlows + netCharge` "the fundamental
+level transported between operations", with species passing only as an
+initial guess.  That loses information which cannot be recovered: C, H and O
+are equally benzene, ethanol and acetate, and no equilibrium relates them.
+
+The corrected form (`EXPECTED_OUTPUT.md` §5) splits the state by role:
+
+* `speciesMolarFlows.reacting` — the network re-solves this distribution
+  downstream from its element+charge totals; here it is a warm start;
+* `speciesMolarFlows.passThrough` — nothing relates these to anything, so the
+  numbers **are** the answer and must cross the boundary intact;
+* `materialInventory` (elements + charge + enthalpy) — the invariant every
+  boundary audits, and what a mixer adds;
+* `inputLedger` — historical, never confused with the state.
+
+### 10. The apparent projection is optional, declared, reporting-only
+
+No universal cation/anion pairing convention.  A case that wants an
+apparent-component report declares the basis; the output states that the
+representation is not unique; and a basis that cannot span the conserved
+inventory is a **refusal** with the missing representational component named
+(`EXPECTED_OUTPUT.md` §4, §6).
+
+### 11. Identifiers: internal short, presentation always
+
+Kept as `H`, `HCO3`, `Ca` (F2 stands).  New hard rule: **no human-facing
+output may show a bare internal identifier** — every equation, table and
+message uses the presentation formula with the phase: `H+(aq)`, `CO3-2(aq)`.
+A third naming scheme (`hydron`, `bicarbonate`) buys nothing the `formula`
+field does not already give.
+
+### 12. Sequencing: these do not travel together
+
+Items 6, 7, 8, 11 and the activation trace are cheap and local — announces,
+metadata, a gate.  Item 9 is **constitutional**: putting species in a stream
+file contradicts the ratified contract that no ion reaches a `0/` or
+`converged/` file, and it is precisely the roadmap item carrying the
+instruction *build via a vertical spike end-to-end before any mass
+migration*.  If they ship in one wave, an argument about where the HSO4
+enthalpy lives becomes hostage to a change in the constitution of streams.
+
+Reassurance for that item: the 300+ molecular tutorials do not move.  For a
+non-reactive case the three levels coincide — what they write today **is**
+the `inputLedger` — so the new form is additive, not a migration.
 
 ## Still open
 
