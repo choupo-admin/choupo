@@ -165,6 +165,60 @@ void Component::readFromDict(const DictPtr& d)
             aqueousMapping_.push_back(
                 { SpeciesId(ion), d2t->lookupScalar(ion) });
     }
+    else if (d->found("solidPhases"))
+    {
+        //  A MINERAL'S BRIDGE IS ITS OWN DISSOLUTION (2026-07-27).  A record
+        //  like calcite already states the stoichiometry:
+        //
+        //      solidPhases { calcite { dissolutionReaction
+        //          { masters ( {ion Ca; nu 1;} {ion HCO3; nu 1;} {ion H; nu -1;} ); } } }
+        //
+        //  Asking the author to ALSO write `aqueousMapping ( Ca:1, HCO3:1 )`
+        //  would put the same stoichiometry in a second place three lines
+        //  away -- the arity sin, in one file.  So it is derived: the
+        //  dissolution's masters, less H and OH.
+        //
+        //  H is dropped because it is not a family total: it is the mediator
+        //  every family shares, and it is closed by electroneutrality inside
+        //  the speciation, never carried as a component's contribution.  That
+        //  is exactly why feeding calcite MOVES the pH without anyone writing
+        //  an equation for it.
+        //
+        //  All declared phases of one component must dissolve to the same
+        //  ions (calcite and aragonite do -- they are polymorphs), so the
+        //  FIRST is read and any disagreement refuses rather than picking.
+        auto sp = d->subDict("solidPhases");
+        const auto phases = sp->keys();
+        std::vector<SpeciesStoich> derived;
+        std::string from;
+        for (const auto& ph : phases)
+        {
+            auto pd = sp->subDict(ph);
+            if (!pd->found("dissolutionReaction")) continue;
+            auto dr = pd->subDict("dissolutionReaction");
+            if (!dr->found("masters")) continue;
+            std::vector<SpeciesStoich> here;
+            for (const auto& m : dr->lookupDictList("masters"))
+            {
+                const std::string ion = m->lookupWord("ion");
+                if (ion == "H" || ion == "OH") continue;
+                here.push_back({ SpeciesId(ion),
+                                 m->lookupScalarOrDefault("nu", 1.0) });
+            }
+            if (derived.empty()) { derived = here; from = ph; continue; }
+            bool same = here.size() == derived.size();
+            for (std::size_t k = 0; same && k < here.size(); ++k)
+                same = here[k].species.key == derived[k].species.key
+                    && here[k].nu == derived[k].nu;
+            if (!same)
+                throw std::runtime_error("Component '" + name_ + "': solid"
+                    " phases '" + from + "' and '" + ph + "' dissolve to"
+                    " DIFFERENT ion sets, so the component's aqueous bridge is"
+                    " ambiguous -- declare `aqueousMapping` explicitly, or"
+                    " split the component.");
+        }
+        aqueousMapping_ = std::move(derived);
+    }
 
     // Aqueous-speciation FACT (substance-level, classifier-read; ratified
     // 2026-07-26): `aqueousSpeciation none;` = curated fact that the

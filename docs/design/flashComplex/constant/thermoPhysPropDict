@@ -58,6 +58,34 @@ equilibrium
         activityModel { ionic davies;  molecular NRTL; }
     }
 
+    //  THE SECOND LIQUID.  20 kmol/h of benzene against 60 of water: they do
+    //  not mix, and this case exists to make the engine say so.
+    //
+    //  Declaring it is not optional bookkeeping.  WITHOUT this block the
+    //  system has one liquid, and that liquid would swallow the benzene as
+    //  though water and benzene were miscible -- a silently wrong answer the
+    //  moment the case's remaining data debt is paid.  WITH it, the engine
+    //  refuses by name until the solver carries the phase.  A refusal is the
+    //  correct output here; a number would not be.
+    //
+    //  members is EXPLICIT.  What a phase admits is a modelling decision the
+    //  author owns, and the exclusion that matters is not the ~0.2 mol% of
+    //  water benzene really holds -- it is that the water-benzene
+    //  IMMISCIBILITY which CAUSES the split is declared here rather than
+    //  computed, so ethanol's partition rests on two binaries with no ternary
+    //  term.  Stated in `reason`, announced on every run.
+    organic
+    {
+        solvent  benzene;
+        members  ( benzene  ethanol );
+        activityModel NRTL;          // must MATCH the aqueous backbone: the
+                                     // coupling is an equality of ACTIVITY
+        reason
+            "pedagogical organic phase: only ethanol is admitted beside the
+             benzene.  The immiscibility that causes the split is declared,
+             not computed, and no ternary parameter prices it.";
+    }
+
     vapour    { fugacityModel idealGas; }
 
     volatiles ( CO2  H2S  N2  NH3  aceticAcid  benzene  ethanol  water );
