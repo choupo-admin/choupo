@@ -817,24 +817,67 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         const std::string& species() const { return isExch ? exchName : rxn->species; }
     };
     std::vector<Active> act;
+    //  ACTIVATION TRACE (2026-07-27): the closure assembles the system from
+    //  what the case fed -- so it must show its work, or the assembly is
+    //  magic.  For every curated reaction we record whether it entered the
+    //  problem and WHY: which master species made it reachable, or which one
+    //  was missing.  A reaction is never in the problem because the catalogue
+    //  happens to hold it; only because a path exists from this feed.
+    struct Trace { std::string species, why; bool on; };
+    std::vector<Trace> trace;
     for (const auto& r : reactions_)
     {
         Active a; a.rxn = &r;
         bool ok = true;
+        std::string need, missing;
         for (const auto& [ion, nu] : r.masters)
         {
             if (ion == "H") { a.nuH += nu; continue; }
             const int j = masterIndex(ion);
-            if (j < 0) { ok = false; break; }     // a master is absent: species off
+            if (j < 0) { ok = false; missing = ion; break; } // master absent: off
+            need += (need.empty() ? "" : " + ") + ion;
             a.idx.emplace_back(j, nu);
         }
-        if (!ok) continue;
+        if (!ok)
+        {
+            trace.push_back({r.species,
+                "master '" + missing + "' not present in this system", false});
+            continue;
+        }
         // solve-pH mode: H+ is unknown number iH -- fold its stoichiometry
         // into the idx machinery so the mass action / Jacobian see it like
         // any other unknown (a.nuH stays authoritative for the given-pH path).
         if (solveH && a.nuH != 0.0) a.idx.emplace_back(int(iH), a.nuH);
         a.logK = kT(r.species, r.logK25, r.hasDH, r.dH, r.kt);
+        {
+            std::ostringstream w;
+            w << "reachable from " << (need.empty() ? "the solvent" : need)
+              << (r.nuWater != 0.0 ? " + H2O" : "")
+              << ";  log K(T) = " << std::setprecision(5) << a.logK
+              << " (25 C: " << r.logK25
+              << (r.kt.hasAnalytic ? ", analytic" : (r.hasDH ? ", van't Hoff"
+                                                             : ", FLAT in T"))
+              << ")";
+            trace.push_back({r.species, w.str(), true});
+        }
         act.push_back(std::move(a));
+    }
+    if (verbosity >= 2 && !trace.empty())
+    {
+        std::size_t on = 0;
+        for (const auto& t : trace) if (t.on) ++on;
+        std::cout << "  [chemistry] closure over the curated network: "
+                  << on << " equilibria activated, "
+                  << (trace.size() - on) << " unreachable from this feed\n";
+        for (const auto& t : trace)
+            if (t.on)
+                std::cout << "  [chemistry]   " << t.species << ": "
+                          << t.why << "\n";
+        if (verbosity >= 4)
+            for (const auto& t : trace)
+                if (!t.on)
+                    std::cout << "  [chemistry]   (off) " << t.species << ": "
+                              << t.why << "\n";
     }
 
     // -- exchange species: Me(z+) + z X- = MeX, Gaines-Thomas equivalent

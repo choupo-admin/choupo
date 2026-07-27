@@ -121,6 +121,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     // ---- The INNER problem: liquid speciation at given liquid totals ------
     //  kgw from the un-vaporised solvent; each family's dissolved total in
     //  molality; closed system, pH SOLVED (electroneutrality inside).
+    bool traced = false;                      // the activation trace prints ONCE
     auto speciate = [&](const sVector& vap, SpeciationResult& out) -> void
     {
         const scalar liqW = nW - (cfg_.gasOf.count(cfg_.solventIdx)
@@ -142,7 +143,13 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             const scalar liq = n[fam.apparentIdx] - vap[fam.apparentIdx];
             in.totals[fam.master] = std::max(liq, 0.0) / kgw;
         }
-        out = spec_->solve(in, 0);                    // quiet inner kernel
+        //  The inner kernel is QUIET (it runs hundreds of times inside the
+        //  Newton) -- except on the very FIRST call, which carries the run's
+        //  verbosity so the closure can print its ACTIVATION TRACE once: the
+        //  student sees which equilibria the assembly put in the problem and
+        //  why, instead of a bare count.
+        out = spec_->solve(in, traced ? 0 : verbosity);
+        traced = true;
     };
 
     // The MOLECULAR BACKBONE state of the liquid (mixed-solvent v1):
