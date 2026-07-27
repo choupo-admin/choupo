@@ -134,6 +134,32 @@ struct ReactiveVLEConfig
     std::set<std::size_t>                                 nonreactive;
     std::map<std::size_t, std::function<scalar(scalar)>> psatOf; // Pa(T[K])
 
+    //  ---- THE SECOND LIQUID (declared, not discovered) --------------------
+    //  A benzene-rich organic phase alongside the aqueous one.  EMPTY means
+    //  no second liquid was declared, and the solver must then take a path
+    //  indistinguishable from the one it took before this field existed --
+    //  that is the mitigation for adding unknowns to a Newton every reactive
+    //  tutorial depends on.
+    //
+    //  members are apparent-component INDICES.  The list is explicit, never
+    //  inferred: what a phase admits is a modelling decision with consequences
+    //  the author must own (the excluded water-benzene immiscibility is a far
+    //  bigger approximation than the excluded 0.2 mol% of water).
+    //
+    //  The organic phase is priced by the SAME molecular model as the aqueous
+    //  backbone, and that is not a convenience.  The coupling is
+    //      gamma_aq * x_aq = gamma_org * x_org,
+    //  an equality of ACTIVITY, so the same physical state must give the same
+    //  gamma on both sides.  Two different models would make the residual
+    //  measure their disagreement instead of the distance from equilibrium.
+    struct OrganicPhase
+    {
+        std::vector<std::size_t> members;      // apparent-component indices
+        std::size_t              solventIdx = 0;
+        std::string              reason;       // the declared approximation
+    };
+    OrganicPhase organic;                      // members empty = not declared
+
     // The liquid's MOLECULAR BACKBONE (mixed-solvent v1, ratified
     // 2026-07-26): the declared solvent + the nonreactive molecular
     // components, mole fractions on the ION-FREE basis.  When the case

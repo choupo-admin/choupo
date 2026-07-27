@@ -787,6 +787,125 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             { i, marker, { { SpeciesId(carrying[0]), scalar(1.0) } } });
     }
 
+    //  ---- THE SECOND LIQUID: declared here, refused here ------------------
+    //  Read and validated BEFORE any solver wiring, so an ill-formed
+    //  declaration never reaches the Newton.  Absent = the reactive path is
+    //  exactly what it was.
+    std::vector<std::string> organicMembers;
+    std::string              organicSolvent, organicReason, organicModel;
+    if (eq->found("organic"))
+    {
+        auto org = eq->subDict("organic");
+        organicSolvent = org->lookupWord("solvent");
+        organicMembers = org->lookupWordList("members");
+        if (org->found("activityModel"))
+        {
+            const EntryValue& oev = org->entryValue("activityModel");
+            organicModel = std::holds_alternative<std::string>(oev)
+                ? std::get<std::string>(oev)
+                : org->subDict("activityModel")->lookupWord("model");
+        }
+        if (org->found("reason")) organicReason = org->lookupWord("reason");
+
+        //  (1) BOTH LIQUIDS, ONE MODEL.  The coupling is an equality of
+        //  ACTIVITY -- gamma_aq x_aq = gamma_org x_org -- so the same
+        //  physical state must give the same gamma on both sides.  Two
+        //  models would make the residual measure their disagreement
+        //  instead of the distance from equilibrium: not an approximation
+        //  with an error bar, a meaningless number.
+        if (molecularModel.empty())
+            throw std::runtime_error("thermophysicalPropertySystem: an"
+                " `organic` liquid is declared, but the aqueous phase has no"
+                " `molecular` backbone model -- the two liquids are coupled"
+                " by equality of ACTIVITY, so both must be priced by the SAME"
+                " model.  Declare activityModel { ionic davies; molecular"
+                " <NRTL|UNIFAC>; } on the aqueous phase.");
+        if (!organicModel.empty() && organicModel != molecularModel)
+            throw std::runtime_error("thermophysicalPropertySystem: the"
+                " organic phase declares activityModel '" + organicModel
+                + "' while the aqueous molecular backbone declares '"
+                + molecularModel + "' -- gamma_aq x_aq = gamma_org x_org is an"
+                " equality of ACTIVITY, and two different models make that"
+                " residual measure their own disagreement rather than the"
+                " distance from equilibrium.  Declare the same model on both,"
+                " or drop the organic phase.");
+
+        //  (2) NO IONS.  Every member must be a curated non-participant in
+        //  the aqueous speciation network.  Silently dropping an ionising
+        //  member would give the author an organic phase missing the very
+        //  component they thought they put in it.
+        for (const auto& mn : organicMembers)
+        {
+            auto it = std::find(names.begin(), names.end(), mn);
+            if (it == names.end())
+                throw std::runtime_error("thermophysicalPropertySystem: the"
+                    " organic phase lists member '" + mn + "', which is not a"
+                    " component of this system.");
+            const std::size_t mi = std::size_t(it - names.begin());
+            if (sysc.components[mi].kind
+                != ComponentClassification::Kind::MolecularNonionising)
+                throw std::runtime_error("thermophysicalPropertySystem:"
+                    " organic-phase member '" + mn + "' takes part in the"
+                    " aqueous speciation network (aqueousSpeciation is not"
+                    " `none`) -- this slice admits NO ions or reacting"
+                    " species in the second liquid.  Ion partitioning into a"
+                    " low-permittivity solvent is different physics with its"
+                    " own parameters; remove the member, or model it in the"
+                    " aqueous phase alone.");
+        }
+        if (std::find(organicMembers.begin(), organicMembers.end(),
+                      organicSolvent) == organicMembers.end())
+            throw std::runtime_error("thermophysicalPropertySystem: the"
+                " organic phase's declared solvent '" + organicSolvent
+                + "' is not in its own `members` list.");
+
+        //  (3) THE APPROXIMATION IS ANNOUNCED, EVERY RUN.  What is excluded
+        //  from this phase is not a detail: the water-solvent immiscibility
+        //  that CAUSES the split is declared rather than computed, and the
+        //  partition of whatever crosses rests on binaries with no ternary
+        //  term.  A comment in a dict is not an announcement.
+        if (thermoAnnounce())
+        {
+            std::cout << "[resolver] second liquid DECLARED: organic (solvent "
+                      << organicSolvent << "; members";
+            for (const auto& mn : organicMembers) std::cout << " " << mn;
+            std::cout << ") -- priced by " << molecularModel
+                      << ", the same model as the aqueous backbone\n"
+                         "[resolver] APPROXIMATION: this phase exists by"
+                         " DECLARATION.  The immiscibility that would cause"
+                         " the split is not computed, so what partitions here"
+                         " rests on binaries with no ternary term.\n";
+            if (!organicReason.empty())
+                std::cout << "[resolver] reason: " << organicReason << "\n";
+        }
+        //  ---- AND THE HONEST REFUSAL WHILE THE SOLVER DOES NOT SERVE IT ---
+        //  The declaration above is validated; the OUTER NEWTON does not yet
+        //  carry the organic phase's unknowns.  Accepting a well-formed
+        //  declaration and then computing an answer WITHOUT that phase is
+        //  the worst outcome available here: the author declared a second
+        //  liquid, the report names two liquids' worth of components, and
+        //  the numbers came from one.  So it refuses, by name, saying
+        //  exactly how far the implementation has got.
+        //
+        //  This refusal is DELETED, not weakened, when the solver lands.
+        throw std::runtime_error("thermophysicalPropertySystem: the `organic`"
+            " second liquid is DECLARED and its declaration is valid, but the"
+            " reactive solver does not yet carry its unknowns -- the outer"
+            " Newton solves vapour + ONE liquid today.  Running would give an"
+            " answer computed WITHOUT the phase you declared, which is worse"
+            " than stopping.  Remedy: drop the `organic` block (the case then"
+            " runs as a vapour + aqueous system), or wait for the solver"
+            " slice (docs/design/reactive-second-liquid-proposal.md).");
+
+        for (const auto& mn : organicMembers)
+            cfg.organic.members.push_back(std::size_t(
+                std::find(names.begin(), names.end(), mn) - names.begin()));
+        cfg.organic.solventIdx = std::size_t(
+            std::find(names.begin(), names.end(), organicSolvent)
+            - names.begin());
+        cfg.organic.reason = organicReason;
+    }
+
     // (c2) the MOLECULAR BACKBONE (mixed-solvent v1, ratified 2026-07-26):
     //      the declared solvent + the nonreactive molecular components on
     //      the ion-free x-basis.  With `molecular NRTL;` declared the FULL
