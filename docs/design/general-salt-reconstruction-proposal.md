@@ -279,7 +279,7 @@ Three questions, and only the first blocks:
 | flash09–13 goldens byte-exact | **pass** — the whole reactive corpus, unmoved |
 | hand check of `m = A n` | **pass** — instrumented totals equal the hand calculation to every printed digit |
 | independent cross-check | **pass** — see below |
-| rank refusal reachable | announced on every run; the deficiency branch has **no corpus case yet** (§8.4) |
+| rank refusal reachable | **pass** — `flash15_refused_salt_basis_rank`, asserted by `check_basis_rank.py` (§8.5) |
 | `bin/runTests` | **319 PASS / 0 FAIL** |
 
 The cross-check ran the converged totals (Ca 0.006993, HCO₃ 0.035987 mol/kg,
@@ -328,12 +328,44 @@ A glass box that shows the wrong number is worse than one that shows none.
 * **The projection convention** — unchanged, still deferred. The engine now
   refuses a rank-deficient basis instead of assuming; choosing what to do
   about it is the next slice.
-* **No rank-deficient corpus case.** The refusal has no test, and a refusal
-  with no test rots. The natural one is K/Na × Cl/SO₄, where the rank drops by
-  exactly (c−1)(a−1) = 1.
 * **The salt's bridge is case-local.** `flash14`'s `aqueousMapping` on CaCO₃
   lives in a sealed by-name overlay, not in the catalogue. Promoting it is a
   curation act that touches every case reaching CaCO₃; it waits on this slice
   being accepted.
 * **`flashComplex` still does not run** — it needs the second liquid phase.
   This slice removed one of its two blockers, as stated.
+
+### 8.5 The refusal has a test (closed 2026-07-27)
+
+`tutorials/steady/flash/flash15_refused_salt_basis_rank` — KCl, NaCl, K₂SO₄,
+Na₂SO₄ in water:
+
+```
+        KCl  K2SO4  NaCl  Na2SO4
+K     [  1     2      0      0   ]
+Na    [  0     0      1      2   ]
+Cl    [  1     0      1      0   ]
+SO4   [  0     1      0      1   ]
+```
+
+Four columns, **rank 3**, so exactly **1 degree of freedom** — and
+(c−1)(a−1) = (2−1)(2−1) = 1 for two cations and two anions. Concretely: take a
+mole each from KCl and Na₂SO₄, add one each to NaCl and K₂SO₄, and every ion
+total is unchanged. Two answers on the component basis, one identical solution.
+The engine refuses with those numbers named.
+
+**The marker is not the test.** `.expect-nonconvergence` makes `bin/runTests`
+*skip* the case — it is never run — so a marker alone would let the refusal
+stop firing without anyone noticing. `bin/curate/check_basis_rank.py` RUNS it
+and asserts the exit status, the rank/component/dof triple against what the
+theorem predicts, the named components, and the presence of a remedy. It also
+asserts the **mirror**: `flash14`, whose matrix is equally not-1:1 but IS full
+rank, must still run and announce `rank 2` — otherwise an engine that refused
+everything would pass.
+
+Both directions were verified by disabling the refusal in the builder and
+confirming the gate fails with *"exited 0 — a rank-deficient component basis
+must never solve"*, then restoring it. The case's `0/` is authored by hand
+rather than by `choupo-init0`, because init0 builds the package and hits the
+same refusal — so the rank deficiency is the **only** reason the case stops,
+which is what makes the assertion mean something.

@@ -1,0 +1,22 @@
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+/*  AUTHORED BY HAND, not by choupo-init0, and that is itself part of the
+    lesson: init0 builds the property package to propagate the feed, so it
+    hits the SAME rank refusal this case exists to demonstrate and cannot
+    materialise a seed.  The values below are the even split init0 would have
+    written -- half the feed into each outlet -- so that the ONLY reason this
+    case refuses is the rank deficiency, and a gate can prove it.  */
+
+componentMolarFlows
+{
+    KCl    0.25 kmol/h;
+    NaCl    0.25 kmol/h;
+    K2SO4    0.1 kmol/h;
+    Na2SO4    0.1 kmol/h;
+    water    49.3 kmol/h;
+}
+
+T               298.15 K;
+P               101325 Pa;

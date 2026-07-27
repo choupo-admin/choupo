@@ -1,0 +1,10 @@
+componentMolarFlows
+{
+    KCl      0.5  kmol/h;
+    NaCl     0.5  kmol/h;
+    K2SO4    0.2  kmol/h;
+    Na2SO4   0.2  kmol/h;
+    water   98.6  kmol/h;
+}
+T               298.15 K;
+P               101325 Pa;

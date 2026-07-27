@@ -1,0 +1,10 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |  DELIBERATE REFUSAL -- this case must NOT run |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "DELIBERATE REFUSAL: K/Na x Cl/SO4 -- four salt components onto four ion families with rank 3, so the component basis has exactly (c-1)(a-1) = 1 degree of freedom and the converged state cannot be read back as these components uniquely";
+verbosity     3;

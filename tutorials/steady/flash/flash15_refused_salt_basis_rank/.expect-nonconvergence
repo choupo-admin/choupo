@@ -1,0 +1,11 @@
+# DELIBERATE REFUSAL, not a bug.
+#
+# Four salts (KCl, NaCl, K2SO4, Na2SO4) map onto four ion families with rank
+# 3: the basis has exactly (c-1)(a-1) = 1 degree of freedom, so the converged
+# species state cannot be read back as these components uniquely.  The engine
+# refuses rather than picking one labelling of infinitely many.
+#
+# The refusal MESSAGE is asserted by bin/curate/check_basis_rank.py -- this
+# marker only stops the tutorial sweep counting the case as a failure.  A
+# marker alone would skip the case entirely, which is how a refusal rots.
+salt basis rank-deficient by (c-1)(a-1) = 1 -- the labels are a choice, refused

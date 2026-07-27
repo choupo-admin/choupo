@@ -1,0 +1,60 @@
+/*----------------------------------------------------------*\
+  constant/components/KCl.dat -- MERGED sealed record: the standards base with
+  this case's partial overlay applied top-level (Choupo-2607 release).
+  Materialised by bin/choupo-import so the sealed case reads ONE
+  complete record with the catalogue hidden; provenance (base +
+  overlay hashes) is recorded in constant/propertyManifest.
+\*----------------------------------------------------------*/
+
+/*  CASE-LOCAL OVERLAY: the declared bridge of KCl onto the ion families.
+    Additive to data/standards/components/KCl.dat -- everything else (MW, the
+    solid datum, solidPhases) comes from the curated record.
+
+    These four bridges together are what make the basis matrix rank 3.  Each
+    one on its own is unremarkable; it is the SET that is degenerate.  */
+
+name        KCl;
+
+formula        KCl;
+
+CAS            7447-40-7;
+
+MW             74.551;
+
+role        nonvolatile;
+
+dissociation   2;
+
+dissociatesTo  { K 1; Cl 1; }
+
+solid
+{
+    rho_p   1988.0;     
+    k_v     1.0;        
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (50.0);      
+    Trange        (270  400);
+}
+
+solidPhases
+{
+    sylvite
+    {
+        dissolutionReaction { masters ( { ion K; nu 1; } { ion Cl; nu 1; } ); }
+        equilibrium { logK25 0.9; dH 8500; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+        calorimetric
+        {
+            solubility          { value 4.76;  unit mol/kgWater; T 298.15; source "Pinho & Macedo, J. Chem. Eng. Data 50 (2005) 29 (aqueous, 25 C; primary)"; }
+            dissolutionEnthalpy { value 17200; unit J/mol; basis "KCl(s) -> K+(aq) + Cl-(aq), infinite dilution (endothermic)"; }
+        }
+        crystal { rho_p 1988.0; k_v 1.0; habit cube; }
+    }
+}
+
+aqueousSpeciation  KClSalt;
+
+aqueousMapping ( { species K; nu 1; } { species Cl; nu 1; } );

@@ -705,6 +705,21 @@ PYEOF
 
     # Element-balance gate (steady): a reacting boundary changes species but
     # closes per atom; an impossible formula refuses ONLY the elemental claim.
+    # Basis-rank gate: the component->species map's rank refusal actually
+    # fires and names the theorem's numbers -- AND a full-rank multi-master
+    # basis still runs.  flash15 is `.expect-nonconvergence`, which makes the
+    # tutorial sweep SKIP it; without this gate nothing would ever check that
+    # the refusal still happens.  A refusal with no test rots.
+    if "$ROOT/bin/curate/check_basis_rank.py" > /tmp/brgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "basis-rank-gate" "$(head -1 /tmp/brgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_basis_rank.py)\n" "basis-rank-gate"
+        cat /tmp/brgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/brgate.$$
+
     if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "element-balance-gate" "$(head -1 /tmp/ebgate.$$)"
         pass=$((pass+1))

@@ -1,0 +1,10 @@
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+        operation   { T 298.15 K;  P 1.0 atm; }
+    }
+);

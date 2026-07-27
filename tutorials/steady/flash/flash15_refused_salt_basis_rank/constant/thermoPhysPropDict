@@ -1,0 +1,68 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |  DELIBERATE REFUSAL                          |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE CASE THAT MUST NOT RUN -- and the theorem it is made of.
+
+  Four salts on four ion families:
+
+              KCl  K2SO4  NaCl  Na2SO4
+      K     [  1     2      0      0   ]
+      Na    [  0     0      1      2   ]      m = A n
+      Cl    [  1     0      1      0   ]
+      SO4   [  0     1      0      1   ]
+
+  Four columns, and the RANK IS 3.  The fourth column is a combination of the
+  other three -- and it must be, because the four salts are not four
+  independent substances in solution.  Dissolve them and what exists is K+,
+  Na+, Cl-, SO4-2 and nothing else; the LABELS "KCl" and "Na2SO4" stopped
+  meaning anything the moment the crystal came apart.
+
+  The deficiency is not an accident of these four choices.  With c cations
+  and a anions the salt-basis representation has exactly
+
+      (c - 1)(a - 1)   degrees of freedom
+
+  and here (2-1)(2-1) = 1.  Concretely: take one mole each away from KCl and
+  Na2SO4 and add one each to NaCl and K2SO4.  Every ion total is unchanged.
+  Two different answers on the component basis, one identical solution.
+
+  So the engine REFUSES.  Not because it cannot compute -- the forward map
+  m = A n is perfectly well defined and the flash would converge happily --
+  but because every report that NAMES components would then be silently
+  picking one of infinitely many labellings and presenting it as the answer.
+
+  THE PHYSICS IS UNAFFECTED.  Elements and charge cross the boundary either
+  way, and the next unit re-speciates from the ion totals.  It is the LABELS
+  that are a choice, and a choice must be declared.  Declaring it -- the
+  projection convention -- is a named, separate slice; until it exists, this
+  case stops here rather than guessing.
+
+  Compare flash14_calcite_carbonate_basis, whose matrix is also not 1:1 but
+  IS full rank: there the reading back is unique and no convention is needed.
+  Rank, not the presence of salts, is what decides.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( K2SO4  KCl  Na2SO4  NaCl  water );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+
+    aqueous
+    {
+        activityModel { model davies; }
+        speciation    { masters ( Cl  K  Na  SO4 ); }
+    }
+
+    vapour    { fugacityModel idealGas; }
+
+    volatiles ( water );
+}

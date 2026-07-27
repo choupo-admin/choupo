@@ -1,0 +1,18 @@
+// [imported] origin "data/standards/components/misenite.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: misenite (K8H6(SO4)7) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name misenite;
+formula "K8H6(SO4)7";
+
+solidPhases
+{
+    misenite
+    {
+        dissolutionReaction { masters ( { ion H; nu 6; } { ion SO4; nu 7; } { ion K; nu 8; } ); }
+        equilibrium { logK25 -10.806; dH 0; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Misenite"; }
+    }
+}
