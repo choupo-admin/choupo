@@ -427,3 +427,63 @@ validated by four refusals, and the case stops with the honest message that
 the solver does not carry the phase. That refusal is now known to be correct
 for a deeper reason than "not implemented yet" — the implementation it named
 was tried and is the wrong one.
+
+
+## 12. Second attempt: NESTED. Better, and still not converged (2026-07-27)
+
+§11 concluded the flat design was wrong and the shape should be nested. That
+was built and measured. **It is clearly the right shape and it still does not
+converge**; reverted again rather than committed.
+
+### 12.1 The shape
+
+The outer Newton keeps its own unknowns and its own dimension — `ln V` plus
+the vapour odds, nothing added. The liquid-liquid split resolves **inside each
+residual evaluation**, by direct Gibbs minimisation over
+(β, x_org) with Nelder-Mead, exactly the posture the class already takes
+toward speciation: *mathematically simultaneous, numerically nested*.
+
+The aqueous side of the objective is the **full backbone, solvent included** —
+what makes water and benzene separate is the water being there, so splitting
+only the members against each other prices the wrong mixture.
+
+### 12.2 What each change bought, measured
+
+| | outer residual |
+|---|---|
+| flat design (§11), organic unknowns in the Newton | 4.166 → 4.062, **stuck** |
+| nested Gibbs split | **1.025 → 0.710**, descending |
+| + warm start of the inner search | one further step accepted |
+| + volatile priced by the liquid it lives in | \|r\|max 0.70 → **0.53** |
+| + FD step lifted above the inner noise floor | no effect |
+
+A factor of four on the residual, and it moves instead of sitting. The
+direction is not in doubt.
+
+### 12.3 Where it stops, and the lead worth following
+
+It now stalls at iteration **0**: the line search finds no descent at all from
+the seed.
+
+The most likely cause is a discontinuity **I built in**. The inner split
+returns "no phase" when β lands within 10⁻⁴ of 0 or 1 — the honest guard from
+§4.2, that a declared phase which does not exist must be reported as absent
+rather than as an empty phase with a meaningless composition. But as written
+it makes `org` jump discontinuously to zero, and a residual with a step in it
+has no descent direction anywhere near the step.
+
+The guard is right; its **placement** is wrong. Phase appearance/disappearance
+belongs in an outer decision (test once, then solve with a fixed phase set),
+not inside a function the Newton differentiates. That is how the molecular
+path does it too — Michelsen TPD decides *whether* to split, and only then
+does the minimisation run.
+
+### 12.4 State, honestly
+
+Not solved. Two designs built and reverted in one sitting; the second is the
+right one and needs the phase-appearance decision lifted out of the
+differentiated path, plus whatever that exposes next. The corpus is untouched
+throughout — 321 PASS, and the no-organic path was verified byte-exact under
+both attempts, so the gating held.
+
+`flashComplex` still stops at its honest refusal.
