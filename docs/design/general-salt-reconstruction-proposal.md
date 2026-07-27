@@ -1,6 +1,10 @@
 # Proposal — general salt reconstruction
 
-**Status: PROPOSAL. Nothing here is implemented.** It exists to be accepted,
+**Status: IMPLEMENTED 2026-07-27** (slice 1 — the forward map, the rank test
+and the vertical spike). Section 8 records what the spike found. The original
+proposal text below is unchanged, so it can still be read against what shipped.
+
+**Was: PROPOSAL. Nothing here is implemented.** It exists to be accepted,
 amended or rejected before any code is written, per the house rule that
 architecture is aligned first.
 
@@ -247,3 +251,89 @@ Three questions, and only the first blocks:
    the convention), or should it include a rank-deficient system from the
    start so the refusal ships with its first real user?
 3. **Does the forum see it first**, or is this document enough?
+
+
+---
+
+## 8. What shipped, and what the spike found
+
+### 8.1 Delivered
+
+* `ReactiveVLEConfig::Family` carries the stoichiometric **vector**, not one
+  master. The solver accumulates (`+=`) instead of assigning.
+* The builder reads the **declared bridge** in full; the marker element is
+  demoted to a fallback for undeclared components. A component that declares
+  its mapping needs no marker, which is also how the shared-marker clash
+  (CO₂/CaCO₃/NH₄HCO₃ all carrying C) stops being a problem.
+* **The rank test**, by Gaussian elimination with partial pivoting on the
+  masters × components matrix, with the deficiency refusal. It announces
+  `[basis] component -> master map: N component(s), rank R` on every reactive
+  run.
+* `tutorials/steady/flash/flash14_calcite_carbonate_basis` — the spike,
+  sealed, golden-recorded.
+
+### 8.2 Acceptance, as measured
+
+| criterion | result |
+|---|---|
+| flash09–13 goldens byte-exact | **pass** — the whole reactive corpus, unmoved |
+| hand check of `m = A n` | **pass** — instrumented totals equal the hand calculation to every printed digit |
+| independent cross-check | **pass** — see below |
+| rank refusal reachable | announced on every run; the deficiency branch has **no corpus case yet** (§8.4) |
+| `bin/runTests` | **319 PASS / 0 FAIL** |
+
+The cross-check ran the converged totals (Ca 0.006993, HCO₃ 0.035987 mol/kg,
+313.15 K) through the `speciate` props op — a route that never touches
+`ReactiveVLE` or the component→master map:
+
+| | reactive flash | speciate op |
+|---|---|---|
+| pH | 6.016 | 6.016 |
+| I [mol/kg] | 1.9469e-02 | 1.9471e-02 |
+| a_w | 0.99924 | 0.99924 |
+| SI calcite | −0.013 | −0.013 |
+| SI aragonite | −0.149 | −0.149 |
+
+The ionic-strength difference is the sixth significant figure of the totals I
+typed in, not a disagreement.
+
+### 8.3 The defect the spike found, which was not what it was looking for
+
+The reactive path printed its speciation diagnostics — pH, ionic strength,
+a_w, species count, gamma passes, Newton steps **and the whole SI table** —
+from the **first inner call**, i.e. the initial guess, reported as though it
+were the answer. The mechanism: the inner solve was verbose only on its first
+call so the activation trace would print once, and the post-convergence
+re-evaluation (`residual(u)`, "re-evaluate EVERYTHING at the answer") then ran
+silently.
+
+It is **pre-existing** and independent of this slice — `flash09`, untouched
+here and byte-exact, printed `SOLVED pH = 10.164` in the block while its own
+converged summary said `9.900`. With a salt in the system the gap reached
+**1.7 pH units**, and the SI table was the saturation state of a guess.
+
+It was found because the cross-check disagreed and the disagreement was
+chased instead of explained away. It cost a false lead first: the spike's feed
+was tuned to calcite saturation against the *guess* SI and had to be retuned
+against the converged one (0.065 → 0.0122 kmol/h — a factor of five).
+
+Fixed here: `SpeciationInput::announceClosure` separates the one-time trace
+from the result diagnostics, so the trace prints on the first call and the
+**converged** call reports. `flash09` now prints 9.900 in both places.
+
+A glass box that shows the wrong number is worse than one that shows none.
+
+### 8.4 Still open after this slice
+
+* **The projection convention** — unchanged, still deferred. The engine now
+  refuses a rank-deficient basis instead of assuming; choosing what to do
+  about it is the next slice.
+* **No rank-deficient corpus case.** The refusal has no test, and a refusal
+  with no test rots. The natural one is K/Na × Cl/SO₄, where the rank drops by
+  exactly (c−1)(a−1) = 1.
+* **The salt's bridge is case-local.** `flash14`'s `aqueousMapping` on CaCO₃
+  lives in a sealed by-name overlay, not in the catalogue. Promoting it is a
+  curation act that touches every case reaching CaCO₃; it waits on this slice
+  being accepted.
+* **`flashComplex` still does not run** — it needs the second liquid phase.
+  This slice removed one of its two blockers, as stated.

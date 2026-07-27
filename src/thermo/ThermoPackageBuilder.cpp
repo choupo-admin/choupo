@@ -656,44 +656,53 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             continue;
         }
 
-        //  The DECLARED bridge anchors the family when the component carries
-        //  one (`aqueousMapping` / `dissociatesTo`, the typed contract): its
-        //  master is the mapped species that appears in the case's declared
-        //  masters list (H/OH are mediators, never declared masters, so they
-        //  fall out naturally).  Element-marker inference below stays as the
-        //  fallback for components without a bridge -- and refuses on any
-        //  ambiguity instead of picking by declaration order.
+        //  THE DECLARED BRIDGE, read as the stoichiometric VECTOR it is
+        //  (general salt reconstruction, 2026-07-27 -- ADR
+        //  docs/design/general-salt-reconstruction-proposal.md).  A component's
+        //  column of the map m = A n is every declared-master term of its
+        //  bridge, with its coefficient; H/OH are the shared mediators of all
+        //  families and are closed by electroneutrality, so they are never
+        //  declared masters and fall out here without a special case.
+        //
+        //  It used to pick ONE master and refuse on two, because a salt could
+        //  not be represented at all.  It can now: CaCO3 contributes +1 Ca AND
+        //  +1 HCO3, and the totals accumulate.  A 1-master component is the
+        //  strict special case (a column with a single +1) and is unchanged.
+        auto bridgeOf = [&](std::size_t ci)
+            -> std::vector<std::pair<SpeciesId, scalar>>
+        {
+            std::vector<std::pair<SpeciesId, scalar>> out;
+            if (comps[ci].hasAqueousMapping())
+                for (const auto& ms : comps[ci].aqueousMapping())
+                {
+                    if (std::find(masters.begin(), masters.end(),
+                                  ms.species.key) == masters.end())
+                        continue;
+                    out.emplace_back(ms.species, scalar(ms.nu));
+                }
+            return out;
+        };
+
         if (comps[i].hasAqueousMapping())
         {
-            std::string masterOf;
-            for (const auto& ms : comps[i].aqueousMapping())
-            {
-                const std::string& key = ms.species.key;
-                if (std::find(masters.begin(), masters.end(), key)
-                        == masters.end())
-                    continue;
-                if (!masterOf.empty() && masterOf != key)
-                    throw std::runtime_error("reactive electrolyteGammaPhi:"
-                        " component '" + names[i] + "' bridges to TWO declared"
-                        " masters (" + masterOf + ", " + key + ") -- one"
-                        " apparent component carries ONE family total; split"
-                        " the component or drop one master from the case's"
-                        " speciation { masters (...) }.");
-                masterOf = key;
-            }
-            if (masterOf.empty())
+            auto bridge = bridgeOf(i);
+            if (bridge.empty())
                 throw std::runtime_error("reactive electrolyteGammaPhi:"
                     " component '" + names[i] + "' declares an aqueousMapping,"
                     " but none of its mapped species is a declared master --"
                     " add its family master to speciation { masters (...) }"
                     " (mediators H/OH cannot anchor a family).");
-            // generic lookup: a master may be NEUTRAL (dissolved Ethanol,
-            // O2(aq)) -- findIon is the ion-physics wrapper, not this seam
-            if (!electrolyte::findAqueousSpecies(masterOf))
-                throw std::runtime_error("reactive electrolyteGammaPhi:"
-                    " declared master '" + masterOf + "' has no species record"
-                    " (species/<name>.dat).");
-            cfg.families.push_back({ i, std::string(), SpeciesId(masterOf) });
+            for (const auto& [m, nu] : bridge)
+            {
+                (void)nu;
+                // generic lookup: a master may be NEUTRAL (dissolved Ethanol,
+                // O2(aq)) -- findIon is the ion-physics wrapper, not this seam
+                if (!electrolyte::findAqueousSpecies(m.key))
+                    throw std::runtime_error("reactive electrolyteGammaPhi:"
+                        " declared master '" + m.key + "' has no species record"
+                        " (species/<name>.dat).");
+            }
+            cfg.families.push_back({ i, std::string(), std::move(bridge) });
             continue;
         }
 
@@ -759,7 +768,13 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                 " component '" + names[i] + "' -- element inference cannot"
                 " tell them apart; declare the typed bridge on the component"
                 " (aqueousMapping ( { species <master>; nu 1; } );).");
-        cfg.families.push_back({ i, marker, SpeciesId(carrying[0]) });
+        //  FALLBACK for an undeclared component: one marker element, one
+        //  master, coefficient +1 -- exactly the old contract, kept for the
+        //  records that have not declared a bridge.  A component that DOES
+        //  declare one never reaches here, which is also how the
+        //  shared-marker clash above stops being a problem for salts.
+        cfg.families.push_back(
+            { i, marker, { { SpeciesId(carrying[0]), scalar(1.0) } } });
     }
 
     // (c2) the MOLECULAR BACKBONE (mixed-solvent v1, ratified 2026-07-26):
@@ -768,6 +783,88 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     //      curated pair model is wired -- never a gammaInfinity constant --
     //      and every backbone pair must have its parameters/NRTL/ record:
     //      declare -> verify -> refuse.
+    //  ---- CAN THIS BASIS REPRESENT ITS OWN ANSWER?  (general salt
+    //  reconstruction, 2026-07-27) ------------------------------------------
+    //  The forward map m = A n always works.  The BACKWARD one -- reading the
+    //  converged species state back as flowsheet components, which every
+    //  stream table and every component-named report does -- is n = A^-1 m,
+    //  and it is unique iff A has FULL COLUMN RANK.  A deficiency of k means
+    //  k degrees of freedom: k different component vectors give the SAME
+    //  species totals, so the labels are a choice and no arithmetic can make
+    //  it for us.  This is the (c-1)(a-1) theorem, computed rather than
+    //  assumed: c cations and a anions give exactly (c-1)(a-1).
+    //
+    //  Refusal, not a warning: the physics is fine either way (elements and
+    //  charge cross the boundary regardless), but a report that NAMES
+    //  components would be quietly picking one of k answers.  Choosing the
+    //  projection convention is its own declared slice; until a case declares
+    //  one, a deficient basis stops here.
+    //
+    //  Nothing in the corpus today is deficient -- every component is
+    //  1-master with a distinct master, so A is a partial permutation and is
+    //  full rank by construction.
+    if (!cfg.families.empty())
+    {
+        //  A: rows = declared masters, columns = families.
+        std::vector<std::size_t> rowOf;               // master index -> row
+        std::map<std::string, std::size_t> rowIdx;
+        for (const auto& m : masters)
+            if (!rowIdx.count(m)) { rowIdx[m] = rowIdx.size(); rowOf.push_back(0); }
+        const std::size_t nr = rowIdx.size(), nc = cfg.families.size();
+        std::vector<std::vector<double>> A(nr, std::vector<double>(nc, 0.0));
+        for (std::size_t c = 0; c < nc; ++c)
+            for (const auto& [master, nu] : cfg.families[c].mapping)
+            {
+                auto it = rowIdx.find(master.key);
+                if (it != rowIdx.end()) A[it->second][c] += double(nu);
+            }
+
+        //  Rank by Gaussian elimination with partial pivoting -- the same
+        //  hand-rolled arithmetic NewtonND uses, on a matrix whose dimensions
+        //  are single digits in every case that exists.
+        std::size_t rank = 0;
+        for (std::size_t c = 0; c < nc && rank < nr; ++c)
+        {
+            std::size_t piv = rank;
+            for (std::size_t r = rank; r < nr; ++r)
+                if (std::fabs(A[r][c]) > std::fabs(A[piv][c])) piv = r;
+            if (std::fabs(A[piv][c]) < 1.0e-12) continue;   // no pivot here
+            std::swap(A[rank], A[piv]);
+            for (std::size_t r = 0; r < nr; ++r)
+            {
+                if (r == rank) continue;
+                const double f = A[r][c] / A[rank][c];
+                for (std::size_t k = c; k < nc; ++k) A[r][k] -= f * A[rank][k];
+            }
+            ++rank;
+        }
+
+        if (rank < nc)
+        {
+            std::string cols;
+            for (const auto& f : cfg.families)
+                cols += (cols.empty() ? "" : ", ") + cfg.apparent.at(f.apparentIdx);
+            throw std::runtime_error("reactive electrolyteGammaPhi: the"
+                " declared component basis (" + cols + ") maps onto "
+                + std::to_string(rank) + " independent master total(s) but has "
+                + std::to_string(nc) + " components -- "
+                + std::to_string(nc - rank) + " degree(s) of freedom.  Reading"
+                " the converged species state back as these components is"
+                " therefore NOT unique: that many different component vectors"
+                " give the same species totals, so any component-named report"
+                " would be silently picking one of them.  The physics is"
+                " unaffected (elements and charge cross the boundary either"
+                " way) -- the LABELS are a choice, and a choice must be"
+                " declared.  Remedy: drop a redundant component from the"
+                " case's basis, or wait for the declared projection"
+                " convention (a named, separate slice).");
+        }
+        if (thermoAnnounce())
+            std::cout << "[basis] component -> master map: " << nc
+                      << " component(s), rank " << rank
+                      << " -- the converged state reads back uniquely\n";
+    }
+
     cfg.backbone.push_back(solventIdx);
     for (std::size_t i = 0; i < names.size(); ++i)
         if (cfg.nonreactive.count(i)) cfg.backbone.push_back(i);

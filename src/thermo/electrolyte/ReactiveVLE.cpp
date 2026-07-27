@@ -51,19 +51,26 @@ ReactiveVLE::ReactiveVLE(ReactiveVLEConfig cfg)
                 " PHASES convention, a = K * p[atm]) before declaring it"
                 " volatile.");
     }
+    //  Every master a component maps onto must be reachable in the chemistry
+    //  set -- checked per TERM now that a component may span several
+    //  (general salt reconstruction).  A salt naming a master no record
+    //  references is exactly the "chemistry cannot map back" failure, and it
+    //  must name the offending term, not the component alone.
     for (const auto& fam : cfg_.families)
-    {
-        bool masterKnown = false;
-        for (const auto& r : spec_->reactions())
-            for (const auto& [m, nu] : r.masters)
-                if (m == fam.master.key) { masterKnown = true; break; }
-        if (!masterKnown)
-            throw std::runtime_error("ReactiveVLE: apparent component '"
-                + cfg_.apparent.at(fam.apparentIdx) + "' maps to master '"
-                + fam.master.key + "', but NO speciation record references that"
-                " master -- the chemistry set cannot map the family's true"
-                " species back to the declared apparent-component basis.");
-    }
+        for (const auto& [master, nu] : fam.mapping)
+        {
+            (void)nu;
+            bool masterKnown = false;
+            for (const auto& r : spec_->reactions())
+                for (const auto& [m, rnu] : r.masters)
+                    if (m == master.key) { masterKnown = true; break; }
+            if (!masterKnown)
+                throw std::runtime_error("ReactiveVLE: apparent component '"
+                    + cfg_.apparent.at(fam.apparentIdx) + "' maps to master '"
+                    + master.key + "', but NO speciation record references that"
+                    " master -- the chemistry set cannot map the family's true"
+                    " species back to the declared apparent-component basis.");
+        }
 }
 
 ReactiveVLE::~ReactiveVLE() = default;
@@ -121,6 +128,22 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     // ---- The INNER problem: liquid speciation at given liquid totals ------
     //  kgw from the un-vaporised solvent; each family's dissolved total in
     //  molality; closed system, pH SOLVED (electroneutrality inside).
+    //  DIAGNOSTIC VERBOSITY of the inner speciation, over the outer Newton's
+    //  hundreds of calls.  It used to be "verbose on the FIRST call, silent
+    //  after", which printed the activation trace once (right) but ALSO
+    //  printed the pH, the ionic strength, a_w, the species count and the
+    //  whole SI table from that first call -- the INITIAL GUESS, reported as
+    //  though it were the answer.  In flash09 the block said pH 10.164 while
+    //  the converged summary said 9.900; with a salt in the system the gap
+    //  reached 1.7 pH units and the SI table was the saturation state of a
+    //  guess.  A glass box that shows the wrong number is worse than one that
+    //  shows none (found by the flash14 spike, 2026-07-27).
+    //
+    //  Now: the FIRST call carries the trace, the middle calls are silent,
+    //  and the FINAL call -- on the converged state -- carries the result
+    //  diagnostics with the trace suppressed (it has already printed).
+    int  innerVerbosity = verbosity;      // first call: trace + diagnostics
+    bool announceClosure = true;
     bool traced = false;                      // the activation trace prints ONCE
     auto speciate = [&](const sVector& vap, SpeciationResult& out) -> void
     {
@@ -138,18 +161,26 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         in.stoichiometricTotals = true;               // bridge-derived, not a
                                                       //   lab analysis
 
+        //  m = A n.  ACCUMULATE (`+=`, not `=`): with a general mapping two
+        //  components may feed the SAME family total -- CO2 and CaCO3 both
+        //  doing carbonate is precisely that -- and each contributes with its
+        //  own stoichiometric coefficient.  With every component 1-master and
+        //  nu = +1 this is byte-identical to the assignment it replaces.
         for (const auto& fam : cfg_.families)
         {
-            const scalar liq = n[fam.apparentIdx] - vap[fam.apparentIdx];
-            in.totals[fam.master] = std::max(liq, 0.0) / kgw;
+            const scalar liq = std::max(n[fam.apparentIdx]
+                                        - vap[fam.apparentIdx], 0.0);
+            for (const auto& [master, nu] : fam.mapping)
+                in.totals[master] += nu * liq / kgw;
         }
         //  The inner kernel is QUIET (it runs hundreds of times inside the
         //  Newton) -- except on the very FIRST call, which carries the run's
         //  verbosity so the closure can print its ACTIVATION TRACE once: the
         //  student sees which equilibria the assembly put in the problem and
         //  why, instead of a bare count.
-        out = spec_->solve(in, traced ? 0 : verbosity);
-        traced = true;
+        in.announceClosure = announceClosure;
+        out = spec_->solve(in, innerVerbosity);
+        if (!traced) { traced = true; innerVerbosity = 0; announceClosure = false; }
     };
 
     // The MOLECULAR BACKBONE state of the liquid (mixed-solvent v1):
@@ -588,8 +619,13 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     }
 
     // ---- JOINT acceptance: re-evaluate EVERYTHING at the answer -----------
+    //  And REPORT it: this is the call whose numbers are the answer, so it is
+    //  the one that gets the diagnostics.  The activation trace stays
+    //  suppressed -- the network is the same one it announced at the start.
+    innerVerbosity = verbosity;
     sVector vap; unpack(u, vap);
     const sVector rFin = residual(u);                // also refreshes srLast
+    innerVerbosity = 0;
     scalar rMax = 0.0; for (auto rv : rFin) rMax = std::max(rMax, std::abs(rv));
     const bool jointOK = rMax < 1.0e-7;
     struct { int iterations; } sol{ it };

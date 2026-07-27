@@ -263,6 +263,14 @@ struct SpeciationInput
     // pH is the weak-acid answer, not an absorbed lab error.  When true the
     // imbalance announce/advisory does not apply (noted at verbosity >= 3).
     bool   stoichiometricTotals = false;
+
+    //  Print the network ACTIVATION TRACE with the rest of the verbose
+    //  output.  A caller that solves the same network many times (the
+    //  reactive flash's outer Newton) prints the trace on its FIRST call and
+    //  clears this for the final, converged one -- so the trace appears once
+    //  while the RESULT diagnostics report the answer instead of the first
+    //  guess.  Defaults on: a single-shot caller announces everything.
+    bool   announceClosure = true;
     // `atmosphere { pCO2 4.2e-4 atm; O2 0.2095 atm; ... }` -- OPEN system:
     // (gas name, partial pressure [atm]) per listed gas; each pins its
     // dissolved species by Henry and replaces that species' master mole

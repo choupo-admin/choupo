@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE VERTICAL SPIKE for general salt reconstruction (2026-07-27, ADR
+  docs/design/general-salt-reconstruction-proposal.md).
+
+  Every reactive case before this one had a component-to-species map that was
+  a RENAMING: one component, one master, coefficient 1.
+
+      NH3  -> NH4+          acetic -> Acetate-
+      CO2  -> HCO3-         H2S    -> HS-
+
+  CaCO3 is the first that is not.  Dissolved calcium carbonate IS calcium and
+  carbonate at once, so its column spans TWO families:
+
+              CO2   CaCO3
+      HCO3  [  1      1  ]         m = A n
+      Ca    [  0      1  ]
+
+  Two things the student should read off that matrix:
+
+  (1) BOTH components feed the carbonate total.  Feeding CaCO3 raises the
+      carbonate family exactly as feeding CO2 does -- which is why the engine
+      ACCUMULATES into a total instead of assigning it.  A renaming cannot
+      express that.
+
+  (2) A is FULL COLUMN RANK, so reading the converged species state back as
+      (CO2, CaCO3) is UNIQUE and no convention is needed.  That is a property
+      of THIS system, not a general truth: with two cations and two anions
+      (K/Na x Cl/SO4) the rank drops by exactly (c-1)(a-1) = 1 and the labels
+      become a choice.  The engine computes the rank and refuses when it is
+      deficient, rather than assuming.
+
+  The H+ leg of calcite dissolution (CaCO3 + H+ = Ca+2 + HCO3-) is NOT in the
+  map: H+ is the shared mediator of every family and is closed by
+  electroneutrality, never by a family total.  That is why the pH moves when
+  the calcite dissolves, without anyone writing an equation for it.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( CO2  CaCO3  water );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+
+    aqueous
+    {
+        activityModel { model davies; }
+        speciation    { masters ( Ca  HCO3 ); }
+    }
+
+    vapour    { fugacityModel idealGas; }
+
+    volatiles ( CO2  water );
+}

@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Reactive calcite/carbonate flash: the FIRST component whose aqueous bridge spans TWO master families (CaCO3 -> Ca+2 AND HCO3-), so the component-to-species map is a matrix, not a renaming";
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

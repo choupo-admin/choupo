@@ -862,7 +862,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         }
         act.push_back(std::move(a));
     }
-    if (verbosity >= 2 && !trace.empty())
+    if (verbosity >= 2 && in.announceClosure && !trace.empty())
     {
         std::size_t on = 0;
         for (const auto& t : trace) if (t.on) ++on;

@@ -91,13 +91,29 @@ struct ReactiveVLEConfig
     std::vector<std::string> apparent;
     std::size_t              solventIdx = 0;     // the water solvent
 
-    // Non-solvent apparent family: marker element + the aqueous MASTER whose
-    // total carries the family (NH3 -> marker N, master NH4).
+    // A non-solvent apparent component's CONTRIBUTION to the aqueous master
+    // totals -- its column of the map  m = A n  (general salt reconstruction,
+    // 2026-07-27; ADR docs/design/general-salt-reconstruction-proposal.md).
+    //
+    // It used to be ONE master with an implicit coefficient of 1, which every
+    // component the reactive path had seen happened to fit (NH3 -> NH4+,
+    // acetic -> Acetate-, CO2 -> HCO3-, H2S -> HS-).  A SALT does not:
+    // dissolved CaCO3 IS calcium and carbonate at once, spanning two families
+    // with a proton leg besides.  So the single master became the
+    // stoichiometric VECTOR that the record already curates -- a component's
+    // `aqueousMapping`, or a salt's `solidPhases.<phase>.dissolutionReaction`.
+    //
+    // A 1-master component is the strict special case: a column with a single
+    // +1.  Everything that ran before this change runs identically after it.
     struct Family
     {
         std::size_t apparentIdx = 0;
-        std::string marker;                      // e.g. "N"
-        SpeciesId   master;                      // e.g. "NH4"
+        std::string marker;                      // e.g. "N" -- FALLBACK only,
+                                                 // empty when declared
+        //  (master, nu): NH3 -> {(NH4, +1)}; CaCO3 -> {(Ca,+1),(HCO3,+1)}.
+        //  The H+ leg is NOT carried here: H is the shared mediator of every
+        //  family and is closed by electroneutrality, never by a total.
+        std::vector<std::pair<SpeciesId, scalar>> mapping;
     };
     std::vector<Family> families;
 
