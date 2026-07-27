@@ -1,6 +1,10 @@
 # Proposal — a second liquid phase on the reactive path
 
-**Status: PROPOSAL. Nothing here is implemented.** For alignment before any
+**Status: PROPOSAL, with §10 implemented.** The blocker this document named
+in §7 turned out not to exist; §10 records what was found and what shipped
+because of it. Everything else here is still a proposal.
+
+**Was: PROPOSAL. Nothing here is implemented.** For alignment before any
 code, per the house rule.
 
 **Driven by:** `docs/design/flashComplex/` — the design driver's remaining
@@ -248,3 +252,93 @@ diverge from today's.
    rather it carried CO₂ so it composes with the calcite work?
 3. **Does the `ethanol-benzene` curation start now**, in parallel, given it
    blocks the spike?
+
+
+---
+
+## 10. The blocker in §7 does not exist (2026-07-27)
+
+§7 named the `ethanol-benzene` NRTL pair as being on the critical path:
+without it the spike could not run at all, so the curation should start before
+the code. **That was wrong, and testing rather than assuming is what showed
+it.**
+
+**UNIFAC is a registered activity model** (`ActivityModel.cpp:99`), and both
+benzene and ethanol already carry their group decomposition:
+
+```
+benzene   groups { unifac ( { group ACH; count 6; } ); }
+ethanol   groups { unifac ( { group CH3; count 1; } { group CH2; count 1; }
+                            { group OH;  count 1; } ); }
+```
+
+A direct check gives γ(benzene) = 1.696, γ(ethanol) = 1.457 at x = 0.5,
+313.15 K — the right magnitude for a strongly positive-deviation pair with a
+minimum-boiling azeotrope. **No pair record is needed**: UNIFAC is predictive
+from the groups.
+
+### 10.1 But the two liquids must share the model
+
+This is the constraint the proposal did not state, and it matters more than
+the pair.
+
+The coupling of §2 is `gamma_aq * x_aq = gamma_org * x_org`. Equality of
+chemical potential means equality of *activity*, so the same physical state
+must give the same γ on both sides. **Pricing one liquid with NRTL and the
+other with UNIFAC would make the equality meaningless** — not an approximation
+with an error bar, but a residual that measures the disagreement between two
+models rather than the distance from equilibrium.
+
+So the organic phase can only be UNIFAC if the **aqueous backbone** can be
+too. It could not: `ThermoPackageBuilder` refused any molecular backbone that
+was not NRTL.
+
+### 10.2 What shipped
+
+The refusal gave its own reason as *"the curated pair records live in
+parameters/NRTL/"* — a **data-availability** argument, which simply does not
+apply to a method that needs no pairs. The backbone now serves NRTL **or**
+UNIFAC, and refuses anything else by name.
+
+The UNIFAC backbone resolves each component's decomposition through
+`injectUnifacGroups`, the same helper the molecular γ-φ path uses — one
+injection contract, not two, so a case-local component overlay is respected
+identically on both paths. A backbone component with no `groups { unifac }`
+block refuses by name, with both remedies stated.
+
+And it announces itself as what it is:
+
+```
+[resolver] liquid molecular backbone: UNIFAC (water ethanol) -- PREDICTIVE
+           group contribution, an ESTIMATE: no pair was regressed for this
+           system
+```
+
+A student must never mistake a group-contribution γ for a regressed one.
+
+### 10.3 What it costs, measured
+
+`flash13` run on both backbones, everything else identical:
+
+| molecular backbone | V/F | pH |
+|---|---|---|
+| NRTL (regressed pair) | 0.580449 | 5.0259 |
+| UNIFAC (predictive) | 0.595242 | 5.0425 |
+
+2.5 % in V/F. That is a *result*, not a defect — it is what the estimate costs
+against a regressed pair on the same system, and it is the kind of number a
+student should be able to produce by changing one word.
+
+### 10.4 Consequences for the rest of the slice
+
+* **§7 is withdrawn.** No curation blocks the spike. `ethanol-benzene` NRTL
+  remains desirable — a regressed pair beats an estimate — but it is no longer
+  on the critical path, and it is now a comparison the case can *make* rather
+  than a prerequisite.
+* **§3.3's declaration gains a constraint:** the organic phase's
+  `activityModel` must match the aqueous backbone's `molecular` model. A
+  mismatch is a refusal, for the reason in §10.1, and it is a refusal that
+  needs a gate that runs it.
+* The rest of the proposal — the outer Newton's extra unknowns, the backbone
+  equality residuals, the phase-vanishes handling, the ion refusal — is
+  unchanged and still unimplemented.

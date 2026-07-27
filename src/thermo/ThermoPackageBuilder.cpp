@@ -28,6 +28,7 @@
 #include <sstream>
 #include <stdexcept>
 #include "thermo/activityCoefficient/ActivityModel.H"
+#include "thermo/activityCoefficient/UNIFAC.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
 namespace fs = std::filesystem;
@@ -493,11 +494,20 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             " electrolyteGammaPhi slice serves ionic davies (the"
             " speciation kernel's rung); '" + actModel + "' joins in a later"
             " slice -- declare davies or drop the speciation block.");
-    if (!molecularModel.empty() && molecularModel != "NRTL")
+    //  The backbone serves the models it can actually WIRE.  NRTL needs a
+    //  curated record per pair; UNIFAC needs none at all -- it is predictive
+    //  from the group decomposition each component already carries.  The
+    //  guard that admitted only NRTL gave its own reason as "the curated pair
+    //  records live in parameters/NRTL/", which is a DATA-availability
+    //  argument and simply does not apply to a group-contribution method
+    //  (2026-07-27).  Anything else still refuses by name.
+    if (!molecularModel.empty()
+        && molecularModel != "NRTL" && molecularModel != "UNIFAC")
         throw std::runtime_error("thermophysicalPropertySystem: the molecular"
-            " backbone of the reactive slice serves NRTL ('"
-            + molecularModel + "' declared) -- the curated pair records live"
-            " in parameters/NRTL/.");
+            " backbone of the reactive slice serves NRTL (curated pairs in"
+            " parameters/NRTL/) or UNIFAC (predictive, from each component's"
+            " declared `groups { unifac ( ... ) }`) -- '"
+            + molecularModel + "' declared.");
     const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
     if (vap != "idealGas")
         throw std::runtime_error("thermophysicalPropertySystem: the reactive"
@@ -868,6 +878,52 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     cfg.backbone.push_back(solventIdx);
     for (std::size_t i = 0; i < names.size(); ++i)
         if (cfg.nonreactive.count(i)) cfg.backbone.push_back(i);
+    //  UNIFAC backbone: no pair records, so nothing to resolve or verify --
+    //  but it is an ESTIMATE, and it says so on every run.  A student reading
+    //  a group-contribution gamma must never mistake it for a regressed one.
+    if (molecularModel == "UNIFAC")
+    {
+        std::vector<std::string> bNames;
+        for (auto b : cfg.backbone) bNames.push_back(names[b]);
+        auto bComps = std::make_shared<std::vector<Component>>();
+        for (const auto& bn : bNames)
+        {
+            Component c = db.loadComponent(bn);
+            if (!c.hasGroups("unifac"))
+                throw std::runtime_error("thermophysicalPropertySystem:"
+                    " `molecular UNIFAC;` declared, but backbone component '"
+                    + bn + "' carries no `groups { unifac ( ... ) }` block --"
+                    " curate its group decomposition, or declare NRTL with"
+                    " curated pairs instead.");
+            bComps->push_back(std::move(c));
+        }
+        auto activityDict = std::make_shared<Dictionary>("activity");
+        activityDict->insert("model", std::string("UNIFAC"));
+        //  The decomposition lives in each component's .dat and is resolved
+        //  HERE, at the site that holds the Component objects -- so a
+        //  case-local component overlay is respected.  Same helper the
+        //  molecular gammaPhi path uses; there is one injection contract, not
+        //  two.
+        const DictPtr injected =
+            injectUnifacGroups(activityDict, bNames, *bComps);
+        std::shared_ptr<ActivityModel> mm(
+            ActivityModel::New(injected, *bComps));
+        cfg.molecularGamma =
+            [mm, bComps](scalar T, const sVector& x) -> sVector
+            { return mm->gamma(T, x); };
+        if (thermoAnnounce())
+        {
+            std::cout << "[resolver] liquid molecular backbone: UNIFAC (";
+            for (std::size_t bi = 0; bi < bNames.size(); ++bi)
+                std::cout << (bi ? " " : "") << bNames[bi];
+            std::cout << ") -- PREDICTIVE group contribution, an ESTIMATE:"
+                         " no pair was regressed for this system\n"
+                         "[resolver] ions: Davies on water-referenced"
+                         " molality (mixed-solvent transfer term: named"
+                         " gap)\n";
+        }
+    }
+
     if (molecularModel == "NRTL")
     {
         std::vector<std::string> bNames;
