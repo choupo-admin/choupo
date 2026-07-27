@@ -1,17 +1,54 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
 |  flashComplex/0/feed -- the authored inlet                                  |
 \*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE SOLUTES WERE DIVIDED BY 20 (2026-07-27), and the reason is that the
+  first version put the case outside the domain of the model it declares.
+
+  Molality follows from the water, not from the kmol/h: 60 kmol/h of water is
+  1081 kg/h, so the original 6 kmol/h of ammonia was 5.55 mol/kg and the
+  4 kmol/h of CO2 was 3.70 mol/kg.  With half the ammonia protonated and
+  matched by bicarbonate that is an ionic strength near 2.8 mol/kg.
+
+  The thermoPhysPropDict declares DAVIES, whose trust range is ~0.5 mol/kg
+  and which now warns above it.  The case was running at five times its own
+  warning threshold.  That is not a precision detail: at I ~ 3 the Davies
+  form is not approximating badly, it is outside the regime where it means
+  anything, and the activity coefficients -- and with them the pH, every
+  saturation index and the whole partition -- would be fiction.
+
+  A concentrated brine is a legitimate system.  It is just a PITZER system,
+  and this case is about the second liquid phase, not the multi-salt engine.
+
+  MEASURED at the new loading (speciate on the aqueous sub-system, 308.15 K):
+
+      I  = 0.277 mol/kg          -- inside the Davies domain, no advisory
+      pH = 6.92                  -- the ammonia/carbonate buffer holding
+      calcite saturates at       -- Ca ~ 3.3e-4 mol/kg
+
+  water, benzene and ethanol are UNCHANGED: diluting them would have shrunk
+  the organic phase, and the two liquids are what this case exists to drive.
+
+  CaCO3 is now 0.002 kmol/h against a saturation of ~0.00035 kmol/h, so
+  roughly one sixth of it dissolves and the rest stays as suspended solid.
+  The original 0.5 kmol/h was ~1400 times the saturation: the comment said
+  "may dissolve" while 99.9 % of it could only sit there as ballast, and the
+  coupling between the two carbonate solids -- the whole point of the case --
+  was never exercised because the calcium never reached solution in a
+  quantity that could matter.
+\*---------------------------------------------------------------------------*/
 componentMolarFlows
 {
-    water          60.0  kmol/h;
-    benzene        20.0  kmol/h;
-    ethanol         8.0  kmol/h;
-    N2              5.0  kmol/h;    // inert -- guarantees a vapour phase
-    CO2             4.0  kmol/h;
-    NH3             6.0  kmol/h;
-    H2S             1.0  kmol/h;
-    aceticAcid      2.0  kmol/h;
-    CaCO3           0.5  kmol/h;    // fed as suspended solid, may dissolve
+    water          60.0    kmol/h;
+    benzene        20.0    kmol/h;
+    ethanol         8.0    kmol/h;
+    N2              5.0    kmol/h;    // inert -- guarantees a vapour phase
+    CO2             0.2    kmol/h;
+    NH3             0.3    kmol/h;
+    H2S             0.05   kmol/h;
+    aceticAcid      0.1    kmol/h;
+    CaCO3           0.002  kmol/h;    // ~6x saturation: part dissolves,
+                                      //   the rest stays suspended solid
 }
 T               308.15 K;
 P               2.0 atm;
