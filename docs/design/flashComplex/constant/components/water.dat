@@ -8,17 +8,14 @@ name        water;
 formula     "H2O";
 CAS         7732-18-5;
 MW          18.0153 g/mol;
-role        solvent;
-
 standardStates
 {
-    liquid  { reference pureLiquid;   dHf_298 -285830 J/mol;  s_298  69.95 J/mol/K; }
-    vapour  { reference idealGas1bar; dHf_298 -241830 J/mol;  s_298 188.84 J/mol/K; }
+    liquid  { dHf_298 -285830 J/mol;  s_298  69.95 J/mol/K; }
+    vapour  { dHf_298 -241830 J/mol;  s_298 188.84 J/mol/K; }
 }
 
 aqueousChemistry
 {
-    introduces ( H  OH );
 
     reactions
     (
@@ -31,10 +28,7 @@ aqueousChemistry
                 { species H;      phase aqueous;  nu  1; }
                 { species OH;     phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25   -14.0;
@@ -42,9 +36,6 @@ aqueousChemistry
                     analytic ( 293.29227 0.1360833 -10576.913 -123.73158 0 -6.996455e-05 );
                     source   "USGS PHREEQC phreeqc.dat (public domain)";
                 }
-                crossCheck speciesData;   // PASSES: 56400 stored vs 55840
-                                          // from species (560 J = 0.016 in
-                                          // log K at 358 K)
             }
         }
     );

@@ -8,12 +8,10 @@ name        ethanol;
 formula     "C2H6O";
 CAS         64-17-5;
 MW          46.068 g/mol;
-role        solute;
-
 standardStates
 {
-    liquid  { reference pureLiquid;   dHf_298 -277690 J/mol; s_298 160.7 J/mol/K; }
-    vapour  { reference idealGas1bar; dHf_298 -234800 J/mol; s_298 281.6 J/mol/K; }
+    liquid  { dHf_298 -277690 J/mol; s_298 160.7 J/mol/K; }
+    vapour  { dHf_298 -234800 J/mol; s_298 281.6 J/mol/K; }
 }
 
 //  The curated FACT the classifier reads: ethanol takes part in NO aqueous

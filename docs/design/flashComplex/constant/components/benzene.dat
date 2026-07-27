@@ -8,12 +8,10 @@ name        benzene;
 formula     "C6H6";
 CAS         71-43-2;
 MW          78.114 g/mol;
-role        solvent;
-
 standardStates
 {
-    liquid  { reference pureLiquid;   dHf_298  49080 J/mol; s_298 173.3 J/mol/K; }
-    vapour  { reference idealGas1bar; dHf_298  82930 J/mol; s_298 269.3 J/mol/K; }
+    liquid  { dHf_298  49080 J/mol; s_298 173.3 J/mol/K; }
+    vapour  { dHf_298  82930 J/mol; s_298 269.3 J/mol/K; }
 }
 
 aqueousChemistry

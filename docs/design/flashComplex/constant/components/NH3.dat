@@ -8,16 +8,13 @@ name        NH3;
 formula     "NH3";
 CAS         7664-41-7;
 MW          17.0305 g/mol;
-role        solute;
-
 standardStates
 {
-    vapour  { reference idealGas1bar; dHf_298 -45940 J/mol;  s_298 192.77 J/mol/K; }
+    vapour  { dHf_298 -45940 J/mol;  s_298 192.77 J/mol/K; }
 }
 
 aqueousChemistry
 {
-    introduces ( NH3aq  NH4 );
 
     reactions
     (
@@ -29,10 +26,7 @@ aqueousChemistry
                 { species NH3;    phase vapour;   nu -1; }
                 { species NH3aq;  phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25    1.7966;
@@ -40,7 +34,6 @@ aqueousChemistry
                     convention PHREEQC-gasMolal-v1;
                     source   "USGS PHREEQC phreeqc.dat (public domain)";
                 }
-                crossCheck speciesData;
             }
         }
 
@@ -53,19 +46,13 @@ aqueousChemistry
                 { species NH3aq;  phase aqueous;  nu  1; }
                 { species H;      phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25   -9.252;          // pKa of the ammonium ion
                     dH        52090 J/mol;
                     source   "USGS PHREEQC phreeqc.dat (public domain)";
                 }
-                crossCheck speciesData;       // NOT AVAILABLE today: NH3aq
-                                              // carries no formation datum
-                                              // (curation debt, announced)
             }
         }
     );

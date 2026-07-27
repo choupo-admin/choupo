@@ -10,18 +10,15 @@ name        N2;
 formula     "N2";
 CAS         7727-37-9;
 MW          28.0134 g/mol;
-role        solute;
-
 standardStates
 {
-    vapour  { reference idealGas1bar; dHf_298 0 J/mol; s_298 191.61 J/mol/K; }
+    vapour  { dHf_298 0 J/mol; s_298 191.61 J/mol/K; }
 }
 
 //  INERT does NOT mean insoluble: the dissolution is priced like any other.
 aqueousChemistry
 {
     speciation none;
-    introduces ( N2aq );
 
     reactions
     (
@@ -33,10 +30,7 @@ aqueousChemistry
                 { species N2;    phase vapour;   nu -1; }
                 { species N2aq;  phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25   -3.1864;
@@ -44,7 +38,6 @@ aqueousChemistry
                     convention PHREEQC-gasMolal-v1;
                     source   "USGS PHREEQC phreeqc.dat (public domain)";
                 }
-                crossCheck speciesData;
             }
         }
     );

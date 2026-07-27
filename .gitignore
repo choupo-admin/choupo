@@ -116,7 +116,15 @@ docs/*.build.log
 .idea/
 
 # ------ Per-user tool state --------------------------------------------
-.claude/
+.claude/*
+# (contents, not the directory itself -- git cannot re-include inside a
+#  wholly-excluded directory)
+# ...EXCEPT the skills: they are PROJECT configuration, not per-user state.
+# A skill only does its job if it is in the repository -- it must apply to
+# every future session, any model, with or without this conversation in
+# context.  `settings.local.json` stays ignored (permissions, preferences).
+!.claude/skills/
+!.claude/skills/**
 
 # Reference papers (third-party copyrighted material; keep locally,
 # do not distribute via the repo)

@@ -58,7 +58,6 @@ stoichiometry
     { species HCO3;    phase aqueous;  nu -1; }
     { species CaHCO3;  phase aqueous;  nu  1; }
 );
-equilibriumCondition zeroAffinity;
 standardGibbs
 {
     authority  measuredK;
@@ -70,5 +69,4 @@ standardGibbs
                   delta_h 2.69 kcal -- restores the value the standards
                   record claims but does not carry (see header)";
     }
-    crossCheck speciesData;
 }

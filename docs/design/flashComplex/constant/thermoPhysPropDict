@@ -23,21 +23,10 @@ schemaVersion 3;
 //  No `components ( ... )` list: the components come from the feed and from
 //  the solids the phases declare.  A component that is never fed and never
 //  named by a phase cannot appear -- there is nothing to forget.
-componentDiscovery fromFeedAndDeclaredPhases;
 
 equilibrium
 {
-    formulation chemicalPotential;
 
-    conditions
-    {
-        homogeneousReactions  zeroAffinity;              // sum(nu*mu) = 0
-        phaseTransfer         equalChemicalPotential;    // mu_i equal in
-                                                         // every phase it is in
-        solids                phaseStabilityComplementarity;
-        // solid present  <=>  SI = 0 ;  absent  <=>  SI < 0 and amount = 0
-        electroneutrality     enforcedPerAqueousPhase;
-    }
 
     phases
     {
@@ -99,13 +88,3 @@ equilibrium
     }
 }
 
-reporting
-{
-    writeResolvedSpecies    true;    // what the closure activated
-    writeResolvedReactions  true;    // and from where
-    writeStandardGibbsSource true;   // measuredK or speciesData, per reaction
-    writeCrossChecks        true;    // and the disagreement when both exist
-    writeChemicalPotentials true;
-    writeReactionAffinities true;    // should be ~0 at the solution
-    writeSaturationIndices  true;
-}

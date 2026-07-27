@@ -43,7 +43,7 @@ MW          44.010 g/mol;
 
 standardStates
 {
-    vapour  { reference idealGas1bar;  dHf_298 -393510 J/mol;  s_298 213.79 J/mol/K; }
+    vapour  { dHf_298 -393510 J/mol;  s_298 213.79 J/mol/K; }
 }
 
 aqueousChemistry
@@ -51,7 +51,6 @@ aqueousChemistry
     //  Species this component BRINGS to the system.  Their identity and
     //  standard-state data live in species/ (one home); this is the link,
     //  never a copy of the values.
-    introduces ( CO2aq  H2CO3  HCO3  CO3 );
 
     reactions
     (
@@ -76,11 +75,8 @@ aqueousChemistry
             //      sum(nu_i * mu_i) = 0        (zero affinity)
             //  What differs between records is only HOW the standard part
             //  sum(nu_i * mu_i^0) is obtained -- see standardGibbs.
-            equilibriumCondition zeroAffinity;
 
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25    -1.468;
@@ -89,7 +85,6 @@ aqueousChemistry
                     convention PHREEQC-gasMolal-v1;
                     source    "USGS PHREEQC phreeqc.dat (public domain)";
                 }
-                crossCheck speciesData;
             }
         }
 
@@ -104,10 +99,7 @@ aqueousChemistry
                 { species water;  phase aqueous;  nu -1; }
                 { species H2CO3;  phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25   -2.886;             // K_hyd = 1.3e-3
@@ -131,10 +123,7 @@ aqueousChemistry
                 { species H;      phase aqueous;  nu  1; }
                 { species HCO3;   phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority derivedFromReactions;
+                            authority derivedFromReactions;
                 derivedFromReactions
                 {
                     //  log Ka = log K1*(aggregate) - log K_hyd
@@ -155,7 +144,6 @@ aqueousChemistry
             //  auditable instead of a comment.
             name      aggregateFirstDissociation;
             equation "CO2(aq) + H2O = H+ + HCO3-";
-            role      referenceOnly;    // parent of a derivation; not solved
             stoichiometry
             (
                 { species CO2aq;  phase aqueous;  nu -1; }
@@ -163,10 +151,7 @@ aqueousChemistry
                 { species H;      phase aqueous;  nu  1; }
                 { species HCO3;   phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25    -6.352;          // pK1* -- the MEASURED quantity
@@ -174,7 +159,6 @@ aqueousChemistry
                     analytic  ( -356.3094 -0.06091964 21834.37 126.8339 -1684915 );
                     source    "USGS PHREEQC phreeqc.dat (public domain)";
                 }
-                crossCheck speciesData;
             }
         }
 
@@ -187,10 +171,7 @@ aqueousChemistry
                 { species H;      phase aqueous;  nu  1; }
                 { species CO3;    phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25   -10.329;          // pK2

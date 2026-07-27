@@ -28,16 +28,13 @@ name        H2S;
 formula     "H2S";
 CAS         7783-06-4;
 MW          34.081 g/mol;
-role        solute;
-
 standardStates
 {
-    vapour  { reference idealGas1bar; dHf_298 -20630 J/mol;  s_298 205.79 J/mol/K; }
+    vapour  { dHf_298 -20630 J/mol;  s_298 205.79 J/mol/K; }
 }
 
 aqueousChemistry
 {
-    introduces ( H2Saq  HS );
 
     reactions
     (
@@ -49,10 +46,7 @@ aqueousChemistry
                 { species H2S;    phase vapour;   nu -1; }
                 { species H2Saq;  phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25   -0.94;
@@ -62,7 +56,6 @@ aqueousChemistry
                     reviewStatus interim;
                     reviewReason ( proxyValue );
                 }
-                crossCheck speciesData;
             }
         }
 
@@ -75,17 +68,13 @@ aqueousChemistry
                 { species H;      phase aqueous;  nu  1; }
                 { species HS;     phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25   -6.994;
                     dH        22175 J/mol;
                     source   "USGS PHREEQC phreeqc.dat (public domain)";
                 }
-                crossCheck speciesData;
             }
         }
     );

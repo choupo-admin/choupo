@@ -12,7 +12,6 @@ stoichiometry
     { species CO3;      phase aqueous;  nu -1; }
     { species CaCO3aq;  phase aqueous;  nu  1; }
 );
-equilibriumCondition zeroAffinity;
 standardGibbs
 {
     authority  measuredK;
@@ -25,5 +24,4 @@ standardGibbs
                   HCO3 master (logK -7.105 = 3.224 - 10.329) -- the two
                   agree exactly through the bicarbonate step.";
     }
-    crossCheck speciesData;
 }

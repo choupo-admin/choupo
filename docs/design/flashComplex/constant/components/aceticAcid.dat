@@ -9,17 +9,14 @@ name        aceticAcid;
 formula     "C2H4O2";
 CAS         64-19-7;
 MW          60.052 g/mol;
-role        solute;
-
 standardStates
 {
-    liquid  { reference pureLiquid;   dHf_298 -484500 J/mol; s_298 159.8 J/mol/K; }
-    vapour  { reference idealGas1bar; dHf_298 -432800 J/mol; s_298 283.5 J/mol/K; }
+    liquid  { dHf_298 -484500 J/mol; s_298 159.8 J/mol/K; }
+    vapour  { dHf_298 -432800 J/mol; s_298 283.5 J/mol/K; }
 }
 
 aqueousChemistry
 {
-    introduces ( HAc  Acetate );
 
     reactions
     (
@@ -31,10 +28,7 @@ aqueousChemistry
                 { species aceticAcid; phase vapour;   nu -1; }
                 { species HAc;        phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25    3.61;
@@ -43,7 +37,6 @@ aqueousChemistry
                     source   "Sander, R. (2015) Atmos. Chem. Phys. 15, 4399
                               (CC-BY 3.0): H_cp ~ 4.1e3 M/atm at 298 K";
                 }
-                crossCheck speciesData;
             }
         }
 
@@ -56,10 +49,7 @@ aqueousChemistry
                 { species H;        phase aqueous;  nu  1; }
                 { species Acetate;  phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25   -4.756;         // pKa
@@ -67,7 +57,6 @@ aqueousChemistry
                     source   "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref.
                               Data 31 (2002) 231";
                 }
-                crossCheck speciesData;
             }
         }
     );
@@ -79,7 +68,6 @@ aqueousChemistry
 //  heat is priced into the duty.
 vapourChemistry
 {
-    introduces ( HAc2 );
 
     reactions
     (
@@ -91,10 +79,7 @@ vapourChemistry
                 { species aceticAcid; phase vapour;  nu -2; }
                 { species HAc2;       phase vapour;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25    3.146;          // K_dim [atm^-1]
@@ -105,7 +90,6 @@ vapourChemistry
                     reviewReason ( primarySourceRecheck );
                     reviewOwner  IST;
                 }
-                crossCheck speciesData;
             }
         }
     );

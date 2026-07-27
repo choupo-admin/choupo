@@ -13,7 +13,6 @@ stoichiometry
     { species CaOH;   phase aqueous;  nu  1; }
     { species H;      phase aqueous;  nu  1; }
 );
-equilibriumCondition zeroAffinity;
 standardGibbs
 {
     authority  measuredK;
@@ -23,5 +22,4 @@ standardGibbs
         source "USGS PHREEQC phreeqc.dat (public domain); no delta_h in the
                 source -- the T-dependence is FLAT and announced as such";
     }
-    crossCheck speciesData;
 }

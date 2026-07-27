@@ -632,6 +632,21 @@ PYEOF
     fi
     rm -f /tmp/lsgate.$$
 
+    # Record-form gate: the settled shape of a data record, enforced in
+    # docs/design/ too -- the one place the 25 other gates never looked, and
+    # therefore the place where `role`, a second standard state and six
+    # single-valued ceremony fields silently came back on 2026-07-27.
+    if "$ROOT/bin/curate/check_record_form.py" > /tmp/rfgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "record-form-gate" "$(tail -1 /tmp/rfgate.$$)"
+        grep "still carry" /tmp/rfgate.$$ || true
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_record_form.py)\n" "record-form-gate"
+        cat /tmp/rfgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rfgate.$$
+
     # Family-outlier gate (born 2026-07-27 from a real defect: CaHCO3+ held
     # logK -4.059 / dH 158 kJ/mol against siblings at +1.0 / 3-25 kJ/mol,
     # while citing a source that holds +1.106).  INFORMATIONAL: chemistry has

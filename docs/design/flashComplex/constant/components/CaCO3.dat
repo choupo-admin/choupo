@@ -29,20 +29,17 @@ name        CaCO3;
 formula     "CaCO3";
 CAS         471-34-1;
 MW          100.0869 g/mol;
-role        nonvolatile;
-
 defaultPhase calcite;
 
 standardStates
 {
-    calcite { reference pureSolid; dHf_298 -1207600 J/mol; s_298 91.7 J/mol/K;
+    calcite { dHf_298 -1207600 J/mol; s_298 91.7 J/mol/K;
               physical { rho_p 2710 kg/m^3; }
               source "CODATA Key Values 1989; xcheck Robie-Hemingway 1995"; }
 }
 
 aqueousChemistry
 {
-    introduces ( Ca );
 
     reactions
     (
@@ -55,10 +52,7 @@ aqueousChemistry
                 { species Ca;     phase aqueous;  nu  1; }
                 { species CO3;    phase aqueous;  nu  1; }
             );
-            equilibriumCondition zeroAffinity;
-            standardGibbs
-            {
-                authority  measuredK;
+                            authority  measuredK;
                 measuredK
                 {
                     logK25   -8.450;          // pKsp 8.450
@@ -69,7 +63,6 @@ aqueousChemistry
                               form log K 1.879 converted through the
                               bicarbonate step; lit: Plummer & Busenberg 1982";
                 }
-                crossCheck speciesData;
             }
         }
     );
