@@ -1,70 +1,76 @@
-/*--------------------------------*- Choupo -*-----------------------*\
-  Component: Calcium carbonate (CaCO3), CALCITE polymorph.  CAS 471-34-1.
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  CaCO3 -- fed as a suspended solid; may dissolve or grow.                    |
+|  DESIGN DRAFT (flashComplex).                                                |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  TWO WAYS TO WRITE THE SAME EQUILIBRIUM (and why they agree)
+  -----------------------------------------------------------
+  The solubility product the student learns:
 
-  A NON-VOLATILE crystalline mineral solid: it never enters the vapour
-  (K = 0) and carries no Antoine / liquid-Cp blocks.  The canonical solid
-  for limestone / precipitated-CaCO3 (PCC) exercises -- a scaling / anti-
-  scaling species in membrane and evaporator cases, and a feed solid for
-  calcination (CaCO3 -> CaO + CO2) Gibbs-reactor exercises.
+      CaCO3(s) = Ca+2 + CO3-2        pKsp = 8.450
 
-  Carries a REAL solid heat capacity (solidHeatCapacity{}) and the solid-
-  phase formation datum, so its sensible heat and its reaction heat both
-  emerge from the elements reference like any other species.
+  The form the geochemical catalogues store (acid form, because CO3-2 is a
+  poor master at circumneutral pH):
 
-  rho_p for calcite ~ 2710 kg/m^3.
-  Sources: solid formation datum from CODATA Key Values (Cox, Wagman &
-           Medvedev 1989), cross-checked vs Robie & Hemingway, USGS Bull.
-           2131 (1995); solidHeatCapacity fitted to Robie & Hemingway 1995
-           (public domain); rho_p 2710 kg/m^3 = calcite crystallographic
-           density (public).
+      CaCO3(s) + H+ = Ca+2 + HCO3-   log K = +1.879
+
+  They are the SAME equilibrium, related through the bicarbonate step:
+
+      -8.450 + 10.329 = 1.879    exactly
+
+  Choupo declares the Ksp form (what the course teaches) and VERIFIES it
+  against the catalogue's acid form through the ladder -- a numerical
+  conversion, never a string match.
 \*---------------------------------------------------------------------------*/
+recordType    component;
+schemaVersion 3;
 
 name        CaCO3;
-formula     CaCO3;
+formula     "CaCO3";
 CAS         471-34-1;
+MW          100.0869 g/mol;
+role        nonvolatile;
 
-MW          100.0869;          // kg/kmol  (calcite)
+defaultPhase calcite;
 
-role        nonvolatile;       // never goes to the vapour (K = 0)
-
-solid
+standardStates
 {
-    rho_p   2710.0;            // calcite particle density [kg/m^3]
+    calcite { reference pureSolid; dHf_298 -1207600 J/mol; s_298 91.7 J/mol/K;
+              physical { rho_p 2710 kg/m^3; }
+              source "CODATA Key Values 1989; xcheck Robie-Hemingway 1995"; }
 }
 
-// Solid-phase formation datum (calcite).  PRIMARY: CODATA Key Values for
-// Thermodynamics (Cox, Wagman & Medvedev 1989); cross-checked vs Robie &
-// Hemingway, USGS Bull. 2131 (1995).  Both are open / public-domain sources.
-standardThermochemistry
+aqueousChemistry
 {
-    dHf_298   -1207600;        // J/mol  calcite [CODATA Key Values 1989; xcheck Robie-Hemingway 1995]
-    s_298     91.7;            // J/(mol*K) third-law absolute [CODATA Key Values 1989]
-    referenceState     pureSolid;
-}
+    introduces ( Ca );
 
-// REAL solid heat capacity of calcite.  Cp(298.15) ~ 83.5 J/(mol*K), rising
-// to ~110.9 at 600 K.  PRIMARY: Robie & Hemingway, "Thermodynamic Properties
-// of Minerals and Related Substances ...", U.S. Geological Survey Bulletin
-// 2131 (1995) -- a U.S. Government work, PUBLIC DOMAIN.  Quadratic least-
-// squares fit to their tabulated Cp at 298.15/400/500/600 K (AAD < 0.3 %).
-solidHeatCapacity
-{
-    model         polynomial;          // Cp = a0 + a1*T + a2*T^2  [J/(mol*K)]
-    coefficients  ( 29.8993   0.224617   -1.49637e-04 );
-    Trange        ( 298  600 );        // [Robie-Hemingway 1995, USGS Bull. 2131]
-}
-
-// Solid phase(s) of this component (roadmap Phase D fold-in):
-solidPhases
-{
-    aragonite
-    {
-        dissolutionReaction { masters ( { ion Ca; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } ); }
-        equilibrium { logK25 1.993; dH -25731.6; analytic ( -64.0902 -0.04546451 -2248.497 32.66939 563713.9 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
-    }
-    calcite
-    {
-        dissolutionReaction { masters ( { ion Ca; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } ); }
-        equilibrium { logK25 1.879; dH -28078.8; analytic ( 40.0171 -0.01928451 -5151.79 -8.66815 563713.9 ); validC ( 0 300 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: 0 - 300 C, Ellis, 1959, Plummer and Busenberg, 1982"; }
-    }
+    reactions
+    (
+        {
+            name      calciteDissolution;
+            equation "CaCO3(calcite) = Ca+2 + CO3-2";
+            stoichiometry
+            (
+                { species CaCO3;  phase calcite;  nu -1; }
+                { species Ca;     phase aqueous;  nu  1; }
+                { species CO3;    phase aqueous;  nu  1; }
+            );
+            equilibriumCondition zeroAffinity;
+            standardGibbs
+            {
+                authority  measuredK;
+                measuredK
+                {
+                    logK25   -8.450;          // pKsp 8.450
+                    dH       -13179.6 J/mol;  // = -28078.8 + 14899.2 (acid
+                                              //   form + bicarbonate step)
+                    validC   ( 0 300 );
+                    source   "USGS PHREEQC phreeqc.dat (public domain), acid
+                              form log K 1.879 converted through the
+                              bicarbonate step; lit: Plummer & Busenberg 1982";
+                }
+                crossCheck speciesData;
+            }
+        }
+    );
 }

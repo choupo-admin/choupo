@@ -1,95 +1,61 @@
-/*--------------------------------*- Choupo -*-----------------------*\
-  Component: Water  (H2O, CAS 7732-18-5)
-  Warning: Antoine fit accurate for 273-373 K only.
-           Above ~373 K use steam tables or a proper EoS (IAPWS).
-  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), the Antoine
-           fit, the Cp polynomials and the ideal-gas formation datum
-           (dHf_298/s_298, JANAF convention) are individual literature
-           values -- primary re-citation pending (IST review).  K_b/K_f
-           and the Andrade/Vogel viscosity fits repeat the same pending
-           re-citation at their blocks; UNIQUAC r,q are the van der Waals
-           values (Abrams-Prausnitz) as used by Popken 2000, Table 2.
-\*---------------------------------------------------------------------------*/
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  water -- the aqueous solvent.  DESIGN DRAFT (flashComplex).                 |
+\*-----------------------------------------------------------------------------*/
+recordType    component;
+schemaVersion 3;
 
 name        water;
-formula     H2O;
+formula     "H2O";
 CAS         7732-18-5;
+MW          18.0153 g/mol;
+role        solvent;
 
-MW          18.015;
-Tc          647.14;
-Pc          220.64;
-omega       0.3449;
-Tb          373.15;
-HvapTb      40660;
-Vliq        1.807e-5;
-diffusionVolume  13.1;          // Fuller diffusion volume [-]
-
-
-standardThermochemistry
+standardStates
 {
-    dHf_298   -241826.0;        // J/mol  -- ideal-gas reference
-    s_298     188.834;         // J/(mol·K)  -- third-law absolute
-}
-vaporPressure
-{
-    model         Antoine;
-    coefficients  (5.40221   1838.675   -31.737);
-    Trange        (273  373);
+    liquid  { reference pureLiquid;   dHf_298 -285830 J/mol;  s_298  69.95 J/mol/K; }
+    vapour  { reference idealGas1bar; dHf_298 -241830 J/mol;  s_298 188.84 J/mol/K; }
 }
 
-idealGasHeatCapacity
+aqueousChemistry
 {
-    model         polynomial;
-    coefficients  (32.243   1.924e-3   1.0555e-5   -3.596e-9);
-    Trange        (200  1500);
+    introduces ( H  OH );
+
+    reactions
+    (
+        {
+            name      waterAutoprotolysis;
+            equation "H2O = H+ + OH-";
+            stoichiometry
+            (
+                { species water;  phase aqueous;  nu -1; }
+                { species H;      phase aqueous;  nu  1; }
+                { species OH;     phase aqueous;  nu  1; }
+            );
+            equilibriumCondition zeroAffinity;
+            standardGibbs
+            {
+                authority  measuredK;
+                measuredK
+                {
+                    logK25   -14.0;
+                    dH        56400 J/mol;
+                    analytic ( 293.29227 0.1360833 -10576.913 -123.73158 0 -6.996455e-05 );
+                    source   "USGS PHREEQC phreeqc.dat (public domain)";
+                }
+                crossCheck speciesData;   // PASSES: 56400 stored vs 55840
+                                          // from species (560 J = 0.016 in
+                                          // log K at 358 K)
+            }
+        }
+    );
 }
 
-liquidHeatCapacity
+//  The solvent's own VLE is the Raoult leg (a_w * psat), NOT a K-bearing
+//  equilibrium: it lives with the phase MODEL in thermoPhysPropDict.  Stated
+//  here so the student is not left wondering where the water vapour went.
+vapourLiquidEquilibrium
 {
-    model         polynomial;
-    coefficients  (75.5);
-    Trange        (273  373);
-}
-
-// Ebulioscopic / cryoscopic constants for water (v0.28+):
-//   K_b = 0.512 K * kg / mol  (boiling-point elevation, ΔT = K_b · m)
-//   K_f = 1.853 K * kg / mol  (freezing-point depression, ΔT = K_f · m)
-// Reference: individual literature values -- primary re-citation pending (IST review).
-ebulioscopic
-{
-    K_b   0.512;
-    K_f   1.853;
-}
-
-// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
-// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
-// fitted to literature mu(T) over ~10-100 degC.
-associationFactor  2.6;
-liquidViscosity
-{
-    andrade { A -13.03; B 1796.1; }
-    vogel   { A -10.5366; B 541.4; C 144.0; }
-}
-
-groups
-{
-    unifac ( { group H2O; count 1; } );
-}
-
-uniquac
-{
-    r   0.9200;
-    q   1.4000;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
-}
-
-cosmo
-{
-    VT2005
-    {
-        model       COSMOSAC;
-        variant     "2002";
-        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-1076-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7732-18-5";
-        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
-        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
-    }
+    route      raoultSolvent;         // p_w = a_w * psat_w(T)
+    note       "activity of the solvent from the declared aqueous activity
+                model; no equilibrium constant is involved";
 }

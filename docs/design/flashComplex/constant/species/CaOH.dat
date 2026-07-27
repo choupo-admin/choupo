@@ -1,0 +1,11 @@
+recordType    modelSpecies;
+schemaVersion 3;
+
+name        CaOH;
+formula     "CaOH+";
+charge      +1;
+MW          57.085 g/mol;
+phase       aqueous;
+standardState infiniteDilutionMolality;
+
+aqueousThermo { status curationRequired; required ( hfAq sAq ); }

@@ -1,53 +1,92 @@
-/*--------------------------------*- Choupo -*-----------------------*\
-  Component: Hydrogen sulfide  (H2S, CAS 7783-06-4)
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  H2S -- volatile weak acid.  DESIGN DRAFT (flashComplex).                    |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE FUSED-RECORD DECOMPOSITION (D6 dossier finding, executed here)
+  ------------------------------------------------------------------
+  The geochemical catalogues store H2S transfer FUSED with its first
+  dissociation:   H2S(g) = H+ + HS-,  log K = -7.93.  That is a DIFFERENT
+  physical family from the molecular Henry constant, so the two are not
+  directly comparable.  The physical (molecular) dissolution is recovered
+  by explicit thermodynamic decomposition, never by label:
 
-  Sour-gas contaminant in natural gas and biogas.  Removed by amine
-  scrubbing; recovered as elemental S via the Claus process
-  (2 H2S + SO2 -> 3 S + 2 H2O at 1000-1500 K) --- another good
-  GibbsReactor target with strong T sensitivity.
-  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
-  reference EOS; standardThermochemistry cross-checked vs NASA TM-4513
-  (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
-  literature value, primary re-citation pending (IST review).
+      H2S(g) = H2S(aq)   log K = -7.93 - (-6.994) = -0.94
+
+  Sanity: more soluble than CO2 (-1.468), as it must be; consistent with
+  Sander's H_cp ~ 0.087 M/atm.  INTERIM until curated as its own record
+  with both parents cited.
+
+  The SECOND dissociation (HS- = S-2 + H+) is DELIBERATELY ABSENT: its pK
+  is contested across the literature by ~7 units (12..19) and modern
+  PHREEQC dropped S-2 entirely.  Its absence is a stated curation
+  decision, not an oversight.
 \*---------------------------------------------------------------------------*/
+recordType    component;
+schemaVersion 3;
 
 name        H2S;
-formula     H2S;
+formula     "H2S";
 CAS         7783-06-4;
-
-// role solute (v0.28+): in a water solvent the K-value comes from
-// HenrysLaw/H2S-water.dat instead of Antoine/Raoult.
+MW          34.081 g/mol;
 role        solute;
 
-MW          34.082;            // kg/kmol
-Tc          373.40;             // K
-Pc          89.63;              // bar
-omega       0.090;              // [-]
-Tb          213.60;             // K
-HvapTb      18670;              // J/mol
-Vliq        3.49e-5;            // m^3/mol
-
-standardThermochemistry
+standardStates
 {
-    dHf_298    -20630.0;        // J/mol  -- ideal-gas reference
-    s_298      205.79;          // J/(mol·K)
+    vapour  { reference idealGas1bar; dHf_298 -20630 J/mol;  s_298 205.79 J/mol/K; }
 }
 
-vaporPressure
+aqueousChemistry
 {
-    model         Antoine;
-    coefficients  (4.22883   806.62   -25.770);
-    Trange        (188  340);
-}
+    introduces ( H2Saq  HS );
 
-idealGasHeatCapacity
-{
-    model         polynomial;
-    coefficients  (31.94   1.436e-3   2.432e-5   -1.176e-8);
-    Trange        (250  1500);
-}
+    reactions
+    (
+        {
+            name      hydrogenSulfideDissolution;
+            equation "H2S(g) = H2S(aq)";
+            stoichiometry
+            (
+                { species H2S;    phase vapour;   nu -1; }
+                { species H2Saq;  phase aqueous;  nu  1; }
+            );
+            equilibriumCondition zeroAffinity;
+            standardGibbs
+            {
+                authority  measuredK;
+                measuredK
+                {
+                    logK25   -0.94;
+                    convention PHREEQC-gasMolal-v1;
+                    source   "DERIVED: fused PHREEQC record (-7.93) minus Ka1
+                              (-6.994); both parents cited in the header";
+                    reviewStatus interim;
+                    reviewReason ( proxyValue );
+                }
+                crossCheck speciesData;
+            }
+        }
 
-// ---- Aqueous-speciation FACT (substance-level, classifier-read) ----
-// H2S(aq) = HS- + H+: the sulfide set, master HS.
-aqueousSpeciation  sulfide;
-aqueousMapping ( { species HS; nu 1; } { species H; nu 1; } );
+        {
+            name      sulfideFirstDissociation;
+            equation "H2S(aq) = H+ + HS-";
+            stoichiometry
+            (
+                { species H2Saq;  phase aqueous;  nu -1; }
+                { species H;      phase aqueous;  nu  1; }
+                { species HS;     phase aqueous;  nu  1; }
+            );
+            equilibriumCondition zeroAffinity;
+            standardGibbs
+            {
+                authority  measuredK;
+                measuredK
+                {
+                    logK25   -6.994;
+                    dH        22175 J/mol;
+                    source   "USGS PHREEQC phreeqc.dat (public domain)";
+                }
+                crossCheck speciesData;
+            }
+        }
+    );
+}

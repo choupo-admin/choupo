@@ -1,23 +1,59 @@
-/*--------------------------------*- Choupo -*-----------------------*\
-  NH4HCO3 (ammonium bicarbonate) -- DRAFT record, design driver ONLY.
-  NOT in data/standards: every value below is INTERIM order-of-magnitude
-  pending primary curation (Trypuc & Kielkowska, J. Chem. Eng. Data,
-  solubility; CRC density) BEFORE this case can ever run.
-\*---------------------------------------------------------------------------*/
-name        NH4HCO3;
-formula     NH4HCO3;
-MW          79.056;             // kg/kmol
-role        solute;
-dissociatesTo ( { species NH4; nu 1; } { species HCO3; nu 1; } );
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  NH4HCO3 -- ammonium bicarbonate.  NEVER FED: this solid APPEARS if the      |
+|  NH3 + CO2 loading crosses saturation.  DESIGN DRAFT -- every value below    |
+|  is INTERIM, pending primary curation.  The case cannot run until it is.     |
+\*-----------------------------------------------------------------------------*/
+recordType    component;
+schemaVersion 3;
 
-solidPhases
+name        NH4HCO3;
+formula     "NH4HCO3";
+MW          79.056 g/mol;
+role        nonvolatile;
+
+defaultPhase ammoniumBicarbonate;
+
+standardStates
 {
     ammoniumBicarbonate
     {
-        physical { rho_p 1580.0; }   // g/cm^3 1.58 -- CRC, INTERIM
-        dissolutionReaction { masters ( { ion NH4; nu 1; } { ion HCO3; nu 1; } ); }
-        equilibrium { logK25 0.25; source "INTERIM: order of magnitude from ~220 g/L (25 C) solubility; primary pending (Trypuc & Kielkowska)"; }
+        reference pureSolid;
+        physical  { rho_p 1580 kg/m^3; }     // CRC, INTERIM
+        source    "INTERIM -- formation datum not curated";
     }
+}
+
+aqueousChemistry
+{
+    introduces ( );          // brings no NEW species: NH4+ and HCO3- are
+                             // already introduced by NH3 and CO2
+
+    reactions
+    (
+        {
+            name      ammoniumBicarbonateDissolution;
+            equation "NH4HCO3(s) = NH4+ + HCO3-";
+            stoichiometry
+            (
+                { species NH4HCO3; phase ammoniumBicarbonate; nu -1; }
+                { species NH4;     phase aqueous;             nu  1; }
+                { species HCO3;    phase aqueous;             nu  1; }
+            );
+            equilibriumCondition zeroAffinity;
+            standardGibbs
+            {
+                authority  measuredK;
+                measuredK
+                {
+                    logK25    0.25;      // ORDER OF MAGNITUDE ONLY, from the
+                                         // ~220 g/L (25 C) solubility
+                    source   "INTERIM: primary pending (Trypuc & Kielkowska,
+                              J. Chem. Eng. Data)";
+                }
+                crossCheck none;         // no species datum to compare against
+            }
+        }
+    );
 }
 
 reviewStatus interim;

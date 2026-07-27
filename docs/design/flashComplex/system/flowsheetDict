@@ -1,20 +1,21 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-|  flashComplex/system/flowsheetDict -- topology only (state lives in 0/)     |
+|  flashComplex/system/flowsheetDict -- topology only (state lives in 0/)      |
 \*-----------------------------------------------------------------------------*/
 
 units
 (
     {
         name        flash01;
-        type        isothermalFlash;            // Q6 SETTLED (Vitor,
-        // 2026-07-27): NO new unit type.  A flash is a flash -- hold T
-        // and P, split into whatever phases the DECLARED thermo world
-        // admits.  The phase repertoire grows in the thermoPhysPropDict
-        // formulation, never in the unit -- so no gatekeeping
-        // classifications deciding which components "may" enter which
-        // flash, and only one flash to teach.
+        type        isothermalFlash;
+        //  Q6 SETTLED (Vitor, 2026-07-27): NO new unit type.  A flash holds
+        //  T and P and splits into whatever phases the DECLARED thermo world
+        //  admits.  A `multiphaseReactiveFlash` would force gatekeeping
+        //  classifications (which components "may" enter which flash) and
+        //  give the student two flashes to learn.  The phase repertoire
+        //  grows in the thermoPhysPropDict formulation, never in the unit.
+
         in          feed;
-        outputs     ( vapor  aqueousLiquid  organicLiquid
+        outputs     ( vapour  aqueous  organic
                       calciteCake  bicarbonateCake );
 
         operation   { T 308.15 K;  P 2.0 atm; }

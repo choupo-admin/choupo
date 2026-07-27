@@ -1,4 +1,4 @@
-/*  flashComplex/0/bicarbonateCake -- initial estimate.  choupo-init0 materialises a
+/*  flashComplex/0/vapour -- initial estimate.  choupo-init0 materialises a
     physical seed by propagation once the engine serves this case.  */
 initialGuess    auto;
 T               308.15 K;

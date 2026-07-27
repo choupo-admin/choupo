@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  Ca2+ + H2O = CaOH+ + H+   -- hydrolysis pair (calcium x solvent)            |
+\*-----------------------------------------------------------------------------*/
+recordType    complexFormation;
+schemaVersion 3;
+
+name        CaOH;
+equation   "Ca+2 + H2O = CaOH+ + H+";
+stoichiometry
+(
+    { species Ca;     phase aqueous;  nu -1; }
+    { species water;  phase aqueous;  nu -1; }
+    { species CaOH;   phase aqueous;  nu  1; }
+    { species H;      phase aqueous;  nu  1; }
+);
+equilibriumCondition zeroAffinity;
+standardGibbs
+{
+    authority  measuredK;
+    measuredK
+    {
+        logK25  -12.78;
+        source "USGS PHREEQC phreeqc.dat (public domain); no delta_h in the
+                source -- the T-dependence is FLAT and announced as such";
+    }
+    crossCheck speciesData;
+}

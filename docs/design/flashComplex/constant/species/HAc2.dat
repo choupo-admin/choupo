@@ -1,0 +1,18 @@
+recordType    modelSpecies;
+schemaVersion 3;
+
+name        HAc2;
+formula     "(CH3COOH)2";
+charge      0;
+MW          120.104 g/mol;
+phase       vapour;                 // a VAPOUR species, not aqueous
+standardState idealGas1bar;
+
+vapourThermo
+{
+    status curationRequired;
+    required ( hf_298  s_298 );
+    note "the dimer's own ideal-gas datum; today the association is priced
+          from the reaction dH only (-58.5 kJ/mol), which is enough for the
+          duty but not for a cross-check";
+}

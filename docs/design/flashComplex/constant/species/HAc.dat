@@ -1,0 +1,19 @@
+recordType    modelSpecies;
+schemaVersion 3;
+
+name        HAc;
+formula     "CH3COOH";
+charge      0;
+MW          60.052 g/mol;
+phase       aqueous;
+standardState infiniteDilutionMolality;
+
+aqueousThermo
+{
+    status curationRequired;
+    required ( hfAq  sAq );
+    note "no aqueous formation datum curated -> the reactions that use this
+          species cannot be cross-checked against species thermodynamics.
+          The engine must ANNOUNCE the missing cross-check, never skip it
+          silently.";
+}

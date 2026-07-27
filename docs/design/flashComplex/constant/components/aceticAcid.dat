@@ -1,86 +1,112 @@
-/*--------------------------------*- Choupo -*-----------------------*\
-  Component: Acetic Acid  (CH3COOH, C2H4O2, CAS 64-19-7)
-  Note: vapour-phase dimerisation is not a pure-component property and is
-        therefore not declared in this component record.  Reactive VLE
-        formulations may activate the curated vapour-association
-        equilibrium from chemistry/ (aceticAcid-dissolution.dat's
-        vapourDimerisation block).
-  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
-           coefficients (marked 'individual literature value' at the block),
-           Cp polynomials and the ideal-gas formation datum -- primary
-           re-citation pending (IST review).  UNIQUAC r,q are the van der
-           Waals values (Abrams-Prausnitz) as used by Popken 2000, Table 2.
-\*---------------------------------------------------------------------------*/
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  aceticAcid -- volatile weak acid that ALSO associates in the vapour.        |
+|  DESIGN DRAFT (flashComplex).                                                |
+\*-----------------------------------------------------------------------------*/
+recordType    component;
+schemaVersion 3;
 
 name        aceticAcid;
-formula     C2H4O2;
+formula     "C2H4O2";
 CAS         64-19-7;
+MW          60.052 g/mol;
+role        solute;
 
-MW          60.052;
-Tc          591.95;
-Pc          57.86;
-omega       0.4665;
-Tb          391.05;
-HvapTb      24390;
-Vliq        5.752e-5;          // 57.52 cm³/mol at 25°C
-
-
-standardThermochemistry
+standardStates
 {
-    dHf_298   -432250.0;        // J/mol  -- ideal-gas reference
-    s_298     282.500;         // J/(mol·K)  -- third-law absolute
-}
-vaporPressure
-{
-    model         Antoine;
-    // log10(Psat [bar]) = A - B / (T[K] + C)   (individual literature value)
-    coefficients  (4.68206   1642.540   -39.764);
-    Trange        (290  392);
+    liquid  { reference pureLiquid;   dHf_298 -484500 J/mol; s_298 159.8 J/mol/K; }
+    vapour  { reference idealGas1bar; dHf_298 -432800 J/mol; s_298 283.5 J/mol/K; }
 }
 
-idealGasHeatCapacity
+aqueousChemistry
 {
-    model         polynomial;
-    coefficients  (4.840   0.2549   -1.753e-4   4.949e-8);
-    Trange        (200  1500);
+    introduces ( HAc  Acetate );
+
+    reactions
+    (
+        {
+            name      aceticAcidDissolution;
+            equation "HAc(g) = HAc(aq)";
+            stoichiometry
+            (
+                { species aceticAcid; phase vapour;   nu -1; }
+                { species HAc;        phase aqueous;  nu  1; }
+            );
+            equilibriumCondition zeroAffinity;
+            standardGibbs
+            {
+                authority  measuredK;
+                measuredK
+                {
+                    logK25    3.61;
+                    dH       -51500 J/mol;
+                    convention PHREEQC-gasMolal-v1;
+                    source   "Sander, R. (2015) Atmos. Chem. Phys. 15, 4399
+                              (CC-BY 3.0): H_cp ~ 4.1e3 M/atm at 298 K";
+                }
+                crossCheck speciesData;
+            }
+        }
+
+        {
+            name      aceticDissociation;
+            equation "HAc(aq) = H+ + Acetate-";
+            stoichiometry
+            (
+                { species HAc;      phase aqueous;  nu -1; }
+                { species H;        phase aqueous;  nu  1; }
+                { species Acetate;  phase aqueous;  nu  1; }
+            );
+            equilibriumCondition zeroAffinity;
+            standardGibbs
+            {
+                authority  measuredK;
+                measuredK
+                {
+                    logK25   -4.756;         // pKa
+                    dH       -410 J/mol;
+                    source   "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref.
+                              Data 31 (2002) 231";
+                }
+                crossCheck speciesData;
+            }
+        }
+    );
 }
 
-liquidHeatCapacity
+//  A reaction in the VAPOUR phase -- the carboxylic-acid signature.  It is
+//  NOT aqueous chemistry, so it lives in its own block: the dimer re-weights
+//  the vapour mole balance (v_HAc = t_mono + 2*t_dim) and its association
+//  heat is priced into the duty.
+vapourChemistry
 {
-    model         polynomial;
-    coefficients  (123.1);          // ~ 123 J/(mol·K) average
-    Trange        (290  390);
-}
+    introduces ( HAc2 );
 
-groups
-{
-    unifac ( { group CH3; count 1; } { group COOH; count 1; } );
-    joback ( { group CH3; count 1; } { group acid; count 1; } );
+    reactions
+    (
+        {
+            name      aceticDimerisation;
+            equation "2 HAc(g) = (HAc)2(g)";
+            stoichiometry
+            (
+                { species aceticAcid; phase vapour;  nu -2; }
+                { species HAc2;       phase vapour;  nu  1; }
+            );
+            equilibriumCondition zeroAffinity;
+            standardGibbs
+            {
+                authority  measuredK;
+                measuredK
+                {
+                    logK25    3.146;          // K_dim [atm^-1]
+                    dH       -58500 J/mol;
+                    source   "Chao & Zwolinski, J. Phys. Chem. Ref. Data 7
+                              (1978) 363";
+                    reviewStatus interim;
+                    reviewReason ( primarySourceRecheck );
+                    reviewOwner  IST;
+                }
+                crossCheck speciesData;
+            }
+        }
+    );
 }
-
-uniquac
-{
-    r   2.2024;
-    q   2.0720;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
-}
-
-cosmo
-{
-    VT2005
-    {
-        model       COSMOSAC;
-        variant     "2002";
-        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0583-PROF.txt bundled in usnistgov/COSMOSAC; CAS 64-19-7";
-        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
-        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
-    }
-}
-
-// ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----
-// The canonical set of aqueous speciation equilibria this component
-// participates in (HAc = Ac- + H+, pKa 4.756).  The VAPOUR dimerisation
-// 2 HAc(g) = (HAc)2(g) is a vapour-phase reaction and deliberately NOT
-// part of this fact (it lives on the gas-liquid record).  The typed
-// bridge delivers the acetate family total, HAc = Acetate- + H+.
-aqueousSpeciation  aceticAcid;
-aqueousMapping ( { species Acetate; nu 1; } { species H; nu 1; } );

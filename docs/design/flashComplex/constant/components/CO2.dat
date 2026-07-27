@@ -1,71 +1,140 @@
-/*--------------------------------*- Choupo -*-----------------------*\
-  Component: Carbon dioxide  (CO2, CAS 124-38-9)
-  Above its triple point (216.55 K, 5.18 bar) CO2 has a normal liquid
-  range only up to Tc = 304.13 K.  In process work above ambient T it
-  is permanently gaseous.
-  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
-  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
-  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
-  Gordon-Reno 1993).
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  CO2 -- the student feeds carbon dioxide; this file carries its water        |
+|  chemistry.  DESIGN DRAFT (flashComplex), not a standards record.            |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  WHY THE DISSOLVED SPECIES IS CALLED CO2aq AND NOT H2CO3
+  -------------------------------------------------------
+  The textbook writes  CO2 + H2O -> H2CO3 -> H+ + HCO3-.  True (molecular)
+  carbonic acid EXISTS, but it is a tiny minority of the dissolved carbon:
+
+      K_hyd = [H2CO3]/[CO2(aq)]  ~ 1.3e-3     (0.13 % of dissolved CO2)
+      pKa(true H2CO3)            ~ 3.45       (a MODERATELY strong acid)
+
+  and the two pictures reconcile exactly:
+
+      pK1(aggregate) = pKa(H2CO3) + log(1/K_hyd) = 3.45 + 2.89 = 6.34
+                                                        measured: 6.352  OK
+
+  EVERY tabulated pK1 = 6.35 -- including this record's -- belongs to the
+  AGGREGATE  CO2* = CO2(aq) + H2CO3, because no analytical method separates
+  them.  Splitting the species while keeping 6.35 would be WRONG physics.
+  Choupo therefore carries the aggregate, NAMES it honestly (CO2aq is CO2*)
+  and prints this box: the student gets the textbook picture AND the
+  convention that the numbers actually obey.
+
+  An explicit-H2CO3 variant is legitimate but needs BOTH K_hyd and
+  pKa(H2CO3) curated from primaries, and a re-curation of the whole
+  carbonate ladder.  Named, not drafted.
 \*---------------------------------------------------------------------------*/
+recordType    component;
+schemaVersion 3;
 
 name        CO2;
-formula     CO2;
-noncondensable true;     // permanent carrier gas (psychrometric carrier)
+formula     "CO2";
 CAS         124-38-9;
-
-// role solute (v0.28+): when the thermo package declares a solvent
-// for which a HenrysLaw/CO2-<solvent>.dat entry exists (water,
-// MEA, ...), the K-value comes from Henry's law instead of the
-// Raoult/γ-φ form.  Falls back to Raoult/γ-φ when no Henry entry
-// is available --- backwards-compatible with existing CO2-bearing
-// tutorials (gibbs cases use GibbsReactor, which does not call Kvec).
+MW          44.010 g/mol;
 role        solute;
 
-MW          44.010;       // kg/kmol
-Tc          304.13;       // K
-Pc          73.83;        // bar
-omega       0.225;        // [-]
-Tb          194.65;       // K  (sublimation point at 1 atm)
-HvapTb      25230;        // J/mol  (estimate at triple-point T)
-Vliq        4.70e-5;      // m^3/mol  (47.0 cm^3/mol at 273 K)
-diffusionVolume  26.9;          // Fuller diffusion volume [-]
-
-standardThermochemistry
+standardStates
 {
-    dHf_298   -393520.0;          // J/mol  -- ideal-gas reference
-    s_298     213.790;            // J/(mol·K)  -- third-law absolute
+    vapour  { reference idealGas1bar;  dHf_298 -393510 J/mol;  s_298 213.79 J/mol/K; }
 }
 
-vaporPressure
+aqueousChemistry
 {
-    model         Antoine;
-    coefficients  (6.81228   1301.679   -3.494);
-    Trange        (154  204);
+    //  Species this component BRINGS to the system.  Their identity and
+    //  standard-state data live in species/ (one home); this is the link,
+    //  never a copy of the values.
+    introduces ( CO2aq  HCO3  CO3 );
+
+    reactions
+    (
+        {
+            name      carbonDioxideDissolution;
+            equation "CO2(g) = CO2(aq)";              // rendered from the
+                                                      // stoichiometry below
+                                                      // and VERIFIED against
+                                                      // it; never a 2nd source
+            stoichiometry
+            (
+                { species CO2;    phase vapour;   nu -1; }
+                { species CO2aq;  phase aqueous;  nu  1; }
+            );
+
+            //  The equilibrium CONDITION is always the same physics:
+            //      sum(nu_i * mu_i) = 0        (zero affinity)
+            //  What differs between records is only HOW the standard part
+            //  sum(nu_i * mu_i^0) is obtained -- see standardGibbs.
+            equilibriumCondition zeroAffinity;
+
+            standardGibbs
+            {
+                authority  measuredK;      // this reaction's TRUTH
+                measuredK
+                {
+                    logK25    -1.468;
+                    dH        -19982.8 J/mol;
+                    analytic  ( 10.5624 -0.023547 -3972.8 0 587460 1.9194e-05 );
+                    convention PHREEQC-gasMolal-v1;
+                    source    "USGS PHREEQC phreeqc.dat (public domain)";
+                }
+                crossCheck speciesData;    // announced comparison against
+                                           // sum(nu*mu0) from species/
+            }
+        }
+
+        {
+            name      carbonicFirstDissociation;
+            equation "CO2(aq) + H2O = H+ + HCO3-";
+            //  Written in the TEXTBOOK direction; log K applies to THIS
+            //  direction.  The catalogue stores the reverse (formation of
+            //  CO2aq from its masters) -- the loader converts and announces.
+            stoichiometry
+            (
+                { species CO2aq;  phase aqueous;  nu -1; }
+                { species water;  phase aqueous;  nu -1; }
+                { species H;      phase aqueous;  nu  1; }
+                { species HCO3;   phase aqueous;  nu  1; }
+            );
+            equilibriumCondition zeroAffinity;
+            standardGibbs
+            {
+                authority  measuredK;
+                measuredK
+                {
+                    logK25    -6.352;          // pK1 of the AGGREGATE CO2*
+                    dH         9108.6 J/mol;
+                    analytic  ( -356.3094 -0.06091964 21834.37 126.8339 -1684915 );
+                    source    "USGS PHREEQC phreeqc.dat (public domain)";
+                }
+                crossCheck speciesData;
+            }
+        }
+
+        {
+            name      bicarbonateDissociation;
+            equation "HCO3- = H+ + CO3-2";
+            stoichiometry
+            (
+                { species HCO3;   phase aqueous;  nu -1; }
+                { species H;      phase aqueous;  nu  1; }
+                { species CO3;    phase aqueous;  nu  1; }
+            );
+            equilibriumCondition zeroAffinity;
+            standardGibbs
+            {
+                authority  measuredK;
+                measuredK
+                {
+                    logK25   -10.329;          // pK2
+                    dH        14899.2 J/mol;
+                    analytic ( -107.8871 -0.03252849 5151.79 38.92561 -563713.9 );
+                    source   "USGS PHREEQC phreeqc.dat (public domain)";
+                }
+                crossCheck speciesData;        // PASSES today: 14899 stored
+                                               // vs 14850 from species (49 J)
+            }
+        }
+    );
 }
-
-idealGasHeatCapacity
-{
-    model         polynomial;
-    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3  (ideal-gas Cp
-    // polynomial -- individual literature value, primary re-citation pending)
-    coefficients  (19.80   7.344e-2   -5.602e-5   1.715e-8);
-    Trange        (250  1500);
-}
-
-// Liquid Cp -- physically extrapolated stub (CO2 is gas or solid at
-// normal P; liquid only above 5.18 bar).  Same purpose as the N2 stub.
-liquidHeatCapacity
-{
-    model         polynomial;
-    coefficients  (90.0);          // J/(mol·K), constant approximation
-}
-
-// Friendly-name aliases (resolved to this file via the generated ALIASES index).
-aliases ( carbonDioxide );
-
-// ---- Aqueous-speciation FACT (substance-level, classifier-read) ----
-// CO2 + H2O = HCO3- + H+ (CO2aq-formation): the carbonate
-// set, master HCO3.
-aqueousSpeciation  carbonate;
-aqueousMapping ( { species HCO3; nu 1; } { species H; nu 1; } );

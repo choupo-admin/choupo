@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  Ca2+ + CO3-2 = CaCO3(aq)  -- neutral ion pair (calcium x carbonate)         |
+\*-----------------------------------------------------------------------------*/
+recordType    complexFormation;
+schemaVersion 3;
+
+name        CaCO3aq;
+equation   "Ca+2 + CO3-2 = CaCO3(aq)";
+stoichiometry
+(
+    { species Ca;       phase aqueous;  nu -1; }
+    { species CO3;      phase aqueous;  nu -1; }
+    { species CaCO3aq;  phase aqueous;  nu  1; }
+);
+equilibriumCondition zeroAffinity;
+standardGibbs
+{
+    authority  measuredK;
+    measuredK
+    {
+        logK25    3.224;
+        dH        14832 J/mol;
+        source   "USGS PHREEQC phreeqc.dat (public domain).  The standards
+                  record stores the same equilibrium re-baselined onto the
+                  HCO3 master (logK -7.105 = 3.224 - 10.329) -- the two
+                  agree exactly through the bicarbonate step.";
+    }
+    crossCheck speciesData;
+}

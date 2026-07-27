@@ -1,96 +1,35 @@
-/*--------------------------------*- Choupo -*-----------------------*\
-  Component: Ethanol  (C2H6O, CAS 64-17-5)
-  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
-           coefficients, Cp polynomials and the ideal-gas formation datum
-           (dHf_298/s_298, JANAF convention) are individual literature
-           values -- primary re-citation pending (IST review).  The
-           Andrade/Vogel viscosity fits are least-squares over literature
-           mu(T), ~10-100 degC (see block comment); relativePermittivity
-           24.3 (25 degC) carries the same pending re-citation.
-\*---------------------------------------------------------------------------*/
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  ethanol -- molecular condensable; joins BOTH liquids.  DESIGN DRAFT.        |
+\*-----------------------------------------------------------------------------*/
+recordType    component;
+schemaVersion 3;
 
 name        ethanol;
-formula     C2H6O;
+formula     "C2H6O";
 CAS         64-17-5;
+MW          46.068 g/mol;
+role        solute;
 
-
-
-MW          46.069;
-Tc          513.92;
-Pc          61.48;
-omega       0.6490;
-Tb          351.44;
-HvapTb      38560;
-Vliq        5.850e-5;
-
-
-standardThermochemistry
+standardStates
 {
-    dHf_298   -234950.0;        // J/mol  -- ideal-gas reference
-    s_298     281.620;         // J/(mol·K)  -- third-law absolute
-}
-vaporPressure
-{
-    model         Antoine;
-    coefficients  (5.37229   1670.409   -40.191);
-    Trange        (273  369);
+    liquid  { reference pureLiquid;   dHf_298 -277690 J/mol; s_298 160.7 J/mol/K; }
+    vapour  { reference idealGas1bar; dHf_298 -234800 J/mol; s_298 281.6 J/mol/K; }
 }
 
-idealGasHeatCapacity
+//  The curated FACT the classifier reads: ethanol takes part in NO aqueous
+//  speciation equilibrium.  It is a molecular condensable on the Raoult
+//  backbone of every liquid phase that admits it -- never a Henry solute,
+//  never an ion.
+aqueousChemistry
 {
-    model         polynomial;
-    coefficients  (9.014   0.2141   -8.39e-5   1.373e-9);
-    Trange        (200  1500);
+    speciation none;
+    note "nonionising: no acid-base, complexation or precipitation
+          equilibrium in water at any pH this case reaches";
 }
 
-liquidHeatCapacity
+vapourLiquidEquilibrium
 {
-    model         polynomial;
-    coefficients  (112.3);
-    Trange        (280  351);
+    route  raoultBackbone;        // p = gamma * x * psat(T)
+    note   "gamma from the declared molecular activity model of whichever
+            liquid phase it sits in (NRTL in both here)";
 }
-
-// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
-// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
-// fitted to literature mu(T) over ~10-100 degC.
-associationFactor  1.5;
-liquidViscosity
-{
-    andrade { A -12.6467; B 1736.8; }
-    vogel   { A -10.8798; B 796.9; C 101.5; }
-}
-
-relativePermittivity 24.3;   // dielectric constant, 25 C (for mixed-solvent eNRTL / drowning-out)
-
-uniquac
-{
-    r   2.1055;
-    q   1.9720;     // van der Waals structural constants (Abrams & Prausnitz,
-                    // AIChE J. 21 (1975) 116; tabulated in Poling, Prausnitz &
-                    // O'Connell, 5th ed., UNIQUAC r,q)
-}
-
-groups
-{
-    joback ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );
-    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );
-}
-
-cosmo
-{
-    VT2005
-    {
-        model       COSMOSAC;
-        variant     "2002";
-        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0478-PROF.txt bundled in usnistgov/COSMOSAC; CAS 64-17-5";
-        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
-        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
-    }
-}
-
-// ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----
-// Curated fact: ethanol does NOT participate in the aqueous speciation
-// network at this thermodynamic level (pKa ~ 15.9 -- negligible).  This
-// says nothing about aqueous reactions in general (esterification etc.
-// belong to reaction sets, not to equilibrium speciation).
-aqueousSpeciation  none;

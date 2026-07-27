@@ -1,20 +1,12 @@
-/*--------------------------------*- Choupo -*--------------------------------*\
-  species/Acetate.dat -- the acetate MASTER species, CH3COO- (aq).
-  The conserved family total of the acetic system: dissolved acetic acid
-  ionises as  HAc = Acetate + H+  (chemistry/HAc-formation.dat holds the
-  formation written in the catalogue convention, Acetate + H = HAc).
-  Thermochemistry: NBS tables via Goldberg, Kishore & Lennen, J. Phys. Chem.
-  Ref. Data 31 (2002) 231 (acetate ion, aqueous standard state).
-\*-----------------------------------------------------------------------------*/
-recordType modelSpecies;
-schemaVersion 1;
+recordType    modelSpecies;
+schemaVersion 3;
 
-name    Acetate;
+name        Acetate;
 formula     "CH3COO-";
-charge  -1;
-MW { value 59.044; unit g/mol;}
-aqueousThermo
-{
-hfAq { value -486010; unit J/mol;}
-sAq  { value 86.6;   unit J/mol/K;}
-}
+charge      -1;
+MW          59.044 g/mol;
+phase       aqueous;
+standardState infiniteDilutionMolality;
+
+aqueousThermo { hfAq { value -486010; unit J/mol; }  sAq { value 86.6; unit J/mol/K; } }
+provenance { source "Goldberg, Kishore & Lennen, JPCRD 31 (2002) 231"; }

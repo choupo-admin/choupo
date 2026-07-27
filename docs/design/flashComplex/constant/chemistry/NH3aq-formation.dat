@@ -1,5 +1,0 @@
-recordType aqueousSpeciation;
-schemaVersion 1;
-
-species NH3aq; ion "NH3"; z 0; masters ( { ion NH4; nu 1; } { ion H; nu -1; } );
-      logK25 -9.252; dH 52090; source "USGS PHREEQC phreeqc.dat (public domain): NH4+ = NH3 + H+, log_k -9.252, delta_h 12.48 kcal";

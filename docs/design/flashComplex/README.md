@@ -22,46 +22,47 @@ The two solids share the carbonate ladder (common-ion coupling); the four
 families (carbonate, ammonia, sulfide, acetate) share the H⁺; the gas phase
 moves both through the Henry legs.  Nothing is decorative.
 
-## The four arenas of equilibrium (all declared in `constant/chemistryDict`)
+## Where each thing is declared (merged form, 2026-07-27)
 
-1. **Aqueous homogeneous** — 6 reactions (water, NH₄⁺, carbonic ×2, H₂S
-   first step, HAc).  The absent HS⁻/S²⁻ second step is a *stated*
-   curation decision (pK₂ contested by ~7 units in the literature).
-2. **Gas–liquid (K-bearing)** — 5 Henry legs, incl. the H₂S *physical*
-   constant **decomposed** from the fused PHREEQC record
-   (logK_phys = −7.93 − (−6.994) = −0.94): the D6 dossier finding, executed.
-3. **Vapour homogeneous** — the acetic dimerisation 2 HAc(g) = (HAc)₂(g).
-4. **Solid–liquid** — calcite (pKsp 8.48) and NH₄HCO₃ (pKsp INTERIM).
+| what | where | note |
+|---|---|---|
+| the substances the student feeds | `0/feed` | only what was introduced before mixing — never ions |
+| the chemistry each substance brings | `constant/components/<name>.dat` | species it introduces + its own equilibria, with sources |
+| reactions that couple TWO families (ion pairs) | `constant/complexes/` | they belong to no single component — the pair axiom |
+| species identity + standard-state data | `constant/species/` | one home each; never an equilibrium constant |
+| phases, models, approximations | `constant/thermoPhysPropDict` | the phases that MAY exist; the solver decides which do |
+| the assembled system | printed at run time | the `[chemistry]` block — no file shows the union |
 
-Plus the Raoult-convention legs (H₂O, EtOH, benzene: γ·x·psat) that carry
-no K and live with the phase models — see open question Q4.
+There is **no student-authored `chemistryDict`**: the reachability closure
+assembles the system from the components fed, and the run prints it.  This is
+not a convenience — it is more correct.  See `DESIGN_DECISIONS.md`: the
+hand-written first draft of this very case missed three calcium ion pairs
+that change how much calcite dissolves.
 
-## The ideal run output (what the student must see, verbatim sketch)
+## One condition, two data routes
+
+Every equilibrium in the case — homogeneous reaction, phase transfer,
+precipitation — is the same condition:
 
 ```
-[chemistry] the declared system: 6 aqueous + 5 gas-liquid + 1 vapour +
-            2 solid equilibria; 4 acid-base families sharing H+
-[chemistry] every reaction checked: charge balance OK, element balance OK
-[chemistry] (1) H2O = H+ + OH-                     pK(308.15 K) = 13.68   [PHREEQC analytic]
-[chemistry] (2) NH4+ = NH3(aq) + H+                pK(308.15 K) =  9.05   [PHREEQC]
-[chemistry] (3) CO2(aq) + H2O = HCO3- + H+         pK(308.15 K) =  6.31   [PHREEQC analytic]
-[chemistry] (4) HCO3- = CO3-2 + H+                 pK(308.15 K) = 10.22   [PHREEQC analytic]
-[chemistry] (5) H2S(aq) = HS- + H+                 pK(308.15 K) =  6.94   [PHREEQC]
-[chemistry] (6) HAc(aq) = Ac- + H+                 pK(308.15 K) =  4.74   [Goldberg 2002]
-[chemistry]     declared pK values verified against the catalogue: 6/6 agree
-[chemistry] closure: 16 aqueous unknowns = 6 mass action + 6 family totals
-            + 1 electroneutrality + 2 saturation complementarities + 1 solvent
-[resolver]  organicLiquid admits ( ethanol ) -- DECLARED APPROXIMATION:
-            water, HAc and dissolved gases excluded from the organic phase
-            (real benzene holds ~0.2% water); announced, delimited, refused
-            for anything unlisted
-...
-[flash]     phases formed: vapour 12.3 kmol/h | aqueous 61.2 | organic 25.8
-            | calcite 0.62 | NH4HCO3 0.9   (pH 8.7, SI_calcite = 0.00,
-            SI_NH4HCO3 = 0.00, both at saturation)
+sum(nu_i * mu_i) = 0          with   mu_i = mu_i^0 + R T ln a_i
 ```
 
-(Numbers illustrative; the *shape* of the output is the specification.)
+What varies is only how the standard part is obtained, and each reaction
+declares it:
+
+```
+standardGibbs
+{
+    authority  measuredK;      // or speciesData
+    measuredK  { logK25 ...; dH ...; source "..."; }
+    crossCheck speciesData;    // both exist -> both printed, plus the diff
+}
+```
+
+`Sum(nu*mu0) = -RT ln K` is an identity, so these are not rival theories —
+they are two measurements of the same quantity, and the one that was actually
+measured is the one that should be stored.
 
 ## What this case forces, layer by layer
 
