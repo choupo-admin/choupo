@@ -3,31 +3,35 @@
 |  chemistry.  DESIGN DRAFT (flashComplex), not a standards record.            |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  WHY THE DISSOLVED SPECIES IS CALLED CO2aq AND NOT H2CO3
-  -------------------------------------------------------
-  The textbook writes  CO2 + H2O -> H2CO3 -> H+ + HCO3-.  True (molecular)
-  carbonic acid EXISTS, but it is a tiny minority of the dissolved carbon:
+  THE CARBONATE LADDER, WRITTEN AS THE COURSE WRITES IT
+  -----------------------------------------------------
+      CO2(g)            = CO2(aq)              Henry
+      CO2(aq) + H2O     = H2CO3                hydration   <- THE SLOW STEP
+      H2CO3             = H+ + HCO3-           pKa
+      HCO3-             = H+ + CO3-2           pK2
 
-      K_hyd = [H2CO3]/[CO2(aq)]  ~ 1.3e-3     (0.13 % of dissolved CO2)
-      pKa(true H2CO3)            ~ 3.45       (a MODERATELY strong acid)
+  Two facts the student must carry away, and which the aggregate form hides:
 
-  and the two pictures reconcile exactly:
+  (1) TRUE carbonic acid is a tiny minority of dissolved carbon --
+      K_hyd = [H2CO3]/[CO2(aq)] ~ 1.3e-3, i.e. 0.13 % -- but it is a
+      MODERATELY STRONG acid (pKa ~ 3.47), far stronger than the apparent
+      6.35 suggests.  The famous pK1 = 6.35 is weak only because almost
+      none of the CO2 has hydrated.
 
-      pK1(aggregate) = pKa(H2CO3) + log(1/K_hyd) = 3.45 + 2.89 = 6.34
-                                                        measured: 6.352  OK
+  (2) The hydration is KINETICALLY SLOW (k_fwd ~ 0.04 1/s at 25 C).  It is
+      the bottleneck of CO2 absorption -- the reason carbonic anhydrase
+      exists in blood and the reason industrial CO2 capture uses amine
+      promoters rather than plain water.  A lumped CO2* species cannot show
+      this step at all.
 
-  EVERY tabulated pK1 = 6.35 -- including this record's -- belongs to the
-  AGGREGATE  CO2* = CO2(aq) + H2CO3, because no analytical method separates
-  them.  Splitting the species while keeping 6.35 would be WRONG physics.
-  Choupo therefore carries the aggregate, NAMES it honestly (CO2aq is CO2*)
-  and prints this box: the student gets the textbook picture AND the
-  convention that the numbers actually obey.
-
-  An explicit-H2CO3 variant is legitimate but needs BOTH K_hyd and
-  pKa(H2CO3) curated from primaries, and a re-curation of the whole
-  carbonate ladder.  Named, not drafted -- see the machine-readable
-  `meaning { aggregate ... splitVariantRequires ... }` block in
-  species/CO2aq.dat, which is what the run prints and what a gate reads.
+  ARITY: the three constants are NOT independent.
+      K_hyd * Ka(H2CO3) = K1*(aggregate)
+  Only TWO may be primary.  The measured one is the AGGREGATE, pK1* = 6.352
+  (+-0.002) -- it is what every experiment sees, because no analytical
+  method separates CO2(aq) from H2CO3.  So K1* and K_hyd are primary and
+  Ka(H2CO3) is DERIVED (-6.352 + 2.886 = -3.466).  The aggregate behaviour
+  is exact by construction: the split changes what the student SEES, not
+  what the experiment SAYS.
 \*---------------------------------------------------------------------------*/
 recordType    component;
 schemaVersion 3;
@@ -36,7 +40,6 @@ name        CO2;
 formula     "CO2";
 CAS         124-38-9;
 MW          44.010 g/mol;
-role        solute;
 
 standardStates
 {
@@ -48,7 +51,7 @@ aqueousChemistry
     //  Species this component BRINGS to the system.  Their identity and
     //  standard-state data live in species/ (one home); this is the link,
     //  never a copy of the values.
-    introduces ( CO2aq  HCO3  CO3 );
+    introduces ( CO2aq  H2CO3  HCO3  CO3 );
 
     reactions
     (
@@ -58,6 +61,11 @@ aqueousChemistry
                                                       // stoichiometry below
                                                       // and VERIFIED against
                                                       // it; never a 2nd source
+            //  HENRY'S LAW on the MOLECULAR species -- the physically correct
+            //  reading now that the ladder is split.  (Tabulated CO2 Henry
+            //  constants are strictly for the aggregate CO2*, but H2CO3 is
+            //  0.13 % of it -- far below the constant's own uncertainty.
+            //  Stated, not hidden.)
             stoichiometry
             (
                 { species CO2;    phase vapour;   nu -1; }
@@ -72,7 +80,7 @@ aqueousChemistry
 
             standardGibbs
             {
-                authority  measuredK;      // this reaction's TRUTH
+                authority  measuredK;
                 measuredK
                 {
                     logK25    -1.468;
@@ -81,17 +89,73 @@ aqueousChemistry
                     convention PHREEQC-gasMolal-v1;
                     source    "USGS PHREEQC phreeqc.dat (public domain)";
                 }
-                crossCheck speciesData;    // announced comparison against
-                                           // sum(nu*mu0) from species/
+                crossCheck speciesData;
             }
         }
 
         {
-            name      carbonicFirstDissociation;
+            name      carbonDioxideHydration;
+            equation "CO2(aq) + H2O = H2CO3";
+            //  THE SLOW STEP (see the header).  Minor at equilibrium,
+            //  decisive in kinetics.
+            stoichiometry
+            (
+                { species CO2aq;  phase aqueous;  nu -1; }
+                { species water;  phase aqueous;  nu -1; }
+                { species H2CO3;  phase aqueous;  nu  1; }
+            );
+            equilibriumCondition zeroAffinity;
+            standardGibbs
+            {
+                authority  measuredK;
+                measuredK
+                {
+                    logK25   -2.886;             // K_hyd = 1.3e-3
+                    source   "INTERIM: literature range 1.3-1.7e-3 (0.1 log
+                              units, which moves pKa(H2CO3) between ~3.47 and
+                              ~3.57); the AGGREGATE is unaffected, being
+                              pinned by pK1*.  Primary curation pending.";
+                    reviewStatus interim;
+                    reviewReason ( primarySourceRecheck );
+                }
+            }
+        }
+
+        {
+            name      carbonicAcidDissociation;
+            equation "H2CO3 = H+ + HCO3-";
+            //  DERIVED, deliberately -- see the ARITY note in the header.
+            stoichiometry
+            (
+                { species H2CO3;  phase aqueous;  nu -1; }
+                { species H;      phase aqueous;  nu  1; }
+                { species HCO3;   phase aqueous;  nu  1; }
+            );
+            equilibriumCondition zeroAffinity;
+            standardGibbs
+            {
+                authority derivedFromReactions;
+                derivedFromReactions
+                {
+                    //  log Ka = log K1*(aggregate) - log K_hyd
+                    //         = -6.352 + 2.886 = -3.466   (pKa 3.466)
+                    from    ( aggregateFirstDissociation  carbonDioxideHydration );
+                    combine ( +1  -1 );
+                    //  the engine prints the derivation, never just the result
+                }
+            }
+        }
+
+        {
+            //  The AGGREGATE first dissociation is kept as a NAMED, MEASURED
+            //  record -- not because the solver uses it directly (it does
+            //  not: the split ladder is what runs), but because it is the
+            //  quantity the experiment measures and the parent of the
+            //  derivation above.  Declaring it makes the arithmetic
+            //  auditable instead of a comment.
+            name      aggregateFirstDissociation;
             equation "CO2(aq) + H2O = H+ + HCO3-";
-            //  Written in the TEXTBOOK direction; log K applies to THIS
-            //  direction.  The catalogue stores the reverse (formation of
-            //  CO2aq from its masters) -- the loader converts and announces.
+            role      referenceOnly;    // parent of a derivation; not solved
             stoichiometry
             (
                 { species CO2aq;  phase aqueous;  nu -1; }
@@ -105,7 +169,7 @@ aqueousChemistry
                 authority  measuredK;
                 measuredK
                 {
-                    logK25    -6.352;          // pK1 of the AGGREGATE CO2*
+                    logK25    -6.352;          // pK1* -- the MEASURED quantity
                     dH         9108.6 J/mol;
                     analytic  ( -356.3094 -0.06091964 21834.37 126.8339 -1684915 );
                     source    "USGS PHREEQC phreeqc.dat (public domain)";
@@ -134,20 +198,20 @@ aqueousChemistry
                     analytic ( -107.8871 -0.03252849 5151.79 38.92561 -563713.9 );
                     source   "USGS PHREEQC phreeqc.dat (public domain)";
                 }
-                //  THE BOTH-ROUTES EXEMPLAR.  Every species in this
-                //  reaction (HCO3-, H+, CO3-2) carries a curated formation
-                //  datum, so the standard part can ALSO be built from
-                //  species data -- and the two must agree.
+                //  THE BOTH-ROUTES EXEMPLAR.  Every species here (HCO3-, H+,
+                //  CO3-2) carries a curated formation datum, so the standard
+                //  part can ALSO be built from species data -- and the two
+                //  must agree.
                 consistencyCheck
                 {
                     compare ( measuredK  speciesData  reactionEnthalpy );
 
                     //  FIRST PASS IS WARNING-ONLY, deliberately.  Setting a
                     //  fatal cut before the distribution of real
-                    //  disagreements is known would let the gate choose
-                    //  which cases die: HSO4-formation sits at 5.8 kJ/mol
-                    //  today and would take the sulfate cases with it.
-                    //  Measure first, then set fatal.
+                    //  disagreements is known would let the gate choose which
+                    //  cases die: HSO4-formation sits at 5.8 kJ/mol today and
+                    //  would take the sulfate cases with it.  Measure first,
+                    //  then set fatal.
                     warningToleranceLogK      0.05;
                     warningToleranceEnthalpy  1000 J/mol;
                     fatalToleranceLogK        unset;
