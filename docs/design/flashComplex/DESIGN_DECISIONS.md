@@ -239,9 +239,35 @@ Two facts the aggregate cannot show, and which the split buys for one record:
 **Arity.** K_hyd · Ka(H₂CO₃) = K₁\*, so only **two of the three** may be
 primary. The aggregate is what every experiment measures — no analytical
 method separates CO₂(aq) from H₂CO₃ — so it and K_hyd are the primaries and
-pKa(H₂CO₃) = −6.352 + 2.886 = **3.466** derives. The aggregate behaviour is
-exact by construction: the split changes what the student *sees*, never what
-the experiment *says*.
+pKa(H₂CO₃) = −6.352 + 2.886 = **3.466** derives.
+
+**How exactly the split reproduces the aggregate** (corrected 2026-07-27; the
+first version of this section claimed *exact by construction*, which is
+false and read as a theorem). The catalogue's 6.352 was measured for the
+*sum* CO₂(aq) + H₂CO₃. Assigning it to CO₂(aq) alone and then adding H₂CO₃
+on top makes the split network reproduce an aggregate of
+
+```
+log(10^6.352 + 10^3.466) = 6.352564      →  +0.000564 log units
+```
+
+against a stated uncertainty on pK₁\* of **±0.002**. So the split sits at
+about a quarter of the measurement's own uncertainty, and no number a student
+cites moves. It is *inside the noise*, not exact.
+
+Making it exact needs one subtraction — CO₂(aq) re-baselined to
+`6.352 − log(1+10^−2.886) = 6.351436`, H₂CO₃ to `3.465436`. **Deliberately
+not done.** That would fork a curated catalogue value inside a case, for a
+correction four times smaller than the uncertainty of the value being
+forked: a second home for a number, bought with nothing measurable. The
+thirteen byte-exact mirrors are worth more than 0.0006 log units.
+
+If the hydration constant is ever curated from a primary — it is INTERIM
+today — the re-baselining is done **there**, once, in the catalogue, and
+every case inherits it. That is where a correction of this size belongs.
+
+The split therefore changes what the student *sees*, and moves what the
+experiment *says* by less than the experiment can tell.
 
 The derivation rides in the record's `source` string, which is the corpus's
 own idiom for a re-baselined value (`CaHCO3-formation.dat` documents its
@@ -332,7 +358,33 @@ closure switched on and every one it left unreachable.
 
 ## 5. Still open
 
-**The named gap: a second liquid phase.** `equilibrium { … }` declares one
+**The first named gap: general salt reconstruction.** Ordered ahead of the
+second liquid phase by the second forum (`FORUM_2.md`), and the reason is
+that the engine already refuses, by name, on both of this case's solids:
+
+```
+apparent component 'CaCO3' carries TWO candidate marker elements (C, Ca)
+  -- the spike's collapse contract needs exactly one; generalised salt
+  reconstruction is a later, deliberate slice.
+```
+(`ThermoPackageBuilder.cpp:690`)
+
+CaCO₃ carries Ca and C; NH₄HCO₃ carries N and C. Declaring the typed bridge
+on each does not rescue them either — `markersSeen` (line 709) refuses two
+components that share a marker element, and CO₂, CaCO₃ and NH₄HCO₃ all
+compete for C.
+
+This is not a defect. It is the (c−1)(a−1) degrees of freedom appearing as
+an error message instead of as an equation: dissolved CaCO₃ *is* calcium and
+carbonate at once, and no single-element collapse represents it.
+
+It is ordered **first** because it is deeper. A second liquid phase extends
+the grammar of phases; salt reconstruction extends the relation between the
+component basis and the species basis — the same seam the basis-reconciliation
+roadmap item names, carrying the instruction *build a vertical spike
+end-to-end through all layers before any mass migration*.
+
+**The second named gap: a second liquid phase.** `equilibrium { … }` declares one
 liquid surface plus a vapour. There is no slot for a benzene-rich organic
 liquid, and designing that slot is what this case exists to drive. Until it
 exists the case cannot run, and `constant/thermoPhysPropDict` says so in place

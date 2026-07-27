@@ -88,6 +88,12 @@ reescrita para a forma do corpus).
 > Isso torna a ordem da lista significativa. Se eu trocar as duas
 > palavras, o caso muda de resposta. Uma lista onde a ordem decide a
 > física, sem que nada o diga, é pior do que uma recusa.
+>
+> *(Precisão acrescentada depois de verificar: a truncagem está confinada
+> ao adaptador de SAL ÚNICO. O `formulation gammaPhi` lê a lista inteira
+> por `aq.solidPhases`, e é por isso que os quatro tutoriais de scaling
+> com `( calcite gypsum )` funcionam. O achado mantém-se — só é mais
+> estreito do que eu o disse.)*
 
 **Aluno de licenciatura**
 

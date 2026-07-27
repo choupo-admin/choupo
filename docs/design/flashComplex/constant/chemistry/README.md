@@ -16,6 +16,25 @@ author filing the record has to guess, and any reader looking for it has to
 guess the same way. A reaction has one name and one home; the physics that
 groups reactions is a **query**, not a directory.
 
+## What is deliberately NOT here
+
+The **mineral solubility**. `CaCO3.dat` carries its own dissolution inside
+`solidPhases { calcite { … } }`, and that is not an exception to the rule
+above — it is the rule.
+
+The criterion is *how many families the reaction couples*:
+
+- couples **two** families (`Ca²⁺ + HCO₃⁻ = CaHCO₃⁺`) → it belongs to
+  neither component, so it lives here;
+- belongs to **one** component (the dissolution of *that component's own
+  solid phase*) → it lives on that component, because moving it here would
+  separate a phase from the substance whose phase it is.
+
+The same applies to the salt-equilibrium anchor. `data/standards/chemistry/README.md`
+states it for the catalogue; it is repeated here because a student reading
+only the case would otherwise infer "all reactions live in `chemistry/`" and
+then go looking for a calcite record that does not exist.
+
 ## Naming
 
 By REACTION, never by the file's contents-of-convenience:

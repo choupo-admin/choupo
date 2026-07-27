@@ -243,12 +243,27 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
     if (chem && chem->present && !chem->solidPhases.empty())
     {
         const auto& salts = chem->solidPhases;
+        //  REFUSAL, not a warning (2026-07-27).  This adapter honours ONE
+        //  salt, so a longer list can only be served by dropping the rest --
+        //  and that makes the ORDER of the words decide the physics, with a
+        //  warning nobody reads standing between a wrong answer and exit 0.
+        //  Name every phase and stop; the remedy is the multi-salt op or a
+        //  shorter list.  (Scoped to this adapter: `formulation gammaPhi`
+        //  reads the whole list through aq.solidPhases and is unaffected --
+        //  the four two-solid scaling tutorials all take that path.)
+        if (salts.size() > 1)
+        {
+            std::string all;
+            for (const auto& s : salts) all += (all.empty() ? "" : ", ") + s;
+            throw std::runtime_error("chemistryDict declares "
+                + std::to_string(salts.size()) + " solid phases (" + all
+                + ") but the single-salt electrolyte adapter represents"
+                " exactly ONE.  Honouring the first and ignoring the rest"
+                " would let the ORDER of the list decide the answer -- so it"
+                " refuses.  Remedy: declare one solid phase here, or move to"
+                " the multi-salt op (eNRTL) which represents them together.");
+        }
         phaseName = salts.front();
-        if (salts.size() > 1 && thermoAnnounce())
-            std::cout << "[builder] chemistryDict solidPhases lists " << salts.size()
-                      << " phases but the single-salt adapter honours ONLY '"
-                      << salts.front() << "' -- the rest are IGNORED (multi-salt"
-                         " needs the eNRTL multi-salt op).\n";
     }
 
     // (c2) particulate-solid properties (rho_p, k_v) from phases/solid/<phase>.dat
