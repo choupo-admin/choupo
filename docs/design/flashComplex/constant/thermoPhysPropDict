@@ -92,22 +92,35 @@ equilibrium
 }
 
 /*---------------------------------------------------------------------------*\
-  THE NAMED GAP OF THIS DRAFT -- the reason the case exists.
+  WHERE THIS CASE STOPS, and why that is the right place.
 
-  A SECOND LIQUID PHASE (benzene-rich, admitting ethanol) has no slot in this
-  grammar: `equilibrium` declares ONE liquid surface plus a vapour.  Designing
-  that slot is what this draft is for, and until it exists the case CANNOT
-  RUN.  Writing a placeholder here that quietly collapsed the organic phase
-  into the aqueous one would be the exact failure the grammar was rebuilt to
-  prevent -- a hidden default filling a slot the grammar lacks.
+  The grammar above is COMPLETE: three phases are declared, the organic one
+  is read, classified and validated (its members must be nonionising, its
+  activity model must match the aqueous backbone's, its solvent must be one
+  of its own members).  What is missing is the SOLVER: the reactive outer
+  Newton carries vapour + ONE liquid, so it has no unknowns for the organic
+  phase's amount and composition.
 
-  When the slot is designed it must also carry the approximation HONESTLY.
-  The exclusion that matters is NOT the ~0.2 mol% of water benzene really
-  holds; it is that water-benzene IMMISCIBILITY -- the thing that CAUSES the
-  split -- would be declared rather than computed, leaving ethanol's partition
-  to two independent binaries (ethanol-water, ethanol-benzene) with no
-  ternary term.  A tie-line from that is an arithmetic coincidence between
-  two pairs, not a tie-line of the ternary.  And ethanol is a co-solvent:
-  above ~40 mol% it closes the miscibility gap altogether.  At the ~9 mol%
-  of this feed two phases still exist, but the model does not know why.
+  An earlier version of this note said a second liquid "has no slot in this
+  grammar".  That was wrong twice over.  It is wrong now, because the slot is
+  twenty lines above.  And it was wrong then, because the engine has resolved
+  vapour + two liquids by direct Gibbs minimisation for a long time
+  (IsothermalFlash's PhaseSet::VLLE, with a passing tutorial) -- what the
+  engine has never done is BOTH at once.  Chemistry with one liquid, or two
+  liquids with no chemistry; this case needs the two together, and that is
+  the fork it exists to close.
+
+  So the case refuses, by name, rather than running without the phase it
+  declares.  Contract: docs/design/reactive-second-liquid-proposal.md.
+
+  THE APPROXIMATION, when the solver lands.  What is excluded from the
+  organic phase is not the ~0.2 mol% of water benzene really holds -- that is
+  the small one.  The large one is that the water-benzene IMMISCIBILITY which
+  CAUSES the split is declared here rather than computed, so ethanol's
+  partition rests on two independent binaries (ethanol-water,
+  ethanol-benzene) with no ternary term.  A tie-line from that is an
+  arithmetic coincidence between two pairs, not a tie-line of the ternary.
+  And ethanol is a co-solvent: above ~40 mol% it closes the miscibility gap
+  altogether.  At the ~9 mol% of this feed two liquids still exist, but the
+  model does not know why.
 \*---------------------------------------------------------------------------*/
