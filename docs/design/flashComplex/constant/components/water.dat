@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*-----------------------*\
-  Component: Water  (H2O, CAS 7732-18-5)  --  DESIGN DRAFT, flashComplex.
+  Component: Water  (H2O, CAS 7732-18-5)  --  flashComplex.
 
   What this draft is testing: the component record carries IDENTITY,
   PURE-COMPONENT constants and ONE formation datum.  It carries NO

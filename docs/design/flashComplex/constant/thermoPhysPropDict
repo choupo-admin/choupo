@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-|  flashComplex/constant/thermoPhysPropDict  --  DESIGN DRAFT.                 |
+|  flashComplex/constant/thermoPhysPropDict                                    |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   The declared property system.  It says WHICH components, WHICH formulation
@@ -21,22 +21,33 @@
       NH3          molecular reactive            (aqueousSpeciation ammonia)
       H2S          molecular reactive            (aqueousSpeciation sulfide)
       aceticAcid   molecular reactive            (aqueousSpeciation aceticAcid)
-      N2           molecular condensable,        (aqueousSpeciation none)
-                   nonionising -- soluble, never ionising
+      N2           PERMANENT GAS                 (noncondensable, and
+                                                   aqueousSpeciation none)
       ethanol      molecular condensable,        (aqueousSpeciation none)
                    nonionising
       benzene      molecular condensable,        (aqueousSpeciation none)
                    nonionising
       CaCO3        nonvolatile solid             (calcite / aragonite)
-      NH4HCO3      nonvolatile solid             (REFUSES -- see its record)
 
-  MASTERS.  Five, one per family the feed reaches: Acetate (acetic), HCO3
-  (carbonate), HS (sulfide), NH4 (ammonia), Ca (calcium).  Each is the
-  MAJORITY species of its family at the pH this case reaches -- a master that
-  is a vanishing minority (CO3-2, NH3(aq)) conditions the solve badly.  H+
-  is shared by every family and is what couples them: this is where the
-  acid-base competition between the ammonia and the two acids emerges,
-  without any reaction being written for it.
+  N2 IS NOT ON THE MOLECULAR BACKBONE, and the distinction is the whole
+  reason `noncondensable` is a curated fact.  The backbone prices a liquid on
+  the pure-component (Raoult) reference; nitrogen has no pure liquid to
+  reference at 308 K, 180 degrees above its critical temperature, and its
+  Antoine correlation stops at 126 K.  It dissolves by HENRY, through its own
+  gas-liquid record -- inert does not mean insoluble.
+
+  MASTERS.  SIX, one per family the feed reaches: Acetate (acetic), HCO3
+  (carbonate), HS (sulfide), NH4 (ammonia), Ca (calcium) -- and N2, whose
+  family the ReactiveVLE builds from its gas record's `dissolvedSpecies`
+  rather than from a bridge on the component, because that record is already
+  the one curated home for which species is dissolved nitrogen.
+
+  Each of the five network masters is the MAJORITY species of its family at
+  the pH this case reaches -- a master that is a vanishing minority (CO3-2,
+  NH3(aq)) conditions the solve badly.  H+ is shared by every family and is
+  what couples them: this is where the acid-base competition between the
+  ammonia and the two acids emerges, without any reaction being written for
+  it.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
@@ -87,13 +98,12 @@ equilibrium
     //  though water and benzene were miscible -- a silently wrong answer the
     //  moment the case's remaining data debt is paid.
     //
-    //  The SOLVER now carries this phase (2026-07-27): the split resolves
-    //  inside each residual evaluation of the outer vapour Newton by an
-    //  equality of activity, and phase appearance/disappearance is decided
-    //  outside it and re-tested at the answer.  See
-    //  tutorials/steady/flash/flash17_two_liquids_reactive, which is the
-    //  same physics on four components and passes.  What still stops THIS
-    //  case is its own data debt, listed at the foot of this file.
+    //  The SOLVER carries this phase (2026-07-27): the split resolves inside
+    //  each residual evaluation of the outer vapour Newton by an equality of
+    //  activity, and phase appearance/disappearance is decided outside it and
+    //  re-tested at the answer.  Here it is PRESENT and large -- 23.3 % of the
+    //  backbone liquid at 95 % benzene.  The same physics on four components
+    //  is tutorials/steady/flash/flash17_two_liquids_reactive.
     //
     //  members is EXPLICIT.  What a phase admits is a modelling decision the
     //  author owns, and the exclusion that matters is not the ~0.2 mol% of
@@ -157,7 +167,7 @@ equilibrium
        with Trange (50, 126) evaluated at 308 K, 180 degrees above nitrogen's
        critical temperature -- a partial pressure read off a curve a long way
        past where it means anything.  A permanent gas has no pure liquid to
-       reference.  The engine now REFUSES it by name instead.
+       reference, so it left the backbone; where it went is item 5.
 
   IT RUNS (2026-07-27).  The last two pieces were the Henry rung for a
   nonionising dissolved gas, and one line of numerics:

@@ -1,6 +1,7 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Calcium carbonate (CaCO3), CALCITE polymorph.  CAS 471-34-1.
-  DESIGN DRAFT.  Fed as a suspended solid; may dissolve or grow.
+  Fed as a suspended solid -- and in this case it GROWS: the free
+  water sits at SI +0.788 and calcite precipitates to the SI = 0 ceiling.
 
   TWO WAYS TO WRITE THE SAME EQUILIBRIUM -- and why only ONE is stored.
   ------------------------------------------------------------------

@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*-----------------------*\
-  Component: Hydrogen sulfide  (H2S, CAS 7783-06-4)  --  DESIGN DRAFT.
+  Component: Hydrogen sulfide  (H2S, CAS 7783-06-4)
   Added mid-flight in this case, together with acetic acid.
 
   Volatile weak acid.  Its rungs live in chemistry/:

@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*-----------------------*\
-  Component: Nitrogen  (N2, CAS 7727-37-9)  --  DESIGN DRAFT.
+  Component: Nitrogen  (N2, CAS 7727-37-9)  --  the PERMANENT GAS.
 
   The INERT.  Its job in this case is to guarantee that a vapour phase
   exists at every condition swept, so that "no vapour formed" can never be
@@ -11,6 +11,23 @@
   fact is about the speciation NETWORK, not about solubility: a component
   can be `none` and still have a Henry rung.  Conflating the two is the
   mistake this line exists to prevent.
+
+  AND `noncondensable true;` IS THE OTHER HALF OF IT.  `aqueousSpeciation`
+  says what nitrogen does in the CHEMISTRY; `noncondensable` says what it does
+  in the LIQUID, and for a permanent gas the two point different ways.  The
+  molecular backbone prices a liquid mixture on the pure-component
+  (Lewis-Randall / Raoult) reference, and a species above its critical
+  temperature has no pure liquid to reference: the Antoine block below stops
+  at 126 K and this case runs at 308.  Read there, nitrogen's partial pressure
+  is a number off the end of a curve.
+
+  So the engine takes it OFF the backbone and onto the HENRY rung, through
+  chemistry/N2-dissolution.dat -- and its dissolved amount becomes an aqueous
+  total like any other family's.  That bridge is NOT declared here, and must
+  not be: the gas-liquid record's `dissolvedSpecies` is already the one
+  curated home for which species is dissolved nitrogen, and writing it a
+  second time makes `aqueousSpeciation none;` a lie (check_resolver_coherence
+  refuses it in those words).
 
   Values mirrored from data/standards/components/N2.dat.
 \*---------------------------------------------------------------------------*/

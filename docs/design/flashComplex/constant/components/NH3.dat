@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*-----------------------*\
-  Component: Ammonia  (NH3, CAS 7664-41-7)  --  DESIGN DRAFT.
+  Component: Ammonia  (NH3, CAS 7664-41-7)
 
   Volatile weak base.  Its two equilibria live in chemistry/:
       NH3(g) = NH3(aq)         NH3-dissolution.dat

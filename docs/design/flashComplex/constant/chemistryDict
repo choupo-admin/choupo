@@ -1,12 +1,15 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-|  flashComplex/constant/chemistryDict  --  DESIGN DRAFT.                      |
+|  flashComplex/constant/chemistryDict                                         |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   The case's ACTIVE-CHEMISTRY SELECTION: WHICH solid phases are admitted.
-  AVAILABILITY, not presence -- whether either solid actually appears is the
-  answer, not the input.  The Ksp/dH facts live in the component records
-  (CaCO3.dat solidPhases, NH4HCO3.dat solidPhases); only an operation asks
-  for saturation.
+  AVAILABILITY, not presence -- whether an admitted solid actually appears is
+  the answer, not the input.  The Ksp/dH facts live in the component records
+  (CaCO3.dat solidPhases, NH4HCO3.dat solidPhases); only an operation asks for
+  saturation.
+
+  ONE is admitted here, and it does appear: the free water sits at SI +0.788
+  and 1.52e-3 mol/kg of calcite precipitates to the SI = 0 ceiling.
 
   CaCO3 is fed as a suspended solid and admitted as CALCITE only.  Aragonite
   is declared in the component record but NOT admitted here: it is the more

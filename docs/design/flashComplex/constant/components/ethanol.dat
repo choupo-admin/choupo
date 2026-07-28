@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*-----------------------*\
-  Component: Ethanol  (C2H6O, CAS 64-17-5)  --  DESIGN DRAFT.
+  Component: Ethanol  (C2H6O, CAS 64-17-5)
 
   The component that joins BOTH liquids and the vapour: it is the only
   species this case admits into the organic phase besides benzene, and it is
