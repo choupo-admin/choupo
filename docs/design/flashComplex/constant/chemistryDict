@@ -23,10 +23,16 @@
   solver a phase it may drive to SI = 0; offering it one whose solubility
   product is an order of magnitude read off a solubility table is offering it
   a number, not a phase.  The record stays (NH4HCO3.dat, `equilibrium {
-  status curationRequired; requires ( logK25 ); }`) as the named debt, with
-  both remedies written down -- curate the solid formation datum, or curate a
-  measured Ksp with its primary citation.  It goes back in the list the day
-  one of them lands, and not before.
+  status curationRequired; requires ( logK25 ); }`) as the named debt.  Four
+  routes to that number were searched on 2026-07-28 and the record now says
+  what each one hit: the public-domain databases carry no ammonium-carbonate
+  solid at all; the formation datum exists only in licence-excluded sources;
+  the literature Ksp is regressed against Extended UNIQUAC and is not portable
+  to Davies ions; and the measured solubility sits at I ~ 2.8 mol/kg, five
+  times past where Davies means anything.  The debt is therefore a
+  CAMPAIGN -- a licence-clean formation datum, or Pitzer parameters for the
+  NH4-HCO3 pair -- not a lookup.  It goes back in the list the day one lands,
+  and not before.
 
   Note what this does NOT weaken: "a solid the student never wrote can enter
   the answer" still holds, and calcite is not the demonstration -- calcite is

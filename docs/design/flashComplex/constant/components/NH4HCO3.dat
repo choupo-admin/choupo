@@ -29,6 +29,47 @@
         pureSolid) from a primary source, and the equilibrium follows; or
     (b) curate a measured solubility product with its primary citation, and
         declare it in solidPhases below.
+
+  THE SEARCH, RUN 2026-07-28, so the next curator does not repeat it.  Four
+  routes were tried; none closes today, and the reasons differ:
+
+    1. A PUBLIC-DOMAIN DATABASE.  The USGS PHREEQC ammonia database (Amm.dat,
+       fetched and read in full) carries the aqueous ammonia species and every
+       common carbonate mineral, and NO ammonium-carbonate solid at all --
+       not NH4HCO3, not teschemacherite.  Neither do the other shipped
+       databases.  This is the route that would have been cleanest, and it is
+       simply empty.
+
+    2. THE SOLID FORMATION DATUM (remedy (a)).  Every route the open web
+       offers ends at NBS/NIST, CRC or DIPPR -- exactly the sources this
+       project excludes on LICENCE grounds (no grant, nothing to honour;
+       CLAUDE.md, the CODE-vs-DATA split).  Not "hard to find": found, and
+       not usable.  A licence-clean primary (CODATA Key Values is the pattern
+       CaCO3.dat follows) does not cover this substance.
+
+    3. A REGRESSED SOLUBILITY PRODUCT (remedy (b)).  It exists -- the
+       NH3-CO2-H2O solid-liquid equilibrium is parameterised in the Extended
+       UNIQUAC line (Thomsen & Rasmussen, Chem. Eng. Sci. 54 (1999) 1787, and
+       the chilled-ammonia work after it), which explicitly carries solid
+       NH4HCO3.  Two obstacles: the papers are paywalled here, and -- the
+       serious one -- a Ksp regressed jointly with Extended UNIQUAC is NOT
+       PORTABLE to this case's Davies ions.  The theory guide states the rule
+       (ch:cryst-ksp): "a solubility product and its activity-coefficient
+       model are an inseparable pair".  Importing that number under Davies
+       would be a licence-clean way of being wrong.
+
+    4. THE MEASURED SOLUBILITY, converted here.  ~220 g/L at 25 C is
+       m_sat ~ 2.8 mol/kg, so I ~ 2.8 -- five times past where Davies is
+       trustworthy (~0.5) and four times past where it even warns (~0.7).
+       The conversion needs the very gamma the case cannot compute at that
+       concentration.  This is why the estimate below carries a log unit of
+       uncertainty: the number is not badly measured, the MODEL is absent.
+
+  So the debt is now precisely stated: it is not a missing measurement.  It is
+  one licence-clean thermodynamic datum (route 2) OR a Pitzer/HMW
+  parameterisation for the NH4+/HCO3- pair, which would make route 4's
+  conversion honest and route 3's number portable.  Either is a curation
+  campaign, not a lookup, and this file stays as it is until one lands.
 \*---------------------------------------------------------------------------*/
 
 name        NH4HCO3;
@@ -60,7 +101,7 @@ solidPhases
     ammoniumBicarbonate
     {
         dissolutionReaction { masters ( { ion NH4; nu 1; } { ion HCO3; nu 1; } ); }
-        equilibrium { status curationRequired; requires ( logK25 ); note "order-of-magnitude estimate logK25 ~ 0.25 from the ~220 g/L (25 C) solubility is NOT stored: a value with a log unit of uncertainty, on a solid whose presence changes the phase set, is not a value.  Primary pending -- Trypuc & Kielkowska, J. Chem. Eng. Data."; }
+        equilibrium { status curationRequired; requires ( logK25 ); note "order-of-magnitude estimate logK25 ~ 0.25 from the ~220 g/L (25 C) solubility is NOT stored: a value with a log unit of uncertainty, on a solid whose presence changes the phase set, is not a value.  The uncertainty is the MODEL, not the measurement -- m_sat ~ 2.8 mol/kg is five times past Davies.  Two remedies, both campaigns: a licence-clean solid formation datum, or Pitzer/HMW parameters for the NH4-HCO3 pair (which would also make the Extended-UNIQUAC literature Ksp portable).  Searched 2026-07-28, see the header."; }
     }
 }
 

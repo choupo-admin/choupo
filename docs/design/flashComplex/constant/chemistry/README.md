@@ -1,10 +1,16 @@
 # `constant/chemistry/` — one file per reaction
 
 Fifteen records, and only **two** of them are new to this case. The other
-thirteen are byte-for-byte mirrors of `data/standards/chemistry/`, exactly as
-`bin/choupo-import` would materialise a sealed closure. That ratio is the
-point of the layout: a reaction is curated once and referenced by every case
-that reaches it.
+thirteen mirror `data/standards/chemistry/`, in the shape
+`bin/choupo-import` gives a sealed closure. That ratio is the point of the
+layout: a reaction is curated once and referenced by every case that reaches
+it.
+
+**The claim stops at the reactions.** This case is *not* sealed: the UNIFAC
+group tables, the components' `groups { unifac … }` decompositions and the
+`conventions/` profiles are still resolved from the installation catalogue, and
+sealing currently refuses for a named reason. `../parameters/README.md` carries
+the reproduction and the root cause.
 
 ## Flat, not filed by chemical type
 

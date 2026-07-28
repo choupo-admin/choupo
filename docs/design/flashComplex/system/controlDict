@@ -38,14 +38,14 @@
   constant/NH4HCO3.dat and constant/chemistryDict.  That is the demonstration
   still owed: a solid the student never wrote entering the answer.
 
-  THE ANSWER.  V/F = 0.0635; the bottoms at pH 8.334 against a feed whose own
+  THE ANSWER.  V/F = 0.0635; the bottoms at pH 8.341 against a feed whose own
   liquid sits at 6.917 (the CO2 leaving for the vapour is the difference);
   the organic liquid 23.3 % of the backbone liquid at 95 % benzene; |r|max
   7e-14 in 6 outer iterations with a quadratic tail.
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description  "FlashComplex: 4-phase reactive flash -- vapour + two liquids (declared admission) + growing calcite, N2 inert on the Henry rung.  V/F 0.0635, pH 8.334, organic 23.3 % of the liquid";
+description  "FlashComplex: 4-phase reactive flash -- vapour + two liquids (declared admission) + growing calcite, N2 inert on the Henry rung.  V/F 0.0635, pH 8.341, organic 23.3 % of the liquid";
 verbosity     3;
 
 reports

@@ -185,7 +185,7 @@ equilibrium
        above 90 % of a component's own amount and exactly linear below, so
        every case that never approached the cap is untouched.
 
-  THE ANSWER:  V/F = 0.0635 · pH 8.334 · organic liquid 23.3 % of the backbone
+  THE ANSWER:  V/F = 0.0635 · pH 8.341 · organic liquid 23.3 % of the backbone
   liquid · calcite at its SI = 0 ceiling · |r|max 7e-14 in 6 outer iterations
   with a quadratic tail.  Nine components, three phases, an aqueous speciation
   network, a precipitating mineral and a permanent gas, solved together.

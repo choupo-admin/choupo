@@ -286,6 +286,17 @@ is neither.
 
 ## 7. The result
 
+The block below is the **design sketch** — what the case was specified to
+print, written before it ran. The numbers in it are illustrative and are not
+the run's: the case now converges at V/F 0.0635 and pH 8.341 with NH4HCO3 still
+withheld (its equilibrium is uncurated, see `constant/components/NH4HCO3.dat`),
+so no SI is quoted for it. Read `system/controlDict` for the answer of record.
+
+The last line was a specification and is now behaviour: every speciation prints
+its converged charge balance, labelled by whether electroneutrality was imposed
+(pH solved) or merely reported (pH given), and `bin/curate/check_charge_balance.py`
+gates it.
+
 ```
 [flash]  phases formed
          vapour   12.31 kmol/h    aqueous  61.24    organic  25.83

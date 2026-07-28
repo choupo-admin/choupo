@@ -452,7 +452,7 @@ The molality+charge surface is a PURE INTERFACE (`ElectrolyteModel`) reached via
 construction-time configure downcasts were removed in A1; the engine query is the
 `asElectrolyte()` virtual, A2).
 
-### Electrolyte data tree — 7 HOMES, NO `apparent/`, NO `true` (SETTLED 2026-07-01, do NOT relitigate)
+### Electrolyte data tree — 5 HOMES, NO `apparent/`, NO `true` (SETTLED 2026-07-01; the count corrected 2026-07-28, do NOT relitigate the layout)
 
 A substance's ROLE (lumped / dissociated / multi-ion / molten) is chosen by the
 declared `thermoPhysPropDict` a case carries — **never stored on the substance** — via two
@@ -462,17 +462,27 @@ one of 4 discrete rungs: solid · pure-liquid Raoult · aqueous-inf-dilution ·
 fused-salt Temkin; mixed-solvent = aqueous + a transfer term in `parameters/`, NOT
 a 5th rung).  The same Na⁺ is aqueous-ref dissolved / fused-ref molten → `species/`
 is **medium-agnostic** (one file), the method picks the rung; molten salt is just
-another method, no special case.  **7 homes:** `components/` (identity **+
-`dissociatesTo`** = formula-like ion stoichiometry, NOT the "saco") · `species/`
-(model species + charge, medium-tagged `…Thermo{}`) · `phases/solid/` (ρ_p,k_v) ·
-`chemistry/` (REAL equilibria w/ K+ΔH: dissolution, association) · `parameters/` ·
-`methods/` (declares model + reference rung) · the property PACKAGE
-(the manifest that SELECTS all — components, methods, chemistry — lives INLINE in
-each case's `constant/thermoPhysPropDict`; the shared `data/standards/propertyPackages/`
-catalogue + `package <name>;` selector were retired 2026-07-15, every case is
-self-contained).  (`propertySets/` was deleted 2026-07-01 — zero readers.)  **ONE component = ONE file:
-`components/apparent/*` is DELETED** (the builder reads salt identity+`dissociatesTo`
-from `components/`, solid from `phases/solid/`, anchor from `chemistry/salts/`);
+another method, no special case.  **5 homes** — verify against `ls
+data/standards/` before quoting this list, it has drifted once:
+`components/` (identity **+ `dissociatesTo`** = formula-like ion stoichiometry,
+NOT the "saco"; **and the substance's own `solidPhases{}`** — ρ_p, k_v and the
+dissolution equilibrium of *its own* solid) · `species/` (model species +
+charge, medium-tagged `…Thermo{}`) · `chemistry/` (**FLAT**, no subfolders:
+REAL equilibria w/ K+ΔH that couple TWO families — dissolution, association) ·
+`parameters/` (per-model pair tables) · `conventions/` (the versioned immutable
+convention profiles the D2 identity references) — plus the property PACKAGE,
+which is not a directory at all: the manifest that SELECTS everything lives
+INLINE in each case's `constant/thermoPhysPropDict` (the shared
+`data/standards/propertyPackages/` catalogue + `package <name>;` selector were
+retired 2026-07-15, every case is self-contained).  **`methods/` and
+`phases/solid/` are RETIRED** — no such directory exists; a phase's reference
+rung is a consequence of the declared formulation (the one-knob rule) and solid
+particle data sits in the component's `solidPhases{}`.  The engine keeps a
+LEGACY `phases/solid/<phase>.dat` read for old external cases; do not write
+one.  (`propertySets/` was deleted 2026-07-01 — zero readers.)  **ONE component
+= ONE file: `components/apparent/*` is DELETED** (the builder reads salt
+identity+`dissociatesTo` from `components/` and the solid from that component's
+own `solidPhases{}`);
 **"true species" is BANNED** (→ *model/solver species*; `recordType modelSpecies`,
 method `requires.ionSpecies`); **NO top-level `basisMaps/`** (it is the K→∞ limit of
 dissociation + is per-(component,method)).  Rejected: two `NaCl.dat`, per-medium
@@ -489,13 +499,22 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
 * Release counts are GENERATED — the single source of truth is
   `bin/curate/release_inventory.py` → `generated/releaseInventory.json`
   (consumed by the homepage + `/models`; a `runTests` gate fails when stale).
-  Do NOT hand-maintain these numbers; the current release (Choupo-2607) is:
-* **318 runnable tutorial cases** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
+  Do NOT hand-maintain these numbers — and that includes HERE.  This file used
+  to carry its own copy of the tally and it drifted (41 aqueous species when
+  the tree held 51, 194 components in §7 against 247 in §6): a second home for
+  a derived number is the arity sin, and a doc is not exempt from it.  Read
+  `generated/releaseInventory.json`, or run `bin/curate/release_inventory.py`.
+  What is stated below is the SHAPE of the corpus, never its size.
+* **Runnable tutorial cases** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
   `bin/runTests` validates them via golden-master KPI + NaN/inf guard + the
   doctrine + release-inventory gates (0 FAIL, 0 KNOWN-BROKEN; deliberate EXPECTED-FAILs).
-* **247 components** (incl. the combustion library — GRI-Mech 3.0 + Burcat sulfur/chlorine/soot-PAH/low-T/NOx families) + **41 aqueous species/ions** (one `recordType modelSpecies` file per species, `species/<name>.dat`),
-  **205 Henry's-law pairs**, **5 public binary-interaction pairs** (NRTL/UNIQUAC; the bulk moved to `data/local` in the legal scrub) + **55 Pitzer + 3 eNRTL pairs**,
-  **49 unit-operation models**, **4 materials**, **4 membranes**, **9 utilities** in the standard catalogue.
+* The standard catalogue carries components (incl. the combustion library —
+  GRI-Mech 3.0 + Burcat sulfur/chlorine/soot-PAH/low-T/NOx families), aqueous
+  species/ions (one `recordType modelSpecies` file per species,
+  `species/<name>.dat`), Henry's-law pairs, a small set of public
+  binary-interaction pairs (NRTL/UNIQUAC — the bulk moved to `data/local` in
+  the legal scrub) plus Pitzer and eNRTL pairs, unit-operation models,
+  materials, membranes and utilities.
 * **Four binaries by problem class:** `choupoSolve` (steady, F(x)=0,
   Newton-on-tears recycle), `choupoBatch` (batch dY/dt=f + recipe layer),
   `choupoCtrl` (dynamic + control loops), `choupoProps` (property eval + the
@@ -663,9 +682,14 @@ Layer-1 data detail in
 `constant/thermoPhysPropDict` declaration → `ThermoPackageBuilder`
 assembles → `ThermoPackage` computes → unit ops.**  The runtime
 assembly step is the BUILDER (loads + assembles, NEVER estimates); "resolver" is
-reserved for CURATION-time estimation.  The reference basis (the `ReferenceRung`)
-lives INSIDE the `propertyMethod`, declared per phase — the engine reads it, never
-hardcodes "aqueous".  Conceptual separation, glass-box — the kinds: components /
+reserved for CURATION-time estimation.  The reference basis is a CONSEQUENCE of
+the declared formulation, not an independent selector: choosing `formulation`
+settles the activity model, the standard states and the Henry treatment
+TOGETHER (the **one-knob rule**), so nothing hardcodes "aqueous" and nothing
+picks a rung separately either.  **There is no `ReferenceRung` type** — the
+name appears in older notes as a planned resolver and was never built; do not
+go looking for it, and do not build one without a case that proves the one-knob
+rule insufficient.  Conceptual separation, glass-box — the kinds: components /
 model species / solid phases (a component's `solidPhases{}`) / chemistry sets /
 property methods / parameter databanks / **the INLINE manifest (the CENTRE — a
 case DECLARES its package, it does not merely list components; the shared
@@ -674,9 +698,9 @@ Basis vocabulary: **flowsheet/component basis** vs **aqueous-species basis**
 (the older "apparent/true" wording is banned — see §data tree).  This is the
 DATA-layout half; root `docs/property-architecture.md` is the
 resolution/MODEL half (a deliberate name twin — root = level-3 deep reference);
-the **arity doctrine** (`docs/ai/data-doctrine.md`) and the
-**`ReferenceRung`** phase-rung resolver are SLICES under it (reference selection
-folds into the propertyMethod layer).  The flat-components O(1) lookup (§7 below,
+the **arity doctrine** (`docs/ai/data-doctrine.md`) is a SLICE under it
+(reference selection folds into the formulation, per the one-knob rule above).
+The flat-components O(1) lookup (§7 below,
 2026-06-07) is preserved by `generated/indexes/`+`flatCaches/` — any basis
 split is SOURCE-layout, never a runtime directory-walk, so the two decisions do
 not conflict.  **General basis reconciliation (the engine carrying the
@@ -695,13 +719,18 @@ parameters/PAIR, packages/UNIT — one Gibbs surface per phase, never two.  Reje
 
 ## 7. Database catalogue (summary)
 
-`data/standards/` holds the FROZEN, committee-managed reference tree:
-`components/` (194), `assets/` (12, FLAT with a `kind` field — Migration 4,
-2026-07-16: 4 construction materials, 4 membranes incl. the CMX_AMX
-ion-exchange pair, 3 adsorbents, the SAC_Na resin), `utilities/` (9: steam
-LP/MP/HP, coolingWater, chilledWater, dowthermA, hitecSalt, refrigerationPG,
-electricity), plus the per-model pair catalogues under `parameters/` (`NRTL/ UNIQUAC/ Wilson/ Henry/ Pitzer/ eNRTL/ SRK/`, Migration 2 done 2026-07-16).  The
-engine REFUSES to write under `data/standards/` — new data is a curation act.
+`data/standards/` holds the FROZEN, committee-managed reference tree.  Eight
+directories, and `ls data/standards/` is the authority on both the list and the
+counts (§6: the tally is generated, never copied here):
+`components/` · `species/` · `chemistry/` (flat) · `parameters/` (the per-model
+pair catalogues — `NRTL/ UNIQUAC/ Henry/ Pitzer/ eNRTL/ SRK/ UNIFAC/
+adsorption/ solution/`, Migration 2 done 2026-07-16) · `conventions/` (the
+versioned convention profiles of the D2 identity) · `assets/` (FLAT with a
+`kind` field — Migration 4, 2026-07-16: construction materials, membranes incl.
+the CMX_AMX ion-exchange pair, adsorbents, the SAC_Na resin) · `mixtures/` ·
+`utilities/` (steam LP/MP/HP, coolingWater, chilledWater, dowthermA,
+hitecSalt, refrigerationPG, electricity).  The engine REFUSES to write under
+`data/standards/` — new data is a curation act.
 
 **Two data tiers only — `standards` (public) and `local` (private); the
 public `proposed` tier was RETIRED 2026-07-13 (do NOT reintroduce it).**  The
