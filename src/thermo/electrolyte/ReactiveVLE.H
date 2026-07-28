@@ -258,6 +258,18 @@ public:
 
     const ReactiveVLEConfig& config() const { return cfg_; }
 
+    // A species' composition in MASTERS -- the NETWORK's own stoichiometry,
+    // which is the only thing that can collapse a speciation back onto the
+    // component basis.  A master returns itself with nu = 1; a derived species
+    // returns the formation reaction's master list (CaHCO3+ -> Ca(+1),
+    // HCO3(+1); CO3-2 -> HCO3(+1), H(-1)).  Empty when the name is unknown.
+    //
+    // Exposed because the STREAM layer verifies the report-only `speciation`
+    // block's closure, and re-deriving the stoichiometry there would be a
+    // second home for the network (aqueous-stream-basis, 2026-07-27).
+    std::vector<std::pair<std::string, scalar>>
+    masterComposition(const std::string& species) const;
+
 private:
     ReactiveVLEConfig                 cfg_;
     std::unique_ptr<SpeciationSolver> spec_;

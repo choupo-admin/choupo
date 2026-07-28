@@ -56,6 +56,7 @@ Description
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace Choupo {
 
@@ -136,6 +137,34 @@ struct ProcessStream
     // "coolingWater_298K", "compressedAir_8bar".  Streams without a
     // category are process streams (feed, product, intermediate).
     std::string category;
+
+    // ---- Aqueous speciation: a REPORT-ONLY decomposition, never state -----
+    //  What the reactive package actually solved inside this stream's liquid:
+    //  the ions and dissolved molecules, with the network they belong to.
+    //
+    //  It is NOT a second home for the material.  The material is z/F/s on the
+    //  apparent component basis, which is what crosses a model boundary and
+    //  what every unit reads; this decomposes it, and collapses back through
+    //  the components' declared bridges exactly.  Delete it and the case is
+    //  unchanged -- that is the test of whether a field is state.  It is
+    //  written to the stream file and VERIFIED on read (closure), then
+    //  discarded: the reader never uses it to build the stream.
+    //
+    //  Held by shared_ptr so the common case -- every non-reactive stream in
+    //  the corpus -- carries one null pointer and nothing else.
+    struct Speciation
+    {
+        std::string network;   // WHICH chemistry set these names belong to
+        //  Always "stoichiometric" when the SOLVER wrote it: the totals came
+        //  from the components through the declared bridges, so H/OH are
+        //  excluded mediators and the set does not close in charge.  An
+        //  `analytical` set is what a LABORATORY writes, and it does.
+        std::string basis = "stoichiometric";
+        std::vector<std::pair<std::string, scalar>> flows;  // species [kmol/s]
+        scalar      pH = 0.0;
+        bool        pH_valid = false;
+    };
+    std::shared_ptr<const Speciation> speciation;   // null = none, the default
 };
 
 } // namespace Choupo

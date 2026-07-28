@@ -44,10 +44,12 @@ Description
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
+#include "streams/ProcessStream.H"
 
 #include <functional>
 #include <map>
 #include <string>
+#include <memory>
 
 namespace Choupo {
 
@@ -88,6 +90,11 @@ struct FlashSolution
     // vapour enthalpy (h_dim = 2 h_mono + dH exactly) -- added to the duty,
     // announced, never silently monomer-priced.
     scalar dimerHeat_J_per_molFeed = 0.0;
+
+    // The reactive package's SOLVED speciation of the liquid, as species
+    // FLOWS -- attached to the liquid outlet as a report-only decomposition
+    // (never state; see ProcessStream::Speciation).  Null on every other path.
+    std::shared_ptr<const ProcessStream::Speciation> speciation;
 };
 
 enum class OuterAccelerator { DirectSubstitution, Wegstein };

@@ -1,14 +1,14 @@
 # Proposal — declaring a stream's basis: apparent components, aqueous species, or both
 
-**Status: HALF IMPLEMENTED (2026-07-27).** The INPUT side shipped -- a stream
-may be written in the aqueous-species basis, with the three refusals of §3.1 --
-and `tutorials/steady/flash/flash18_water_analysis_basis` is the vertical spike
-of §6, gated by `bin/curate/check_stream_basis.py`. The OUTPUT side of §3.2
-(the closing `speciation {}` decomposition) is NOT built; §9 records why the
-proposal was wrong about how easy it was, and what it needs.
+**Status: IMPLEMENTED (2026-07-27), both sides.** A stream may be WRITTEN in
+the aqueous-species basis (§3.1) and the solver WRITES back the speciation it
+resolved, as a decomposition that closes (§3.2).
+`tutorials/steady/flash/flash18_water_analysis_basis` is the vertical spike of
+§6; `bin/curate/check_stream_basis.py` holds its six assertions, four of them
+refusals. §9 records the two things the spike corrected in this document.
 
-One correction the spike forced on §3.1, and it matters: the input block also
-needs **`basis analytical|stoichiometric;`**, REQUIRED. See §9.1.
+One correction it forced on §3.1, and it matters: the input block also needs
+**`basis analytical|stoichiometric;`**, REQUIRED. See §9.1.
 
 **Asked for by Vítor (2026-07-27):** *"No caso de soluções aquosas de iões,
 tem de ser possível especificar que os sais aparentes (ou bases ou ácidos) ou
@@ -275,7 +275,7 @@ The proposal put it only on the OUTPUT block. It belongs on both, and it is
 **required, not defaulted**: one reading refuses correct waters, the other
 waves broken ones through, so there is no safe default to pick.
 
-### 9.2 The output side is harder than §3.2 implies, and for a good reason
+### 9.2 The output side, and the trap §3.2 walked into
 
 §3.2 says the speciation block is *"written by the solver and VERIFIED on
 read"*. Verified on read is built and easy — it is `A n` against the declared
@@ -292,9 +292,24 @@ because it is the arity doctrine again:
   `SpeciationResult` plumbed from the unit that solved it to the writer, which
   today receives only a `ProcessStream` and a `ThermoPackage`.
 
-So the output half is a real slice with a named dependency, not a formatting
-job. Building it as `A n` to look finished would have been worse than not
-building it.
+So the output half was a real slice with a named dependency. It is now built:
+`FlashSolution` carries the solved speciation, `IsothermalFlash` converts the
+kernel's molalities to FLOWS against the liquid's own water
+(`n_i = m_i * F_liq * x_water * MW_water`) and attaches it to the LIQUID outlet
+only -- ions do not enter a vapour, and a decomposition on a stream that cannot
+carry it would be decoration.
+
+**And the closure check had a trap in it.** §3.2 said `A · n` must reproduce
+the declared species totals. Written naively that compares the components'
+master totals against the block's *free-ion* rows, and it fails on the first
+real water: the calcium of a calcium-bicarbonate water is spread over Ca²⁺,
+CaHCO₃⁺, CaCO₃(aq) and CaOH⁺, and only 86 % of it is the free ion. The
+collapse has to run through the NETWORK's own stoichiometry -- each species'
+formation reaction IS its composition on the master basis -- which is why
+`ReactiveVLE::masterComposition` exists and why the stream layer asks for it
+instead of re-deriving one. H and OH fall out by themselves: they are the
+shared mediators, closed by electroneutrality, and no component bridges to
+them.
 
 ### 9.3 What shipped
 
@@ -305,7 +320,14 @@ building it.
 * Four refusals: no reactive package, unknown `network`, missing/invalid
   `basis`, unbalanced charge (analytical only), rank-deficient projection, and
   a master no component can carry.
-* `flash18_water_analysis_basis` + `check_stream_basis.py`, whose first
-  assertion is the one that matters: the species basis gives the **same** KPIs
-  as the components it inverts to. A coordinate change that moves the answer
-  was not a coordinate change.
+* The OUTPUT side: `ProcessStream::Speciation` (report-only, `shared_ptr`, so
+  every non-reactive stream carries one null pointer), written by
+  `writeStreamState`, VERIFIED on read through the network's stoichiometry and
+  then discarded.
+* `flash18_water_analysis_basis` + `check_stream_basis.py`, with six
+  assertions. Two of them are the ones that matter:
+  **equivalence** — the species basis gives the *same* KPIs as the components
+  it inverts to, because a coordinate change that moves the answer was not a
+  coordinate change; and **deletability** — strip the `speciation {}` block and
+  the answer must not move, which is this design's own test of whether a field
+  is state.

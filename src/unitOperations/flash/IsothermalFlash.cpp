@@ -119,6 +119,43 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             ? "reactive electrolyte VLE (simultaneous speciation + phase"
               " equilibrium; pH " + std::to_string(r.pH).substr(0, 5) + ")"
             : "single liquid (reactive: subsaturated at T,P; fully speciated)";
+
+        //  ---- The SOLVED speciation, as species FLOWS ----------------------
+        //  The kernel works in molality (mol per kg of solvent water) because
+        //  that is the reference the activity models use.  A stream carries
+        //  FLOWS, so the conversion runs here, once, against the liquid's own
+        //  water: n_i = m_i * (F_liq * x_water * MW_water).  This is a
+        //  DECOMPOSITION of the liquid, attached to the liquid outlet below,
+        //  and it is report-only -- nothing reads it back to build a stream.
+        if (const auto* cfg = thermo.reactiveConfig())
+        {
+            const std::size_t wi = cfg->solventIdx;
+            const scalar Fliq = in.F * (1.0 - r.V_over_F);
+            const scalar kgw  = (wi < r.xApp.size())
+                ? Fliq * r.xApp[wi] * thermo.comp(wi).MW() : 0.0;
+            if (kgw > 0.0)
+            {
+                auto sp = std::make_shared<ProcessStream::Speciation>();
+                //  Every set the case's components declare: the species names
+                //  come from the UNION of those networks, so naming one would
+                //  be a half-truth in any system that declares two.
+                for (std::size_t i = 0; i < thermo.n(); ++i)
+                {
+                    const std::string& s = thermo.comp(i).aqueousSpeciation();
+                    if (s.empty() || s == "none") continue;
+                    if (sp->network.find(s) == std::string::npos)
+                        sp->network += (sp->network.empty() ? "" : " ") + s;
+                }
+                sp->basis    = "stoichiometric";
+                sp->pH       = r.pH;
+                sp->pH_valid = true;
+                for (const auto& row : r.trueState.rows)
+                    //  molality [mol/kg] * kg/s = mol/s -> kmol/s
+                    sp->flows.emplace_back(row.name,
+                                           row.molality * kgw / 1000.0);
+                sol.speciation = sp;
+            }
+        }
         return sol;
     }
 
@@ -1279,6 +1316,10 @@ int IsothermalFlash::solve(const DictPtr& dict,
         alpha.P    = in.P;
         alpha.z    = sol.x;
         alpha.vf   = 0.0;
+        //  The speciation belongs to the LIQUID and to nothing else: ions do
+        //  not enter a vapour, and a decomposition attached to a stream that
+        //  cannot carry it would be a decoration.
+        alpha.speciation = sol.speciation;
         produced_.push_back(alpha);
 
         ProcessStream beta;

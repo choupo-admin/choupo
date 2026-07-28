@@ -149,6 +149,33 @@ void writeStreamState(const ProcessStream&  s,
     if (!s.category.empty())
         out << "category        " << s.category << ";\n";
 
+    //  AQUEOUS SPECIATION -- a DECOMPOSITION, written only when the reactive
+    //  package solved one.  It is what the model actually resolved inside this
+    //  liquid, which is the part no arithmetic on the block above can recover:
+    //  HCO3- against CO3-2 against CaCO3(aq), and the pH they imply.  It
+    //  collapses back through the components' declared bridges exactly, and
+    //  the reader VERIFIES that and then discards it -- delete the block and
+    //  the case is unchanged.  That deletability is what keeps it from being a
+    //  second home for the material (aqueous-stream-basis, 2026-07-27).
+    if (s.speciation && !s.speciation->flows.empty())
+    {
+        const auto& sp = *s.speciation;
+        out << "\nspeciation\n{\n"
+               "    //  Report-only: the material is componentMolarFlows above."
+               "  This decomposes it\n"
+               "    //  and must collapse back through the declared bridges"
+               " (verified on read).\n";
+        out << "    network   ( " << sp.network << " );\n";
+        out << "    basis     " << sp.basis << ";\n";
+        if (sp.pH_valid)
+            out << "    pH        " << sp.pH << ";\n";
+        out << "\n";
+        for (const auto& [nm, v] : sp.flows)
+            if (std::abs(v) > 0.0)
+                out << "    " << nm << "    " << v * 3600.0 << " kmol/h;\n";
+        out << "}\n";
+    }
+
     // PHASE DECOMPOSITION -- written ONLY when a solid phase rides along.  It
     // decomposes the overall material and sums back to it (validated on read);
     // the fluid phase is named by its vapour fraction.
@@ -319,12 +346,22 @@ ProcessStream readStreamState(const fs::path&       file,
                 " species basis is relative to the chemistry set that defines"
                 " those names -- without it the block is unreadable outside"
                 " the case that wrote it.");
-        const std::string net = blk->lookupWord("network");
+        //  `network` is a WORD or a LIST: an analysis may span two declared
+        //  sets (a carbonate water that also carries ammonia), and forcing one
+        //  name would make the author pick a half-truth.
+        std::vector<std::string> nets;
+        {
+            const EntryValue& ev = blk->entryValue("network");
+            if (std::holds_alternative<std::string>(ev))
+                nets.push_back(std::get<std::string>(ev));
+            else
+                nets = blk->lookupWordList("network");
+        }
+        const std::string net = nets.empty() ? std::string() : nets.front();
         //  ...and it must be a set THIS case's components declare.  A network
         //  name nobody in the system speaks is a typo that would otherwise
         //  pass silently and make the file look authoritative.
         {
-            bool known = false;
             std::string declared;
             for (std::size_t i = 0; i < thermo.n(); ++i)
             {
@@ -332,13 +369,18 @@ ProcessStream readStreamState(const fs::path&       file,
                 if (s.empty() || s == "none") continue;
                 if (declared.find(s) == std::string::npos)
                     declared += (declared.empty() ? "" : " ") + s;
-                if (s == net) known = true;
             }
-            if (!known)
-                throw std::runtime_error("stream state '" + name + "':"
-                    " `network " + net + ";` is not a chemistry set this"
-                    " system declares (its components declare: "
-                    + (declared.empty() ? "none" : declared) + ").");
+            for (const auto& nm : nets)
+            {
+                bool known = false;
+                for (std::size_t i = 0; i < thermo.n(); ++i)
+                    if (thermo.comp(i).aqueousSpeciation() == nm) known = true;
+                if (!known)
+                    throw std::runtime_error("stream state '" + name + "':"
+                        " `network " + nm + ";` is not a chemistry set this"
+                        " system declares (its components declare: "
+                        + (declared.empty() ? "none" : declared) + ").");
+            }
         }
         //  ANALYTICAL vs STOICHIOMETRIC -- and this is not bookkeeping, it
         //  decides whether charge must close.  An ANALYTICAL set is a water
@@ -527,6 +569,69 @@ ProcessStream readStreamState(const fs::path&       file,
         auto sf = d->subDict("solidFlows");
         for (const auto& comp : sf->keys())
             solid[thermo.indexOf(comp)] = sf->lookupScalar(comp);
+    }
+
+    //  ---- The SPECIATION decomposition: VERIFIED, then discarded ----------
+    //  It is not read into the stream.  Nothing downstream consults it; the
+    //  material is the component block above.  What happens here is the one
+    //  thing that keeps it honest: it must collapse back through the
+    //  components' declared bridges onto the material actually present.  A
+    //  block that has drifted -- hand-edited, or copied from another state --
+    //  is caught here rather than being quietly believed.
+    if (d->found("speciation"))
+    {
+        const auto* cfg = thermo.reactiveConfig();
+        auto sd = d->subDict("speciation");
+        if (!cfg)
+            throw std::runtime_error("stream state '" + name + "': carries a"
+                " `speciation` block but this case declares no reactive"
+                " chemistry -- the block's names belong to a network that is"
+                " not in force here, so nothing could check it.");
+        std::map<std::string, scalar> declared;      // master -> kmol/s
+        for (const auto& k : sd->keys())
+        {
+            if (k == "network" || k == "basis" || k == "pH") continue;
+            declared[k] += sd->lookupScalar(k);
+        }
+        //  m = A n from the material that IS state, against the same bridges.
+        std::map<std::string, scalar> fromComponents;
+        for (const auto& fam : cfg->families)
+            for (const auto& [master, nu] : fam.mapping)
+                fromComponents[master.key] += nu * overall[fam.apparentIdx];
+        //  ...and the block collapsed the other way, through the NETWORK's own
+        //  stoichiometry.  Summing the free ions would not do: the calcium of
+        //  a calcium-bicarbonate water is spread over Ca(2+), CaHCO3(+),
+        //  CaCO3(aq) and CaOH(+), and only the reactions know that.  H and OH
+        //  fall out on their own -- they are the shared mediators, closed by
+        //  electroneutrality, and no component bridges to them.
+        std::map<std::string, scalar> collapsed;
+        for (const auto& [sp, v] : declared)
+            for (const auto& [m, nu] : thermo.speciesMasterComposition(sp))
+                collapsed[m] += nu * v;
+        std::string worst; scalar worstErr = 0.0, worstWant = 0.0, worstGot = 0.0;
+        for (const auto& [m, want] : fromComponents)
+        {
+            auto it = collapsed.find(m);
+            const scalar got = (it == collapsed.end()) ? 0.0 : it->second;
+            const scalar err = std::abs(got - want);
+            if (err > worstErr) { worstErr = err; worst = m; worstWant = want; worstGot = got; }
+        }
+        scalar scale = 0.0;
+        for (const auto& [m, v] : fromComponents) scale = std::max(scale, std::abs(v));
+        if (!worst.empty() && worstErr > 1.0e-6 * std::max(scale, 1.0e-30))
+        {
+            std::ostringstream os;
+            os << std::scientific << std::setprecision(6);
+            os << "stream state '" << name << "': the `speciation` block does"
+                  " NOT collapse back to the material.  Master '" << worst
+               << "': the components carry " << worstWant
+               << " kmol/s through their declared bridges, the block declares "
+               << worstGot << ".  A decomposition that does not close is a"
+                  " SECOND account of the same matter, and the material is the"
+                  " componentMolarFlows block -- delete the speciation block or"
+                  " re-run the case that wrote it.";
+            throw std::runtime_error(os.str());
+        }
     }
 
     // ---- Reconstruct the ProcessStream: fluid = overall - solid (the legacy

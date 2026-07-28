@@ -27,6 +27,18 @@ written in components, and provoking the refusals on purpose.
      own mediators and are excluded from the masters), so one default refuses
      correct waters and the other waves broken ones through.
 
+  5. CLOSURE.  The solver WRITES a `speciation {}` decomposition on the liquid
+     outlet.  Fed back as state it must be accepted; broken by hand it must
+     REFUSE, naming the master and both numbers.  Summing free ions would not
+     detect it -- the calcium of this water is spread over Ca(2+), CaHCO3(+),
+     CaCO3(aq) and CaOH(+), so the check collapses through the NETWORK's own
+     stoichiometry.
+
+  6. DELETABILITY.  Delete the block and the answer must not move.  That is
+     the design's own test of whether a field is state: if removing it loses
+     information, it was a second home for the material and the shape is
+     wrong.
+
 Contract: docs/design/aqueous-stream-basis-proposal.md.
 """
 import json
@@ -141,11 +153,66 @@ elif "carries no `basis analytical|" not in out5:
     bad.append("the missing basis refused, but not by naming the choice.  "
                "Got:\n" + out5[-600:])
 
+#  ---- 5. CLOSURE, and 6. DELETABILITY -------------------------------------
+conv = CASE / "converged" / "liquid"
+if not conv.is_file():
+    bad.append("no converged/liquid to read back -- the case must have been "
+               "run before this gate (it is, by the tutorial sweep)")
+else:
+    body = conv.read_text()
+    if "speciation" not in body:
+        bad.append("the solver wrote no `speciation` block on the liquid "
+                   "outlet -- the decomposition the case exists to show is "
+                   "missing")
+    else:
+        rcA, outA = variant(body, "roundtrip")
+        if rcA != 0:
+            bad.append("the solver's own speciation block was REFUSED when "
+                       f"fed back as state (exit {rcA}):\n" + outA[-800:])
+        base = result(outA) if rcA == 0 else None
+
+        broken = re.sub(r"^(\s+Ca\s+)[0-9.eE+-]+", r"\g<1>0.5", body,
+                        count=1, flags=re.M)
+        if broken == body:
+            bad.append("could not break the speciation block to test the "
+                       "closure check -- the gate would pass vacuously")
+        else:
+            rcB, outB = variant(broken, "brokenspec")
+            if rcB == 0:
+                bad.append("a speciation block broken by hand SOLVED -- a "
+                           "decomposition that does not close is a second "
+                           "account of the same matter")
+            elif "does NOT collapse back to the material" not in outB:
+                bad.append("the broken block refused, but not by naming the "
+                           "closure.  Got:\n" + outB[-600:])
+
+        stripped = re.sub(r"\nspeciation\n\{.*?\n\}\n", "\n", body,
+                          flags=re.S)
+        if stripped == body:
+            bad.append("could not strip the speciation block -- the "
+                       "deletability test would pass vacuously")
+        else:
+            rcC, outC = variant(stripped, "nospec")
+            got = result(outC) if rcC == 0 else None
+            if got is None:
+                bad.append(f"deleting the speciation block broke the case "
+                           f"(exit {rcC}) -- it is meant to be report-only")
+            elif base is not None:
+                for unit, kpis in base["kpis"].items():
+                    for k, v in kpis.items():
+                        w = got["kpis"].get(unit, {}).get(k)
+                        if w is None or abs(v - w) > 1e-9 * max(1.0, abs(w)):
+                            bad.append(f"{unit}.{k} moved when the speciation "
+                                       f"block was deleted ({v} -> {w}) -- it "
+                                       f"is STATE, and this design says it "
+                                       f"must not be")
+
 if bad:
     print("stream-basis gate FAILED:")
     for b in bad:
         print("  - " + b)
     sys.exit(1)
 
-print("stream-basis gate: species basis == component basis to solver "
-      "tolerance; charge, network and basis refusals all fire")
+print("stream-basis gate: species basis == component basis; charge, network "
+      "and basis refusals fire; the written speciation closes, refuses when "
+      "broken, and is deletable without moving the answer")

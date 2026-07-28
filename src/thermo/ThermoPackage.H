@@ -440,6 +440,12 @@ public:
     //  Null when the package is not reactive.
     const electrolyte::ReactiveVLEConfig* reactiveConfig() const;   // .cpp
 
+    //  A species' composition in MASTERS, from the reactive engine's network
+    //  (see ReactiveVLE::masterComposition).  Empty when not reactive or the
+    //  name is unknown.
+    std::vector<std::pair<std::string, scalar>>
+    speciesMasterComposition(const std::string& species) const;    // .cpp
+
     // Minimum-parameter-set audit findings (per model x component x property:
     // MISSING / ESTIMATED / PLACEHOLDER), computed once at assembly.  Drives the
     // gap report + the result-JSON honesty surface.  See PackageAudit.H.

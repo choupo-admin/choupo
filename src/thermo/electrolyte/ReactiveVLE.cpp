@@ -75,6 +75,30 @@ ReactiveVLE::ReactiveVLE(ReactiveVLEConfig cfg)
 
 ReactiveVLE::~ReactiveVLE() = default;
 
+std::vector<std::pair<std::string, scalar>>
+ReactiveVLE::masterComposition(const std::string& species) const
+{
+    //  A DERIVED species is defined by its formation reaction, and that
+    //  reaction's master list IS its composition on the master basis.
+    for (const auto& r : spec_->reactions())
+        if (r.species == species)
+        {
+            std::vector<std::pair<std::string, scalar>> out;
+            for (const auto& [m, nu] : r.masters) out.emplace_back(m, nu);
+            return out;
+        }
+    //  Otherwise it is a MASTER itself, if any reaction names it as one.
+    //  (Asking the reaction list rather than assuming: a name that appears
+    //  nowhere in the network is not silently promoted to a master here.)
+    for (const auto& r : spec_->reactions())
+        for (const auto& [m, nu] : r.masters)
+        {
+            (void)nu;
+            if (m == species) return {{ species, 1.0 }};
+        }
+    return {};
+}
+
 const GasEntry* ReactiveVLE::gasFor(std::size_t appIdx) const
 {
     auto it = cfg_.gasOf.find(appIdx);
