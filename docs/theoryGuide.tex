@@ -5850,6 +5850,35 @@ and every complex.  The pH is then an \emph{output}: the free
 $\text{H}^+$ adjusts until the cations and anions balance.  This is the
 dict form \dict{pH solve;}.
 
+\begin{pitfall}
+\textbf{A precipitating mineral does not belong in
+\eqref{eq:electroneutrality}.}  Calcite dissolves as
+$\mathrm{CaCO_3(s)} + \mathrm{H}^{+} = \mathrm{Ca}^{2+} +
+\mathrm{HCO_3^-}$, so precipitating it \emph{releases} a proton and the
+solved pH must fall.  The tempting move --- add $\nu_{p\mathrm H}\,n_p$
+to the charge row so the freed proton is ``accounted for'' --- counts it
+\emph{twice}.  The crystal is neutral, so its dissolution reaction is
+charge-balanced by construction, $\sum_j z_j\nu_{pj} + \nu_{p\mathrm H} =
+0$ ($+2-1-1$ here); substituting the mole
+balances~\eqref{eq:spec-molebalance} into the charge sum and using charge
+conservation of the formation reactions ($z_s = \sum_j \nu_{sj}z_j +
+\nu_{s\mathrm H}$) gives
+\[
+   \sum_i z_i m_i \;=\;
+   m_{\mathrm H} + \sum_s \nu_{s\mathrm H} m_s
+   \;+\; \sum_j z_j T_j \;+\; \sum_p \nu_{p\mathrm H}\,n_p ,
+\]
+so setting it to zero \emph{already} shifts the proton condition by
+$\nu_{p\mathrm H} n_p$: the sink pulls $\mathrm{Ca}^{2+}$ and
+$\mathrm{HCO_3^-}$ out in $1{:}1$ and the only species left to restore
+the balance is $\mathrm{H}^{+}$.  The acidification is a
+\emph{consequence} of the mole balances, never a term to be added.  The
+double count is silent --- the solver still converges, on
+$\sum_i z_i m_i = +n_p$ --- and it under-predicts the calcite ceiling of
+an RO concentrate by nearly 60\,\%.  Which is why Choupo reports the
+converged charge residual next to the answer and gates it.
+\end{pitfall}
+
 \begin{intuition}
 Charge balance closing the pH is exactly what a titration does
 physically.  When the cation and anion totals on a sheet do not add up to

@@ -1347,10 +1347,25 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                 }
                 if (solveH)
                 {
-                    // ELECTRONEUTRALITY sum z_i m_i = 0 over ALL species.
-                    // A carbonate mineral's { ion H; nu -1; } leg RELEASES H+
-                    // on precipitation: nuH * n_p enters here so the freed H+
-                    // re-acidifies the solved pH (pH-solve mode only).
+                    // ELECTRONEUTRALITY  sum z_i m_i = 0  over all AQUEOUS
+                    // species -- masters, H+, OH- and every complex (theory
+                    // guide, ch:speciation).  A precipitated solid is not one
+                    // of them and removes NO net charge: the crystal is
+                    // neutral, so its dissolution reaction is charge-balanced
+                    // (calcite: sum_j z_j nu_pj + nu_pH = +2 -1 -1 = 0).
+                    //
+                    // The H+ a carbonate FREES on precipitation is therefore
+                    // already in this row, delivered by the master balances:
+                    // the sink pulls Ca(+2) and HCO3(-1) out in 1:1, and the
+                    // only species that can restore the balance is H+.  Put
+                    // formally, substituting the balances and using charge
+                    // conservation of the formation reactions,
+                    //     q = m_H + sum_s nu_sH m_s + sum_j z_j T_j
+                    //             + sum_p nu_pH n_p,
+                    // so q = 0 ALREADY moves the proton condition by nu_pH n_p.
+                    // Adding nu_pH * n_p to q counts that proton TWICE -- it
+                    // forced sum z_i m_i = +n_p (measured at exactly 1.00000 of
+                    // the precipitated amount, 24 % of the total charge).
                     double q = std::exp(xa[iH]), qScale = std::exp(xa[iH]);
                     for (std::size_t j = 0; j < n; ++j)
                     {
@@ -1362,8 +1377,6 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                         q      += a.z() * a.m;       // exchange species: z()=0
                         qScale += std::fabs(a.z()) * a.m;
                     }
-                    for (std::size_t p = 0; p < nAct; ++p)
-                        q += allowed[std::size_t(activeMin[p])].nuH * xa[nUnk + p];
                     R[iH] = q;
                     worst = std::max(worst, std::fabs(q) / qScale);
                 }
@@ -1486,14 +1499,15 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                             for (const auto& [k, nu] : a.idx)
                                 J[iX][std::size_t(k)] -= a.nuSite * nu * a.m;
                 }
-                // mineral-sink columns (dR_j/dn_p) and electroneutrality H column
+                // mineral-sink columns (dR_j/dn_p).  The electroneutrality row
+                // has NO n_p column: it sums charge over the aqueous species
+                // only, and those enter it through x, not through n_p.
                 for (std::size_t p = 0; p < nAct; ++p)
                 {
                     const Allowed& al = allowed[std::size_t(activeMin[p])];
                     for (std::size_t j = 0; j < n; ++j)
                         if (pinOfRow[j] < 0)
                             J[j][nUnk + p] = -al.nuPj[j];
-                    if (solveH) J[iH][nUnk + p] = al.nuH;
                 }
                 // SI = 0 rows: d/dx_k = sum over formation legs of nu * (the
                 // species' d ln a/dx_k = nu_species,k for masters/chained spec)
@@ -1789,6 +1803,31 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         r.activity = r.molality / CEC;                  // beta_X = m_X/CEC
         r.isMaster = true;
         out.rows.push_back(std::move(r));
+    }
+
+    // -- charge balance ON THE ANSWER -------------------------------------------
+    // Summed over the aqueous rows just assembled (bound exchange species and
+    // the pseudo-master exchanger carry z = 0 and drop out).  When the pH was
+    // SOLVED this is the residual of the electroneutrality row and belongs at
+    // round-off; when the pH was GIVEN it is the net charge the analysis
+    // carries, which nothing forced to zero.
+    {
+        double q = 0.0, qScale = 0.0;
+        for (const auto& r : out.rows)
+        {
+            q      += r.z * r.molality;
+            qScale += std::fabs(r.z) * r.molality;
+        }
+        out.chargeImposed  = solveH;
+        out.chargeResidual = (qScale > 0.0) ? q / qScale : 0.0;
+        if (verbosity >= 2 && qScale > 0.0)
+            std::cout << "  charge balance on the answer: sum z_i m_i / sum |z_i| m_i = "
+                      << std::scientific << std::setprecision(2) << out.chargeResidual
+                      << std::defaultfloat
+                      << (solveH ? "  (electroneutrality IMPOSED -- this is the"
+                                   " residual of the row)\n"
+                                 : "  (pH GIVEN -- this is the net charge the"
+                                   " analysis carries)\n");
     }
 
     // -- cation-exchange result: loadings + the eq-for-eq salt penalty ----------

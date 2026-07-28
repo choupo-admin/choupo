@@ -773,6 +773,21 @@ PYEOF
     fi
     rm -f /tmp/cbgate.$$
 
+    # Charge-balance gate: when a case SOLVES its pH, electroneutrality is an
+    # equation the solver imposes, so its residual on the ANSWER belongs at
+    # round-off -- and a precipitating crystal, being neutral, may not move it.
+    # (The double-counted carbonate proton this catches was invisible to every
+    # other check: converged, exit 0, goldens green, scale under-predicted 58%.)
+    if "$ROOT/bin/curate/check_charge_balance.py" > /tmp/qgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "charge-balance-gate" "$(head -1 /tmp/qgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_charge_balance.py)\n" "charge-balance-gate"
+        cat /tmp/qgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/qgate.$$
+
     # Asset-home gate (Codex assets-audit, 2026-07-18): a physical asset lives
     # in ONE home (constant/assets/) -- the legacy membranes/ overlay let a
     # sealed case open input its manifest never claimed.

@@ -8,6 +8,34 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
 (`Choupo-dev`); `main` is always the latest stable release.
 **Choupo-2607** is the first version.
 
+## Choupo-dev (2026-07-28)
+
+* **Electroneutrality FIXED: a neutral crystal moves no charge.**  The
+  charge row of the speciation Newton carried an extra `nu_pH * n_p` term,
+  added so a precipitating carbonate's freed proton would re-acidify the
+  solved pH.  The effect is real; the term counted it TWICE.  A crystal is
+  neutral, so its dissolution reaction is charge-balanced by construction
+  (calcite: `+2 -1 -1 = 0`), and substituting the mole balances into the
+  charge sum shows `sum z_i m_i = 0` ALREADY shifts the proton condition by
+  `nu_pH n_p` -- the sink pulls Ca(+2) and HCO3(-1) out in 1:1 and only H+
+  can restore the balance.  The double count forced `sum z_i m_i = +n_p`
+  (exactly 1.00000 of the precipitated amount, 24 % of the total charge in
+  flash16) and was SILENT: converged, exit 0, goldens green.  Consequences,
+  all in the safe-to-know direction: the calcite ceiling of an RO
+  concentrate rises ~58 % (12.1 -> 19.2 kg/day at r = 0.85 in
+  `precipitation_ro_brackish`), gypsum backs off as calcite takes the
+  shared Ca (onset r 0.60 -> 0.65), and every solved pH rises by 0.01-0.09.
+  Three goldens deliberately re-recorded.
+* **The charge balance is now REPORTED and GATED.**  Every speciation
+  announces `sum z_i m_i / sum |z_i| m_i` on its answer, read two ways and
+  labelled: pH SOLVED = the residual of a row the solver imposes (belongs
+  at round-off); pH GIVEN = the net charge the analysis actually carries
+  (reported, never forced).  `bin/curate/check_charge_balance.py` gates the
+  first over 8 named cases -- three of them with a precipitating solid,
+  the exact configuration the bug lived in -- and was verified to FAIL on
+  the reintroduced term.  Theory guide gains the pitfall with the
+  derivation (`ch:speciation`).
+
 ## Choupo-dev (2026-07-25/26)
 
 * **D2 closed migration EXECUTED** (identity per parameterisation): all

@@ -320,6 +320,18 @@ struct SpeciationResult
     std::string                   pHScale;
     double                        imbalancePct = 0.0;  // feed charge imbalance %
                                             //   (PHREEQC convention; solvePH only)
+    //  Charge balance ON THE ANSWER: sum z_i m_i over the SOLVED aqueous
+    //  species, normalised by sum |z_i| m_i.  Two different readings by mode,
+    //  and the reader must not confuse them:
+    //    pH SOLVED  -- electroneutrality was IMPOSED, so this is the residual
+    //                  of an equation the solver claims to satisfy.  Anything
+    //                  above round-off is a bug in the row, not a property of
+    //                  the water (a precipitating solid is neutral and must
+    //                  not move it).  Gated in bin/runTests.
+    //    pH GIVEN   -- nothing forced it, so this IS the net charge the
+    //                  analysis carries, reported rather than hidden.
+    double                        chargeResidual = 0.0;
+    bool                          chargeImposed  = false;  // true iff pH solved
     std::map<std::string, double> SI;       // mineral -> log10(IAP/K)  (available only;
                                             //   POST-equilibration when equilibrate set:
                                             //   0.000 for precipitated phases, free-water

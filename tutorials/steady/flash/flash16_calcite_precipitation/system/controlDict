@@ -6,7 +6,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
-description   "Reactive flash that PRECIPITATES: the calcite/carbonate basis of flash14 fed past saturation, with calcite admitted -- the speciation drives SI to 0 and the freed proton drops the pH from 7.06 to 6.32";
+description   "Reactive flash that PRECIPITATES: the calcite/carbonate basis of flash14 fed past saturation, with calcite admitted -- the speciation drives SI to 0 and the freed proton drops the pH from 6.63 to 6.02 -- ONE proton per mole of calcite, and exactly once: the crystal is neutral, so it moves no charge, and the acidification arrives through the master balances that electroneutrality closes";
 verbosity     3;
 
 reports

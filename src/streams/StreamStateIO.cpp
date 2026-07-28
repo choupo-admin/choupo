@@ -66,17 +66,6 @@ bool looksLikeStreamState(const std::string& body)
     return false;
 }
 
-// A flattened solver name "SECTOR.sub.stream" -> path "SECTOR/sub/stream".
-static fs::path nameToPath(const std::string& flat)
-{
-    fs::path p;
-    std::string seg;
-    std::istringstream ss(flat);
-    while (std::getline(ss, seg, '.'))
-        if (!seg.empty()) p /= seg;
-    return p;
-}
-
 void writeStreamState(const ProcessStream&  s,
                       const ThermoPackage&  thermo,
                       const fs::path&       file)
