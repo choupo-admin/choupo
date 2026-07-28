@@ -22,6 +22,7 @@ units
     {
         name        flash01;
         type        isothermalFlash;
+        model       rachfordRice;      // the machine, NAMED (type -> model -> operation)
         in          feed;
         outputs     ( liquid  vapor );
 

@@ -773,6 +773,20 @@ PYEOF
     fi
     rm -f /tmp/cbgate.$$
 
+    # Flash-model gate: the machine that solves a flash has a NAME (`model`,
+    # the distillation convention) -- and a name that cannot lie.  Four
+    # refusals, including the one that matters: a REACTIVE package's machine
+    # belongs to the declared formulation, never to the unit.
+    if "$ROOT/bin/curate/check_flash_model.py" > /tmp/fmgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "flash-model-gate" "$(head -1 /tmp/fmgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_flash_model.py)\n" "flash-model-gate"
+        cat /tmp/fmgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/fmgate.$$
+
     # Charge-balance gate: when a case SOLVES its pH, electroneutrality is an
     # equation the solver imposes, so its residual on the ANSWER belongs at
     # round-off -- and a precipitating crystal, being neutral, may not move it.

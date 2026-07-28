@@ -10,6 +10,29 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
 
 ## Choupo-dev (2026-07-28)
 
+* **The flash machine has a NAME: the `model` slot.**  Four numerical worlds
+  have always lived inside the one flash unit -- K-value iteration
+  (Rachford-Rice + Wegstein), direct Gibbs minimisation for the liquid split,
+  the multi-start seeding of the three-phase case, and the reactive joint
+  Newton -- and none of them had a name in the dictionary: a student found
+  out which one ran by reading the C++.  `model` now names the first two, in
+  the slot the distillation column settled (`type` -> `model` ->
+  `operation`), with the DEFAULT being what already ran: 327 PASS, every KPI
+  byte-identical.
+  What is deliberately NOT in the list is the reactive path.  It is chosen by
+  `thermo.hasReactiveEquilibrium()` -- a consequence of the declared
+  formulation (the one-knob rule), and units never implement chemistry
+  (ratified 6b) -- so naming it in the unit would give one decision two homes
+  and let a case declare a machine its package cannot run.  Four refusals,
+  each with its reason: `rachfordRice` on an LL/VLLE phase set (the K-value
+  iteration converges to the trivial K = 1 saddle -- two phases of identical
+  composition, which satisfies every equality and is not a split),
+  `gibbsMinimisation` on VL, ANY model on a reactive package, and an unknown
+  name with the available list.  `bin/curate/check_flash_model.py` proves all
+  four fire WITH their reasons, that the corpus exercises the declared branch
+  and not only the implied default, and that a reactive case announces no
+  unit-level model.
+
 * **The dissolved-totals ledger lied for a Henry-pinned master.**  `WATER
   BEFORE/AFTER` rebuilt each total as `feed - sum nu_pj n_p`, which is
   meaningless for a master whose balance the PIN replaced -- the run itself

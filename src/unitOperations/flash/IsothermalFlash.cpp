@@ -1074,6 +1074,78 @@ int IsothermalFlash::solve(const DictPtr& dict,
         else throw std::runtime_error("Unknown phaseSet '" + ps
             + "' (expected 'VL', 'LL' or 'VLLE')");
     }
+
+    /*-----------------------------------------------------------------------*\
+      THE `model` SLOT: which MACHINE solves the flash.
+
+      Four numerical worlds have always lived in this one unit and NONE of
+      them had a name in the dictionary -- a student found out which one ran
+      by reading the C++.  The distillation column settled the convention
+      (`type` = which unit, `model` = which variant, `operation` = the
+      values), and this is the same move, with the same posture: the DEFAULT
+      is what already ran, so every existing case is untouched.
+
+        rachfordRice       K-value iteration: Rachford-Rice inside, Wegstein
+                           (or direct substitution) outside on composition.
+        gibbsMinimisation  direct minimisation of the Gibbs energy of mixing.
+                           Not an optimisation of taste: for a SYMMETRIC
+                           gamma-model the K-value iteration converges to the
+                           trivial K = 1 saddle -- two phases of identical
+                           composition, which satisfies every equality and is
+                           not a split.  This is why LL and VLLE take it.
+
+      WHAT IS *NOT* IN THE LIST is the reactive path, and deliberately.  It
+      is chosen by `thermo.hasReactiveEquilibrium()` -- a consequence of the
+      formulation the case DECLARED (the one-knob rule), never a unit's
+      choice.  Units never implement chemistry (the ratified section 6b).
+      Naming it here would give one decision two homes and let a case declare
+      a machine its package cannot run; so a reactive package with a declared
+      `model` is REFUSED, by name, rather than silently overridden.
+    \*-----------------------------------------------------------------------*/
+    const bool reactivePkg = thermo.hasReactiveEquilibrium();
+    const std::string declaredModel = dict->lookupWordOrDefault("model", "");
+    const char* impliedModel =
+        (opts.phaseSet == PhaseSet::VL) ? "rachfordRice" : "gibbsMinimisation";
+
+    if (!declaredModel.empty())
+    {
+        if (reactivePkg)
+            throw std::runtime_error("flash: `model " + declaredModel
+                + ";` was declared, but this case's thermophysical package"
+                  " resolves a REACTIVE electrolyte equilibrium -- speciation,"
+                  " phase transfer and electroneutrality are solved jointly by"
+                  " the package, and the unit implements no chemistry.  Which"
+                  " machine runs is a consequence of the declared formulation,"
+                  " not a unit-level choice: remove the `model` line (the"
+                  " package's own announce says what it solved), or declare a"
+                  " non-reactive formulation in constant/thermoPhysPropDict.");
+        if (declaredModel != "rachfordRice" && declaredModel != "gibbsMinimisation")
+            throw std::runtime_error("flash: unknown `model " + declaredModel
+                + ";`.  Available: rachfordRice (K-value iteration:"
+                  " Rachford-Rice + Wegstein) | gibbsMinimisation (direct"
+                  " Gibbs minimisation -- required for a liquid-liquid split,"
+                  " where the K-value iteration converges to the trivial"
+                  " K = 1 saddle).");
+        if (declaredModel == "rachfordRice" && opts.phaseSet != PhaseSet::VL)
+            throw std::runtime_error("flash: `model rachfordRice;` with"
+                " `phaseSet " + operDict->lookupWord("phaseSet") + ";`.  A"
+                " liquid-liquid split cannot be reached by K-value iteration:"
+                " for a symmetric activity model it converges to the trivial"
+                " K = 1 saddle -- two phases of identical composition, which"
+                " satisfies every equality and is not a split.  Declare"
+                " `model gibbsMinimisation;` or drop the line (that is the"
+                " default for this phase set).");
+        if (declaredModel == "gibbsMinimisation" && opts.phaseSet == PhaseSet::VL)
+            throw std::runtime_error("flash: `model gibbsMinimisation;` with"
+                " a VL phase set.  The Gibbs path of this unit resolves the"
+                " LIQUID phases; a vapour-liquid flash runs the K-value"
+                " iteration.  Drop the line, or declare the phase set the"
+                " machine is for (`phaseSet LL;` / `phaseSet VLLE;`).");
+    }
+    if (opts.verbosity >= 2 && !reactivePkg)
+        std::cout << "  [flash] model " << impliedModel
+                  << (declaredModel.empty() ? "  (implied by the phase set)"
+                                            : "  (declared)") << "\n";
     if (operDict->found("alphaRich"))
         opts.llAlphaRichComp = thermo.indexOf(operDict->lookupWord("alphaRich"));
     if (operDict->found("betaRich"))

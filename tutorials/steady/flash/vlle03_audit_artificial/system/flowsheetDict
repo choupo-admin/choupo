@@ -36,6 +36,7 @@ units
     {
         name        decanter01;
         type        isothermalFlash;
+        model       gibbsMinimisation;      // the machine, NAMED (type -> model -> operation)
         in          feed;
         outputs     ( vapor  aqueous  organic );
 
