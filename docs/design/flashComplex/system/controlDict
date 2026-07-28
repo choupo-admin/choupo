@@ -45,7 +45,7 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description  "FlashComplex: 4-phase reactive flash -- vapour + two liquids (declared admission) + growing calcite, N2 inert on the Henry rung.  V/F 0.0635, pH 8.341, organic 23.3 % of the liquid";
+description  "FlashComplex: 4-phase reactive flash -- vapour + two liquids (declared admission) + growing calcite, N2 inert on the Henry rung.  It DEMONSTRATES that the joint Newton closes (|r| 2e-13, V/F 0.0635, organic 23.3 % of the liquid); it does NOT predict the chemistry -- the ions are Davies on water-referenced molality in a backbone that is ~10 mol% ethanol, and the mixed-solvent transfer term that would price that is a NAMED GAP, worth ~2 log units on the calcite SI.  The pH is an OUTPUT of that model, not a claim about this water";
 verbosity     3;
 
 reports

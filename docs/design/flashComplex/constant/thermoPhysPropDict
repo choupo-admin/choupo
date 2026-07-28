@@ -185,10 +185,26 @@ equilibrium
        above 90 % of a component's own amount and exactly linear below, so
        every case that never approached the cap is untouched.
 
-  THE ANSWER:  V/F = 0.0635 · pH 8.341 · organic liquid 23.3 % of the backbone
+  THE ANSWER -- and read the next paragraph before quoting any of it.
+  V/F = 0.0635 · pH 8.341 · organic liquid 23.3 % of the backbone
   liquid · calcite at its SI = 0 ceiling · |r|max 7e-14 in 6 outer iterations
   with a quadratic tail.  Nine components, three phases, an aqueous speciation
   network, a precipitating mineral and a permanent gas, solved together.
+
+  DO NOT HEADLINE THE pH.  The ions here are Davies on WATER-referenced
+  molality, and the backbone they sit in is ~10 mol% ethanol (water 0.895 /
+  ethanol 0.103 / benzene 0.002 in the aqueous liquid).  The standard-state
+  TRANSFER TERM that would price an ion's move from water into that mixture
+  is the named gap of docs/design/standard-state-transfer-adr.md -- and it is
+  not small: a Born estimate at eps ~ 64 against water's 78.4 puts it near
+  1.4 kJ/mol per unit z^2, which is a factor of ~9 on a divalent gamma and
+  about TWO LOG UNITS on the calcite saturation index.  Every K in the
+  network stays water-referenced meanwhile.  So the number this case earns is
+  |r| 2e-13 -- that a vapour, two liquids, a speciation network, a growing
+  mineral and a permanent gas can be solved TOGETHER.  The pH is what that
+  model returns, not what this water would read.  (An MIT reviewer put it
+  exactly right on 2026-07-28: "don't headline a number the model cannot
+  price.")
 
   THE APPROXIMATION, now that the solver has landed.  What is excluded from the
   organic phase is not the ~0.2 mol% of water benzene really holds -- that is

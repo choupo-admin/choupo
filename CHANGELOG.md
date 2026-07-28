@@ -10,6 +10,33 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
 
 ## Choupo-dev (2026-07-28)
 
+* **The dissolved-totals ledger lied for a Henry-pinned master.**  `WATER
+  BEFORE/AFTER` rebuilt each total as `feed - sum nu_pj n_p`, which is
+  meaningless for a master whose balance the PIN replaced -- the run itself
+  announces that its `totals` entry is only an initial guess.  On an open-CO2
+  water precipitating calcite it read **2.8x high** (HCO3 2.6855e-3 against
+  9.562e-4 mol/kg summed from the species).  Both sides of the ledger now
+  read the same quantity off the converged state, `m_j + sum_s nu_sj m_s`:
+  identical for an honoured balance, CORRECT for a pinned one.  Verified to
+  reconcile with the species table to 1.0000.
+* **`equilibrate {}` inside a `type exchange;` op was silently ignored** -- a
+  softener carrying it reported SI_calcite +1.708 with nothing precipitated
+  and no message, in a code that refuses unknown keys inside `equilibrate{}`
+  itself.  Now refused by name, with both remedies (drop it, or speciate the
+  effluent in a separate op) and the reason it is not simply honoured: the
+  solver does carry a CEC row and a mineral active set, but nobody has ever
+  solved them together against a reference.  A capability, not an oversight
+  -- and not something to enable by accident.
+* **flashComplex stops headlining a number the model cannot price.**  Its
+  description led with `pH 8.341`.  The ions are Davies on water-referenced
+  molality in a backbone that is ~10 mol% ethanol; the standard-state
+  transfer term is a named gap worth ~1.4 kJ/mol per unit z^2 -- a factor of
+  ~9 on a divalent gamma and about two log units on the calcite SI.  What the
+  case earns is `|r| 2e-13`: that vapour + two liquids + speciation + a
+  growing mineral + a permanent gas solve TOGETHER.  The description and the
+  thermoPhysPropDict now say that, and say the pH is the model's output, not
+  a claim about the water.
+
 * **Curated stoichiometry is now CHECKED, not assumed.**  Two identities hold
   for every record in the electrolyte layer and the whole electroneutrality
   closure is DERIVED from them -- `z_s = sum_j nu_sj z_j` for a complex,

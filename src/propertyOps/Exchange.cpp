@@ -240,6 +240,26 @@ int Exchange::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     } coutGuard;
 
     diag_.clear();
+    //  `equilibrate {}` is READ BY NOBODY here, and a key nobody reads must
+    //  not be silently accepted (audit, 2026-07-28: a softener op carrying it
+    //  reported SI_calcite +1.708 with nothing precipitated and no message --
+    //  in a code that refuses unknown keys INSIDE equilibrate{}, that is a
+    //  doctrine leak).  The solver does carry both an exchange row and a
+    //  mineral active set, so this is a CAPABILITY, not an impossibility --
+    //  but nothing has ever validated the two together, and a softener that
+    //  starts precipitating because a block was quietly honoured is the
+    //  silent-crutch failure, not a feature.
+    if (dict->found("equilibrate"))
+        throw std::runtime_error("exchange: `equilibrate {}` is not honoured by"
+            " the exchange op -- an exchange run reports saturation indices but"
+            " precipitates nothing, and until now it ignored this block in"
+            " silence.  Either drop it (the SI table already tells you what the"
+            " softened effluent is supersaturated in), or run the effluent"
+            " through a separate `speciate` op that carries the"
+            " `equilibrate { minerals ( ... ); }`.  Joint exchange +"
+            " precipitation is a validation slice nobody has run: the CEC"
+            " capacity row and the mineral active set have never been solved"
+            " together against a reference.");
     auto in = propertyOps::readAnalysis(dict);
     if (in.totals.empty())
         throw std::runtime_error("exchange: `totals` is empty -- a softener "

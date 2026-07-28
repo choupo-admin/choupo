@@ -1713,8 +1713,25 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                 freezeActivity([&](std::size_t j){ return std::exp(x[j]); });
             out.pHbefore = solveH ? -std::log10(gNamed(ar, "H", 1.0) * m_H) : in.pH;
         }
+        //  The DISSOLVED total of master j, summed from the state itself:
+        //  m_j + sum_s nu_sj m_s.  For a master whose balance the solve
+        //  honoured this equals the feed total (minus any mineral sink); for a
+        //  HENRY-PINNED master it does not, and that is the whole point -- its
+        //  balance was REPLACED by the pin, so `mtot[j]` is the initial guess
+        //  the run already announced as such, and reporting it as an inventory
+        //  read 2.8x high on an open CO2 + calcite water (audit, 2026-07-28).
+        //  One formula, both sides of the ledger, pinned or not.
+        auto dissolvedTotal = [&](std::size_t j) -> double
+        {
+            double t = std::exp(x[j]);
+            for (const auto& a : act)
+                if (!a.isExch)
+                    for (const auto& [k, nu] : a.idx)
+                        if (std::size_t(k) == j) t += nu * a.m;
+            return t;
+        };
         for (std::size_t j = 0; j < n; ++j)
-            out.totalsBefore[mast[j]] = mtot[j];   // dissolved totals = feed (no solid)
+            out.totalsBefore[mast[j]] = dissolvedTotal(j);   // free water, no solid
 
         // SI of an allowed mineral at the live iterate (admission/eviction test)
         auto siAllowed = [&](int ai) -> double
@@ -1817,10 +1834,11 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                 isActive(int(a)) ? npVal[a] : 0.0;
         for (std::size_t j = 0; j < n; ++j)
         {
-            double tot = mtot[j];
-            for (std::size_t a = 0; a < allowed.size(); ++a)
-                if (isActive(int(a))) tot -= allowed[a].nuPj[j] * npVal[a];
-            out.totalsAfter[mast[j]] = tot;
+            //  Same formula as `before` -- read off the converged species, not
+            //  reconstructed from the feed minus the sink.  Identical for an
+            //  honoured balance; CORRECT for a pinned one, where no feed total
+            //  exists to subtract from.
+            out.totalsAfter[mast[j]] = dissolvedTotal(j);
         }
         // pH-stat risk: given-pH + a precipitated mineral with an H-leg
         if (!solveH)
