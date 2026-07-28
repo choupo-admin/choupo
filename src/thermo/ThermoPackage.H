@@ -101,6 +101,7 @@ namespace electrolyte {
 class  ReactiveVLE;
 class  SpeciationSolver;
 struct ReactiveVLEResult;
+struct ReactiveVLEConfig;
 struct SpeciationInput;
 struct SpeciationResult;
 }
@@ -428,6 +429,16 @@ public:
     bool hasReactiveEquilibrium() const { return reactive_ != nullptr; }
     electrolyte::ReactiveVLEResult equilibrate(scalar T_K, scalar P_Pa,
         scalar F, const sVector& zApparent, int verbosity) const;   // .cpp
+
+    //  The DECLARED component -> master bridge, read-only, for the code that
+    //  has to cross the basis at the STREAM boundary: a feed written in the
+    //  aqueous-species basis (a water analysis, measured in ions) has to be
+    //  projected onto the components the flowsheet shares.  It is the same
+    //  map `m = A n` the basis-rank test already validates, and exposing it
+    //  is not a new authority -- reading it here is what stops the stream
+    //  layer from re-deriving one (aqueous-stream-basis, 2026-07-27).
+    //  Null when the package is not reactive.
+    const electrolyte::ReactiveVLEConfig* reactiveConfig() const;   // .cpp
 
     // Minimum-parameter-set audit findings (per model x component x property:
     // MISSING / ESTIMATED / PLACEHOLDER), computed once at assembly.  Drives the

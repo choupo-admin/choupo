@@ -158,6 +158,9 @@ electrolyte::ReactiveVLEResult ThermoPackage::equilibrate(scalar T_K,
     scalar P_Pa, scalar F, const sVector& zApparent, int verbosity) const
 { return reactive_->solve(T_K, P_Pa, F, zApparent, verbosity); }
 
+const electrolyte::ReactiveVLEConfig* ThermoPackage::reactiveConfig() const
+{ return reactive_ ? &reactive_->config() : nullptr; }
+
 // Pure-fluid routing helper (defined below): returns the component index to
 // route through when the phase is effectively pure in a flagged component;
 // throws LOUDLY when a flagged component is present but mixed; nullopt = use

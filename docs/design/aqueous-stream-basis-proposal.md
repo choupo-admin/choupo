@@ -1,7 +1,14 @@
 # Proposal — declaring a stream's basis: apparent components, aqueous species, or both
 
-**Status: PROPOSAL. Nothing here is implemented.** For alignment before any
-code, per the house rule.
+**Status: HALF IMPLEMENTED (2026-07-27).** The INPUT side shipped -- a stream
+may be written in the aqueous-species basis, with the three refusals of §3.1 --
+and `tutorials/steady/flash/flash18_water_analysis_basis` is the vertical spike
+of §6, gated by `bin/curate/check_stream_basis.py`. The OUTPUT side of §3.2
+(the closing `speciation {}` decomposition) is NOT built; §9 records why the
+proposal was wrong about how easy it was, and what it needs.
+
+One correction the spike forced on §3.1, and it matters: the input block also
+needs **`basis analytical|stoichiometric;`**, REQUIRED. See §9.1.
 
 **Asked for by Vítor (2026-07-27):** *"No caso de soluções aquosas de iões,
 tem de ser possível especificar que os sais aparentes (ou bases ou ácidos) ou
@@ -243,3 +250,62 @@ deletability of the decomposition.
 2. Are the names right (`speciesMolarFlows`, `speciation {}`, `network`,
    `basis stoichiometric|analytical`)?
 3. Is the spike the right shape, and which system should it be?
+
+
+---
+
+## 9. What the spike changed in this proposal (2026-07-27)
+
+### 9.1 The input needs a `basis`, and the proposal missed it
+
+§3.1 asked for `network` and electroneutrality validation. Building the spike
+showed that is not enough, and the case that showed it is the obvious one.
+
+The equivalent of `CO2 2.0 + CaCO3 0.0122` in masters is `HCO3 2.0122,
+Ca 0.0122` — which has a net charge of −1.99 and would have been REFUSED by
+the electroneutrality check this proposal asked for. Correctly, too: as an
+*analysis* that water is impossible. But as a **stoichiometric** set it is
+right, because H⁺ and OH⁻ are the network's own mediators and are excluded
+from the masters — a neutral acid delivered as its conjugate base looks 200 %
+imbalanced while being charge-balanced by construction.
+
+The engine already draws that distinction internally
+(`SpeciationInput::stoichiometricTotals`, whose comment says exactly this).
+The proposal put it only on the OUTPUT block. It belongs on both, and it is
+**required, not defaulted**: one reading refuses correct waters, the other
+waves broken ones through, so there is no safe default to pick.
+
+### 9.2 The output side is harder than §3.2 implies, and for a good reason
+
+§3.2 says the speciation block is *"written by the solver and VERIFIED on
+read"*. Verified on read is built and easy — it is `A n` against the declared
+bridges. **Written by the solver is not**, and the reason is worth stating
+because it is the arity doctrine again:
+
+* Writing `A n` — the master totals — would be trivial, and **worthless**:
+  every number in it is derivable from the `componentMolarFlows` block two
+  lines above, through bridges the case already declares. That is the
+  `introduces` sin in its purest form.
+* What is NOT derivable without running the model is the **solved
+  speciation** — HCO₃⁻ against CO₃²⁻ against CaCO₃(aq), the ion activities,
+  the pH. That is the block worth writing, and it needs the converged
+  `SpeciationResult` plumbed from the unit that solved it to the writer, which
+  today receives only a `ProcessStream` and a `ThermoPackage`.
+
+So the output half is a real slice with a named dependency, not a formatting
+job. Building it as `A n` to look finished would have been worse than not
+building it.
+
+### 9.3 What shipped
+
+* `speciesMolarFlows { network; basis; <species> <flow>; }` as a sixth
+  canonical material form, exclusive with the other five.
+* `ThermoPackage::reactiveConfig()` — read-only access to the declared bridge,
+  so the stream layer reads the map instead of re-deriving one.
+* Four refusals: no reactive package, unknown `network`, missing/invalid
+  `basis`, unbalanced charge (analytical only), rank-deficient projection, and
+  a master no component can carry.
+* `flash18_water_analysis_basis` + `check_stream_basis.py`, whose first
+  assertion is the one that matters: the species basis gives the **same** KPIs
+  as the components it inverts to. A coordinate change that moves the answer
+  was not a coordinate change.

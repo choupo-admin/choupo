@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE FEED IS AN ANALYSIS, written the way an analysis comes.
+
+  A laboratory does not report a water as "calcium carbonate plus carbon
+  dioxide".  It reports calcium and alkalinity -- the IONS it measured.  Every
+  other reactive case in this corpus makes the author convert that into
+  components first, and that conversion is not innocent: it is a choice of
+  LABELS.  The same ions can be formulated as several different component sets
+  (NaCl + KBr and NaBr + KCl are the textbook pair), and picking one silently
+  is exactly what the basis-rank test exists to stop.
+
+  So this stream declares its own basis and hands the engine the measurement.
+
+  WHAT THE ENGINE DOES WITH IT.  m = A n, solved for n against the components'
+  DECLARED bridges -- CO2 -> HCO3, CaCO3 -> Ca + HCO3 (the H leg is the
+  network's shared mediator and is never a master).  Two masters, two
+  components, rank 2:
+
+      Ca    = 0.0122          ->   CaCO3 = 0.0122 kmol/h
+      HCO3  = 0.0244          ->   CO2   = 0.0244 - 0.0122 = 0.0122 kmol/h
+
+  Not a conversion the author did in their head and typed in: an inversion the
+  engine performed, and would have REFUSED to perform if it were not unique.
+
+  WHY THE NUMBERS BALANCE.  `basis analytical;` says this is a measured water,
+  and a measured water closes in charge: 2 x 0.0122 of Ca(2+) against 0.0244
+  of HCO3(-) is exactly zero.  The engine checks it and refuses an analysis
+  that does not -- an unbalanced water is a measurement to fix, never a
+  residue for the solved pH to absorb.  A `stoichiometric` set is the other
+  case and does NOT balance, because H/OH are excluded mediators; declaring
+  which one you have is therefore not bookkeeping, it decides the check.
+
+  This is a calcium-bicarbonate water -- the commonest natural water there is.
+\*---------------------------------------------------------------------------*/
+speciesMolarFlows
+{
+    network   carbonate;         // WHICH chemistry set these names belong to
+    basis     analytical;        // a measured water: charge MUST close
+
+    Ca         0.0122  kmol/h;   // calcium
+    HCO3       0.0244  kmol/h;   // alkalinity, as bicarbonate
+    water     97.0     kmol/h;
+}
+T               313.15 K;
+P               101325 Pa;

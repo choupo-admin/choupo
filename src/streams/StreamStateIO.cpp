@@ -28,6 +28,8 @@ License
 
 #include "streams/StreamStateIO.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/electrolyte/ReactiveVLE.H"
+#include "thermo/electrolyte/SaltFromCatalogue.H"
 #include "core/Dictionary.H"
 #include "core/Types.H"
 
@@ -56,6 +58,9 @@ bool looksLikeStreamState(const std::string& body)
     // mistaken for per-stream state.
     if (has("componentMolarFlows") || has("componentMassFlows") || has("componentFlows"))
         return true;
+    // The AQUEOUS-SPECIES basis is self-identifying too (a water analysis
+    // written in ions -- aqueous-stream-basis, 2026-07-27).
+    if (has("speciesMolarFlows")) return true;
     if (has("moleFractions") && has("molarFlow")) return true;
     if (has("massFractions") && has("massFlow")) return true;
     return false;
@@ -220,11 +225,17 @@ ProcessStream readStreamState(const fs::path&       file,
     const bool hasMolF = d->found("molarFlow");
     const bool hasCmMF = d->found("componentMassFlows");
     const bool hasMasF = d->found("massFlow");
-    const int  forms   = hasCMF + hasCF + hasMolF + hasCmMF + hasMasF;
+    //  E  speciesMolarFlows { network <set>; <species> <kmol/h>; ... }
+    //     The AQUEOUS-SPECIES basis: a water measured the way waters are
+    //     measured, in ions.  It is a SIXTH canonical form, exclusive with the
+    //     rest -- two material blocks in one file cannot say which one the
+    //     author meant.  See docs/design/aqueous-stream-basis-proposal.md.
+    const bool hasSMF  = d->found("speciesMolarFlows");
+    const int  forms   = hasCMF + hasCF + hasMolF + hasCmMF + hasMasF + hasSMF;
     if (forms == 0)
         throw std::runtime_error("stream state '" + name + "': no material-flow "
             "specification (need componentMolarFlows, molarFlow+moleFractions, "
-            "componentMassFlows, or massFlow+massFractions)");
+            "componentMassFlows, massFlow+massFractions, or speciesMolarFlows)");
     if (forms > 1)
         throw std::runtime_error("stream state '" + name + "': FATAL conflicting "
             "material-flow specifications -- choose exactly ONE canonical form");
@@ -281,9 +292,208 @@ ProcessStream readStreamState(const fs::path&       file,
             overall[i] = mass ? total * f[i] / thermo.comp(i).MW() : total * f[i];
     };
 
+    //  ---- THE AQUEOUS-SPECIES BASIS ----------------------------------------
+    //  A water analysis arrives in IONS.  Making the author convert it into
+    //  salts makes them CHOOSE LABELS -- NaCl + KBr and NaBr + KCl give the
+    //  same ions -- and that choice is exactly the degree of freedom the
+    //  basis-rank test polices.  Reading the analysis as measured needs no
+    //  inverse; stating it on the basis the flowsheet's units SHARE does, and
+    //  the same rank condition applies.  m = A n, solved here for n.
+    auto readSpecies = [&](const DictPtr& blk)
+    {
+        const auto* cfg = thermo.reactiveConfig();
+        if (!cfg)
+            throw std::runtime_error("stream state '" + name + "':"
+                " `speciesMolarFlows` needs a REACTIVE package -- the species"
+                " basis only means something relative to a declared aqueous"
+                " chemistry set, and this case declares none.  Write the"
+                " stream in `componentMolarFlows`, or declare the reactive"
+                " equilibrium (formulation electrolyteGammaPhi).");
+        //  The NETWORK is mandatory.  A species name is meaningful only
+        //  relative to a declared chemistry set: an `NH4` written by one
+        //  network is not the `NH4` of another, and a stream file that does
+        //  not say which one it belongs to cannot be read anywhere else.
+        if (!blk->found("network"))
+            throw std::runtime_error("stream state '" + name + "':"
+                " `speciesMolarFlows` carries no `network <setName>;`.  A"
+                " species basis is relative to the chemistry set that defines"
+                " those names -- without it the block is unreadable outside"
+                " the case that wrote it.");
+        const std::string net = blk->lookupWord("network");
+        //  ...and it must be a set THIS case's components declare.  A network
+        //  name nobody in the system speaks is a typo that would otherwise
+        //  pass silently and make the file look authoritative.
+        {
+            bool known = false;
+            std::string declared;
+            for (std::size_t i = 0; i < thermo.n(); ++i)
+            {
+                const std::string& s = thermo.comp(i).aqueousSpeciation();
+                if (s.empty() || s == "none") continue;
+                if (declared.find(s) == std::string::npos)
+                    declared += (declared.empty() ? "" : " ") + s;
+                if (s == net) known = true;
+            }
+            if (!known)
+                throw std::runtime_error("stream state '" + name + "':"
+                    " `network " + net + ";` is not a chemistry set this"
+                    " system declares (its components declare: "
+                    + (declared.empty() ? "none" : declared) + ").");
+        }
+        //  ANALYTICAL vs STOICHIOMETRIC -- and this is not bookkeeping, it
+        //  decides whether charge must close.  An ANALYTICAL set is a water
+        //  measured in ions and it balances: that is what makes it a good
+        //  analysis.  A STOICHIOMETRIC set is what the component bridges
+        //  deliver, and it does NOT balance, because H/OH are the network's
+        //  own mediators and are excluded from the masters -- a neutral acid
+        //  delivered as its conjugate base looks 200 % imbalanced while being
+        //  charge-balanced by construction (the same distinction
+        //  SpeciationInput::stoichiometricTotals already draws inside the
+        //  kernel).  Checking the wrong one either refuses a correct water or
+        //  waves a broken one through, so it is DECLARED, never defaulted.
+        if (!blk->found("basis"))
+            throw std::runtime_error("stream state '" + name + "':"
+                " `speciesMolarFlows` carries no `basis analytical|"
+                "stoichiometric;`.  It decides whether charge must close:"
+                " an ANALYTICAL water is measured in ions and balances; a"
+                " STOICHIOMETRIC set is what the component bridges deliver"
+                " and does not, because H/OH are excluded mediators.  There"
+                " is no safe default -- one reading refuses a correct water,"
+                " the other waves a broken one through.");
+        const std::string basis = blk->lookupWord("basis");
+        if (basis != "analytical" && basis != "stoichiometric")
+            throw std::runtime_error("stream state '" + name + "': basis '"
+                + basis + "' is not one of analytical / stoichiometric.");
+
+        //  Read the totals, and the SOLVENT, which is a component and not a
+        //  master (it is the medium the molalities are referenced to).
+        std::map<std::string, scalar> mTot;      // master -> kmol/s
+        scalar solventFlow = -1.0;
+        const std::string solventName = thermo.comp(cfg->solventIdx).name();
+        for (const auto& k : blk->keys())
+        {
+            if (k == "network" || k == "basis") continue;
+            if (k == solventName) { solventFlow = blk->lookupScalar(k); continue; }
+            mTot[k] += blk->lookupScalar(k);
+        }
+        if (solventFlow < 0.0)
+            throw std::runtime_error("stream state '" + name + "':"
+                " `speciesMolarFlows` names no solvent flow ('" + solventName
+                + "') -- the aqueous species are dissolved IN something, and"
+                  " the amount of it is not optional.");
+
+        //  ELECTRONEUTRALITY, validated exactly as the props bench validates
+        //  a formulated-salts `composition`: an analysis that does not balance
+        //  charge is an error IN THE ANALYSIS, and absorbing it into the
+        //  solved pH would hide a measurement fault inside a result.
+        scalar netCharge = 0.0;
+        for (const auto& [sp, v] : mTot)
+        {
+            DictPtr rec = electrolyte::findAqueousSpecies(sp);
+            if (!rec)
+                throw std::runtime_error("stream state '" + name + "': species '"
+                    + sp + "' has no record (species/" + sp + ".dat) -- it is"
+                    " not a species of any declared network.");
+            netCharge += rec->lookupScalar("z") * v;
+        }
+        scalar absCharge = 0.0;
+        for (const auto& [sp, v] : mTot)
+        {
+            DictPtr rec = electrolyte::findAqueousSpecies(sp);
+            absCharge += std::abs(rec->lookupScalar("z") * v);
+        }
+        if (basis == "analytical" && absCharge > 0.0
+            && std::abs(netCharge) > 1.0e-6 * absCharge)
+        {
+            std::ostringstream os;
+            os << std::scientific << std::setprecision(4);
+            os << "stream state '" << name << "': the species analysis does"
+                  " NOT balance charge -- SUM z_i n_i = " << netCharge
+               << " kmol/s against " << absCharge << " kmol/s of charge"
+                  " carried.  H+ and OH- are the network's own mediators and"
+                  " do not close a lab analysis: an unbalanced water is a"
+                  " measurement to fix, never a residue for the pH to absorb.";
+            throw std::runtime_error(os.str());
+        }
+
+        //  m = A n.  Columns are the components' DECLARED bridges (never name
+        //  identity); rows are the masters the analysis names.
+        std::vector<std::string> rows;
+        for (const auto& [sp, v] : mTot) { (void)v; rows.push_back(sp); }
+        const std::size_t nr = rows.size();
+        std::vector<std::size_t> cols;              // component indices
+        for (const auto& fam : cfg->families) cols.push_back(fam.apparentIdx);
+        const std::size_t nc = cols.size();
+        std::vector<sVector> A(nr, sVector(nc, 0.0));
+        for (std::size_t c = 0; c < nc; ++c)
+            for (const auto& [master, nu] : cfg->families[c].mapping)
+                for (std::size_t r = 0; r < nr; ++r)
+                    if (rows[r] == master.key) A[r][c] += nu;
+
+        //  Solve by Gaussian elimination with partial pivoting on the square
+        //  part; a rank short of nc is the SAME refusal the basis-rank test
+        //  raises, reached from the input side.
+        sVector nSol(nc, 0.0);
+        {
+            std::vector<sVector> M = A;
+            sVector b(nr);
+            for (std::size_t r = 0; r < nr; ++r) b[r] = mTot[rows[r]];
+            std::vector<std::size_t> pivRow(nc, nr);
+            std::size_t rank = 0;
+            for (std::size_t c = 0; c < nc && rank < nr; ++c)
+            {
+                std::size_t piv = rank;
+                for (std::size_t r = rank; r < nr; ++r)
+                    if (std::abs(M[r][c]) > std::abs(M[piv][c])) piv = r;
+                if (std::abs(M[piv][c]) < 1.0e-12) continue;
+                std::swap(M[rank], M[piv]); std::swap(b[rank], b[piv]);
+                for (std::size_t r = 0; r < nr; ++r)
+                {
+                    if (r == rank) continue;
+                    const scalar f = M[r][c] / M[rank][c];
+                    for (std::size_t cc = 0; cc < nc; ++cc) M[r][cc] -= f*M[rank][cc];
+                    b[r] -= f * b[rank];
+                }
+                pivRow[c] = rank;
+                ++rank;
+            }
+            if (rank < nc)
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " species analysis cannot be stated on this component"
+                    " basis -- the map has rank " + std::to_string(rank)
+                    + " for " + std::to_string(nc) + " components, so several"
+                      " different component vectors give these same species"
+                      " totals and any one of them would be an arbitrary"
+                      " choice of LABELS.  Remedy: drop a redundant component"
+                      " from the case's basis (the same deficiency"
+                      " flash15_refused_salt_basis_rank refuses).");
+            for (std::size_t c = 0; c < nc; ++c)
+                if (pivRow[c] < nr) nSol[c] = b[pivRow[c]] / M[pivRow[c]][c];
+            //  Rows the components cannot reach at all: the analysis names a
+            //  master no component in this case bridges to.
+            for (std::size_t r = 0; r < nr; ++r)
+            {
+                scalar recon = 0.0;
+                for (std::size_t c = 0; c < nc; ++c) recon += A[r][c] * nSol[c];
+                const scalar want = mTot[rows[r]];
+                if (std::abs(recon - want) > 1.0e-6*std::max(1.0, std::abs(want)))
+                    throw std::runtime_error("stream state '" + name + "':"
+                        " species '" + rows[r] + "' cannot be carried by this"
+                        " case's components (declared " + std::to_string(want)
+                        + " kmol/s, reachable " + std::to_string(recon)
+                        + ") -- add a component whose bridge names it, or drop"
+                          " it from the analysis.");
+            }
+        }
+        for (std::size_t c = 0; c < nc; ++c) overall[cols[c]] += nSol[c];
+        overall[cfg->solventIdx] += solventFlow;
+        (void)net;
+    };
+
     if      (hasCMF)  readMolar(d->subDict("componentMolarFlows"), false);
     else if (hasCF)   readMolar(d->subDict("componentFlows"),      false);
     else if (hasCmMF) readMolar(d->subDict("componentMassFlows"),  true);
+    else if (hasSMF)  readSpecies(d->subDict("speciesMolarFlows"));
     else if (hasMolF) readFractions("moleFractions", d->lookupScalar("molarFlow"), false);
     else if (hasMasF) readFractions("massFractions", d->lookupScalar("massFlow"),  true);
 

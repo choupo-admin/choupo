@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash18_water_analysis_basis -- THE FEED IS AN ANALYSIS.
+
+  Everything else in this corpus writes a stream in apparent components.  This
+  one writes it in the AQUEOUS SPECIES a laboratory actually measures, and lets
+  the engine do the formulation:
+
+      speciesMolarFlows { network carbonate; basis analytical;
+                          Ca 0.0122; HCO3 0.0244; water 97.0; }
+
+           -- m = A n, against the components' DECLARED bridges --
+
+      componentMolarFlows { CO2 0.0122; CaCO3 0.0122; water 97.0; }
+
+  WHY IT MATTERS.  Converting an analysis into components by hand is a choice
+  of LABELS, not a calculation: the same ions can be formulated as different
+  component sets, and picking one silently is the arbitrariness the basis-rank
+  test exists to refuse.  Done here, the inversion is performed by the engine
+  and REFUSED when it is not unique -- the same refusal
+  flash15_refused_salt_basis_rank raises, reached from the input side.
+
+  THREE REFUSALS GUARD IT, and check_stream_basis.py exercises all three:
+    * an analysis that does not close in CHARGE (a measurement to fix, never a
+      residue for the solved pH to absorb);
+    * a `network` naming a chemistry set this system does not declare;
+    * a missing `basis` -- because analytical and stoichiometric sets differ
+      exactly in whether charge must close (H/OH are excluded mediators), so
+      there is no safe default.
+
+  The answer is IDENTICAL to the same water written in components: the species
+  basis is a change of coordinates, not a change of model.  pH 7.757 -- a
+  natural calcium-bicarbonate water.
+
+  Contract: docs/design/aqueous-stream-basis-proposal.md.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description  "A stream written in the AQUEOUS-SPECIES basis: a calcium-bicarbonate water analysis (Ca 0.0122, HCO3 0.0244 kmol/h) inverted onto the case's components by m = A n -- the engine formulates the salts, the author does not";
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

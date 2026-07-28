@@ -735,6 +735,21 @@ PYEOF
     fi
     rm -f /tmp/tlgate.$$
 
+    # Stream-basis gate: a feed written in the aqueous-SPECIES basis gives the
+    # SAME answer as the components it inverts to, and its three refusals
+    # (charge, network, basis) still fire.  Invisible to a golden master: the
+    # projection happens on read, so by the time a KPI sees the case it is an
+    # ordinary component-basis stream.
+    if "$ROOT/bin/curate/check_stream_basis.py" > /tmp/sbgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "stream-basis-gate" "$(head -1 /tmp/sbgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_stream_basis.py)\n" "stream-basis-gate"
+        cat /tmp/sbgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sbgate.$$
+
     if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "element-balance-gate" "$(head -1 /tmp/ebgate.$$)"
         pass=$((pass+1))
