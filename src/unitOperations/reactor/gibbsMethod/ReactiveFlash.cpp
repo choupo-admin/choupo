@@ -43,7 +43,6 @@ GibbsEquilibrium ReactiveFlash::equilibrium(const GibbsProblem& p, scalar T,
 {
     const auto&       thermo = *p.thermo;
     const std::size_t M = p.M(), N = p.N();
-    const scalar      RTt = constant::R * T;
     const scalar      P   = p.P;
 
     sVector g_over_RT(N);

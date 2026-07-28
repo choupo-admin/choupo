@@ -33,6 +33,7 @@ License
 #include <algorithm>
 #include <atomic>
 #include <cmath>
+#include <limits>
 #include <mutex>
 #include <stdexcept>
 #include <thread>
@@ -189,7 +190,14 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
         scalar alpha = 1.0;
         sVector xNew(x.size());
         sVector FxNew;
-        scalar  normFNew;
+        //  NaN, not garbage.  The backtracking loop below can EXHAUST -- every
+        //  trial infeasible, or none reducing the norm before alpha falls under
+        //  minAlpha -- and it then falls out having assigned nothing.  The
+        //  iteration used to carry that uninitialised value straight into
+        //  `normF` and move a possibly-EMPTY FxNew into Fx: from there the
+        //  convergence test, the iteration hook and the returned residual are
+        //  all reading memory nobody wrote.  Seeded here, detected below.
+        scalar  normFNew = std::numeric_limits<scalar>::quiet_NaN();
         if (opts.backtracking)
         {
             while (alpha >= opts.minAlpha)
@@ -214,6 +222,17 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
                 catch (const InfeasibleTrial&) { a *= 0.5; if (a < opts.minAlpha) throw; }
             }
             normFNew = normL2(FxNew);
+        }
+
+        //  An EXHAUSTED line search is a failed step, not a step to take.
+        //  Bail with the last GOOD iterate and converged = false -- the same
+        //  posture as the singular Jacobian above, and the only honest one:
+        //  a solver that cannot improve must say so, never advance on a
+        //  trial it could not evaluate.
+        if (FxNew.empty() || !std::isfinite(normFNew))
+        {
+            if (opts.onIter) opts.onIter({it, x, Fx, normF, alpha});
+            return {x, Fx, normF, it, false};
         }
 
         if (opts.onIter) opts.onIter({it, x, Fx, normF, alpha});

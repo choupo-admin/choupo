@@ -77,9 +77,17 @@ int VleConsistency::run(const DictPtr& dict,
     if (i1 == thermo.n())
         throw std::runtime_error("vleConsistency: component '" + comp + "' not in the thermo package");
     const std::string partner = dict->lookupWordOrDefault("partner", "");
+    //  BRACES ARE LOad-BEARING here.  Without them the `else` binds to the
+    //  INNER `if (name == partner)`, not to `if (!partner.empty())`: with a
+    //  named partner, every component that did NOT match ran the two-component
+    //  fallback and overwrote i2.  It happened to land on the right index for
+    //  n == 2 (the only case where the branch does anything) -- correct by
+    //  arithmetic accident, not by the control flow anyone wrote.
     if (!partner.empty())
+    {
         for (std::size_t i = 0; i < thermo.n(); ++i)
             if (thermo.comp(i).name() == partner) i2 = i;
+    }
     else if (thermo.n() == 2)
         i2 = (i1 == 0) ? 1 : 0;
     if (i2 == thermo.n())

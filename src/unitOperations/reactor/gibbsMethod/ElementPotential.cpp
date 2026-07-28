@@ -41,7 +41,6 @@ GibbsEquilibrium ElementPotential::equilibrium(const GibbsProblem& p, scalar T,
 {
     const auto&       thermo = *p.thermo;
     const std::size_t N = p.N();
-    const scalar      RTt = constant::R * T;
 
     sVector g_over_RT(N);
     for (std::size_t i = 0; i < N; ++i)

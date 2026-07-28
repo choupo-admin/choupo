@@ -245,9 +245,14 @@ scalar PCSAFT::molarVolumeLiquid(scalar T_K, scalar P_Pa, const sVector& y) cons
 // the production 1e-6 by default; verify() sweeps hRel/10 and 10*hRel to
 // confirm the value sits on the central-difference plateau (O(h^2) truncation
 // vs O(eps/h) round-off balance).
-sVector PCSAFT::lnPhiAt(scalar T, scalar P, scalar rho, const sVector& x,
+sVector PCSAFT::lnPhiAt(scalar T, scalar /*P*/, scalar rho, const sVector& x,
                         scalar hRel) const
 {
+    //  P is UNUSED and stays in the signature on purpose: this overload's
+    //  caller has already solved the density from (T, P), and rho is the
+    //  state variable the residual Helmholtz derivatives are taken in.  The
+    //  parameter documents which (T, P) the rho belongs to; naming it out
+    //  says that without pretending it is read.
     const scalar Zc = 1.0 + rho * daRes_dRho(T, rho, x);
     // total moles N and volume V held: pick N=1 => V = N/rho_molar; rho here is
     // number density, work per-molecule consistently.

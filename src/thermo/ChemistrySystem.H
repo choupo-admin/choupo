@@ -36,7 +36,8 @@ Description
 
       thermoPhysPropDict      property surfaces + routes per phase;
       chemistryDict           WHICH equilibria/solid phases are in the network;
-      constant/chemistry/*.dat  sealed closure RECORDS (facts), never selection;
+      constant/chemistry/<rxn>.dat   sealed closure RECORDS (facts), never
+                              selection;
       constant/reactions      the process-reaction library (unit ops activate
                               by name), untouched;
       propsDict/flowsheetDict the fed analysis, totals, atmosphere, dose, and

@@ -10,6 +10,31 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
 
 ## Choupo-dev (2026-07-28)
 
+* **The tree compiles CLEAN: 40 warnings -> 0**, and two of them were real.
+  - `NewtonND`'s backtracking line search can EXHAUST (every trial infeasible,
+    or none reducing the norm before alpha falls under `minAlpha`) and then
+    fell out having assigned NOTHING: the iteration carried an uninitialised
+    `normFNew` into `normF` and moved a possibly-EMPTY `FxNew` into `Fx`, so
+    the convergence test, the iteration hook and the returned residual were
+    all reading memory nobody wrote.  An exhausted search is now a FAILED
+    step: bail with the last good iterate and `converged = false`, the same
+    posture as a singular Jacobian.
+  - `VleConsistency` had a dangling `else` binding to the INNER `if`: with a
+    named `partner`, every component that did not match ran the
+    two-component fallback and overwrote `i2`.  It landed on the right index
+    by arithmetic accident (n == 2 is the only case where the branch does
+    anything), never by the control flow anyone wrote.
+  The rest were noise that hid them: 20 missing-field-initializers cured at
+  the struct (`PairResolution`'s five audit fields carry explicit defaults --
+  an audit detail nobody filled is ABSENT, not zero), a `/*` inside a comment,
+  two misleading-indentation lambdas, three unused `RTt` (this layer works in
+  g/RT throughout), a member-init list disagreeing with declaration order, and
+  an unused-but-documenting parameter now named out.
+* **`make STRICT=1` makes a warning an error.**  Opt-in, not the default: a
+  newer compiler invents new warnings and a user on one we never tested must
+  still be able to build.  Development holds the line; distribution stays
+  kind.
+
 * **`phaseSet auto`: the phase set decided, not typed.**  The case dicts have
   said for a while that "the phase set is a RESULT, not an input", and then
   made the author type it.  Under `auto` the engine decides, from two things

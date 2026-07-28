@@ -39,6 +39,22 @@ endif
 
 CXXSTD   := -std=c++17
 WARN     := -Wall -Wextra -Wpedantic
+
+#  STRICT=1  ->  a warning is an ERROR.  The tree compiles CLEAN (zero
+#  warnings, 2026-07-28), and the point of that is to keep it readable: a
+#  build that prints forty "this is fine" lines is a build where the one that
+#  matters gets scrolled past -- the uninitialised norm in NewtonND and the
+#  dangling `else` in VleConsistency had both been sitting in that noise.
+#
+#  Opt-in, NOT the default, and deliberately so: a newer compiler invents new
+#  warnings, and a user on a compiler we never tested must still be able to
+#  build the simulator.  Development holds the line; distribution stays kind.
+#      make STRICT=1            release, warnings fatal
+#      make MODE=debug STRICT=1 the same on the debug tree
+ifeq ($(STRICT),1)
+    WARN += -Werror
+endif
+
 INCLUDES := -Isrc
 
 CXXFLAGS := $(CXXSTD) $(OPT) $(WARN) $(INCLUDES) -pthread

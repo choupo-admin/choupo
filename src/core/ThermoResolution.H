@@ -71,11 +71,17 @@ struct PairResolution
     //      header, the result JSON, the gap report and mode-evaluate.
     // RANKING AND POLICY USE ONLY `origin` (the typed tier); `provSource` stays
     // as the raw source label during migration and never outranks the type.
+    //  The five audit fields carry EXPLICIT defaults so a call site may
+    //  brace-initialise the six identity fields alone -- which every caller
+    //  does, and which is correct: an audit detail nobody filled is absent,
+    //  not zero.  Without the defaults the compiler warns on each of those
+    //  call sites, and twenty warnings that all mean "this is fine" are how a
+    //  real one gets scrolled past.
     Origin                           origin = Origin::unattributed;
-    std::string                      method;
-    std::string                      methodVersion;  // STABLE id, never a path
-    ValidityDomain                   validity;
-    std::optional<PromotionOverride> promotedDespite;
+    std::string                      method{};
+    std::string                      methodVersion{};   // STABLE id, never a path
+    ValidityDomain                   validity{};
+    std::optional<PromotionOverride> promotedDespite{};
 };
 
 // ---- Shared audit emission (forum #73-3): ONE implementation of the P1

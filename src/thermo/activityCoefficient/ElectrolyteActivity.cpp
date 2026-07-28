@@ -51,8 +51,13 @@ ElectrolyteActivity::ElectrolyteActivity(std::vector<std::string> names,
     soluteIdx_(a.soluteIdx), solventIdx_(a.solventIdx),
     solventMW_(a.solventMW), solubility_(a.solubility),
     calorimetricFit_(a.calorimetricFit), hasAqRef_(a.hasAqRef),
-    hfAqSum_(a.hfAqSum), cpAqSum_(a.cpAqSum), lphiValidityMax_(a.lphiValidityMax),
-    ccAvail_(a.ccAvail),
+    //  DECLARATION ORDER, exactly: members are constructed in the order they
+    //  are declared in the header, never in the order written here, and a list
+    //  that disagrees reads as a promise the compiler does not keep.
+    //  (`lphiValidityMax_` is declared AFTER `ccAvail_`, so it is initialised
+    //  after it whatever this list says.)
+    hfAqSum_(a.hfAqSum), cpAqSum_(a.cpAqSum),
+    ccAvail_(a.ccAvail), lphiValidityMax_(a.lphiValidityMax),
     dHsolution_(a.dHsolution), soluteName_(std::move(a.soluteName))
 {
     for (int k = 0; k < 5; ++k) ccNodes_[k] = a.ccNodes[k];

@@ -243,9 +243,12 @@ void PrbsSignal::initialise(const DictPtr& d)
         state = ((state << 1) | fb) & period;   // period == the n-bit mask
         if (state == seed && k + 1 < period)
             throw std::runtime_error("PrbsSignal: taps ("
-                + [&]{ std::string s2; for (int tp : taps)
-                       s2 += (s2.empty() ? "" : " ") + std::to_string(tp);
-                       return s2; }()
+                + [&]{
+                       std::string s2;
+                       for (int tp : taps)
+                           s2 += (s2.empty() ? "" : " ") + std::to_string(tp);
+                       return s2;
+                  }()
                 + ") give cycle length " + std::to_string(k + 1)
                 + " != 2^n - 1 = " + std::to_string(period)
                 + " -- a LINEARLY NON-MAXIMAL set; use the canonical table"

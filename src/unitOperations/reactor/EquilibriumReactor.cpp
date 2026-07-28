@@ -143,8 +143,12 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         }
         return g;
     };
-    auto normInf = [](const sVector& v) { scalar m = 0.0;
-        for (auto x : v) m = std::max(m, std::abs(x)); return m; };
+    auto normInf = [](const sVector& v)
+    {
+        scalar m = 0.0;
+        for (auto x : v) m = std::max(m, std::abs(x));
+        return m;
+    };
 
     // ---- Interior start: every logged species needs a foothold ----------
     //  Forward AND backward limits per reaction (a feed missing a REACTANT is
