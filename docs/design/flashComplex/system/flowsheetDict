@@ -33,7 +33,7 @@ units
         type        isothermalFlash;
 
         in          feed;
-        outputs     ( vapour  bottoms );
+        outputs     ( bottoms  vapour );
 
         operation   { T 308.15 K;  P 2.0 atm; }
     }

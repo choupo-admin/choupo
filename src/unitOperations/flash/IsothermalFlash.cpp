@@ -153,6 +153,8 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                     //  molality [mol/kg] * kg/s = mol/s -> kmol/s
                     sp->flows.emplace_back(row.name,
                                            row.molality * kgw / 1000.0);
+                for (const auto& [mineral, molal] : r.trueState.precipitated)
+                    sp->flows.emplace_back(mineral, molal * kgw / 1000.0);
                 sol.speciation = sp;
             }
         }

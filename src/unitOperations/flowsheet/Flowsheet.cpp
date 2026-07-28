@@ -3196,6 +3196,72 @@ int Flowsheet::solve(const DictPtr& dict,
         }
     }
 
+    // ---- Stream SPECIATION (post-solve, same posture as the enthalpy) -----
+    //  A reactive case's streams should show BOTH bases: the apparent
+    //  components that ARE the state, and the species the model resolves in
+    //  them.  The producing unit already attaches its own solved speciation to
+    //  its liquid outlet -- but that leaves the INLETS blank, and a feed whose
+    //  chemistry nobody reports is exactly the stream a student most wants to
+    //  compare against.  So every stream that carries a liquid gets one here,
+    //  the same way every stream gets an enthalpy here.
+    //
+    //  It stays REPORT-ONLY.  This does not touch z/F/s -- it decomposes them
+    //  -- and the stream file writer verifies the closure on read.
+    if (thermo.hasReactiveEquilibrium())
+        for (auto& [name, s] : streams_)
+        {
+            if (s.speciation) continue;         // the unit already solved it
+            if (s.vf >= 1.0 - 1e-9) continue;   // an all-vapour stream has no
+                                                //   aqueous phase to speciate
+            try
+            {
+                //  Speciate the material AS IT IS, as a liquid -- NOT a flash.
+                //  Running the flash here would describe the liquid that WOULD
+                //  FORM, which is a different material from the one the stream
+                //  file carries, and the decomposition would not collapse back
+                //  onto it: the closure check caught exactly that on the feed
+                //  (2026-07-27).  A report describes the stream in front of it.
+                const auto* cfg = thermo.reactiveConfig();
+                if (!cfg) continue;
+                sVector nApp(thermo.n(), 0.0);
+                for (std::size_t i = 0; i < thermo.n() && i < s.z.size(); ++i)
+                    nApp[i] = s.F * s.z[i] + (i < s.s.size() ? s.s[i] : 0.0);
+                const auto sr = thermo.speciateReactiveAsLiquid(s.T, nApp);
+                const std::size_t wi = cfg->solventIdx;
+                const scalar kgw = (wi < nApp.size())
+                    ? nApp[wi] * thermo.comp(wi).MW() : 0.0;
+                if (kgw <= 0.0) continue;
+                auto sp = std::make_shared<ProcessStream::Speciation>();
+                for (std::size_t i = 0; i < thermo.n(); ++i)
+                {
+                    const std::string& set = thermo.comp(i).aqueousSpeciation();
+                    if (set.empty() || set == "none") continue;
+                    if (sp->network.find(set) == std::string::npos)
+                        sp->network += (sp->network.empty() ? "" : " ") + set;
+                }
+                sp->basis    = "stoichiometric";
+                sp->pH       = sr.pH;
+                sp->pH_valid = true;
+                for (const auto& row : sr.rows)
+                    sp->flows.emplace_back(row.name,
+                                           row.molality * kgw / 1000.0);
+                //  ...and the PRECIPITATED minerals.  They are part of what the
+                //  model resolved in this stream, and most of the calcium of a
+                //  scaling water is in them: leaving them out would make the
+                //  decomposition describe less matter than the stream carries.
+                for (const auto& [mineral, molal] : sr.precipitated)
+                    sp->flows.emplace_back(mineral, molal * kgw / 1000.0);
+                s.speciation = sp;
+            }
+            catch (const std::exception&)
+            {
+                //  A stream the chemistry cannot resolve keeps no speciation.
+                //  Silent by design: this is a REPORT, and refusing the whole
+                //  run because one stream's decomposition is unavailable would
+                //  put a diagnostic in charge of the answer.
+            }
+        }
+
     // ---- Model-boundary audit (H conserved, T is the model-dependent readout)
     // Where adjacent units use different thermo models, make the enthalpy the
     // two models disagree about VISIBLE -- it is held, never silently absorbed

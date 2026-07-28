@@ -288,6 +288,15 @@ public:
     std::vector<std::pair<std::string, scalar>>
     masterComposition(const std::string& species) const;
 
+    // Speciate a material AS A LIQUID -- no phase split, no flash.  This is
+    // what a stream REPORT needs: the decomposition must describe the material
+    // the stream file carries, so that it collapses back onto it exactly.
+    // Running the flash instead would describe the LIQUID THAT WOULD FORM,
+    // which is a different material and does not close against the file
+    // (found the day the feed grew a speciation block, 2026-07-27).
+    // `nApp` is apparent amounts in the package's component order.
+    SpeciationResult speciateAsLiquid(scalar T_K, const sVector& nApp) const;
+
 private:
     ReactiveVLEConfig                 cfg_;
     std::unique_ptr<SpeciationSolver> spec_;

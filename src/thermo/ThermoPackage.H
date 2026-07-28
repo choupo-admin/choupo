@@ -446,6 +446,11 @@ public:
     std::vector<std::pair<std::string, scalar>>
     speciesMasterComposition(const std::string& species) const;    // .cpp
 
+    //  Speciate a material AS A LIQUID (no flash) -- what a stream report
+    //  needs, so the decomposition describes the material the stream carries.
+    electrolyte::SpeciationResult
+    speciateReactiveAsLiquid(scalar T_K, const sVector& nApp) const;  // .cpp
+
     // Minimum-parameter-set audit findings (per model x component x property:
     // MISSING / ESTIMATED / PLACEHOLDER), computed once at assembly.  Drives the
     // gap report + the result-JSON honesty surface.  See PackageAudit.H.

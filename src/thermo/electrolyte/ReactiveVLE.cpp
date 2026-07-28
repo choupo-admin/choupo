@@ -112,6 +112,32 @@ ReactiveVLE::ReactiveVLE(ReactiveVLEConfig cfg)
 
 ReactiveVLE::~ReactiveVLE() = default;
 
+SpeciationResult
+ReactiveVLE::speciateAsLiquid(scalar T_K, const sVector& nApp) const
+{
+    const scalar nW = (cfg_.solventIdx < nApp.size())
+                    ? nApp[cfg_.solventIdx] : 0.0;
+    const scalar kgw = nW * cfg_.solventMW;
+    if (kgw <= 1.0e-12)
+        throw std::runtime_error("ReactiveVLE::speciateAsLiquid: the material"
+            " carries no solvent water -- there is no aqueous phase to"
+            " speciate.");
+    SpeciationInput in;
+    in.T = T_K;
+    in.solvePH = true;                     // electroneutrality closes it
+    in.stoichiometricTotals = true;        // bridge-derived, not an analysis
+    in.announceClosure = false;
+    in.equilibrate = cfg_.admittedSolids;
+    for (const auto& fam : cfg_.families)
+    {
+        const scalar q = (fam.apparentIdx < nApp.size())
+                       ? std::max(nApp[fam.apparentIdx], 0.0) : 0.0;
+        for (const auto& [master, nu] : fam.mapping)
+            in.totals[master] += nu * q / kgw;
+    }
+    return spec_->solve(in, 0);
+}
+
 std::vector<std::pair<std::string, scalar>>
 ReactiveVLE::masterComposition(const std::string& species) const
 {
@@ -132,6 +158,24 @@ ReactiveVLE::masterComposition(const std::string& species) const
         {
             (void)nu;
             if (m == species) return {{ species, 1.0 }};
+        }
+    //  ...or a master that appears in NO reaction, which is what an inert
+    //  dissolved gas is: nitrogen's whole aqueous story is one dissolution
+    //  equilibrium, so the gas-liquid record is the only place its species is
+    //  named.  Without this it collapses to nothing and a report block that
+    //  correctly declares 5 kmol/h of dissolved N2 is read as declaring none.
+    for (const auto& g : spec_->gases())
+        if (g.species == species) return {{ species, 1.0 }};
+    //  ...or a PRECIPITATED MINERAL, whose dissolution reaction is its
+    //  composition on the master basis.  A stream carrying calcite has most of
+    //  its calcium in the solid, not in solution: a decomposition that listed
+    //  only the aqueous rows would be missing the matter, not describing it.
+    for (const auto& m : spec_->minerals())
+        if (m.mineral == species)
+        {
+            std::vector<std::pair<std::string, scalar>> out;
+            for (const auto& [mm, nu] : m.masters) out.emplace_back(mm, nu);
+            return out;
         }
     return {};
 }

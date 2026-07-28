@@ -161,6 +161,15 @@ electrolyte::ReactiveVLEResult ThermoPackage::equilibrate(scalar T_K,
 const electrolyte::ReactiveVLEConfig* ThermoPackage::reactiveConfig() const
 { return reactive_ ? &reactive_->config() : nullptr; }
 
+electrolyte::SpeciationResult
+ThermoPackage::speciateReactiveAsLiquid(scalar T_K, const sVector& nApp) const
+{
+    if (!reactive_)
+        throw std::runtime_error("ThermoPackage::speciateReactiveAsLiquid:"
+            " the package declares no reactive chemistry.");
+    return reactive_->speciateAsLiquid(T_K, nApp);
+}
+
 std::vector<std::pair<std::string, scalar>>
 ThermoPackage::speciesMasterComposition(const std::string& species) const
 {

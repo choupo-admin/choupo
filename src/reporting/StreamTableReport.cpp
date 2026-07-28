@@ -32,6 +32,7 @@ License
 #include "streams/StreamMass.H"
 
 #include <algorithm>
+#include <sstream>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -56,9 +57,39 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     if (!f.is_open())
         throw std::runtime_error("streamTable: cannot open " + path.string());
 
+    //  SPECIES columns.  A reactive case's streams carry TWO bases and the
+    //  table must show both: the apparent components that are the state, and
+    //  the species the model resolved in them.  The column set is the UNION
+    //  over the streams that carry a speciation -- a stream without one (an
+    //  all-vapour line: ions do not enter a vapour) leaves them blank, which
+    //  is the honest mark for "no aqueous phase here", not a zero.
+    std::vector<std::string> species;
+    bool anySpeciation = false;
+    for (const auto& [name, s] : ctx.result.streams)
+    {
+        (void)name;
+        if (!s.speciation) continue;
+        anySpeciation = true;
+        for (const auto& [sp, v] : s.speciation->flows)
+        {
+            (void)v;
+            if (std::find(species.begin(), species.end(), sp) == species.end())
+                species.push_back(sp);
+        }
+    }
+    std::sort(species.begin(), species.end());
+
     // Header
     f << "stream,role,F_kmol_per_h,F_mass_kg_per_h,T_K,P_bar,vapourFraction,solids_kg_per_h,enthalpy_kW";
     for (const auto& c : comps) f << ",x_" << c;
+    if (anySpeciation)
+    {
+        f << ",pH";
+        //  n_ (an AMOUNT), never x_: the species are a decomposition of the
+        //  LIQUID, so a mole fraction over the whole stream would be a
+        //  different denominator wearing the same prefix.
+        for (const auto& sp : species) f << ",n_" << sp << "_kmol_per_h";
+    }
     f << "\n";
 
     // Stable order: feed -> intermediate -> product, then by name.
@@ -94,13 +125,47 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         // stream and print n/a (an honest "no elements enthalpy here"), never
         // a fabricated second datum.  The energy BALANCE, by contrast, lets
         // the throw propagate so the gap surfaces loudly.
-        try { f << "," << std::setprecision(4)
-                 << reporting::streamH_elements(s, ctx.thermo); }
-        catch (const std::exception&) { f << ",n/a"; }
+        //  Build the field BEFORE writing the separator.  Streaming the comma
+        //  first and then calling a function that may throw wrote the comma,
+        //  hit the catch, and wrote ",n/a" -- TWO fields for one column, so
+        //  every column after it shifted by one for any stream whose elements
+        //  enthalpy is unavailable.  A CSV that silently mislabels its own
+        //  columns is worse than one with a gap in it (found 2026-07-27, on a
+        //  feed carrying a solid).
+        {
+            std::string hcell = "n/a";
+            try
+            {
+                std::ostringstream os;
+                os << std::fixed << std::setprecision(4)
+                   << reporting::streamH_elements(s, ctx.thermo);
+                hcell = os.str();
+            }
+            catch (const std::exception&) { }
+            f << "," << hcell;
+        }
         for (std::size_t i = 0; i < comps.size(); ++i)
         {
             const scalar xi = (i < s.z.size()) ? s.z[i] : 0.0;
             f << "," << std::setprecision(6) << xi;
+        }
+        if (anySpeciation)
+        {
+            if (!s.speciation)
+                for (std::size_t k = 0; k < species.size() + 1; ++k) f << ",";
+            else
+            {
+                f << "," << std::fixed << std::setprecision(3)
+                  << (s.speciation->pH_valid ? s.speciation->pH : 0.0);
+                for (const auto& sp : species)
+                {
+                    scalar v = 0.0;
+                    for (const auto& [nm, q] : s.speciation->flows)
+                        if (nm == sp) { v = q; break; }
+                    f << "," << std::scientific << std::setprecision(6)
+                      << v * 3600.0;
+                }
+            }
         }
         f << "\n";
     }
