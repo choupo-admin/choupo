@@ -10,7 +10,7 @@ the row already delivers it -- a precipitating crystal is NEUTRAL, so its
 dissolution reaction is charge-balanced (calcite: +2 -1 -1 = 0) and the
 proton arrives through the master balances.  Counting it twice forced
 sum z_i m_i = +n_p (exactly 1.00000 of the precipitated amount, 24 % of the
-total charge), under-predicting calcite scale by ~58 % at high recovery.
+total charge), under-reading calcite scale by 37 % at high recovery.
 The failure was INVISIBLE: every case converged, exit 0, goldens green.
 
 Two claims, both causal:
@@ -18,13 +18,17 @@ Two claims, both causal:
   1. IMPOSED rows are at round-off.  Every "electroneutrality IMPOSED" line
      printed by the listed cases must satisfy |sum z m| / sum |z| m <= TOL.
      The cases with a PRECIPITATING carbonate are the ones that matter --
-     they are the exact configuration the bug lived in -- so they are
-     listed explicitly and their coverage is asserted, not hoped for.
+     they are the exact configuration the bug lived in -- so a solid must
+     actually PRECIPITATE (n > 0) in each of them.  The first version of
+     this gate wrote that assertion two ways round and it asserted nothing
+     (an MIT audit, 2026-07-28: it passed on `stayed dissolved`, which is
+     the NO-precipitation message).  It now reads the amount.
 
   2. GIVEN rows are REPORTED, never forced.  A pH-given case carries the
-     analysis's own net charge; the gate checks such a line exists and is
-     NOT silently zeroed (that would mean the solver had started imposing
-     electroneutrality behind a given pH).
+     analysis's own net charge, and at least one of them must be NON-ZERO:
+     a corpus where every given-pH line reads 0.00e+00 is a corpus where
+     the solver has started imposing electroneutrality behind a given pH,
+     which is precisely the silent behaviour change the label denies.
 
 Exit 1 listing failures."""
 import re
@@ -57,8 +61,10 @@ IMPOSED = re.compile(
     r"charge balance on the answer: .*= *([-+0-9.eE]+) *\(electroneutrality IMPOSED")
 GIVEN = re.compile(
     r"charge balance on the answer: .*= *([-+0-9.eE]+) *\(pH GIVEN")
-# "calcite  0.0055 mol/kg" style line from the equilibrate summary
-PRECIP = re.compile(r"\bprecipitated\b|\bSI = 0\b|-> *0\.000 *\(at saturation\)")
+#  "  calcite       n = 1.0120e-02 mol/kg = 1012.87 mg/kg   SI -> +0.000"
+#  -- the AMOUNT, not the word: `stayed dissolved (n = 0)` is the sibling
+#  line that means the opposite.
+PRECIP = re.compile(r"^\s+(\w+)\s+n = ([0-9.eE+-]+) mol/kg", re.M)
 
 
 def run(case, binary):
@@ -71,7 +77,8 @@ def run(case, binary):
 
 
 def main():
-    fails, imposed_seen, given_seen = [], 0, 0
+    fails, imposed_seen, given_seen, precipitated = [], 0, 0, 0
+    given_vals = []
     for case, binary, wants_solid in CASES:
         out, err = run(case, binary)
         if err:
@@ -89,16 +96,30 @@ def main():
             fails.append(f"{case}: electroneutrality residual {worst:.3e} > {TOL:.0e} "
                          f"over {len(rows)} solved speciation(s) -- the imposed "
                          "row is not being satisfied")
-        if wants_solid and "stayed dissolved" not in out and "SI" not in out:
-            fails.append(f"{case}: expected a solid-bearing run (this case is "
-                         "the gate's causal coverage for the precipitation "
-                         "path) but no saturation report was printed")
-        given_seen += len(GIVEN.findall(out))
+        if wants_solid:
+            got = [(m, float(v)) for m, v in PRECIP.findall(out) if float(v) > 0.0]
+            if not got:
+                fails.append(f"{case}: NOTHING precipitated.  This case is the "
+                             "gate's causal coverage for the precipitation "
+                             "path -- with no solid it exercises none of it, "
+                             "and the electroneutrality row it is here to "
+                             "watch never sees a mineral sink")
+            else:
+                precipitated += len(got)
+        vals = [float(v) for v in GIVEN.findall(out)]
+        given_seen += len(vals)
+        given_vals += vals
 
     if given_seen == 0:
         fails.append("no 'pH GIVEN' charge line anywhere in the corpus sample -- "
                      "a given pH must still REPORT the analysis's net charge; "
                      "if that announce is gone, the diagnostic went with it")
+    elif not any(abs(v) > TOL for v in given_vals):
+        fails.append(f"every one of the {given_seen} given-pH charge lines is at "
+                     "round-off.  Nothing forces charge balance under a GIVEN "
+                     "pH, so a corpus of exact zeros means electroneutrality is "
+                     "being imposed there too -- the label would then be lying "
+                     "about which equation was solved")
 
     if fails:
         print("charge-balance gate FAILED:")
@@ -106,8 +127,9 @@ def main():
             print("  -", f)
         return 1
     print(f"charge balance: {imposed_seen} imposed row(s) at <= {TOL:.0e}, "
-          f"{given_seen} given-pH row(s) reported, over {len(CASES)} cases "
-          "(3 with a precipitating solid)")
+          f"{given_seen} given-pH row(s) reported (max |q| "
+          f"{max(abs(v) for v in given_vals):.1e}), {precipitated} solid "
+          f"amount(s) > 0 on the precipitation path, over {len(CASES)} cases")
     return 0
 
 

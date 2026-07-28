@@ -75,6 +75,85 @@ std::vector<std::pair<std::string, double>> readMasters(const DictPtr& e)
     return v;
 }
 
+/*---------------------------------------------------------------------------*\
+  CHARGE CONSERVATION of a curated reaction -- ASSERTED, never assumed.
+
+  Two identities hold for every record in this layer, and the whole
+  electroneutrality closure is DERIVED from them:
+
+      complex :  z_s = sum_j nu_sj z_j          (+ nu_sH, H+ carried in masters)
+      mineral :  0   = sum_j nu_pj z_j          (the crystal is NEUTRAL)
+
+  Until 2026-07-28 they were used everywhere and checked nowhere.  An MIT
+  audit proved the cost: editing calcite's dissolution to `{ ion H; nu -2; }`
+  -- a "solid" of charge -1, which is not a crystal -- converged, exited 0,
+  moved the solved pH by 2.7 units, and passed every gate, because the charge
+  row it corrupts is exactly the row that was derived from the identity it
+  broke.  The engine polices its equations and, until now, not the
+  stoichiometry those equations are derived from.
+
+  The check is at LOAD time, where both numbers are already in memory, and it
+  refuses by name with the arithmetic shown.  Water contributes no charge, so
+  nuWater never enters.
+\*---------------------------------------------------------------------------*/
+namespace {
+
+//  Charge of any ion or species NAME: its identity record if it owns one,
+//  else the inline `z` of the reaction that forms it (a derived neutral or
+//  complex declares its identity there -- identity has one home, either way).
+//  Returns false when neither exists, which is not this check's business to
+//  refuse: the loaders above already do, by name.
+bool chargeOfName(const std::string& nm,
+                  const std::vector<SpeciationReaction>& known,
+                  double& z)
+{
+    if (DictPtr rec = rawSpeciesRecord(nm))
+    { z = rec->lookupScalar("charge"); return true; }
+    for (const auto& r : known)
+        if (r.species == nm) { z = r.z; return true; }
+    return false;
+}
+
+//  `expect` is the reaction's own charge: z_s for a complex, 0 for a solid.
+void refuseUnlessChargeBalanced(
+        const std::string&                                  what,
+        const std::string&                                  name,
+        const std::vector<std::pair<std::string, double>>&   masters,
+        double                                              expect,
+        const std::vector<SpeciationReaction>&              known)
+{
+    double sum = 0.0;
+    std::ostringstream terms;
+    for (const auto& [ion, nu] : masters)
+    {
+        double z = 0.0;
+        if (!chargeOfName(ion, known, z)) return;    // unknown ion: not ours
+        sum += nu * z;
+        terms << (terms.tellp() > 0 ? "  " : "") << std::showpos << nu
+              << std::noshowpos << "*(" << ion << " " << std::showpos << z
+              << std::noshowpos << ")";
+    }
+    if (std::fabs(sum - expect) < 1.0e-9) return;
+    std::ostringstream msg;
+    msg << what << " '" << name << "' does not CONSERVE CHARGE: "
+        << terms.str() << " = " << std::showpos << sum << std::noshowpos
+        << ", expected " << std::showpos << expect << std::noshowpos << ".  ";
+    if (expect == 0.0)
+        msg << "A crystal is neutral, so its dissolution reaction is"
+               " charge-balanced by construction -- a non-zero sum means the"
+               " record dissolves a charged solid, which does not exist.";
+    else
+        msg << "A formation reaction cannot create or destroy charge, so the"
+               " species' declared charge must equal the sum its masters"
+               " release.";
+    msg << "  Fix the stoichiometry (or the declared charge) in the curated"
+           " record; the electroneutrality closure is DERIVED from this"
+           " identity and is silently wrong without it.";
+    throw std::runtime_error(msg.str());
+}
+
+} // namespace
+
 // Read the optional analytic K(T) block (`analytic ( A1 .. A5 );` + an optional
 // `validC ( lo hi );`).  Absence-tolerant -- an entry without it keeps the dH /
 // flat path unchanged.  FAILS LOUDLY on a malformed coefficient count.
@@ -231,6 +310,8 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
             if (r.hasDH) r.dH = e->lookupScalar("dH");
             r.kt      = readKT(e);
             r.source  = e->lookupWordOrDefault("source", "undeclared");
+            refuseUnlessChargeBalanced("speciation: formation reaction",
+                                       r.species, r.masters, r.z, reactions_);
             reactions_.push_back(std::move(r));
         }
         // Optional `gases` section: gas dissolution (Henry) constants for the
@@ -357,6 +438,8 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
             if (m.hasDH) m.dH = e->lookupScalar("dH");
             m.kt      = readKT(e);
             m.source  = e->lookupWordOrDefault("source", "undeclared");
+            refuseUnlessChargeBalanced("speciation: mineral dissolution",
+                                       m.mineral, m.masters, 0.0, reactions_);
             minerals_.push_back(std::move(m));
         }
         // UNIFIED substance files: a component in standards/components/ may declare
@@ -411,6 +494,9 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                         if (m.hasDH) m.dH = eq->lookupScalar("dH");
                         m.kt      = readKT(eq);
                         m.source  = eq->lookupWordOrDefault("source", "undeclared");
+                        refuseUnlessChargeBalanced(
+                            "speciation: mineral dissolution",
+                            m.mineral, m.masters, 0.0, reactions_);
                         minerals_.push_back(std::move(m));
                     }
                 }

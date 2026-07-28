@@ -777,7 +777,7 @@ PYEOF
     # equation the solver imposes, so its residual on the ANSWER belongs at
     # round-off -- and a precipitating crystal, being neutral, may not move it.
     # (The double-counted carbonate proton this catches was invisible to every
-    # other check: converged, exit 0, goldens green, scale under-predicted 58%.)
+    # other check: converged, exit 0, goldens green, scale under-read by 37%.)
     if "$ROOT/bin/curate/check_charge_balance.py" > /tmp/qgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "charge-balance-gate" "$(head -1 /tmp/qgate.$$)"
         pass=$((pass+1))

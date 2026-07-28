@@ -10,6 +10,26 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
 
 ## Choupo-dev (2026-07-28)
 
+* **Curated stoichiometry is now CHECKED, not assumed.**  Two identities hold
+  for every record in the electrolyte layer and the whole electroneutrality
+  closure is DERIVED from them -- `z_s = sum_j nu_sj z_j` for a complex,
+  `0 = sum_j nu_pj z_j` for a mineral (the crystal is neutral).  They were
+  used everywhere and asserted nowhere.  An independent audit priced the
+  gap: editing calcite's dissolution to `{ ion H; nu -2; }` -- a "solid" of
+  charge -1, which is not a crystal -- converged, exited 0, moved the solved
+  pH by 2.7 units and passed every gate, because the charge row it corrupts
+  is exactly the row derived from the identity it broke.  Now refused at
+  LOAD time, by name, with the arithmetic shown (`+1*(Ca +2)  +1*(HCO3 -1)
+  -2*(H +1) = -1, expected +0`), exit 2.  The whole curated corpus passes
+  unchanged: 326 PASS.
+* **The charge-balance gate was weaker than its own docstring**, and the same
+  audit found both spots.  Its precipitation-coverage assertion was written
+  two ways round and asserted nothing (it passed on `stayed dissolved`, the
+  NO-precipitation message); it now reads the AMOUNT and requires n > 0.  Its
+  pH-GIVEN claim was never implemented; it now fails if every given-pH line
+  is at round-off, which is what "electroneutrality is being imposed behind a
+  given pH" would look like.  Both were verified to fail when they should.
+
 * **Electroneutrality FIXED: a neutral crystal moves no charge.**  The
   charge row of the speciation Newton carried an extra `nu_pH * n_p` term,
   added so a precipitating carbonate's freed proton would re-acidify the
@@ -22,10 +42,11 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
   (exactly 1.00000 of the precipitated amount, 24 % of the total charge in
   flash16) and was SILENT: converged, exit 0, goldens green.  Consequences,
   all in the safe-to-know direction: the calcite ceiling of an RO
-  concentrate rises ~58 % (12.1 -> 19.2 kg/day at r = 0.85 in
-  `precipitation_ro_brackish`), gypsum backs off as calcite takes the
-  shared Ca (onset r 0.60 -> 0.65), and every solved pH rises by 0.01-0.09.
-  Three goldens deliberately re-recorded.
+  concentrate rises 58 % (12.1 -> 19.2 kg/day at r = 0.85 in
+  `precipitation_ro_brackish`) -- i.e. the bug UNDER-READ the true ceiling
+  by 37 % -- gypsum backs off as calcite takes the shared Ca (onset
+  r 0.60 -> 0.65), and every solved pH rises by 0.01-0.09.  Three goldens
+  deliberately re-recorded.
 * **The charge balance is now REPORTED and GATED.**  Every speciation
   announces `sum z_i m_i / sum |z_i| m_i` on its answer, read two ways and
   labelled: pH SOLVED = the residual of a row the solver imposes (belongs
