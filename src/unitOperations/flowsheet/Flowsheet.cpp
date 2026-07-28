@@ -34,6 +34,7 @@ License
 #include "reporting/BalanceMath.H"          // missingEnthalpyData: name no-datum species
 #include "reporting/ModelBoundaryAudit.H"
 #include "thermo/ThermoPackageBuilder.H"
+#include "streams/SpeciationBlock.H"
 #include "streams/StreamOverrides.H"
 #include "streams/StreamOwnership.H"
 #include "streams/StreamStateIO.H"
@@ -74,90 +75,13 @@ namespace Choupo {
 
 namespace {
 
-// Invert Psat(T) = P for T via Newton-1D.  Used by the `state`-based
-// stream specification when the user gives P but not T (or vice
-// versa) and declares e.g. saturatedVapour --- T is the saturation
-// temperature at that pressure for the pure component.
-scalar invertPsat(const Component& c, scalar P_target_Pa)
-{
-    auto f  = [&](scalar T){ return c.vp().Psat_Pa(T) - P_target_Pa; };
-    auto df = [&](scalar T){
-        const scalar dT = 0.5;
-        return (f(T+dT) - f(T-dT)) / (2.0*dT);
-    };
-    solver::NROptions opt;
-    opt.tolerance = 1.0;             // 1 Pa
-    opt.maxIter   = 60;
-    opt.lower     = 250.0;
-    opt.upper     = c.Tc() > 0 ? std::min(c.Tc()-1.0, 1500.0) : 1500.0;
-    opt.bracket   = true;
-    opt.monotoneIncreasing = true;
-    auto r = solver::newton1D(f, df, std::max(c.Tb(), 273.15), opt);
-    return r.x;
-}
-
-// Mixture-aware thermal-state completion: given the composition z and ONE of
-// {P, T} plus a target vapour fraction, find the MISSING variable so the
-// equilibrium flash returns that vf.  This is what makes `vaporFraction` a
-// COMPLETE stream spec for a MIXTURE -- the counterpart of invertPsat() for a
-// pure component -- because on the phase boundary T and P are NOT independent,
-// so a saturated/two-phase feed MUST pin vf (with P or T).  vf=0 is the bubble
-// point, vf=1 the dew point, in between a flash-at-vf.  Bisection on the flash
-// vf, which is monotone (increasing in T at fixed P, decreasing in P at fixed
-// T); robust to flash non-convergence at the extremes via a sign-change scan.
-scalar solveStateForVf(const ThermoPackage& thermo, sVector z,
-                       bool knownIsP, scalar known, scalar vfTarget,
-                       const std::string& name)
-{
-    scalar zsum = 0.0; for (scalar zi : z) zsum += zi;
-    if (zsum > 0.0) for (auto& zi : z) zi /= zsum;          // normalise
-    // Aim a hair inside (0,1): the bubble/dew edge is the vf=0/1 limit, and the
-    // clamped flash vf is flat there, so target vf-eps to land ON the edge.
-    const scalar vfEff = std::min(1.0 - 1.0e-6, std::max(1.0e-6, vfTarget));
-    auto vfAt = [&](scalar x) -> scalar
-    {
-        FlashInput fin; fin.F = 1.0; fin.z = z;
-        if (knownIsP) { fin.T = x; fin.P = known; }
-        else          { fin.T = known; fin.P = x; }
-        FlashOptions fo; fo.verbosity = 0;
-        const FlashSolution fs = IsothermalFlash::solveCore(fin, thermo, fo);
-        if (!fs.converged || !std::isfinite(fs.V_over_F)) return std::nan("");
-        return std::min(1.0, std::max(0.0, fs.V_over_F));
-    };
-    // Scan for a sign-change bracket of f(x) = vf(x) - vfEff.
-    scalar lo, hi;
-    if (knownIsP) { lo = 80.0;  hi = 1500.0; }             // T in K
-    else          { lo = 100.0; hi = 5.0e7;  }             // P in Pa (1 mbar..500 bar)
-    const int NS = 60;
-    scalar a = lo, b = hi, fa = std::nan(""); bool bracketed = false;
-    scalar xPrev = lo, fPrev = std::nan("");
-    for (int i = 0; i <= NS; ++i)
-    {
-        const scalar x = knownIsP ? lo + (hi - lo) * scalar(i) / NS
-                                  : lo * std::pow(hi / lo, scalar(i) / NS);
-        const scalar v = vfAt(x);
-        const scalar fx = std::isfinite(v) ? v - vfEff : std::nan("");
-        if (std::isfinite(fPrev) && std::isfinite(fx) && fPrev * fx <= 0.0)
-        { a = xPrev; b = x; fa = fPrev; bracketed = true; break; }
-        xPrev = x; fPrev = fx;
-    }
-    if (!bracketed)
-        throw std::runtime_error("Stream '" + name + "': could not find a "
-            + std::string(knownIsP ? "temperature" : "pressure")
-            + " giving vaporFraction = " + std::to_string(vfTarget)
-            + " -- the mixture is likely single-phase at the given "
-            + (knownIsP ? "pressure" : "temperature")
-            + ", or outside the thermo model's range.  Give T and P explicitly.");
-    for (int it = 0; it < 90 && std::abs(b - a) > (knownIsP ? 1.0e-4 : 1.0e-1); ++it)
-    {
-        const scalar m = 0.5 * (a + b);
-        const scalar v = vfAt(m);
-        if (!std::isfinite(v)) { b = m; continue; }        // pull in from the bad side
-        const scalar fm = v - vfEff;
-        if (fa * fm <= 0.0) b = m; else { a = m; fa = fm; }
-    }
-    return 0.5 * (a + b);
-}
+// (The `state`-based stream spec -- saturatedVapour / vaporFraction -- and
+//  its two solvers, invertPsat() and solveStateForVf(), were readers of the
+//  RETIRED flowsheetDict `streams {}` block.  That block is refused loudly
+//  now (stream-state migration, 2026-07-10: one home, no dual reader), so
+//  the solvers lost their only caller and go with it.  If a saturated-state
+//  spec returns, it returns through the 0/ grammar -- where the code is not
+//  this code.  See docs/architecture/stream-state-architecture.md.)
 
 
 void printStream(const ProcessStream& s, const ThermoPackage& thermo)
@@ -1540,7 +1464,12 @@ static VarBound parseVarBound(const DictPtr& bd, const char* key)
     return vb;
 }
 
-static StreamBounds parseStreamBounds(const DictPtr& streamDict)
+//  PARKED, deliberately: the enforcement below (resolve/apply/checkAt
+//  Solution) is wired and reachable, but nothing FILLS the bounds map --
+//  the reader rode the retired `streams {}` block and the cage returns, if
+//  ever, through the 0/ grammar.  Kept beside the machinery it feeds so the
+//  two cannot drift apart while they wait.
+[[maybe_unused]] static StreamBounds parseStreamBounds(const DictPtr& streamDict)
 {
     StreamBounds b;
     if (streamDict && streamDict->found("bounds"))
@@ -3230,28 +3159,7 @@ int Flowsheet::solve(const DictPtr& dict,
                 const std::size_t wi = cfg->solventIdx;
                 const scalar kgw = (wi < nApp.size())
                     ? nApp[wi] * thermo.comp(wi).MW() : 0.0;
-                if (kgw <= 0.0) continue;
-                auto sp = std::make_shared<ProcessStream::Speciation>();
-                for (std::size_t i = 0; i < thermo.n(); ++i)
-                {
-                    const std::string& set = thermo.comp(i).aqueousSpeciation();
-                    if (set.empty() || set == "none") continue;
-                    if (sp->network.find(set) == std::string::npos)
-                        sp->network += (sp->network.empty() ? "" : " ") + set;
-                }
-                sp->basis    = "stoichiometric";
-                sp->pH       = sr.pH;
-                sp->pH_valid = true;
-                for (const auto& row : sr.rows)
-                    sp->flows.emplace_back(row.name,
-                                           row.molality * kgw / 1000.0);
-                //  ...and the PRECIPITATED minerals.  They are part of what the
-                //  model resolved in this stream, and most of the calcium of a
-                //  scaling water is in them: leaving them out would make the
-                //  decomposition describe less matter than the stream carries.
-                for (const auto& [mineral, molal] : sr.precipitated)
-                    sp->flows.emplace_back(mineral, molal * kgw / 1000.0);
-                s.speciation = sp;
+                s.speciation = speciationBlock(thermo, sr, kgw, sr.pH);
             }
             catch (const std::exception&)
             {

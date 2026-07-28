@@ -38,6 +38,7 @@ License
 #include <iostream>
 #include <limits>
 #include <stdexcept>
+#include "streams/SpeciationBlock.H"
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/equationOfState/EquationOfState.H"
@@ -133,30 +134,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             const scalar Fliq = in.F * (1.0 - r.V_over_F);
             const scalar kgw  = (wi < r.xApp.size())
                 ? Fliq * r.xApp[wi] * thermo.comp(wi).MW() : 0.0;
-            if (kgw > 0.0)
-            {
-                auto sp = std::make_shared<ProcessStream::Speciation>();
-                //  Every set the case's components declare: the species names
-                //  come from the UNION of those networks, so naming one would
-                //  be a half-truth in any system that declares two.
-                for (std::size_t i = 0; i < thermo.n(); ++i)
-                {
-                    const std::string& s = thermo.comp(i).aqueousSpeciation();
-                    if (s.empty() || s == "none") continue;
-                    if (sp->network.find(s) == std::string::npos)
-                        sp->network += (sp->network.empty() ? "" : " ") + s;
-                }
-                sp->basis    = "stoichiometric";
-                sp->pH       = r.pH;
-                sp->pH_valid = true;
-                for (const auto& row : r.trueState.rows)
-                    //  molality [mol/kg] * kg/s = mol/s -> kmol/s
-                    sp->flows.emplace_back(row.name,
-                                           row.molality * kgw / 1000.0);
-                for (const auto& [mineral, molal] : r.trueState.precipitated)
-                    sp->flows.emplace_back(mineral, molal * kgw / 1000.0);
-                sol.speciation = sp;
-            }
+            sol.speciation = speciationBlock(thermo, r.trueState, kgw, r.pH);
         }
         return sol;
     }

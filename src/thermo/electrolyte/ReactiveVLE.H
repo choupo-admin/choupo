@@ -41,15 +41,32 @@ Description
     and in the detailed report.  UNITS NEVER IMPLEMENT CHEMISTRY: a unit op
     calls ThermoPackage::equilibrate(), which delegates here.
 
-    THE PHYSICS (spike scope).  Aqueous liquid + ideal-gas vapour:
+    THE PHYSICS.  Up to four phases at once -- ideal-gas vapour, a speciated
+    aqueous liquid, an optional second (organic) liquid, and precipitating
+    solids:
       * liquid speciation by the existing SpeciationSolver (closed system,
         pH SOLVED -- electroneutrality is one of its equations; Davies
-        gammas; K(T) anchored analytic / van't Hoff, announced);
+        gammas; K(T) anchored analytic / van't Hoff, announced), including
+        the minerals the case ADMITS in constant/chemistryDict, which reach
+        their SI = 0 ceiling by the solver's own active-set complementarity;
       * phase transfer of each declared VOLATILE through its curated
         gas-liquid equilibrium record (chemistry/, recordType
         gasLiquidEquilibrium, PHREEQC convention  a(dissolved) = K(T) *
         p_gas[atm]).  Water's own record (H2O.dat) supplies the solvent VLE
         -- Raoult emerges as a_w/K, no separate Antoine wiring;
+      * the MOLECULAR BACKBONE beside the ions: nonionising condensables
+        priced on the pure-component (Raoult) reference by the declared
+        molecular activity model, or by an authorised ideal (gamma = 1).
+        The solvent activity decomposes multiplicatively, a_w = gamma_w x_w
+        * aw_ionic, so nothing is counted twice;
+      * PERMANENT GASES (noncondensable) leave that backbone -- a species
+        far above its critical temperature has no pure liquid to reference
+        -- and dissolve on the Henry rung of their own gas record;
+      * a SECOND LIQUID when the case declares `equilibrium { organic {...} }`:
+        both liquids share the molecular model (two models would make the
+        residual measure their disagreement) and they leave as ONE apparent
+        liquid, so the stream table and the outer Newton's dimension are
+        unchanged and the no-organic path is byte-identical;
       * ions are EXCLUDED from the vapour by construction.
 
     NUMERICS.  Mathematically simultaneous, numerically nested (the ratified
@@ -57,9 +74,21 @@ Description
     variables keep them positive), whose residuals are the gas-liquid
     equilibria; each residual evaluation re-solves the INNER liquid
     speciation (mass balances + mass action + electroneutrality) at the
-    current liquid totals.  The run only reports convergence when the JOINT
-    residual set -- phase equilibria AND the speciation's own closures --
-    is satisfied at the accepted state.  Never flash-once/speciate-once.
+    current liquid totals, and -- when an organic phase is declared -- the
+    liquid-liquid split, by a Newton on the equality of ACTIVITY.  Gibbs
+    DECIDES which phase set is being solved; the Newton only SOLVES it.
+    Phase appearance/disappearance is an OUTER decision, tested on the feed,
+    re-tested at the answer, announced both ways.
+
+    The run only reports convergence when the JOINT residual set -- phase
+    equilibria AND the speciation's own closures -- is satisfied at the
+    accepted state.  Never flash-once/speciate-once.
+
+    Every tolerance, cap, seed and iteration count lives in ONE named block
+    at the top of the .cpp (`namespace num`), with the three that are
+    load-bearing physics rather than housekeeping called out there: the
+    smooth vaporisation cage, the two competing seeds, and the Gibbs margin
+    the second liquid must beat before it is admitted.
 
     COLLAPSE RULE (spike contract, refused when not closable).  Each
     non-solvent apparent component owns a unique MARKER ELEMENT (NH3 -> N);
