@@ -5,6 +5,7 @@
 
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "solver/NewtonND.H"
+#include "thermo/electrolyte/SaltFromCatalogue.H"
 
 #include <algorithm>
 #include <cmath>
@@ -24,6 +25,33 @@ ReactiveVLE::ReactiveVLE(ReactiveVLEConfig cfg)
     cfg_(std::move(cfg)),
     spec_(std::make_unique<SpeciationSolver>(cfg_.activityModel))
 {
+    //  ---- PERMANENT GASES: their family, from the record that already has it
+    //  A dissolved gas anchors a family like any other component, but its
+    //  bridge is not on the component record and must not be put there: the
+    //  gas-liquid record's `dissolvedSpecies` is the one curated home for
+    //  "which species is dissolved N2", and it is a TYPED reference already.
+    //  This is the only place in the assembly where those records are loaded,
+    //  so this is where the bridge is read.
+    for (const auto appIdx : cfg_.dissolvedGases)
+    {
+        const GasEntry* g = gasFor(appIdx);
+        if (!g)
+            throw std::runtime_error("ReactiveVLE: '"
+                + cfg_.apparent.at(appIdx) + "' is a permanent gas in a"
+                " reactive aqueous system, so its aqueous home is its"
+                " gas-liquid record -- and it has none.  Declare it a volatile"
+                " and curate chemistry/<gas>-dissolution.dat (recordType"
+                " gasLiquidEquilibrium, PHREEQC convention a = K * p[atm]), or"
+                " drop it from the component set.");
+        if (!findAqueousSpecies(g->species))
+            throw std::runtime_error("ReactiveVLE: the gas-liquid record for '"
+                + cfg_.apparent.at(appIdx) + "' dissolves into species '"
+                + g->species + "', which has no record (species/" + g->species
+                + ".dat) -- the dissolved gas cannot become an aqueous total.");
+        cfg_.families.push_back(
+            { appIdx, std::string(), {{ SpeciesId(g->species), 1.0 }} });
+    }
+
     // ---- Assembly-time verification (declare -> verify -> refuse) ---------
     //  Solve-time surprises are forbidden: every record the solve will need
     //  is checked HERE, with the curation remedy in the message.
@@ -64,6 +92,15 @@ ReactiveVLE::ReactiveVLE(ReactiveVLEConfig cfg)
             for (const auto& r : spec_->reactions())
                 for (const auto& [m, rnu] : r.masters)
                     if (m == master.key) { masterKnown = true; break; }
+            //  A DISSOLVED GAS's master is referenced by its gas-liquid record
+            //  and by nothing else, and that is not a broken chemistry set --
+            //  it is what INERT means.  Nitrogen ionises with nothing and
+            //  reacts with nothing; its entire aqueous story is one
+            //  dissolution equilibrium.  Requiring a speciation reaction would
+            //  refuse the one case where having none is the physics.
+            if (!masterKnown && cfg_.dissolvedGases.count(fam.apparentIdx))
+                for (const auto& g : spec_->gases())
+                    if (g.species == master.key) { masterKnown = true; break; }
             if (!masterKnown)
                 throw std::runtime_error("ReactiveVLE: apparent component '"
                     + cfg_.apparent.at(fam.apparentIdx) + "' maps to master '"
@@ -696,15 +733,39 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         {
             const std::size_t idx = act[k];
             //  The per-component cage keeps a liquid amount from reaching
-            //  exactly zero (logs and mole fractions need it).  It used to sit
-            //  at 0.9995*n, which is not a guard but a CEILING: a component
-            //  whose equilibrium leaves 0.03 % of itself in the liquid -- a
-            //  benzene stripped into the vapour, say -- cannot reach its own
-            //  answer, and the residual goes flat against the cap with every
-            //  volatile's leg uniformly short.  That is a stall with no
-            //  descent direction, and it looks exactly like a rank-deficient
-            //  Jacobian while being nothing of the kind (2026-07-27).
-            vap[idx] = std::min(V * w[k]/wSum, (1.0 - 1.0e-10) * n[idx]);
+            //  exactly zero (logs and mole fractions need it).  It used to be
+            //  a hard min() at 0.9995*n, which is not a guard but a CEILING
+            //  twice over.  As a LIMIT it is too low: a component whose
+            //  equilibrium leaves 0.03 % of itself in the liquid -- a benzene
+            //  stripped into the vapour -- cannot reach its own answer.  And
+            //  as a CLAMP it kills the derivative: once min() picks the cap,
+            //  vap stops responding to the unknowns entirely, so the residual
+            //  goes flat and the Newton has nowhere to step.  A nearly
+            //  insoluble permanent gas hits that instantly -- nitrogen wants
+            //  to be 99.98 % vaporised, the clamp puts it at 100 %, and its
+            //  leg sits 14 log units out with zero gradient.
+            //
+            //  So the saturation is SMOOTH -- and smooth ONLY WHERE THE CLAMP
+            //  USED TO BITE.  Below 90 % of a component's own amount, vap is
+            //  exactly t, so every case that never approached the cap is
+            //  untouched; above it, the curve bends over exponentially and
+            //  approaches n from below without ever reaching it:
+            //
+            //      vap = t                                  t <= 0.9 n
+            //      vap = n - 0.1 n exp( -(t - 0.9n)/(0.1n) ) t >  0.9 n
+            //
+            //  Continuous AND C1 at the join (value 0.9n, slope 1 on both
+            //  sides), asymptotic to n, derivative never zero.  Making it
+            //  smooth EVERYWHERE was tried first and broke flash13 with a
+            //  singular Jacobian: bending the curve where it did not need
+            //  bending left two of its columns near-parallel (2026-07-27).
+            const scalar t  = V * w[k]/wSum;
+            const scalar ni = n[idx];
+            if (ni <= 0.0)            vap[idx] = 0.0;
+            else if (t <= 0.9 * ni)   vap[idx] = t;
+            else
+                vap[idx] = ni - 0.1*ni
+                    * std::exp(-std::min((t - 0.9*ni) / (0.1*ni), 700.0));
         }
     };
 
@@ -766,9 +827,16 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         // diverges).  A diverging trial is NOT a failed solve: return a huge
         // residual so the damped outer Newton backtracks away from it.  Only
         // a divergence AT the accepted solution surfaces as a real refusal.
-        try { speciate(vap, srLast); }
-        catch (const std::exception&)
-        { return sVector(nV, 1.0e6); }
+        //  The guard covers the WHOLE evaluation, not just the speciation
+        //  step.  A trial that strips a solute out of the liquid entirely
+        //  makes its dissolved species vanish from the result, and reading it
+        //  back raises the curation refusal -- right at the answer, wrong at a
+        //  trial.  Catching only the diverging fixed point left that second
+        //  path uncaught, and flash13 hit it the day the seed changed
+        //  (2026-07-27).
+        try
+        {
+        speciate(vap, srLast);
         const TrueVap tv = trueVapour(vap);
         const scalar tau = std::max(tv.tau, 1.0e-300);
         //  A trial that does not admit the phase set being solved is reported
@@ -806,6 +874,9 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                  - std::log(std::max(K * pA, 1.0e-300));
         }
         return r;
+        }
+        catch (const std::exception&)
+        { return sVector(nV, 1.0e6); }
     };
 
     // Seed: V = 2 % of the feed, vapour ratio from the feed ratio of the
@@ -860,27 +931,39 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         auto eqPressures = [&](const sVector& vap, std::vector<scalar>& p)
                            -> bool
         {
-            SpeciationResult sr;
-            try { speciate(vap, sr); }
-            catch (const std::exception&) { return false; }
-            LiquidState ls;
-            if (!liquidState(vap, ls)) return false;
-            p.assign(nV, 0.0);
-            for (std::size_t k = 0; k < nV; ++k)
+            //  A SEED TRIAL, and it is allowed to be unphysical.  Pushing a
+            //  solute's liquid to nothing makes its dissolved species drop out
+            //  of the speciation result, and reading that back is a CURATION
+            //  refusal -- correct at the answer, wrong here: this is the
+            //  Rachford-Rice loop looking for a starting point, and a trial it
+            //  cannot price is simply a trial to walk away from.  Same posture
+            //  the residual already takes toward a diverging speciation
+            //  (2026-07-27, found when flash13's RR round drove the ammonia
+            //  out of the liquid).
+            try
             {
-                const std::size_t idx = act[k];
-                if (cfg_.nonreactive.count(idx))
+                SpeciationResult sr;
+                speciate(vap, sr);
+                LiquidState ls;
+                if (!liquidState(vap, ls)) return false;
+                p.assign(nV, 0.0);
+                for (std::size_t k = 0; k < nV; ++k)
                 {
-                    p[k] = molecularActivity(idx, ls)
-                         * cfg_.psatOf.at(idx)(T_K) / kAtm;
-                    continue;
+                    const std::size_t idx = act[k];
+                    if (cfg_.nonreactive.count(idx))
+                    {
+                        p[k] = molecularActivity(idx, ls)
+                             * cfg_.psatOf.at(idx)(T_K) / kAtm;
+                        continue;
+                    }
+                    const scalar K = std::pow(10.0, gasLogK(*gasFor(idx), T_K));
+                    p[k] = dissolvedActivity(idx, sr, ls)
+                         / std::max(K, 1.0e-300);
+                    if (idx == dimIdx)
+                        p[k] += 2.0*Kd*p[k]*p[k];    // apparent moles / dimer
                 }
-                const scalar K = std::pow(10.0, gasLogK(*gasFor(idx), T_K));
-                p[k] = dissolvedActivity(idx, sr, ls)
-                     / std::max(K, 1.0e-300);
-                if (idx == dimIdx)
-                    p[k] += 2.0*Kd*p[k]*p[k];        // apparent moles / dimer
             }
+            catch (const std::exception&) { return false; }
             return true;
         };
         //  ---- SEED THE AMOUNT, not just the ratio -----------------------

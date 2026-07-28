@@ -159,28 +159,26 @@ equilibrium
        past where it means anything.  A permanent gas has no pure liquid to
        reference.  The engine now REFUSES it by name instead.
 
-  WHAT IS LEFT is ONE NAMED SLICE: the Henry rung for a nonionising dissolved
-  gas inside the reactive shape.  The builder already refuses a `role solute`
-  component for exactly this reason; nitrogen reaches the same wall by a
-  different fact (`noncondensable true`).  What is missing is small and
-  specific -- the gas's DISSOLVED amount must enter the speciation as a total,
-  and the only record naming that species is its own gas-liquid record
-  (`dissolvedSpecies N2`), which the solver reads and the builder does not.
+  IT RUNS (2026-07-27).  The last two pieces were the Henry rung for a
+  nonionising dissolved gas, and one line of numerics:
 
-  Writing that bridge a second time on the component looks tempting and is
-  wrong: it is a second home for one fact, and check_resolver_coherence says
-  so in as many words -- a bridge IS participation, so `aqueousSpeciation
-  none;` would then be lying.  It was tried on 2026-07-27 and the gate caught
-  it the same hour.
+    5. N2's aqueous home is its GAS-LIQUID record.  Its family is built by
+       ReactiveVLE's constructor from that record's `dissolvedSpecies` -- the
+       one curated home for which species is dissolved nitrogen.  Declaring
+       that bridge on the component was tried and check_resolver_coherence
+       caught it the same hour: a bridge IS participation, so
+       `aqueousSpeciation none;` would then be lying.
+    6. The per-component cage was a hard min(), which does not merely LIMIT
+       the vaporised amount -- it kills the derivative.  Nitrogen wants to be
+       99.98 % vaporised; the clamp put it at 100 % and its residual leg sat
+       14 log units out with zero gradient.  The saturation is now smooth
+       above 90 % of a component's own amount and exactly linear below, so
+       every case that never approached the cap is untouched.
 
-  Everything downstream of that wall was reached and works: with N2 taken out
-  of the basis the case assembles completely, masters derive (Acetate Ca HCO3
-  HS NH4), the basis is full rank, the second liquid is PRESENT at 95.1 %
-  benzene, calcite precipitates 139.8 mg/kg to SI = 0.000 and the pH solves at
-  6.78.  The outer flash Newton then still does not converge on this feed --
-  a nearly-insoluble inert beside a strongly coupled weak-electrolyte system
-  is a harder flash than the seed was built for (flash17 has no inert).  Two
-  named slices, then, and both are solver work, not data.
+  THE ANSWER:  V/F = 0.0635 · pH 8.334 · organic liquid 23.3 % of the backbone
+  liquid · calcite at its SI = 0 ceiling · |r|max 7e-14 in 6 outer iterations
+  with a quadratic tail.  Nine components, three phases, an aqueous speciation
+  network, a precipitating mineral and a permanent gas, solved together.
 
   THE APPROXIMATION, now that the solver has landed.  What is excluded from the
   organic phase is not the ~0.2 mol% of water benzene really holds -- that is

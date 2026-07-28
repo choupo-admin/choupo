@@ -134,6 +134,24 @@ struct ReactiveVLEConfig
     std::set<std::size_t>                                 nonreactive;
     std::map<std::size_t, std::function<scalar(scalar)>> psatOf; // Pa(T[K])
 
+    //  PERMANENT GASES on the HENRY rung (N2, O2 -- `noncondensable true;`).
+    //  Nonionising like the components above, and NOT on the molecular
+    //  backbone: the backbone prices a liquid on the pure-component
+    //  (Raoult) reference and a species above its critical temperature has no
+    //  pure liquid to reference -- nitrogen's Antoine correlation stops at
+    //  126 K and the cases that carry it run at 300.
+    //
+    //  Their dissolved amount is a TOTAL the aqueous system carries, so each
+    //  one anchors a family like any other component.  What it does NOT do is
+    //  declare that bridge on the component record: the dissolved species is
+    //  already curated, once, in the gas-liquid record's `dissolvedSpecies`,
+    //  and writing it again would be a second home for one fact (the
+    //  coherence gate says so in as many words -- a bridge IS participation,
+    //  so `aqueousSpeciation none;` would then be lying).  So the family is
+    //  built in THIS class's constructor, where the gas records are loaded,
+    //  from the typed reference they already carry (2026-07-27).
+    std::set<std::size_t>                                 dissolvedGases;
+
     //  ---- ADMITTED SOLID PHASES (from constant/chemistryDict) -------------
     //  The minerals this system may PRECIPITATE, passed straight through to
     //  the speciation kernel's `equilibrate` list.  EMPTY = the path this

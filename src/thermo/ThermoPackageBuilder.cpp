@@ -732,26 +732,32 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             //  the coherence gate says so in as many words: a bridge IS
             //  participation, and `aqueousSpeciation none` would then be
             //  lying (2026-07-27).
+            //  A permanent gas takes the HENRY rung through its gas-liquid
+            //  record.  Its FAMILY is built by ReactiveVLE's constructor, from
+            //  that record's `dissolvedSpecies` -- the one curated home for
+            //  which species is dissolved nitrogen.  Declaring the bridge on
+            //  the component instead would be a second home for one fact, and
+            //  check_resolver_coherence refuses it by name (a bridge IS
+            //  participation, so `aqueousSpeciation none;` would be lying).
+            //
+            //  The basis-rank conclusion below is UNAFFECTED: this adds one
+            //  column whose only nonzero entry is a NEW row, which raises the
+            //  rank by exactly one and keeps full column rank if it held.
             if (cp->isNoncondensable())
-                throw std::runtime_error("reactive electrolyteGammaPhi: '"
-                    + names[i] + "' is a PERMANENT GAS (noncondensable) in a"
-                    " reactive aqueous system.  It cannot ride the molecular"
-                    " backbone -- that prices a liquid on the pure-component"
-                    " (Raoult) reference, and a species above its critical"
-                    " temperature has no pure liquid to reference: its Antoine"
-                    " correlation would be extrapolated far past the point"
-                    " where it means anything.  Its home is the HENRY rung"
-                    " through its gas-liquid record, and carrying a dissolved"
-                    " gas's total through the reactive speciation is a NAMED,"
-                    " unbuilt slice (the same one `role solute` refuses"
-                    " above).  Remedy today: drop the permanent gas from the"
-                    " component set, or use the diluteSolution world.");
             {
-                cfg.nonreactive.insert(i);
-                cfg.psatOf[i] =
-                    [cp](scalar T) { return cp->vp().Psat_Pa(T); };
+                cfg.dissolvedGases.insert(i);
+                if (thermoAnnounce())
+                    std::cout << "[resolver] " << names[i] << ": permanent gas"
+                                 " (noncondensable) -- HENRY rung through its"
+                                 " gas-liquid record, not the Raoult backbone"
+                                 " (no pure liquid to reference above Tc); its"
+                                 " dissolved amount is an aqueous total\n";
                 continue;
             }
+            cfg.nonreactive.insert(i);
+            cfg.psatOf[i] =
+                [cp](scalar T) { return cp->vp().Psat_Pa(T); };
+            continue;
         }
 
         //  THE DECLARED BRIDGE, read as the stoichiometric VECTOR it is
