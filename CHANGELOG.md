@@ -10,6 +10,26 @@ tag `v2607` = version `2607`).  Development happens on the `dev` branch
 
 ## Choupo-dev (2026-07-28)
 
+* **`phaseSet auto`: the phase set decided, not typed.**  The case dicts have
+  said for a while that "the phase set is a RESULT, not an input", and then
+  made the author type it.  Under `auto` the engine decides, from two things
+  it already trusts: WHAT THE PACKAGE ADMITS (a formulation declaring one
+  liquid has no second to split into; one declaring no vapour cannot boil)
+  and MICHELSEN's TPD on the liquid -- the same test the LL path already runs.
+  When a second liquid exists and the package has a vapour, the RICHEST
+  admissible set goes to the Gibbs minimisation and Gibbs decides whether the
+  vapour is populated; the engine does not assert it.
+  A first cut asked a third question -- the Rachford-Rice bracket at the FEED
+  composition -- and it was wrong in the way that matters: on vlle03 it read
+  sum zK = 0.965 and chose LL over the declared VLLE, losing a vapour the
+  minimisation does find.  K-values at the feed are not K-values at the split.
+  That question is gone.
+  Opt-in and golden-neutral: absent, the phase set stays VL; an explicit
+  VL/LL/VLLE remains the author's override.  Proved by EQUIVALENCE rather
+  than by a new case -- the gate runs four cases twice, declared and with
+  `auto` swapped in, and requires the same phase set AND the same V/F AND the
+  same regime: VL (flash01, flash02), LL (vlle01), VLLE (vlle03), 4/4.  The
+  check was verified to fail when the VLLE branch is broken.
 * **The flash machine has a NAME: the `model` slot.**  Four numerical worlds
   have always lived inside the one flash unit -- K-value iteration
   (Rachford-Rice + Wegstein), direct Gibbs minimisation for the liquid split,

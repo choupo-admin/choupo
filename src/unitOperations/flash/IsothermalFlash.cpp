@@ -1065,14 +1065,93 @@ int IsothermalFlash::solve(const DictPtr& dict,
     if (dict->found("maxOuterIter"))
         opts.maxOuterIter   = static_cast<int>(dict->lookupScalar("maxOuterIter"));
 
+    std::string psDeclared;
     if (operDict->found("phaseSet"))
     {
         const std::string ps = operDict->lookupWord("phaseSet");
+        psDeclared = ps;
         if      (ps == "VL"  ) opts.phaseSet = PhaseSet::VL;
         else if (ps == "LL"  ) opts.phaseSet = PhaseSet::LL;
         else if (ps == "VLLE") opts.phaseSet = PhaseSet::VLLE;
+        else if (ps == "auto")
+        {
+            /*---------------------------------------------------------------*\
+              `phaseSet auto` -- the phase set as a RESULT, not an input.
+
+              This repository has said for a while, in its own case dicts,
+              that "the phase set is a RESULT, not an input", and then made
+              the author type it.  Under `auto` the engine decides, and it
+              decides from two things it already trusts -- never from a new
+              heuristic:
+
+                * WHAT THE PACKAGE ADMITS.  A formulation that declares one
+                  liquid phase has no second liquid to split into, and one
+                  that declares no vapour cannot boil.  The phase set can
+                  never be richer than the declared thermophysical system,
+                  and the VLLE path already refuses when it is asked for a
+                  vapour the package does not have.
+                * MICHELSEN's TANGENT-PLANE DISTANCE on the liquid -- the
+                  same test the LL path runs before it minimises anything.
+                  tm < 0 means a composition exists whose chemical potential
+                  lies below the tangent plane at z: the feed is not stable
+                  as one liquid.
+
+              A first cut of this asked a THIRD question -- the
+              Rachford-Rice bracket (sum z K, sum z/K) at the feed's own
+              composition -- to decide whether a vapour would appear.  It was
+              wrong, and wrong in the way that matters: on vlle03 it read
+              sum zK = 0.965 and chose LL over the declared VLLE, losing a
+              vapour the Gibbs minimisation does find.  K-values evaluated at
+              the FEED are not the K-values at the split, and a strongly
+              non-ideal system is exactly where they differ.  So the vapour
+              question is not asked here at all: when a second liquid exists
+              and the package has a vapour, the richest set is handed to the
+              Gibbs minimisation, and GIBBS decides whether the vapour is
+              populated.  That is the settled posture, not a new one.
+
+              Opt-in, and it cannot move a case that does not ask: absent,
+              the phase set stays VL exactly as before, and an explicit
+              VL/LL/VLLE remains the author's override.
+            \*---------------------------------------------------------------*/
+            const std::size_t nLiq = thermo.phasesOfType("liquid").size();
+            const std::size_t nVap = thermo.phasesOfType("vapor").size();
+            bool   llSplit = false;
+            scalar tmMin   = 0.0;
+            if (nLiq >= 2)
+            {
+                const auto st = solver::michelsenTPD(
+                    thermo.phase(thermo.phasesOfType("liquid")[0]),
+                    in.T, in.P, in.z);
+                llSplit = st.unstable;
+                tmMin   = st.tmMin;
+            }
+            opts.phaseSet = !llSplit ? PhaseSet::VL
+                          : (nVap >= 1 ? PhaseSet::VLLE : PhaseSet::LL);
+            if (verbosity >= 2)
+            {
+                std::cout << "  [flash] phaseSet auto -> "
+                          << (opts.phaseSet == PhaseSet::VL   ? "VL"
+                            : opts.phaseSet == PhaseSet::LL   ? "LL" : "VLLE")
+                          << "  (package admits " << nLiq << " liquid phase(s)"
+                          << (nVap ? " + vapour" : ", no vapour") << "; ";
+                if (nLiq >= 2)
+                    std::cout << "TPD tm_min " << std::scientific
+                              << std::setprecision(3) << tmMin
+                              << (llSplit ? " -- second liquid"
+                                          : " -- stable as one liquid")
+                              << std::defaultfloat;
+                else
+                    std::cout << "one liquid declared -- nothing to split into";
+                std::cout << ")\n";
+                if (opts.phaseSet == PhaseSet::VLLE)
+                    std::cout << "  [flash] the vapour is NOT asserted here --"
+                                 " the richest admissible set goes to the Gibbs"
+                                 " minimisation and Gibbs decides whether it is"
+                                 " populated\n";
+            }
+        }
         else throw std::runtime_error("Unknown phaseSet '" + ps
-            + "' (expected 'VL', 'LL' or 'VLLE')");
+            + "' (expected 'VL', 'LL', 'VLLE' or 'auto')");
     }
 
     /*-----------------------------------------------------------------------*\

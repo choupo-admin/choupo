@@ -30,6 +30,15 @@ And two positive checks: the corpus exercises the DECLARED branch (not only
 the implied default), and the reactive cases announce nothing (they must not
 sprout a model line they do not own).
 
+`phaseSet auto` is checked by EQUIVALENCE, which is the only honest way to
+check a decision: each case below is run twice -- as its author declared it,
+and again with `phaseSet auto;` swapped in -- and the automatic decision must
+reach the SAME phase set and the SAME answer.  No golden is touched; the
+cases stay declared, and the gate proves the engine would have got there on
+its own.  (The first cut of `auto` failed exactly this: it read a
+Rachford-Rice bracket at the FEED composition and chose LL over vlle03's
+VLLE, losing a vapour the Gibbs minimisation does find.)
+
 Exit 1 listing failures."""
 import re
 import shutil
@@ -63,6 +72,34 @@ DECLARED = [
 ]
 
 REACTIVE_SILENT = "tutorials/steady/flash/flash16_calcite_precipitation"
+
+#  (case, the phase set the author declared / the default the case relies on)
+AUTO_EQUIV = [
+    ("tutorials/steady/flash/vlle03_audit_artificial",  "VLLE"),
+    ("tutorials/steady/flash/vlle01_waterButanol",      "LL"),
+    ("tutorials/steady/flash/flash01_benzene_toluene",  "VL"),
+    ("tutorials/steady/flash/flash02_ethanol_water",    "VL"),
+]
+
+PHASE_SET = re.compile(r"phaseSet\s+\w+;")
+OPER      = re.compile(r"(operation\s*\{)")
+AUTO_LINE = re.compile(r"\[flash\] phaseSet auto -> (\w+)")
+VF        = re.compile(r'"V_over_F":\s*([-0-9.eE+]+)')
+REGIME    = re.compile(r"^  Regime:\s+(.*)$", re.M)
+
+
+def with_auto(tmp, case):
+    dst = Path(tmp) / (Path(case).name + "_auto")
+    shutil.copytree(ROOT / case, dst)
+    fd = dst / "system" / "flowsheetDict"
+    s = fd.read_text()
+    s2, n = PHASE_SET.subn("phaseSet   auto;", s, count=1)
+    if n == 0:
+        s2, n = OPER.subn(r"\1 phaseSet auto;", s, count=1)
+    if n != 1:
+        return None
+    fd.write_text(s2)
+    return dst
 
 
 def run(case_dir):
@@ -127,6 +164,41 @@ def main():
                      "the unit; announcing one in the unit's voice is the "
                      "second home this gate exists to prevent")
 
+    #  ---- `phaseSet auto` by EQUIVALENCE -------------------------------
+    autoOk = 0
+    with tempfile.TemporaryDirectory() as tmp:
+        for case, declared in AUTO_EQUIV:
+            rcD, outD = run(ROOT / case)
+            d = with_auto(tmp, case)
+            if d is None:
+                fails.append(f"{case}: no phaseSet/operation to swap for auto")
+                continue
+            rcA, outA = run(d)
+            if rcD != 0 or rcA != 0:
+                fails.append(f"{case}: declared exit {rcD}, auto exit {rcA} "
+                             "-- both must run")
+                continue
+            m = AUTO_LINE.search(outA)
+            if not m:
+                fails.append(f"{case}: `phaseSet auto;` printed no decision "
+                             "line -- the choice must be announced, always")
+            elif m.group(1) != declared:
+                fails.append(f"{case}: auto chose {m.group(1)}, the author "
+                             f"declared {declared}.  The engine must reach the "
+                             "same phase set the case was written for, or the "
+                             "automatic decision is not trustworthy")
+            vD, vA = VF.search(outD), VF.search(outA)
+            if vD and vA and abs(float(vD.group(1)) - float(vA.group(1))) > 1e-9:
+                fails.append(f"{case}: auto reached {declared} but a different "
+                             f"answer (V/F {vD.group(1)} vs {vA.group(1)})")
+            rD, rA = REGIME.search(outD), REGIME.search(outA)
+            if rD and rA and rD.group(1) != rA.group(1):
+                fails.append(f"{case}: auto reached a different regime "
+                             f"('{rD.group(1)}' vs '{rA.group(1)}')")
+            if not [f for f in fails if case in f]:
+                autoOk += 1
+            shutil.rmtree(d)
+
     if fails:
         print("flash-model gate FAILED:")
         for f in fails:
@@ -134,7 +206,9 @@ def main():
         return 1
     print(f"flash model: {len(REFUSALS)} refusal(s) fire with their reasons, "
           f"{len(DECLARED)} case(s) exercise the declared branch, the reactive "
-          "path announces no unit-level model")
+          f"path announces no unit-level model; `phaseSet auto` reproduces the "
+          f"declared set AND the answer on {autoOk}/{len(AUTO_EQUIV)} cases "
+          "(VL, LL, VLLE)")
     return 0
 
 
