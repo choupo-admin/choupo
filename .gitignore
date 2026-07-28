@@ -31,6 +31,10 @@ src/**/*.d
 tutorials/*/*/reports/
 # fractal plants nest sectors/units arbitrarily deep -> ignore reports/ at any depth
 tutorials/**/reports/
+# A DESIGN DRIVER (docs/design/<case>/) is a runnable case too, and running it
+# leaves the same generated tree.  NOT a blanket **/reports/: docs/reports/
+# holds curated, tracked roadmap documents that have nothing to do with a run.
+docs/design/**/reports/
 # postProcessing/ is the CHT-faithful report tree (controlDict
 # `reportsLayout postProcessing;`): postProcessing/<report>/<instant>/...
 # Generated output, same status as reports/ -- ignore at any depth.
