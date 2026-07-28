@@ -111,6 +111,47 @@ All of the following, before any code or grammar lands:
    limit; recovers the declared endpoints), gate-enforced like
    `check_composite_limits`.
 
+### Where those seven stand today (surveyed 2026-07-28)
+
+The survey was prompted by an external audit that put a number on the gap:
+for flashComplex's aqueous backbone (water 0.895 / ethanol 0.103 / benzene
+0.002) a Born estimate at ε ≈ 64 against water's 78.4 gives ~1.4 kJ/mol per
+unit z² — a factor of ~9 on a divalent γ and about **two log units on the
+calcite saturation index**. The gap is not a rounding term, and until it is
+priced the two-liquid capability is architecture without physics.
+
+* **2 (form) — AVAILABLE.** The Born expression is already implemented and
+  exercised: `ENRTLSingleSalt.H` carries `ln γ_i^Born = (e²/8πε₀k_BT)
+  (1/ε_mix − 1/ε_w)(1/r_i)` with mixture permittivity, molar volume and molar
+  mass replacing the pure-water values in `A_DH`. It is not a new model.
+* **3 (conventions) — AVAILABLE.** The versioned profiles the origin and
+  destination resolve to exist since the D2 migration
+  (`data/standards/conventions/`).
+* **7 (limit tests) — MECHANICAL.** `x_anti → 0` recovering the aqueous γ
+  exactly is already the eNRTL mixed-solvent contract; the gate is the same
+  shape as `check_composite_limits`.
+* **1 (primary source) — THE BINDING CONDITION.** Everything else waits on
+  it, and it is precisely two curated quantities:
+  - **relative permittivity per backbone co-solvent** (ethanol, benzene, …)
+    with a validity range in T. Water is covered — Malmberg & Maryott,
+    J. Res. NBS 56 (1956) 1, US-government public domain, already in
+    `SolventProperties.H`. The co-solvents are not, and every open route
+    found on 2026-07-28 lands on CRC/NIST, which this project excludes on
+    licence grounds (no grant, nothing to honour).
+  - **Born radii per ion**, or the measured transfer free energies that
+    would make radii unnecessary. Today's single radius is *fitted to KCl in
+    water+ethanol* and documented as such — one system, not a rung.
+* **5 / 6 (validation system, non-zero reference case) — follow from 1.**
+  Ethanol–water is the natural choice: the transfer data are the most
+  measured, and flashComplex already sits at 10 mol% ethanol with a divalent
+  ion and a mineral, so the correction would be observable at two log units
+  rather than decorative.
+
+**So the campaign is a CURATION campaign, not a modelling one**, and it is
+the same wall the NH4HCO3 solubility hit the same day: the physics and the
+code are available, a licence-clean primary is not. Anyone picking this up
+should start at the permittivity records, not at the solver.
+
 ## Relations
 
 * `docs/design/equilibrium-parameterisation-identity.md` — the convention
