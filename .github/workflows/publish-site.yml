@@ -1,0 +1,114 @@
+# =============================================================================
+#  publish-site  --  build Choupo-dev and publish it at www.choupo.org
+#
+#  WHAT IS PUBLISHED is a STATIC site.  The simulator ships as WebAssembly and
+#  runs in the visitor's own browser tab: no server ever solves a flash, there
+#  is no per-user state, and a case a visitor opens never leaves their machine.
+#  That is why a static host is enough, and it is the property to preserve --
+#  the day this needs a backend is the day it needs a different design review.
+#
+#  ONE ASSEMBLER.  Every step below that touches the site calls
+#  `bin/buildSite`, the same script `bin/runSite` uses for the local
+#  rehearsal.  A second copy of the assembly here would be a second home for
+#  the build recipe, and the day the two disagree is the day "it works
+#  locally" stops being evidence about what visitors see.
+#
+#  BEFORE THE FIRST RUN CAN SUCCEED, two things must be done by hand, once,
+#  and neither can be done from inside this repository:
+#    1. Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+#    2. DNS at the registrar (see docs/deploying-the-site.md for the records).
+#  Until then the build and upload succeed and the deploy step fails, loudly,
+#  which is the correct signal: nothing is silently half-published.
+# =============================================================================
+name: publish-site
+
+on:
+  push:
+    branches: [dev]
+    #  Docs-only and test-only changes still rebuild: the landing reads
+    #  generated/releaseInventory.json and the app serves docs/*.pdf, so
+    #  "nothing visible changed" is not a judgement this file should make.
+  workflow_dispatch:
+
+concurrency:
+  #  One publish at a time, and a newer push wins: a half-finished older
+  #  deploy overwriting a newer one is the failure mode worth spending a
+  #  cancelled job on.
+  group: publish-site
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      #  ---- the toolchain: a C++ compiler for the native binaries the
+      #       curation scripts run, Emscripten for the WASM, node for the app,
+      #       and LaTeX for the guides the app links to.
+      - name: Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.6          # pinned: docs/gui-internals.md documents this
+          actions-cache-folder: emsdk-cache
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: gui/package-lock.json
+
+      - name: LaTeX (the guides the app's Help links serve)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-recommended texlive-latex-extra texlive-pictures \
+            texlive-fonts-recommended
+
+      #  ---- the SAME chain proven locally, in the same order ---------------
+      - name: Build the WASM the app runs
+        run: make wasm-gui
+
+      - name: Install the app's dependencies
+        run: npm ci --no-audit --no-fund
+        working-directory: gui
+
+      - name: Assemble the site
+        run: bin/buildSite
+
+      #  A published site that cannot solve is worse than none: it looks like
+      #  the simulator and is not.  Assert the pieces a visitor actually
+      #  fetches, by path and by size, before anything is uploaded.
+      - name: Verify what is about to be published
+        run: |
+          set -e
+          d=site/_dist
+          for f in index.html app/index.html models/index.html \
+                   wasm/choupoSolve.wasm wasm/choupoProps.wasm CNAME; do
+            [ -s "$d/$f" ] || { echo "MISSING or EMPTY: $f"; exit 1; }
+          done
+          # the solver is megabytes; a stub or a git-lfs pointer is kilobytes
+          sz=$(stat -c%s "$d/wasm/choupoSolve.wasm")
+          [ "$sz" -gt 1000000 ] || { echo "choupoSolve.wasm is $sz B -- not a build"; exit 1; }
+          grep -q "www.choupo.org" "$d/CNAME" || { echo "CNAME does not name the site"; exit 1; }
+          echo "site OK: $(du -sh $d | cut -f1)"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/_dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

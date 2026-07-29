@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+#---------------------------------------------------------------------------#
+#  buildSite  --  ASSEMBLE the Choupo site into site/_dist.  ONE assembler,
+#                 two consumers: `bin/runSite` serves what this produces, and
+#                 the publish workflow uploads what this produces.
+#
+#  That is the whole point of the file existing.  The assembly used to live
+#  inside runSite, which meant a published site could only be built by a
+#  SECOND copy of the same twenty lines -- and the day those two copies
+#  disagree is the day "it worked locally" stops being evidence about the
+#  thing visitors see.  One quantity, one home; a build recipe is a quantity.
+#
+#  THE SINGLE-ORIGIN LAYOUT (no asset rebasing anywhere):
+#      site/_dist/index.html        the LANDING, at /
+#      site/_dist/app/index.html    the APP entry, at /app
+#      site/_dist/{assets,wasm,workers,docs}/   served at ROOT, so the app's
+#                                   absolute /assets, /wasm, /workers refs
+#                                   resolve and /app/index.html runs unchanged.
+#
+#  The simulator (choupoSolve.wasm and friends) is DELIVERED by whatever
+#  serves this directory and EXECUTES in the visitor's browser tab.  No server
+#  ever computes a flash.  That is not an implementation detail: it is why a
+#  static host is enough, why there is no per-user state, and why a visitor's
+#  case never leaves their machine.
+#
+#  Usage:
+#      bin/buildSite            build the app, then assemble
+#      bin/buildSite --no-build reuse gui/dist, just assemble
+#
+#  Requires (for a full build): npm, and gui/node_modules installed.  The
+#  WASM must already be built (`make wasm-gui`) -- this script does NOT build
+#  it, because a 7-minute Emscripten link has no business hiding inside an
+#  assembly step that otherwise takes a second.
+#---------------------------------------------------------------------------#
+
+set -e
+
+script_dir=$(dirname "$(readlink -f "$0")")
+root=$(readlink -f "$script_dir/..")
+gui="$root/gui"
+src="$root/site"
+dist="$src/_dist"
+
+if [ "${1:-}" != "--no-build" ]; then
+    #  The guide PDFs FIRST (incremental), so the served Help links never 404.
+    if command -v pdflatex >/dev/null 2>&1; then
+        echo "[buildSite] compiling guide PDFs (make -C docs) ..."
+        ( cd "$root/docs" && make all >/dev/null 2>&1 ) \
+            || echo "[buildSite] WARN: docs build had errors; using existing PDFs"
+    else
+        echo "[buildSite] WARN: no pdflatex -- using existing docs/*.pdf"
+    fi
+    echo "[buildSite] building the app (npm run build) ..."
+    ( cd "$gui" && npm run build )
+fi
+
+if [ ! -d "$gui/dist" ]; then
+    echo "[buildSite] ERROR: no app build at $gui/dist (run without --no-build first)" >&2
+    exit 1
+fi
+if [ ! -f "$gui/public/wasm/choupoSolve.wasm" ]; then
+    echo "[buildSite] ERROR: no WASM at gui/public/wasm -- run \`make wasm-gui\` first." >&2
+    echo "[buildSite]        A site assembled without it serves an app that cannot solve." >&2
+    exit 1
+fi
+
+echo "[buildSite] assembling combined site -> $dist"
+rm -rf "$dist"
+mkdir -p "$dist/app"
+cp -r "$gui/dist/." "$dist/"          # app assets + the app index.html at root
+mv "$dist/index.html" "$dist/app/index.html"   # the APP lives at /app
+cp "$src/index.html" "$dist/index.html"         # the LANDING lives at /
+# The model catalogue page at /models/ (clean route via a directory index).
+mkdir -p "$dist/models"
+cp "$src/models.html" "$dist/models/index.html" 2>/dev/null || true
+# The releases page at /releases/ (same clean-route pattern).
+mkdir -p "$dist/releases"
+cp "$src/releases.html" "$dist/releases/index.html" 2>/dev/null || true
+# The generated single-source-of-truth JSONs the landing + /models consume.
+python3 "$root/bin/curate/release_inventory.py" >/dev/null 2>&1 || true
+cp "$root/generated/releaseInventory.json" "$dist/" 2>/dev/null || true
+cp "$root/generated/modelsCatalogue.json"  "$dist/" 2>/dev/null || true
+cp "$src"/*.svg "$dist/" 2>/dev/null || true
+cp "$src"/*.png "$dist/" 2>/dev/null || true    # landing logo (logo2.png) + any raster art
+cp "$src"/*.webp "$dist/" 2>/dev/null || true   # compressed landing product imagery
+cp "$src/sw.js" "$dist/" 2>/dev/null || true    # offline service worker (scope /)
+#  The custom domain, when one is declared.  GitHub Pages reads CNAME from the
+#  root of what is published; keeping it in site/ means the domain is a fact of
+#  the SITE, versioned beside the pages it names, not a setting in a web UI
+#  that no clone can see.
+cp "$src/CNAME" "$dist/" 2>/dev/null || true
+#  Jekyll is not involved and must not be: a directory or file beginning with
+#  an underscore (the app's chunks can) would be silently dropped otherwise.
+touch "$dist/.nojekyll"
+
+echo "[buildSite] done:  $(du -sh "$dist" | cut -f1)  in  $dist"
