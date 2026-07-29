@@ -284,6 +284,29 @@ struct ReactiveVLEResult
     // so the flash duty is CORRECTED, never silently monomer-priced.
     scalar vapDimerMolPerMolFeed = 0.0;
     scalar dimDH_J               = 0.0;
+
+    //  The SECOND LIQUID at the accepted state, per APPARENT component and
+    //  index-aligned with the package's component vector, as a fraction of
+    //  ONE MOLE OF FEED (the same basis as xApp/yApp).  EMPTY when one
+    //  liquid -- absence of a phase, not a phase of zero.
+    //
+    //  Only the ORGANIC side is published, and that is deliberate: the
+    //  aqueous side is the liquid MINUS this, so the two sum back to the
+    //  apparent liquid EXACTLY, by subtraction, at any precision.  Publishing
+    //  both would be a second home for one quantity and the pair would
+    //  eventually disagree in the last digits -- which is precisely the
+    //  closure a stream file's decomposition is checked on.
+    //
+    //  This is REPORT-ONLY.  The stream stays on the apparent component
+    //  basis and the outer Newton keeps its dimension: the two liquids leave
+    //  through one nozzle (reactive-second-liquid ADR, 2026-07-27).  What it
+    //  buys is that the stream file can say WHICH material the speciation
+    //  decomposes -- the ions live in the aqueous phase and nowhere else, so
+    //  a block hung on the whole stream is checked against material that
+    //  includes the organic.  Today that passes only because no organic
+    //  admits a speciating component; it is a latent wrong answer, not a
+    //  formatting preference.
+    sVector nOrgApp;
 };
 
 class ReactiveVLE

@@ -1467,6 +1467,28 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                         vap[appIdx] / tvF.tau * P_Pa / kAtm;
         }
     }
+    //  The SECOND LIQUID, per apparent component, on the same one-mole-of-
+    //  feed basis as xApp.  Computed here and NOT inside the verbosity block
+    //  that prints it: what the stream file carries cannot depend on how
+    //  loudly the run was asked to talk.
+    //
+    //  Only the organic side is published; the aqueous side is the liquid
+    //  minus this, so the decomposition closes by subtraction rather than by
+    //  two roundings agreeing.
+    if (twoLiquids)
+    {
+        LiquidState lsF; (void)liquidState(vap, lsF);
+        if (lsF.split && !lsF.nOrg.empty())
+        {
+            res.nOrgApp.assign(nApp, 0.0);
+            for (std::size_t b = 0; b < cfg_.backbone.size(); ++b)
+                res.nOrgApp[cfg_.backbone[b]] = lsF.nOrg[b];
+        }
+        //  A declared-and-present organic that does not split AT THE ANSWER
+        //  is already refused below (a one-liquid answer under a two-liquid
+        //  declaration).  Leaving nOrgApp empty here would report "one
+        //  liquid", so it must never be reached quietly.
+    }
     res.trueState    = srLast;
     res.pH           = srLast.pH;
     res.resPhaseMax  = rMax;

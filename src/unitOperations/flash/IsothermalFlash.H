@@ -95,6 +95,14 @@ struct FlashSolution
     // FLOWS -- attached to the liquid outlet as a report-only decomposition
     // (never state; see ProcessStream::Speciation).  Null on every other path.
     std::shared_ptr<const ProcessStream::Speciation> speciation;
+
+    // The reactive package's SECOND LIQUID at the answer, per component
+    // [kmol/s] on the flash's own basis -- attached to the liquid outlet
+    // beside the speciation, and report-only for the same reason: the two
+    // liquids leave through ONE nozzle, so this decomposes that stream, it
+    // does not add another.  Null when one liquid.  Only the ORGANIC side,
+    // the aqueous being the liquid minus it (one home, exact closure).
+    std::shared_ptr<const sVector> organicLiquid;
 };
 
 enum class OuterAccelerator { DirectSubstitution, Wegstein };

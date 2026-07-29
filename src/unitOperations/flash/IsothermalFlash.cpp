@@ -135,6 +135,18 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             const scalar kgw  = (wi < r.xApp.size())
                 ? Fliq * r.xApp[wi] * thermo.comp(wi).MW() : 0.0;
             sol.speciation = speciationBlock(thermo, r.trueState, kgw, r.pH);
+
+            //  The second liquid, on the stream's own basis.  `nOrgApp` is
+            //  per mole of FEED (like xApp), so it scales by in.F -- the same
+            //  conversion the kgw line above performs for the molalities, and
+            //  for the same reason: the kernel works in its own basis and a
+            //  stream carries flows.
+            if (!r.nOrgApp.empty())
+            {
+                auto org = std::make_shared<sVector>(r.nOrgApp);
+                for (auto& v : *org) v *= in.F;
+                sol.organicLiquid = org;
+            }
         }
         return sol;
     }
@@ -1451,6 +1463,9 @@ int IsothermalFlash::solve(const DictPtr& dict,
         //  not enter a vapour, and a decomposition attached to a stream that
         //  cannot carry it would be a decoration.
         alpha.speciation = sol.speciation;
+        //  ...and so does the liquid-liquid split, for the same reason and on
+        //  the same terms: it decomposes THIS stream, it does not add another.
+        alpha.organicLiquid = sol.organicLiquid;
         produced_.push_back(alpha);
 
         ProcessStream beta;

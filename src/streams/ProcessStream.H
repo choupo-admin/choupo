@@ -165,6 +165,27 @@ struct ProcessStream
         bool        pH_valid = false;
     };
     std::shared_ptr<const Speciation> speciation;   // null = none, the default
+
+    //  The SECOND LIQUID, per component [kmol/s], when the package declares
+    //  one and it is PRESENT.  Null = one liquid -- the absence of a phase,
+    //  never a phase of zero.
+    //
+    //  Report-only, exactly like `speciation`: F/z stay the APPARENT material
+    //  of both liquids together, the two leave through one nozzle, and no
+    //  unit downstream reads this (reactive-second-liquid ADR, 2026-07-27).
+    //
+    //  Only the ORGANIC side is held.  The aqueous side is `F*z - organic`,
+    //  so the decomposition sums back to the material EXACTLY, by
+    //  subtraction, instead of by two independently-rounded vectors agreeing
+    //  -- and that sum is what the stream-file reader checks.
+    //
+    //  It exists for one reason worth stating plainly: the ions are in the
+    //  AQUEOUS phase and nowhere else, so a `speciation` block that hangs on
+    //  the whole stream is verified against material that includes the
+    //  organic.  Until there was a way to name the aqueous phase, that check
+    //  was right only by the accident of no organic admitting a speciating
+    //  component.
+    std::shared_ptr<const sVector> organicLiquid;
 };
 
 } // namespace Choupo
