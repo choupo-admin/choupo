@@ -475,6 +475,118 @@ struct TwoLiquidSplit
     }
 };
 
+
+/*---------------------------------------------------------------------------*\
+  The VAPOUR COORDINATES and the vapour-side DIMER, lifted out of solve().
+
+  Both are pure arithmetic over a handful of numbers -- the unknowns, which
+  volatiles are active, the feed amounts -- so neither needed the 1200-line
+  scope it used to capture by reference.  The smooth CAGE lives in the first
+  and the dimer BISECTION in the second: the two places a reader most often
+  goes looking, now findable without scrolling through a Newton.
+\*---------------------------------------------------------------------------*/
+// Unknowns: (ln V, softmax odds z_1..z_{m-1}) -- the CLASSICAL flash
+// coordinates, generalised to m volatiles (2026-07-26; the 2-volatile
+// logit is the m = 2 special case).  The first cut used raw (v_1, v_2)
+// and its Jacobian was near-singular at small V (the vapour RATIO
+// carries all the sensitivity, the AMOUNT almost none); with (V, y) the
+// amount couples through liquid DEPLETION and Sigma y = 1 is built into
+// the parametrisation.  y_k = exp(z_k)/Sigma exp(z_j), z_m = 0 pinned.
+void unpackVapour(const sVector&                  u,
+                  const std::vector<std::size_t>&  act,
+                  const sVector&                   n,
+                  const scalar                     nTot,
+                  const std::size_t                nApp,
+                  sVector&                         vap)
+{
+    const std::size_t nV = act.size();
+    vap.assign(nApp, 0.0);
+    const scalar V  = std::min(std::exp(u[0]), 0.999*nTot);
+    std::vector<scalar> w(nV, 1.0);              // z_{m-1} = 0 reference
+    scalar wSum = 0.0;
+    for (std::size_t k = 0; k + 1 < nV; ++k) w[k] = std::exp(u[k+1]);
+    for (auto q : w) wSum += q;
+    for (std::size_t k = 0; k < nV; ++k)
+    {
+        const std::size_t idx = act[k];
+        //  The per-component cage keeps a liquid amount from reaching
+        //  exactly zero (logs and mole fractions need it).  It used to be
+        //  a hard min() at 0.9995*n, which is not a guard but a CEILING
+        //  twice over.  As a LIMIT it is too low: a component whose
+        //  equilibrium leaves 0.03 % of itself in the liquid -- a benzene
+        //  stripped into the vapour -- cannot reach its own answer.  And
+        //  as a CLAMP it kills the derivative: once min() picks the cap,
+        //  vap stops responding to the unknowns entirely, so the residual
+        //  goes flat and the Newton has nowhere to step.  A nearly
+        //  insoluble permanent gas hits that instantly -- nitrogen wants
+        //  to be 99.98 % vaporised, the clamp puts it at 100 %, and its
+        //  leg sits 14 log units out with zero gradient.
+        //
+        //  So the saturation is SMOOTH -- and smooth ONLY WHERE THE CLAMP
+        //  USED TO BITE.  Below 90 % of a component's own amount, vap is
+        //  exactly t, so every case that never approached the cap is
+        //  untouched; above it, the curve bends over exponentially and
+        //  approaches n from below without ever reaching it:
+        //
+        //      vap = t                                  t <= 0.9 n
+        //      vap = n - 0.1 n exp( -(t - 0.9n)/(0.1n) ) t >  0.9 n
+        //
+        //  Continuous AND C1 at the join (value 0.9n, slope 1 on both
+        //  sides), asymptotic to n, derivative never zero.  Making it
+        //  smooth EVERYWHERE was tried first and broke flash13 with a
+        //  singular Jacobian: bending the curve where it did not need
+        //  bending left two of its columns near-parallel (2026-07-27).
+        const scalar t  = V * w[k]/wSum;
+        const scalar ni = n[idx];
+        if (ni <= 0.0)            vap[idx] = 0.0;
+        else if (t <= num::cageKnee * ni) vap[idx] = t;
+        else
+        {
+            const scalar tail = (1.0 - num::cageKnee) * ni;
+            vap[idx] = ni - tail * std::exp(
+                -std::min((t - num::cageKnee*ni) / tail, num::expClamp));
+        }
+    }
+}
+
+//  TRUE vapour composition under dimerisation: the apparent vaporised
+//  moles of the dimerising volatile split as v_d = t_mono + 2 t_dim,
+//  with the vapour-phase equilibrium p_dim = K_dim p_mono^2 (partial
+//  pressures over the TRUE mole count tau = S + t_mono + t_dim, S = the
+//  other volatiles' moles).  g(t_mono) = (v_d - t_mono)/2
+//  - K_dim P t_mono^2 / tau is monotone with a bracketed sign change --
+//  bisection is exact enough and never escapes (0, v_d].
+struct TrueVap { scalar tMono, tDim, tau; };
+
+TrueVap trueVapour(const sVector&                  vap,
+                   const std::vector<std::size_t>& act,
+                   const std::size_t               dimIdx,
+                   const std::size_t               nApp,
+                   const scalar                    Kd,
+                   const scalar                    Patm)
+{
+    scalar S = 0.0;
+    for (const auto appIdx : act)
+        if (appIdx != dimIdx) S += vap[appIdx];
+    if (dimIdx == nApp) return { 0.0, 0.0, S };
+    const scalar vd = vap[dimIdx];
+    if (vd <= 0.0) return { 0.0, 0.0, S };
+    auto g = [&](scalar tm)
+    {
+        const scalar tau = S + tm + (vd - tm)/2.0;
+        return (vd - tm)/2.0 - Kd * Patm * tm*tm / std::max(tau, 1e-300);
+    };
+    scalar lo = 0.0, hi = vd;
+    for (int b = 0; b < 80; ++b)
+    {
+        const scalar mid = 0.5*(lo + hi);
+        (g(mid) > 0.0 ? lo : hi) = mid;
+    }
+    const scalar tm = 0.5*(lo + hi);
+    const scalar td = (vd - tm)/2.0;
+    return { tm, td, S + tm + td };
+}
+
 ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                                      const sVector& zApp, int verbosity) const
 {
@@ -849,64 +961,9 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     }
     const std::size_t nV = act.size();
     SpeciationResult srLast;
-    // Unknowns: (ln V, softmax odds z_1..z_{m-1}) -- the CLASSICAL flash
-    // coordinates, generalised to m volatiles (2026-07-26; the 2-volatile
-    // logit is the m = 2 special case).  The first cut used raw (v_1, v_2)
-    // and its Jacobian was near-singular at small V (the vapour RATIO
-    // carries all the sensitivity, the AMOUNT almost none); with (V, y) the
-    // amount couples through liquid DEPLETION and Sigma y = 1 is built into
-    // the parametrisation.  y_k = exp(z_k)/Sigma exp(z_j), z_m = 0 pinned.
     scalar nTot = 0.0; for (auto x : n) nTot += x;
     auto unpack = [&](const sVector& u, sVector& vap)
-    {
-        vap.assign(nApp, 0.0);
-        const scalar V  = std::min(std::exp(u[0]), 0.999*nTot);
-        std::vector<scalar> w(nV, 1.0);              // z_{m-1} = 0 reference
-        scalar wSum = 0.0;
-        for (std::size_t k = 0; k + 1 < nV; ++k) w[k] = std::exp(u[k+1]);
-        for (auto q : w) wSum += q;
-        for (std::size_t k = 0; k < nV; ++k)
-        {
-            const std::size_t idx = act[k];
-            //  The per-component cage keeps a liquid amount from reaching
-            //  exactly zero (logs and mole fractions need it).  It used to be
-            //  a hard min() at 0.9995*n, which is not a guard but a CEILING
-            //  twice over.  As a LIMIT it is too low: a component whose
-            //  equilibrium leaves 0.03 % of itself in the liquid -- a benzene
-            //  stripped into the vapour -- cannot reach its own answer.  And
-            //  as a CLAMP it kills the derivative: once min() picks the cap,
-            //  vap stops responding to the unknowns entirely, so the residual
-            //  goes flat and the Newton has nowhere to step.  A nearly
-            //  insoluble permanent gas hits that instantly -- nitrogen wants
-            //  to be 99.98 % vaporised, the clamp puts it at 100 %, and its
-            //  leg sits 14 log units out with zero gradient.
-            //
-            //  So the saturation is SMOOTH -- and smooth ONLY WHERE THE CLAMP
-            //  USED TO BITE.  Below 90 % of a component's own amount, vap is
-            //  exactly t, so every case that never approached the cap is
-            //  untouched; above it, the curve bends over exponentially and
-            //  approaches n from below without ever reaching it:
-            //
-            //      vap = t                                  t <= 0.9 n
-            //      vap = n - 0.1 n exp( -(t - 0.9n)/(0.1n) ) t >  0.9 n
-            //
-            //  Continuous AND C1 at the join (value 0.9n, slope 1 on both
-            //  sides), asymptotic to n, derivative never zero.  Making it
-            //  smooth EVERYWHERE was tried first and broke flash13 with a
-            //  singular Jacobian: bending the curve where it did not need
-            //  bending left two of its columns near-parallel (2026-07-27).
-            const scalar t  = V * w[k]/wSum;
-            const scalar ni = n[idx];
-            if (ni <= 0.0)            vap[idx] = 0.0;
-            else if (t <= num::cageKnee * ni) vap[idx] = t;
-            else
-            {
-                const scalar tail = (1.0 - num::cageKnee) * ni;
-                vap[idx] = ni - tail * std::exp(
-                    -std::min((t - num::cageKnee*ni) / tail, num::expClamp));
-            }
-        }
-    };
+    { unpackVapour(u, act, n, nTot, nApp, vap); };
 
     //  The dimerising volatile (at most one in this slice) and its K_dim(T).
     std::size_t dimIdx = nApp; scalar Kd = 0.0;
@@ -924,39 +981,10 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                  - (g->dimDH / (std::log(10.0) * 8.31446))
                    * (1.0/T_K - 1.0/298.15));
     }
+    const scalar dimPatm = P_Pa / kAtm;
+    auto trueVapourOf = [&](const sVector& vap) -> TrueVap
+    { return trueVapour(vap, act, dimIdx, nApp, Kd, dimPatm); };
 
-    //  TRUE vapour composition under dimerisation: the apparent vaporised
-    //  moles of the dimerising volatile split as v_d = t_mono + 2 t_dim,
-    //  with the vapour-phase equilibrium p_dim = K_dim p_mono^2 (partial
-    //  pressures over the TRUE mole count tau = S + t_mono + t_dim, S = the
-    //  other volatiles' moles).  g(t_mono) = (v_d - t_mono)/2
-    //  - K_dim P t_mono^2 / tau is monotone with a bracketed sign change --
-    //  bisection is exact enough and never escapes (0, v_d].
-    struct TrueVap { scalar tMono, tDim, tau; };
-    auto trueVapour = [&](const sVector& vap) -> TrueVap
-    {
-        scalar S = 0.0;
-        for (const auto appIdx : act)
-            if (appIdx != dimIdx) S += vap[appIdx];
-        if (dimIdx == nApp) return { 0.0, 0.0, S };
-        const scalar vd = vap[dimIdx];
-        if (vd <= 0.0) return { 0.0, 0.0, S };
-        const scalar Patm = P_Pa / kAtm;
-        auto g = [&](scalar tm)
-        {
-            const scalar tau = S + tm + (vd - tm)/2.0;
-            return (vd - tm)/2.0 - Kd * Patm * tm*tm / std::max(tau, 1e-300);
-        };
-        scalar lo = 0.0, hi = vd;
-        for (int b = 0; b < 80; ++b)
-        {
-            const scalar mid = 0.5*(lo + hi);
-            (g(mid) > 0.0 ? lo : hi) = mid;
-        }
-        const scalar tm = 0.5*(lo + hi);
-        const scalar td = (vd - tm)/2.0;
-        return { tm, td, S + tm + td };
-    };
 
     auto residual = [&](const sVector& u) -> sVector
     {
@@ -976,7 +1004,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         try
         {
         speciate(vap, srLast);
-        const TrueVap tv = trueVapour(vap);
+        const TrueVap tv = trueVapourOf(vap);
         const scalar tau = std::max(tv.tau, 1.0e-300);
         //  A trial that does not admit the phase set being solved is reported
         //  unphysical, exactly as a diverging speciation is: the damped outer
@@ -1422,7 +1450,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     //  pressures, the co-volatile's contribution, and the dimer moles that
     //  price the vapour-enthalpy correction (exact: h_dim = 2 h_mono + dH).
     {
-        const TrueVap tvF = trueVapour(vap);
+        const TrueVap tvF = trueVapourOf(vap);
         if (tvF.tau > 0.0)
         {
             if (dimIdx != nApp)
