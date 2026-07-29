@@ -13,11 +13,14 @@
 #  the build recipe, and the day the two disagree is the day "it works
 #  locally" stops being evidence about what visitors see.
 #
-#  Pages is enabled BY THIS WORKFLOW (`enablement: true` below), so the only
-#  thing left outside the repository is DNS: the records in
-#  docs/deploying-the-site.md.  Until they exist the site is live at the
-#  github.io address and www.choupo.org does not resolve -- a state the run
-#  reports rather than hides.
+#  TWO THINGS LIVE OUTSIDE THIS REPOSITORY, and both are one-time:
+#    1. Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+#       A workflow CANNOT do this for you -- see the note on the
+#       configure-pages step below for the attempt and the exact refusal.
+#    2. DNS at the registrar (docs/deploying-the-site.md has the records).
+#  Until (1), the build and the verification pass and the run stops at
+#  configure-pages: a red step that says "not published yet", where a skipped
+#  one would say nothing at all.
 # =============================================================================
 name: publish-site
 
@@ -97,16 +100,22 @@ jobs:
           grep -q "www.choupo.org" "$d/CNAME" || { echo "CNAME does not name the site"; exit 1; }
           echo "site OK: $(du -sh $d | cut -f1)"
 
-      #  `enablement: true` turns Pages ON if it is off -- so the FIRST run
-      #  of this workflow configures the site itself instead of failing and
-      #  waiting for someone to click through Settings.  It is the action's
-      #  own documented parameter, it needs only the `pages: write` permission
-      #  already granted above, and it is idempotent: on every later run Pages
-      #  is already enabled and this is a no-op.
+      #  `enablement: true` asks the action to CREATE the Pages site if it
+      #  does not exist.  It was tried, and GitHub refuses:
       #
-      #  What it does NOT do is the DNS.  The custom domain still needs the
-      #  records in docs/deploying-the-site.md; until they exist the site is
-      #  live at the github.io address and www.choupo.org does not resolve.
+      #      Create Pages site failed.
+      #      Error: Resource not accessible by integration
+      #
+      #  `pages: write` grants DEPLOYING to a Pages site that already exists;
+      #  CREATING one needs repository-admin scope, which a workflow token
+      #  does not have and should not.  So the one click through Settings is
+      #  unavoidable, and this parameter is kept only because it costs nothing
+      #  and becomes correct the moment the site exists (from then on the step
+      #  is a plain no-op).
+      #
+      #  It was worth trying: the error in run 2 named the parameter, and the
+      #  cheapest way to find out whether a documented escape hatch applies is
+      #  to take it and read what comes back.
       - uses: actions/configure-pages@v5
         with:
           enablement: true

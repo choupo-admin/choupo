@@ -20,18 +20,30 @@ The chain was run end to end before the workflow was written: `make wasm-gui`
 every route fetched: `/` 38 kB, `/app/`, `/models/`, `/releases/`,
 `wasm/choupoSolve.wasm` 5.8 MB, `releaseInventory.json`.
 
-## Pages: enabled by the workflow
+## Step 1 — turn Pages on (one click, and it cannot be automated)
 
-`actions/configure-pages@v5` is called with `enablement: true`, so the first
-run turns Pages on itself and every later run finds it already on. The first
-attempt failed without it — *"Get Pages site failed. Please verify that the
-repository has Pages enabled"* — which is what pointed at the parameter.
+`github.com/choupo-admin/choupo` → **Settings** → **Pages** →
+*Build and deployment* → **Source: GitHub Actions**.
 
-Once the first deploy has landed, one optional click on
-**Settings → Pages**: tick **Enforce HTTPS** (the certificate for the custom
-domain is issued automatically, usually within the hour of DNS resolving).
+This was attempted from the workflow first, because the run-2 error named the
+escape hatch itself (*"consider exploring the `enablement` parameter"*).
+`actions/configure-pages@v5` with `enablement: true` gets:
 
-## The one thing a workflow cannot do: point the domain
+```
+Create Pages site failed.  Error: Resource not accessible by integration
+```
+
+`pages: write` grants **deploying** to a Pages site that already exists;
+**creating** one needs repository-admin scope, which a workflow token does not
+have and should not. The parameter stays in the workflow because it costs
+nothing and becomes a no-op the moment the site exists — but the click is
+real work only you can do.
+
+After the first deploy lands, one more optional tick on the same page:
+**Enforce HTTPS** (the certificate for the custom domain issues automatically,
+usually within the hour of DNS resolving).
+
+## Step 2 — point the domain
 
 At whoever holds `choupo.org`:
 
