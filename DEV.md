@@ -21,11 +21,14 @@ are and what to do next*.
   Release, and a frozen browser copy at `choupo.org/v2607/app/`.  `main` is
   tagged as the next `Choupo-YYMM` when the teaching term needs one (roughly
   every six months; decided at cut time, never pre-committed).
-- **Site:** `www.choupo.org` publishes automatically on every push to `main`
-  (`.github/workflows/publish-site.yml`).  `/app/` runs `Choupo-dev` (badged
-  with its commit in the top bar, from `wasm/version.json`);
-  `choupo.org/releases/` is the version storefront.  Freezing a release at
-  `/vYYMM/app/` is not yet wired into the workflow — see `RELEASING.md`.
+- **Site:** served by a SECOND repository, `choupo-admin/choupo-admin.github.io`
+  — it holds the `CNAME` and the frozen `/v2607/app/`.  This repo only BUILDS
+  it: `publish-site.yml` verifies on every push to `main` and publishes
+  nothing (a deploy from here would fight the user site for the domain — it
+  did, for an afternoon, while the live site sat 55 commits stale).
+  Publishing is a hand act, one command, in `RELEASING.md`.  **The top-bar
+  badge (`Choupo-dev · <commit>`) is the staleness check** — if it is not the
+  commit you pushed, the deploy did not land.
 - **Health:** full regression **299 / 0** (4 deliberate EXPECTED-FAILs);
   GUI vitest ~1834; four quality gates green (doctrine, tree, retired-name,
   seal-drift, element/ctrl balance).

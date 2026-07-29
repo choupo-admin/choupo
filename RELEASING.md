@@ -99,35 +99,67 @@ Published `vYYMM` tags are never deleted, moved or reused — no exceptions.
 
 ## Site deployment (www.choupo.org)
 
-**Publishing is automatic.**  `.github/workflows/publish-site.yml` runs on
-every push to `main`, builds the WASM and the app, calls `bin/buildSite` —
-the *same* assembler `bin/runSite` uses locally — verifies the pieces a
-visitor actually fetches, and deploys to GitHub Pages.  There is no manual
-rsync and no second site repository; the click-paths that remain outside the
-repo (Pages on, DNS) are in
-[`docs/deploying-the-site.md`](docs/deploying-the-site.md).
+**The site lives in a SECOND repository: `choupo-admin/choupo-admin.github.io`.**
+That repository holds the `CNAME`, and it holds the frozen release copies
+under `/vYYMM/`. This repository builds the site; it does not serve it.
 
-Rehearse locally before pushing anything that touches the site:
+Read that twice before automating anything here. On 2026-07-29 a workflow
+was added that ended in `actions/deploy-pages`, publishing *this*
+repository's Pages — a second site, at another address, that nobody visits,
+uploading a `CNAME` claiming a domain the user site already owns. It was
+green for a whole afternoon while `www.choupo.org` served a bundle 55
+commits old. Two repositories claiming one domain is how a live site gets
+taken away from under itself. The workflow now **builds and verifies only**.
+
+**Publishing is deliberate.** With the site repo checked out at `$D`:
 
 ```bash
-make wasm-gui           # the app cannot solve without it
-bin/runSite             # assembles site/_dist and serves it (then --kill)
+git checkout main
+bin/runTests                                  # 0 FAIL or no deploy
+make wasm-gui                                 # WASM + version.json (the badge)
+bin/buildSite                                 # assembles site/_dist
+#  --delete so removals propagate; the two --exclude are load-bearing:
+#  CNAME is the site repo's own, and v*/ are the frozen releases.
+rsync -a --delete --exclude='.git' --exclude='CNAME' --exclude='v*/' \
+      site/_dist/ "$D/"
+cat "$D/CNAME"                                # must still read www.choupo.org
+ls -d "$D"/v*/app                             # the frozen copies must survive
+git -C "$D" add -A . && git -C "$D" commit -m "site: dev refresh — <resumo>" \
+   && git -C "$D" push origin main
 ```
+
+**Verify what you are about to publish, not just that it built.** The
+staleness above was invisible because nothing compared the *bundle* to the
+*corpus*. Before pushing, grep `site/_dist/assets/` for a case that is new
+since the last deploy — if the bundle cannot name it, the site is not the
+simulator the tutorials describe. The workflow now asserts this too.
+
+Automating the push needs a deploy key or PAT in **Settings → Secrets** —
+`GITHUB_TOKEN` cannot write to another repository. Until that secret exists,
+publishing stays a hand act, and that is not the worst arrangement: it is
+one command, and it is the moment someone looks at what visitors will get.
 
 **`/app/` serves Choupo-dev** — a browser app has no install, so visitors run
 the newest line, badged `Choupo-dev · <commit>` in the top bar (the badge
 reads `wasm/version.json`, written by the WASM build beside the binaries).
+If the badge on the live site is not the commit you just pushed, the deploy
+did not land — that badge is the cheapest staleness check there is.
 
-**Freezing a release's app at `/vYYMM/app/` is NOT yet wired into the
-workflow.**  Pages replaces the whole published tree on each deploy, so a
-frozen copy must be part of what `bin/buildSite` assembles — it cannot be
-left behind in the published output the way the old rsync (`--exclude='v*/'`)
-left it.  Building it is one `vite build --base=/vYYMM/app/` from the tag;
-the open question is where the result *lives* between deploys (checked into
-`site/`, or rebuilt from the tag by the workflow).  Decide it at the first
-release that needs it, and do not pretend meanwhile that the URL exists.
+**Freezing a release's app at `/vYYMM/app/`**, once, at release time:
 
-After any deploy: Pages serves in ~1–3 min, and the service worker caches —
+```bash
+git checkout vYYMM
+make wasm-gui                                 # stable banner + version.json
+cd gui && npx vite build --base=/vYYMM/app/ --outDir dist-vYYMM && cd ..
+cp -r gui/dist-vYYMM "$D/vYYMM/app" && rm -rf gui/dist-vYYMM
+git -C "$D" add vYYMM && git -C "$D" commit -m "site: freeze Choupo-YYMM app at /vYYMM/app/" \
+   && git -C "$D" push origin main
+```
+
+The frozen copies survive every later refresh because of `--exclude='v*/'`
+above. That exclusion is the whole mechanism — do not drop it.
+
+After any push: Pages serves in ~1–3 min, and the service worker caches —
 hard-refresh (`Ctrl+Shift+R`) to see it.
 
 ## Citation

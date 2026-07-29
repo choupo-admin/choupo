@@ -1,5 +1,30 @@
 # =============================================================================
-#  publish-site  --  build Choupo-dev and publish it at www.choupo.org
+#  publish-site  --  BUILD Choupo-dev and prove the site is publishable.
+#
+#  IT DOES NOT PUBLISH.  Read this before adding a deploy step back.
+#
+#  www.choupo.org is served by a DIFFERENT repository --
+#  `choupo-admin/choupo-admin.github.io`, the user site, which holds the
+#  CNAME and the frozen release copy at /v2607/app/.  This workflow once
+#  ended in actions/deploy-pages, which published THIS repository's Pages
+#  instead: a second site, at another address, that nobody visits -- and
+#  worse, it uploaded a CNAME claiming a domain another repository already
+#  owns.  Two repositories claiming one domain is how a live site gets
+#  taken away from under itself.
+#
+#  So the deploy job is gone and the build stays.  What survives is worth
+#  having on its own: every push proves the WASM links, the app builds, and
+#  the pieces a visitor fetches exist at the right paths and the right
+#  sizes.  A red build here means "do not publish", which is exactly the
+#  question this file can answer without owning the site.
+#
+#  PUBLISHING is `bin/buildSite` + a push into the site repository (the
+#  procedure in RELEASING.md).  Automating that from here needs a deploy
+#  key or a PAT in Settings -> Secrets, because GITHUB_TOKEN cannot write
+#  to another repository.  That secret does not exist yet; until it does,
+#  publishing is a deliberate act, not a side effect of a push.
+# =============================================================================
+#  build Choupo-dev and verify it is publishable
 #
 #  WHAT IS PUBLISHED is a STATIC site.  The simulator ships as WebAssembly and
 #  runs in the visitor's own browser tab: no server ever solves a flash, there
@@ -8,36 +33,17 @@
 #  the day this needs a backend is the day it needs a different design review.
 #
 #  ONE ASSEMBLER.  Every step below that touches the site calls
-#  `bin/buildSite`, the same script `bin/runSite` uses for the local
-#  rehearsal.  A second copy of the assembly here would be a second home for
-#  the build recipe, and the day the two disagree is the day "it works
-#  locally" stops being evidence about what visitors see.
-#
-#  TWO THINGS LIVE OUTSIDE THIS REPOSITORY, each one-time, neither doable
-#  from here (docs/deploying-the-site.md has the click paths):
-#    1. Settings -> Pages -> Source: GitHub Actions.  A workflow CANNOT do
-#       this -- see the configure-pages note below for the exact refusal.
-#    2. DNS at the registrar.
-#  Each is a red step that says "not published yet" rather than a skipped one
-#  that says nothing at all.
-#
-#  There used to be a THIRD: a rule letting the `github-pages` environment
-#  accept `dev`, because that environment's default policy admits only the
-#  repository's DEFAULT branch.  It is gone -- not by adding a rule, but
-#  because the development line now IS the default branch (CLAUDE.md §2,
-#  OpenFOAM.org's structure).  Worth remembering how the refusal looked, in
-#  case a future branch reintroduces it: the deploy job fails in ONE SECOND,
-#  with no runner and no steps -- the environment refusing entry, never the
-#  code failing.
+#  `bin/buildSite`, the same script `bin/runSite` uses locally and the same
+#  one the publish procedure uses.  A second copy of the assembly here would
+#  be a second home for the build recipe, and the day the two disagree is the
+#  day "it works locally" stops being evidence about what visitors see.
 # =============================================================================
 name: publish-site
 
 on:
   push:
     branches: [main]
-    #  The DEFAULT branch, which carries Choupo-dev: the site shows the
-    #  continuously-updated development line, and the `github-pages`
-    #  environment admits it with no rule to add.
+    #  The DEFAULT branch, which carries Choupo-dev.
     #
     #  Docs-only and test-only changes still rebuild: the landing reads
     #  generated/releaseInventory.json and the app serves docs/*.pdf, so
@@ -45,16 +51,15 @@ on:
   workflow_dispatch:
 
 concurrency:
-  #  One publish at a time, and a newer push wins: a half-finished older
-  #  deploy overwriting a newer one is the failure mode worth spending a
-  #  cancelled job on.
+  #  One build at a time, and a newer push wins: an older run's verdict
+  #  landing after a newer one is worth spending a cancelled job on.
   group: publish-site
   cancel-in-progress: true
 
 permissions:
+  #  Read only.  This workflow builds and checks; it owns no site, so it
+  #  needs no `pages: write` and no `id-token: write`.
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
   build:
@@ -97,8 +102,8 @@ jobs:
 
       #  A published site that cannot solve is worse than none: it looks like
       #  the simulator and is not.  Assert the pieces a visitor actually
-      #  fetches, by path and by size, before anything is uploaded.
-      - name: Verify what is about to be published
+      #  fetches, by path and by size.  This is the whole point of the run.
+      - name: Verify the site is publishable
         run: |
           set -e
           d=site/_dist
@@ -110,37 +115,14 @@ jobs:
           sz=$(stat -c%s "$d/wasm/choupoSolve.wasm")
           [ "$sz" -gt 1000000 ] || { echo "choupoSolve.wasm is $sz B -- not a build"; exit 1; }
           grep -q "www.choupo.org" "$d/CNAME" || { echo "CNAME does not name the site"; exit 1; }
-          echo "site OK: $(du -sh $d | cut -f1)"
+          #  The site went 55 commits stale once without anyone noticing,
+          #  because nothing compared what is BUILT against what is SERVED.
+          #  Name a case that exists here and did not exist then: if the
+          #  bundle cannot answer for its own corpus, the build is not the
+          #  simulator the tutorials describe.
+          grep -rqs flash17 "$d/assets/" \
+            || { echo "the bundle does not carry the tutorial corpus"; exit 1; }
+          echo "site OK: $(du -sh $d | cut -f1)  --  build only, NOT published"
 
-      #  `enablement: true` asks the action to CREATE the Pages site if it
-      #  does not exist.  It was tried, and GitHub refuses:
-      #
-      #      Create Pages site failed.
-      #      Error: Resource not accessible by integration
-      #
-      #  `pages: write` grants DEPLOYING to a Pages site that already exists;
-      #  CREATING one needs repository-admin scope, which a workflow token
-      #  does not have and should not.  So the one click through Settings is
-      #  unavoidable, and this parameter is kept only because it costs nothing
-      #  and becomes correct the moment the site exists (from then on the step
-      #  is a plain no-op).
-      #
-      #  It was worth trying: the error in run 2 named the parameter, and the
-      #  cheapest way to find out whether a documented escape hatch applies is
-      #  to take it and read what comes back.
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site/_dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      #  Deliberately NO deploy.  See the header: the site lives in another
+      #  repository, and publishing from here would fight it for the domain.
