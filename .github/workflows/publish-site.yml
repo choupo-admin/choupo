@@ -13,25 +13,32 @@
 #  the build recipe, and the day the two disagree is the day "it works
 #  locally" stops being evidence about what visitors see.
 #
-#  THREE THINGS LIVE OUTSIDE THIS REPOSITORY, each one-time, none of them
-#  doable from here (docs/deploying-the-site.md has the click paths):
+#  TWO THINGS LIVE OUTSIDE THIS REPOSITORY, each one-time, neither doable
+#  from here (docs/deploying-the-site.md has the click paths):
 #    1. Settings -> Pages -> Source: GitHub Actions.  A workflow CANNOT do
 #       this -- see the configure-pages note below for the exact refusal.
-#    2. Settings -> Environments -> github-pages -> allow the `dev` branch.
-#       Enabling Pages creates that environment with a policy allowing ONLY
-#       the default branch (`main` here), and this workflow publishes `dev`.
-#       Its signature is unmistakable: the deploy job fails in ONE SECOND,
-#       with no runner and no steps -- the environment refusing entry, never
-#       the code failing.
-#    3. DNS at the registrar.
+#    2. DNS at the registrar.
 #  Each is a red step that says "not published yet" rather than a skipped one
 #  that says nothing at all.
+#
+#  There used to be a THIRD: a rule letting the `github-pages` environment
+#  accept `dev`, because that environment's default policy admits only the
+#  repository's DEFAULT branch.  It is gone -- not by adding a rule, but
+#  because the development line now IS the default branch (CLAUDE.md §2,
+#  OpenFOAM.org's structure).  Worth remembering how the refusal looked, in
+#  case a future branch reintroduces it: the deploy job fails in ONE SECOND,
+#  with no runner and no steps -- the environment refusing entry, never the
+#  code failing.
 # =============================================================================
 name: publish-site
 
 on:
   push:
-    branches: [dev]
+    branches: [main]
+    #  The DEFAULT branch, which carries Choupo-dev: the site shows the
+    #  continuously-updated development line, and the `github-pages`
+    #  environment admits it with no rule to add.
+    #
     #  Docs-only and test-only changes still rebuild: the landing reads
     #  generated/releaseInventory.json and the app serves docs/*.pdf, so
     #  "nothing visible changed" is not a judgement this file should make.

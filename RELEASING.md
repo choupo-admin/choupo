@@ -1,36 +1,56 @@
 # Releasing Choupo
 
-Two branches, immutable tags, one naming convention (settled 2026-07-20):
+One line of development, immutable tags, one naming convention
+(revised 2026-07-29 — this supersedes the two-branch arrangement of
+2026-07-20):
 
 ```
-main   latest stable release            (e.g. Choupo-2607)
-dev    active development, Choupo-dev   (the continuously-updated latest;
-                                          no pre-announced target version)
+main          THE DEVELOPMENT LINE, Choupo-dev — the default branch, the
+              continuously-updated latest, no pre-announced target version
+
+vYYMM         a release: an IMMUTABLE tag, never deleted, moved or reused
+release-YYMM  cut FROM a tag, and only on the day a patch actually ships
 
 Public name:      Choupo-2607
 Internal version: 2607        (CITATION.cff, Banner)
-Git tag:          v2607       (immutable: never deleted, moved or reused)
+Git tag:          v2607
 GitHub Release:   tag v2607, title "Choupo-2607"
 ```
 
-Never use variants (`v26.07`, `2026.07`, `Choupo-v2607`).  **Model:
-OpenFOAM-dev style.**  `dev` is never pinned to a named future release —
-it is just the latest, continuously.  Roughly every six months (not a
-fixed date, and not pre-announced), whoever is maintaining the project
-takes a snapshot of `dev` and that snapshot becomes the next
-`Choupo-YYMM`, named for whatever calendar month it actually lands in.
-In practice a snapshot is usually convenient near a teaching-term start,
-but that is a scheduling convenience decided at cut time, never a
-commitment baked into the code or docs beforehand.  No per-version
-branches unless an old release someday needs long-term maintenance.
+Never use variants (`v26.07`, `2026.07`, `Choupo-v2607`).
+
+**Why the default branch carries the development line.**  The earlier layout
+froze `main` at the last release and did the work on `dev`.  OpenFOAM.org —
+the model it claimed to follow — does the opposite, and checking rather than
+remembering settled it: one repository per version line (`OpenFOAM-dev`,
+`OpenFOAM-13`, `OpenFOAM-12`, …) and in **every one of them the default branch
+is that line's own**.  No repository in that project holds "default = frozen
+release, side branch = the work".  Two lessons, and both apply here: the
+development line owns the default branch, and a release is **maintained**, not
+photographed.  The old layout also duplicated the release — `main` and `v2607`
+were meant to name the same thing, and `main` had already drifted 3 commits
+past the tag before anyone looked.  One quantity, one home; a release is a
+quantity, and its home is the tag.
+
+`main` is never pinned to a named future release — it is just the latest,
+continuously.  Roughly every six months (not a fixed date, and not
+pre-announced), whoever is maintaining the project tags it and that tag
+becomes the next `Choupo-YYMM`, named for whatever calendar month it actually
+lands in.  In practice a tag is usually convenient near a teaching-term start,
+but that is a scheduling convenience decided at cut time, never a commitment
+baked into the code or docs beforehand.
 
 ## Where work goes
 
-- New features: `dev`.
-- Critical fixes to the stable release: `main`, then also applied to `dev`.
-- The published tag is never touched by fixes; `main` may advance past it.
+- Everything — features and fixes alike — goes to `main`.
+- A fix for an **already-released** version goes to `main` first, then is
+  cherry-picked onto `release-YYMM`, which is cut from `vYYMM` the first time
+  such a fix exists.  Until that day the branch does not exist, because there
+  is nothing for it to carry.
+- The published tag is never touched by fixes; the `release-YYMM` branch
+  carries them and a patch gets its own tag.
 
-## Publishing a release (from dev)
+## Publishing a release
 
 1. Update the internal version: `src/core/Banner.H` (`CHOUPO_VERSION
    "Choupo-YYMM"`, drop the dev suffix), `CITATION.cff` (`version`,
@@ -39,90 +59,76 @@ branches unless an old release someday needs long-term maintenance.
 3. Update the landing page (release name, date, citation block).
 4. Run everything: `bin/runTests` (0 FAIL), `cd gui && npx tsc --noEmit &&
    npx vitest run`, `make wasm-gui`.
-5. Merge and tag:
+5. Commit and tag:
 
    ```bash
    git checkout main
-   git merge --no-ff dev
+   git commit ...                       # the version bump of steps 1-3
    git push origin main
    git tag -a vYYMM -m "Choupo-YYMM"
    git push origin vYYMM
    ```
 
 6. Create the GitHub Release: tag `vYYMM`, title `Choupo-YYMM`, notes from
-   the CHANGELOG section (`gh release create vYYMM --title "Choupo-YYMM"
-   --notes-file <notes>`).
-7. Freeze the release's app at `/vYYMM/app/` and deploy the site (both in
-   "Site deployment" below); add the release to the /releases/ history
-   list and point its "Run" button at the frozen copy.
-8. On `dev`: bump the Banner back to `Choupo-dev` (no target string to set —
-   there isn't one) and open the next CHANGELOG section.
+   the CHANGELOG section.
+7. Freeze the release's app at `/vYYMM/app/` (see "Site deployment"); add the
+   release to the /releases/ history list and point its "Run" button at the
+   frozen copy.
+8. Bump the Banner back to `Choupo-dev` (no target string to set — there
+   isn't one) and open the next CHANGELOG section, on `main`.
+
+The push in step 5 publishes the site; the tag does not deploy anything by
+itself.
 
 ## Identification in the binaries
 
-- Stable (`main` / a tag): `Version: Choupo-YYMM`.
-- Development (`dev`): `Version: Choupo-dev · commit <short hash>` — no
-  named target; the hash matters precisely because dev moves.
+- A tag / a `release-YYMM` branch: `Version: Choupo-YYMM`.
+- `main`: `Version: Choupo-dev · commit <short hash>` — no named target; the
+  hash matters precisely because the line moves.
 
 ## Day-to-day workflow (pushing work)
 
-All development happens on `dev`:
-
 ```bash
-git checkout dev
+git checkout main
 # ... work, commit (identity: Vítor Geraldes <talentgroundlda@gmail.com>) ...
 bin/runTests            # 0 FAIL before any push
-git push origin dev
-```
-
-A **critical fix to the stable release** goes to `main` first, then into
-`dev` — never the other way around:
-
-```bash
-git checkout main && git cherry-pick <fix>   # or commit directly
-bin/runTests && git push origin main
-git checkout dev && git merge main && git push origin dev
+git push origin main    # this also publishes the site
 ```
 
 Published `vYYMM` tags are never deleted, moved or reused — no exceptions.
 
-## Site deployment (choupo.org)
+## Site deployment (www.choupo.org)
 
-**`/app/` serves Choupo-dev by default** — a browser app has no install,
-so visitors run the newest line, badged `Choupo-dev · <commit>` in the top
-bar (the badge reads `wasm/version.json`, written by the WASM build beside
-the binaries).  **Each stable release keeps a frozen copy at
-`/vYYMM/app/`** — the citable, teachable, never-touched URL.
+**Publishing is automatic.**  `.github/workflows/publish-site.yml` runs on
+every push to `main`, builds the WASM and the app, calls `bin/buildSite` —
+the *same* assembler `bin/runSite` uses locally — verifies the pieces a
+visitor actually fetches, and deploys to GitHub Pages.  There is no manual
+rsync and no second site repository; the click-paths that remain outside the
+repo (Pages on, DNS) are in
+[`docs/deploying-the-site.md`](docs/deploying-the-site.md).
 
-Deploying the dev line (the routine deploy; ONLY with a green suite):
-
-```bash
-git checkout dev
-bin/runTests                                  # 0 FAIL or no deploy
-make wasm-gui                                 # dev banner + version.json
-bin/runSite                                   # assembles site/_dist (then --kill)
-D=<tmp>/site-deploy
-git clone https://github.com/choupo-admin/choupo-admin.github.io.git "$D"  # or pull
-rsync -a --delete --exclude='.git' --exclude='CNAME' --exclude='v*/' \
-      site/_dist/ "$D/"                       # NEVER touches the frozen /vYYMM/
-cat "$D/CNAME"                                # must still read www.choupo.org
-git -C "$D" add -A . && git -C "$D" commit -m "site: dev refresh — <resumo>" \
-   && git -C "$D" push origin HEAD:main
-```
-
-Freezing a release's app (once, at release time, from the fresh tag):
+Rehearse locally before pushing anything that touches the site:
 
 ```bash
-git checkout vYYMM
-make wasm-gui                                 # stable banner + version.json
-cd gui && npx vite build --base=/vYYMM/app/ --outDir dist-vYYMM && cd ..
-cp -r gui/dist-vYYMM "$D/vYYMM/app" && rm -rf gui/dist-vYYMM
-git -C "$D" add vYYMM && git -C "$D" commit -m "site: freeze Choupo-YYMM app at /vYYMM/app/" \
-   && git -C "$D" push origin HEAD:main
+make wasm-gui           # the app cannot solve without it
+bin/runSite             # assembles site/_dist and serves it (then --kill)
 ```
 
-After any site push: GitHub Pages rebuilds in ~1–3 min, and the service
-worker caches — hard-refresh (`Ctrl+Shift+R`) to see the new deploy.
+**`/app/` serves Choupo-dev** — a browser app has no install, so visitors run
+the newest line, badged `Choupo-dev · <commit>` in the top bar (the badge
+reads `wasm/version.json`, written by the WASM build beside the binaries).
+
+**Freezing a release's app at `/vYYMM/app/` is NOT yet wired into the
+workflow.**  Pages replaces the whole published tree on each deploy, so a
+frozen copy must be part of what `bin/buildSite` assembles — it cannot be
+left behind in the published output the way the old rsync (`--exclude='v*/'`)
+left it.  Building it is one `vite build --base=/vYYMM/app/` from the tag;
+the open question is where the result *lives* between deploys (checked into
+`site/`, or rebuilt from the tag by the workflow).  Decide it at the first
+release that needs it, and do not pretend meanwhile that the URL exists.
+
+After any deploy: Pages serves in ~1–3 min, and the service worker caches —
+hard-refresh (`Ctrl+Shift+R`) to see it.
 
 ## Citation
 

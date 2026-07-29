@@ -4,11 +4,30 @@ All notable changes to **Choupo** are documented here.  The format follows
 [Keep a Changelog](https://keepachangelog.com/).  Releases are dated, not
 semantic: the public name is `Choupo-YYMM`, the immutable git tag is
 `vYYMM`, and the internal version string is `YYMM` (so `Choupo-2607` =
-tag `v2607` = version `2607`).  Development happens on the `dev` branch
-(`Choupo-dev`); `main` is always the latest stable release.
+tag `v2607` = version `2607`).  Development happens on `main`, the default
+branch, which carries `Choupo-dev`; a release is an immutable tag.
 **Choupo-2607** is the first version.
 
 ## Choupo-dev (2026-07-28)
+
+* **The development line moved to the DEFAULT branch — `main` is now
+  `Choupo-dev`, and `dev` retires.**  The previous arrangement froze `main`
+  at the last release and did the work on `dev`, claiming OpenFOAM-dev as its
+  model.  Checking rather than remembering settled it: OpenFOAM.org keeps one
+  repository per version line (`OpenFOAM-dev`, `OpenFOAM-13`, `OpenFOAM-12`,
+  ...) and in *every one of them the default branch is that line's own* — no
+  repository there holds "default = frozen release, side branch = the work".
+  Two lessons taken: the development line owns the default branch, and a
+  release is **maintained**, not photographed (a `release-YYMM` branch is cut
+  from its immutable `vYYMM` tag only on the day a patch actually ships).
+  The old layout had also duplicated the release — `main` and `v2607` were
+  meant to name the same thing, and `main` had already drifted 3 commits past
+  the tag: the arity sin, in the repository's own structure.  Concretely this
+  also DELETES a click: the `github-pages` environment admits only the default
+  branch, so publishing from `dev` needed a branch rule that no longer exists
+  — what publishes and what the environment allows are now the same branch by
+  construction (`publish-site.yml` triggers on `main`).  Rationale and
+  procedure in `RELEASING.md`; `CLAUDE.md` §2 supersedes the 2026-07-20 note.
 
 * **The tree compiles CLEAN: 40 warnings -> 0**, and two of them were real.
   - `NewtonND`'s backtracking line search can EXHAUST (every trial infeasible,

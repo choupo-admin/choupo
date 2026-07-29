@@ -12,16 +12,20 @@ are and what to do next*.
 
 ## 1. Current state (facts, not history)
 
-- **Branches:** `main` = the latest stable release, `dev` = `Choupo-dev` (the
-  continuously-updated development line, OpenFOAM-dev style — no pre-announced
-  target version).  **Work happens on `dev`.**
+- **Branches (revised 2026-07-29):** `main` **is** `Choupo-dev` — the default
+  branch carries the continuously-updated development line, no pre-announced
+  target version.  **Work happens on `main`.**  A release is an immutable tag
+  `vYYMM`; a `release-YYMM` branch is cut from that tag only on the day a patch
+  actually ships.  `dev` is retired.  Rationale and procedure: `RELEASING.md`.
 - **Latest release:** `Choupo-2607` — immutable git tag `v2607`, a GitHub
-  Release, and a frozen browser copy at `choupo.org/v2607/app/`.  A snapshot of
-  `dev` becomes the next `Choupo-YYMM` when the teaching term needs one (roughly
+  Release, and a frozen browser copy at `choupo.org/v2607/app/`.  `main` is
+  tagged as the next `Choupo-YYMM` when the teaching term needs one (roughly
   every six months; decided at cut time, never pre-committed).
-- **Site:** `choupo.org/app/` runs `Choupo-dev` (badged with its commit in the
-  top bar, from `wasm/version.json`); `choupo.org/v2607/app/` is the frozen
-  stable copy; `choupo.org/releases/` is the version storefront.
+- **Site:** `www.choupo.org` publishes automatically on every push to `main`
+  (`.github/workflows/publish-site.yml`).  `/app/` runs `Choupo-dev` (badged
+  with its commit in the top bar, from `wasm/version.json`);
+  `choupo.org/releases/` is the version storefront.  Freezing a release at
+  `/vYYMM/app/` is not yet wired into the workflow — see `RELEASING.md`.
 - **Health:** full regression **299 / 0** (4 deliberate EXPECTED-FAILs);
   GUI vitest ~1834; four quality gates green (doctrine, tree, retired-name,
   seal-drift, element/ctrl balance).
@@ -83,7 +87,7 @@ ones for day-to-day work:
   self-funded personal project (not an institutional product) — never frame it
   otherwise in any prose.
 
-## 4. Roadmap for `dev` (candidate work, priority-ish)
+## 4. Roadmap for the development line (candidate work, priority-ish)
 
 1. **Ctrl physical energy** — reformulate `dynamicCSTR`'s energy equation around a
    stored `U(n,T)`/`H(n,T)` so the first-law ledger can CLAIM closure (today it
@@ -136,10 +140,10 @@ ones for day-to-day work:
 ## 6. How to work (the short version; full: RELEASING.md)
 
 ```bash
-git checkout dev
+git checkout main
 # ... work; commit as Vítor Geraldes <talentgroundlda@gmail.com>, no Co-Authored-By ...
 bin/runTests                 # 0 FAIL before any push (NaN/inf guard + goldens + gates)
-git push origin dev
+git push origin main         # this also publishes www.choupo.org
 ```
 
 - **Never `git add -A`** — stage explicitly; keep run outputs and the untracked

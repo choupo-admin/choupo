@@ -12,7 +12,7 @@ needs a backend is the day it needs a different design review.
 |---|---|
 | the assembler | `bin/buildSite` — **one** recipe, used by the local rehearsal *and* the publish workflow |
 | the local rehearsal | `bin/runSite` (serves what `buildSite` produced, at `:4180`) |
-| the publish workflow | `.github/workflows/publish-site.yml`, on every push to `dev` |
+| the publish workflow | `.github/workflows/publish-site.yml`, on every push to `main` |
 | the custom domain | `site/CNAME` → `www.choupo.org`, copied into the published root |
 
 The chain was run end to end before the workflow was written: `make wasm-gui`
@@ -43,24 +43,19 @@ After the first deploy lands, one more optional tick on the same page:
 **Enforce HTTPS** (the certificate for the custom domain issues automatically,
 usually within the hour of DNS resolving).
 
-## Step 1b — let `dev` deploy (the second click, and the least obvious)
+### The click that used to be here, and why it is gone
 
 Enabling Pages creates a `github-pages` **environment**, and its default
-deployment-branch policy allows **only the repository's default branch**.
-This repo's default is `main`; the site publishes from `dev`. So the build
-goes green, uploads its artifact, and the deploy job is rejected *before it
-is given a runner* — one second, no steps, no log to download. That signature
-(a deploy job that fails instantly with no runner) is the environment saying
-no, never the code.
+deployment-branch policy allows **only the repository's default branch**. The
+site first published from `dev`, so the build went green, uploaded its
+artifact, and the deploy job was rejected *before it was given a runner* — one
+second, no steps, no log to download. That signature (a deploy job that fails
+instantly with no runner) is the environment saying no, never the code.
 
-**Settings → Environments → `github-pages` → Deployment branches and tags →
-Add deployment branch or tag rule → `dev`.**
-
-https://github.com/choupo-admin/choupo/settings/environments
-
-(The alternative is to publish from `main`, which needs no rule — but then
-the site shows the last stable release rather than `Choupo-dev`, which is not
-what was asked for.)
+The fix was not a rule. The development line moved to the default branch
+(`RELEASING.md`), so what publishes and what the environment admits are now
+the same branch by construction. Keep the signature in mind anyway: it is
+what a future publish from any other branch will look like.
 
 ## Step 2 — point the domain
 
@@ -98,10 +93,11 @@ bandwidth (~11 000 first visits). Neither binds for a teaching site.
 
 ## What is published, and from where
 
-`dev`, on every push — the branch is `Choupo-dev`, the continuously updated
-development line, which is what "operational online" was asked for. `main`
-publishes nothing today; when a release is tagged and that changes, it is one
-more `on: push:` entry and a second Pages environment, not a redesign.
+`main`, on every push. `main` is the default branch and it carries
+`Choupo-dev`, the continuously updated development line — which is what
+"operational online" was asked for. A tagged release does not publish by
+itself; freezing a release's app at `/vYYMM/app/` is an open point, stated as
+such in [`RELEASING.md`](../RELEASING.md).
 
 Nothing under `data/local/` or `thirdParty/` is in the repository, so nothing
 of either can reach the site — the licence scrub holds by construction, not by

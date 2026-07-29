@@ -86,12 +86,25 @@ Choupo/
 * **No `Co-Authored-By` trailer** in commit messages.
 * **Version** lives in `src/core/Banner.H` (`CHOUPO_VERSION`), `CITATION.cff`,
   and `CHANGELOG.md` — bump them together when tagging a release.
-* **Branches & tags (settled 2026-07-20):** two branches only — `main` (latest
-  stable release) and `dev` (`Choupo-dev`, the continuously-updated development
-  line, OpenFOAM-dev style — no pre-announced target version).  Public name
-  `Choupo-YYMM`, immutable git tag `vYYMM`, internal version `YYMM`.  A
-  published `vYYMM` tag is NEVER deleted, moved or reused.  Release
-  procedure: [`RELEASING.md`](RELEASING.md).
+* **Branches & tags (revised 2026-07-29 — this SUPERSEDES the two-branch
+  arrangement of 2026-07-20).**  **The default branch IS the development
+  line**: `main` carries `Choupo-dev`, continuously updated, no pre-announced
+  target version.  A release is an **immutable tag** `vYYMM` (public name
+  `Choupo-YYMM`, internal version `YYMM`) — NEVER deleted, moved or reused; a
+  `release-YYMM` branch is cut **from that tag only on the day a patch
+  actually ships**, never pre-emptively.  Release procedure:
+  [`RELEASING.md`](RELEASING.md).
+  Why the change: the earlier layout froze `main` at the last release and did
+  the work on `dev`.  OpenFOAM.org — the model it claimed to follow — does the
+  opposite, and checking rather than remembering settled it: one repository per
+  version line (`OpenFOAM-dev`, `OpenFOAM-13`, `OpenFOAM-12`, …) and in **every
+  one of them the default branch is that line's own**.  No repository anywhere
+  in that project holds "default = frozen release, side branch = the work".
+  Two lessons, and both apply here: the development line owns the default
+  branch, and a release is **maintained**, not photographed.  The old layout
+  also duplicated the release: `main` and `v2607` were meant to be the same
+  thing, and by today `main` had already drifted 3 commits past the tag — the
+  arity sin, in the repository's own structure.
 * **Starting a dev session?** Read [`DEV.md`](DEV.md) — current state,
   the settled contracts, the roadmap, and how to work.  It is the live
   starting point (companion to `RELEASING.md`).
