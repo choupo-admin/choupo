@@ -43,6 +43,25 @@ After the first deploy lands, one more optional tick on the same page:
 **Enforce HTTPS** (the certificate for the custom domain issues automatically,
 usually within the hour of DNS resolving).
 
+## Step 1b — let `dev` deploy (the second click, and the least obvious)
+
+Enabling Pages creates a `github-pages` **environment**, and its default
+deployment-branch policy allows **only the repository's default branch**.
+This repo's default is `main`; the site publishes from `dev`. So the build
+goes green, uploads its artifact, and the deploy job is rejected *before it
+is given a runner* — one second, no steps, no log to download. That signature
+(a deploy job that fails instantly with no runner) is the environment saying
+no, never the code.
+
+**Settings → Environments → `github-pages` → Deployment branches and tags →
+Add deployment branch or tag rule → `dev`.**
+
+https://github.com/choupo-admin/choupo/settings/environments
+
+(The alternative is to publish from `main`, which needs no rule — but then
+the site shows the last stable release rather than `Choupo-dev`, which is not
+what was asked for.)
+
 ## Step 2 — point the domain
 
 At whoever holds `choupo.org`:
