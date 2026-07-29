@@ -13,12 +13,11 @@
 #  the build recipe, and the day the two disagree is the day "it works
 #  locally" stops being evidence about what visitors see.
 #
-#  BEFORE THE FIRST RUN CAN SUCCEED, two things must be done by hand, once,
-#  and neither can be done from inside this repository:
-#    1. Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
-#    2. DNS at the registrar (see docs/deploying-the-site.md for the records).
-#  Until then the build and upload succeed and the deploy step fails, loudly,
-#  which is the correct signal: nothing is silently half-published.
+#  Pages is enabled BY THIS WORKFLOW (`enablement: true` below), so the only
+#  thing left outside the repository is DNS: the records in
+#  docs/deploying-the-site.md.  Until they exist the site is live at the
+#  github.io address and www.choupo.org does not resolve -- a state the run
+#  reports rather than hides.
 # =============================================================================
 name: publish-site
 
@@ -98,7 +97,19 @@ jobs:
           grep -q "www.choupo.org" "$d/CNAME" || { echo "CNAME does not name the site"; exit 1; }
           echo "site OK: $(du -sh $d | cut -f1)"
 
+      #  `enablement: true` turns Pages ON if it is off -- so the FIRST run
+      #  of this workflow configures the site itself instead of failing and
+      #  waiting for someone to click through Settings.  It is the action's
+      #  own documented parameter, it needs only the `pages: write` permission
+      #  already granted above, and it is idempotent: on every later run Pages
+      #  is already enabled and this is a no-op.
+      #
+      #  What it does NOT do is the DNS.  The custom domain still needs the
+      #  records in docs/deploying-the-site.md; until they exist the site is
+      #  live at the github.io address and www.choupo.org does not resolve.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site/_dist

@@ -20,22 +20,18 @@ The chain was run end to end before the workflow was written: `make wasm-gui`
 every route fetched: `/` 38 kB, `/app/`, `/models/`, `/releases/`,
 `wasm/choupoSolve.wasm` 5.8 MB, `releaseInventory.json`.
 
-## The two things a script cannot do
+## Pages: enabled by the workflow
 
-Both are one-time, both need Vítor, and until both are done the workflow
-builds and uploads fine and **fails at the deploy step** — which is the right
-signal: nothing gets silently half-published.
+`actions/configure-pages@v5` is called with `enablement: true`, so the first
+run turns Pages on itself and every later run finds it already on. The first
+attempt failed without it — *"Get Pages site failed. Please verify that the
+repository has Pages enabled"* — which is what pointed at the parameter.
 
-### 1. Turn Pages on
+Once the first deploy has landed, one optional click on
+**Settings → Pages**: tick **Enforce HTTPS** (the certificate for the custom
+domain is issued automatically, usually within the hour of DNS resolving).
 
-`github.com/choupo-admin/choupo` → **Settings** → **Pages** →
-*Build and deployment* → **Source: GitHub Actions**.
-
-Then, once the first deploy has run, on the same page set the custom domain to
-`www.choupo.org` and tick **Enforce HTTPS** (the certificate is issued
-automatically, usually within the hour).
-
-### 2. Point the domain
+## The one thing a workflow cannot do: point the domain
 
 At whoever holds `choupo.org`:
 
