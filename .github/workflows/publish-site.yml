@@ -1,42 +1,41 @@
 # =============================================================================
-#  publish-site  --  BUILD Choupo-dev and prove the site is publishable.
+#  publish-site  --  build Choupo-dev, verify it, and push it to the site.
 #
-#  IT DOES NOT PUBLISH.  Read this before adding a deploy step back.
+#  THE SITE IS ANOTHER REPOSITORY.  www.choupo.org is served by
+#  `choupo-admin/choupo-admin.github.io` -- the user site, which owns the
+#  CNAME and the frozen release copies under /vYYMM/.  THIS repository has
+#  no Pages site of its own and must never acquire one: an earlier version
+#  of this file ended in actions/deploy-pages and published a SECOND site,
+#  at another address, that nobody visits -- uploading a CNAME claiming a
+#  domain the user site already owned.  It was green for an afternoon while
+#  the live domain served a bundle 55 commits old.  Two repositories
+#  claiming one domain is how a live site gets taken away from under
+#  itself.  Publishing means pushing INTO the site repository.  Nothing
+#  else is publishing.
 #
-#  www.choupo.org is served by a DIFFERENT repository --
-#  `choupo-admin/choupo-admin.github.io`, the user site, which holds the
-#  CNAME and the frozen release copy at /v2607/app/.  This workflow once
-#  ended in actions/deploy-pages, which published THIS repository's Pages
-#  instead: a second site, at another address, that nobody visits -- and
-#  worse, it uploaded a CNAME claiming a domain another repository already
-#  owns.  Two repositories claiming one domain is how a live site gets
-#  taken away from under itself.
+#  THE KEY.  GITHUB_TOKEN cannot write to another repository, so the push
+#  uses an SSH DEPLOY KEY: the public half sits on the site repo (Settings
+#  -> Deploy keys, "Allow write access" TICKED), the private half here
+#  (Settings -> Secrets -> Actions, named SITE_DEPLOY_KEY).  A deploy key
+#  is scoped to ONE repository and never expires -- a PAT would carry the
+#  whole account and a renewal date.
 #
-#  So the deploy job is gone and the build stays.  What survives is worth
-#  having on its own: every push proves the WASM links, the app builds, and
-#  the pieces a visitor fetches exist at the right paths and the right
-#  sizes.  A red build here means "do not publish", which is exactly the
-#  question this file can answer without owning the site.
+#  WITHOUT THE SECRET this workflow still builds and verifies, and says so
+#  in the log.  It does not fail: "no key configured" is a true and
+#  harmless state, and a red X would train everyone to ignore the run.  But
+#  it never silently claims to have published either.
 #
-#  PUBLISHING is `bin/buildSite` + a push into the site repository (the
-#  procedure in RELEASING.md).  Automating that from here needs a deploy
-#  key or a PAT in Settings -> Secrets, because GITHUB_TOKEN cannot write
-#  to another repository.  That secret does not exist yet; until it does,
-#  publishing is a deliberate act, not a side effect of a push.
-# =============================================================================
-#  build Choupo-dev and verify it is publishable
+#  ONE ASSEMBLER.  Every step that touches the site calls `bin/buildSite`,
+#  the same script `bin/runSite` uses locally and the same one RELEASING.md
+#  documents for a hand publish.  A second copy of the assembly here would
+#  be a second home for the build recipe, and the day the two disagree is
+#  the day "it works locally" stops being evidence about what visitors see.
 #
 #  WHAT IS PUBLISHED is a STATIC site.  The simulator ships as WebAssembly and
 #  runs in the visitor's own browser tab: no server ever solves a flash, there
 #  is no per-user state, and a case a visitor opens never leaves their machine.
 #  That is why a static host is enough, and it is the property to preserve --
 #  the day this needs a backend is the day it needs a different design review.
-#
-#  ONE ASSEMBLER.  Every step below that touches the site calls
-#  `bin/buildSite`, the same script `bin/runSite` uses locally and the same
-#  one the publish procedure uses.  A second copy of the assembly here would
-#  be a second home for the build recipe, and the day the two disagree is the
-#  day "it works locally" stops being evidence about what visitors see.
 # =============================================================================
 name: publish-site
 
@@ -57,8 +56,10 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  #  Read only.  This workflow builds and checks; it owns no site, so it
-  #  needs no `pages: write` and no `id-token: write`.
+  #  Read only, and it stays that way.  The write this workflow performs is
+  #  to ANOTHER repository, authorised by the deploy key -- not by
+  #  GITHUB_TOKEN.  No `pages:` scope: this repository has no Pages site and
+  #  must not acquire one (see the header).
   contents: read
 
 jobs:
@@ -122,7 +123,59 @@ jobs:
           #  simulator the tutorials describe.
           grep -rqs flash17 "$d/assets/" \
             || { echo "the bundle does not carry the tutorial corpus"; exit 1; }
-          echo "site OK: $(du -sh $d | cut -f1)  --  build only, NOT published"
+          echo "site OK: $(du -sh $d | cut -f1)"
 
-      #  Deliberately NO deploy.  See the header: the site lives in another
-      #  repository, and publishing from here would fight it for the domain.
+      #  ---- publish: push into the SITE repository -------------------------
+      #
+      #  Skipped, loudly and successfully, when SITE_DEPLOY_KEY is absent.
+      #  A missing key is a true state of the world, not a broken build; a
+      #  red X here would teach everyone to ignore this workflow, which is
+      #  precisely how the site went 55 commits stale unnoticed.
+      - name: Publish to www.choupo.org
+        env:
+          DEPLOY_KEY: ${{ secrets.SITE_DEPLOY_KEY }}
+          SITE_REPO: git@github.com:choupo-admin/choupo-admin.github.io.git
+        run: |
+          set -e
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo "::notice::SITE_DEPLOY_KEY not configured -- built and verified, NOT published."
+            echo "Add it: site repo -> Settings -> Deploy keys (public half, WRITE access)"
+            echo "        this repo -> Settings -> Secrets -> Actions -> SITE_DEPLOY_KEY"
+            exit 0
+          fi
+
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519   # trailing \n: ssh rejects a key without it
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+
+          git clone --depth 1 "$SITE_REPO" /tmp/site
+
+          #  The two exclusions are LOAD-BEARING, not tidiness:
+          #    CNAME  belongs to the site repo -- it is what makes the domain
+          #           resolve there, and overwriting it from here is how the
+          #           domain gets contested.
+          #    v*/    are the FROZEN release apps (/v2607/app/ ...), the
+          #           citable URLs.  --delete without this exclusion erases
+          #           every past release in one push.
+          rsync -a --delete --exclude='.git' --exclude='CNAME' --exclude='v*/' \
+                site/_dist/ /tmp/site/
+
+          #  Prove the two survived before committing, not after pushing.
+          grep -q 'www.choupo.org' /tmp/site/CNAME \
+            || { echo "CNAME lost -- refusing to publish"; exit 1; }
+          ls -d /tmp/site/v[0-9]*/app >/dev/null 2>&1 \
+            || { echo "frozen release apps lost -- refusing to publish"; exit 1; }
+
+          cd /tmp/site
+          git config user.name  "Vítor Geraldes"
+          git config user.email "talentgroundlda@gmail.com"
+          git add -A .
+          if git diff --cached --quiet; then
+            echo "::notice::site already matches this build -- nothing to publish."
+            exit 0
+          fi
+          git commit -q -m "site: dev refresh — ${GITHUB_SHA:0:8}" \
+                        -m "Built from choupo-admin/choupo@${GITHUB_SHA}."
+          git push origin HEAD:main
+          echo "::notice::published ${GITHUB_SHA:0:8} -- the top-bar badge must now read it."

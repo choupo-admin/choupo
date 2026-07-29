@@ -134,10 +134,28 @@ staleness above was invisible because nothing compared the *bundle* to the
 since the last deploy — if the bundle cannot name it, the site is not the
 simulator the tutorials describe. The workflow now asserts this too.
 
-Automating the push needs a deploy key or PAT in **Settings → Secrets** —
-`GITHUB_TOKEN` cannot write to another repository. Until that secret exists,
-publishing stays a hand act, and that is not the worst arrangement: it is
-one command, and it is the moment someone looks at what visitors will get.
+**The workflow does this automatically once one secret exists.**
+`publish-site.yml` runs the same chain on every push to `main` and pushes
+into the site repo over SSH. It needs a deploy key, because `GITHUB_TOKEN`
+cannot write to another repository — and a deploy key is scoped to one repo
+and never expires, where a PAT would carry the whole account and a renewal
+date. Set it up once:
+
+```bash
+ssh-keygen -t ed25519 -C "choupo site deploy" -f ~/choupo-site-deploy -N ""
+```
+
+| half | where it goes |
+|---|---|
+| `~/choupo-site-deploy.pub` (public) | **site** repo → Settings → Deploy keys → Add, **☑ Allow write access** |
+| `~/choupo-site-deploy` (private) | **this** repo → Settings → Secrets → Actions → name it `SITE_DEPLOY_KEY` |
+
+Paste the private half whole, `-----BEGIN`/`-----END` lines included. Then
+delete both local files — each half already lives where it belongs.
+
+Until the secret exists the workflow builds, verifies, and says in the log
+that it did not publish — a missing key is a true state of the world, not a
+broken build, and a red X there would train everyone to ignore the run.
 
 **`/app/` serves Choupo-dev** — a browser app has no install, so visitors run
 the newest line, badged `Choupo-dev · <commit>` in the top bar (the badge

@@ -49,13 +49,42 @@ The build now asserts a matching property from the other side: it greps the
 bundle for a tutorial that exists in the corpus. A bundle that cannot name its
 own cases is not the simulator the tutorials describe.
 
-## Automating the publish
+## The one secret that turns publishing automatic
 
-Pushing from Actions into the site repository needs a **deploy key or PAT** in
-*Settings → Secrets* — `GITHUB_TOKEN` cannot write to another repository.
-Until that secret exists, publishing is a hand act. That is not the worst
-arrangement: it is one command, and it is the moment someone actually looks at
-what visitors will get.
+`publish-site.yml` already pushes into the site repository — it just needs a
+key, because `GITHUB_TOKEN` cannot write to another repository. Use an SSH
+**deploy key**, not a PAT: a deploy key is scoped to one repository and never
+expires, where a PAT carries the whole account and a renewal date.
+
+**1. Generate the pair** (once, on your machine):
+
+```bash
+ssh-keygen -t ed25519 -C "choupo site deploy" -f ~/choupo-site-deploy -N ""
+```
+
+**2. The PUBLIC half → the SITE repo.** `cat ~/choupo-site-deploy.pub`, then
+[site repo → Settings → Deploy keys](https://github.com/choupo-admin/choupo-admin.github.io/settings/keys)
+→ *Add deploy key* → paste → **☑ Allow write access** ← without this tick the
+push is refused → *Add key*.
+
+**3. The PRIVATE half → THIS repo.** `cat ~/choupo-site-deploy`, copy it
+whole (`-----BEGIN` and `-----END` lines included), then
+[this repo → Settings → Secrets → Actions](https://github.com/choupo-admin/choupo/settings/secrets/actions)
+→ *New repository secret* → name it exactly **`SITE_DEPLOY_KEY`** → paste →
+*Add secret*.
+
+**4.** `rm ~/choupo-site-deploy ~/choupo-site-deploy.pub` — each half now
+lives where it belongs.
+
+Until the secret exists the workflow builds, verifies, and prints a notice
+saying it did not publish. It does not fail: a missing key is a true state of
+the world, and a red X there would train everyone to ignore the run — which is
+exactly how the site went 55 commits stale unnoticed.
+
+Two guards run before the workflow commits anything: the `CNAME` must still
+name the site, and the frozen `/vYYMM/app/` copies must still exist. Both are
+protected by `--exclude` in the rsync; the assertions catch the day someone
+edits that line.
 
 ## The domain
 
