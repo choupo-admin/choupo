@@ -98,9 +98,16 @@ WASM_ALL_OUT := $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) \
 # The version the SHIPPED app announces = the version baked into these
 # binaries (Banner.H), written beside them so GUI and engine can never
 # disagree.  Content-compared: an unchanged version never touches the file.
+#  mkdir FIRST.  gui/public/wasm/ is a BUILD OUTPUT and gitignored, so it does
+#  not exist in a fresh clone -- and this target writes into it before any
+#  link rule has had a chance to create it.  On a developer's machine an
+#  earlier build had always made the directory, so the failure was invisible
+#  here and instant in CI: `cannot create gui/public/wasm/.version.tmp:
+#  Directory nonexistent`, first run, before a single object compiled.
 .PHONY: wasm-version
 wasm-version:
-	@v=$$(sed -n 's/.*CHOUPO_VERSION = "\(.*\)";/\1/p' src/core/Banner.H); \
+	@mkdir -p gui/public/wasm; \
+	v=$$(sed -n 's/.*CHOUPO_VERSION = "\(.*\)";/\1/p' src/core/Banner.H); \
 	h=$$(git rev-parse --short HEAD 2>/dev/null || echo ""); \
 	printf '{ "version": "%s", "commit": "%s" }\n' "$$v" "$$h" \
 	  > gui/public/wasm/.version.tmp; \
