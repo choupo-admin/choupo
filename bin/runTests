@@ -574,6 +574,24 @@ PYEOF
     fi
     rm -f /tmp/aqgate.$$
 
+    # Phase-speciation gate: the aqueous speciation must NAME the phase it
+    # decomposes.  The block used to sit at the top level and be verified
+    # against the OVERALL material -- every phase -- while the ions live in
+    # the aqueous phase and nowhere else.  flash17 passed that check to 2e-12
+    # only because its organic admits no acid; the gate removes that luck and
+    # requires the reader to refuse a block whose own phase does not hold what
+    # it claims.  The three structural refusals survive the fix being reverted
+    # (verified by sabotage), so case (d) is the one that guards the check.
+    if "$ROOT/bin/curate/check_phase_speciation.py" > /tmp/psgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "phase-speciation-gate" "$(tail -1 /tmp/psgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_phase_speciation.py)\n" "phase-speciation-gate"
+        cat /tmp/psgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/psgate.$$
+
     # Cosmo-scrub gate: the public tree ships NO externally-restricted values.
     # A COSMO set is an external REFERENCE (licence externalRestricted;
     # installed false) or carries an open-licence profile (the synthetic
