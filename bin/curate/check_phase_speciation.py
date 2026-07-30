@@ -311,10 +311,80 @@ else:
     lint_refuses("(e) top-level block on a 30 % vapour stream",
                  two_phase_top_level, "% vapour", raw=raw17)
 
+# ---------------------------------------------------------------------------
+#  4. THE PSD RIDES WITH ITS POPULATION, and the first law comes back.
+#
+#  Two things landed this week with nothing guarding them, which is the same
+#  as not having landed: a regression would revert either in silence and every
+#  KPI would stay green, because KPIs read neither stream files nor duties.
+# ---------------------------------------------------------------------------
+CRYST = os.path.join(ROOT, "tutorials", "steady", "crystallisation",
+                     "crystalliser02_msmpr")
+MAGMA = os.path.join(CRYST, "converged", "magma")
+
+r = subprocess.run([SOLVER, CRYST], capture_output=True, text=True)
+if r.returncode != 0:
+    fail("crystalliser02_msmpr does not run (exit %d)" % r.returncode)
+elif not os.path.exists(MAGMA):
+    fail("crystalliser02_msmpr produced no converged/magma")
+else:
+    magma = open(MAGMA).read()
+    #  A size distribution describes a POPULATION of particles.  At the top
+    #  level it can only ever describe one, which is why the field had to be
+    #  documented as "the combined solid phase" -- a single curve over two
+    #  minerals is not a physical object.
+    if re.search(r"^particleSizeDistribution$", magma, re.M):
+        fail("crystalliser02 writes its PSD at the TOP LEVEL: the distribution "
+             "is back to describing 'the combined solid' instead of the "
+             "population it belongs to")
+    elif "particleSizeDistribution" not in magma:
+        fail("crystalliser02 writes NO PSD at all -- the case that carries the "
+             "size distribution stopped carrying it")
+    else:
+        m = re.search(r"\n    solid\n    \{\n(.*?)\n    \}", magma, re.S)
+        if not m or "particleSizeDistribution" not in m.group(1):
+            fail("crystalliser02's PSD is not inside the solid phase")
+        else:
+            nbins = len(re.findall(r"[-\d.eE+]+", m.group(1).split("diameter")[1]
+                                   .split(")")[0]))
+            ok("crystalliser02: the PSD rides inside the solid phase (%d bins)"
+               % nbins)
+
+#  THE FIRST LAW.  flash19 published NO duty until the dissolution heat was
+#  read from the ADMITTED solid phase's own record.  A flash forming
+#  1096 mg/kg of calcite with no energy balance passed every test in the
+#  suite, because a missing duty is an absent KPI and absence was never
+#  asserted against.
+r = subprocess.run([SOLVER, os.path.join(FLASH, "flash19_organic_and_precipitate")],
+                   capture_output=True, text=True)
+out = (r.stdout or "") + (r.stderr or "")
+if r.returncode != 0:
+    fail("flash19 does not run (exit %d)" % r.returncode)
+elif "duty UNAVAILABLE" in out:
+    fail("flash19 publishes NO duty again -- a precipitating flash without a "
+         "first law.  The dissolution heat is curated in the substance's own "
+         "solidPhases equilibrium; the caloric path has stopped reading it")
+elif '"Q_kW"' not in out:
+    fail("flash19 emits no Q_kW at all")
+else:
+    q = float(re.search(r'"Q_kW":\s*([-\d.eE+]+)', out).group(1))
+    #  And the number must come from the ADMITTED phase.  CaCO3 declares two
+    #  polymorphs whose heats differ by 2.3 kJ/mol; reading the record's first
+    #  entry instead of the case's declaration would let the ORDER OF THE FILE
+    #  decide the energy.
+    if "-28.0788" not in out:
+        fail("flash19's duty is not sourced from the admitted phase's dH "
+             "(-28.0788 kJ/mol, calcite).  Reading aragonite (-25.7316) or the "
+             "record's first entry lets the file's order decide the energy")
+    else:
+        ok("flash19: first law published, Q = %.2f kW, dHsoln from the "
+           "ADMITTED phase (calcite, not aragonite)" % q)
+
 print()
 if fails:
     print("%d failure(s)." % len(fails))
     sys.exit(1)
-print("phase-speciation gate: every block names its phase, the crystal is a "
-      "phase and not a species, and the reader refuses each way of being vague.")
+print("phase gate: every block names its phase, the crystal is a phase and "
+      "not a species, the PSD rides with its population, the first law is "
+      "published, and the reader refuses each way of being vague.")
 sys.exit(0)
