@@ -1,9 +1,33 @@
 # flashComplex — the design-driver case (2026-07-26/27)
 
-**Status: SPECIFICATION.  This case does not run.**  It is the case the
-architecture must grow to serve — authored first, reviewed by Vítor, and
-only then implemented in slices (each slice keeping the full suite green).
-It graduates to `tutorials/` the day `choupoSolve` solves it.
+**Status: IT RUNS (2026-07-30).**  `choupoSolve` closes it — four phases at
+once, jointly:
+
+    V/F = 0.063491        |r|max(joint) = 4.63e-13
+    organic  23.25 % of the backbone liquid  (x_benzene = 0.951)
+    calcite  183.5 mg/kg, driven to SI = 0
+    bottoms  phases { aqueous { … speciation } organic { … } solid { … } }
+
+It was authored FIRST, as a specification, and implemented in slices against
+it — each slice keeping the full suite green.  The last one it needed was the
+stream file learning to name its phases (2026-07-30); `flash19` is the
+smaller case that proved the four-phase path before this one was retried.
+
+**It has NOT graduated to `tutorials/` yet, and the reason is curation, not
+physics.**  Sealing refuses, correctly:
+
+  * NINE `constant/species/*.dat` were byte-identical copies of the standard
+    records — second homes for values that already had one.  DELETED
+    (2026-07-30); the case runs identically without them, which is what a
+    duplicate means.
+  * TEN `constant/components/*.dat` differ from the catalogue in REAL DATA,
+    not just commentary — 5 lines for CO₂, 14 for ethanol, 16 for water.
+    Adopting them (`choupo-import --adopt-local`) seals those values as the
+    case's own, permanently, and that is a provenance decision a curator
+    makes deliberately.  Until it is made, this case stays here.
+
+So the honest reading of its status: **the engine serves it; the data
+provenance is unresolved.**
 
 ## The physical system
 

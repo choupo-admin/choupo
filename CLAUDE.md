@@ -634,6 +634,30 @@ block in any flowsheetDict (root or nested) is REFUSED loudly — no dual
 reader, no fallback.  Full contract:
 [`docs/architecture/stream-state-architecture.md`](docs/architecture/stream-state-architecture.md).
 
+**The `phases {}` decomposition names AQUEOUS · ORGANIC · SOLID (2026-07-30).**
+`componentMolarFlows` stays the OVERALL material and the apparent basis is
+NEVER disturbed; a `phases {}` block decomposes it and must sum back exactly.
+Three rules, each fixing a wrong answer every test had passed: (1) **the
+speciation attaches to the AQUEOUS material** — top level when there is one
+liquid (the stream IS that material), inside `phases.aqueous` when a second
+liquid or a solid is named, because the ions are there and nowhere else; (2)
+**a precipitate is a PHASE, not a species** — a mineral among the aqueous
+species reported a crystal as dissolved, and *closed*, which is why nobody
+saw it; the owning component comes from its own `solidPhases {}` record,
+never matched by name; (3) **a size distribution belongs to its POPULATION**
+— inside `phases.solid`, never at the top level where it could only describe
+"the combined solid".  **Names are checked against what they name:** outlets
+bind POSITIONALLY, so `outputs ( aqueous organic )` was right only while the
+solvent happened to be declared first — the engine refuses an `aqueous`
+outlet holding less solvent than the `organic` one, and refuses the name
+outright in a system with no solvent.  Splits close by SUBTRACTION (one side
+stored, the other derived) so two roundings cannot drift apart.  Reference
+cases: `flash17` (two liquids), `flash16` (precipitate), `flash19` (FOUR
+phases at once).  Gate: `check_phase_speciation` — seven refusals fired
+through the real reader, and **three of them passed with the fix reverted**
+(they test structure, not the check), which is worth knowing before trusting
+a green run.
+
 **Three-axiom property layout** (referenced by `docs/ai/overview.md`):
 (1) INTRINSIC pure-compound props → `data/standards/components/<name>.dat`;
 (2) PAIR-dependent (NRTL/Wilson/Henry) → `data/standards/<feature>/<pair>.dat`;
