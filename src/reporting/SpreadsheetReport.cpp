@@ -111,6 +111,65 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
             ods.numberCell(i < s.z.size() ? s.z[i] : 0.0, 6, st);
     }
 
+    // ============================== Phases ===============================
+    //  The Stream Table sheet above is one row per stream on the OVERALL
+    //  material; a stream holding two liquids or a precipitate says nothing
+    //  there about the split.  Same artefact as reports/streams/phases.csv,
+    //  same rule: present ONLY when some stream carries more than one phase,
+    //  and the AQUEOUS side derived by subtraction (the engine stores the
+    //  organic side alone, so the pair cannot drift).
+    {
+        bool anyPhases = false;
+        for (const auto& kv : ctx.result.streams)
+        {
+            const auto& s = kv.second;
+            if ((s.organicLiquid && !s.organicLiquid->empty())
+                || std::any_of(s.s.begin(), s.s.end(), [](scalar v){ return v != 0.0; }))
+            { anyPhases = true; break; }
+        }
+        if (anyPhases)
+        {
+            ods.beginSheet("Phases");
+            ods.newRow();
+            ods.textCell("Phase split (aqueous = fluid - organic)", OdsWriter::Title);
+            ods.newRow();
+            ods.textCell("stream",        OdsWriter::Header);
+            ods.textCell("phase",         OdsWriter::Header);
+            ods.textCell("component",     OdsWriter::Header);
+            ods.textCell("n [kmol/h]",    OdsWriter::Header);
+            for (const auto& nm : names)
+            {
+                const auto& s = ctx.result.streams.at(nm);
+                const bool hasOrg = s.organicLiquid && !s.organicLiquid->empty();
+                const bool hasSol = std::any_of(s.s.begin(), s.s.end(),
+                                                [](scalar v){ return v != 0.0; });
+                if (!hasOrg && !hasSol) continue;
+                const OdsWriter::Style st = roleStyle(nm);
+                auto row = [&](const char* phase, const std::string& comp, scalar v)
+                {
+                    if (v == 0.0) return;
+                    ods.newRow();
+                    ods.textCell(nm, st);
+                    ods.textCell(phase, st);
+                    ods.textCell(comp, st);
+                    ods.numberCell(v * 3600.0, 6, st);
+                };
+                for (std::size_t i = 0; i < n; ++i)
+                {
+                    const scalar fluid = s.F * ((i < s.z.size()) ? s.z[i] : 0.0);
+                    const scalar org = (hasOrg && i < s.organicLiquid->size())
+                                     ? (*s.organicLiquid)[i] : 0.0;
+                    const scalar aq = fluid - org;
+                    row("aqueous", comps[i],
+                        (std::abs(aq) > 1e-15 * std::max(scalar(1), std::abs(fluid)))
+                            ? aq : 0.0);
+                    row("organic", comps[i], org);
+                    row("solid",   comps[i], (i < s.s.size()) ? s.s[i] : 0.0);
+                }
+            }
+        }
+    }
+
     // ========================= Mass Balance (global) =====================
     ods.beginSheet("Mass Balance");
     ods.newRow();
@@ -345,7 +404,6 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
     }
 
     // ===================== Profiles (one sheet per unit) =================
-    int profileSheets = 0;
     for (const auto& [unit, prof] : ctx.result.profiles)
     {
         if (prof.columns.empty()) continue;
@@ -377,11 +435,9 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
                 else              ods.emptyCell();
             }
         }
-        ++profileSheets;
     }
 
     // ====================== Design (equipment sizing) ====================
-    int extraSheets = 0;
     if (!ctx.result.sizings.empty())
     {
         std::set<std::string> keys;
@@ -409,7 +465,6 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
                 else                       ods.emptyCell();
             }
         }
-        ++extraSheets;
     }
 
     // ========================= Economics (CAPEX) =========================
@@ -439,7 +494,6 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
         ods.numberCell(tp, 2, OdsWriter::Bold);
         ods.numberCell(tb, 2, OdsWriter::Bold);
         ods.numberCell(tt, 2, OdsWriter::Bold);
-        ++extraSheets;
     }
 
     // Default layout: the .ods sits directly in reports/ (legacySub "");
@@ -451,7 +505,7 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
 
     if (ctx.verbosity >= 2)
         std::cout << "  [report] spreadsheet -> " << path.string()
-                  << "   (" << (5 + profileSheets + extraSheets)
+                  << "   (" << ods.sheetCount()
                   << " sheets, coloured)\n";
 }
 

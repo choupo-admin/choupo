@@ -73,9 +73,17 @@ public:
 
     void save(const std::string& path) const;
 
+    //  How many sheets this writer actually holds.  The count belongs HERE,
+    //  where the sheets are: the spreadsheet report used to print a
+    //  hand-maintained `5 + profileSheets + extraSheets`, which had already
+    //  drifted (six unconditional sheets, one of them conditional) and drifted
+    //  again the moment a seventh was added.  A number with two homes.
+    std::size_t sheetCount() const { return nSheets_; }
+
 private:
     std::string body_;        // accumulated <table:table>... </table:table>
     bool        inSheet_ = false;
+    std::size_t nSheets_ = 0;
     bool        inRow_   = false;
 
     void closeRow();

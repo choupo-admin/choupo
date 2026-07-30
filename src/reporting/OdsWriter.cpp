@@ -69,6 +69,7 @@ std::string OdsWriter::xmlEscape(const std::string& s)
 
 void OdsWriter::beginSheet(const std::string& name)
 {
+    ++nSheets_;
     closeSheet();
     body_ += "<table:table table:name=\"" + xmlEscape(name) + "\">";
     inSheet_ = true;
