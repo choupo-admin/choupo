@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "FOUR phases at once: vapour + speciated aqueous + benzene-rich organic + solid calcite.  flash16's feed plus benzene and ethanol, nothing else changed -- the co-solvent moves the precipitation from 729 to 1096 mg/kg";
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

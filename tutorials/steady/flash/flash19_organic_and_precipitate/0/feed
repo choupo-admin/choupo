@@ -1,0 +1,13 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  flash14/0/feed -- the authored inlet                                        |
+\*-----------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    CO2      2.0  kmol/h;
+    CaCO3   0.03  kmol/h;
+    water   97.0  kmol/h;
+    benzene    2.0 kmol/h;
+    ethanol    1.0 kmol/h;
+}
+T               313.15 K;
+P               101325 Pa;
