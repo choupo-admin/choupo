@@ -146,46 +146,79 @@ void writeStreamState(const ProcessStream&  s,
     //  the reader VERIFIES that and then discards it -- delete the block and
     //  the case is unchanged.  That deletability is what keeps it from being a
     //  second home for the material (aqueous-stream-basis, 2026-07-27).
-    if (s.speciation && !s.speciation->flows.empty())
+    //  THE ONE RULE: the speciation attaches to the AQUEOUS material.  With a
+    //  single liquid the stream IS that material and the block sits at top
+    //  level; with a declared second liquid it moves INSIDE `phases.aqueous`,
+    //  because the ions are there and nowhere else.  Two placements, one rule
+    //  -- and the reader refuses the ambiguous combination.
+    const bool splitLiquids = s.organicLiquid && !s.organicLiquid->empty();
+    const bool hasSpec      = s.speciation && !s.speciation->flows.empty();
+
+    auto writeSpeciation = [&](const char* pad)
     {
         const auto& sp = *s.speciation;
-        out << "\nspeciation\n{\n"
-               "    //  Report-only: the material is componentMolarFlows above."
-               "  This decomposes it\n"
-               "    //  and must collapse back through the declared bridges"
-               " (verified on read).\n";
-        out << "    network   ( " << sp.network << " );\n";
-        out << "    basis     " << sp.basis << ";\n";
-        if (sp.pH_valid)
-            out << "    pH        " << sp.pH << ";\n";
+        out << "\n" << pad << "speciation\n" << pad << "{\n"
+            << pad << "    //  Report-only: this decomposes the material of the"
+                      " phase that carries it,\n"
+            << pad << "    //  and must collapse back through the declared"
+                      " bridges (verified on read).\n";
+        out << pad << "    network   ( " << sp.network << " );\n";
+        out << pad << "    basis     " << sp.basis << ";\n";
+        if (sp.pH_valid) out << pad << "    pH        " << sp.pH << ";\n";
         out << "\n";
         for (const auto& [nm, v] : sp.flows)
             if (std::abs(v) > 0.0)
-                out << "    " << nm << "    " << v * 3600.0 << " kmol/h;\n";
-        out << "}\n";
-    }
+                out << pad << "    " << nm << "    " << v * 3600.0 << " kmol/h;\n";
+        out << pad << "}\n";
+    };
 
-    // PHASE DECOMPOSITION -- written ONLY when a solid phase rides along.  It
-    // decomposes the overall material and sums back to it (validated on read);
-    // the fluid phase is named by its vapour fraction.
     bool anySolid = false;
-    for (std::size_t i = 0; i < s.s.size(); ++i) if (s.s[i] != 0.0) { anySolid = true; break; }
-    if (anySolid)
+    for (std::size_t i = 0; i < s.s.size(); ++i)
+        if (s.s[i] != 0.0) { anySolid = true; break; }
+
+    //  The fluid phase is named AQUEOUS only when it is a single liquid that
+    //  carries a speciation: naming a two-phase fluid "aqueous" would be a
+    //  lie the reader would then verify the block against.
+    const bool aqueousNamed = hasSpec && s.vf <= 0.001 && (anySolid || splitLiquids);
+    if (hasSpec && !splitLiquids && !aqueousNamed) writeSpeciation("");
+
+    if (anySolid || splitLiquids)
     {
         const char* fluidPhase = s.vf >= 0.999 ? "vapour"
                                : (s.vf <= 0.001 ? "liquid" : "fluid");
-        auto block = [&](const char* nm, const std::function<scalar(std::size_t)>& q)
+        auto block = [&](const char* nm,
+                         const std::function<scalar(std::size_t)>& q,
+                         bool nest = false)
         {
             out << "    " << nm << "\n    {\n        componentMolarFlows\n        {\n";
             for (std::size_t i = 0; i < thermo.n(); ++i)
                 if (significant(q(i)))
                     out << "            " << thermo.comp(i).name() << "    "
                         << q(i) * 3600.0 << " kmol/h;\n";
-            out << "        }\n    }\n";
+            out << "        }\n";
+            if (nest) writeSpeciation("        ");
+            out << "    }\n";
         };
+        auto fluidOf = [&](std::size_t i)
+        { return s.F * (i < s.z.size() ? s.z[i] : 0.0); };
         out << "\nphases\n{\n";
-        block(fluidPhase, [&](std::size_t i){ return s.F * (i < s.z.size() ? s.z[i] : 0.0); });
-        block("solid",    [&](std::size_t i){ return i < s.s.size() ? s.s[i] : 0.0; });
+        if (splitLiquids)
+        {
+            //  The AQUEOUS side is the liquid MINUS the organic -- derived,
+            //  never stored twice, so the two sum back to the overall exactly
+            //  at whatever precision this file is written in.
+            const auto& org = *s.organicLiquid;
+            auto orgOf = [&](std::size_t i)
+            { return i < org.size() ? org[i] : 0.0; };
+            block("aqueous", [&](std::size_t i){ return fluidOf(i) - orgOf(i); },
+                  hasSpec);
+            block("organic", orgOf);
+        }
+        else
+            block(aqueousNamed ? "aqueous" : fluidPhase, fluidOf, aqueousNamed);
+        if (anySolid)
+            block("solid", [&](std::size_t i)
+                  { return i < s.s.size() ? s.s[i] : 0.0; });
         out << "}\n";
     }
 
@@ -531,6 +564,15 @@ ProcessStream readStreamState(const fs::path&       file,
     // ---- SOLID phase: new phases{ solid { } } decomposition (validated to sum
     //      back to overall) OR the legacy solidFlows block.
     std::vector<scalar> solid(n, 0.0);
+    //  The AQUEOUS phase's own material, when the decomposition names one, and
+    //  the speciation that rides inside it.  These are what the block is
+    //  checked against: the ions are in the aqueous phase and nowhere else, so
+    //  checking against the OVERALL material is right only while no other
+    //  phase holds a speciating component -- true today by the accident of a
+    //  declaration, not by anything the format enforced.
+    std::vector<scalar>               aqueous;      // empty = none named
+    std::shared_ptr<const Dictionary> nestedSpec;
+    std::string                       specPhase;
     if (d->found("phases"))
     {
         auto ph = d->subDict("phases");
@@ -538,16 +580,44 @@ ProcessStream readStreamState(const fs::path&       file,
         for (const auto& pname : ph->keys())
         {
             auto pd = ph->subDict(pname);
+            if (pd->found("speciation"))
+            {
+                if (nestedSpec)
+                    throw std::runtime_error("stream state '" + name + "': two"
+                        " phases carry a `speciation` block ('" + specPhase
+                        + "' and '" + pname + "').  A speciation describes ONE"
+                          " material; two of them are two accounts of the same"
+                          " chemistry and nothing says which is believed.");
+                nestedSpec = pd->subDict("speciation");
+                specPhase  = pname;
+            }
             if (!pd->found("componentMolarFlows")) continue;
             auto cmf = pd->subDict("componentMolarFlows");
+            if (pname == "aqueous") aqueous.assign(n, 0.0);
             for (const auto& comp : cmf->keys())
             {
                 const std::size_t i = thermo.indexOf(comp);
                 const scalar v = cmf->lookupScalar(comp);
                 phaseSum[i] += v;
-                if (pname == "solid") solid[i] += v;
+                if (pname == "solid")   solid[i]   += v;
+                if (pname == "aqueous") aqueous[i] += v;
             }
         }
+        //  A top-level block beside a named aqueous phase is the ambiguity
+        //  this whole change removes: it would be checked against the overall
+        //  material while its own phase sits right there, named.
+        if (!aqueous.empty() && d->found("speciation"))
+            throw std::runtime_error("stream state '" + name + "': a"
+                " `speciation` block sits at the top level while `phases`"
+                " names an aqueous phase.  The ions are in the aqueous phase"
+                " and nowhere else, so the block belongs INSIDE it -- at the"
+                " top level it would be checked against material that includes"
+                " the other phases.  Move it into `phases.aqueous`.");
+        if (nestedSpec && specPhase != "aqueous")
+            throw std::runtime_error("stream state '" + name + "': phase '"
+                + specPhase + "' carries a `speciation` block.  Aqueous"
+                  " speciation describes the AQUEOUS phase; a solid or an"
+                  " organic liquid has no ion network to decompose.");
         for (std::size_t i = 0; i < n; ++i)
             if (std::abs(phaseSum[i] - overall[i]) > 1e-6 * std::max(1.0, std::abs(overall[i])))
                 throw std::runtime_error("stream state '" + name + "': phase decomposition "
@@ -567,10 +637,15 @@ ProcessStream readStreamState(const fs::path&       file,
     //  components' declared bridges onto the material actually present.  A
     //  block that has drifted -- hand-edited, or copied from another state --
     //  is caught here rather than being quietly believed.
-    if (d->found("speciation"))
+    if (d->found("speciation") || nestedSpec)
     {
         const auto* cfg = thermo.reactiveConfig();
-        auto sd = d->subDict("speciation");
+        auto sd = nestedSpec ? nestedSpec : d->subDict("speciation");
+        //  THE MATERIAL THE BLOCK DESCRIBES.  Nested: the aqueous phase's own
+        //  amounts.  Top-level: the whole stream -- correct exactly when there
+        //  is one liquid and no other phase holds a speciating component,
+        //  which is why the nested form exists at all.
+        const std::vector<scalar>& basisMaterial = nestedSpec ? aqueous : overall;
         if (!cfg)
             throw std::runtime_error("stream state '" + name + "': carries a"
                 " `speciation` block but this case declares no reactive"
@@ -586,7 +661,7 @@ ProcessStream readStreamState(const fs::path&       file,
         std::map<std::string, scalar> fromComponents;
         for (const auto& fam : cfg->families)
             for (const auto& [master, nu] : fam.mapping)
-                fromComponents[master.key] += nu * overall[fam.apparentIdx];
+                fromComponents[master.key] += nu * basisMaterial[fam.apparentIdx];
         //  ...and the block collapsed the other way, through the NETWORK's own
         //  stoichiometry.  Summing the free ions would not do: the calcium of
         //  a calcium-bicarbonate water is spread over Ca(2+), CaHCO3(+),
@@ -612,7 +687,9 @@ ProcessStream readStreamState(const fs::path&       file,
             std::ostringstream os;
             os << std::scientific << std::setprecision(6);
             os << "stream state '" << name << "': the `speciation` block does"
-                  " NOT collapse back to the material.  Master '" << worst
+                  " NOT collapse back to the material of "
+               << (nestedSpec ? "the AQUEOUS phase" : "the stream")
+               << ".  Master '" << worst
                << "': the components carry " << worstWant
                << " kmol/s through their declared bridges, the block declares "
                << worstGot << ".  A decomposition that does not close is a"

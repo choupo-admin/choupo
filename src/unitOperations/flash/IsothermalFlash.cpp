@@ -159,6 +159,16 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                 [&](const std::string& m)
                 { return cfg->solidOwner.count(m) > 0; });
             if (anyPlaced) sol.solidFlows = solidFlows;
+
+            //  The second liquid, on the stream's own basis.  `nOrgApp` is
+            //  per mole of FEED (like xApp), so it scales by in.F -- the same
+            //  conversion the kgw line above performs for the molalities.
+            if (!r.nOrgApp.empty())
+            {
+                auto org = std::make_shared<sVector>(r.nOrgApp);
+                for (auto& v : *org) v *= in.F;
+                sol.organicLiquid = org;
+            }
         }
         return sol;
     }
@@ -1475,6 +1485,26 @@ int IsothermalFlash::solve(const DictPtr& dict,
         //  not enter a vapour, and a decomposition attached to a stream that
         //  cannot carry it would be a decoration.
         alpha.speciation = sol.speciation;
+        //  ...and so do the liquid-liquid split and the precipitate: both
+        //  describe THIS stream, neither adds another.
+        alpha.organicLiquid = sol.organicLiquid;
+        if (!sol.solidFlows.empty())
+        {
+            //  The crystal rides with the liquid it grew in, and it rides as
+            //  a SOLID: alpha.F/z describe the fluid, alpha.s the crystals.
+            //  The apparent total is unchanged -- the material only changes
+            //  phase.
+            alpha.s = sol.solidFlows;
+            scalar liqTot = 0.0;
+            for (std::size_t i = 0; i < alpha.z.size(); ++i)
+            {
+                const scalar fluid = alpha.F * alpha.z[i]
+                                   - (i < alpha.s.size() ? alpha.s[i] : 0.0);
+                alpha.z[i] = fluid; liqTot += fluid;
+            }
+            alpha.F = liqTot;
+            if (liqTot > 0.0) for (auto& zi : alpha.z) zi /= liqTot;
+        }
         produced_.push_back(alpha);
 
         ProcessStream beta;
