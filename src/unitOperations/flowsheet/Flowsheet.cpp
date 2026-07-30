@@ -3208,8 +3208,25 @@ int Flowsheet::solve(const DictPtr& dict,
         for (auto& [name, s] : streams_)
         {
             if (s.speciation) continue;         // the unit already solved it
-            if (s.vf >= 1.0 - 1e-9) continue;   // an all-vapour stream has no
-                                                //   aqueous phase to speciate
+            //  A stream must be essentially ALL LIQUID to carry a block
+            //  written here.  All-vapour has no aqueous phase at all; a
+            //  TWO-PHASE stream has one, but this pass cannot name it -- it
+            //  speciates the material AS IT IS, as a liquid, and does not
+            //  flash (deliberately: flashing would describe the liquid that
+            //  WOULD FORM, a different material).  So on a 30 %-vapour feed
+            //  it produced a block claiming ALL the acid in solution, with
+            //  the pH of a fully-liquid stream -- the vapour fraction
+            //  changing nothing -- and the closure check waved it through
+            //  because both sides used the total.  A report that cannot say
+            //  which material it describes does not get written.
+            //
+            //  (This line was fixed once, in 6328479c, and a later commit
+            //  re-applied over a stale tree put the old one back.  The reader
+            //  refuses such a file, so the engine was writing output it would
+            //  not read -- and no test noticed, because the gate exercised
+            //  the READER on a hand-written file.  Case (h) there now runs
+            //  the round trip.)
+            if (s.vf >= 1e-6) continue;
             try
             {
                 //  Speciate the material AS IT IS, as a liquid -- NOT a flash.

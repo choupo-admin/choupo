@@ -463,6 +463,55 @@ if os.path.isdir(VLLE):
         solve_refuses("(g) an 'aqueous' outlet in a system with no solvent",
                       VLLE, call_it_aqueous, "no solvent")
 
+#  ------------------------------------------------------------------------
+#  (h) THE ROUND TRIP.  Case (e) fires the reader's refusal on a hand-written
+#  file, and it passed all day while the WRITER was producing exactly such a
+#  file: the post-solve pass's "essentially all liquid" test was fixed in
+#  6328479c and a later commit, re-applied over a stale tree, put the old
+#  all-vapour test back.  The engine wrote a converged/ state it would then
+#  REFUSE to read, and nothing noticed, because the gate exercised the reader
+#  alone.  So: run a reactive case whose feed declares 30 % vapour, then feed
+#  its own output back in.  Whatever the engine writes, it must be able to
+#  read.
+F13 = os.path.join(FLASH, "flash13_acetic_ethanol_vacuum_flash")
+if not os.path.isdir(F13):
+    fail("(h) flash13 is gone -- the writer/reader round trip has no case")
+else:
+    tmp = tempfile.mkdtemp(prefix="roundtrip.")
+    try:
+        dst = os.path.join(tmp, "case")
+        shutil.copytree(F13, dst)
+        for junk in ("converged", "reports"):
+            shutil.rmtree(os.path.join(dst, junk), ignore_errors=True)
+        with open(os.path.join(dst, "0", "feed"), "a") as f:
+            f.write("\nvaporFraction   0.30;\n")
+        r1 = subprocess.run([SOLVER, dst], capture_output=True, text=True)
+        conv = os.path.join(dst, "converged")
+        if r1.returncode != 0:
+            fail("(h) the 30 %%-vapour feed case does not run (exit %d) -- a "
+                 "two-phase feed is legal; only the report on it was not.  "
+                 "Tail:\n%s" % (r1.returncode, (r1.stdout + r1.stderr)[-500:]))
+        elif not os.path.isdir(conv):
+            fail("(h) the case ran but wrote no converged/ state")
+        else:
+            written = open(os.path.join(conv, "feed")).read()
+            if re.search(r"^speciation$", written, re.M):
+                fail("(h) the engine wrote a TOP-LEVEL speciation on a 30 % "
+                     "vapour stream -- the block cannot say which material it "
+                     "describes, and the reader refuses this very file")
+            for fn in os.listdir(conv):
+                shutil.copy(os.path.join(conv, fn), os.path.join(dst, "0", fn))
+            r2 = subprocess.run([SOLVER, dst], capture_output=True, text=True)
+            if r2.returncode != 0:
+                fail("(h) the engine REFUSES ITS OWN OUTPUT: converged/ copied "
+                     "back into 0/ does not load (exit %d).  Tail:\n%s"
+                     % (r2.returncode, (r2.stdout + r2.stderr)[-500:]))
+            else:
+                ok("(h) a 30 % vapour feed: no unnameable block written, and "
+                   "the engine reads back what it wrote")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
 print()
 if fails:
     print("%d failure(s)." % len(fails))
