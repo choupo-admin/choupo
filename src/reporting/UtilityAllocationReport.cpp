@@ -228,7 +228,24 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
             }
             else
             {
-                r.utility = (r.T > 0.0) ? "(none adequate)" : "(unit T unknown)";
+                //  THREE DIFFERENT FACTS, and only one of them is about the
+                //  process.  "(none adequate)" says the catalogue was
+                //  consulted and nothing in it fits -- a real finding about
+                //  this duty.  With NO catalogue loaded it says the same
+                //  thing while having looked at nothing, which is the shape
+                //  of mistake this whole week has been about: a message
+                //  asserting a check it did not perform.
+                //
+                //  An empty catalogue is not exotic: the sealed cases run
+                //  with the installation tree hidden, and a run launched
+                //  from inside a case directory (no CHOUPO_HOME, no
+                //  data/standards beside the cwd) loads none either -- which
+                //  is exactly how this was found, chasing a duty that turned
+                //  out to be perfectly serviceable by steamLP.
+                r.utility = (r.T <= 0.0)                          ? "(unit T unknown)"
+                          : UtilityCatalogue::availableNames().empty()
+                                ? "(no utility catalogue loaded)"
+                                : "(none adequate)";
             }
             rows.push_back(std::move(r));
         }
