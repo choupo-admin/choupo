@@ -235,7 +235,14 @@ int PropertyScan2D::run(const DictPtr& dict,
             applyAxis(axX, bindX, xVal);
             applyAxis(axY, bindY, yVal);
 
-            csv << xVal << "," << yVal;
+            //  Set the format for the AXIS columns too.  A stream's flags are
+            //  sticky, and the first property value below switches it to
+            //  scientific and leaves it there -- so the very first row printed
+            //  its T as `280` and every row after it as `2.80000000e+02`.  The
+            //  same column, two renderings, decided by whether a property had
+            //  been written yet.
+            csv << std::scientific << std::setprecision(8)
+                << xVal << "," << yVal;
             for (const auto& p : propWords)
             {
                 try

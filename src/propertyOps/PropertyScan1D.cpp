@@ -181,7 +181,12 @@ int PropertyScan1D::run(const DictPtr& dict,
             x[partnerIdx]   = 1.0 - varVal;
         }
 
-        csv << varVal;
+        //  Same sticky-flag trap as PropertyScan2D: the first property value
+        //  below switches the stream to scientific and leaves it there, so
+        //  the FIRST row printed its T as `280` and every row after it as
+        //  `2.82000000e+02` -- one column, two renderings, decided by whether
+        //  a property had been written yet.
+        csv << std::scientific << std::setprecision(8) << varVal;
         for (const auto& p : propWords)
         {
             // Resilient per-property eval (mirrors PropertyScan2D): a property
