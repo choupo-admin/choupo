@@ -30,6 +30,8 @@ License
 #include "SolutionDiffusion.H"
 #include "DSPM_DE.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

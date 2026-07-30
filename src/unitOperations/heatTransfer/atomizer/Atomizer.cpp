@@ -31,6 +31,8 @@ License
 #include "PressureSwirlAtomizer.H"
 #include "TwinFluidAtomizer.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

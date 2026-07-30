@@ -106,6 +106,8 @@ Description
 
 #include "BatchUnitOperation.H"
 
+#include <map>
+
 namespace Choupo {
 
 class BatchStill : public BatchUnitOperation

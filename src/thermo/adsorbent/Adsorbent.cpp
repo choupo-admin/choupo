@@ -28,6 +28,8 @@ License
 
 #include "Adsorbent.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

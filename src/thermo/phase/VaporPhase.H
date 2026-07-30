@@ -43,6 +43,8 @@ Description
 #include "Phase.H"
 #include "thermo/equationOfState/EquationOfState.H"
 
+#include <memory>
+
 namespace Choupo {
 
 class VaporPhase : public Phase

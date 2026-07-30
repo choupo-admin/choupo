@@ -37,6 +37,8 @@ License
 #include <fstream>
 #include <functional>
 #include <iomanip>
+#include <map>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 #include <vector>

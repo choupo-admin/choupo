@@ -32,6 +32,7 @@ License
 #include "thermo/ThermoPackage.H"
 
 #include <iostream>
+#include <stdexcept>
 
 namespace Choupo {
 

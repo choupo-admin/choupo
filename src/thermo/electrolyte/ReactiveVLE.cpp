@@ -9,8 +9,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <functional>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

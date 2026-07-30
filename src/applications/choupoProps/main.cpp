@@ -83,6 +83,8 @@ Description
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
+#include <memory>
 #include <set>
 #include <sstream>
 #include <stdexcept>

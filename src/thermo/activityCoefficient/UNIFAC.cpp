@@ -36,6 +36,8 @@ License
 #include <cmath>
 #include <filesystem>
 #include <iostream>
+#include <map>
+#include <memory>
 #include <set>
 #include <stdexcept>
 

@@ -30,6 +30,8 @@ License
 #include "ConstantKfilm.H"
 #include "SchockMiquel.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

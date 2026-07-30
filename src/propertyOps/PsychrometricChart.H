@@ -71,6 +71,7 @@ License
 
 #include "PropertyOperation.H"
 
+#include <map>
 #include <string>
 
 namespace Choupo {

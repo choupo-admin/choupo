@@ -642,6 +642,41 @@ PYEOF
     fi
     rm -f /tmp/regscan.$$
 
+    # Standard-include gate: g++ hands a file <sstream> through <iostream>;
+    # emscripten's libc++ does not.  So the WASM build -- which is what
+    # www.choupo.org is MADE of -- can fail on a file that compiles perfectly
+    # here, and it did: the psychrometric chart's label lambda used a
+    # stringstream without the header, `make all` was clean, this suite was
+    # 333 PASS, and every publish-site run failed at the build step until the
+    # failure arrived by EMAIL.  Building both compilers on every slice costs
+    # ~8 min of emscripten; this costs a second and catches that shape.
+    if "$ROOT/bin/curate/check_std_includes.py" > /tmp/stdinc.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "std-include-gate" "$(tail -1 /tmp/stdinc.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_std_includes.py)\n" "std-include-gate"
+        cat /tmp/stdinc.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/stdinc.$$
+
+    # Git-visibility gate: .gitignore's broad case-output rules (`**/postProcessing/`,
+    # `**/solution/`) match a directory ANYWHERE, and two of them were sitting
+    # on src/ directories.  The files already there are tracked so nothing
+    # looked wrong -- but a NEW file added there is invisible to `git status`,
+    # and this project stages explicitly (never `git add -A`), so it would
+    # simply never be committed.  Both were found by accident; this finds them
+    # on purpose.
+    if "$ROOT/bin/curate/check_git_visibility.py" > /tmp/gitvis.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "git-visibility-gate" "$(tail -1 /tmp/gitvis.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_git_visibility.py)\n" "git-visibility-gate"
+        cat /tmp/gitvis.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gitvis.$$
+
     # Cosmo-scrub gate: the public tree ships NO externally-restricted values.
     # A COSMO set is an external REFERENCE (licence externalRestricted;
     # installed false) or carries an open-licence profile (the synthetic

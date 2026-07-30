@@ -38,6 +38,7 @@ Reference (public-domain method, primary source -- NOT a port of any code):
 
 #include <algorithm>
 #include <cmath>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <limits>

@@ -34,6 +34,7 @@ License
 #include <iomanip>
 #include <iostream>
 #include <set>
+#include <stdexcept>
 #include <vector>
 
 namespace Choupo {

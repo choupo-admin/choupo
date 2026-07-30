@@ -34,6 +34,8 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
+#include <stdexcept>
 
 namespace Choupo {
 

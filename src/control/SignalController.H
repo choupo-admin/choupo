@@ -65,6 +65,8 @@ Description
 #include "Controller.H"
 #include "signal/Signal.H"
 
+#include <memory>
+
 namespace Choupo {
 
 class SignalController : public Controller

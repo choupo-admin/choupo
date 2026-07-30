@@ -30,6 +30,7 @@ License
 #include "DerivedClosures.H"
 
 #include <cmath>
+#include <map>
 
 namespace Choupo {
 

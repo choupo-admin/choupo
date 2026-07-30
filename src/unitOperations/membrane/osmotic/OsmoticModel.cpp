@@ -30,6 +30,8 @@ License
 #include "Pitzer.H"
 #include "VanHoff.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

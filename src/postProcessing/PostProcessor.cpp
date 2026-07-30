@@ -33,6 +33,8 @@ License
 #include "costing/CostingModel.H"
 #include "sizing/EquipmentSize.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

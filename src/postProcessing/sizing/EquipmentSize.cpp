@@ -36,6 +36,8 @@ License
 #include "SprayDryerSize.H"
 #include "StirredTank.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

@@ -30,6 +30,8 @@ License
 #include "SatoRiedel.H"
 #include "Latini.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

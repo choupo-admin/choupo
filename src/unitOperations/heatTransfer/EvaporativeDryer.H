@@ -59,6 +59,8 @@ Description
 
 #include "unitOperations/UnitOperation.H"
 
+#include <map>
+
 namespace Choupo {
 
 class EvaporativeDryer : public UnitOperation

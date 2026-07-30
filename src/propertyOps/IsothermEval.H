@@ -75,6 +75,7 @@ Description
 
 #include "PropertyOperation.H"
 
+#include <map>
 #include <string>
 #include <vector>
 

@@ -29,6 +29,7 @@ License
 #include "streams/SpeciationBlock.H"
 
 #include <functional>
+#include <memory>
 
 #include "thermo/ThermoPackage.H"
 #include "thermo/electrolyte/SpeciationSolver.H"

@@ -60,6 +60,8 @@ License
 
 #include "PropertyOperation.H"
 
+#include <map>
+
 namespace Choupo {
 
 class ENRTLMixedSolventOp : public PropertyOperation

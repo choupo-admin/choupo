@@ -29,6 +29,8 @@ License
 #include "SurfaceTensionModel.H"
 #include "transport/BrockBird.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

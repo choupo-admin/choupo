@@ -15,6 +15,8 @@ License
 
 #include "unitOperations/UnitOperation.H"
 
+#include <map>
+
 namespace Choupo {
 
 class TSATwinBed : public UnitOperation

@@ -43,6 +43,8 @@ Description
 
 #include "PropertyOperation.H"
 
+#include <map>
+
 namespace Choupo {
 
 class HeatTransferBench : public PropertyOperation

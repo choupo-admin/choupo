@@ -16,6 +16,7 @@ License
 #include "core/RegistryScan.H"
 
 #include <iostream>
+#include <map>
 #include <set>
 #include <stdexcept>
 

@@ -86,6 +86,7 @@ Description
 #include "core/Constants.H"
 #include "thermo/Component.H"
 
+#include <memory>
 #include <string>
 #include <vector>
 

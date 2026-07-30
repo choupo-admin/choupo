@@ -36,6 +36,8 @@ License
 #include "ElectrolyteActivity.H"
 #include "thermo/Component.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

@@ -30,6 +30,8 @@ License
 #include "WilkeChang.H"
 #include "Scheibel.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

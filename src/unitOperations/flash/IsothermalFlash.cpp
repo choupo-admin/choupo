@@ -37,6 +37,7 @@ License
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <stdexcept>
 #include "streams/SpeciationBlock.H"
 #include "thermo/electrolyte/ReactiveVLE.H"

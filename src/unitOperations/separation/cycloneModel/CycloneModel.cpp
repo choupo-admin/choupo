@@ -34,6 +34,8 @@ License
 #include "Muschelknautz.H"
 
 #include <cmath>
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

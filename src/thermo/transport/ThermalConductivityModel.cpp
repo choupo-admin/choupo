@@ -29,6 +29,8 @@ License
 #include "ThermalConductivityModel.H"
 #include "Eucken.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

@@ -31,6 +31,8 @@ License
 #include "Gnielinski.H"
 #include "Kern.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

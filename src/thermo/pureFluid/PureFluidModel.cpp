@@ -32,6 +32,8 @@ License
 #include "thermo/iapws/IAPWSTransport.H"
 
 #include <algorithm>
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

@@ -29,6 +29,8 @@ License
 #include "DiffusivityModel.H"
 #include "Fuller.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

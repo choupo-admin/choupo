@@ -31,6 +31,8 @@ License
 #include "EulerSI.H"
 #include "Rosenbrock23.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo::solver

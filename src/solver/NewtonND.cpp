@@ -33,6 +33,7 @@ License
 #include <algorithm>
 #include <atomic>
 #include <cmath>
+#include <functional>
 #include <limits>
 #include <mutex>
 #include <stdexcept>

@@ -30,6 +30,7 @@ License
 
 #include <algorithm>
 #include <cmath>
+#include <functional>
 
 namespace Choupo::solver {
 

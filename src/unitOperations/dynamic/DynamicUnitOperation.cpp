@@ -29,6 +29,8 @@ License
 #include "DynamicUnitOperation.H"
 #include "DynamicCSTR.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

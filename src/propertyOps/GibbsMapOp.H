@@ -63,6 +63,8 @@ License
 
 #include "PropertyOperation.H"
 
+#include <map>
+
 namespace Choupo {
 
 class GibbsMapOp : public PropertyOperation

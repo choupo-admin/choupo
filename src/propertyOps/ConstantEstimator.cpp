@@ -33,6 +33,7 @@ License
 #include "Yang2020.H"
 
 #include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

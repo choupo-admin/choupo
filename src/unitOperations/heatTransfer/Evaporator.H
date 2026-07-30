@@ -95,6 +95,7 @@ KPIs reported
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
 
+#include <map>
 #include <string>
 
 namespace Choupo {

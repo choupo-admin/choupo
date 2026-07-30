@@ -52,6 +52,8 @@ Description
 
 #include "propertyOps/PropertyOperation.H"
 
+#include <map>
+
 namespace Choupo {
 
 class ElementCompositionOp : public PropertyOperation

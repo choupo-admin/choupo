@@ -62,6 +62,8 @@ License
 
 #include "PropertyOperation.H"
 
+#include <map>
+
 namespace Choupo {
 
 class ENRTLMultiSaltOp : public PropertyOperation

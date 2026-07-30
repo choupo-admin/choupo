@@ -86,6 +86,7 @@ Description
 
 #include "BatchUnitOperation.H"
 
+#include <map>
 #include <vector>
 
 namespace Choupo {

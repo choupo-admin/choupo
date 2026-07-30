@@ -88,6 +88,8 @@ Description
 #include <iomanip>
 #include <iostream>
 #include <sstream>      // std::ostringstream (libc++/WASM needs it explicit)
+#include <map>
+#include <memory>
 #include <stdexcept>
 #include <set>
 #include <string>

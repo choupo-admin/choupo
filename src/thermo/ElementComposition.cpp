@@ -33,6 +33,7 @@ License
 
 #include <cctype>
 #include <cmath>
+#include <map>
 #include <vector>
 #include <set>
 

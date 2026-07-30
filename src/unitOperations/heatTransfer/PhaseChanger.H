@@ -82,6 +82,7 @@ SourceFiles
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
 
+#include <map>
 #include <string>
 #include <vector>
 

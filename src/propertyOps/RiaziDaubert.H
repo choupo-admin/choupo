@@ -54,6 +54,8 @@ License
 
 #include "ConstantEstimator.H"
 
+#include <map>
+
 namespace Choupo {
 
 class RiaziDaubert : public ConstantEstimator

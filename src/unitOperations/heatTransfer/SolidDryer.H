@@ -55,6 +55,8 @@ Description
 
 #include "unitOperations/UnitOperation.H"
 
+#include <map>
+
 namespace Choupo {
 
 class SolidDryer : public UnitOperation

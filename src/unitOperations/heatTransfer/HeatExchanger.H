@@ -67,6 +67,8 @@ Description
 
 #include "unitOperations/UnitOperation.H"
 
+#include <map>
+
 namespace Choupo {
 
 class HeatExchanger : public UnitOperation

@@ -76,6 +76,8 @@ License
 #include "electrochem/ElectrodialysisStack.H"
 #include "valve/Valve.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

@@ -77,6 +77,8 @@ Description
 
 #include "unitOperations/UnitOperation.H"
 
+#include <map>
+
 namespace Choupo {
 
 class Extractor : public UnitOperation

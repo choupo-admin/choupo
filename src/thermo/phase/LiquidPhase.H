@@ -47,6 +47,8 @@ Description
 #include "Phase.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 
+#include <memory>
+
 namespace Choupo {
 
 class LiquidPhase : public Phase

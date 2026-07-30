@@ -33,6 +33,8 @@ License
 #include "ParetoSweepDriver.H"
 #include "SweepDriver.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

@@ -35,6 +35,7 @@ License
 
 #include <cmath>
 #include <filesystem>
+#include <memory>
 #include <stdexcept>
 #include <variant>
 #include "thermo/vaporPressure/VaporPressureModel.H"

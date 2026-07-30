@@ -29,6 +29,8 @@ License
 #include "CostingModel.H"
 #include "Guthrie.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

@@ -81,6 +81,7 @@ Description
 
 #include "unitOperations/UnitOperation.H"
 
+#include <map>
 #include <optional>
 
 namespace Choupo {

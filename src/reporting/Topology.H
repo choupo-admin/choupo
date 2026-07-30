@@ -46,6 +46,7 @@ Description
 #include "core/Dictionary.H"
 #include "core/SimulationResult.H"
 
+#include <map>
 #include <set>
 #include <string>
 #include <vector>

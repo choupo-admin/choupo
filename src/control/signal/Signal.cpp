@@ -29,6 +29,8 @@ License
 #include "Signal.H"
 #include "Signals.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

@@ -31,6 +31,8 @@ License
 #include "SolidPhase.H"
 #include "VaporPhase.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

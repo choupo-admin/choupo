@@ -30,6 +30,8 @@ License
 #include "ConstantDrop.H"
 #include "SchockMiquelDrop.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

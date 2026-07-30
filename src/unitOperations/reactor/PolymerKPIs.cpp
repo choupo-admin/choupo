@@ -31,6 +31,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <map>
 
 namespace Choupo {
 namespace PolymerKPIs {

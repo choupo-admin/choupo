@@ -32,6 +32,8 @@ License
 #include "thermo/electrolyte/PitzerHMW.H"
 
 #include <cmath>
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

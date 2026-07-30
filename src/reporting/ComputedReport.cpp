@@ -35,6 +35,7 @@ License
 #include <functional>
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 #include <variant>
 #include <vector>
 

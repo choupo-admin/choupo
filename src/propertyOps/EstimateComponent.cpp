@@ -42,6 +42,7 @@ License
 #include <iostream>
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <vector>
 

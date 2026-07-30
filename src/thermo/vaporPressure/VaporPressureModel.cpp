@@ -30,6 +30,8 @@ License
 #include "Antoine.H"
 #include "AmbroseWalton.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

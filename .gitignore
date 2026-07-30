@@ -99,6 +99,12 @@ tutorials/**/postProcessing/
 # a change to SolutionRegistry.cpp, which git refused as an ignored path.
 !src/thermo/solution/
 !src/thermo/solution/**
+# ...and src/postProcessing/ is the SizingPass/CostingPass SOURCE, not a case's
+# report tree.  Same trap as src/thermo/solution above, found the same way:
+# git refused a pathspec while staging.  bin/curate/check_git_visibility.py
+# probes every source directory for exactly this.
+!src/postProcessing/
+!src/postProcessing/**
 # Solver-generated CSVs (sweep / optim / trajectory / propertyScan /
 # fit_history / parity / per-component property output) -- the filename
 # is user-defined in the dict so we match by location.  Recursive **

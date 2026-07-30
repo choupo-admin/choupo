@@ -30,6 +30,8 @@ License
 #include "PolynomialCp.H"
 #include "NASA7Cp.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

@@ -103,6 +103,7 @@ Description
 #include "thermo/Component.H"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 

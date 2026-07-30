@@ -29,6 +29,8 @@ License
 #include "TransportModel.H"
 #include "ChungViscosity.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

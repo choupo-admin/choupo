@@ -22,6 +22,8 @@
 #include <filesystem>
 #include <iomanip>
 #include <iostream>
+#include <map>
+#include <memory>
 #include <numeric>
 #include <algorithm>
 #include <set>

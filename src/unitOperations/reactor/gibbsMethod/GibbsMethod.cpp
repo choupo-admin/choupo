@@ -37,6 +37,9 @@ License
 
 #include <cmath>
 #include <algorithm>
+#include <functional>
+#include <map>
+#include <memory>
 #include <stdexcept>
 #include <iostream>
 #include "thermo/equationOfState/EquationOfState.H"

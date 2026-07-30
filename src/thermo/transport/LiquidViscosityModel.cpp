@@ -30,6 +30,8 @@ License
 #include "Andrade.H"
 #include "Vogel.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

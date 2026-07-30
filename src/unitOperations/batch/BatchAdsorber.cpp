@@ -41,6 +41,7 @@ License
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <stdexcept>
 

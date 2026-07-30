@@ -30,6 +30,7 @@ License
 
 #include <cctype>
 #include <cstdlib>
+#include <functional>
 #include <stdexcept>
 
 namespace Choupo {

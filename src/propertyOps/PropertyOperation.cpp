@@ -59,6 +59,8 @@ License
 #include "thermo/ThermoPackage.H"
 #include "thermo/ThermoPackageBuilder.H"
 
+#include <map>
+#include <memory>
 #include <stdexcept>
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/equationOfState/EquationOfState.H"
