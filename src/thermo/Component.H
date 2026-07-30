@@ -111,6 +111,20 @@ public:
     // Determines the reference path h_formation() walks to reach a
     // stream's (T, target_phase).
     const std::string& naturalPhase() const { return naturalPhase_; }
+
+    //  The DISSOLUTION enthalpy of this substance's own solid phase [J/mol],
+    //  read from its `solidPhases { <phase> { equilibrium { dH ... } } }` --
+    //  the SAME curated number the speciation solver uses for K(T), never a
+    //  second copy.  Absent when the record declares none, or when it
+    //  declares SEVERAL solid phases with different values: polymorphs
+    //  dissolve to the same ions but not with the same heat, and picking one
+    //  would let the order of the file decide the energy.
+    //  Keyed by PHASE NAME, because a substance may declare several and they
+    //  do NOT share the heat: CaCO3 carries aragonite (-25731.6 J/mol) and
+    //  calcite (-28078.8).  Which one applies is the CASE's declaration
+    //  (`chemistryDict: solidPhases ( calcite )`), never this record's order.
+    const std::map<std::string, scalar>& dHdissolutionByPhase() const
+    { return dHdissByPhase_; }
     // Per-component enthalpy at (T, target_phase) referenced to the
     // formation datum at 298 K in the natural phase.  Reaction enthalpy
     // emerges naturally as h_out − h_in because every species carries
@@ -415,6 +429,7 @@ private:
     scalar      S298_    = 0.0;
     bool        hasGibbsData_ = false;
     std::string naturalPhase_ = "gas";   // gas | liquid | solid (default IG/NIST/JANAF)
+    std::map<std::string, scalar> dHdissByPhase_;   // phase -> dH [J/mol]
 
     // Solute support
     scalar      nu_          = 1.0;       // van't Hoff factor for osmotic pressure

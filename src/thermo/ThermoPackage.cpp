@@ -943,8 +943,63 @@ std::optional<scalar> ThermoPackage::dHsolnForSolute(std::size_t i) const
             + c.name() + "-water).  Provide solution/" + c.name() + "-"
             + solvent + ".dat or set `solvent water;` explicitly.");
 
-    // Default solvent (water) but no sucrose-water-style entry: this solute
-    // simply has no curated heat of solution yet -> stays on the crystal rung.
+    // Default solvent (water), no solution/ pair -- but the SUBSTANCE'S OWN
+    // record may carry the dissolution heat of the solid phase THIS CASE
+    // ADMITS, in the
+    // `solidPhases { <phase> { equilibrium { dH ... } } }` block the
+    // speciation solver already reads for K(T).  Using it here is
+    // SINGLE-SOURCING, not new physics: the alternative was the caloric path
+    // falling through to the ideal-gas leg, which for a nonvolatile salt is
+    // forbidden outright (CLAUDE.md sec.5) -- and did not merely bend the
+    // number, it made the DUTY UNAVAILABLE.  A flash that precipitates
+    // 1096 mg/kg of calcite published no first law at all.
+    //
+    // WHICH PHASE is the CASE's declaration, never the record's order.  CaCO3
+    // carries TWO polymorphs and they do not share the heat -- aragonite
+    // -25731.6 J/mol, calcite -28078.8 -- so "the component's dH" would let
+    // the order of the file decide the energy.  The case says
+    // `chemistryDict: solidPhases ( calcite )`; a system admitting none, or
+    // several that disagree, keeps its honest gap.
+    //
+    // The datum is the reaction the record curates (calcite + H+ = Ca2+ +
+    // HCO3-, dH = -28078.8 J/mol, USGS PHREEQC).  On the elements datum with
+    // the H+(aq) = 0 convention, Hf_solid + dH IS the aqueous rung of the
+    // component in the master basis its own `dissolutionReaction` declares --
+    // which is the same basis the speciation collapses onto.
+    //
+    // It comes LAST on purpose.  A curated solution/ pair wins, and so does
+    // the electrolyte branch's aqueous ION reference upstream of this call:
+    // NaCl and KCl keep the Parker-refit path they already had, byte for
+    // byte.  This only reaches substances that had NO caloric route at all.
+    {
+        const auto& byPhase = c.dHdissolutionByPhase();
+        if (!byPhase.empty())
+        {
+            bool seen = false, clash = false; scalar dh = 0.0;
+            for (const auto& ph : aqueous_.solidPhases)
+            {
+                auto it = byPhase.find(ph);
+                if (it == byPhase.end()) continue;
+                if (!seen) { dh = it->second; seen = true; }
+                else if (std::abs(it->second - dh)
+                         > 1.0e-6 * std::max(std::abs(dh), 1.0)) clash = true;
+            }
+            if (seen && !clash)
+            {
+                if (AdvisoryLog::instance().add("thermo", "info",
+                        "dHsoln-solidPhase " + c.name(),
+                        "from the admitted solid phase's equilibrium dH"))
+                    std::cerr << "[thermo] dHsoln(" << c.name() << "): "
+                              << dh * 1.0e-3 << " kJ/mol from the ADMITTED"
+                                 " solid phase's own equilibrium dH (the same"
+                                 " datum the speciation reads for K(T)) -- no"
+                                 " solution/ pair curated\n";
+                return dh;
+            }
+        }
+    }
+
+    // No curated heat of solution anywhere -> stays on the crystal rung.
     return std::nullopt;
 }
 

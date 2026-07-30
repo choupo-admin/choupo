@@ -189,6 +189,7 @@ void Component::readFromDict(const DictPtr& d)
         //  FIRST is read and any disagreement refuses rather than picking.
         auto sp = d->subDict("solidPhases");
         const auto phases = sp->keys();
+
         std::vector<SpeciesStoich> derived;
         std::string from;
         for (const auto& ph : phases)
@@ -305,6 +306,31 @@ void Component::readFromDict(const DictPtr& d)
         auto an = d->subDict("anchors");
         K_b_ = an->lookupScalarOrDefault("K_b", 0.0);
         K_f_ = an->lookupScalarOrDefault("K_f", 0.0);
+    }
+
+    //  THE DISSOLUTION HEAT of this substance's own solid, INDEPENDENT of
+    //  which aqueous-bridge branch the record took above: a mineral whose
+    //  bridge IS its dissolution and a salt that declares `dissociatesTo`
+    //  both carry it, and the first draft read it inside the bridge's
+    //  else-if -- so it was parsed for one kind of record and silently not
+    //  for the other.
+    //
+    //  It is the SAME curated number the speciation solver reads for K(T)
+    //  (calcite: -28078.8 J/mol, USGS PHREEQC).  One home.
+    //
+    //  SEVERAL phases with DIFFERENT dH leaves it ABSENT: polymorphs dissolve
+    //  to the same ions but not with the same heat, and reading the first
+    //  would let the order of the file decide the energy.
+    if (d->found("solidPhases"))
+    {
+        auto spd = d->subDict("solidPhases");
+        for (const auto& ph : spd->keys())
+        {
+            auto pd = spd->subDict(ph);
+            if (!pd->found("equilibrium")) continue;
+            auto eq = pd->subDict("equilibrium");
+            if (eq->found("dH")) dHdissByPhase_[ph] = eq->lookupScalar("dH");
+        }
     }
 
     // UNIFIED substance file: crystal props live under solidPhases.<phase>.crystal;
