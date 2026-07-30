@@ -89,6 +89,18 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
     if (dict->found("grid") && dict->subDict("grid")->found("n"))
         n = std::max<std::size_t>(8, static_cast<std::size_t>(dict->subDict("grid")->lookupScalar("n")));
 
+    //  LABEL THE CURVE WITH THE VALUE GIVEN, not a truncation of it.  The
+    //  list is in PERCENT, and `static_cast<int>` collapsed anything below 1
+    //  to the same "rh:0" -- so a user writing fractions (0.2 0.4 0.6 0.8,
+    //  the other natural reading of "relative humidity") got FOUR curves all
+    //  named rh:0, drawn on top of each other, and a chart that looked like
+    //  it had one line.  Plausible and wrong, with nothing said.
+    auto rhLabel = [](double phi)
+    {
+        std::ostringstream o;
+        o << std::defaultfloat << phi;      // 60 -> "60", 0.2 -> "0.2"
+        return o.str();
+    };
     std::vector<double> rhList;
     if (dict->found("relativeHumidity")) rhList = dict->lookupList("relativeHumidity");
     else rhList = { 10, 20, 30, 40, 50, 60, 70, 80, 90 };
@@ -122,13 +134,28 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
         const double pv = psat(T_K);
         if (pv <= 0.0) continue;
         if (pv < PV_CAP)
+        {
             csv << Tc_ << "," << ratio * pv / (P - pv) << ",saturation\n";
+            //  Pin the ceiling at BOTH ends of the declared range.  Y_sat is
+            //  ratio * Psat/(P - Psat), so it moves with the vapour-pressure
+            //  model AND with `ratio` -- the molar-mass ratio of the DECLARED
+            //  carrier.  That second dependence is the reason this chart is
+            //  computed rather than copied: with N2 as carrier Y_sat(60 C) is
+            //  0.1586, where a printed AIR chart reads 0.152.
+            {
+                const double ys = ratio * pv / (P - pv);
+                if (!diag_.count("Y_sat_first")) diag_["Y_sat_first"] = ys;
+                diag_["Y_sat_last"] = ys;
+                diag_["nSaturationPoints"] = diag_["nSaturationPoints"] + 1.0;
+            }
+        }
         for (double phi : rhList)
         {
             const double pvp = (phi / 100.0) * pv;
             if (pvp > 0.0 && pvp < PV_CAP)
                 csv << Tc_ << "," << ratio * pvp / (P - pvp)
-                    << ",rh:" << static_cast<int>(phi) << "\n";
+                    << ",rh:" << rhLabel(phi) << "\n";
+            diag_["nRhCurves"] = static_cast<double>(rhList.size());
         }
     }
 
@@ -159,6 +186,11 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
                 Y  = Yas - cs * (Tc_ - TasC) / lam;
                 if (Y < 0.0) break;
                 csv << Tc_ << "," << Y << ",adiabatic:" << static_cast<int>(TasC) << "\n";
+                //  The adiabatic line's END is where the latent-heat term has
+                //  done its work; it moves with Hvap and with the moist-gas
+                //  heat capacity, neither of which the saturation anchors see.
+                diag_["Y_adiabatic_last"] = Y;
+                diag_["nWetBulbCurves"]   = static_cast<double>(wbList.size());
             }
         }
 

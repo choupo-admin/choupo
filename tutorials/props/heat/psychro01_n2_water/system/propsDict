@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+operations
+(
+    {
+        name             airWater;
+        type             psychrometricChart;
+
+        //  The CARRIER is the dry gas, the CONDENSABLE the one that can
+        //  saturate.  They are not interchangeable: only the condensable
+        //  needs a vapour-pressure model, and the op refuses by name when it
+        //  has none.
+        carrier          N2;
+        condensable      water;
+
+        P                101325;        // Pa
+        TminC            0;
+        TmaxC            60;
+        grid             { n 61; }      // 1 C steps -- readable, not smooth-washed
+
+        relativeHumidity ( 20  40  60  80 );   // PERCENT (the op's unit)
+        wetBulb          ( 10  20  30 );   // C
+
+        output { file psychroChart.csv; }
+    }
+);

@@ -80,6 +80,18 @@ class PsychrometricChart : public PropertyOperation
 public:
     const std::string& type() const override { static const std::string t = "psychrometricChart"; return t; }
     int run(const DictPtr& dict, const ThermoPackage& thermo, int verbosity) override;
+
+    //  WHAT THE CHART CAME OUT AS, as scalars a golden master can pin.
+    //  This op published `"diagnostics": {}` -- it wrote a CSV and reported
+    //  NOTHING about it, so even a tutorial exercising it would have been a
+    //  smoke test: it could return a different chart and no check would move.
+    //  Every other property op publishes what it computed; this one now does
+    //  too, and the anchors are chosen so that a change in the vapour-pressure
+    //  model, in the CARRIER's molar mass, or in the grid moves at least one.
+    std::map<std::string, scalar> diagnostics() const override { return diag_; }
+
+private:
+    std::map<std::string, scalar> diag_;
 };
 
 } // namespace Choupo

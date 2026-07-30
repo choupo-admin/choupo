@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+//  Air as the CARRIER and water as the CONDENSABLE.  Only the condensable
+//  needs a vapour-pressure model here -- the carrier contributes its heat
+//  capacity to the wet-bulb lines and nothing else.
+components    ( N2  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model ideal; } }
+    vapour  { fugacityModel idealGas; }
+}
+
+//  TRANSPORT is what makes the wet-bulb line the TRUE one.  The adiabatic-
+//  saturation line and the wet-bulb line coincide only when the Lewis number
+//  is 1; for air/water it is close but not equal, and the op computes it from
+//  these models rather than assuming the coincidence.
+transport
+{
+    model               Chung;
+    thermalConductivity Eucken;
+    diffusivity         Fuller;
+}
