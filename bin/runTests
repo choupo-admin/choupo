@@ -591,6 +591,24 @@ PYEOF
     fi
     rm -f /tmp/phspec.$$
 
+    # flashComplex gate: the DESIGN-DRIVER case must keep closing.  It lives
+    # in docs/design/, not tutorials/, because sealing it is an unresolved
+    # CURATION question (ten component records differ from the catalogue in
+    # real data -- its README carries the numbers).  So the case loop never
+    # runs it, and the hardest thing the solver does had no regression signal
+    # at all: every slice of the phase work could break it with the whole
+    # suite staying green.  Verified by sabotage -- deleting the organic
+    # declaration leaves it converging, exit 0, answering a different problem.
+    if "$ROOT/bin/curate/check_flash_complex.py" > /tmp/fcgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "flashComplex-gate" "$(tail -1 /tmp/fcgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_flash_complex.py)\n" "flashComplex-gate"
+        cat /tmp/fcgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/fcgate.$$
+
     # Cosmo-scrub gate: the public tree ships NO externally-restricted values.
     # A COSMO set is an external REFERENCE (licence externalRestricted;
     # installed false) or carries an open-licence profile (the synthetic
