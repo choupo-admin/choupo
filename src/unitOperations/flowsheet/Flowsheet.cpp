@@ -62,6 +62,7 @@ License
 #include <iostream>
 #include <memory>
 #include <set>
+#include <sstream>
 #include <stdexcept>
 #include "thermo/pureFluid/PureFluidModel.H"
 #include "thermo/electrolyte/ElectrolyteModel.H"

@@ -35,6 +35,7 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 #include "thermo/vaporPressure/VaporPressureModel.H"
