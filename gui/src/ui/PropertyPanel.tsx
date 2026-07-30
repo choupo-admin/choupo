@@ -74,6 +74,7 @@ import { useMemo, useState } from "react";
 
 import { boundaryForStream } from "../case/modelBoundary.js";
 import { streamCardSource } from "../case/streamCardState.js";
+import { streamPhases } from "../case/streamPhases.js";
 import { compositeMembers, unitFolderNames, streamStateSpec, zeroStateText, topologyFeedNames } from "../case/toGraph.js";
 import {
   operationSchemaFor,
@@ -474,6 +475,9 @@ function StreamDetails({
     return spec ? { F: spec.F, T: spec.T, P: spec.P } as JsonDict : undefined;
   });
   const prefs = useStore((s) => s.displayPrefs);
+  //  Molar masses from the run payload -- what turns the solid phase's kg/s
+  //  into the kmol/s the other phases are in.
+  const molarMass = useStore((s) => s.runResult?.componentMolarMass);
   // Model-boundary audit entry for this stream (producer/consumer on
   // different thermo models): shown as one row so the audit is visible at
   // the stream it names, not only in the summary band.
@@ -553,6 +557,10 @@ function StreamDetails({
   const composition = Object.entries(stream.composition ?? {}).sort(
     (a, b) => Number(b[1]) - Number(a[1]),
   );
+  //  Which phases the stream carries, and how much is in each.  Empty when
+  //  there is only one fluid phase and no crystals.
+  const phases = runStream ? streamPhases(runStream, molarMass) : [];
+  const phaseFlowUnit = prefs.flow.includes("mol") ? prefs.flow : "kmol/h";
   return (
     <Stack gap="md">
       <Stack gap={4}>
@@ -706,6 +714,36 @@ function StreamDetails({
           })}
         </Stack>
       </Stack>
+      {phases.length > 0 && (
+        //  The sidebar is narrow, so it carries the HEADLINE -- which phases
+        //  exist and how much is in each.  The per-component breakdown lives
+        //  in the Streams workspace, which has the width for it.  Without
+        //  this, a four-phase stream looked exactly like a one-phase one.
+        <Stack gap={4}>
+          <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
+            Phases
+          </Text>
+          <Table withRowBorders={false} striped="even" verticalSpacing={4}>
+            <Table.Tbody>
+              {phases.map((ph) => (
+                <Table.Tr key={ph.name}>
+                  <Table.Td style={{ width: "45%" }}>
+                    <Text size="xs" ff="monospace">{ph.name}</Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text size="xs" ff="monospace" c="dimmed">
+                      {formatFlow(ph.total, phaseFlowUnit)} {phaseFlowUnit}
+                    </Text>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+          <Text size="xs" c="dimmed">
+            per-component breakdown in the Streams workspace
+          </Text>
+        </Stack>
+      )}
       {runStream?.speciation && (
         //  A REACTIVE case's card used to stop at the composition above --
         //  mole fractions of CaCO3 and CO2, and not a word about the Ca,
