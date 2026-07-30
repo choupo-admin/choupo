@@ -646,6 +646,28 @@ ProcessStream readStreamState(const fs::path&       file,
         //  is one liquid and no other phase holds a speciating component,
         //  which is why the nested form exists at all.
         const std::vector<scalar>& basisMaterial = nestedSpec ? aqueous : overall;
+        //  A TOP-LEVEL block on a two-phase stream describes nothing
+        //  checkable: `overall` is liquid plus vapour, and the ions are in
+        //  the liquid.  It is refused rather than verified against the wrong
+        //  material -- the same reasoning as the nested form, one phase
+        //  boundary out.  (vf == 1 is refused too: no aqueous phase at all.)
+        //  Read the vapour fraction FROM THE DICT, not from `s`: the
+        //  thermodynamic state is parsed further down, so `s.vf` is still 0
+        //  here.  Taking it from the half-built stream made this refusal
+        //  silently unreachable -- it passed its own test by never firing.
+        const scalar vfDecl =
+            d->found("vaporFraction") ? d->lookupScalar("vaporFraction")
+          : (d->found("phase") && d->lookupWord("phase") == "gas") ? 1.0
+          : 0.0;
+        if (!nestedSpec && vfDecl > 1e-6)
+            throw std::runtime_error("stream state '" + name + "': a"
+                " top-level `speciation` block on a stream that is "
+                + std::to_string(vfDecl * 100.0).substr(0, 5) + " % vapour."
+                "  The ions are in the LIQUID; at the top level the block"
+                " would be checked against the liquid AND the vapour"
+                " together.  Name the phase it describes"
+                " (`phases { aqueous { ... speciation { ... } } }`), or drop"
+                " the block.");
         if (!cfg)
             throw std::runtime_error("stream state '" + name + "': carries a"
                 " `speciation` block but this case declares no reactive"

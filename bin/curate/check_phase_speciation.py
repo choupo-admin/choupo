@@ -39,10 +39,12 @@ What is asserted:
      is.
   2. flash16's aqueous phase holds the DISSOLVED calcium only, and the
      calcite is a solid phase -- with the apparent total untouched.
-  3. FOUR REFUSALS, each fired through the real reader (choupo-lint on a
-     scratch case), never asserted from the source text.
+  3. FIVE REFUSALS, each fired through the real reader (choupo-lint on a
+     scratch case), never asserted from the source text -- including (e),
+     a top-level block on a part-vapour stream, where `overall` is liquid
+     PLUS vapour and there is nothing checkable to check it against.
 
-CASE (d) IS THE ONE THAT MATTERS.  (a), (b) and (c) are STRUCTURE: which
+CASES (d) AND (e) ARE THE ONES THAT MATTER.  (a), (b) and (c) are STRUCTURE: which
 block sits where.  Structure survives the fix being reverted -- putting the
 reader's basis back to `overall` leaves all three passing, which was verified
 by sabotage before this file was wired in.  Only (d) exercises the check
@@ -188,6 +190,20 @@ def lint_refuses(label, mutate, expect, case="flash17_two_liquids_reactive",
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+def drop_nested_to_top(t):
+    """The nested form flattened: speciation at the top, no phases{} block.
+
+    Used to build the two-phase case, which must have NO phases block (that
+    is the point: nothing names the aqueous phase) while still carrying a
+    speciation."""
+    head, rest = t.split("\nphases", 1)
+    m = re.search(r"\n *speciation\n *\{.*?\n *\}\n", rest, re.S)
+    spec = m.group(0) if m else ""
+    spec = "\n".join(l[8:] if l.startswith(" " * 8) else l
+                     for l in spec.split("\n"))
+    return head + spec
+
+
 def dup_top_level(t):
     spec = ("\nspeciation\n{\n    network   ( aceticAcid );\n"
             "    basis     stoichiometric;\n    HAc    0.09324022498 kmol/h;\n}\n")
@@ -255,6 +271,25 @@ else:
     lint_refuses("(d) the aqueous phase no longer holds the acid its "
                  "speciation claims",
                  acid_into_organic, "the AQUEOUS phase", raw=raw17)
+
+    #  (e) THE PHASE BOUNDARY ONE OUT.  A stream that is part vapour with a
+    #  TOP-LEVEL block: `overall` is liquid plus vapour and the ions are in
+    #  the liquid, so there is nothing checkable to check it against.
+    #
+    #  This was reachable and reproduced: giving a reactive feed
+    #  `vaporFraction 0.30` produced a block claiming ALL the acid in
+    #  solution, at the pH of a fully-liquid stream -- the vapour fraction
+    #  changing nothing -- because the post-solve pass speciates the material
+    #  AS IT IS, as a liquid, and the closure check used the total on both
+    #  sides.  The pass no longer writes one; the reader refuses one written
+    #  by hand or carried in an old file.
+    def two_phase_top_level(t):
+        flat = drop_nested_to_top(t)
+        return re.sub(r"(P\s+[\d.eE+]+ Pa;\n)", r"\1vaporFraction   0.30;\n",
+                      flat, count=1)
+
+    lint_refuses("(e) top-level block on a 30 % vapour stream",
+                 two_phase_top_level, "% vapour", raw=raw17)
 
 print()
 if fails:
