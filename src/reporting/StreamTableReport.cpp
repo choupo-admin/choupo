@@ -175,6 +175,72 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     if (ctx.verbosity >= 2)
         std::cout << "  [report] streamTable -> " << path.string()
                   << "  (" << names.size() << " streams)\n";
+
+    //  ---- the PHASE split, when a stream carries more than one -----------
+    //
+    //  The table above is one row per stream on the OVERALL material, and for
+    //  a stream holding two liquids or a precipitate that row says nothing
+    //  about the split -- flash19's liquid keeps 91 % of its benzene in a
+    //  phase the table could not mention.  Widening the table by a column per
+    //  (phase, component) would double it for every case, most of which have
+    //  one phase, so this is its own artefact and it EXISTS ONLY when there is
+    //  something to say: no second liquid and no solid anywhere, no file.
+    //
+    //  Long format -- one row per (stream, phase, component) -- because the
+    //  phase set differs per stream and a wide table would be mostly blank.
+    //  The AQUEOUS row is the fluid MINUS the organic (the engine stores only
+    //  the organic side, the same as the stream files); the SOLID comes from
+    //  s[], in the same molar basis as the rest, not the kg/h of the summary
+    //  column above.
+    bool anyPhases = false;
+    for (const auto& [nm, s] : ctx.result.streams)
+    {
+        (void)nm;
+        if ((s.organicLiquid && !s.organicLiquid->empty())
+            || std::any_of(s.s.begin(), s.s.end(), [](scalar v){ return v != 0.0; }))
+        { anyPhases = true; break; }
+    }
+    if (!anyPhases) return;
+
+    const std::filesystem::path ppath = dir / "phases.csv";
+    std::ofstream pf(ppath);
+    if (!pf.is_open())
+        throw std::runtime_error("streamTable: cannot open " + ppath.string());
+    pf << "stream,phase,component,n_kmol_per_h\n";
+    std::size_t rows = 0;
+    for (const auto& name : names)
+    {
+        const auto& s = ctx.result.streams.at(name);
+        const bool hasOrg = s.organicLiquid && !s.organicLiquid->empty();
+        const bool hasSol = std::any_of(s.s.begin(), s.s.end(),
+                                        [](scalar v){ return v != 0.0; });
+        if (!hasOrg && !hasSol) continue;      // one phase: nothing to split
+        auto row = [&](const char* phase, const std::string& comp, scalar n)
+        {
+            if (n == 0.0) return;
+            pf << name << "," << phase << "," << comp << ","
+               << std::scientific << std::setprecision(6) << n * 3600.0 << "\n";
+            ++rows;
+        };
+        for (std::size_t i = 0; i < comps.size(); ++i)
+        {
+            const scalar fluid = s.F * ((i < s.z.size()) ? s.z[i] : 0.0);
+            const scalar org = (hasOrg && i < s.organicLiquid->size())
+                             ? (*s.organicLiquid)[i] : 0.0;
+            //  A subtraction can leave a rounding crumb below any physical
+            //  amount; that is the organic side's last digit, not a component
+            //  of the aqueous phase.
+            const scalar aq = fluid - org;
+            row("aqueous", comps[i],
+                (std::abs(aq) > 1e-15 * std::max(scalar(1), std::abs(fluid))) ? aq : 0.0);
+            row("organic", comps[i], org);
+            row("solid",   comps[i], (i < s.s.size()) ? s.s[i] : 0.0);
+        }
+    }
+    pf.close();
+    if (ctx.verbosity >= 2)
+        std::cout << "  [report] streamTable -> " << ppath.string()
+                  << "  (" << rows << " phase rows)\n";
 }
 
 } // namespace Choupo

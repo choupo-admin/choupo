@@ -512,6 +512,64 @@ else:
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
+#  ------------------------------------------------------------------------
+#  (i) THE REPORT.  The CSV a student reads outside the GUI is one row per
+#  stream on the OVERALL material, which for flash19's liquid says nothing
+#  about the split that case exists to show.  streamTable writes a phases.csv
+#  beside it -- long format, one row per (stream, phase, component) -- and
+#  the aqueous side is DERIVED there too, the fluid minus the organic.  What
+#  is checked is that it closes: an artefact that decomposes a material and
+#  does not sum back to it is worse than no artefact.
+F19 = os.path.join(FLASH, "flash19_organic_and_precipitate")
+PH = os.path.join(F19, "reports", "streams", "phases.csv")
+ST = os.path.join(F19, "reports", "streams", "streamTable.csv")
+r = subprocess.run([SOLVER, F19], capture_output=True, text=True)
+if r.returncode != 0:
+    fail("(i) flash19 does not run (exit %d)" % r.returncode)
+elif not os.path.exists(PH):
+    fail("(i) flash19 writes no phases.csv -- a stream with two liquids and a "
+         "precipitate reported as though it had one phase")
+else:
+    import csv as _csv
+    rows = list(_csv.DictReader(open(PH)))
+    seen_phases = {row["phase"] for row in rows}
+    if seen_phases != {"aqueous", "organic", "solid"}:
+        fail("(i) phases.csv names %s -- flash19 carries all three"
+             % (", ".join(sorted(seen_phases)) or "nothing"))
+    #  Checked against converged/liquid, NOT against streamTable.csv: that
+    #  table prints its mole fractions to six DECIMALS, and flash19's CaCO3
+    #  sits at 1.03e-4, so the comparison measured the column's formatting
+    #  quantum (5e-3 relative) instead of the arithmetic.  The first version
+    #  of this check did exactly that and reported a 2.8e-4 "failure" that
+    #  was print rounding.  The state file carries full precision, and
+    #  report-vs-state is the more useful question anyway: two artefacts of
+    #  one run must agree.
+    csvph = {}
+    for row in rows:
+        if row["stream"] != "liquid":
+            continue
+        csvph[(row["phase"], row["component"])] = float(row["n_kmol_per_h"])
+    liq = open(os.path.join(F19, "converged", "liquid")).read()
+    worst, worst_k = 0.0, ""
+    checked = 0
+    for ph in ("aqueous", "organic", "solid"):
+        state = phase_amounts(liq, ph) or {}
+        for c, v in state.items():
+            got = csvph.get((ph, c), 0.0)
+            err = abs(got - v) / max(abs(v), 1e-30)
+            checked += 1
+            if err > worst:
+                worst, worst_k = err, "%s/%s" % (ph, c)
+    if checked == 0:
+        fail("(i) converged/liquid names no phases -- nothing to check the "
+             "report against, so this proves nothing")
+    elif worst > 1e-6:
+        fail("(i) phases.csv disagrees with converged/liquid -- worst %s off "
+             "by %.2e relative" % (worst_k, worst))
+    else:
+        ok("(i) phases.csv agrees with converged/liquid on %d entries "
+           "(worst %s, %.1e rel)" % (checked, worst_k, worst))
+
 print()
 if fails:
     print("%d failure(s)." % len(fails))

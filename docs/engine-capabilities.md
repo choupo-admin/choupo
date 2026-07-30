@@ -168,6 +168,18 @@ flowsheet.
 `utilityAllocation` sizes each duty to a utility by T-level; its result is
 also emitted in the run JSON (the GUI reads it).
 
+**Phase split (steady)** — `streamTable` writes a second artefact,
+`phases.csv`, whenever a stream carries more than one phase: one row per
+(stream, phase, component) in kmol/h, phases named `aqueous` / `organic` /
+`solid`.  It is long-format because the phase set differs per stream, and it
+exists ONLY when there is something to say — a case with one fluid phase and
+no crystals gets no file.  The **aqueous side is derived by subtraction**
+(the fluid minus the organic), exactly as the stream files store it: the
+engine keeps one home for the split, so the pair cannot drift.  Without it
+the table's single row per stream reported flash19's liquid — two liquids
+plus a precipitate, 91 % of its benzene in the organic — as though it had one
+phase.
+
 **Element balance (steady)** — `elementBalance` is the plant-boundary ATOM
 conservation diagnostic, its own artefact beside the mass balance (rows are
 ELEMENTS in kmol-atom/h; the mass balance's rows are components — different
