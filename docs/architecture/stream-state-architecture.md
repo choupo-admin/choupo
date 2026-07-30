@@ -282,6 +282,60 @@ derived { vaporFraction 0;  molarEnthalpy -280.9 kJ/mol; }   // diagnostics, NOT
 Retires the ambiguous `componentFlows`+`solidFlows` pair (where `componentFlows`
 silently meant the *non-solid* portion).
 
+**Which phases a `phases{}` block may name (AMENDED 2026-07-30).** The
+decomposition grew beyond fluid/solid, because a stream carrying chemistry has
+more than one condensed phase and could not say so:
+
+| name | when | what it may also carry |
+|---|---|---|
+| `aqueous` | a single liquid that carries a speciation | `speciation {}` |
+| `organic` | the declared second liquid (`equilibrium { organic {…} }`) | — |
+| `solid` | precipitate / crystals | `particleSizeDistribution {}` |
+| `liquid` · `vapour` · `fluid` | the fluid phase when no speciation names it | — |
+
+Three rules, and each exists because its absence produced a wrong answer that
+every test passed:
+
+1. **The speciation attaches to the AQUEOUS material.** With one liquid the
+   stream *is* that material and the block sits at top level; with a second
+   liquid or a solid phase named, it moves INSIDE `phases.aqueous`. Two
+   placements, one rule. The ions are in the aqueous phase and nowhere else,
+   so a block hung on the whole stream is verified against material that
+   includes the organic and the crystals — which passed only while no other
+   phase held a speciating component.
+
+2. **A precipitate is a PHASE, not a species.** A mineral used to be listed
+   among the aqueous species so the closure check would balance; that reported
+   a crystal as dissolved. It is now solid material of its owning component
+   — read from the component's own `solidPhases {}` record, never matched by
+   name (calcite is CaCO₃, gypsum is CaSO₄·2H₂O). The APPARENT basis is
+   untouched: `componentMolarFlows` still carries the whole substance and only
+   its phase changed.
+
+3. **A size distribution belongs to its POPULATION.** It rides inside
+   `phases.solid`, not at the stream's top level, where it could only ever
+   describe "the combined solid" — and one curve over two minerals is not a
+   physical object. The top-level form is still READ (authored `0/` states),
+   never written; a file carrying both is refused.
+
+**Names are checked against what they name.** Outlets bind POSITIONALLY, and a
+two-liquid unit returns its phases in an order set by the solver's seeding, so
+`outputs ( aqueous organic )` was right only while the solvent happened to be
+declared first. The engine now refuses an outlet called `aqueous` that holds
+less solvent than the one called `organic`, and refuses the name outright in a
+system with no solvent at all. A synthetic three-component audit case is not
+aqueous and must not say it is.
+
+**The decompositions close by SUBTRACTION where they can.** Only the organic
+side of a liquid-liquid split is stored; the aqueous side is the liquid minus
+it. Two independently-rounded vectors would eventually disagree in the last
+digits — and that closure is exactly what the reader checks.
+
+Guarded by `bin/curate/check_phase_speciation.py`, which fires each refusal
+through the real reader and was itself verified by sabotage: three of its
+seven cases passed with the fix reverted, because they test STRUCTURE rather
+than the check.
+
 **Role decides the file's meaning (topology, §2.3).** An INLET's `0/` file is a
 boundary specification — an AUTHORED material form + one closure, no `derived{}`.
 An INTERNAL/OUTLET file is an initial guess the solver may overwrite — a
