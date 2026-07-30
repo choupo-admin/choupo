@@ -550,6 +550,55 @@ function Detail({
         )}
       </SimpleGrid>
 
+      {/* The SPECIATION, when the package solved one.  This workspace is
+          where a student comes to study one stream, so it carries the same
+          two bases as the Properties card: the apparent components ARE the
+          state (the composition above), the species are what the model
+          resolves in them.  In FLOWS -- a stoichiometric set excludes H/OH
+          as mediators and does not close to 1, so a percentage of it would
+          read like a composition without being one. */}
+      {stream.speciation && Object.keys(stream.speciation.flows).length > 0 && (
+        <Stack gap={4}>
+          <Group gap="xs" align="baseline">
+            <Text size="xs" c="dimmed" tt="uppercase" fw={600}
+              style={{ letterSpacing: 0.5 }}>
+              Speciation — {stream.speciation.network} network,
+              {" "}{stream.speciation.basis} basis
+            </Text>
+            {stream.speciation.pH !== undefined && (
+              <Text size="xs" ff="monospace" c="dimmed">
+                pH {stream.speciation.pH.toFixed(3)}
+              </Text>
+            )}
+          </Group>
+          <Text size="xs" c="dimmed">
+            aqueous phase — a decomposition of the composition above, never a
+            second state
+          </Text>
+          <Table verticalSpacing={4} fz="sm">
+            <Table.Tbody>
+              {Object.entries(stream.speciation.flows)
+                .sort((a, b) => b[1] - a[1])
+                .map(([sp, f]) => (
+                  <Table.Tr key={sp}>
+                    <Table.Td style={{ color: "light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))", width: 180 }}>
+                      {sp}
+                    </Table.Td>
+                    <Table.Td style={{
+                      color: "light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))",
+                      fontFamily: "JetBrains Mono, monospace",
+                      textAlign: "right",
+                    }}>
+                      {formatFlow(f, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")}
+                      {" "}{prefs.flow.includes("mol") ? prefs.flow : "kmol/h"}
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+            </Table.Tbody>
+          </Table>
+        </Stack>
+      )}
+
       {/* PSD: shown when the producer wrote one.  A solid-bearing stream
           without psd (e.g. equilibrium crystalliser, solid dryer)
           renders an explanatory note instead of silently omitting it,

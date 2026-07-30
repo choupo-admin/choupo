@@ -68,6 +68,12 @@ export function popOutSingleStream(args: {
   const role = args.role ?? args.runStream?.role ?? "stream";
 
   const compRows = Object.entries(composition).sort((a, b) => b[1] - a[1]);
+  //  The species the package resolved the apparent components into.  Only the
+  //  run carries it -- a declared stream states its apparent material and the
+  //  chemistry is the model's answer about that material, not an input.
+  const spec = args.runStream?.speciation;
+  const specRows = spec ? Object.entries(spec.flows).sort((a, b) => b[1] - a[1]) : [];
+  const specUnit = args.prefs.flow.includes("mol") ? args.prefs.flow : "kmol/h";
 
   const C = popoutColors();
   const html = `<!doctype html><html lang="en"><head>
@@ -122,6 +128,21 @@ export function popOutSingleStream(args: {
     </tr>`).join("")}
   </table>`}
 </section>
+${specRows.length === 0 ? "" : `
+<section>
+  <h3>Speciation — ${esc(spec!.network)} network, ${esc(spec!.basis)} basis${
+    spec!.pH !== undefined ? ` &middot; pH ${spec!.pH.toFixed(3)}` : ""}</h3>
+  <p style="color:${C.dim};font-size:12px;margin:0 0 8px;">aqueous phase — a
+     decomposition of the composition above, never a second state.  In FLOWS: a
+     stoichiometric set excludes H/OH as mediators and does not close to 1.</p>
+  <table>
+    <tr><th>species</th><th style="text-align:right;">${esc(specUnit)}</th></tr>
+    ${specRows.map(([s, f]) => `<tr>
+      <td>${esc(s)}</td>
+      <td class="right">${esc(formatFlow(f, specUnit, 6))}</td>
+    </tr>`).join("")}
+  </table>
+</section>`}
 </body></html>`;
   openHtmlInNewTab(html);
 }
