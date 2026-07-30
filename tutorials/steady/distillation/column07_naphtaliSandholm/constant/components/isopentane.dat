@@ -56,8 +56,11 @@ standardThermochemistry
     s_298     343.74;        // J/(mol.K) third-law absolute [NASA-TM4513]
 }
 
-groups { joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } ); }
-
+groups
+{
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } );
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } );
+}
 provenance
 {
     constants      "CoolProp 7.2.0 -- Lemmon-JCED-2006";
@@ -68,12 +71,6 @@ provenance
     preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
     standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), H0/S0(298.15) from NASA-7 poly";
 }
-
-groups
-{
-    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } );
-}
-
 cosmo
 {
     VT2005

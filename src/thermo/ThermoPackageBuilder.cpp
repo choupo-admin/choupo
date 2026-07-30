@@ -889,6 +889,32 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     std::string              organicSolvent, organicReason, organicModel;
     if (eq->found("organic"))
     {
+        //  EXACTLY ONE second liquid.  Two `organic` blocks parse without
+        //  complaint and the LAST one wins -- so the order of the file
+        //  decides which solvent is announced, while the answer comes out
+        //  identical to the single-organic case because only one is ever
+        //  built.  Reproduced: declaring a second block with `solvent
+        //  ethanol` printed "solvent ethanol" and still returned the
+        //  benzene-rich phase, which is a report that does not describe the
+        //  computation.
+        //
+        //  A third liquid is a DECLARED limitation of this engine (one
+        //  aqueous, one organic).  A limitation that refuses is a boundary;
+        //  one that silently keeps the last block is a wrong answer wearing
+        //  a green run.
+        {
+            std::size_t nOrg = 0;
+            for (const auto& k : eq->keys()) if (k == "organic") ++nOrg;
+            if (nOrg > 1)
+                throw std::runtime_error("thermoPhysPropDict: `equilibrium`"
+                    " declares " + std::to_string(nOrg) + " `organic` blocks."
+                    "  This engine represents ONE second liquid (one aqueous,"
+                    " one organic); a second block is parsed, announced, and"
+                    " then ignored -- the file's order would decide which"
+                    " solvent is reported while the answer came from the"
+                    " other.  Declare one organic phase, or admit the extra"
+                    " members into it.");
+        }
         auto org = eq->subDict("organic");
         organicSolvent = org->lookupWord("solvent");
         organicMembers = org->lookupWordList("members");

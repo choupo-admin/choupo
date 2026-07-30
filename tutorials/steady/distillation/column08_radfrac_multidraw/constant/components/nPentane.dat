@@ -56,8 +56,11 @@ standardThermochemistry
     s_298     349.49;        // J/(mol.K) third-law absolute [NASA-TM4513]
 }
 
-groups { joback ( { group CH3; count 2; } { group CH2; count 3; } ); }
-
+groups
+{
+    joback ( { group CH3; count 2; } { group CH2; count 3; } );
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } );
+}
 provenance
 {
     constants      "CoolProp 7.2.0 -- Thol-FPE-2019-alkanes-pentane";
@@ -68,12 +71,6 @@ provenance
     preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
     standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), H0/S0(298.15) from NASA-7 poly";
 }
-
-groups
-{
-    unifac ( { group CH3; count 2; } { group CH2; count 3; } );
-}
-
 cosmo
 {
     VT2005

@@ -56,8 +56,11 @@ standardThermochemistry
     s_298     323.091;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S]
 }
 
-groups { joback ( { group CH3; count 2; } { group CH2; count 2; } { group ether; count 1; } ); }
-
+groups
+{
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group ether; count 1; } );
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH2O; count 1; } );
+}
 provenance
 {
     dHf_298
@@ -77,12 +80,6 @@ provenance
     triplePoint    "CoolProp reference EOS triple-point T,P";
     preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
 }
-
-groups
-{
-    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH2O; count 1; } );
-}
-
 cosmo
 {
     VT2005

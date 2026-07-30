@@ -68,6 +68,15 @@ groups
     unifac ( { group ACH; count 6; } );
 }
 
+// ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----
+// Curated fact: benzene does NOT participate in the aqueous speciation
+// network.  An aromatic hydrocarbon has no ionisable proton in water at
+// any pH the network describes.  It says nothing about benzene's aqueous
+// behaviour in general -- its solubility is tiny and its activity
+// coefficient enormous, which is why it forms a SECOND LIQUID rather than
+// dissolving; that is phase behaviour, not speciation.
+aqueousSpeciation  none;
+
 cosmo
 {
     VT2005

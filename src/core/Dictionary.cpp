@@ -548,6 +548,30 @@ private:
 void Dictionary::insert(const std::string& key, EntryValue value)
 {
     auto it = entries_.find(key);
+    //  A KEY DECLARED TWICE IN ONE FILE is refused, at the only place that
+    //  can see it.  This map is last-wins by design -- `setScalarAtPath`
+    //  updates values through here on every sweep and optimisation pass --
+    //  so above the parser a duplicate is INVISIBLE: the key appears once in
+    //  `order_`, holding the last value, and every reader agrees on an
+    //  answer the file does not uniquely state.
+    //
+    //  Found through a two-liquid case.  Declaring a second `organic` block
+    //  with `solvent ethanol` made the run ANNOUNCE "solvent ethanol" and
+    //  return the benzene-rich phase from the first block: a report that did
+    //  not describe the computation, with no warning anywhere.  It is not
+    //  specific to that block -- `T` twice, two `operation` sub-dicts, two
+    //  `activityModel`s all behave the same way, and the order of the file
+    //  decides the physics.
+    //
+    //  Only PARSE time, because programmatic updates are the legitimate use
+    //  of overwriting.  The corpus was swept before this went in: zero
+    //  duplicates in 60 cases including the fractal plant, so nothing
+    //  authored is being outlawed retroactively.
+    if (it != entries_.end() && parseTime_)
+        throw std::runtime_error("dictionary: key '" + key + "' is declared"
+            " TWICE in the same block.  Only the last would survive -- the"
+            " file's order would decide the answer, and nothing downstream"
+            " could see that it had.  Remove one, or merge them.");
     if (it == entries_.end()) order_.push_back(key);
     entries_[key] = std::move(value);
     // NOTE: we deliberately do NOT clear entryDims_[key] here.
@@ -840,6 +864,7 @@ void Dictionary::setScalarAtPath(const std::string& path, scalar value)
 
 DictPtr Dictionary::fromFile(const std::string& path)
 {
+    struct PT { PT(){parseTime_=true;} ~PT(){parseTime_=false;} } _pt;
     std::ifstream f(path);
     if (!f)
         throw std::runtime_error("Cannot open dictionary file: " + path);

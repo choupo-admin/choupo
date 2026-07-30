@@ -93,6 +93,7 @@ public:
     // ---- Queries -----------------------------------------------------------
     bool found(const std::string& key) const;
     const std::vector<std::string>& keys() const { return order_; }
+    static inline bool parseTime_ = false;
 
     scalar                    lookupScalar(const std::string& key) const;
     std::string               lookupWord  (const std::string& key) const;

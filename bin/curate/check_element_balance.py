@@ -17,6 +17,7 @@ report is real physics, not a renamed mass balance.
    elements), with in = 0 and a metric unmistakably far from 100 %.
 
 Exit 1 listing failures."""
+import re
 import csv
 import shutil
 import subprocess
@@ -36,8 +37,15 @@ def run_case(tmp, name, overlay=None, overlay_name="toluene.dat"):
     shutil.copytree(CASE, case,
                     ignore=shutil.ignore_patterns("log.choupo*", "reports",
                                                   "converged"))
-    with open(case / "system" / "controlDict", "a") as f:
-        f.write(REPORTS)
+    #  APPEND ONLY IF ABSENT.  This blindly appended a `reports` block to a
+    #  controlDict that might already have one -- and the dictionary silently
+    #  kept the last, so the fixture ran with whichever block came second.
+    #  It worked by luck of the source cases; the parser now refuses the
+    #  duplicate, which is how the fixture's own defect surfaced.
+    cd = case / "system" / "controlDict"
+    if not re.search(r"^\s*reports\s*$|^\s*reports\s*\{", cd.read_text(), re.M):
+        with open(cd, "a") as f:
+            f.write(REPORTS)
     if overlay:
         d = case / "constant" / "components"
         d.mkdir(parents=True, exist_ok=True)
