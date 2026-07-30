@@ -96,10 +96,30 @@ def overall_of(text):
             NUM.findall(text.split("\nphases")[0].split("componentMolarFlows", 1)[1])}
 
 
+#  RUN THE CASES.  This gate reads converged/ output, so depending on someone
+#  having produced it first makes the verdict depend on ORDER: the same tree
+#  scored 328/0 and 327/1 on consecutive suite runs, which is a gate measuring
+#  the schedule rather than the code.  It runs them itself -- a few seconds --
+#  and a SKIP is then only possible when the binary is missing, which is a
+#  fact worth saying out loud rather than passing over.
+SOLVER = os.path.join(ROOT, "choupoSolve")
+if not os.path.exists(SOLVER):
+    print("SKIP  no choupoSolve binary -- build first (make)")
+    sys.exit(0)
+for case in ("flash17_two_liquids_reactive", "flash16_calcite_precipitation"):
+    r = subprocess.run([SOLVER, os.path.join(FLASH, case)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        fail("%s does not run (exit %d) -- this gate reads its output, so a "
+             "broken case is a blind gate, never a silent pass" % (case, r.returncode))
+if fails:
+    print("\n%d failure(s)." % len(fails))
+    sys.exit(1)
+
 for path, label in ((LIQ17, "flash17"), (LIQ16, "flash16")):
     if not os.path.exists(path):
-        print("SKIP  %s has no converged/ -- run the case first" % label)
-        sys.exit(0)
+        fail("%s produced no converged/ state even though it ran" % label)
+        sys.exit(1)
 
 raw17, raw16 = open(LIQ17).read(), open(LIQ16).read()
 

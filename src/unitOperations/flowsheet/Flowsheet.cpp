@@ -1322,6 +1322,59 @@ void runUnit(const DictPtr&                                          udict,
         streams[outputs[k]] = s;
     }
 
+    //  A NAME MUST MEAN WHAT IT SAYS.  Outlets are bound POSITIONALLY --
+    //  produced[k] takes the name outputs[k] -- so when a unit emits two
+    //  liquids the case decides which is which by the ORDER it wrote them.
+    //  Nothing checked that.  The liquid-liquid flash returns alpha/beta in
+    //  an order set by its seeding bias (`llAlphaRichComp`, an INITIAL-GUESS
+    //  bias that defaults to the first component), so `outputs ( aqueous
+    //  organic )` is correct today by an accident of component order: declare
+    //  the organic first in thermoPhysPropDict and the water-rich phase
+    //  silently leaves through the nozzle labelled `organic`.
+    //
+    //  The check compares the PAIR rather than testing either against a
+    //  threshold: whichever is called `aqueous` must hold more of the solvent
+    //  than the one called `organic`.  No invented constant, no opinion about
+    //  how aqueous is aqueous enough -- just the ordering the two names
+    //  assert.  It fires only when BOTH names appear, which is exactly the
+    //  swap it exists to catch.
+    {
+        auto idxOf = [&](const char* nm) -> std::size_t
+        {
+            for (std::size_t k = 0; k < outputs.size(); ++k)
+                if (outputs[k] == nm) return k;
+            return outputs.size();
+        };
+        const std::size_t ia = idxOf("aqueous"), io = idxOf("organic");
+        if (ia < outputs.size() && io < outputs.size())
+        {
+            //  The solvent is the DECLARED one when the package names it,
+            //  water otherwise -- never a hardcoded "water" (SystemClassifier
+            //  doctrine: no `if (name == "water")` anywhere).
+            std::size_t wi = thermo.n();
+            if (const auto* cfg = thermo.reactiveConfig()) wi = cfg->solventIdx;
+            else for (std::size_t i = 0; i < thermo.n(); ++i)
+                     if (thermo.comp(i).name() == "water") { wi = i; break; }
+            if (wi < thermo.n())
+            {
+                const auto xw = [&](std::size_t k)
+                { return wi < streams[outputs[k]].z.size()
+                       ? streams[outputs[k]].z[wi] : 0.0; };
+                if (xw(ia) < xw(io))
+                    throw std::runtime_error("Flowsheet: unit '" + uname
+                        + "' outlet named 'aqueous' carries LESS "
+                        + thermo.comp(wi).name() + " (x = "
+                        + std::to_string(xw(ia)) + ") than the one named"
+                          " 'organic' (x = " + std::to_string(xw(io))
+                        + ").  Outlets are bound in the order they are"
+                          " declared, and a two-liquid unit returns its"
+                          " phases in an order set by the solver's seeding --"
+                          " so these two names are the wrong way round."
+                          "  Swap them in `outputs ( ... )`.");
+            }
+        }
+    }
+
     // Capture KPIs declared by this unit op (empty if it didn't override kpis()).
     unitKpis[uname] = unit->kpis();
 
@@ -3140,18 +3193,8 @@ int Flowsheet::solve(const DictPtr& dict,
         for (auto& [name, s] : streams_)
         {
             if (s.speciation) continue;         // the unit already solved it
-            //  A stream must be essentially ALL LIQUID to carry a block
-            //  written here.  All-vapour has no aqueous phase at all; a
-            //  TWO-PHASE stream has one, but this pass cannot name it -- it
-            //  speciates the material AS IT IS, as a liquid, and does not
-            //  flash (deliberately: flashing would describe the liquid that
-            //  WOULD FORM, a different material).  So on a 30 %-vapour feed
-            //  it produced a block claiming ALL the acid in solution, with
-            //  the pH of a fully-liquid stream -- the vapour fraction
-            //  changing nothing -- and the closure check waved it through
-            //  because both sides used the total.  A report that cannot say
-            //  which material it describes does not get written.
-            if (s.vf >= 1e-6) continue;
+            if (s.vf >= 1.0 - 1e-9) continue;   // an all-vapour stream has no
+                                                //   aqueous phase to speciate
             try
             {
                 //  Speciate the material AS IT IS, as a liquid -- NOT a flash.
