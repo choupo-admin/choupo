@@ -46,6 +46,7 @@ License
 #include <functional>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <stdexcept>
 
@@ -219,6 +220,10 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
     // The `gases` sidecar rides on the case file either way.
     {
         std::vector<DictPtr> records;
+        // Where each record came from, index-parallel to `records` -- a
+        // Dictionary does not remember its file, and a duplicate-species
+        // refusal that cannot name the two files is not actionable.
+        std::vector<std::string> recordSource;
         DictPtr caseDict;   // the case-local file (holds the gases sidecar, if any)
         const fs::path cl = caseElectrolytePath("speciation.dat");
         bool caseReplaces = false;
@@ -257,6 +262,7 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                     if (rec->lookupWordOrDefault("recordType", "")
                         != "aqueousSpeciation") continue;
                     records.push_back(std::move(rec));
+                    recordSource.push_back(f.string());
                 }
             }
         }
@@ -267,7 +273,42 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
             const std::string sp = e->lookupWord("species");
             auto it = std::find_if(records.begin(), records.end(),
                 [&](const DictPtr& r){ return r->lookupWord("species") == sp; });
-            if (it != records.end()) *it = e; else records.push_back(e);
+            const std::string here = "the case `reactions` block";
+            if (it != records.end())
+            {
+                recordSource[std::size_t(it - records.begin())] = here;
+                *it = e;
+            }
+            else
+            {
+                records.push_back(e);
+                recordSource.push_back(here);
+            }
+        }
+        // ONE FORMATION REACTION PER SPECIES.  The case overlay above replaces
+        // in place, so a species reached twice HERE means two catalogue
+        // records both form it -- and the network would carry the species
+        // twice, two equations for one unknown, on whichever K the last file
+        // happened to bring.  There is no defensible answer between two K's;
+        // refuse, naming both records.
+        {
+            std::map<std::string, std::string> formedBy;
+            for (std::size_t i = 0; i < records.size(); ++i)
+            {
+                const std::string sp = records[i]->lookupWord("species");
+                const std::string src = i < recordSource.size()
+                                      ? recordSource[i] : std::string("(unknown)");
+                auto [it, fresh] = formedBy.emplace(sp, src);
+                if (!fresh)
+                    throw std::runtime_error(
+                        "speciation: two records both declare the formation of"
+                        " '" + sp + "':\n    " + it->second + "\n    " + src
+                        + "\nA species is formed by exactly one reaction; keep"
+                          " the curated record and delete or rename the other"
+                          " (a case delta belongs in the case's"
+                          " constant/electrolyte/speciation.dat, which overrides"
+                          " by species instead of duplicating it).");
+            }
         }
         for (const auto& e : records)
         {

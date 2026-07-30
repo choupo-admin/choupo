@@ -28,6 +28,7 @@ License
 
 #include "MembraneRegistry.H"
 #include "core/Dictionary.H"
+#include "core/RegistryScan.H"
 #include "thermo/RecordResolver.H"
 
 #include <filesystem>
@@ -66,6 +67,7 @@ void MembraneRegistry::loadFrom(const std::string& dataRoot)
     auto scan = [](const fs::path& dir)
     {
         if (!fs::exists(dir)) return;
+        records::ScanGuard guard("MembraneRegistry", "membrane");
         for (auto& e : fs::directory_iterator(dir))
         {
             if (!e.is_regular_file()) continue;
@@ -83,6 +85,7 @@ void MembraneRegistry::loadFrom(const std::string& dataRoot)
             if (m.name().empty())
                 throw std::runtime_error("MembraneRegistry: file '"
                     + e.path().string() + "' has no `name` entry");
+            guard.claim(m.name(), e.path().string());
             registry()[m.name()] = std::move(m);
         }
     };

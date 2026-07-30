@@ -28,6 +28,7 @@ License
 
 #include "SolutionRegistry.H"
 #include "core/Dictionary.H"
+#include "core/RegistryScan.H"
 
 #include <filesystem>
 #include <map>
@@ -57,6 +58,7 @@ void SolutionRegistry::loadFrom(const std::string& dataRoot)
     fs::path dir = fs::path(dataRoot) / "standards" / "parameters" / "solution";
     if (!fs::exists(dir)) return;
 
+    records::ScanGuard guard("SolutionRegistry", "solution pair");
     for (auto& e : fs::directory_iterator(dir))
     {
         if (!e.is_regular_file()) continue;
@@ -67,6 +69,7 @@ void SolutionRegistry::loadFrom(const std::string& dataRoot)
         if (s.solute().empty() || s.solvent().empty())
             throw std::runtime_error("SolutionRegistry: file '"
                 + e.path().string() + "' lacks `solute` or `solvent`");
+        guard.claim(key(s.solute(), s.solvent()), e.path().string());
         registry()[key(s.solute(), s.solvent())] = std::move(s);
     }
 }

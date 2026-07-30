@@ -60,6 +60,35 @@ Nothing — no solvent, no model, no level — is ever **implicit** on disk.
 "implied" / "assumed" is the forbidden word; the second species, the model,
 and the level are always **named in the file**.
 
+### One identity, one FILE — the registries are keyed by what is inside
+
+Arity has a second face, and it is about files rather than numbers: **no two
+files may claim one record's identity.**  A catalogue registry (materials,
+membranes, adsorbents, `parameters/Henry/`, `parameters/solution/`,
+`utilities/`, and the `chemistry/` formation reactions) is built by walking a
+directory and keying each record by a name read **inside** the file.  The
+file's identity is its path; the registry's key is its content — so two files
+claiming one key leave the answer to whichever the filesystem happened to list
+last, an order that is neither sorted nor the same on two machines.
+
+It is not a thought experiment.  `flash16_calcite_precipitation`, with its
+`CO3-formation.dat` copied under a second filename, ran to completion, exit 0,
+and reported **pH 6.02020872708** against the correct **6.02023176857** — a
+species formed by two reactions is two equations for one unknown, and the
+network absorbed it silently.
+
+The rules, all enforced by `bin/curate/check_registry_scan.py`:
+
+* **Two files, one directory, one key → REFUSED**, naming both paths.
+* **A case-local record replacing a catalogue one → ANNOUNCED** (`[override]`),
+  never silent.  That is the deliberate tier overlay of §3, and a sealed case
+  never sees it at all: it reads its own closure alone.
+* **The symmetric-pair models spell the file ONE way** — `NRTL`, `UNIQUAC` and
+  `Wilson` build the name sorted (`min-max.dat`), so `water-ethanol.dat` is a
+  file the engine never opens and a pair that silently falls back to ideal.
+  (`Henry` and `Pitzer` are directional by nature: `solute-solvent`,
+  `cation-anion`.)
+
 ### No juice-less files — every file carries its own explanatory content
 
 The explicitness rule has a file-level corollary: **a content-free file is

@@ -30,6 +30,7 @@ License
 
 #include "IsothermModel.H"
 #include "core/Dictionary.H"
+#include "core/RegistryScan.H"
 #include "thermo/RecordResolver.H"
 
 #include <filesystem>
@@ -99,6 +100,7 @@ void AdsorbentRegistry::loadFrom(const std::string& dataRoot)
     auto scan = [&](const fs::path& dir)
     {
         if (!fs::exists(dir)) return;
+        records::ScanGuard guard("AdsorbentRegistry", "adsorbent");
         for (auto& e : fs::directory_iterator(dir))
         {
             if (!e.is_regular_file()) continue;
@@ -111,6 +113,7 @@ void AdsorbentRegistry::loadFrom(const std::string& dataRoot)
                 "parameters/adsorption/equilibria/" + a.name());
             if (eqDir.empty()) eqDir = eqStd / a.name();
             attachEquilibria(a, eqDir);           // fs::exists-guarded inside
+            guard.claim(a.name(), e.path().string());
             registry()[a.name()] = std::move(a);
         }
     };

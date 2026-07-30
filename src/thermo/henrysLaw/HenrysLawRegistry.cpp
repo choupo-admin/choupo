@@ -28,6 +28,7 @@ License
 
 #include "HenrysLawRegistry.H"
 #include "core/Dictionary.H"
+#include "core/RegistryScan.H"
 #include "thermo/RecordResolver.H"
 
 #include <filesystem>
@@ -58,6 +59,7 @@ void HenrysLawRegistry::loadFrom(const std::string& dataRoot)
     auto scan = [](const fs::path& dir)
     {
         if (!fs::exists(dir)) return;
+        records::ScanGuard guard("HenrysLawRegistry", "Henry pair");
         for (auto& e : fs::directory_iterator(dir))
         {
             if (!e.is_regular_file()) continue;
@@ -68,6 +70,7 @@ void HenrysLawRegistry::loadFrom(const std::string& dataRoot)
             if (h.solute().empty() || h.solvent().empty())
                 throw std::runtime_error("HenrysLawRegistry: file '"
                     + e.path().string() + "' lacks `solute` or `solvent`");
+            guard.claim(key(h.solute(), h.solvent()), e.path().string());
             registry()[key(h.solute(), h.solvent())] = std::move(h);
         }
     };

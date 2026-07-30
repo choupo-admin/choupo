@@ -626,6 +626,22 @@ PYEOF
     fi
     rm -f /tmp/dupkey.$$
 
+    # Registry-scan gate: the duplicate-key sweep above covers ONE key twice
+    # inside ONE file.  The same failure lives one level up -- two FILES both
+    # claiming one record's identity, where the registry is keyed by a name
+    # read from inside the file and `registry()[key] = rec` kept whichever the
+    # directory listing reached last.  It is not hypothetical: flash16 with
+    # its CO3 formation record duplicated ran to exit 0 and moved the pH.
+    if "$ROOT/bin/curate/check_registry_scan.py" > /tmp/regscan.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "registry-scan-gate" "$(tail -1 /tmp/regscan.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_registry_scan.py)\n" "registry-scan-gate"
+        cat /tmp/regscan.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/regscan.$$
+
     # Cosmo-scrub gate: the public tree ships NO externally-restricted values.
     # A COSMO set is an external REFERENCE (licence externalRestricted;
     # installed false) or carries an open-licence profile (the synthetic

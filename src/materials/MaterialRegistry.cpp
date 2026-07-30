@@ -28,6 +28,7 @@ License
 
 #include "MaterialRegistry.H"
 #include "core/Dictionary.H"
+#include "core/RegistryScan.H"
 #include "thermo/RecordResolver.H"
 
 #include <filesystem>
@@ -75,6 +76,7 @@ void MaterialRegistry::loadFrom(const std::string& dataRoot)
     auto scan = [](const fs::path& dir)
     {
         if (!fs::exists(dir)) return;
+        records::ScanGuard guard("MaterialRegistry", "material");
         for (auto& e : fs::directory_iterator(dir))
         {
             if (!e.is_regular_file()) continue;
@@ -83,6 +85,7 @@ void MaterialRegistry::loadFrom(const std::string& dataRoot)
             if (d->lookupWordOrDefault("kind", "") != "constructionMaterial")
                 continue;
             Material m = readMaterialFile(e.path());
+            guard.claim(m.name, e.path().string());
             registry()[m.name] = m;
         }
     };

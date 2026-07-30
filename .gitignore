@@ -91,6 +91,14 @@ tutorials/**/postProcessing/
 # instant-solver wrapper -- keep it.
 !data/standards/parameters/solution/
 !data/standards/parameters/solution/**
+# ...and neither is src/thermo/solution/ -- that is the SolutionPair/
+# SolutionRegistry SOURCE.  Its four files are tracked (they predate the rule),
+# so `git status` shows them and nothing looked wrong -- but a NEW file added
+# there was invisible to `git add`, which in a project that forbids
+# `git add -A` means it would simply never be committed.  Found while staging
+# a change to SolutionRegistry.cpp, which git refused as an ignored path.
+!src/thermo/solution/
+!src/thermo/solution/**
 # Solver-generated CSVs (sweep / optim / trajectory / propertyScan /
 # fit_history / parity / per-component property output) -- the filename
 # is user-defined in the dict so we match by location.  Recursive **

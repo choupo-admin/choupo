@@ -28,6 +28,7 @@ License
 
 #include "UtilityCatalogue.H"
 #include "core/Dictionary.H"
+#include "core/RegistryScan.H"
 
 #include <filesystem>
 #include <limits>
@@ -90,11 +91,13 @@ void UtilityCatalogue::loadFrom(const std::string& dataRoot)
     fs::path dir = fs::path(dataRoot) / "standards" / "utilities";
     if (!fs::exists(dir)) return;
 
+    records::ScanGuard guard("UtilityCatalogue", "utility");
     for (auto& e : fs::directory_iterator(dir))
     {
         if (!e.is_regular_file()) continue;
         if (e.path().extension() != ".dat") continue;
         Utility u = readUtilityFile(e.path());
+        guard.claim(u.name, e.path().string());
         registry()[u.name] = u;
     }
 }
