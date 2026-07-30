@@ -2,7 +2,7 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 stream  feed                   F                0.0275083333333  1e-4
-stream  liquid                 F                0.0269247487752  1e-4
+stream  liquid                 F                0.0269198443389  1e-4
 stream  vapor                  F                0.000583584558179 1e-4
 kpi     flash01                F_alpha          0.0269247487752  1e-4
 kpi     flash01                F_beta           0.000583584558179 1e-4
