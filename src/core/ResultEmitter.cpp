@@ -228,6 +228,28 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                 os << (k ? ", " : "") << num(s.psd.massFrac[k]);
             os << "] }";
         }
+        //  The SPECIATION the package solved for this stream: the ions the
+        //  apparent components resolve into, in the aqueous phase.  It is on
+        //  disk in converged/<stream> (nested under phases.aqueous) but was
+        //  absent from this payload, so the GUI -- which reads only this --
+        //  could not show it at all: a reactive case's card offered mole
+        //  fractions of CaCO3 and nothing about Ca, HCO3 or the pH.
+        //
+        //  REPORT-ONLY, like the file: `composition` above stays the apparent
+        //  material and is untouched.  Flows in kmol/s (canonical SI), the
+        //  same basis as F.
+        if (s.speciation && !s.speciation->flows.empty())
+        {
+            const auto& sp = *s.speciation;
+            os << ", \"speciation\": { \"network\": " << esc(sp.network)
+               << ", \"basis\": " << esc(sp.basis);
+            if (sp.pH_valid) os << ", \"pH\": " << num(sp.pH);
+            os << ", \"flows\": {";
+            for (std::size_t k = 0; k < sp.flows.size(); ++k)
+                os << (k ? ", " : "") << esc(sp.flows[k].first) << ": "
+                   << num(sp.flows[k].second);
+            os << "} }";
+        }
         os << " }";
     }
     os << "\n  },\n";

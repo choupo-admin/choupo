@@ -91,6 +91,18 @@ export interface StreamResult {
    *  Absent for fully-curated streams (and for run logs from an older solver
    *  that did not yet emit the field). */
   H_missing?: string[];
+  /** The SPECIATION the thermo package solved for this stream: the ions the
+   *  apparent components resolve into, in the aqueous phase.  Report-only,
+   *  exactly as on disk (converged/<stream>, nested under phases.aqueous):
+   *  `composition` above stays the APPARENT material and is untouched by it.
+   *  `flows` in kmol/s, the same basis as F.  Absent on a stream with no
+   *  chemistry -- and on every stream of a non-reactive case. */
+  speciation?: {
+    network: string;
+    basis: string;
+    pH?: number;
+    flows: { [species: string]: number };
+  };
 }
 
 export interface ConvergenceCurve {

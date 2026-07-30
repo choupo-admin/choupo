@@ -73,6 +73,7 @@ import { theoryLink } from "../case/modelDocs.js";
 import { useMemo, useState } from "react";
 
 import { boundaryForStream } from "../case/modelBoundary.js";
+import { streamCardSource } from "../case/streamCardState.js";
 import { compositeMembers, unitFolderNames, streamStateSpec, zeroStateText, topologyFeedNames } from "../case/toGraph.js";
 import {
   operationSchemaFor,
@@ -479,7 +480,15 @@ function StreamDetails({
   const boundary = useStore((s) =>
     boundaryForStream(s.runResult?.modelBoundaries, runName ?? name),
   );
-  if (!stream && runStream) {
+  // THE RUN WINS on a stream the solver computes -- the rule and the whole
+  // story live in case/streamCardState.ts, where they can be tested.
+  const isAuthoredFeed = rawStream !== undefined;
+  const cardSource = streamCardSource({
+    hasAuthored: stream !== undefined,
+    hasRun: runStream !== undefined,
+    isAuthoredFeed,
+  });
+  if (runStream && cardSource === "run") {
     // Wrap the StreamResult into the same view shape so the rest of the
     // function doesn't care where the numbers came from.
     stream = {
@@ -549,7 +558,8 @@ function StreamDetails({
       <Stack gap={4}>
         <Group justify="space-between" align="center" wrap="nowrap">
           <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
-            {runStream ? `${runStream.role} stream` : "Feed stream"}
+            {runStream ? `${runStream.role} stream`
+             : isAuthoredFeed ? "Feed stream" : "Stream"}
           </Text>
           <Tooltip
             label="Open this stream's details in a new browser tab"
@@ -569,6 +579,15 @@ function StreamDetails({
           </Tooltip>
         </Group>
         <Text fw={600}>{name}</Text>
+        {!runStream && !isAuthoredFeed && (
+          //  Pre-run, the only numbers there are come from 0/ -- which for a
+          //  computed stream is the choupo-init0 ESTIMATE the solver
+          //  overwrites.  Say so; a seed shown without a word about it is
+          //  indistinguishable from an answer.
+          <Text size="xs" c="dimmed">
+            initial estimate from 0/ — the solver overwrites it on Run
+          </Text>
+        )}
       </Stack>
       {rawStream ? (
         // A declared feed: F/T/P are tinkerable (only scalar fields the dict
@@ -687,6 +706,52 @@ function StreamDetails({
           })}
         </Stack>
       </Stack>
+      {runStream?.speciation && (
+        //  A REACTIVE case's card used to stop at the composition above --
+        //  mole fractions of CaCO3 and CO2, and not a word about the Ca,
+        //  HCO3 and pH the package actually solved for.  Both bases belong
+        //  on the stream: the APPARENT components ARE the state, the species
+        //  are what the model resolves in them.  Flows, not fractions --
+        //  the species set does not close to 1 (H/OH are excluded mediators
+        //  in a stoichiometric set), and a fraction of an open set is a
+        //  number that reads like a composition and is not one.
+        <Stack gap={6}>
+          <Group gap="xs" align="baseline">
+            <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
+              Speciation ({runStream.speciation.network})
+            </Text>
+            {runStream.speciation.pH !== undefined && (
+              <Text size="xs" ff="monospace" c="dimmed">
+                pH {runStream.speciation.pH.toFixed(3)}
+              </Text>
+            )}
+          </Group>
+          <Text size="xs" c="dimmed">
+            aqueous phase, {runStream.speciation.basis} basis — a
+            decomposition of the composition above, never a second state
+          </Text>
+          <Table withRowBorders={false} striped="even" verticalSpacing={4}>
+            <Table.Tbody>
+              {Object.entries(runStream.speciation.flows)
+                .sort((a, b) => b[1] - a[1])
+                .map(([sp, f]) => (
+                  <Table.Tr key={sp}>
+                    <Table.Td style={{ width: "45%" }}>
+                      <Text size="xs" ff="monospace">{sp}</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="xs" ff="monospace" c="dimmed">
+                        {formatFlow(f, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")}
+                        {" "}
+                        {prefs.flow.includes("mol") ? prefs.flow : "kmol/h"}
+                      </Text>
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+            </Table.Tbody>
+          </Table>
+        </Stack>
+      )}
     </Stack>
   );
 }

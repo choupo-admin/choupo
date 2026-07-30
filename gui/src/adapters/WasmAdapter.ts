@@ -572,6 +572,12 @@ interface ResultPayload {
       solids?: { [comp: string]: number };
       psd?: { diameter: number[]; massFrac: number[] };
       H_missing?: string[];
+      speciation?: {
+        network: string;
+        basis: string;
+        pH?: number;
+        flows: { [species: string]: number };
+      };
     };
   };
   kpis: { [unitName: string]: { [k: string]: number } };
@@ -726,6 +732,9 @@ export function shapeStreams(payload: ResultPayload,
         ? { diameter: [...s.psd.diameter], massFrac: [...s.psd.massFrac] }
         : undefined,
       H_missing: s.H_missing ? [...s.H_missing] : undefined,
+      speciation: s.speciation
+        ? { ...s.speciation, flows: { ...s.speciation.flows } }
+        : undefined,
     });
   }
   // Stable order: feed -> intermediate -> product, then alphabetical.

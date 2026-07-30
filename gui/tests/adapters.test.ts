@@ -256,3 +256,66 @@ describe("MockAdapter", () => {
     expect(result.log).toContain("cancelled");
   });
 });
+
+// ---------------------------------------------------------------------------
+//  Stream SPECIATION crossing the bridge.
+//
+//  The Properties card of a reactive stream stopped at the apparent
+//  composition -- mole fractions of CaCO3 and CO2, nothing about the Ca,
+//  HCO3 and pH the package had solved for -- because the payload never
+//  carried them: the speciation was on disk in converged/<stream> and the
+//  GUI reads only this JSON.  Both bases belong on the stream, so the
+//  emitter publishes it and the adapter must carry it through UNCHANGED
+//  (report-only: `composition` stays the apparent material).
+// ---------------------------------------------------------------------------
+describe("stream speciation", () => {
+  const withSpeciation = (extra: Record<string, unknown>) => ({
+    version: 1,
+    converged: true,
+    components: ["water", "CaCO3"],
+    streams: {
+      liquid: {
+        F: 1.0, T: 313.15, P: 101325,
+        composition: { water: 0.99, CaCO3: 0.01 },
+        ...extra,
+      },
+    },
+    kpis: {},
+  });
+  const run = (payload: unknown) =>
+    extractStructured(`${BEGIN_MARK}\n${JSON.stringify(payload)}\n${END_MARK}\n`,
+                      caseWith(["liquid"]));
+
+  it("carries network, basis, pH and the species flows through", () => {
+    const out = run(withSpeciation({
+      speciation: {
+        network: "carbonate", basis: "stoichiometric", pH: 6.107235458,
+        flows: { Ca: 2.725e-6, HCO3: 5.749e-6, H: 4.3e-10 },
+      },
+    }));
+    const sp = out.streams[0]?.speciation;
+    expect(sp?.network).toBe("carbonate");
+    expect(sp?.basis).toBe("stoichiometric");
+    expect(sp?.pH).toBeCloseTo(6.107235458, 9);
+    expect(sp?.flows.HCO3).toBeCloseTo(5.749e-6, 12);
+    //  Report-only: the apparent composition is untouched by its presence.
+    expect(out.streams[0]?.composition).toEqual({ water: 0.99, CaCO3: 0.01 });
+  });
+
+  it("is a COPY, not the payload's own object", () => {
+    const payload = withSpeciation({
+      speciation: { network: "carbonate", basis: "stoichiometric",
+                    flows: { Ca: 1.0 } },
+    });
+    const out = run(payload);
+    out.streams[0]!.speciation!.flows.Ca = 999;
+    const orig = payload.streams.liquid as unknown as
+      { speciation: { flows: { Ca: number } } };
+    expect(orig.speciation.flows.Ca).toBe(1.0);
+  });
+
+  it("is ABSENT on a stream with no chemistry -- never an empty block", () => {
+    const out = run(withSpeciation({}));
+    expect(out.streams[0]?.speciation).toBeUndefined();
+  });
+});
