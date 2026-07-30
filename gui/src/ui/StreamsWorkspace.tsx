@@ -75,6 +75,7 @@ import { useStore } from "../state/store.js";
 import { parse, toJson, type JsonDict, type JsonValue } from "../dict/index.js";
 import type { StreamResult } from "../adapters/SolverAdapter.js";
 import { findRunStream } from "./streamPopOut.js";
+import { streamPhases } from "../case/streamPhases.js";
 import { StreamsSummary } from "./StreamsSummary.js";
 import { StreamsTable } from "./StreamsTable.js";
 import {
@@ -414,6 +415,9 @@ function Detail({
   stream: StreamResult | null;
 }) {
   const prefs = useStore((s) => s.displayPrefs);
+  //  Molar masses come from the run payload, and are what turns the solid's
+  //  kg/s into the kmol/s the other phases are in.
+  const molarMass = useStore((s) => s.runResult?.componentMolarMass);
 
   if (!name) {
     return (
@@ -549,6 +553,57 @@ function Detail({
           />
         )}
       </SimpleGrid>
+
+      {/* The PHASE decomposition, when the stream carries more than one.
+          flash19 is four phases at once -- vapour, aqueous, organic, solid --
+          and the composition above is the OVERALL fluid, which says none of
+          that.  The aqueous side is DERIVED by subtraction (see
+          case/streamPhases.ts): the engine stores the organic side alone, and
+          two stored vectors are two roundings that can drift apart. */}
+      {(() => {
+        const phases = streamPhases(stream, molarMass);
+        if (phases.length === 0) return null;
+        return (
+          <Stack gap={4}>
+            <Text size="xs" c="dimmed" tt="uppercase" fw={600}
+              style={{ letterSpacing: 0.5 }}>
+              Phases (molar flow)
+            </Text>
+            <Text size="xs" c="dimmed">
+              a decomposition of the material above — the aqueous side is the
+              fluid minus the organic, so the two close by subtraction
+            </Text>
+            <SimpleGrid cols={{ base: 1, md: Math.min(3, phases.length) }} spacing="xl">
+              {phases.map((ph) => (
+                <Stack key={ph.name} gap={4}>
+                  <Text size="xs" ff="monospace" fw={600}>
+                    {ph.name} — {formatFlow(ph.total, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")}
+                    {" "}{prefs.flow.includes("mol") ? prefs.flow : "kmol/h"}
+                  </Text>
+                  <Table verticalSpacing={4} fz="sm">
+                    <Table.Tbody>
+                      {Object.entries(ph.flows).sort((a, b) => b[1] - a[1]).map(([c, n]) => (
+                        <Table.Tr key={c}>
+                          <Table.Td style={{ color: "light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))" }}>
+                            {c}
+                          </Table.Td>
+                          <Table.Td style={{
+                            color: "light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))",
+                            fontFamily: "JetBrains Mono, monospace",
+                            textAlign: "right",
+                          }}>
+                            {formatFlow(n, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")}
+                          </Table.Td>
+                        </Table.Tr>
+                      ))}
+                    </Table.Tbody>
+                  </Table>
+                </Stack>
+              ))}
+            </SimpleGrid>
+          </Stack>
+        );
+      })()}
 
       {/* The SPECIATION, when the package solved one.  This workspace is
           where a student comes to study one stream, so it carries the same

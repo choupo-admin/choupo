@@ -578,6 +578,7 @@ interface ResultPayload {
         pH?: number;
         flows: { [species: string]: number };
       };
+      organicLiquid?: { [component: string]: number };
     };
   };
   kpis: { [unitName: string]: { [k: string]: number } };
@@ -735,6 +736,7 @@ export function shapeStreams(payload: ResultPayload,
       speciation: s.speciation
         ? { ...s.speciation, flows: { ...s.speciation.flows } }
         : undefined,
+      organicLiquid: s.organicLiquid ? { ...s.organicLiquid } : undefined,
     });
   }
   // Stable order: feed -> intermediate -> product, then alphabetical.

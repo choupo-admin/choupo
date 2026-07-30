@@ -103,6 +103,13 @@ export interface StreamResult {
     pH?: number;
     flows: { [species: string]: number };
   };
+  /** The SECOND LIQUID, per component [kmol/s] -- the ORGANIC side ONLY,
+   *  exactly as the engine stores it.  The aqueous side is the fluid MINUS
+   *  this (F*z - organicLiquid), so the pair closes by subtraction instead of
+   *  by two independently-rounded vectors agreeing: one home, no drift.
+   *  Absent when the package declares no second liquid, or declares one that
+   *  is not PRESENT -- the absence of a phase, never a phase of zero. */
+  organicLiquid?: { [component: string]: number };
 }
 
 export interface ConvergenceCurve {

@@ -228,6 +228,29 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                 os << (k ? ", " : "") << num(s.psd.massFrac[k]);
             os << "] }";
         }
+        //  The SECOND LIQUID, per component [kmol/s].  Only the ORGANIC side,
+        //  exactly as the stream file stores it: the aqueous is the liquid
+        //  MINUS this, so the pair closes by subtraction instead of by two
+        //  independently-rounded vectors agreeing.  One home here too -- the
+        //  GUI subtracts, it is not handed a second vector to drift from.
+        //
+        //  Without it a four-phase case could not show its phases: flash19's
+        //  liquid carries an aqueous, an organic and a solid, and the payload
+        //  named only the solid.
+        if (s.organicLiquid && !s.organicLiquid->empty())
+        {
+            const auto& org = *s.organicLiquid;
+            os << ", \"organicLiquid\": {";
+            bool firstOrg = true;
+            for (std::size_t i = 0; i < names.size(); ++i)
+            {
+                const scalar oi = (i < org.size()) ? org[i] : 0.0;
+                if (oi == 0.0) continue;
+                os << (firstOrg ? "" : ", ") << esc(names[i]) << ": " << num(oi);
+                firstOrg = false;
+            }
+            os << "}";
+        }
         //  The SPECIATION the package solved for this stream: the ions the
         //  apparent components resolve into, in the aqueous phase.  It is on
         //  disk in converged/<stream> (nested under phases.aqueous) but was
