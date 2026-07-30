@@ -83,6 +83,7 @@ Description
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -502,6 +503,27 @@ try
     };
     if (propsDict->found("experimental"))
     {
+        // The dataset's `name` names its FILE (exp_<name>.csv), so two entries
+        // sharing one name write over each other: the second dataset's points
+        // land in the first one's file and the overlay then draws the same
+        // curve twice under two labels.  These are list entries, not dict
+        // keys, so the parser's duplicate-key refusal never sees them.
+        // Checked BEFORE the loop -- refusing halfway leaves the first
+        // dataset's CSV already on disk.
+        {
+            std::set<std::string> datasetNames;
+            for (const auto& e : propsDict->lookupDictList("experimental"))
+            {
+                const std::string nm = e->lookupWord("name");
+                if (!datasetNames.insert(nm).second)
+                    throw std::runtime_error("propsDict: two `experimental`"
+                        " entries are both named '" + nm + "' -- the name is"
+                        " the CSV's filename (exp_" + nm + ".csv), so the"
+                        " second would overwrite the first and both overlays"
+                        " would draw the same points.  Give each dataset its"
+                        " own name.");
+            }
+        }
         for (const auto& e : propsDict->lookupDictList("experimental"))
         {
             const std::string name = e->lookupWord("name");

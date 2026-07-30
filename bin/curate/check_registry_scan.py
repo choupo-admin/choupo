@@ -234,6 +234,51 @@ sweep("chemistry", ("recordType", "aqueousSpeciation"), ["species"],
       "formation reactions")
 
 # ---------------------------------------------------------------------------
+#  (g) the same failure in different clothing: a propsDict `experimental`
+#      entry's `name` IS its CSV's filename (exp_<name>.csv).  Two entries
+#      sharing one name wrote over each other, and the overlay then drew one
+#      dataset's points twice under two labels.  They are LIST entries, not
+#      dict keys, so the parser's duplicate-key refusal never sees them.
+# ---------------------------------------------------------------------------
+PROPS = os.path.join(ROOT, "choupoProps")
+VLE = os.path.join(ROOT, "tutorials", "props", "compare", "compare_vle_etoh_water")
+if not os.path.exists(PROPS):
+    fail("(g) no choupoProps binary -- cannot fire the dataset-name refusal")
+else:
+    tmp = tempfile.mkdtemp(prefix="regscan.")
+    try:
+        dst = os.path.join(tmp, "case")
+        shutil.copytree(VLE, dst)
+        #  The tutorial directory holds the CSVs of whoever ran it last (run
+        #  output, gitignored).  Copying them along would make the "nothing
+        #  written" assertion below read a leftover and call it a write --
+        #  which is exactly what it did on the first run of this gate.
+        for f in os.listdir(dst):
+            if f.startswith("exp_") and f.endswith(".csv"):
+                os.remove(os.path.join(dst, f))
+        pd = os.path.join(dst, "system", "propsDict")
+        text = open(pd).read()
+        blk = text[text.index("experimental\n("):]
+        entry = blk[blk.index("{"):blk.index("}") + 1]
+        open(pd, "w").write(text.replace(entry + "\n);",
+                                         entry + "\n    " + entry + "\n);", 1))
+        r = subprocess.run([PROPS, dst], capture_output=True, text=True)
+        out = r.stdout + r.stderr
+        if r.returncode == 0:
+            fail("(g) a propsDict with two datasets of one name RAN -- the "
+                 "second silently overwrote the first one's CSV")
+        elif "are both named 'etoh_water_1atm'" not in out:
+            fail("(g) refused (exit %d) but not for this reason.  Tail:\n%s"
+                 % (r.returncode, out[-500:]))
+        elif [f for f in os.listdir(dst) if f.startswith("exp_")]:
+            fail("(g) refused, but only after writing a CSV -- the check must "
+                 "run before the loop, not inside it")
+        else:
+            ok("(g) two datasets of one name: refused, nothing written")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+# ---------------------------------------------------------------------------
 #  (f) the symmetric-pair models look a file up under ONE canonical spelling
 #      -- sorted, `min-max.dat` (NRTL.cpp, UNIQUAC.cpp, Wilson.cpp all build
 #      the name as `a < b ? a-b : b-a`).  A curated pair written the other way
