@@ -134,7 +134,31 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             const scalar Fliq = in.F * (1.0 - r.V_over_F);
             const scalar kgw  = (wi < r.xApp.size())
                 ? Fliq * r.xApp[wi] * thermo.comp(wi).MW() : 0.0;
-            sol.speciation = speciationBlock(thermo, r.trueState, kgw, r.pH);
+            //  THE PRECIPITATE IS A PHASE, not an aqueous species.  Each
+            //  mineral whose OWNING component the package declares moves into
+            //  the stream's solid material -- "dissolved CaCO3 and solid
+            //  CaCO3 are the same flowsheet component, so precipitation moves
+            //  nothing between components; it moves material between PHASES"
+            //  (ReactiveVLE.H).  That sentence was written before there was
+            //  anywhere to move it TO; there is now.
+            //
+            //  The apparent basis is untouched: componentMolarFlows still
+            //  carries the whole CaCO3.  What changes is that the crystal
+            //  stops being reported as if it were in solution.
+            sVector solidFlows(thermo.n(), 0.0);
+            bool anyPlaced = false;
+            for (const auto& [mineral, molal] : r.trueState.precipitated)
+            {
+                auto it = cfg->solidOwner.find(mineral);
+                if (it == cfg->solidOwner.end() || molal <= 0.0) continue;
+                solidFlows[it->second] += molal * kgw / 1000.0;
+                anyPlaced = true;
+            }
+            sol.speciation = speciationBlock(
+                thermo, r.trueState, kgw, r.pH,
+                [&](const std::string& m)
+                { return cfg->solidOwner.count(m) > 0; });
+            if (anyPlaced) sol.solidFlows = solidFlows;
         }
         return sol;
     }

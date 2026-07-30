@@ -28,6 +28,8 @@ License
 
 #include "streams/SpeciationBlock.H"
 
+#include <functional>
+
 #include "thermo/ThermoPackage.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
 
@@ -37,7 +39,8 @@ std::shared_ptr<const ProcessStream::Speciation>
 speciationBlock(const ThermoPackage&                 thermo,
                 const electrolyte::SpeciationResult& sr,
                 const scalar                         kgw,
-                const scalar                         pH)
+                const scalar                         pH,
+                const std::function<bool(const std::string&)>& ownedSolid)
 {
     if (!(kgw > 0.0)) return nullptr;
 
@@ -77,12 +80,26 @@ speciationBlock(const ThermoPackage&                 thermo,
     for (const auto& row : sr.rows)
         sp->flows.emplace_back(row.name, row.molality * kgw / 1000.0);
 
-    //  ...and the PRECIPITATED minerals.  They are part of what the model
-    //  resolved in this stream, and most of the calcium of a scaling water is
-    //  in them: leaving them out would make the decomposition describe less
-    //  matter than the stream carries, and the closure check would say so.
+    //  ...and the PRECIPITATED minerals -- which are NOT aqueous species and
+    //  no longer sit among them.
+    //
+    //  They used to, and the reason was structural, not physical: the block
+    //  was checked against the stream's OVERALL material, so a mineral left
+    //  out made the decomposition describe less matter than the stream
+    //  carried and the closure check said so.  In flash16 that put 58.9 % of
+    //  the calcium -- solid calcite -- in a block whose subject is the
+    //  aqueous phase.  It closed, and it closed by counting a crystal as a
+    //  dissolved species.
+    //
+    //  Now the phase exists, so the crystal goes to it: the caller moves each
+    //  owned mineral into the stream's SOLID material, the aqueous phase is
+    //  the liquid minus it, and this block closes against that -- describing
+    //  the 41.1 % that is actually in solution.  A mineral with no declared
+    //  owner still cannot be placed, and stays reported here rather than
+    //  vanishing.
     for (const auto& [mineral, molal] : sr.precipitated)
-        sp->flows.emplace_back(mineral, molal * kgw / 1000.0);
+        if (!ownedSolid || !ownedSolid(mineral))
+            sp->flows.emplace_back(mineral, molal * kgw / 1000.0);
 
     return sp;
 }

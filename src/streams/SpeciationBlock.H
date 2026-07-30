@@ -58,7 +58,9 @@ License
 #include "core/Types.H"
 #include "streams/ProcessStream.H"
 
+#include <functional>
 #include <memory>
+#include <string>
 
 namespace Choupo {
 
@@ -72,10 +74,17 @@ namespace electrolyte { struct SpeciationResult; }
 //    sr      the SOLVED speciation (rows in molality, precipitated minerals)
 //    kgw     kilograms of solvent water in THIS stream's liquid [kg/s]
 //    pH      the solved pH of that liquid
+//    ownedSolid  true for a mineral the caller has PLACED in the stream's
+//            solid phase -- it is then no aqueous species and is omitted
+//            here.  Null (or false) keeps the mineral in the block, which
+//            is the honest fallback for a phase no component declares:
+//            unplaceable matter is reported, never dropped.
 std::shared_ptr<const ProcessStream::Speciation>
 speciationBlock(const ThermoPackage&                  thermo,
                 const electrolyte::SpeciationResult&  sr,
                 scalar                                kgw,
-                scalar                                pH);
+                scalar                                pH,
+                const std::function<bool(const std::string&)>& ownedSolid
+                    = nullptr);
 
 } // namespace Choupo

@@ -165,6 +165,21 @@ struct ProcessStream
         bool        pH_valid = false;
     };
     std::shared_ptr<const Speciation> speciation;   // null = none, the default
+
+    //  The SECOND LIQUID, per component [kmol/s], when the package declares
+    //  one and it is PRESENT.  Null = one liquid -- the absence of a phase,
+    //  never a phase of zero.
+    //
+    //  Report-only, like `speciation`: F/z stay the APPARENT material of both
+    //  liquids together and the two leave through one nozzle.  Only the
+    //  ORGANIC side is held; the aqueous is `F*z - organic`, so the
+    //  decomposition sums back EXACTLY by subtraction rather than by two
+    //  independently-rounded vectors agreeing -- and that sum is what the
+    //  stream-file reader checks.
+    //
+    //  It exists so a stream can say WHICH material its speciation
+    //  decomposes: the ions are in the aqueous phase and nowhere else.
+    std::shared_ptr<const sVector> organicLiquid;
 };
 
 } // namespace Choupo

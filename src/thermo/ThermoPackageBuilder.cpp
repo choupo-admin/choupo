@@ -1083,10 +1083,38 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     if (chem && chem->present && !chem->solidPhases.empty())
     {
         cfg.admittedSolids = chem->solidPhases;
+        //  WHO OWNS each admitted phase.  Declared, never guessed: a
+        //  component's own record names the solid phases it can form
+        //  (`solidPhases { calcite { ... } }`), which is the same block the
+        //  crystal properties are read from.  Matching `calcite` to `CaCO3`
+        //  by name or formula would be the kind of similarity inference this
+        //  tree bans everywhere else, and it would be wrong the first time a
+        //  polymorph pair (calcite / aragonite) both resolved.
+        for (std::size_t i = 0; i < comps.size(); ++i)
+        {
+            const fs::path sp = records::componentBase(comps[i].name());
+            if (!fs::exists(sp)) continue;
+            DictPtr rec = Dictionary::fromFile(sp.string());
+            if (rec)
+                rec = Database::applyCaseOverlay(comps[i].name(), rec,
+                                                 sp.string()).dict;
+            if (!rec || !rec->found("solidPhases")) continue;
+            auto sp_d = rec->subDict("solidPhases");
+            for (const auto& phase : cfg.admittedSolids)
+                if (sp_d->found(phase) && !cfg.solidOwner.count(phase))
+                    cfg.solidOwner[phase] = i;
+        }
         if (thermoAnnounce())
         {
             std::cout << "[chemistry] admitted solid phase(s):";
-            for (const auto& s : cfg.admittedSolids) std::cout << " " << s;
+            for (const auto& s : cfg.admittedSolids)
+            {
+                std::cout << " " << s;
+                auto it = cfg.solidOwner.find(s);
+                if (it != cfg.solidOwner.end())
+                    std::cout << " (" << comps[it->second].name() << ")";
+                else std::cout << " (no declared owner -- stays in the report)";
+            }
             std::cout << " -- they may precipitate to their SI = 0 ceiling."
                          "  A CEILING, not a deposition rate: infinite time,"
                          " no nucleation barrier.\n";

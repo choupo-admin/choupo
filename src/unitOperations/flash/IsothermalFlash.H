@@ -95,6 +95,20 @@ struct FlashSolution
     // FLOWS -- attached to the liquid outlet as a report-only decomposition
     // (never state; see ProcessStream::Speciation).  Null on every other path.
     std::shared_ptr<const ProcessStream::Speciation> speciation;
+
+    // The reactive package's SECOND LIQUID at the answer, per component
+    // [kmol/s] -- report-only: the two liquids leave through ONE nozzle, so
+    // this decomposes that stream, it does not add another.  Null when one
+    // liquid.  Only the ORGANIC side; the aqueous is the liquid minus it, so
+    // the pair closes by subtraction instead of by two roundings agreeing.
+    std::shared_ptr<const sVector> organicLiquid;
+
+    // The PRECIPITATED solid, per component [kmol/s].  Unlike the two above
+    // this is NOT report-only: it becomes the stream's solid material, so the
+    // liquid left behind is the liquid actually in solution.  Empty when
+    // nothing precipitated, or when no component declares the mineral's
+    // owning solid phase (that mineral stays in the speciation report).
+    sVector solidFlows;
 };
 
 enum class OuterAccelerator { DirectSubstitution, Wegstein };

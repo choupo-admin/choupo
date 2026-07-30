@@ -198,6 +198,20 @@ struct ReactiveVLEConfig
     //  buffering, and the H+ leg of a carbonate dissolution moves the pH.
     std::vector<std::string> admittedSolids;
 
+    //  ...and WHICH COMPONENT owns each of them: phase name -> apparent
+    //  index.  The sentence above -- "dissolved CaCO3 and solid CaCO3 are the
+    //  same flowsheet component" -- is only actionable if the code can say
+    //  which component that is, and it is NOT the mineral's name (calcite is
+    //  CaCO3, gypsum is CaSO4:2H2O).  The owner is DECLARED: the component's
+    //  record carries `solidPhases { <phase> { ... } }`, so the map is read
+    //  off the records, never matched by name or by formula similarity.
+    //
+    //  A phase with no declared owner is absent from this map, and its
+    //  precipitate stays where it always was -- inside the speciation report.
+    //  That is the honest degradation: unowned matter cannot be moved into a
+    //  phase of a component nobody named.
+    std::map<std::string, std::size_t> solidOwner;
+
     //  ---- THE SECOND LIQUID (declared, not discovered) --------------------
     //  A benzene-rich organic phase alongside the aqueous one.  EMPTY means
     //  no second liquid was declared, and the solver must then take a path
@@ -284,6 +298,17 @@ struct ReactiveVLEResult
     // so the flash duty is CORRECTED, never silently monomer-priced.
     scalar vapDimerMolPerMolFeed = 0.0;
     scalar dimDH_J               = 0.0;
+
+    //  The SECOND LIQUID at the accepted state, per APPARENT component and
+    //  index-aligned with the package's component vector, per ONE MOLE OF
+    //  FEED (the basis of xApp/yApp).  EMPTY when one liquid -- the absence
+    //  of a phase, not a phase of zero.
+    //
+    //  Only the ORGANIC side: the aqueous is the liquid minus it, so the two
+    //  close by subtraction.  Publishing both would put one quantity in two
+    //  homes and let them disagree in the last digits, which is exactly the
+    //  closure a stream file's decomposition is checked on.
+    sVector nOrgApp;
 };
 
 class ReactiveVLE
