@@ -188,7 +188,7 @@ void writeStreamState(const ProcessStream&  s,
                                : (s.vf <= 0.001 ? "liquid" : "fluid");
         auto block = [&](const char* nm,
                          const std::function<scalar(std::size_t)>& q,
-                         bool nest = false)
+                         bool nest = false, bool nestPsd = false)
         {
             out << "    " << nm << "\n    {\n        componentMolarFlows\n        {\n";
             for (std::size_t i = 0; i < thermo.n(); ++i)
@@ -197,6 +197,27 @@ void writeStreamState(const ProcessStream&  s,
                         << q(i) * 3600.0 << " kmol/h;\n";
             out << "        }\n";
             if (nest) writeSpeciation("        ");
+            //  THE PSD IS THE SOLID PHASE'S, not the stream's.  A size
+            //  distribution describes a PARTICLE POPULATION; hung on the
+            //  stream it can only ever describe one, which is why the field
+            //  had to be documented as "the combined solid phase" -- and a
+            //  single distribution over two different minerals is not a
+            //  physical object.  Writing it inside the phase costs nothing
+            //  while there is one solid phase, and is what the second one
+            //  will need.  (Commercial simulators reach the same place from
+            //  the other end: the distribution rides with a declared solids
+            //  SUBSTREAM, one per population.  The substream machinery is a
+            //  type system for streams and is not worth its price here; the
+            //  phases{} block already carries the naming.)
+            if (nestPsd && !s.psd.empty())
+            {
+                out << "\n        particleSizeDistribution\n        {\n"
+                       "            diameter  (";
+                for (const auto d : s.psd.diameter) out << " " << d;
+                out << " );\n            massFrac  (";
+                for (const auto m : s.psd.massFrac) out << " " << m;
+                out << " );\n        }\n";
+            }
             out << "    }\n";
         };
         auto fluidOf = [&](std::size_t i)
@@ -218,14 +239,19 @@ void writeStreamState(const ProcessStream&  s,
             block(aqueousNamed ? "aqueous" : fluidPhase, fluidOf, aqueousNamed);
         if (anySolid)
             block("solid", [&](std::size_t i)
-                  { return i < s.s.size() ? s.s[i] : 0.0; });
+                  { return i < s.s.size() ? s.s[i] : 0.0; }, false, true);
         out << "}\n";
     }
 
-    // Particle-size distribution of the solid phase: diameter [m] + the mass
-    // fraction per bin (Sigma = 1).  Part of a solid stream's STATE -- persisted
-    // so a drilled crystalliser / dryer sub-case keeps the PSD it was fed.
-    if (!s.psd.empty())
+    // Particle-size distribution: diameter [m] + the mass fraction per bin
+    // (Sigma = 1).  Part of a solid stream's STATE -- persisted so a drilled
+    // crystalliser / dryer sub-case keeps the PSD it was fed.
+    //
+    // Written HERE only when no solid phase was named above; when one was,
+    // the distribution is already inside it and a copy out here would be a
+    // second home for one quantity, free to drift.  Hand-authored 0/ files
+    // in the old top-level form keep working -- the reader takes either.
+    if (!s.psd.empty() && !anySolid)
     {
         out << "\nparticleSizeDistribution\n{\n    diameter  (";
         for (const auto d : s.psd.diameter) out << " " << d;
@@ -769,11 +795,46 @@ ProcessStream readStreamState(const fs::path&       file,
     }
     s.category = d->lookupWordOrDefault("category", "");   // utility-stream tag
 
-    if (d->found("particleSizeDistribution"))
+    //  The PSD, from the SOLID PHASE that owns it, or -- for a file written
+    //  before the distribution moved into the phase, and for hand-authored
+    //  0/ states -- from the top level.  Both are read; only the nested form
+    //  is written.  A file carrying BOTH is refused rather than silently
+    //  preferring one: two distributions for one population is the drift
+    //  this move exists to prevent.
+    DictPtr psdDict;
+    if (d->found("phases"))
     {
-        auto pd = d->subDict("particleSizeDistribution");
-        if (pd->found("diameter")) s.psd.diameter = pd->lookupList("diameter");
-        if (pd->found("massFrac")) s.psd.massFrac = pd->lookupList("massFrac");
+        auto ph = d->subDict("phases");
+        for (const auto& pname : ph->keys())
+        {
+            auto pd = ph->subDict(pname);
+            if (!pd->found("particleSizeDistribution")) continue;
+            if (psdDict)
+                throw std::runtime_error("stream state '" + name + "': more"
+                    " than one phase carries a particleSizeDistribution."
+                    "  Each solid population has its own -- but the stream"
+                    " holds ONE, so a second cannot be represented and"
+                    " picking either would decide the physics by the order"
+                    " of the file.");
+            if (pname != "solid")
+                throw std::runtime_error("stream state '" + name + "': phase"
+                    " '" + pname + "' carries a particleSizeDistribution."
+                    "  A size distribution describes a population of"
+                    " PARTICLES; a fluid phase has none.");
+            psdDict = pd->subDict("particleSizeDistribution");
+        }
+    }
+    if (psdDict && d->found("particleSizeDistribution"))
+        throw std::runtime_error("stream state '" + name + "': a"
+            " particleSizeDistribution at the top level AND inside the solid"
+            " phase.  One population, one distribution -- two homes drift."
+            "  Keep the one inside the phase.");
+    if (!psdDict && d->found("particleSizeDistribution"))
+        psdDict = d->subDict("particleSizeDistribution");
+    if (psdDict)
+    {
+        if (psdDict->found("diameter")) s.psd.diameter = psdDict->lookupList("diameter");
+        if (psdDict->found("massFrac")) s.psd.massFrac = psdDict->lookupList("massFrac");
     }
     return s;
 }
