@@ -609,6 +609,23 @@ PYEOF
     fi
     rm -f /tmp/fcgate.$$
 
+    # Duplicate-key gate: the parser refuses a key declared twice, but only
+    # for a file some case LOADS.  A record nobody opens carries the defect
+    # silently until the day it is used -- which is exactly how twelve
+    # standard components sat there discarding their Joback groups.  This
+    # sweeps every dict on disk, loaded or not, and it exists because the
+    # corpus was SAMPLED once (sixty cases, declared clean) and the full
+    # suite then found four more.
+    if "$ROOT/bin/curate/check_duplicate_keys.py" > /tmp/dupkey.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "duplicate-key-gate" "$(tail -1 /tmp/dupkey.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_duplicate_keys.py)\n" "duplicate-key-gate"
+        cat /tmp/dupkey.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/dupkey.$$
+
     # Cosmo-scrub gate: the public tree ships NO externally-restricted values.
     # A COSMO set is an external REFERENCE (licence externalRestricted;
     # installed false) or carries an open-licence profile (the synthetic
