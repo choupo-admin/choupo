@@ -380,6 +380,89 @@ else:
         ok("flash19: first law published, Q = %.2f kW, dHsoln from the "
            "ADMITTED phase (calcite, not aragonite)" % q)
 
+# ---------------------------------------------------------------------------
+#  5. A PHASE NAME ASSERTS SOMETHING, so it must be checkable and checked.
+#
+#  Outlets are bound POSITIONALLY (produced[k] takes outputs[k]) and a
+#  two-liquid unit returns its phases in an order set by the solver's seeding
+#  bias.  So `outputs ( aqueous organic )` was correct in the extraction case
+#  only because water happens to be declared first: reorder the components and
+#  the water-rich phase leaves through the nozzle labelled `organic`, silently,
+#  with every KPI green.
+# ---------------------------------------------------------------------------
+EXTR = os.path.join(ROOT, "tutorials", "steady", "absorption",
+                    "extraction01_waterButanol")
+
+
+def solve_refuses(label, case_src, mutate_case, expect):
+    """Copy a case, apply mutate_case(dir), require choupoSolve to REFUSE.
+
+    The mutation takes the whole DIRECTORY, not one file, and that is not
+    generality for its own sake: renaming an outlet in flowsheetDict without
+    renaming its 0/ state file trips the COMPLETENESS refusal first, and a
+    negative test that fires an earlier refusal proves that refusal rather
+    than its own.  Cost the first time this was written, twice."""
+    tmp = tempfile.mkdtemp(prefix="phasename.")
+    try:
+        dst = os.path.join(tmp, "case")
+        shutil.copytree(case_src, dst)
+        for junk in ("converged", "reports"):
+            shutil.rmtree(os.path.join(dst, junk), ignore_errors=True)
+        mutate_case(dst)
+        r = subprocess.run([SOLVER, dst], capture_output=True, text=True)
+        out = (r.stdout or "") + (r.stderr or "")
+        if r.returncode == 0:
+            fail("%s -- ACCEPTED.  A name that is never checked against what "
+                 "it names is the defect this exists for." % label)
+        elif expect not in out:
+            fail("%s -- refused for the wrong reason.  Expected %r, got: %s"
+                 % (label, expect, out.strip()[-250:]))
+        else:
+            ok("%s -- refused, naming it" % label)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+if not os.path.isdir(EXTR):
+    fail("extraction01_waterButanol is gone -- the two-liquid naming rule has "
+         "no case to be checked on")
+else:
+    def swap_names(d):
+        fd = os.path.join(d, "system", "flowsheetDict")
+        body = open(fd).read().replace("outputs     ( aqueous  organic )",
+                                       "outputs     ( organic  aqueous )")
+        open(fd, "w").write(body)
+
+    solve_refuses("(f) the two liquid outlets named the wrong way round",
+                  EXTR, swap_names, "carries LESS")
+
+#  ...and a name that asserts a phase the system CANNOT have.  vlle03 is three
+#  synthetic components with no water at all, and it used to call its liquids
+#  `aqueous` and `organic` -- so the swap check above skipped in silence,
+#  exactly where the names meant least.  It now says liquidA / liquidB.
+VLLE = os.path.join(FLASH, "vlle03_audit_artificial")
+if os.path.isdir(VLLE):
+    fd = open(os.path.join(VLLE, "system", "flowsheetDict")).read()
+    if re.search(r"outputs.*\baqueous\b", fd):
+        fail("vlle03 names an outlet 'aqueous' again, in a system of synthetic "
+             "components with no water: the name asserts a phase the system "
+             "cannot have")
+    else:
+        ok("vlle03: synthetic liquids carry neutral names, not a chemistry "
+           "they do not have")
+        def call_it_aqueous(d):
+            fd = os.path.join(d, "system", "flowsheetDict")
+            body = open(fd).read().replace("( vapor  liquidA  liquidB )",
+                                           "( vapor  aqueous  liquidB )")
+            open(fd, "w").write(body)
+            #  ...and the 0/ state with it, or the COMPLETENESS refusal fires
+            #  first and this test proves that one instead.
+            os.rename(os.path.join(d, "0", "liquidA"),
+                      os.path.join(d, "0", "aqueous"))
+
+        solve_refuses("(g) an 'aqueous' outlet in a system with no solvent",
+                      VLLE, call_it_aqueous, "no solvent")
+
 print()
 if fails:
     print("%d failure(s)." % len(fails))

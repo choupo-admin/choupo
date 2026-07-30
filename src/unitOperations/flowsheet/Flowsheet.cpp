@@ -1346,7 +1346,7 @@ void runUnit(const DictPtr&                                          udict,
             return outputs.size();
         };
         const std::size_t ia = idxOf("aqueous"), io = idxOf("organic");
-        if (ia < outputs.size() && io < outputs.size())
+        if (ia < outputs.size())
         {
             //  The solvent is the DECLARED one when the package names it,
             //  water otherwise -- never a hardcoded "water" (SystemClassifier
@@ -1355,12 +1355,27 @@ void runUnit(const DictPtr&                                          udict,
             if (const auto* cfg = thermo.reactiveConfig()) wi = cfg->solventIdx;
             else for (std::size_t i = 0; i < thermo.n(); ++i)
                      if (thermo.comp(i).name() == "water") { wi = i; break; }
-            if (wi < thermo.n())
+            //  NO SOLVENT AT ALL and an outlet still called `aqueous`.
+            //  vlle03_audit_artificial did exactly this -- three synthetic
+            //  components compA/compB/compC and `outputs ( vapor aqueous
+            //  organic )` -- and the check above SKIPPED, because there was
+            //  no water to compare.  A name that asserts a property the
+            //  system cannot have is worse than a generic one: it reads as
+            //  information and carries none, and the guard that should catch
+            //  a swap goes quiet exactly where the names mean least.
+            if (wi >= thermo.n())
+                throw std::runtime_error("Flowsheet: unit '" + uname
+                    + "' names an outlet 'aqueous', but this system has no"
+                      " solvent -- no declared aqueous solvent and no water"
+                      " among the components.  The name asserts a phase the"
+                      " system cannot have.  Use neutral names (liquidA /"
+                      " liquidB) for liquids that are not aqueous and"
+                      " organic.");
             {
                 const auto xw = [&](std::size_t k)
                 { return wi < streams[outputs[k]].z.size()
                        ? streams[outputs[k]].z[wi] : 0.0; };
-                if (xw(ia) < xw(io))
+                if (io < outputs.size() && xw(ia) < xw(io))
                     throw std::runtime_error("Flowsheet: unit '" + uname
                         + "' outlet named 'aqueous' carries LESS "
                         + thermo.comp(wi).name() + " (x = "

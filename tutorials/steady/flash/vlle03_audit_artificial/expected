@@ -1,8 +1,8 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
-stream  aqueous                F                0.011307571384     1e-4
+stream  liquidA                F                0.011307571384     1e-4
 stream  feed                   F                0.0277777777778    1e-4
-stream  organic                F                0.0113091924076    1e-4
+stream  liquidB                F                0.0113091924076    1e-4
 stream  vapor                  F                0.00516101398624   1e-4
 kpi     decanter01             F_alpha          0.0164702063938    1e-4
 kpi     decanter01             F_beta           0.011307571384     1e-4
