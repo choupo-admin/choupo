@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        Z_co2_TP;
+        type        propertyScan2D;
+
+        varyX { variable T;  from 280 K;  to 420 K;  n 15; }
+        varyY { variable P;  from   1 bar; to 200 bar; n 20; }
+
+        state { composition { CO2 1.0; } }
+
+        properties  ( Z  v_molar );
+
+        output      { file Z_co2_grid.csv; }
+    }
+);

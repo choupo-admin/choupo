@@ -1,0 +1,19 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+#
+#  A0/A1/A2 are an EXACT-RECOVERY claim: the data was generated from this very
+#  quadratic, so a 1e-4 band would pass with the normal equations quietly off
+#  in the fourth digit.  What is pinned is the six figures the payload renders.
+#  dHvap_dT_kirchhoff keeps the looser band -- it mixes the fit with the
+#  CATALOGUE ideal-gas Cp, so it moves if that record is recurated, and
+#  pinning it tightly would make a data update look like a code regression.
+diag    cp_dce_liquid_fit      A0               194                1e-6
+diag    cp_dce_liquid_fit      A1               -0.618063          1e-6
+diag    cp_dce_liquid_fit      A2               0.00170318         1e-6
+diag    cp_dce_liquid_fit      Cp_at_Tmid       166.076            1e-4
+diag    cp_dce_liquid_fit      Cp_ig_at_Tmid    84.2326            1e-4
+diag    cp_dce_liquid_fit      R2               1                  1e-12
+diag    cp_dce_liquid_fit      dHvap_dT_kirchhoff -81.8435           1e-4
+diag    cp_dce_liquid_fit      degree           2                  1e-4
+diag    cp_dce_liquid_fit      n_points         21                 1e-4

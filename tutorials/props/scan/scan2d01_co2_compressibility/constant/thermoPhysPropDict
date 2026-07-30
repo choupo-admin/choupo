@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  A cubic EoS is the whole point here: Z is its answer, and the surface
+    below is what that answer looks like when you stop evaluating it one
+    point at a time.
+*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( CO2 );
+
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState { model PengRobinson; }
+}

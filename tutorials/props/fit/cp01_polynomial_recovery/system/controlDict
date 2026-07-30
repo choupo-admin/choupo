@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  A LINEAR FIT, AND THE PHYSICS THAT CHECKS IT.
+
+    `heatCapacityFit` regresses Cp(T) = A0 + A1 T + A2 T^2 by linear least
+    squares -- normal equations, no iteration.  Fed data generated FROM a
+    quadratic, it must return that quadratic, so the expected file pins the
+    coefficients rather than a tolerance band.
+
+    The interesting number is not the fit.  It is KIRCHHOFF:
+
+        d(dHvap)/dT = Cp_ig - Cp_liq
+
+    The op takes the FITTED liquid Cp and the component's CATALOGUE ideal-gas
+    Cp and reports that difference at the mid temperature.  It should be
+    NEGATIVE -- the enthalpy of vaporisation falls as T rises, to zero at the
+    critical point -- and its size is the slope of dHvap(T).  That is the link
+    tying Cp to dHvap to the Antoine fit next door (psat01_antoine_recovery,
+    which reports dHvap from B): three ops, one consistency network, and a
+    student can check one against the other by hand.
+
+    Why the case exists: `heatCapacityFit` had NO case and no gate.  Writing
+    the first one for its sibling vaporPressureFit segfaulted choupoProps
+    twice and found a thermoPhysPropDict being silently ignored.
+*/
+application   choupoProps;
+description   "Quadratic Cp fit on data generated from a quadratic -- exact recovery, with the Kirchhoff Cp_ig - Cp_liq cross-check that ties Cp to dHvap";
+verbosity     3;

@@ -70,8 +70,18 @@ public:
     int run(const DictPtr& dict, const ThermoPackage& thermo, int verbosity) override;
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
 
+    //  Each AAD exists only when the case GAVE this op the matching measured
+    //  set: a gamma dataset publishes gamma_AAD_pct, an enthalpy one
+    //  publishes the Lphi pair, and naming all four always meant every case
+    //  pointed at two that were not there.
     std::vector<std::string> headline() const override
-    { return { "gamma_AAD_pct", "phi_AAD_pct", "Lphi_AAD_rel_pct", "Lphi_AAD_abs_Jmol" }; }
+    {
+        std::vector<std::string> h;
+        for (const char* k : { "gamma_AAD_pct", "phi_AAD_pct",
+                               "Lphi_AAD_rel_pct", "Lphi_AAD_abs_Jmol" })
+            if (diag_.count(k)) h.push_back(k);
+        return h;
+    }
 
 private:
     std::map<std::string, scalar> diag_;

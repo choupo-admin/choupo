@@ -90,8 +90,19 @@ public:
             const ThermoPackage& thermo,
             int verbosity) override;
 
+    //  Only keys this run actually PUBLISHED.  The fixed four named the
+    //  critical constants, and the van-Krevelen density path publishes none
+    //  of them -- so that case asked the GUI to emphasise four absent
+    //  numbers.  A headline is a pointer into the diagnostics; it cannot
+    //  point outside them.
     std::vector<std::string> headline() const override
-    { return { "Tb_K", "Tc_K", "Pc_bar", "omega" }; }
+    {
+        std::vector<std::string> h;
+        for (const char* k : { "Tb_K", "Tc_K", "Pc_bar", "omega",
+                               "density_g_cm3", "V_cm3_per_mol" })
+            if (diag_.count(k)) h.push_back(k);
+        return h;
+    }
 
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
 

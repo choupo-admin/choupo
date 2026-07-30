@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  THE COMPRESSIBILITY SURFACE, NOT A CURVE.
+
+    `propertyScan2D` sweeps TWO state variables over a rectangle and reports
+    the property at every node -- long-form CSV, one row per (T, P), ready to
+    pivot into a heat map.  Here it is Z(T, P) for CO2 on Peng-Robinson,
+    280-420 K by 1-200 bar: a 15 x 20 grid that walks straight over the
+    critical point (304.13 K, 73.77 bar).
+
+    What to read:
+      * along an isotherm below Tc the surface DROPS steeply and then turns
+        up -- the liquid-like branch;
+      * above Tc the same isotherm is smooth: the discontinuity is a
+        coexistence line, and the grid crosses where it ends;
+      * Z -> 1 in the whole low-P edge, which is the ideal-gas limit falling
+        out of a cubic rather than being assumed.
+
+    The op reports `failures` -- nodes where the property could not be
+    evaluated -- as a diagnostic, so a grid that quietly returned fewer points
+    than it promised is visible in the payload rather than only in the CSV's
+    line count.  The expected file pins it at zero: on this rectangle every
+    node must solve.
+
+    Why the case exists: `propertyScan2D` had NO case and no gate, though
+    `propertyScan1D`, `propertyScanBinary` and `propertyScanTernary` all have
+    one.  Its sibling vaporPressureFit was in the same position, and writing
+    the first case for THAT one segfaulted choupoProps twice.
+*/
+application   choupoProps;
+description   "Z(T,P) for CO2 on Peng-Robinson over a 15 x 20 grid that crosses the critical point: the compressibility surface, one row per node";
+verbosity     3;

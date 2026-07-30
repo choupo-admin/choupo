@@ -74,8 +74,20 @@ public:
             const ThermoPackage& thermo,
             int verbosity) override;
 
+    //  The headline names which diagnostics are THE answer, and the GUI
+    //  emphasises them -- so it may only name keys the payload carries.  The
+    //  fixed pair {Ea_kJ_per_mol, chi2} named neither on one path and half on
+    //  the other: the ARRHENIUS branch publishes Ea and R2 and no chi2, the
+    //  plain sweep publishes k and publishes chi2 only when it was given lab
+    //  data to compare against.  Derived from diag_, it cannot point at a key
+    //  that is not there.
     std::vector<std::string> headline() const override
-    { return { "Ea_kJ_per_mol", "chi2" }; }
+    {
+        std::vector<std::string> h;
+        for (const char* k : { "Ea_kJ_per_mol", "k", "R2", "chi2" })
+            if (diag_.count(k)) h.push_back(k);
+        return h;
+    }
 
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
 

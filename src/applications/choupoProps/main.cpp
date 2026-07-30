@@ -495,7 +495,28 @@ try
                       << rc << "\n";
             overallRc = rc;
         }
-        opResults.push_back({ opName, opType, op->diagnostics(), opProvenance(opDict),
+        //  A HEADLINE IS A POINTER INTO THE DIAGNOSTICS.  It tells the GUI
+        //  which numbers ARE the answer, so naming a key the op did not
+        //  publish asks it to emphasise nothing.  Three ops did: kinetics1D
+        //  named `chi2` on a path that publishes R2, estimateComponent named
+        //  the four critical constants on a density estimate that publishes
+        //  none of them, pitzerActivity named all four AADs when a case gives
+        //  it the data for one.  45 of 139 op results across the props
+        //  corpus pointed at something absent.
+        //
+        //  This is the op's own contract with itself, so it is a REFUSAL, not
+        //  a warning: it can only be wrong in the C++, never in a case, and
+        //  any case exercising the op will surface it in the suite.
+        const auto diags = op->diagnostics();
+        for (const auto& h : op->headline())
+            if (!diags.count(h))
+                throw std::runtime_error("operation '" + opName + "' (type "
+                    + opType + ") declares the headline diagnostic '" + h
+                    + "', which it did not publish.  A headline names which"
+                      " of the diagnostics ARE the answer -- derive it from"
+                      " what this run actually produced (see Kinetics1D.H),"
+                      " never a fixed list covering every path.");
+        opResults.push_back({ opName, opType, diags, opProvenance(opDict),
                               op->headline() });
     }
 

@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+operations
+(
+    {
+        name       cp_dce_liquid_fit;
+        type       heatCapacityFit;
+        component  Dichloroethane;
+        degree     2;
+        dataset    "constant/experiments/cp-dce-liquid-synthetic.dat";
+        output     { file cp_dce_liquid_fit.csv; }
+    }
+);

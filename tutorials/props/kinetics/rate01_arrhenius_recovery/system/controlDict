@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  THE ACTIVATION ENERGY COMES OUT OF A SLOPE.
+
+    `kinetics1D` is a PROPERTY evaluation, not a reactor: it uses the
+    integrated rate law in closed form, so a student can overlay competing
+    orders on the same lab data and SEE which one is straight.  Given
+    isotherms at more than one temperature it goes further -- fits k on each
+    one, then the line
+
+        ln k = ln k0 - (Ea/R) (1/T)
+
+    and Ea falls out of the SLOPE.  That is the whole of Arrhenius, and it is
+    worth watching happen on data whose answer is known.
+
+    So the data here is generated from k0 = 4.0e6 L/(mol s), Ea = 60 kJ/mol,
+    second order, at 40/60/80 C.  The fit must return those two numbers; the
+    expected file pins them, and R2 = 1 because the points carry no scatter.
+
+    What to read: the per-isotherm k values (3.93e-4, 1.57e-3, 5.34e-3), which
+    span a factor of 13.6 over 40 K -- the reason a rate constant is never
+    quoted without its temperature.
+
+    Why the case exists: `kinetics1D` had NO case and no gate.  Its sibling
+    vaporPressureFit was in the same position, and writing the first case for
+    THAT one segfaulted choupoProps twice.
+*/
+application   choupoProps;
+description   "Second-order decay at three temperatures, generated from k0 = 4e6, Ea = 60 kJ/mol: the Arrhenius line must give both back";
+verbosity     3;

@@ -1,0 +1,54 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  SYNTHETIC DATASET -- generated, not measured.  Twenty-one (T, Cp) points for
+  liquid 1,2-dichloroethane, produced by evaluating a QUADRATIC
+
+      Cp(T) = 194.0 - 0.618063 T + 0.00170318 T^2     [J/(mol K)]
+
+  at 260-360 K in 5 K steps.  Those three coefficients are the first three of
+  the curated cubic in data/standards/components/Dichloroethane.dat, taken as
+  a quadratic on purpose: the fit's job here is to return the polynomial it
+  was given, and a degree-2 fit of degree-2 data must do so EXACTLY.
+
+  Why generated and not measured: a fit tested against laboratory data can
+  only be judged to the scatter of those measurements.  Against data the
+  polynomial itself produced, any deviation is the normal equations'
+  arithmetic and nothing else -- which is what a first test for this op needs
+  to say.  A case fitting real calorimetry belongs beside this one, and would
+  be testing the DATA rather than the solver.
+
+  Licence: GPL-3.0-or-later -- Choupo's own numbers evaluated; no third-party
+  data is involved and none is redistributed.
+
+  Used by system/propsDict op `cp_dce_liquid_fit` (type heatCapacityFit).
+\*-----------------------------------------------------------------------------*/
+
+columns
+(
+    { name T;   unit K;        }
+    { name Cp;  unit J/mol/K;  }
+);
+
+data
+(
+        260.00    148.438588
+        265.00    149.8191205
+        270.00    151.284812
+        275.00    152.8356625
+        280.00    154.471672
+        285.00    156.1928405
+        290.00    157.999168
+        295.00    159.8906545
+        300.00    161.8673
+        305.00    163.9291045
+        310.00    166.076068
+        315.00    168.3081905
+        320.00    170.625472
+        325.00    173.0279125
+        330.00    175.515512
+        335.00    178.0882705
+        340.00    180.746188
+        345.00    183.4892645
+        350.00    186.3175
+        355.00    189.2308945
+        360.00    192.229448
+);

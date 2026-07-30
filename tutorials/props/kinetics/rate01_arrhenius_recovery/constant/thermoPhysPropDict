@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  A closed-form rate law needs no thermodynamics; the package is here
+    because a case declares one, and it names the species the column plots.
+*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( aceticAcid  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model ideal; } }
+    vapour  { fugacityModel idealGas; }
+}

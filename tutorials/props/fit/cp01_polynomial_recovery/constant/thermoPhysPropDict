@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  The regression needs no thermodynamics.  The package is here for the
+    KIRCHHOFF cross-check: the op names the component so its curated
+    ideal-gas Cp can be read against the fitted liquid one.
+*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( Dichloroethane );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model ideal; } }
+    vapour  { fugacityModel idealGas; }
+}

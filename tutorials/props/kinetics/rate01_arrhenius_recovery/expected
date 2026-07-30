@@ -1,0 +1,15 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+#
+#  Ea and k0 are an EXACT-RECOVERY claim: the three isotherms were generated
+#  from k0 = 4e6 and Ea = 60 kJ/mol, so the Arrhenius regression must return
+#  them and a 1e-4 band would hide a slope error in the fourth digit.
+diag    rate_arrhenius         Ea               60000              1e-6
+diag    rate_arrhenius         Ea_kJ_per_mol    60                 1e-6
+diag    rate_arrhenius         R2               1                  1e-12
+diag    rate_arrhenius         arrhenius        1                  1e-4
+diag    rate_arrhenius         fitted           1                  1e-4
+diag    rate_arrhenius         k0               4e+06              1e-6
+diag    rate_arrhenius         n_temps          3                  1e-4
+diag    rate_arrhenius         order            2                  1e-4

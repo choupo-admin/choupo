@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+operations
+(
+    {
+        name       rate_arrhenius;
+        type       kinetics1D;
+        component  aceticAcid;
+        dataset    "constant/experiments/rate-secondorder-synthetic.dat";
+        fit        ( k0  Ea );
+        time       { from 0;  to 1200;  n 61; }
+        rate       { order 2;  c0 1.0;  k 1.0e-3; }
+        output     { file rate_arrhenius.csv; }
+    }
+);
