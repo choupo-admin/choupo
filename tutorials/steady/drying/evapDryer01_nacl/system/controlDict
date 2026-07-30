@@ -1,0 +1,8 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Evaporative dryer: free surface water on NaCl crystals evaporated into dry nitrogen, adiabatic, the binding limit announced";
+verbosity     3;
+reports { streamTable {}  massBalance {} }

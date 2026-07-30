@@ -88,6 +88,34 @@ struct Parser
             while (j < s.size()
                    && std::isdigit(static_cast<unsigned char>(s[j])))
                 ++j;
+            //  THE ASCII DOT IS AMBIGUOUS, and Choupo resolved it in favour
+            //  of the DECIMAL SUBSCRIPT -- sepiolite is curated as
+            //  "Mg2Si3O7.5OH:3H2O", a genuine half-integer, so the fraction
+            //  reading has to stay.  The cost is that the literature's other
+            //  use of the same character, the hydrate `MgSO4.7H2O`, parses
+            //  as O 4.7 + one water: O 5.7 and H 2 where the salt has O 11
+            //  and H 14.  A wrong element balance, silently, from a spelling
+            //  a chemist would call correct.
+            //
+            //  Refuse it where the two readings actually collide -- a
+            //  fraction immediately followed by `H2O` is a hydrate in every
+            //  practical case -- and name both spellings that are not
+            //  ambiguous.  Sepiolite is untouched: its fraction is followed
+            //  by OH, not H2O.
+            if (s.compare(j, 3, "H2O") == 0
+                && (j + 3 >= s.size()
+                    || !std::islower(static_cast<unsigned char>(s[j + 3]))))
+            {
+                err = "'" + s.substr(i, j - i) + "H2O' is ambiguous: the '.'"
+                      " reads as a DECIMAL SUBSCRIPT here (Choupo curates"
+                      " sepiolite as Mg2Si3O7.5OH:3H2O, a real half-integer),"
+                      " so a hydrate written this way would silently count"
+                      " the water into the previous element.  Write the"
+                      " hydrate with ':' or the middle dot -- MgSO4:7H2O --"
+                      " or, if a fractional subscript IS meant, separate it"
+                      " from the following group.";
+                return -1.0;
+            }
         }
         scalar v;
         try { v = std::stod(s.substr(i, j - i)); }

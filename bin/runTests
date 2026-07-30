@@ -677,6 +677,23 @@ PYEOF
     fi
     rm -f /tmp/gitvis.$$
 
+    # Type-coverage gate: a registered type is a PROMISE -- it shows in the
+    # GUI's palette and a student may write it in a dict.  Four property ops
+    # had no case; the first one written for `vaporPressureFit` segfaulted
+    # choupoProps twice and then ran with a silently empty package, and
+    # `evaporativeDryer` was the last unit-op class nobody built.  Aliases
+    # need no case of their own (`flash` and `isothermalFlash` are one
+    # class); a CLASS with no case at all is the failure.
+    if "$ROOT/bin/curate/check_type_coverage.py" > /tmp/typecov.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "type-coverage-gate" "$(tail -1 /tmp/typecov.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_type_coverage.py)\n" "type-coverage-gate"
+        cat /tmp/typecov.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/typecov.$$
+
     # Cosmo-scrub gate: the public tree ships NO externally-restricted values.
     # A COSMO set is an external REFERENCE (licence externalRestricted;
     # installed false) or carries an open-licence profile (the synthetic

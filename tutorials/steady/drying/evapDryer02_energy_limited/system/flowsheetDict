@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  FREE WATER, NOT BOUND WATER.
+
+    `evaporativeDryer` is the honest counterpart of `solidDryer`: where that
+    one models a HYGROSCOPIC material whose moisture is GAB-sorbed and dries
+    toward an equilibrium isotherm, this one models a NON-sorbing crystal
+    whose moisture is free surface water.  There is no isotherm, so there is
+    no equilibrium moisture to stop at -- the drying stops at whichever of
+    three real limits binds FIRST, and the unit ANNOUNCES which:
+
+      1. the free water runs out;
+      2. the exhaust reaches saturation (the constant-rate air-capacity
+         limit);
+      3. the gas cannot supply the latent + sensible heat.
+
+    Limits 2 and 3 are coupled -- evaporation cools the gas, which lowers its
+    carrying capacity -- and the unit bisects on the removed water until the
+    two agree, rather than applying them in sequence and hoping.
+
+    THIS CASE IS THE STARVED ONE.  Identical to evapDryer01_nacl except for
+    the gas: 40 kmol/h instead of 600.  The announcement changes to
+    [energy-limited], a WARNING says the gas cannot supply the drying heat,
+    T_out is floored at the wet solid's own temperature, and 16.6 wt% of the
+    water stays on the crystal -- a dryer that does not dry, reported as such
+    instead of returning a dry solid it cannot produce.
+
+    Read the exhaust humidity beside it: 0.95, exactly the cap.  Both limits
+    are within rounding of each other here, which is what the coupling means
+    -- the gas cools as it evaporates, and running out of heat and running
+    out of room are the same wall approached from two sides.
+*/
+units
+(
+    {
+        name        dryer;
+        type        evaporativeDryer;
+        inputs      ( wetSolid  hotGas );
+        outputs     ( drySolid  humidExhaust );
+        operation   { }
+    }
+);

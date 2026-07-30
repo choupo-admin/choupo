@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  Free surface water on a crystal, evaporating into nitrogen.  No sorption
+    isotherm is declared and none is consulted -- that is the difference
+    between this dryer and its hygroscopic sibling, and declaring one here
+    would be describing physics the material does not have.
+*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( water  NaCl  N2 );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal;  standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}

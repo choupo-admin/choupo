@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  THE FORMULA PARSER, WITH ITS LID OFF.
+
+    The element balance is only as good as the thing that reads a formula, so
+    that reader is ONE piece of code (src/thermo/ElementComposition) and
+    `elementalComposition` is its glass-box surface: give it a formula, see
+    the atoms it counted.
+
+    The formulas here are chosen to be the awkward ones, because those are
+    where a hand-rolled parser goes wrong:
+
+      C2H6O        plain, the control;
+      Ca(OH)2      a nested group with a multiplier -- 2 O and 2 H, not 1;
+      CaSO4:2H2O   a HYDRATE, the colon form: 6 O in total, 4 from the
+                   sulfate and 2 from the two waters;
+      MgSO4:7H2O   the same salt, colon form: Mg 1, S 1, O 11, H 14;
+      MgSO4.7H2O   THE SAME SALT AS A CHEMIST WRITES IT, and the one formula
+                   here that is REFUSED.  The ASCII '.' is ambiguous, and
+                   Choupo resolved it in favour of the decimal subscript --
+                   see sepiolite below -- so this spelling would silently
+                   count the seven waters into the oxygen: O 5.7 and H 2
+                   where the salt has O 11 and H 14.  A wrong element balance
+                   from a spelling nobody would flag by eye.  It refuses and
+                   names both unambiguous forms;
+      Mg2Si3O7.5OH:3H2O
+                   why the dot cannot simply BE the hydrate separator: this
+                   is curated sepiolite, and its 7.5 is a real half-integer;
+      SO4-2        an ION: the charge is not an element and must not become
+                   one;
+      (NH4)2SO4    a nested group of a nested group's worth of hydrogen -- 8 H.
+
+    A parser that silently mis-reads any of these produces an element balance
+    that closes on the wrong atoms, which is worse than one that refuses.
+*/
+application   choupoProps;
+description   "The shared formula parser, opened up: nested groups, both hydrate spellings, an ion charge that is not an element";
+verbosity     3;

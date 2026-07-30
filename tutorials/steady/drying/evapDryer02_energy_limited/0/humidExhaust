@@ -1,0 +1,9 @@
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit. ---*/
+componentMolarFlows
+{
+    N2       40 kmol/h;
+    water    0.5 kmol/h;
+}
+
+T               400 K;
+P               101325 Pa;

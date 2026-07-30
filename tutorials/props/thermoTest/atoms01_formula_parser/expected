@@ -1,0 +1,15 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    atoms                  C2H6O_C          2                  1e-4
+diag    atoms                  C2H6O_H          6                  1e-4
+diag    atoms                  C2H6O_O          1                  1e-4
+diag    atoms                  CO2_C            1                  1e-4
+diag    atoms                  CO2_O            2                  1e-4
+diag    atoms                  ethanol_C        2                  1e-4
+diag    atoms                  ethanol_H        6                  1e-4
+diag    atoms                  ethanol_O        1                  1e-4
+diag    atoms                  formulas_available 10                 1e-4
+diag    atoms                  formulas_total   11                 1e-4
+diag    atoms                  water_H          2                  1e-4
+diag    atoms                  water_O          1                  1e-4

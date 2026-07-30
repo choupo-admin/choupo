@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  Counting atoms needs no thermodynamics.  The package is here so the op
+    can also be asked for the formula of a LOADED component, which is the
+    path the element balance uses.
+*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( water  CO2  ethanol );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model ideal; } }
+    vapour  { fugacityModel idealGas; }
+}

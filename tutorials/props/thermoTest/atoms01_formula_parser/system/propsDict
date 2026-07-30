@@ -1,0 +1,14 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+operations
+(
+    {
+        name       atoms;
+        type       elementalComposition;
+        formulas   ( C2H6O  "Ca(OH)2"  "CaSO4:2H2O"  "MgSO4:7H2O"  "MgSO4.7H2O"
+                 "Mg2Si3O7.5OH:3H2O"  "SO4-2"  "(NH4)2SO4" );
+        components ( water  CO2  ethanol );
+    }
+);

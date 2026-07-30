@@ -1,0 +1,15 @@
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit. ---*/
+componentMolarFlows
+{
+    water    15 kmol/h;
+    NaCl     20 kmol/h;
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    liquid { componentMolarFlows { water  15 kmol/h; } }
+    solid  { componentMolarFlows { NaCl   20 kmol/h; } }
+}
