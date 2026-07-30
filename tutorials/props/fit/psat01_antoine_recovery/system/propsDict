@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+operations
+(
+    {
+        name       psat_water_fit;
+        type       vaporPressureFit;
+        component  water;
+        dataset    "constant/experiments/psat-water-synthetic.dat";
+        output     { file psat_water_fit.csv; }
+    }
+);

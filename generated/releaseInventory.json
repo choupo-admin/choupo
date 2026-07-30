@@ -21,8 +21,8 @@
     "engines": 4
   },
   "tutorials": {
-    "runnableCases": 299,
-    "regressionChecks": 264
+    "runnableCases": 300,
+    "regressionChecks": 265
   },
   "totals": {
     "mixtureParameterRecords": 268

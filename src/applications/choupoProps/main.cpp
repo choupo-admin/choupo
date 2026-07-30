@@ -361,7 +361,22 @@ try
         // the fit varies the SOURCE grammar itself.
         bool v2Native = false;
         bool aqNative = false;
-        if (sel->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
+        //  THE SAME REFUSAL choupoSolve gives (main.cpp, "the ONE case
+        //  grammar").  Here it was a silent skip: a thermoPhysPropDict
+        //  without `recordType` fell through both branches, the package was
+        //  never assembled, and the run continued with ZERO components --
+        //  announcing "Thermo package: 0 components" as though that were a
+        //  package.  Every op that reads thermo then reads nothing.  Found by
+        //  authoring the first case for vaporPressureFit and forgetting the
+        //  line; the whole 303-case corpus declares it, so nothing had ever
+        //  taken this path.
+        if (sel->lookupWordOrDefault("recordType", "")
+                != "thermophysicalPropertySystem")
+            throw std::runtime_error("constant/thermoPhysPropDict must"
+                " declare `recordType thermophysicalPropertySystem;`"
+                " -- the ONE case grammar.  Without it the package is not"
+                " assembled at all and every operation that needs thermo"
+                " reads an empty one.");
         {
             v2Authored = sel;
             if (sel->found("aqueousProperties"))
@@ -415,8 +430,16 @@ try
 
     if (verbosity >= 2)
     {
+        //  hasEos() is not decoration: a package assembled for a LIQUID-only
+        //  job carries no equation of state, and eos() then dereferences a
+        //  null.  The banner did it unguarded and SEGFAULTED -- before any
+        //  operation ran, and with stdout still buffered, so the user saw not
+        //  even the header: an empty terminal and exit 139.  The gap report
+        //  three hundred lines up had the guard all along.
         std::cout << "Thermo package:    " << thermo.n() << " components, EoS = "
-                  << thermo.eos().modelName() << "\n";
+                  << (thermo.hasEos() ? thermo.eos().modelName()
+                                      : std::string("none (no vapour phase in this package)"))
+                  << "\n";
         std::cout << "  components:     ";
         for (std::size_t i = 0; i < thermo.n(); ++i)
             std::cout << thermo.comp(i).name() << " ";
@@ -696,7 +719,13 @@ try
         std::cout << (i ? ", " : "") << "\""
                   << thermo.comp(i).name() << "\"";
     std::cout << "],\n";
-    std::cout << "  \"eos\": \"" << thermo.eos().modelName() << "\",\n";
+    //  Same guard as the banner and the gap report: no vapour phase, no
+    //  equation of state, and the GUI reads this JSON -- so the second
+    //  unguarded eos() would have crashed the run right where the structured
+    //  result is emitted, which is the worst possible place to lose stdout.
+    std::cout << "  \"eos\": \""
+              << (thermo.hasEos() ? thermo.eos().modelName() : std::string("none"))
+              << "\",\n";
     std::cout << "  \"operations\": [";
     for (std::size_t k = 0; k < opsList.size(); ++k)
         std::cout << (k ? ", " : "") << "\""

@@ -1,0 +1,17 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+#
+#  The data was GENERATED from this very equation (constant/experiments/
+#  psat-water-synthetic.dat), so the fit must return what it was given, and a
+#  1e-4 tolerance would pass with it quietly off in the fourth digit -- the
+#  whole failure this case exists to catch.  What is pinned is the SIX
+#  FIGURES the result JSON renders: both sides of the comparison come from
+#  that rendering, so a tighter number here does not buy more precision than
+#  the payload carries.  Six figures of exact recovery is the claim.
+diag    psat_water_fit         A                5.40221            1e-9
+diag    psat_water_fit         B                1838.68            1e-6
+diag    psat_water_fit         C                -31.737            1e-6
+diag    psat_water_fit         R2               1                  1e-12
+diag    psat_water_fit         dHvap_kJ_per_mol 42.1162            1e-4
+diag    psat_water_fit         n_points         20                 1e-4
