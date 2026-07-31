@@ -607,6 +607,20 @@ PYEOF
     fi
     rm -f /tmp/bothbases.$$
 
+    # Unread-key gate: a key written and never read is a value that did
+    # nothing while the author believes it did.  `murphreeEficiency` -- one
+    # letter short -- ran the column ideal-tray and moved the distillate
+    # toluene 2.47 -> 0.94 kmol/h in silence.
+    if "$ROOT/bin/curate/check_unread_keys.py" > /tmp/unread.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "unread-keys-gate" "$(tail -1 /tmp/unread.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_unread_keys.py)\n" "unread-keys-gate"
+        cat /tmp/unread.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/unread.$$
+
     # flashComplex gate: the DESIGN-DRIVER case must keep closing.  It lives
     # in docs/design/, not tutorials/, because sealing it is an unresolved
     # CURATION question (ten component records differ from the catalogue in

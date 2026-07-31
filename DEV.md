@@ -122,9 +122,17 @@ These are decisions, not tasks.  Work continues around them; none should be
 taken by a helper, because each one makes the engine refuse something it
 accepts today, and that is a policy call.
 
-1. **Unread dict keys.**  A misspelt key (`murphreeEficiency`) runs silently
-   with the default.  Proposal, with the three candidate strictness levels:
-   [`docs/design/unread-dict-keys-proposal.md`](docs/design/unread-dict-keys-proposal.md).
+1. ~~**Unread dict keys.**~~  **DECIDED AND BUILT 2026-07-31 — announcing, and
+   staying that way.**  A key written and never read is reported by name, with
+   the key the model actually looked for offered as the correction.  It does
+   NOT refuse, and that is the MEASURED answer, not timidity: the corpus's only
+   dead keys are the two cyclones that short-circuit on a solids-free feed and
+   never reach their geometry — lawful behaviour a refusal would break.  Gate:
+   `bin/curate/check_unread_keys.py` (fires, states the cost, does not cry
+   wolf, and pins the explained set).  It found the fermenter in
+   `ChemicalPlantTutorial` declaring `T 310 K;` while running at 315.
+   (The proposal doc this line used to point at never existed — the pointer was
+   written from memory and was wrong.)
 2. **`role` vocabulary migration** — `data/tmp/_ROLE_VOCABULARY_GAP.md`.
 3. **flashComplex's 10 divergent component records** — adopt into the
    catalogue, or keep the case out of `tutorials/`?  Its README carries the
