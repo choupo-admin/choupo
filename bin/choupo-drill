@@ -51,9 +51,17 @@ def main():
     plant, sector, out = sys.argv[1], sys.argv[2], sys.argv[3]
     src = sys.argv[sys.argv.index("--from") + 1] if "--from" in sys.argv else "converged"
 
+    #  TWO LAYOUTS EXIST IN THE CORPUS and both are legal: a sector may sit
+    #  directly under the plant (ChemicalPlantTutorial/DRYING) or under a
+    #  sectors/ folder (lithiumBrinePlant/sectors/BRINE).  This knew only the
+    #  first, so the one plant that carries electrolyte worlds -- the reason to
+    #  drill in the first place -- could not be drilled at all.
     sdir = os.path.join(plant, sector)
     if not os.path.isdir(sdir):
-        sys.exit(f"choupo-drill: no sector '{sector}' in {plant}")
+        sdir = os.path.join(plant, "sectors", sector)
+    if not os.path.isdir(sdir):
+        sys.exit(f"choupo-drill: no sector '{sector}' in {plant} "
+                 f"(looked in {plant}/{sector} and {plant}/sectors/{sector})")
     statedir = os.path.join(plant, src)
     if not os.path.isdir(statedir):
         sys.exit(f"choupo-drill: parent has no '{src}/' -- run the plant first "
@@ -76,13 +84,24 @@ def main():
     if os.path.exists(out): shutil.rmtree(out)
     os.makedirs(os.path.join(out, "system"))
     shutil.copytree(os.path.join(plant, "constant"), os.path.join(out, "constant"))
-    shutil.copytree(sdir, os.path.join(out, sector))
+    #  MIRROR THE PARENT'S LAYOUT, do not flatten it.  A plant that keeps its
+    #  sectors under sectors/ puts them one level deeper, and the engine walks
+    #  a fixed number of levels up from a sector to find the case root -- so a
+    #  flattened copy sent it looking for constant/ ABOVE the drilled case and
+    #  it refused to open a dict that was sitting right there.
+    sect_rel = os.path.relpath(sdir, plant)          # "BRINE" or "sectors/BRINE"
+    shutil.copytree(sdir, os.path.join(out, sect_rel))
 
     with open(os.path.join(out, "system", "flowsheetDict"), "w") as f:
         f.write(f"/*--- Drilled domain: sector {sector} of {os.path.basename(plant)}. "
                 f"Every stream keeps its identity; its ROLE is inferred in THIS "
                 f"domain (a producer that left -> the stream is now an inlet). ---*/\n\n")
-        f.write(f"children    ( {sector} );\n\nconnections\n{{\n")
+        #  `sectors ( ... )`, not the retired `children ( ... )`: the composite
+        #  keyword was renamed and this tool kept emitting the old one, so every
+        #  drilled sub-case was refused by the engine with "node has neither a
+        #  `units (...)` list, a `members (...)` list, nor a `type`".  The tool
+        #  produced output its own solver would not read.
+        f.write(f"sectors\n(\n    {sector}\n);\n\nconnections\n{{\n")
         for name, fr, to in kept:
             parts = (f"from {fr}; " if fr else "") + (f"to {to};" if to else "")
             f.write(f"    {name:14s} {{ {parts} }}\n")
@@ -105,14 +124,40 @@ def main():
     # The drilled domain's streams: the restricted-edge names (boundary) PLUS the
     # sector's OWN internal edges (produced inside the sector).
     sect_edges = parse_named_edges(open(os.path.join(sdir, "system", "flowsheetDict")).read())
-    stream_names = set(nm for nm, _f, _t in kept)
-    stream_names |= set(nm for nm, fr, to in sect_edges if fr and to)   # internal
+
+    #  A NAMED EDGE IS AN ALIAS, AND THE STATE IS FILED UNDER ITS OWNER.
+    #  The plant writes `RecoveredDust { from DRYING/Dust; }`, and converged/
+    #  stores that stream ONCE, in the producing sector's folder
+    #  (converged/DRYING/Dust) -- the "inter-sector streams stored once, owned
+    #  by the producer" rule.  This looked the ALIAS up in a by-basename index
+    #  and reported the parent as missing state for streams it had, so drill-in
+    #  failed on every plant that names its edges, which is the fractal form
+    #  the architecture ratified.  Resolve through the port the edge declares.
+    def state_key(name, fr, to):
+        port = fr or to                     # whichever endpoint stayed/produced
+        return os.path.basename(port) if port else name
+
+    wanted = {}                             # stream name in the child -> key in the parent state
+    for nm, fr, to in kept:
+        wanted[nm] = state_key(nm, fr, to)
+    for nm, fr, to in sect_edges:
+        if fr and to: wanted[nm] = state_key(nm, fr, to)
+
     missing, n = [], 0
-    for name in sorted(stream_names):
-        if name not in found: missing.append(name); continue
-        dest = os.path.join(out, "0", sector, name)
+    for name in sorted(wanted):
+        key = wanted[name]
+        if key not in found:
+            missing.append(name if key == name else f"{name} (as {key})")
+            continue
+        #  Write under the name the CHILD graph uses -- the port's own name --
+        #  not the plant-level alias.  The alias belongs to the parent's
+        #  connections block; inside the sector the stream is `Vapour`, not
+        #  `DryerVapour`, and writing the alias produced a 0/ that was
+        #  simultaneously MISSING every real stream and ORPHANing every file
+        #  it had just written.
+        dest = os.path.join(out, "0", sector, key)
         os.makedirs(os.path.dirname(dest), exist_ok=True)
-        shutil.copy2(found[name], dest)
+        shutil.copy2(found[key], dest)
         n += 1
     if missing:
         sys.exit(f"choupo-drill: parent {src}/ missing state for: {', '.join(missing)}")
