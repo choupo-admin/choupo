@@ -331,3 +331,62 @@ them.
   coordinate change; and **deletability** — strip the `speciation {}` block and
   the answer must not move, which is this design's own test of whether a field
   is state.
+
+---
+
+## 10. How far the species basis reaches today (measured 2026-07-31)
+
+§5 defers "carrying the species basis through EVERY stream" as `[ROADMAP]` --
+"the endgame this spike exists to inform".  This is the measurement that
+informs it, rather than an estimate.
+
+**Method.** For every case declaring `electrolyteGammaPhi`, each `0/` file was
+rewritten from `componentMolarFlows` into `speciesMolarFlows`, using the
+speciation THE ENGINE ITSELF reported for that stream in `converged/` (its own
+bridge, never a re-derivation), then re-run and its KPIs compared with the
+untouched case.
+
+**Result: 22 attempts, 22 refusals, 0 differences.**  Nothing was silently
+accepted with a moved answer -- where the engine takes the species basis it
+takes it, and where it does not it refuses BY NAME.  The refusals fall into
+exactly two families, and each is a named slice rather than a migration:
+
+| n | refusal | what it means |
+|---|---|---|
+| 10 | ``speciesMolarFlows` needs a REACTIVE package` | the Pitzer/eNRTL cases.  The input side requires an equilibrium NETWORK to name species in, and a molality model resolves ions WITHOUT one |
+| 12 | ``speciesMolarFlows` names no solvent flow` | the probe replaced only the species block; the solvent is a component, not a master, and a file written in species must still say how much medium there is |
+
+### 10.1 Slice A -- the species basis without a network
+
+This is the exact asymmetry that was closed on the OUTPUT side on 2026-07-31:
+a Pitzer/eNRTL stream now carries `speciation { network ( completeDissociation
+); basis stoichiometric; }`, built from each component's declared bridge.  The
+INPUT side never received the same treatment, so the engine will write a form
+it will not read back -- the defect this project keeps rediscovering.
+
+**Blocked on one named interface addition, not on design.**  The reader's
+projection takes the solvent from `cfg->solventIdx`, and a molality package
+has no `cfg`.  `ElectrolyteModel` exposes `soluteName()` and no solvent, and
+inferring "water" is banned (SystemClassifier: the solvent is the DECLARED
+`aqueous { solvent ...; }`, and there is no `if (name == "water")` anywhere).
+So Slice A needs the declared solvent reachable from the package on the
+non-reactive path.  That is a small, bounded addition -- and naming it is the
+point of this section.
+
+### 10.2 Slice B -- the solvent convention in a species-written file
+
+Twelve cases refuse because a file written in species still needs its solvent
+amount, and the mechanical rewrite did not carry it.  The refusal is correct;
+what is undecided is the CONVENTION: does a species-written stream name the
+solvent alongside the ions (as flash18 does, `water 97.0 kmol/h;`), and is
+that the only form?  flash18 answers it for one case by hand.  A general
+migration answers it for every author, and that is a decision about the file
+format, not a bug to fix.
+
+### 10.3 What this changes about the endgame
+
+The measurement's useful surprise is the **zero**: no case took the species
+basis and produced a different answer.  The risk in general reconciliation was
+never silent divergence -- it is coverage.  Two named slices, one of them
+blocked on a one-method interface addition, is a materially smaller endgame
+than "carry the species basis through every stream" reads like.
