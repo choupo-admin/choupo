@@ -30,6 +30,7 @@ License
 #include "thermo/ThermoPackage.H"
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
+#include "thermo/electrolyte/ElectrolyteModel.H"   // solventIndex() on the molality path
 #include "core/Dictionary.H"
 #include "core/Types.H"
 
@@ -379,18 +380,71 @@ ProcessStream readStreamState(const fs::path&       file,
     auto readSpecies = [&](const DictPtr& blk)
     {
         const auto* cfg = thermo.reactiveConfig();
-        if (!cfg)
+
+        //  ---- THE SAME TWO PATHS THE OUTPUT SIDE ALREADY HAS -------------
+        //
+        //  A reactive package carries the bridges in its families; a MOLALITY
+        //  package (Pitzer / eNRTL) resolves ions with no equilibrium NETWORK
+        //  at all, and its bridges live on the components.  The output side
+        //  was taught both earlier today -- a brine now writes
+        //  `speciation { network ( completeDissociation ); ... }`.  The INPUT
+        //  side still demanded a network, so the engine would write a form it
+        //  refused to read back: 10 of the corpus's electrolyte cases failed
+        //  exactly there when the two bases were measured against each other.
+        //
+        //  Columns of A are the components that DECLARE a bridge, in package
+        //  order; the solvent is the package's declared one (never inferred
+        //  from a name -- SystemClassifier settled that).
+        //  One shape for both sources: the reactive families carry
+        //  pair<SpeciesId,scalar>, a component's own bridge carries
+        //  SpeciesStoich.  Same fact, two spellings -- normalised here so the
+        //  projection below does not have to know which path it came from.
+        struct Bridge
+        {
+            std::size_t apparentIdx;
+            std::vector<std::pair<SpeciesId, scalar>> mapping;
+        };
+        std::vector<Bridge> bridges;
+        std::size_t solventIdx = thermo.n();
+        bool haveNetwork = false;
+
+        if (cfg)
+        {
+            haveNetwork = true;
+            solventIdx  = cfg->solventIdx;
+            for (const auto& fam : cfg->families)
+            {
+                Bridge b; b.apparentIdx = fam.apparentIdx; b.mapping = fam.mapping;
+                bridges.push_back(std::move(b));
+            }
+        }
+        else if (thermo.hasElectrolyte())
+        {
+            solventIdx = thermo.electrolyte().solventIndex();
+            for (std::size_t i = 0; i < thermo.n(); ++i)
+                if (thermo.comp(i).hasAqueousMapping())
+                {
+                    Bridge b; b.apparentIdx = i;
+                    for (const auto& ms : thermo.comp(i).aqueousMapping())
+                        b.mapping.emplace_back(ms.species, ms.nu);
+                    bridges.push_back(std::move(b));
+                }
+        }
+
+        if (bridges.empty() || solventIdx >= thermo.n())
             throw std::runtime_error("stream state '" + name + "':"
-                " `speciesMolarFlows` needs a REACTIVE package -- the species"
-                " basis only means something relative to a declared aqueous"
-                " chemistry set, and this case declares none.  Write the"
-                " stream in `componentMolarFlows`, or declare the reactive"
-                " equilibrium (formulation electrolyteGammaPhi).");
+                " `speciesMolarFlows` needs a package that RESOLVES IONS --"
+                " either a reactive equilibrium (formulation"
+                " electrolyteGammaPhi with a chemistry network) or a molality"
+                " model (Pitzer / eNRTL) whose components declare their"
+                " bridges.  This case declares neither, so the species names"
+                " answer to nothing here.  Write the stream in"
+                " `componentMolarFlows`.");
         //  The NETWORK is mandatory.  A species name is meaningful only
         //  relative to a declared chemistry set: an `NH4` written by one
         //  network is not the `NH4` of another, and a stream file that does
         //  not say which one it belongs to cannot be read anywhere else.
-        if (!blk->found("network"))
+        if (!blk->found("network") && haveNetwork)
             throw std::runtime_error("stream state '" + name + "':"
                 " `speciesMolarFlows` carries no `network <setName>;`.  A"
                 " species basis is relative to the chemistry set that defines"
@@ -400,6 +454,7 @@ ProcessStream readStreamState(const fs::path&       file,
         //  sets (a carbonate water that also carries ammonia), and forcing one
         //  name would make the author pick a half-truth.
         std::vector<std::string> nets;
+        if (blk->found("network"))
         {
             const EntryValue& ev = blk->entryValue("network");
             if (std::holds_alternative<std::string>(ev))
@@ -461,7 +516,7 @@ ProcessStream readStreamState(const fs::path&       file,
         //  master (it is the medium the molalities are referenced to).
         std::map<std::string, scalar> mTot;      // master -> kmol/s
         scalar solventFlow = -1.0;
-        const std::string solventName = thermo.comp(cfg->solventIdx).name();
+        const std::string solventName = thermo.comp(solventIdx).name();
         for (const auto& k : blk->keys())
         {
             if (k == "network" || k == "basis") continue;
@@ -514,11 +569,11 @@ ProcessStream readStreamState(const fs::path&       file,
         for (const auto& [sp, v] : mTot) { (void)v; rows.push_back(sp); }
         const std::size_t nr = rows.size();
         std::vector<std::size_t> cols;              // component indices
-        for (const auto& fam : cfg->families) cols.push_back(fam.apparentIdx);
+        for (const auto& br : bridges) cols.push_back(br.apparentIdx);
         const std::size_t nc = cols.size();
         std::vector<sVector> A(nr, sVector(nc, 0.0));
         for (std::size_t c = 0; c < nc; ++c)
-            for (const auto& [master, nu] : cfg->families[c].mapping)
+            for (const auto& [master, nu] : bridges[c].mapping)
                 for (std::size_t r = 0; r < nr; ++r)
                     if (rows[r] == master.key) A[r][c] += nu;
 
@@ -578,7 +633,7 @@ ProcessStream readStreamState(const fs::path&       file,
             }
         }
         for (std::size_t c = 0; c < nc; ++c) overall[cols[c]] += nSol[c];
-        overall[cfg->solventIdx] += solventFlow;
+        overall[solventIdx] += solventFlow;
         (void)net;
     };
 
