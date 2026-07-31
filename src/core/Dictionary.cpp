@@ -614,13 +614,39 @@ Dimensions Dictionary::dimensionsOrDefault(const std::string& key,
     return (it == entryDims_.end()) ? def : it->second;
 }
 
+void Dictionary::note(const std::string& key) const
+{
+    asked_.insert(key);
+    if (entries_.find(key) != entries_.end()) read_.insert(key);
+}
+
+std::vector<std::string> Dictionary::unreadKeys() const
+{
+    //  FILE ORDER, not alphabetical: the author reads their own file top to
+    //  bottom, and a diagnostic that reorders their work makes them hunt.
+    std::vector<std::string> out;
+    for (const auto& k : order_)
+        if (read_.find(k) == read_.end()) out.push_back(k);
+    return out;
+}
+
+std::vector<std::string> Dictionary::askedButAbsent() const
+{
+    std::vector<std::string> out;
+    for (const auto& k : asked_)
+        if (entries_.find(k) == entries_.end()) out.push_back(k);
+    return out;
+}
+
 bool Dictionary::found(const std::string& key) const
 {
+    note(key);
     return entries_.find(key) != entries_.end();
 }
 
 const EntryValue& Dictionary::entryValue(const std::string& key) const
 {
+    note(key);
     auto it = entries_.find(key);
     if (it == entries_.end())
         throw std::runtime_error("Dictionary '" + name_ +
@@ -630,6 +656,7 @@ const EntryValue& Dictionary::entryValue(const std::string& key) const
 
 scalar Dictionary::lookupScalar(const std::string& key) const
 {
+    note(key);
     auto it = entries_.find(key);
     if (it == entries_.end())
         throw std::runtime_error("Dictionary '" + name_ +
@@ -663,6 +690,7 @@ scalar Dictionary::lookupScalar(const std::string& key) const
 
 std::string Dictionary::lookupWord(const std::string& key) const
 {
+    note(key);
     auto it = entries_.find(key);
     if (it == entries_.end())
         throw std::runtime_error("Dictionary '" + name_ +
@@ -675,6 +703,7 @@ std::string Dictionary::lookupWord(const std::string& key) const
 
 std::vector<scalar> Dictionary::lookupList(const std::string& key) const
 {
+    note(key);
     auto it = entries_.find(key);
     if (it == entries_.end())
         throw std::runtime_error("Dictionary '" + name_ +
@@ -687,6 +716,7 @@ std::vector<scalar> Dictionary::lookupList(const std::string& key) const
 
 std::vector<std::string> Dictionary::lookupWordList(const std::string& key) const
 {
+    note(key);
     auto it = entries_.find(key);
     if (it == entries_.end())
         throw std::runtime_error("Dictionary '" + name_ +
@@ -704,6 +734,7 @@ std::vector<std::string> Dictionary::lookupWordList(const std::string& key) cons
 
 std::vector<DictPtr> Dictionary::lookupDictList(const std::string& key) const
 {
+    note(key);
     auto it = entries_.find(key);
     if (it == entries_.end())
         throw std::runtime_error("Dictionary '" + name_ +
@@ -716,6 +747,7 @@ std::vector<DictPtr> Dictionary::lookupDictList(const std::string& key) const
 
 bool Dictionary::hasDictList(const std::string& key) const
 {
+    note(key);
     auto it = entries_.find(key);
     return it != entries_.end()
         && std::holds_alternative<std::vector<DictPtr>>(it->second);
@@ -723,6 +755,7 @@ bool Dictionary::hasDictList(const std::string& key) const
 
 DictPtr Dictionary::subDict(const std::string& key) const
 {
+    note(key);
     auto it = entries_.find(key);
     if (it == entries_.end())
         throw std::runtime_error("Dictionary '" + name_ +

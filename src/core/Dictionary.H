@@ -50,6 +50,7 @@ Description
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <variant>
 #include <vector>
@@ -223,8 +224,46 @@ public:
     DictPtr               varsDict()      const  { return varsDict_; }
     void                  propagateVarsDict(DictPtr v);
 
+    // ---- Read tracking: the keys the CODE consulted -------------------
+    //
+    //  A misspelt key is a silent wrong answer.  `murphreeEficiency 0.70;`
+    //  parses, sits in the dict, is never read, and the column runs with the
+    //  ideal-tray default -- exit 0, nothing said, and the distillate toluene
+    //  moves 2.47 -> 0.94 kmol/h.  The student reports a purity they did not
+    //  compute.  That is the "no silent crutch" doctrine broken by the
+    //  dictionary layer itself.
+    //
+    //  Two facts are recorded, and it is the PAIR that makes the diagnosis
+    //  precise rather than a bare warning:
+    //
+    //    read_   keys PRESENT in the file that some lookup consulted;
+    //    asked_  keys the CODE asked for, present or not.
+    //
+    //  `murphreeEficiency` is present-but-unread; `murphreeEfficiency` is
+    //  asked-for-but-absent.  Edit distance 1 -- so the engine can name the
+    //  key the author meant instead of merely listing what it ignored.
+    //  Neither set is state: they are diagnostics, and nothing downstream
+    //  computes from them.
+    const std::set<std::string>& readKeys()  const { return read_; }
+    const std::set<std::string>& askedKeys() const { return asked_; }
+
+    //  Keys present in the file that nothing ever consulted, in FILE ORDER
+    //  (an author reads their own file top to bottom, not alphabetically).
+    std::vector<std::string> unreadKeys() const;
+
+    //  Keys the code asked for and did not find here -- the candidate
+    //  intentions an unread key may have been aiming at.
+    std::vector<std::string> askedButAbsent() const;
+
 private:
     void setVarsDictRecursive_(const DictPtr& v);
+
+    //  Record one consultation.  Called by every public lookup; `mutable`
+    //  because consulting a dict does not change what it MEANS.
+    void note(const std::string& key) const;
+
+    mutable std::set<std::string> read_;
+    mutable std::set<std::string> asked_;
 
     std::string name_;
     std::string source_;
