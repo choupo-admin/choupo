@@ -9,3 +9,15 @@
 application   choupoSolve;
 description   "NaCl crystalliser: saturation from the PITZER ion activity (Ksp = (gamma_pm*m_sat)^2). Feed is a SUPERSATURATED brine (post-evaporation, ~7.6 mol/kg); the unit drops it to saturation (6.144 mol/kg) and crystallises the excess.";
 verbosity     3;
+
+//  A brine case earns a stream table as much as any other -- and this one is
+//  the corpus's witness that the table gets the SPECIES columns right where
+//  the package resolves ions without an equilibrium network: n_Na / n_Cl
+//  present, and NO pH column, because complete dissociation has no H+ network
+//  to solve a pH from.  (The column used to be written as `0.000`, which does
+//  not read as "absent" -- it reads as a strongly acidic brine.)
+reports
+{
+    streamTable  {}
+    massBalance  {}
+}

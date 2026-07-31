@@ -377,6 +377,33 @@ elif "answer to nothing" not in out:
 else:
     ok("REFUSED: a speciation block on a case with no bridge and no network")
 
+# --- 5c. the REPORT says the same thing -------------------------------------
+#  The stream table wrote `pH 0.000` for a block with no pH.  A zero in that
+#  column does not read as "absent" -- it reads as a strongly acidic brine,
+#  and the header two lines up already says a blank is the honest mark for
+#  "no aqueous phase here".  No case in the corpus enabled the reports chain
+#  on an electrolyte package, so the column had no witness at all;
+#  crystalliser05 is now it.
+PITZER = os.path.join(ROOT, "tutorials", "steady", "crystallisation",
+                      "crystalliser05_nacl_pitzer")
+r = run(PITZER)
+table = os.path.join(PITZER, "reports", "streams", "streamTable.csv")
+if r.returncode != 0 or not os.path.exists(table):
+    fail("crystalliser05 produced no stream table -- the report assertion is"
+         " testing nothing")
+else:
+    header = open(table, errors="replace").readline().strip().split(",")
+    if "pH" in header:
+        fail("the stream table carries a pH column on a complete-dissociation"
+             " case -- there is no H+ network to solve a pH from, and the"
+             " cell used to be filled with 0.000")
+    elif not any(h.startswith("n_") for h in header):
+        fail("the stream table carries no species columns on a case whose"
+             " streams do carry a speciation: %s" % header)
+    else:
+        ok("the stream table shows the species (%s) and NO pH column"
+           % ", ".join(h for h in header if h.startswith("n_")))
+
 # --- 6. the negative --------------------------------------------------------
 r = run(MOLECULAR)
 if r.returncode != 0:
