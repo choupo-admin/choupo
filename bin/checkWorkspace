@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -----------------------------------------------------------------------------
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+#
+#  checkWorkspace -- is this checkout what you think it is, and is anything
+#                    here at risk of vanishing?
+#
+#  WHY THIS EXISTS.  In a HOSTED session (Claude Code on the web, a CI runner,
+#  any ephemeral container) the machine can be restarted and its disk restored
+#  from the snapshot taken when the environment was created.  When that
+#  happens the checkout silently reverts to the commit that was HEAD at
+#  snapshot time -- along with the working tree, /tmp, the build directory,
+#  and .git itself.
+#
+#  It does NOT look like a git operation, because it is not one: a `git reset`
+#  always leaves a reflog entry, and after a restore the reflog has a GAP
+#  where the lost work used to be.  That is the fingerprint this script reads.
+#
+#  Diagnosed 2026-07-31 after five such reverts in one session, each time to
+#  the same commit.  The evidence was: machine uptime shorter than the working
+#  day, a reflog jumping straight from the snapshot commit to the present, and
+#  every file's mtime equal to the moment of recovery.
+#
+#  NOTHING IN THIS REPOSITORY CAN PREVENT IT.  The remote is the only durable
+#  store, so the rule is simply: commit and push as soon as a change builds,
+#  not once the whole verification is finished.  This script makes the loss
+#  visible in one second instead of surfacing later as a confusing failure
+#  (a test suite quietly running against week-old sources, say).
+#
+#  Usage:  bin/checkWorkspace [remote]        (default remote: origin)
+#  Exit 0 = nothing at risk.  Exit 1 = something is unpushed or behind.
+
+set -u
+REMOTE="${1:-origin}"
+cd "$(dirname "$0")/.." || exit 2
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+if [ -z "$BRANCH" ] || [ "$BRANCH" = "HEAD" ]; then
+    echo "checkWorkspace: not on a branch (detached HEAD) -- push before anything else."
+    exit 1
+fi
+
+risk=0
+
+# ---- 1. Is the local branch behind / ahead of the remote? -------------------
+if ! git fetch "$REMOTE" "$BRANCH" --quiet 2>/dev/null; then
+    echo "  ?  could not reach $REMOTE -- cannot tell whether this tree is current."
+    risk=1
+else
+    LOCAL=$(git rev-parse HEAD)
+    UPSTREAM=$(git rev-parse FETCH_HEAD)
+    AHEAD=$(git rev-list --count "$UPSTREAM..$LOCAL" 2>/dev/null || echo 0)
+    BEHIND=$(git rev-list --count "$LOCAL..$UPSTREAM" 2>/dev/null || echo 0)
+
+    if [ "$BEHIND" -gt 0 ] && [ "$AHEAD" -eq 0 ]; then
+        #  The signature of a restored snapshot: the remote has work this
+        #  checkout has never heard of, and this checkout has nothing of its
+        #  own.  A human who simply forgot to pull looks identical, and the
+        #  remedy is the same.
+        echo "  !  BEHIND by $BEHIND commit(s), ahead by none."
+        echo "     This checkout is at $(git log --oneline -1 --format=%h\ %s)"
+        echo "     The remote is at    $(git log --oneline -1 --format=%h\ %s FETCH_HEAD)"
+        echo "     Recover:  git fetch $REMOTE $BRANCH && git reset --hard $REMOTE/$BRANCH"
+        risk=1
+    elif [ "$AHEAD" -gt 0 ]; then
+        echo "  !  $AHEAD commit(s) committed here but NOT pushed -- they live"
+        echo "     only on this disk, which is the one that does not survive:"
+        git log --oneline "$UPSTREAM..$LOCAL" | sed 's/^/       /'
+        echo "     Push:  git push -u $REMOTE $BRANCH"
+        risk=1
+    else
+        echo "  ok  in sync with $REMOTE/$BRANCH ($(git rev-parse --short HEAD))"
+    fi
+fi
+
+# ---- 2. Uncommitted work is the most fragile thing here --------------------
+DIRTY=$(git status --porcelain 2>/dev/null | wc -l)
+if [ "$DIRTY" -gt 0 ]; then
+    echo "  !  $DIRTY uncommitted path(s) -- these survive nothing:"
+    git status --short | head -20 | sed 's/^/       /'
+    [ "$DIRTY" -gt 20 ] && echo "       ... and $((DIRTY - 20)) more"
+    risk=1
+else
+    echo "  ok  working tree clean -- nothing here exists only on this disk"
+fi
+
+# ---- 3. The fingerprint, reported rather than guessed at -------------------
+#  Uptime shorter than the age of the last commit means the machine restarted
+#  after that work was done.  On its own it proves nothing (a fresh session is
+#  normal); together with a BEHIND branch it names the cause.
+if [ -r /proc/uptime ]; then
+    UP=$(awk '{printf "%d", $1}' /proc/uptime)
+    LAST=$(git log -1 --format=%ct 2>/dev/null || echo 0)
+    NOW=$(date +%s)
+    AGE=$((NOW - LAST))
+    if [ "$UP" -lt "$AGE" ]; then
+        printf "  i  this machine has been up %d min; HEAD's commit is %d min old --\n" \
+               $((UP / 60)) $((AGE / 60))
+        echo "     the container restarted after that commit was made."
+    fi
+fi
+
+exit $risk

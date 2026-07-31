@@ -171,6 +171,38 @@ accepts today, and that is a policy call.
    390 px screenshot confirms it end-to-end (Codex: prove clean or it stays
    a check).  The adsorption debt is roadmap #7 above.
 
+## 5b. If you are working in a HOSTED session, read this first
+
+**The checkout can silently revert to an older commit.**  It happened five
+times in one session on 2026-07-31, always to the same commit, and it is worth
+knowing that it is NOT git and NOT this repository misbehaving.
+
+The cause: an ephemeral container (Claude Code on the web, a CI runner) can be
+restarted and its disk restored from the snapshot taken when the environment
+was created.  The checkout then reverts to whatever was HEAD at snapshot time,
+and so do the working tree, `/tmp`, the build directory, and `.git` itself.
+
+It does not look like a git operation because it is not one.  A `git reset`
+always leaves a reflog entry; after a restore the **reflog has a gap** where
+the lost work used to be.  That, plus a machine uptime shorter than the
+working day and every file's mtime equal to the moment of recovery, is the
+fingerprint.
+
+    bin/checkWorkspace          # one second: behind? unpushed? uncommitted?
+
+**The remote is the only durable store.**  So the rule is: *commit and push as
+soon as a change builds*, not once the whole verification is finished.  A
+suite run is worth less than a pushed commit -- it can be repeated, and the
+work cannot.  Recovery is one line, and `checkWorkspace` prints it:
+
+    git fetch origin <branch> && git reset --hard origin/<branch>
+
+Nothing in this repository can prevent it; the point of the script is to make
+the loss visible in a second instead of surfacing later as a confusing failure
+-- a regression suite quietly running against week-old sources, for instance,
+which is exactly how it was first noticed (a case count that dropped with
+nothing reported as failing).
+
 ## 6. How to work (the short version; full: RELEASING.md)
 
 ```bash
