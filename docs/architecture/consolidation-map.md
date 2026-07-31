@@ -69,7 +69,7 @@ mesmo.
 | **Identidade de espécie** (uma casa, coerência verificada) | CLAUDE.md §5 | `SpeciationSolver` recusa `z` incoerente | `check_species_identity` (2 recusas) | **2026-07-31** |
 | **ThermoResolver** (declaração persistida verificada) | CLAUDE.md §5 | 3 recusas no `ThermoPackageBuilder` | `check_resolver_coherence` (3) | **2026-07-31** |
 | **Ponte aquosa** (componente → espécie, só declarada) | CLAUDE.md §5 (F2) | `AqueousBridge::singleMaster` | `check_typed_identifiers` (membrane08) | **2026-07-31** |
-| **As duas bases em TODA a corrente** (onde o pacote resolve iões, incluindo a entrada) | CLAUDE.md §5 | leitor verifica `m = A n` contra as pontes declaradas | `check_both_bases` (2 recusas + o negativo) | **2026-07-31** |
+| **As duas bases em TODA a corrente** (onde o pacote resolve iões, incluindo a entrada) | CLAUDE.md §5 | leitor verifica `m = A n` contra as pontes declaradas | `check_both_bases` (2 recusas + negativo **verificado por sabotagem**) | **2026-07-31** |
 | Chaves não lidas (`murphreeEficiency` corre em silêncio) | [`../design/unread-dict-keys-proposal.md`](../design/unread-dict-keys-proposal.md) | — | — | **espera decisão** |
 | Vocabulário do `role` | `data/tmp/_ROLE_VOCABULARY_GAP.md` | — | — | **espera decisão** |
 | Termo de transferência (D3) | [`../design/standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | contrato só | — | por implementar |
@@ -141,6 +141,29 @@ A lição de método, que vale mais do que a correcção: **atacar a defesa
 encontra a defesa que não dispara; perguntar ao corpus encontra a regra que
 nunca foi aplicada a metade dele.**  São dois exames diferentes, e o segundo
 não estava a ser feito.
+
+### A testemunha negativa tem de poder falhar
+
+A primeira versão da passagem guardava-se nos COMPONENTES: «algum componente
+declara ponte?».  Sob essa guarda, **51 casos moleculares deste corpus** —
+todos os reactores de ácido acético, as duas fábricas de amoníaco, o absorvedor
+de CO2, a família inteira das membranas — ganhavam uma decomposição iónica
+inventada, porque o registo do NaCl (ou do aceticAcid) declara a ponte mesmo
+quando o mundo em vigor a trata como soluto agregado.  A regra é do **MODELO**,
+não da substância: `hasElectrolyte()` pergunta se o modelo de actividade
+trabalha em molalidade com cargas.
+
+E o negativo do gate era `flash01` (benzeno/tolueno) — que **também** não ganha
+bloco, e portanto teria passado durante todo esse erro.  Trocado por
+`evaporator01_brine`: NaCl dentro de um pacote `gammaPhi`/ideal, exactamente a
+forma que se estragou.  **Uma testemunha negativa que não pode falhar não é uma
+testemunha.**
+
+O mesmo aconteceu uma linha adiante: a recusa «nomes que não respondem a nada»
+foi enxertada primeiro numa corrente com 30 % de vapor, e disparou a recusa
+*da fracção de vapor* — também correcta, também não a que estava em teste.  Um
+gate que lê só o código de saída teria marcado isso como passagem.  As duas
+recusas verificam agora a MENSAGEM, não o código.
 
 ---
 

@@ -53,9 +53,20 @@ What is asserted, on the real binaries, never from source text:
          master and both numbers;
      (b) a block on a case whose components declare NO bridge and which has
          no network -- names that answer to nothing must not be believed.
-  6. THE NEGATIVE.  A molecular case (no ions anywhere) gets NO block.  A
-     pass that writes one everywhere would satisfy 1-4 and be inventing
-     chemistry; only this says it does not.
+  6. THE NEGATIVE, on a case that CAN be got wrong: evaporator01_brine puts
+     NaCl -- a salt whose record declares `dissociatesTo` -- inside a
+     MOLECULAR gammaPhi package that lumps it.  The rule is the MODEL's, not
+     the substance's: a declared bridge does not mean the world in force
+     resolves ions.  The first cut of this pass guarded on the components
+     alone and would have decorated 51 molecular cases in this corpus with
+     invented ions; a benzene/toluene negative would have passed throughout.
+     A negative witness that cannot fail is not a witness.
+
+SABOTAGE-VERIFIED.  Reverting the model guard (`anyBridge && hasElectrolyte()`
+back to `anyBridge`) and rebuilding makes assertion 6 fail by name --
+"a molecular case got a speciation block on concentrated, feed".  That is the
+difference between this file and a decoration, and it is the check to redo if
+anyone edits the guard.
 
 Exit 0 = all hold.  Exit 1 = a named failure.
 """
@@ -76,9 +87,24 @@ LINT = os.path.join(ROOT, "bin", "choupo-lint")
 #  the crystal in one case.
 CASE = os.path.join(ROOT, "tutorials", "steady", "crystallisation",
                     "crystalliser06_nacl_antisolvent")
-#  The molecular witness for the negative.
-MOLECULAR = os.path.join(ROOT, "tutorials", "steady", "flash",
-                         "flash01_benzene_toluene")
+#  THE NEGATIVE WITNESS, and the choice matters more than it looks.
+#  evaporator01_brine carries NaCl -- whose record declares `dissociatesTo`
+#  right there -- inside a MOLECULAR gammaPhi/ideal package that lumps it.
+#  A benzene/toluene case would also get no block, and would have proved
+#  nothing: the first cut of this pass guarded on the components alone, and
+#  under that guard 51 molecular cases in this corpus (every acetic-acid
+#  reactor, both ammonia plants, the CO2 absorber, the whole membrane family)
+#  gained an invented ion decomposition while a benzene/toluene negative sat
+#  there passing.  The witness must be a case that CAN be got wrong.
+MOLECULAR = os.path.join(ROOT, "tutorials", "steady", "evaporation",
+                         "evaporator01_brine")
+#  ...and a SEPARATE witness for the "names answer to nothing" refusal, which
+#  needs a case with NO bridge at all.  evaporator01_brine cannot serve: its
+#  NaCl declares one, so a grafted block there is refused by the CLOSURE check
+#  instead, and a test that only reads the exit code would report the wrong
+#  refusal as fired.  Two claims, two witnesses.
+NOBRIDGE = os.path.join(ROOT, "tutorials", "steady", "flash",
+                        "flash01_benzene_toluene")
 
 NUM = re.compile(r"(\w+)\s+([-\d.eE+]+)\s+kmol/h;")
 
@@ -301,13 +327,28 @@ else:
     ok("REFUSED: an altered block does not collapse back to the material")
 
 # --- 5b. fired refusal: names that answer to nothing -------------------------
+grafted = []
+
+
 def graft(zero):
-    """Put a speciation block on a case whose components declare no bridge."""
+    """Put a speciation block on a case whose components declare no bridge.
+
+    It must land on an ALL-LIQUID stream.  flash01's feed is 30 % vapour, and
+    a top-level block there fires the vapour-fraction refusal instead -- also
+    correct, also not the one under test.  A gate that reads only the exit
+    code would have scored that as a pass.
+    """
     for f in sorted(os.listdir(zero)):
         p = os.path.join(zero, f)
         t = open(p, errors="replace").read()
         if "componentMolarFlows" not in t:
             continue
+        if re.search(r"(?m)^phase\s+gas\s*;", t):
+            continue
+        m = re.search(r"(?m)^vaporFraction\s+([-\d.eE+]+)", t)
+        if m and float(m.group(1)) > 1e-6:
+            continue
+        grafted.append(f)
         open(p, "w").write(t + """
 speciation
 {
@@ -321,11 +362,18 @@ speciation
         return
 
 
-p = lint_with_state(graft, MOLECULAR)
-if p.returncode == 0:
-    fail("a speciation block was accepted on a molecular case whose components"
-         " declare no aqueous bridge -- names that answer to nothing were"
-         " believed")
+p = lint_with_state(graft, NOBRIDGE)
+out = p.stderr + p.stdout
+if not grafted:
+    fail("no all-liquid stream in %s to graft onto -- the refusal was never"
+         " exercised" % os.path.basename(NOBRIDGE))
+elif p.returncode == 0:
+    fail("a speciation block was accepted on a case whose components declare"
+         " no aqueous bridge -- names that answer to nothing were believed")
+elif "answer to nothing" not in out:
+    #  Reading only the exit code would let ANY refusal stand in for this one.
+    fail("the grafted block was refused, but not by the no-bridge refusal: %s"
+         % out[-300:])
 else:
     ok("REFUSED: a speciation block on a case with no bridge and no network")
 
