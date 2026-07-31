@@ -69,6 +69,7 @@ mesmo.
 | **Identidade de espécie** (uma casa, coerência verificada) | CLAUDE.md §5 | `SpeciationSolver` recusa `z` incoerente | `check_species_identity` (2 recusas) | **2026-07-31** |
 | **ThermoResolver** (declaração persistida verificada) | CLAUDE.md §5 | 3 recusas no `ThermoPackageBuilder` | `check_resolver_coherence` (3) | **2026-07-31** |
 | **Ponte aquosa** (componente → espécie, só declarada) | CLAUDE.md §5 (F2) | `AqueousBridge::singleMaster` | `check_typed_identifiers` (membrane08) | **2026-07-31** |
+| **As duas bases em TODA a corrente** (onde o pacote resolve iões, incluindo a entrada) | CLAUDE.md §5 | leitor verifica `m = A n` contra as pontes declaradas | `check_both_bases` (2 recusas + o negativo) | **2026-07-31** |
 | Chaves não lidas (`murphreeEficiency` corre em silêncio) | [`../design/unread-dict-keys-proposal.md`](../design/unread-dict-keys-proposal.md) | — | — | **espera decisão** |
 | Vocabulário do `role` | `data/tmp/_ROLE_VOCABULARY_GAP.md` | — | — | **espera decisão** |
 | Termo de transferência (D3) | [`../design/standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | contrato só | — | por implementar |
@@ -111,6 +112,35 @@ Dois exemplos do mesmo dia, para calibrar:
 * a caixa de propriedades da GUI mostrava a semente do `0/` em vez da resposta,
   ao lado de um nó que mostrava a resposta.  Nenhum teste falhava porque nenhum
   teste perguntava de onde vinha o número.
+
+## A quinta instância, e a que muda o método
+
+As quatro acima foram encontradas a atacar a defesa.  A quinta — **as duas
+bases em toda a corrente** — foi encontrada a fazer uma pergunta ao corpus
+INTEIRO: *«percorre cada caso e confirma se as correntes têm todas, no fim, a
+estrutura da arquitectura que consolidámos; até a entrada tem de ter a
+especiação.»*  Não havia falha a investigar.  A auditoria respondeu com **24
+casos que resolvem iões e 23 com lacuna**, em duas famílias com causas
+opostas:
+
+* os `flash*` reactivos: só a corrente de vapor sem bloco — **correcto**, uma
+  corrente toda em vapor não tem fase aquosa para decompor;
+* todos os cristalizadores e evaporadores Pitzer/eNRTL: **nem um ião, em
+  corrente nenhuma**, entrada incluída.
+
+A causa não era a física.  A passagem pós-solução estava escrita dentro de
+`if (thermo.hasReactiveEquilibrium())`, e um pacote de molalidade **resolve
+iões sem ter rede de equilíbrio** — caiu inteiro fora da guarda.  Por baixo,
+mais duas: o sal chegava ao runtime como componente-identidade reduzido (nome,
+MW, papel), de modo que o `dissociatesTo` declarado no seu próprio registo era
+invisível ao motor que acabara de o ler; e o LEITOR recusava qualquer bloco de
+especiação num caso sem química reactiva — ou seja, o motor teria escrito um
+ficheiro que ele próprio recusava.
+
+A lição de método, que vale mais do que a correcção: **atacar a defesa
+encontra a defesa que não dispara; perguntar ao corpus encontra a regra que
+nunca foi aplicada a metade dele.**  São dois exames diferentes, e o segundo
+não estava a ser feito.
 
 ---
 

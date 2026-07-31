@@ -696,11 +696,24 @@ ProcessStream readStreamState(const fs::path&       file,
                 " together.  Name the phase it describes"
                 " (`phases { aqueous { ... speciation { ... } } }`), or drop"
                 " the block.");
-        if (!cfg)
+        //  NO NETWORK IS NOT NO CHEMISTRY.  A Pitzer or eNRTL package resolves
+        //  ions -- that is what a molality model IS -- it simply has no
+        //  equilibrium network to solve them from, so its block is complete
+        //  dissociation through the components' own declared bridges.  This
+        //  used to refuse outright, which meant the engine could not write a
+        //  speciation for any brine in the corpus without producing a file it
+        //  would then refuse to read.  What must never be believed is a block
+        //  whose names answer to NOTHING here -- so the test is whether the
+        //  components declare any bridge at all, not whether a network exists.
+        bool anyBridge = false;
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+            if (thermo.comp(i).hasAqueousMapping()) { anyBridge = true; break; }
+        if (!cfg && !anyBridge)
             throw std::runtime_error("stream state '" + name + "': carries a"
-                " `speciation` block but this case declares no reactive"
-                " chemistry -- the block's names belong to a network that is"
-                " not in force here, so nothing could check it.");
+                " `speciation` block but no component in this case declares an"
+                " aqueous bridge (`aqueousMapping` / `dissociatesTo`) and there"
+                " is no reactive chemistry -- the block's names answer to"
+                " nothing here, so nothing could check it.");
         std::map<std::string, scalar> declared;      // master -> kmol/s
         for (const auto& k : sd->keys())
         {
@@ -708,10 +721,19 @@ ProcessStream readStreamState(const fs::path&       file,
             declared[k] += sd->lookupScalar(k);
         }
         //  m = A n from the material that IS state, against the same bridges.
+        //  WITH a network the families carry them; without one they are the
+        //  components' own -- the same matrix either way, read from the same
+        //  declaration, which is why the block closes by construction rather
+        //  than by two roundings agreeing.
         std::map<std::string, scalar> fromComponents;
-        for (const auto& fam : cfg->families)
-            for (const auto& [master, nu] : fam.mapping)
-                fromComponents[master.key] += nu * basisMaterial[fam.apparentIdx];
+        if (cfg)
+            for (const auto& fam : cfg->families)
+                for (const auto& [master, nu] : fam.mapping)
+                    fromComponents[master.key] += nu * basisMaterial[fam.apparentIdx];
+        else
+            for (std::size_t i = 0; i < thermo.n() && i < basisMaterial.size(); ++i)
+                for (const auto& m : thermo.comp(i).aqueousMapping())
+                    fromComponents[m.species.key] += m.nu * basisMaterial[i];
         //  ...and the block collapsed the other way, through the NETWORK's own
         //  stoichiometry.  Summing the free ions would not do: the calcium of
         //  a calcium-bicarbonate water is spread over Ca(2+), CaHCO3(+),
@@ -720,8 +742,21 @@ ProcessStream readStreamState(const fs::path&       file,
         //  electroneutrality, and no component bridges to them.
         std::map<std::string, scalar> collapsed;
         for (const auto& [sp, v] : declared)
+        {
+            if (!cfg)
+            {
+                //  Complete dissociation: there ARE no complexes, so each
+                //  declared species is its own master and the collapse is the
+                //  identity.  Routing it through speciesMasterComposition
+                //  would ask a network that does not exist and get an empty
+                //  answer -- which reads as "the block declares nothing" and
+                //  refuses a block that is in fact exact.
+                collapsed[sp] += v;
+                continue;
+            }
             for (const auto& [m, nu] : thermo.speciesMasterComposition(sp))
                 collapsed[m] += nu * v;
+        }
         std::string worst; scalar worstErr = 0.0, worstWant = 0.0, worstGot = 0.0;
         for (const auto& [m, want] : fromComponents)
         {

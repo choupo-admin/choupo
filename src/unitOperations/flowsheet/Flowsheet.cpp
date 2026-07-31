@@ -3296,6 +3296,80 @@ int Flowsheet::solve(const DictPtr& dict,
             }
         }
 
+    //  ---- The SAME two bases, on the NON-reactive electrolyte path --------
+    //
+    //  A Pitzer or eNRTL package resolves ions too -- that is what a molality
+    //  model IS -- but it carries no equilibrium NETWORK, so the pass above
+    //  (guarded by hasReactiveEquilibrium) skipped it entirely.  The result:
+    //  every crystalliser and evaporator brine in the corpus reported its
+    //  apparent components and NOT ONE ion, while the reactive flashes
+    //  reported both.  Same architecture, two behaviours -- and the rule is
+    //  the architecture's, not the reactive path's: where the package
+    //  resolves ions, the stream shows both bases.
+    //
+    //  Here the species set comes from COMPLETE DISSOCIATION through each
+    //  component's DECLARED bridge (`aqueousMapping`, or the legacy
+    //  `dissociatesTo` converted at load) -- never from a name.  It is the
+    //  same `m = A n` the basis-rank test validates, so the block closes by
+    //  construction rather than by two roundings agreeing.
+    //
+    //  No pH: there is no H+ network to solve one from, and inventing a
+    //  neutral 7 would be a number with no model behind it.  The network
+    //  field says `completeDissociation` so a reader can tell this block from
+    //  one an equilibrium network produced.
+    else
+    {
+        //  THE PACKAGE MUST RESOLVE IONS -- a declared bridge is not enough.
+        //  A molecular gammaPhi package can perfectly well CONTAIN NaCl and
+        //  treat it as a lumped solute; its record still declares
+        //  `dissociatesTo`, so testing the components alone would have put an
+        //  ion decomposition on every stream of the lithium-brine plant,
+        //  whose global world is ideal-molecular and whose Pitzer physics
+        //  lives in per-unit overrides.  That is inventing chemistry the
+        //  world in force does not do.  `hasElectrolyte()` asks the model, not
+        //  the substance: it is true exactly when the activity model works in
+        //  molality with charges.
+        bool anyBridge = false;
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+            if (thermo.comp(i).hasAqueousMapping()) { anyBridge = true; break; }
+        if (anyBridge && thermo.hasElectrolyte())
+            for (auto& [name, st] : streams_)
+            {
+                (void)name;
+                if (st.speciation) continue;
+                if (st.vf >= 1e-6) continue;      // same rule as above: a
+                                                  // part-vapour stream has no
+                                                  // nameable aqueous phase here
+                std::map<std::string, scalar> flows;   // species -> kmol/s
+                bool any = false;
+                for (std::size_t i = 0; i < thermo.n() && i < st.z.size(); ++i)
+                {
+                    //  THE FLUID ONLY.  st.s is the CRYSTAL the crystalliser
+                    //  already decided to precipitate, and dissolving it here
+                    //  would report a solid as ions in solution -- exactly the
+                    //  flash16 error the phase-speciation contract was written
+                    //  against (58.9 % of the calcium sat among the aqueous
+                    //  species).  The reactive pass may add st.s because its
+                    //  solver re-decides what precipitates and moves the
+                    //  minerals back out; there is no such solver here, so the
+                    //  solid stays where the unit put it.
+                    const scalar n_i = st.F * st.z[i];
+                    if (n_i == 0.0) continue;
+                    const auto& c = thermo.comp(i);
+                    if (!c.hasAqueousMapping()) continue;
+                    for (const auto& m : c.aqueousMapping())
+                    { flows[m.species.key] += m.nu * n_i; any = true; }
+                }
+                if (!any) continue;
+                auto sp = std::make_shared<ProcessStream::Speciation>();
+                sp->network  = "completeDissociation";
+                sp->basis    = "stoichiometric";
+                sp->pH_valid = false;
+                for (const auto& [nm, v] : flows) sp->flows.emplace_back(nm, v);
+                st.speciation = sp;
+            }
+    }
+
     // ---- Model-boundary audit (H conserved, T is the model-dependent readout)
     // Where adjacent units use different thermo models, make the enthalpy the
     // two models disagree about VISIBLE -- it is held, never silently absorbed

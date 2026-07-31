@@ -176,6 +176,14 @@ public:
     // by the liquid sensible-enthalpy path in mixed-solvent / recycle cases).
     void   setLiquidCp(const DictPtr& d);
 
+    // Read the component -> aqueous-species bridge from a substance record
+    // (`aqueousMapping`, or `dissociatesTo`, or a mineral's own dissolution).
+    // readFromDict calls it; the ThermoPackageBuilder's electrolyte path calls
+    // it too, because that path mints the salt with identity() above and would
+    // otherwise carry no bridge -- which is why a Pitzer brine used to report
+    // its apparent salt and not one ion.  ONE parse, two callers.
+    void   readAqueousMapping(const DictPtr& d);
+
     // ---- Sublimation reference state (the solid-vapour P-T anchor) ---------
     // Optional `sublimation { tripleT <K>; tripleP <Pa>; Hfus <J/mol>;
     //   Hsub <J/mol>; }` block.  Intrinsic pure-compound constants that anchor

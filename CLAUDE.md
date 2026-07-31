@@ -330,6 +330,30 @@ announced).  Solid phases: `constant/chemistryDict` says WHICH exist; the
 unit only holds policy (`reportMinerals`).  Gates: check_no_unit_chemistry,
 unit-chemistry in runTests.
 
+### THE TWO BASES, on EVERY stream the package can resolve (settled 2026-07-31)
+
+Where the package resolves ions, a stream carries BOTH bases: the apparent
+components (which ARE the state) and the `speciation {}` decomposition — **the
+INLET included**, because a feed nobody speciates is exactly the stream a
+student compares an outlet against.  The rule is the ARCHITECTURE's, not the
+reactive path's: the post-solve pass was written inside
+`if (hasReactiveEquilibrium())`, and a molality model (Pitzer / eNRTL)
+**resolves ions without carrying an equilibrium NETWORK**, so every
+crystalliser and evaporator brine in the corpus reported its apparent salt and
+not one ion while the reactive flashes reported both.  Without a network the
+block is COMPLETE DISSOCIATION through each component's declared bridge
+(`network ( completeDissociation ); basis stoichiometric;`, **no pH** — there
+is no H+ network to solve one from and a neutral 7 would be a number with no
+model behind it).  It decomposes the LIQUID: a precipitated crystal stays in
+the solid phase (dissolving `s` there is the flash16 error).  The READER
+verifies `m = A n` against the SAME declared bridges, so the block closes by
+construction; a case with neither a network nor any declared bridge is refused
+(names that answer to nothing).  A molecular case gets NO block — one basis is
+its whole structure.  Two corollaries that cost real bugs: an identity-minted
+component must still carry its record's bridge (`Component::readAqueousMapping`,
+ONE parse, two callers), and a writer whose output the reader refuses is a bug
+in both.  Gate: check_both_bases (2 fired refusals + the negative).
+
 ### Typed identifiers + the F2 rename (EXECUTED 2026-07-26, three-way ratified)
 
 `ComponentId` / `SpeciesId` / `SolidId` (core/Identifiers.H) are strong types

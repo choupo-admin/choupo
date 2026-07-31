@@ -66,11 +66,16 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     //  is the honest mark for "no aqueous phase here", not a zero.
     std::vector<std::string> species;
     bool anySpeciation = false;
+    //  A complete-dissociation block has no H+ network behind it and so no
+    //  pH; a whole case of them gets no pH COLUMN, rather than a column of
+    //  blanks inviting the reader to wonder what went missing.
+    bool anyPH = false;
     for (const auto& [name, s] : ctx.result.streams)
     {
         (void)name;
         if (!s.speciation) continue;
         anySpeciation = true;
+        if (s.speciation->pH_valid) anyPH = true;
         for (const auto& [sp, v] : s.speciation->flows)
         {
             (void)v;
@@ -85,7 +90,7 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     for (const auto& c : comps) f << ",x_" << c;
     if (anySpeciation)
     {
-        f << ",pH";
+        if (anyPH) f << ",pH";
         //  n_ (an AMOUNT), never x_: the species are a decomposition of the
         //  LIQUID, so a mole fraction over the whole stream would be a
         //  different denominator wearing the same prefix.
@@ -153,11 +158,21 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         if (anySpeciation)
         {
             if (!s.speciation)
-                for (std::size_t k = 0; k < species.size() + 1; ++k) f << ",";
+                for (std::size_t k = 0; k < species.size() + (anyPH ? 1 : 0); ++k)
+                    f << ",";
             else
             {
-                f << "," << std::fixed << std::setprecision(3)
-                  << (s.speciation->pH_valid ? s.speciation->pH : 0.0);
+                //  NO pH IS A BLANK CELL, NEVER A ZERO.  A complete-
+                //  dissociation block has no H+ network to solve a pH from,
+                //  and `0.000` in this column does not read as "absent" -- it
+                //  reads as a strongly acidic brine.  The no-speciation row
+                //  above already leaves the cell empty; this one must agree.
+                if (anyPH)
+                {
+                    f << ",";
+                    if (s.speciation->pH_valid)
+                        f << std::fixed << std::setprecision(3) << s.speciation->pH;
+                }
                 for (const auto& sp : species)
                 {
                     scalar v = 0.0;

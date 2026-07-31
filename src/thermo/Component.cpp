@@ -88,70 +88,21 @@ const Component::CosmoSet& Component::cosmoSet(const std::string& name) const
     return it->second;
 }
 
-void Component::readFromDict(const DictPtr& d)
+// The component -> aqueous-species bridge, TYPED AT LOAD (the loader
+// contract of the 2026-07-25 identifier-typing decision): the general
+// `aqueousMapping ( { species X; nu n; } ... )` block wins; a salt's
+// `dissociatesTo` converts to the same typed structure.  No block, no
+// bridge -- name identity is never assumed.
+//
+// It lives in its OWN method because the ThermoPackageBuilder's electrolyte
+// path does NOT go through readFromDict: it mints the salt as an IDENTITY
+// component (name + MW + role) and so inherited no bridge at all, which is
+// why every Pitzer/eNRTL brine in the corpus reported its apparent
+// components and not one ion.  Two parses of one block would be the arity
+// sin; one method called from both places is the fix.
+void Component::readAqueousMapping(const DictPtr& d)
 {
-    // The component grammar is FLAT (name; MW; Tc; ...; the named model
-    // sub-blocks).  A reference-state block at top level is not part of it
-    // -- refuse loudly, never read it silently.
-    for (const char* blk : {"identity", "critical", "liquidPure", "gasIdeal",
-                             "component"})
-        if (d->found(blk))
-            throw std::runtime_error("component .dat: '" + std::string(blk)
-                + "{}' is not the component grammar -- the layout is FLAT"
-                " (bin/curate/migrate_component_blocks.py converts a"
-                " block-form file; component{speciesMap} is spelled"
-                " `dissociatesTo { ... }`).");
-
-    name_    = d->lookupWordOrDefault("name", "");
-    if (d->found("aliases")) aliases_ = d->lookupWordList("aliases");
-    formula_ = d->lookupWordOrDefault("formula", "");
-    cas_     = d->lookupWordOrDefault("CAS", "");
-
-    MW_      = d->lookupScalar       ("MW");
-    Tc_      = d->lookupScalarOrDefault("Tc",      0.0);
-    Pc_      = d->lookupScalarOrDefault("Pc",      0.0);
-    omega_   = d->lookupScalarOrDefault("omega",   0.0);
-    Tb_      = d->lookupScalarOrDefault("Tb",      0.0);
-    Hvap_Tb_ = d->lookupScalarOrDefault("HvapTb",  0.0);
-    Vliq_    = d->lookupScalarOrDefault("Vliq",    0.0);
-    diffusionVolume_ = d->lookupScalarOrDefault("diffusionVolume", 0.0);
-
-    // Liquid-viscosity parameters: keep the raw `liquidViscosity`
-    // block so the selected model (Andrade / Vogel) reads its own sub-block.
-    // Wilke-Chang association factor (solvent) defaults to 1.0.
-    associationFactor_ = d->lookupScalarOrDefault("associationFactor", 1.0);
-    if (d->found("liquidViscosity"))
-        liquidViscDict_ = d->subDict("liquidViscosity");
-
-    // Non-volatile / solute extensions.  When `nonvolatile true;`
-    // is set, the component is dissolved-only: Antoine and Cp blocks are
-    // not required, and the VLE machinery (Kvec, flash, bubble-T) treats
-    // it as K = 0 (never appears in the vapour).  `dissociation nu` is the
-    // van't Hoff factor used by the osmotic-pressure formula in membrane
-    // modules: 1 for non-electrolyte (glucose), 2 for fully-dissociated
-    // 1-1 salt (NaCl, NaOH, KCl), 3 for 1-2 / 2-1 (MgCl2, Na2SO4), and so
-    // on.  Real solutions deviate from full dissociation; for the
-    // ideal-dilute van't Hoff form is the pedagogical baseline.
-    // DERIVED from the ion map, never stored twice: nu = Σ coefficients of
-    // dissociatesTo (1 + 1 = 2 for NaCl/LiCl, 1 + 2 = 3 for CaCl2/Na2SO4).
-    // A LUMPED solute with no ion map declares `dissociation nu` directly
-    // (the colligative factor is its only speciation fact; a non-electrolyte
-    // defaults to 1).  Two fields must never encode one fact -- when the map
-    // exists, it is canonical and nu derives from it.
-    if (d->found("dissociatesTo"))
-    {
-        nu_ = 0.0;
-        auto d2t = d->subDict("dissociatesTo");
-        for (const auto& ion : d2t->keys()) nu_ += d2t->lookupScalar(ion);
-    }
-    else
-        nu_ = d->lookupScalarOrDefault("dissociation", 1.0);
-
-    // The component -> aqueous-species bridge, TYPED AT LOAD (the loader
-    // contract of the 2026-07-25 identifier-typing decision): the general
-    // `aqueousMapping ( { species X; nu n; } ... )` block wins; a salt's
-    // `dissociatesTo` converts to the same typed structure.  No block, no
-    // bridge -- name identity is never assumed.
+    aqueousMapping_.clear();
     if (d->found("aqueousMapping"))
     {
         for (const auto& e : d->lookupDictList("aqueousMapping"))
@@ -221,6 +172,68 @@ void Component::readFromDict(const DictPtr& d)
         }
         aqueousMapping_ = std::move(derived);
     }
+}
+
+void Component::readFromDict(const DictPtr& d)
+{
+    // The component grammar is FLAT (name; MW; Tc; ...; the named model
+    // sub-blocks).  A reference-state block at top level is not part of it
+    // -- refuse loudly, never read it silently.
+    for (const char* blk : {"identity", "critical", "liquidPure", "gasIdeal",
+                             "component"})
+        if (d->found(blk))
+            throw std::runtime_error("component .dat: '" + std::string(blk)
+                + "{}' is not the component grammar -- the layout is FLAT"
+                " (bin/curate/migrate_component_blocks.py converts a"
+                " block-form file; component{speciesMap} is spelled"
+                " `dissociatesTo { ... }`).");
+
+    name_    = d->lookupWordOrDefault("name", "");
+    if (d->found("aliases")) aliases_ = d->lookupWordList("aliases");
+    formula_ = d->lookupWordOrDefault("formula", "");
+    cas_     = d->lookupWordOrDefault("CAS", "");
+
+    MW_      = d->lookupScalar       ("MW");
+    Tc_      = d->lookupScalarOrDefault("Tc",      0.0);
+    Pc_      = d->lookupScalarOrDefault("Pc",      0.0);
+    omega_   = d->lookupScalarOrDefault("omega",   0.0);
+    Tb_      = d->lookupScalarOrDefault("Tb",      0.0);
+    Hvap_Tb_ = d->lookupScalarOrDefault("HvapTb",  0.0);
+    Vliq_    = d->lookupScalarOrDefault("Vliq",    0.0);
+    diffusionVolume_ = d->lookupScalarOrDefault("diffusionVolume", 0.0);
+
+    // Liquid-viscosity parameters: keep the raw `liquidViscosity`
+    // block so the selected model (Andrade / Vogel) reads its own sub-block.
+    // Wilke-Chang association factor (solvent) defaults to 1.0.
+    associationFactor_ = d->lookupScalarOrDefault("associationFactor", 1.0);
+    if (d->found("liquidViscosity"))
+        liquidViscDict_ = d->subDict("liquidViscosity");
+
+    // Non-volatile / solute extensions.  When `nonvolatile true;`
+    // is set, the component is dissolved-only: Antoine and Cp blocks are
+    // not required, and the VLE machinery (Kvec, flash, bubble-T) treats
+    // it as K = 0 (never appears in the vapour).  `dissociation nu` is the
+    // van't Hoff factor used by the osmotic-pressure formula in membrane
+    // modules: 1 for non-electrolyte (glucose), 2 for fully-dissociated
+    // 1-1 salt (NaCl, NaOH, KCl), 3 for 1-2 / 2-1 (MgCl2, Na2SO4), and so
+    // on.  Real solutions deviate from full dissociation; for the
+    // ideal-dilute van't Hoff form is the pedagogical baseline.
+    // DERIVED from the ion map, never stored twice: nu = Σ coefficients of
+    // dissociatesTo (1 + 1 = 2 for NaCl/LiCl, 1 + 2 = 3 for CaCl2/Na2SO4).
+    // A LUMPED solute with no ion map declares `dissociation nu` directly
+    // (the colligative factor is its only speciation fact; a non-electrolyte
+    // defaults to 1).  Two fields must never encode one fact -- when the map
+    // exists, it is canonical and nu derives from it.
+    if (d->found("dissociatesTo"))
+    {
+        nu_ = 0.0;
+        auto d2t = d->subDict("dissociatesTo");
+        for (const auto& ion : d2t->keys()) nu_ += d2t->lookupScalar(ion);
+    }
+    else
+        nu_ = d->lookupScalarOrDefault("dissociation", 1.0);
+
+    readAqueousMapping(d);
 
     // Aqueous-speciation FACT (substance-level, classifier-read; ratified
     // 2026-07-26): `aqueousSpeciation none;` = curated fact that the

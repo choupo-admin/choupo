@@ -591,6 +591,22 @@ PYEOF
     fi
     rm -f /tmp/phspec.$$
 
+    # Both-bases gate: where the package resolves ions, EVERY stream shows
+    # both -- the inlet included.  The post-solve speciation pass sat inside
+    # `if (hasReactiveEquilibrium())`, so every Pitzer/eNRTL brine in the
+    # corpus reported its apparent salt and not one ion while the reactive
+    # flashes reported both, and nothing failed because the corpus only ever
+    # asserted the block where it already existed.
+    if "$ROOT/bin/curate/check_both_bases.py" > /tmp/bothbases.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "both-bases-gate" "$(tail -1 /tmp/bothbases.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_both_bases.py)\n" "both-bases-gate"
+        cat /tmp/bothbases.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/bothbases.$$
+
     # flashComplex gate: the DESIGN-DRIVER case must keep closing.  It lives
     # in docs/design/, not tutorials/, because sealing it is an unresolved
     # CURATION question (ten component records differ from the catalogue in

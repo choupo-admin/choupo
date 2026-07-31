@@ -206,6 +206,15 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
             const std::string saltRole =
                 rec->lookupWordOrDefault("role", "volatile");
             comps.push_back(Component::identity(cn, saltMW, saltRole));
+            //  The identity component carries name/MW/role only -- but the
+            //  record it was minted FROM declares `dissociatesTo`, and that
+            //  bridge is what lets a stream report its ions.  Without this
+            //  line every Pitzer/eNRTL brine in the corpus printed its
+            //  apparent salt and no speciation at all, while the reactive
+            //  flashes printed both bases.  Same architecture, two
+            //  behaviours; the bridge is the salt's own declared fact, so it
+            //  travels with it.
+            comps.back().readAqueousMapping(rec);
         }
         else
         {
