@@ -92,4 +92,62 @@ if bad:
 print(f"typed-identifier gate: no laundered crossings in unit ops;"
       f" {nCases} bridge-unit case(s) declare their component->species"
       f" mappings")
+
+# ---------------------------------------------------------------------------
+#  THE BRIDGE REFUSAL, FIRED.  Claim 3 above checks that every case running an
+#  aqueous-bridge unit DECLARES the bridge, "so the refusal never fires at a
+#  student mid-run".  That is a statement about the corpus; the refusal itself
+#  -- ThermoPackage::AqueousBridge::singleMaster, the one place the two
+#  identity spaces meet -- was exercised by nothing, because the corpus is
+#  complete.
+#
+#  Fired here on membrane08, whose scaling path DOES cross the bridge.  Note
+#  which case: removing the same declaration from membrane01 changes NOTHING
+#  (identical KPIs, exit 0), because a solution-diffusion module prices the
+#  salt, never the ions -- a mutation that does not reach the code path proves
+#  nothing about it.
+# ---------------------------------------------------------------------------
+import re as _re, shutil as _shutil, subprocess as _sub, tempfile as _tmp
+
+_SOLVER = ROOT / "choupoSolve"
+_CASE = ROOT / "tutorials" / "steady" / "membranes" / "membrane08_softened_scaling"
+
+if not _SOLVER.exists():
+    print("SKIP  no choupoSolve binary -- the bridge refusal needs one")
+elif not _CASE.is_dir():
+    print("FAIL  membrane08 is gone -- nothing crosses the bridge")
+    sys.exit(1)
+else:
+    _tmpdir = _tmp.mkdtemp(prefix="bridge.")
+    try:
+        _dst = Path(_tmpdir) / "case"
+        _shutil.copytree(_CASE, _dst)
+        for _junk in ("converged", "reports"):
+            _shutil.rmtree(_dst / _junk, ignore_errors=True)
+        _f = _dst / "constant" / "components" / "Ca.dat"
+        _t = _f.read_text()
+        _u = _re.sub(r"(?ms)^aqueousMapping\s*\([^)]*\)\s*;\s*$", "", _t, count=1)
+        if _u == _t:
+            _u = _re.sub(r"(?m)^dissociatesTo.*$", "", _t, count=1)
+        if _u == _t:
+            print("FAIL  Ca.dat declares no bridge to remove -- the mutation "
+                  "does not apply, so this proves nothing")
+            sys.exit(1)
+        _f.write_text(_u)
+        _r = _sub.run([str(_SOLVER), str(_dst)], capture_output=True, text=True)
+        _out = (_r.stdout or "") + (_r.stderr or "")
+        if _r.returncode == 0:
+            print("FAIL  a bridge-crossing case RAN with Ca's mapping removed "
+                  "-- a name-identity fallback is back")
+            sys.exit(1)
+        if "declares no aqueous mapping" not in _out:
+            print("FAIL  refused (exit %d) but not for this reason:\n%s"
+                  % (_r.returncode, _out[-400:]))
+            sys.exit(1)
+        print("  ok   the aqueous bridge refuses a component with no declared "
+              "mapping, naming the block to add")
+    finally:
+        _shutil.rmtree(_tmpdir, ignore_errors=True)
+
+
 sys.exit(0)
