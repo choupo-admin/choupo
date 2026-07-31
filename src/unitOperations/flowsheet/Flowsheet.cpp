@@ -2196,6 +2196,45 @@ int Flowsheet::solve(const DictPtr& dict,
         throw std::runtime_error("Flowsheet: node has neither a `units (...)`"
             " list, a `members (...)` list, nor a `type` (leaf node)");
     }
+
+    //  CHEMISTRY IS DECLARED BY THE CASE, READ BY THE UNITS (settled
+    //  2026-07-25/26).  A unit that names an activity model or a mineral set
+    //  at its TOP level had that declaration silently DROPPED: the unit build
+    //  copies a whitelist of keys (operation / model / thermo / reaction /
+    //  ...) and anything outside it falls on the floor.  Reproduced on
+    //  flash16 -- `activityModel { model pitzerHMW; }` beside the unit's
+    //  `operation` block ran to exit 0 on the case's declared davies, with
+    //  the file saying otherwise.
+    //
+    //  check_no_unit_chemistry kept the CORPUS free of it; nothing stopped a
+    //  student writing it.  A gate that cleans the corpus is not the same as
+    //  an engine that refuses the input.
+    {
+        static const std::map<std::string, const char*> forbiddenUnitKeys = {
+            { "activityModel", "the case's constant/thermoPhysPropDict" },
+            { "formulation",   "the case's constant/thermoPhysPropDict" },
+            { "components",    "the case's constant/thermoPhysPropDict" },
+            { "minerals",      "the case's constant/chemistryDict" },
+            { "chemistry",     "the case's constant/chemistryDict" },
+            { "speciation",    "the case's constant/chemistryDict" },
+        };
+        for (const auto& u : units)
+        {
+            if (!u) continue;
+            for (const auto& [key, home] : forbiddenUnitKeys)
+                if (u->found(key))
+                    throw std::runtime_error("Flowsheet: unit '"
+                        + u->lookupWordOrDefault("name", "?") + "' declares `"
+                        + key + "` at its own level -- chemistry is declared"
+                          " by the CASE and read by the units, never chosen by"
+                          " one.  It belongs in " + std::string(home)
+                        + ".  A per-unit THERMO override is legal and goes"
+                          " inside `thermo { ... }`, which replaces the models"
+                          " for that unit alone; written here the declaration"
+                          " was silently dropped and the unit ran on the"
+                          " case's models.");
+        }
+    }
     // Record the flattened unit interface (name / type / resolved in+out
     // stream names) so the per-unit reports can iterate the real equipment
     // even for a composite plant.  Works uniformly: the units-list, the

@@ -23,8 +23,17 @@ Three checks:
      thermoPhysPropDict and chemistryDict respectively.
   3. A DECLARED aqueous model must be one the engine implements.
 
-Exit 1 on any violation.
-"""
+  4. THE ENGINE REFUSES IT, not just the corpus.  Checks 1-3 keep the tree
+     clean; none of them stops a STUDENT writing `activityModel { ... }`
+     beside a unit's `operation` block.  Until 2026-07-31 nothing did: the
+     unit build copies a whitelist of keys and anything outside it fell on
+     the floor, so flash16 with `activityModel { model pitzerHMW; }` ran to
+     exit 0 on the case's declared davies.  This fires that refusal through
+     choupoSolve, and checks the LEGAL neighbour still works -- the same
+     block inside `thermo { ... }` is a per-unit override and must be
+     honoured, or the refusal would have eaten the feature it protects.
+
+Exit 1 on any violation."""
 import re
 import sys
 from pathlib import Path
@@ -117,6 +126,67 @@ if bad:
     for b in bad:
         print("  " + b)
     sys.exit(1)
+
+# ---------------------------------------------------------------------------
+#  4. The refusal, fired for real.
+# ---------------------------------------------------------------------------
+import shutil, subprocess, tempfile
+
+SOLVER = ROOT / "choupoSolve"
+CASE = ROOT / "tutorials" / "steady" / "flash" / "flash16_calcite_precipitation"
+
+
+def _run_with(insert: str):
+    """Copy flash16, splice `insert` in front of the unit's `operation`, run."""
+    tmp = tempfile.mkdtemp(prefix="unitchem.")
+    try:
+        dst = Path(tmp) / "case"
+        shutil.copytree(CASE, dst)
+        for junk in ("converged", "reports"):
+            shutil.rmtree(dst / junk, ignore_errors=True)
+        fd = dst / "system" / "flowsheetDict"
+        body = fd.read_text()
+        i = body.index("operation")
+        fd.write_text(body[:i] + insert + "\n        " + body[i:])
+        r = subprocess.run([str(SOLVER), str(dst)], capture_output=True, text=True)
+        return r.returncode, (r.stdout or "") + (r.stderr or "")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+if not SOLVER.exists():
+    print("SKIP  no choupoSolve binary -- check 4 needs one")
+elif not CASE.is_dir():
+    fail = True
+    print("FAIL  flash16 is gone -- check 4 has no case to mutate")
+    sys.exit(1)
+else:
+    rc, out = _run_with("activityModel { model pitzerHMW; }")
+    if rc == 0:
+        print("FAIL  a unit declaring `activityModel` RAN (exit 0) -- the "
+              "declaration was dropped and the unit used the case's model")
+        sys.exit(1)
+    if "declares `activityModel` at its own level" not in out:
+        print("FAIL  refused (exit %d) but not for this reason -- a negative "
+              "test that trips an earlier refusal proves that one:\n%s"
+              % (rc, out[-400:]))
+        sys.exit(1)
+    print("  ok   engine refuses `activityModel` written at unit level")
+
+    #  ...and the LEGAL neighbour still runs, or the refusal ate the feature.
+    rc, out = _run_with("thermo { equilibrium { formulation gammaPhi; "
+                        "liquid { activityModel { model ideal; } } "
+                        "vapour { fugacityModel idealGas; } } }")
+    if rc != 0:
+        print("FAIL  a per-unit `thermo { ... }` override no longer runs "
+              "(exit %d) -- the refusal above is too wide:\n%s"
+              % (rc, out[-400:]))
+        sys.exit(1)
+    if "LOCAL override" not in out:
+        print("FAIL  the per-unit override ran but was not ANNOUNCED -- the "
+              "cascade must be loud (CLAUDE.md, fractal units)")
+        sys.exit(1)
+    print("  ok   the legal `thermo { ... }` override still runs, and says so")
 
 print(f"unit-chemistry gate: no unit op selects thermodynamics; "
       f"{nDeclared} case(s) declare an aqueous activity model, all implemented"
