@@ -65,11 +65,34 @@ mesmo.
 | **Identidade de registo** (dois ficheiros, uma chave) | este mapa + `data-doctrine.md` §1 | `records::ScanGuard` | `check_registry_scan` | **2026-07-30** |
 | **Cobertura de tipos** (uma classe, um caso) | este mapa | — (é coberta, não recusa) | `check_type_coverage` | **2026-07-30** |
 | **Contrato do headline** (aponta para dentro dos diagnósticos) | — | `choupoProps` recusa | qualquer caso da op | **2026-07-30** |
+| **Química declarada pelo caso** (nenhuma unidade a escolhe) | CLAUDE.md §5/§6 | `Flowsheet` recusa a chave ao nível da unidade | `check_no_unit_chemistry` (4) | **2026-07-31** |
+| **Identidade de espécie** (uma casa, coerência verificada) | CLAUDE.md §5 | `SpeciationSolver` recusa `z` incoerente | `check_species_identity` (2 recusas) | **2026-07-31** |
+| **ThermoResolver** (declaração persistida verificada) | CLAUDE.md §5 | 3 recusas no `ThermoPackageBuilder` | `check_resolver_coherence` (3) | **2026-07-31** |
+| **Ponte aquosa** (componente → espécie, só declarada) | CLAUDE.md §5 (F2) | `AqueousBridge::singleMaster` | `check_typed_identifiers` (membrane08) | **2026-07-31** |
 | Chaves não lidas (`murphreeEficiency` corre em silêncio) | [`../design/unread-dict-keys-proposal.md`](../design/unread-dict-keys-proposal.md) | — | — | **espera decisão** |
 | Vocabulário do `role` | `data/tmp/_ROLE_VOCABULARY_GAP.md` | — | — | **espera decisão** |
 | Termo de transferência (D3) | [`../design/standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | contrato só | — | por implementar |
 
 ---
+
+## O padrão, agora com quatro instâncias
+
+Quatro contratos desta semana tinham **a regra escrita e a recusa no motor**,
+sem nada a ligá-las.  A forma repete-se:
+
+> *Um gate que lê o corpus prova o corpus, nunca o motor.*
+
+E repete-se por uma razão específica: **um corpus coerente nunca toma o
+caminho da recusa**.  Quanto melhor curada está a árvore, menos exercitada
+fica a defesa que a protege — até que um aluno com um ficheiro fora da árvore
+seja a primeira pessoa a descobrir se ela ainda funciona.
+
+Um corolário, que custou uma leitura errada antes de ficar claro: **uma
+mutação que não alcança o caminho do código não prova nada, em nenhuma
+direcção.**  Remover a ponte aquosa do `membrane01` não muda um único KPI —
+um módulo de solução-difusão preça o SAL, nunca os iões — e lido à letra isso
+diria «o motor não recusa».  A mesma remoção no `membrane08`, cujo caminho de
+incrustação atravessa a ponte, é recusada pelo nome.
 
 ## Como ler a coluna «caso que a dispara»
 
