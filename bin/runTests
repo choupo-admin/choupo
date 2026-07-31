@@ -621,6 +621,20 @@ PYEOF
     fi
     rm -f /tmp/unread.$$
 
+    # Drill-in gate: the drilled sub-case must RUN, not merely be produced.
+    # choupo-drill carried five defects at once and had never completed on
+    # either plant, because it had no test: four of the five only showed when
+    # the solver was pointed at what it wrote.
+    if "$ROOT/bin/curate/check_drill_in.py" > /tmp/drillin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "drill-in-gate" "$(tail -1 /tmp/drillin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_drill_in.py)\n" "drill-in-gate"
+        cat /tmp/drillin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/drillin.$$
+
     # ---- Curation gates that existed but never RAN ----------------------
     # Eleven gates sat in bin/curate/ unwired; seven were not even
     # executable.  Two were stale -- check_ion_pins read the retired
