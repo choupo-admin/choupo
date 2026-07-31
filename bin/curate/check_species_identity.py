@@ -140,4 +140,72 @@ if bad:
 print(f"species identity gate: {len(species)} species + {len(inline)} inline "
       f"identities; single-home enforced (0 standards duplicates); "
       f"{len(HISTORICAL_OPAQUE)} historical keys pinned, 0 new")
+
+# ---------------------------------------------------------------------------
+#  THE REFUSAL, FIRED.  Everything above is a sweep over the tree: it proves
+#  the CORPUS has one home per identity.  It cannot prove the LOADER refuses a
+#  file that does not -- and the loader's coherence check ("one fact, two
+#  homes, now inconsistent") guards exactly the shape the corpus no longer
+#  has, so nothing exercised it.  A guard for legacy input, never fired, is a
+#  guard nobody knows still works.
+#
+#  Two mutations, because the two refusals are DIFFERENT and the wrong one
+#  firing would look like success:
+#    * inline `z` disagreeing with the species file  -> the COHERENCE refusal;
+#    * masters that do not sum to the declared charge -> the CHARGE-BALANCE
+#      refusal, which is what fires when there is no inline z to compare.
+# ---------------------------------------------------------------------------
+import shutil as _shutil, subprocess as _sub, tempfile as _tmp
+
+_SOLVER = ROOT / "choupoSolve"
+_CASE = ROOT / "tutorials" / "steady" / "flash" / "flash16_calcite_precipitation"
+
+
+def _fire(mutate, expect, label):
+    tmp = _tmp.mkdtemp(prefix="specid.")
+    try:
+        dst = Path(tmp) / "case"
+        _shutil.copytree(_CASE, dst)
+        for junk in ("converged", "reports"):
+            _shutil.rmtree(dst / junk, ignore_errors=True)
+        mutate(dst)
+        r = _sub.run([str(_SOLVER), str(dst)], capture_output=True, text=True)
+        out = (r.stdout or "") + (r.stderr or "")
+        if r.returncode == 0:
+            print("FAIL  %s -- the case RAN (exit 0)" % label)
+            return False
+        if expect not in out:
+            print("FAIL  %s -- refused (exit %d) but not for this reason; a "
+                  "negative test that trips an earlier refusal proves that "
+                  "one:\n%s" % (label, r.returncode, out[-400:]))
+            return False
+        print("  ok   %s -- refused, naming it" % label)
+        return True
+    finally:
+        _shutil.rmtree(tmp, ignore_errors=True)
+
+
+if not _SOLVER.exists():
+    print("SKIP  no choupoSolve binary -- the refusals need one")
+elif not _CASE.is_dir():
+    print("FAIL  flash16 is gone -- no case to mutate")
+    sys.exit(1)
+else:
+    def _double(dst):
+        f = dst / "constant" / "chemistry" / "CO3-formation.dat"
+        f.write_text(f.read_text().replace("species CO3;", "species CO3; z -3;", 1))
+
+    def _unbalanced(dst):
+        f = dst / "constant" / "chemistry" / "CO3-formation.dat"
+        f.write_text(f.read_text().replace(
+            "masters ( { ion HCO3; nu 1; } { ion H; nu -1; } );",
+            "masters ( { ion HCO3; nu 1; } );", 1))
+
+    if not (_fire(_double, "one fact, two homes, now inconsistent",
+                  "inline z contradicting the identity file")
+            and _fire(_unbalanced, "does not CONSERVE CHARGE",
+                      "masters that do not sum to the declared charge")):
+        sys.exit(1)
+
+
 sys.exit(0)
