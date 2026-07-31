@@ -404,6 +404,39 @@ else:
         ok("the stream table shows the species (%s) and NO pH column"
            % ", ".join(h for h in header if h.startswith("n_")))
 
+# --- 5d. the salt reaches the runtime WHOLE ---------------------------------
+#  The same seam as (1), one field over.  identity() minted the salt with
+#  name/MW/role, so `formula NaCl;` -- declared in the record, three lines from
+#  the MW the same call had just read -- never arrived, and the element balance
+#  could not count atoms it had every right to count:
+#
+#      status,UNAVAILABLE
+#      refusedSpecies.NaCl,"component 'NaCl': no molecular formula declared"
+#
+#  A component with NO formula to declare (a petroleum cut, a heat-transfer
+#  fluid, a polymer) is a different case entirely and must KEEP its
+#  UNAVAILABLE -- so this asserts the verdict only for a salt whose record
+#  carries a formula, and checks that record first.
+meta = os.path.join(PITZER, "reports", "balances", "elementBalance.meta")
+saltdecl = open(saltrec, errors="replace").read()
+if not re.search(r"(?m)^\s*formula\s+\S+\s*;", saltdecl):
+    fail("the NaCl record declares no formula -- assertion (5d) would be"
+         " asserting the engine reads something that is not there")
+elif not os.path.exists(meta):
+    fail("crystalliser05 emitted no elementBalance.meta")
+else:
+    body = open(meta, errors="replace").read()
+    if re.search(r"(?m)^status,FULL", body):
+        ok("the salt reaches the runtime with its declared formula -- the"
+           " element balance closes (status FULL)")
+    else:
+        st = re.search(r"(?m)^status,(\w+)", body)
+        refused = re.findall(r"(?m)^refusedSpecies\.(\w+),", body)
+        fail("element balance is %s on a case whose salt DECLARES a formula"
+             " (refused: %s) -- a declared datum is being dropped between the"
+             " record and the runtime"
+             % (st.group(1) if st else "(none)", ", ".join(refused) or "-"))
+
 # --- 6. the negative --------------------------------------------------------
 r = run(MOLECULAR)
 if r.returncode != 0:

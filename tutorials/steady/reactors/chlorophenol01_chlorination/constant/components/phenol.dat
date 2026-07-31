@@ -25,7 +25,14 @@
 \*---------------------------------------------------------------------------*/
 
 name        phenol;
-// formula  ?;            // TODO: not derivable from groups
+formula     C6H6O;      // IDENTITY, not an estimate: the group
+                        //   decomposition could not derive it, but the
+                        //   substance is not in doubt.  Cross-checked
+                        //   against the MW below: 6*12.011 + 6*1.008 + 15.999
+                        //   = 94.113 g/mol, to the digit.
+                        //   The element balance counts atoms from HERE;
+                        //   without it this chlorination could not check
+                        //   its own Cl.
 // CAS      ?;            // TODO: look up + verify identity
 MW          94.113;        // g/mol (group sum)
 

@@ -349,10 +349,28 @@ the solid phase (dissolving `s` there is the flash16 error).  The READER
 verifies `m = A n` against the SAME declared bridges, so the block closes by
 construction; a case with neither a network nor any declared bridge is refused
 (names that answer to nothing).  A molecular case gets NO block — one basis is
-its whole structure.  Two corollaries that cost real bugs: an identity-minted
-component must still carry its record's bridge (`Component::readAqueousMapping`,
-ONE parse, two callers), and a writer whose output the reader refuses is a bug
-in both.  Gate: check_both_bases (2 fired refusals + the negative).
+its whole structure.
+
+**THE REDUCED-IDENTITY RULE, generalised (it has now cost two bugs, one field
+apart).**  `Component::identity()` mints a salt with name + MW + role, and the
+electrolyte builder used it and stopped there — so EVERY fact the record
+declares beyond those three was silently absent at run time.  Two were, and
+both surfaced as the engine reporting a datum "missing" that its own input
+declares: `dissociatesTo` (no ions on any brine stream) and `formula` (the
+element balance publishing `refusedSpecies.NaCl,"no molecular formula
+declared"` about a record that says `formula NaCl;` three lines from the MW the
+same call had just read).  So: **a component minted by `identity()` must be
+handed every declared fact it will be asked for**, through the record it was
+minted FROM — `readIdentity()` and `readAqueousMapping()`, ONE parse each, two
+callers each, never a second copy of the parse.  When you add a field the
+runtime reads off a Component, ask whether the electrolyte salt can reach it.
+(A component that genuinely has no such fact — a petroleum cut with no
+molecular formula — keeps its honest refusal; the rule is about DECLARED facts
+being dropped, never about inventing one.)
+
+The other corollary, also paid for: a writer whose output the reader refuses is
+a bug in BOTH.  Gate: check_both_bases (2 fired refusals + the negative +
+the element-balance verdict).
 
 ### Typed identifiers + the F2 rename (EXECUTED 2026-07-26, three-way ratified)
 

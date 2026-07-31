@@ -88,6 +88,31 @@ const Component::CosmoSet& Component::cosmoSet(const std::string& name) const
     return it->second;
 }
 
+// The IDENTITY fields -- who this substance is, as its record declares it.
+//
+// Same seam, same cause as readAqueousMapping below, one field over.  The
+// electrolyte builder mints its salt with identity() above, which carries
+// name, MW and role and nothing else, so `formula NaCl;` -- written plainly in
+// the record, three lines from the MW the same call had just read -- never
+// reached the runtime.  The element balance counts atoms from a formula, so
+// every Pitzer/eNRTL case in the corpus published
+//
+//     status,UNAVAILABLE
+//     refusedSpecies.NaCl,"component 'NaCl': no molecular formula declared"
+//
+// about a component that declares one.  The datum was never missing; the mint
+// dropped it, and the report faithfully said what the runtime could see.
+//
+// (Pseudo-components -- dowthermA, hitecSalt, a petroleum cut, polystyrene --
+// have no molecular formula to declare, and their UNAVAILABLE is the honest
+// answer.  This changes nothing for them.)
+void Component::readIdentity(const DictPtr& d)
+{
+    if (d->found("aliases")) aliases_ = d->lookupWordList("aliases");
+    formula_ = d->lookupWordOrDefault("formula", "");
+    cas_     = d->lookupWordOrDefault("CAS", "");
+}
+
 // The component -> aqueous-species bridge, TYPED AT LOAD (the loader
 // contract of the 2026-07-25 identifier-typing decision): the general
 // `aqueousMapping ( { species X; nu n; } ... )` block wins; a salt's
@@ -189,9 +214,7 @@ void Component::readFromDict(const DictPtr& d)
                 " `dissociatesTo { ... }`).");
 
     name_    = d->lookupWordOrDefault("name", "");
-    if (d->found("aliases")) aliases_ = d->lookupWordList("aliases");
-    formula_ = d->lookupWordOrDefault("formula", "");
-    cas_     = d->lookupWordOrDefault("CAS", "");
+    readIdentity(d);
 
     MW_      = d->lookupScalar       ("MW");
     Tc_      = d->lookupScalarOrDefault("Tc",      0.0);

@@ -70,6 +70,8 @@ mesmo.
 | **ThermoResolver** (declaração persistida verificada) | CLAUDE.md §5 | 3 recusas no `ThermoPackageBuilder` | `check_resolver_coherence` (3) | **2026-07-31** |
 | **Ponte aquosa** (componente → espécie, só declarada) | CLAUDE.md §5 (F2) | `AqueousBridge::singleMaster` | `check_typed_identifiers` (membrane08) | **2026-07-31** |
 | **As duas bases em TODA a corrente** (onde o pacote resolve iões, incluindo a entrada) | CLAUDE.md §5 | leitor verifica `m = A n` contra as pontes declaradas | `check_both_bases` (2 recusas + negativo **verificado por sabotagem**) | **2026-07-31** |
+| **Identidade reduzida** (um componente cunhado recebe os factos que declara) | CLAUDE.md §5 | — (é perda de dado, não recusa) | `check_both_bases` (veredicto do balanço) | **2026-07-31** |
+| **Marcador `.cho`** (o que define um caso, não só o que a busca usa) | CLAUDE.md §3 | `check_sealed_corpus` sai 1 | um caso sem marcador é nomeado | **2026-07-31** |
 | Chaves não lidas (`murphreeEficiency` corre em silêncio) | [`../design/unread-dict-keys-proposal.md`](../design/unread-dict-keys-proposal.md) | — | — | **espera decisão** |
 | Vocabulário do `role` | `data/tmp/_ROLE_VOCABULARY_GAP.md` | — | — | **espera decisão** |
 | Termo de transferência (D3) | [`../design/standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | contrato só | — | por implementar |
@@ -141,6 +143,47 @@ A lição de método, que vale mais do que a correcção: **atacar a defesa
 encontra a defesa que não dispara; perguntar ao corpus encontra a regra que
 nunca foi aplicada a metade dele.**  São dois exames diferentes, e o segundo
 não estava a ser feito.
+
+### A regra da identidade reduzida (dois erros, um campo de distancia)
+
+O `Component::identity()` cunha o sal com nome + MW + papel, e o construtor de
+eletrolitos usava-o e ficava por ali -- portanto **todo o facto que o registo
+declara alem desses tres estava silenciosamente ausente em execucao**.  Dois
+estavam, e os dois apareceram na mesma forma: o motor a dizer que falta um dado
+que o seu proprio ficheiro de entrada declara.
+
+* `dissociatesTo` -> nem um iao em corrente nenhuma de salmoura;
+* `formula` -> o balanco de elementos a publicar
+  `refusedSpecies.NaCl,"no molecular formula declared"` sobre um registo que diz
+  `formula NaCl;` **tres linhas acima do MW que a mesma chamada acabara de ler**.
+
+O balanco nunca esteve errado: dizia com fidelidade o que o runtime conseguia
+ver.  A regra que fica: **um componente cunhado por `identity()` tem de receber
+todos os factos declarados que lhe vao ser pedidos**, pelo registo de onde foi
+cunhado -- uma leitura por facto, dois chamadores cada, nunca uma segunda copia
+da analise sintactica.  Ao acrescentar um campo que o runtime le de um
+Component, perguntar se o sal do pacote de eletrolitos lhe chega.
+
+Um componente que genuinamente NAO tem o facto -- um corte de petroleo sem
+formula molecular, o dowthermA, o poliestireno -- mantem a sua recusa honesta.
+A regra e sobre factos DECLARADOS que se perdem, nunca sobre inventar um.
+
+### O metodo tambem produz falsos positivos
+
+Duas auditorias desta ronda acusaram lacunas que nao existiam, e as duas pela
+mesma razao: **adivinhei a forma do artefacto em vez de a ler**.
+
+* o balanco de elementos "faltava" no `ChemicalPlantTutorial` -- que usa a
+  disposicao `reportsLayout postProcessing;`, uma opcao documentada, e o
+  emite em `postProcessing/elementBalance/0/`;
+* os 27 UNAVAILABLE "nao tinham razao nomeada" -- procurei uma chave `reason,`
+  e o motor escreve `refusedSpecies.<nome>,<explicacao>`, uma linha por
+  especie recusada, que e MAIS especifica e nao menos.
+
+Nos dois casos o corpus estava certo e o palpite errado.  A diferenca face ao
+achado da especiacao e simples e vale como regra: ali foram lidos ficheiros
+`converged/` a serio.  **Perguntar ao corpus so vale se a pergunta for feita ao
+artefacto, nao a ideia que se tem dele.**
 
 ### A testemunha negativa tem de poder falhar
 

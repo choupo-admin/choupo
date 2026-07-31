@@ -176,6 +176,14 @@ public:
     // by the liquid sensible-enthalpy path in mixed-solvent / recycle cases).
     void   setLiquidCp(const DictPtr& d);
 
+    // Read the identity fields (aliases / formula / CAS) from a substance
+    // record.  Same two callers and the same reason as readAqueousMapping
+    // below: a component minted by identity() above carries name/MW/role only,
+    // so the formula its record declares never reached the element balance,
+    // and every brine reported "no molecular formula declared" about a record
+    // that has one.  ONE parse, two callers.
+    void   readIdentity(const DictPtr& d);
+
     // Read the component -> aqueous-species bridge from a substance record
     // (`aqueousMapping`, or `dissociatesTo`, or a mineral's own dissolution).
     // readFromDict calls it; the ThermoPackageBuilder's electrolyte path calls

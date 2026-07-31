@@ -206,6 +206,11 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
             const std::string saltRole =
                 rec->lookupWordOrDefault("role", "volatile");
             comps.push_back(Component::identity(cn, saltMW, saltRole));
+            //  ...and its DECLARED IDENTITY.  Without this the salt reached
+            //  the runtime with no `formula`, so the element balance could
+            //  not count its atoms and published UNAVAILABLE against a record
+            //  that declares `formula NaCl;` right beside the MW read above.
+            comps.back().readIdentity(rec);
             //  The identity component carries name/MW/role only -- but the
             //  record it was minted FROM declares `dissociatesTo`, and that
             //  bridge is what lets a stream report its ions.  Without this
