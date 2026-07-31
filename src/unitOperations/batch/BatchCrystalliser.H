@@ -131,6 +131,10 @@ private:
 
     std::size_t iSolute_ = 0, iSolv_ = 0;
     scalar      MW_sol_  = 0, MW_solv_ = 0;
+    //- Saturation at the (isothermal) campaign temperature, kg solute / kg
+    //  solvent, resolved ONCE by the shared crystSaturation -- ion activity
+    //  for an electrolyte package, the solubility curve otherwise.
+    scalar      c_sat_   = 0;
     scalar      rho_c_   = 0, k_v_     = 0;
     scalar      T_       = 0, V_       = 0;  // isothermal T, suspension volume
 

@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "BatchCrystalliser.H"
+#include "unitOperations/crystallisation/CrystallisationSaturation.H"
 #include "streams/Composition.H"
 #include "thermo/Component.H"
 #include "unitOperations/crystallisation/CrystallisationHeat.H"
@@ -62,14 +63,30 @@ void BatchCrystalliser::initialise(const DictPtr&       unitDict,
         throw std::runtime_error("BatchCrystalliser '" + name_ + "': needs a"
             " positive suspension volume V in the `initial` block.");
 
-    // ---- Identify solute (solubility curve) + solvent (volatile carrier)
-    iSolute_ = n; iSolv_ = n;
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        if (state_.n[i] <= 0.0) continue;
-        if (thermo.comp(i).hasSolubility())          iSolute_ = i;
-        else if (thermo.comp(i).hasVaporPressure())  iSolv_   = i;
-    }
+    // ---- Solute / solvent / saturation: THE SHARED RESOLVER --------------
+    //
+    //  This used to identify the pair itself and read c_sat straight off the
+    //  solute's solubility curve.  That is the molecular route and ONLY the
+    //  molecular route, while the steady crystalliser resolves saturation
+    //  from ION ACTIVITY when the package is an electrolyte one
+    //  (Ksp = (gamma_pm * m_sat)^2, with the drowning-out mixed-solvent term).
+    //  Two routes for one physical quantity, split across the two time
+    //  regimes -- exactly what unifying the heat of crystallisation was meant
+    //  to prevent.  The heat was shared; the saturation was not.
+    //
+    //  Nothing had failed because no batch case declares an electrolyte
+    //  package.  The first one would have resolved ions for its activity
+    //  coefficients and its heat, then taken supersaturation off a molecular
+    //  curve -- silently, both routes returning a plausible number.
+    //
+    //  The batch charge is a fixed inventory, so `state_.n` plays the role of
+    //  z with F = 1: the resolver's `solvent_mass = F * z[iSolv] * MW_solv`
+    //  is then the charge's solvent mass in kg, which is what this model
+    //  already computed by hand.
+    const SatState sat = crystSaturation(thermo, state_.n, 1.0, T_);
+    iSolute_ = sat.iSolute;
+    iSolv_   = sat.iSolv;
+    c_sat_   = sat.c_sat;              // kg solute / kg solvent at T (isothermal)
     if (iSolute_ == n)
         throw std::runtime_error("BatchCrystalliser '" + name_ + "': no"
             " crystallising solute (need a component with a `solubility {}` block).");
@@ -228,8 +245,10 @@ scalar BatchCrystalliser::supersaturation_(scalar nSoluteDissolved) const
     const scalar solventMass = state_.n[iSolv_] * MW_solv_;     // kg (·1, kmol·kg/kmol)
     if (solventMass <= 0.0) return 1.0;
     const scalar c     = (nSoluteDissolved * MW_sol_) / solventMass;  // kg/kg
-    const scalar c_sat = thermo_->comp(iSolute_).c_sat(T_);
-    return (c_sat > 0.0) ? c / c_sat : 1.0;
+    //  c_sat_ was resolved ONCE by the shared crystSaturation -- by the ion
+    //  route for an electrolyte package, by the solubility curve otherwise.
+    //  The model is isothermal, so it is a constant of the campaign.
+    return (c_sat_ > 0.0) ? c / c_sat_ : 1.0;
 }
 
 // packed = (mu0, mu1, mu2, mu3, n_solute_dissolved)
