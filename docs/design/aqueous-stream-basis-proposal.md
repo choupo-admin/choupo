@@ -364,14 +364,26 @@ a Pitzer/eNRTL stream now carries `speciation { network ( completeDissociation
 INPUT side never received the same treatment, so the engine will write a form
 it will not read back -- the defect this project keeps rediscovering.
 
-**Blocked on one named interface addition, not on design.**  The reader's
-projection takes the solvent from `cfg->solventIdx`, and a molality package
-has no `cfg`.  `ElectrolyteModel` exposes `soluteName()` and no solvent, and
-inferring "water" is banned (SystemClassifier: the solvent is the DECLARED
-`aqueous { solvent ...; }`, and there is no `if (name == "water")` anywhere).
-So Slice A needs the declared solvent reachable from the package on the
-non-reactive path.  That is a small, bounded addition -- and naming it is the
-point of this section.
+**SHIPPED 2026-07-31.**  The reader now builds its projection from whichever
+source carries the bridges: the reactive families where a network exists, each
+component's own `aqueousMapping` where one does not, normalised to one shape so
+the `m = A n` solve does not know which path it came from.  `network` is
+mandatory only where a network exists.  Verified by equivalence:
+`crystalliser05_nacl_pitzer` fed in `Na`/`Cl`/`water` instead of `NaCl`/`water`
+gives a BYTE-IDENTICAL magma.
+
+*This paragraph previously said the slice was blocked on a new interface
+method, because the reader takes the solvent from `cfg->solventIdx` and a
+molality package has no `cfg`.  That was wrong: `ElectrolyteModel` already
+exposes `solventIndex()`.  I searched for `solventName()`, did not find it,
+and concluded from the wrong question.  Nothing was added to the interface.*
+
+**One thing left visible, deliberately.**  `ElectrolyteModel::solventIndex()`
+defaults to `return 0` -- a model that does not override it silently claims
+component 0 is the solvent.  No electrolyte model in the tree relies on that
+default today, so nothing is wrong now; but a silent structural default is the
+pattern this project refuses everywhere else, and it should be a refusal or a
+required override.
 
 ### 10.2 Slice B -- the solvent convention in a species-written file
 
