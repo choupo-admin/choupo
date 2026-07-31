@@ -6,7 +6,7 @@ stream  reactorOut             F                0.000277777777778 1e-4
 kpi     reactor                F_in_kmol_h      1                1e-4
 kpi     reactor                F_out_kmol_h     1                1e-4
 kpi     reactor                Q_kW             -1.85832125175   1e-4
-kpi     reactor                T                350              1e-4
+kpi     reactor                T                394.33285007     1e-4
 kpi     reactor                T_guess          400              1e-4
 kpi     reactor                T_out            394.33285007     1e-4
 kpi     reactor                V_R              0.005            1e-4

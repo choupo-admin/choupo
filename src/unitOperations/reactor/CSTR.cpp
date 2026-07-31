@@ -83,6 +83,33 @@ int CSTR::solve(const DictPtr& dict,
                                   feedDict->lookupScalarOrDefault("P", 101325.0),
                                   V_R, vf_in, z_in);
 
+    //  ---- THE OPERATING TEMPERATURE, when the case declares one ---------
+    //
+    //  The model's own note on thermalMode reads "isothermal (default -- T
+    //  IMPOSED, duty a result)", and the case author read that note.  The code
+    //  did not honour it: it took T from the FEED and there was no way to
+    //  impose another, so `operation { T 310 K; }` sat in the dict doing
+    //  nothing.  The ChemicalPlantTutorial fermenter declared
+    //
+    //      T  310 K;        // isothermal (mild fermentation temperature)
+    //
+    //  and ran at 314.95 K -- five degrees hotter than the temperature the
+    //  lesson is about, with the yeast's tolerance being the whole point.
+    //  (Found by the unread-key diagnostic on its first pass over the corpus,
+    //  which is what that instrument is for.)
+    //
+    //  ABSENT the key, T_react == the feed temperature: every existing case is
+    //  byte-identical.  Declared, it is the reactor's temperature -- the
+    //  kinetics run at it, the outlet leaves at it, and the duty (an exact
+    //  H_out - H_in on the elements datum, already general) picks up the
+    //  sensible heating without any change here.
+    const scalar T_react =
+        operDict->lookupScalarOrDefault("T", T, Dims::temperature);
+    if (T_react != T && verbosity >= 2)
+        std::cout << "  [cstr] operating temperature IMPOSED: " << T_react
+                  << " K (feed enters at " << T << " K) -- the duty below"
+                     " carries the sensible heating\n";
+
     auto rxnDict = dict->subDict("reaction");
 
     // ---- Reaction stoichiometry & kinetics --------------------------
@@ -109,7 +136,7 @@ int CSTR::solve(const DictPtr& dict,
     const scalar A_pre = kinDict->lookupScalar("A");
     const scalar Ea    = kinDict->lookupScalar("Ea");
 
-    const scalar k = Reaction::arrheniusRate(A_pre, Ea, T);
+    const scalar k = Reaction::arrheniusRate(A_pre, Ea, T_react);
 
     // Optional reversible reaction:
     //   When `reversible true;` is set on the reaction, the reverse rate
@@ -120,7 +147,7 @@ int CSTR::solve(const DictPtr& dict,
     scalar k_rev = 0.0;
     if (reversible)
     {
-        K_eq  = Reaction::equilibriumKc(thermo, nu, T);
+        K_eq  = Reaction::equilibriumKc(thermo, nu, T_react);
         k_rev = k / K_eq;
     }
 
@@ -296,7 +323,7 @@ int CSTR::solve(const DictPtr& dict,
     ProcessStream out;
     out.name = "out";
     out.F    = F_out / 1000.0;              // mol/s -> kmol/s (canonical SI)
-    out.T    = T;
+    out.T    = T_react;
     out.P    = 0.0;                          // P not tracked here — set by flowsheet
     out.z    = z_out;
     out.vf   = vf_in;                        // inherit the inlet phase (no phase change)
@@ -305,7 +332,10 @@ int CSTR::solve(const DictPtr& dict,
     // ---- KPIs (published for outer drivers / post-processors) ----------
     kpis_.clear();
     kpis_["V_R"]            = V_R;
-    kpis_["T"]              = T;
+    //  The REACTOR's temperature, not the feed's.  This reported the feed
+    //  while the reactor ran at the imposed T -- a KPI that disagrees with
+    //  the outlet stream beside it is the same silence one field over.
+    kpis_["T"]              = T_react;
     kpis_["tau_s"]          = tau;
     kpis_["k"]              = k;
     kpis_["Da_kTau"]        = Da;
@@ -395,6 +425,26 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     const scalar UA = hx ? operDict->lookupScalar("UA") : 0.0;               // W/K
     const scalar Tc = hx ? operDict->lookupScalar("T_coolant", Dims::temperature) : 0.0;
     const scalar Tguess = operDict->lookupScalarOrDefault("T_guess", T, Dims::temperature);
+
+    //  The IMPOSED temperature under `thermalMode isothermal` -- see the note
+    //  in the single-reaction path above.  Absent, it is the feed's, which is
+    //  what every existing case gets.  It is meaningless under adiabatic or
+    //  heatExchange, where T_out is the UNKNOWN the energy balance solves, so
+    //  declaring it there is refused rather than quietly ignored: that would
+    //  be the very silence this key was added to end.
+    const bool hasImposedT = operDict->found("T");
+    if (hasImposedT && !isoT)
+        throw std::runtime_error("CSTR: `operation { T ...; }` imposes the"
+            " reactor temperature and only means something under"
+            " `thermalMode isothermal`; this unit declares thermalMode '"
+            + tmode + "', where T_out is the RESULT the energy balance solves"
+            " for.  Remove the T, or switch to isothermal.");
+    const scalar T_iso =
+        isoT ? operDict->lookupScalarOrDefault("T", T, Dims::temperature) : T;
+    if (isoT && T_iso != T && verbosity >= 2)
+        std::cout << "  [cstr] operating temperature IMPOSED: " << T_iso
+                  << " K (feed enters at " << T << " K) -- the duty carries"
+                     " the sensible heating\n";
 
     // CATALYST LOADING.  A heterogeneous rate constant is reported per gram of dry
     // catalyst, not per cubic metre of reactor.  Declare the bulk loading and the
@@ -489,7 +539,8 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     if (isoT)
     {
         bool ok = false;
-        xi = extentsAt(T, ok);
+        T_out = T_iso;                       // imposed, or the feed's
+        xi = extentsAt(T_iso, ok);
         converged = ok;
         recordResidual(lastRes);
         if (!ok && verbosity >= 1)
@@ -646,7 +697,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     // ---- KPIs ---------------------------------------------------------
     kpis_.clear();
     kpis_["V_R"]            = V_R;
-    kpis_["T"]              = T;
+    kpis_["T"]              = T_out;
     kpis_["tau_s"]          = tau;
     kpis_["nReactions"]     = static_cast<scalar>(R);
     kpis_["newtonResidual"] = lastRes;
