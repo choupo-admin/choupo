@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/internalState -- the vessel's initial HOLDUP.
+
+  900 kg water + 399.7 kg NaCl = 7.60 mol/kg, a post-evaporation liquor held
+  at 25 C.  Saturation there is NOT read from a curve: the Pitzer package
+  solves Ksp = (gamma_pm * m_sat)^2 for m_sat ~ 6.14 mol/kg, so S0 ~ 1.24 and
+  the excess salt is what crystallises.
+
+      water  49.9584 kmol  (900 kg / 18.015)
+      NaCl    6.8400 kmol  (7.6 mol/kg * 900 kg)
+      total  56.7984 kmol
+\*---------------------------------------------------------------------------*/
+
+time            0;
+application     batch;
+
+units
+{
+    "cryst"
+    {
+        T            298.15 K;          // 25 C, held (isothermal)
+        P            1.013 bar;
+        V            1.08;              // m³ suspension volume
+        totalMoles   56.7984;           // kmol
+        molarComposition  { water 0.879574;  NaCl 0.120426; }
+    }
+}

@@ -1,0 +1,68 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-07-31";
+    importerVersion    "2";
+    records
+    {
+        "components/NaCl.dat"
+        {
+            type          imported;
+            sha256        "443cb05462b9f13c6f6fa3e074f208e7c8893d32a3f046f1b2acfcf95f72d9d0";
+            origin        "data/standards/components/NaCl.dat";
+            originSha256  "024195bd057f66c752e229c0c3c40b6276bb50bfbc8ca282f3b4f0f7dbf07072";
+            release       Choupo-2607;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
+            origin        "data/standards/components/water.dat";
+            originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
+            release       Choupo-2607;
+        }
+        "parameters/Pitzer/pairs/Na-Cl.dat"
+        {
+            type          imported;
+            sha256        "8efa88331d512d87057bd5b9766bb0a18fdfdc36abba6244c59531e16f9caa69";
+            origin        "data/standards/parameters/Pitzer/pairs/Na-Cl.dat";
+            originSha256  "dc44b0259620150a5a96e7783fd285fc378126d8b6f5ff3750243fd3f31d3a89";
+            release       Choupo-2607;
+        }
+        "species/Cl.dat"
+        {
+            type          imported;
+            sha256        "b8f643e4616c36aa4ec1f6d5320da536d7b9100373476be8aba880d9dda5fb48";
+            origin        "data/standards/species/Cl.dat";
+            originSha256  "b8f643e4616c36aa4ec1f6d5320da536d7b9100373476be8aba880d9dda5fb48";
+            release       Choupo-2607;
+        }
+        "species/Na.dat"
+        {
+            type          imported;
+            sha256        "93922ead854033587adbd91bfc71497fbecbfbd9ccba192f88b01f59ea4b524a";
+            origin        "data/standards/species/Na.dat";
+            originSha256  "93922ead854033587adbd91bfc71497fbecbfbd9ccba192f88b01f59ea4b524a";
+            release       Choupo-2607;
+        }
+    }
+}

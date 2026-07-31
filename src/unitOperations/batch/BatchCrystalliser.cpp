@@ -137,20 +137,31 @@ void BatchCrystalliser::initialise(const DictPtr&       unitDict,
 
     // ---- Heat of crystallisation, resolved ONCE through the SAME shared
     //      resolver the steady crystalliser reads (never a second source).
-    //      T and (for the electrolyte path) the charge molality are fixed
-    //      by the isothermal model, so the per-mol value is a constant of
-    //      the campaign; the source travels into every duty record's basis.
+    //      T is fixed by the isothermal model, so the per-mol value is a
+    //      constant of the campaign; the source travels into every duty
+    //      record's basis.
+    //
+    //      AT SATURATION, not at the charge.  This passed the CHARGE molality
+    //      where the steady unit passes sat.m_sat, and hardcoded mixedSolvent
+    //      false where the steady unit passes sat.mixedSolvent.  Both were
+    //      invisible until a batch case declared an electrolyte package: the
+    //      first one announced "** EXTRAPOLATED: m_sat 7.600000 > fit window
+    //      6.000000 **" quoting the supersaturated charge as though it were
+    //      the saturation, and a drowning-out batch would have dropped the
+    //      mixed-solvent term without a word.
+    //
+    //      The crystal leaves a SATURATED solution -- that is what saturation
+    //      means -- so L2_bar is evaluated at m_sat, which is also what the
+    //      sibling does.  Both values come from the shared resolver above, so
+    //      there is nothing left here to disagree with it.
     {
-        const scalar solventMass = state_.n[iSolv_] * MW_solv_;   // kg
-        const scalar m0 = (solventMass > 0.0)
-            ? state_.n[iSolute_] * 1000.0 / solventMass : 0.0;    // mol/kg
         const scalar dHconst =
             unitDict->found("operation")
                 ? unitDict->subDict("operation")
                           ->lookupScalarOrDefault("dHcryst", 0.0)
                 : 0.0;
         dHcrystPerMol_ = crystallisationHeatPerMol(
-            thermo, iSolute_, thermo.hasElectrolyte(), false, m0,
+            thermo, iSolute_, sat.useElec, sat.mixedSolvent, sat.m_sat,
             T_, dHconst, dHcrystSource_);
         std::cout << "  [BatchCrystalliser] dH_cryst = " << dHcrystPerMol_
                   << " J/mol  [" << dHcrystSource_ << "]\n";

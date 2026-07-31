@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch13_nacl_pitzer / constant/crystallisation
+
+  Kinetics in the SAME form as every other crystalliser in the corpus:
+      growth      G  = k_g (S-1)^g            [m/s]
+      nucleation  B0 = k_b (S-1)^b M_T^j      [#/(m^3 s)]
+
+  j = 0 (primary) so the unseeded charge bootstraps from S > 1.
+
+  ILLUSTRATIVE constants, and labelled as such: NaCl growth and nucleation
+  rates are strongly impurity- and hydrodynamics-dependent, and this case
+  exists to show WHERE the supersaturation comes from, not to publish a rate.
+  The thermodynamics (Pitzer, curated) is the part that is real here.
+\*---------------------------------------------------------------------------*/
+
+naclBatchKinetics
+{
+    growth
+    {
+        k_g   2.0e-8;     // m/s        (illustrative)
+        g     1.0;
+    }
+    nucleation
+    {
+        k_b   5.0e8;      // #/(m^3 s)  (illustrative)
+        b     2.0;
+        j     0.0;        // primary nucleation (unseeded bootstrap)
+    }
+}

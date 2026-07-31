@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch13_nacl_pitzer  --  batch crystalliser whose saturation comes from ION
+                           ACTIVITY, not from a solubility curve.
+
+  The sibling of batch05 (sugar), and deliberately so: same population balance,
+  same method of moments, same RK4 -- and a different route to the ONE number
+  the whole model turns on, the supersaturation S.
+
+  batch05 asks a molecular solubility curve for c_sat.  This case declares a
+  Pitzer package, so the saturated molality is the one that satisfies
+  Ksp = (gamma_pm * m_sat)^2 -- the ion activity product, solved for m_sat by
+  the SAME resolver the steady crystalliser uses.  A student can put the two
+  cases side by side and see that "supersaturation" is not one recipe: it is
+  whatever the declared thermodynamics says saturation is.
+
+  Until 2026-07-31 this case could not have been written honestly: the batch
+  model computed c/c_sat off the molecular curve and had no way to reach the
+  ionic route, which lived in an anonymous namespace inside the steady unit.
+  It would have resolved ions for its activity coefficients AND its heat of
+  crystallisation, then taken S from a curve -- silently.
+
+  A supersaturated brine (m0 ~ 7.6 mol/kg against m_sat ~ 6.14 at 25 C, the
+  state a post-evaporation liquor arrives in) relaxes: crystals nucleate and
+  grow, the dissolved salt depletes, S decays toward 1.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Batch NaCl crystalliser: saturation from the Pitzer ion activity, not a solubility curve";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         7200;     // s   (2 h)
+deltaT          2.0;      // s   (RK4 step)
+writeInterval   360;      // s
