@@ -72,6 +72,7 @@ Description
 #include "thermo/PropertyContext.H"
 #include "io/SolutionWriter.H"
 #include "thermo/Database.H"
+#include "thermo/SealCheck.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackageBuilder.H"
 #include "thermo/SaturationCurves.H"
@@ -459,7 +460,7 @@ try
     // materials/membranes/adsorbents, parameters/Henry/ for Henry, ...), so
     // they must ALL load unconditionally: loadFrom("") scans the case-local
     // dir alone (sealed), and the empty standards path is fs::exists-guarded.
-    MaterialRegistry::loadFrom(dataRoot.string());
+        MaterialRegistry::loadFrom(dataRoot.string());
     MembraneRegistry::loadFrom(dataRoot.string());
     AdsorbentRegistry::loadFrom(dataRoot.string());
     HenrysLawRegistry::loadFrom(dataRoot.string());
@@ -505,6 +506,14 @@ try
     // covers the LOAD phase too: the package/builder announcement chorus below
     // is gated at >= 2, same threshold as the flash's seed line.
     const int verbosity = static_cast<int>(controlDict->lookupScalarOrDefault("verbosity", 3));
+    //  The manifest says it verifies its claimed records by sha256.  The
+    //  importer did, and the offline gate does; the RUNTIME never did -- so
+    //  an edited mirrored record ran and MOVED THE ANSWER while the manifest
+    //  went on claiming the catalogue's provenance.  Announced, never
+    //  refused: the case belongs to its author, and the stale claim is the
+    //  defect, not the edit.
+    records::verifySeal(verbosity);
+
     thermoAnnounceLevel() = verbosity;
 
     // Aspen property architecture: a case SELECTS a propertyPackage (the builder

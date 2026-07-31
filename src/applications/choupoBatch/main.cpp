@@ -58,6 +58,7 @@ Description
 #include "thermo/solution/SolutionRegistry.H"
 #include "thermo/utility/UtilityCatalogue.H"
 #include "thermo/Database.H"
+#include "thermo/SealCheck.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/PropertyContext.H"
@@ -167,7 +168,7 @@ try
 
     if (!dataRoot.empty())
     {
-        MaterialRegistry::loadFrom(dataRoot.string());
+                MaterialRegistry::loadFrom(dataRoot.string());
         HenrysLawRegistry::loadFrom(dataRoot.string());
 
         SolutionRegistry::loadFrom(dataRoot.string());
@@ -200,6 +201,14 @@ try
     DisplayUnits::instance().readPrecision(controlDict);
 
     const int verbosity = static_cast<int>(controlDict->lookupScalarOrDefault("verbosity", 3));
+    //  The manifest says it verifies its claimed records by sha256.  The
+    //  importer did, and the offline gate does; the RUNTIME never did -- so
+    //  an edited mirrored record ran and MOVED THE ANSWER while the manifest
+    //  went on claiming the catalogue's provenance.  Announced, never
+    //  refused: the case belongs to its author, and the stale claim is the
+    //  defect, not the edit.
+    records::verifySeal(verbosity);
+
     thermoAnnounceLevel() = verbosity;   // gate the load-phase thermo chorus too
     const std::string application =
         controlDict->lookupWordOrDefault("application", "choupoBatch");
