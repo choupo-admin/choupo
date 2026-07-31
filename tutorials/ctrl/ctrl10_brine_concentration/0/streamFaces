@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/streamFaces -- the vessel's inlet face.
+
+  The same 3.0 mol/kg brine, entering cold at 25 C: the jacket has to hold
+  40 C against it.  Written in the APPARENT basis (water + NaCl), which is the
+  basis every stream in this project carries -- the ions are what the package
+  resolves IN it, never a second state.
+\*---------------------------------------------------------------------------*/
+
+time            0;
+faces
+{
+    "tank.feed"
+    {
+        bc          inlet;
+        T           298.15;
+        P           101300.0;
+        molarFlows
+        {
+            water   4.74363049e-04;
+            NaCl    2.56369510e-05;
+        }
+    }
+}

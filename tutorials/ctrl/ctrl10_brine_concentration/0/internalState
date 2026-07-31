@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/internalState -- the vessel's initial HOLDUP.
+
+  50 kg water + 8.77 kg NaCl = 3.00 mol/kg, at 25 C, to be warmed to 40 C by
+  the jacket loop.  Comfortably below the Pitzer saturation (~6.14 mol/kg at
+  25 C), so nothing crystallises: the point here is the ACTIVITY model
+  travelling through a transient, not a phase change.
+
+      water  2.775465 kmol   (50 kg / 18.015)
+      NaCl   0.150000 kmol   (3.0 mol/kg * 50 kg)
+\*---------------------------------------------------------------------------*/
+
+time            0;
+application     ctrl;
+
+units
+{
+    "tank"
+    {
+        type        dynamicCSTR;
+        T           298.15;
+        P           101300.0;
+        V           0.06;               // m^3 holdup
+        holdupMolar                     // kmol per species
+        {
+            water   2.775465;
+            NaCl    0.150000;
+        }
+    }
+}

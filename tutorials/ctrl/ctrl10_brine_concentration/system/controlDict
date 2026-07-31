@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl10_brine_concentration  --  the dynamic path carrying an ELECTROLYTE
+                                  package, which nothing in the corpus did.
+
+  A stirred tank fed a concentrated NaCl brine, held on temperature by a
+  jacket loop.  There is NO reaction: the vessel is a mixing dynamic, a
+  first-order lag on the holdup, which is the honest thing to model when the
+  point is the THERMODYNAMICS travelling through the transient rather than
+  kinetics.
+
+  Why it exists.  Speciation was a steady-state property of this project by
+  accident, not by decision: choupoSolve grew the two-bases contract, batch
+  got it on 2026-07-31, and choupoCtrl had never seen an electrolyte package
+  at all -- so nobody could say whether the contract held there.  It builds
+  the same ThermoPackage as the other two binaries and writes per-species
+  material at every accepted step; this case is what makes that testable
+  instead of assumed.
+
+  What a student sees: the jacket loop settling a brine whose activity
+  coefficients are Pitzer's, not ideal -- and the run saying so in its own
+  banner.  The material at every face is the apparent basis (water, NaCl),
+  the same basis the steady and batch cases carry.
+\*---------------------------------------------------------------------------*/
+
+application   choupoCtrl;
+description   "Dynamic brine tank on a Pitzer package: the electrolyte thermodynamics through a transient";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         600;      // s
+deltaT          1.0;      // s
+writeInterval   50;       // s

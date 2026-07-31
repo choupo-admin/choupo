@@ -1,0 +1,23 @@
+# ctrl10 is REFUSED, on purpose, and the refusal is the lesson.
+#
+# The dynamic CSTR's energy balance is a Cp/convective ODE: it needs a
+# liquidHeatCapacity per component.  A DISSOLVED SALT has none -- NaCl's
+# enthalpy rides the ionic route (aqueous inf-dilution reference + the
+# Criss-Cobble ion Cp(T) the builder announces two lines earlier), and a
+# "liquid Cp of NaCl" would be a fabricated number, not a missing one.
+#
+# So this case runs far enough to prove the PACKAGE reaches choupoCtrl -- the
+# Pitzer banner, the ion Cp(T) load, the molality VLE world all appear -- and
+# then stops, by name, at the one thing that cannot follow it:
+#
+#   ERROR: DynamicCSTR: component 'NaCl' has no liquidHeatCapacity entry
+#
+# That is roadmap item #1 (DEV.md): reformulate the dynamicCSTR energy
+# equation around a stored U(n,T)/H(n,T) so the first-law ledger can CLAIM
+# closure instead of honestly refusing.  Until then the dynamic path is
+# MOLECULAR-ONLY on the energy side, and this case is what says so out loud.
+#
+# Delete this file when the reformulation lands: the case should then run,
+# and its streamFaces should carry the two bases like every other stream in
+# the project.
+the dynamic energy balance is Cp-per-component; a dissolved salt has no liquid Cp (roadmap #1)

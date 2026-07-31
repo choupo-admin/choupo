@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl10_brine_concentration / flowsheetDict
+
+  ONE stirred vessel, NO reaction.  The dynamic CSTR tolerates an empty
+  reaction list, and that is exactly the model wanted here: the holdup is a
+  mixing lag, and the thermodynamics -- Pitzer activity coefficients on the
+  molality basis -- is what travels through it.
+
+  The jacket loop is the same PID shape as ctrl01: it acts on T_jacket to
+  hold the vessel temperature.  A brine tank held on temperature is what sits
+  upstream of every evaporator and crystalliser in the corpus.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        tank;
+        type        dynamicCSTR;
+
+        operation
+        {
+            UA           80.0;             // W/K   (jacket coupling)
+            T_jacket     298.15 K;         // K     (initial; the controller drives it)
+        }
+        //  No `reaction`: a salt in water does not react.  The vessel is a
+        //  mixing dynamic, and saying so is more honest than inventing a
+        //  pseudo-reaction to keep a reactor busy.
+    }
+);
+
+controllers
+(
+    {
+        name         TC1;
+        type         PID;
+
+        measurement  { unit tank;  cv T; }
+        actuator     { unit tank;  mv T_jacket; }
+
+        setpoint     313.15;    // K  (40 C -- a warmed feed tank)
+
+        gains
+        {
+            Kp       6.0;
+            Ki       0.06;      // tau_I = Kp/Ki = 100 s
+            Kd       0.0;
+        }
+
+        output
+        {
+            min      280.0;
+            max      360.0;
+            bias     298.15;    // jacket idles at the inlet temperature
+        }
+    }
+);
