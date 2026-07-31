@@ -26,7 +26,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-TABLE = ROOT / "data/standards/joback/groups.dat"
+#  Migration 2 (2026-07-16) moved the per-model parameter tables under
+#  parameters/; this gate kept pointing at the pre-migration path and so could
+#  not run at all -- which is also why it was never wired into runTests.
+TABLE = ROOT / "data/standards/parameters/Joback.dat"
 
 REL_TOL = 1.0e-6   # same method + same inputs must reproduce to round-off
 

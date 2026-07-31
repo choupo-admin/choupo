@@ -24,16 +24,30 @@ repo = Path(__file__).resolve().parents[2]
 
 def ion_hf(species):
     # The ion kind now lives ONLY as per-species records under
-    # components/true/aqueous/ (the monolithic electrolyte/ions.dat is gone).
-    f = repo / f"data/standards/components/true/aqueous/{species}.dat"
-    if not f.exists(): sys.exit(f"PIN FAIL: true/aqueous/{species}.dat not found")
+    # data/standards/species/ -- ONE medium-agnostic file per model species.
+    # This used to read components/true/aqueous/, a path retired when "true
+    # species" was banned and the five-home layout landed.  The gate was never
+    # updated, was never executable, and was never wired into runTests: it has
+    # been unable to run since that migration, while CLAUDE.md went on citing
+    # it as the refusal that makes the salt-enthalpy contract settled.  A gate
+    # that cannot run guards nothing.
+    f = repo / f"data/standards/species/{species}.dat"
+    if not f.exists(): sys.exit(f"PIN FAIL: species/{species}.dat not found")
     m = re.search(r"hfAq\s*\{[^}]*?value\s+(-?[\d.eE+]+)", f.read_text(), re.S)
-    if not m: sys.exit(f"PIN FAIL: ion '{species}' has no hfAq in true/aqueous/{species}.dat")
+    if not m: sys.exit(f"PIN FAIL: ion '{species}' has no hfAq in species/{species}.dat")
     return float(m.group(1))
 
 def salt_anchor(name):
     txt = (repo / f"data/standards/components/{name}.dat").read_text()
-    m = re.search(r"dissolutionEnthalpy\s+(-?[\d.]+)", txt)
+    #  BLOCK form first (`dissolutionEnthalpy { value -44510; unit J/mol; }`),
+    #  which is what the corpus writes; the bare `dissolutionEnthalpy -44510;`
+    #  is the legacy spelling and still reads.  The hfAq lookup above was
+    #  migrated to the block grammar and this one was not, so the gate reported
+    #  "NaOH.dat has no dissolutionEnthalpy" about a record that states it in
+    #  full, with a citation -- half a migration is a gate that accuses the
+    #  data of its own staleness.
+    m = re.search(r"dissolutionEnthalpy\s*\{[^}]*?value\s+(-?[\d.eE+]+)", txt, re.S) \
+        or re.search(r"dissolutionEnthalpy\s+(-?[\d.eE+]+)", txt)
     if not m: sys.exit(f"PIN FAIL: {name}.dat has no dissolutionEnthalpy")
     return float(m.group(1))
 

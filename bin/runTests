@@ -621,6 +621,135 @@ PYEOF
     fi
     rm -f /tmp/unread.$$
 
+    # ---- Curation gates that existed but never RAN ----------------------
+    # Eleven gates sat in bin/curate/ unwired; seven were not even
+    # executable.  Two were stale -- check_ion_pins read the retired
+    # components/true/aqueous/ layout and check_estimates the pre-Migration-2
+    # Joback path -- so the contracts CLAUDE.md calls settled on their
+    # strength had been unguarded since those migrations.  A gate that does
+    # not run guards nothing.
+
+    # the salt's solid formation is DERIVED from ions + dissolutionEnthalpy, never stored twice
+    if "$ROOT/bin/curate/check_ion_pins.py" > /tmp/check_ion_pins.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ion-pins-gate" "$(tail -1 /tmp/check_ion_pins.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ion_pins.py)\n" "ion-pins-gate"
+        cat /tmp/check_ion_pins.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_ion_pins.$$
+
+    # every structured Joback estimate reproduces its own recipe
+    if "$ROOT/bin/curate/check_estimates.py" > /tmp/check_estimates.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "estimates-gate" "$(tail -1 /tmp/check_estimates.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_estimates.py)\n" "estimates-gate"
+        cat /tmp/check_estimates.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_estimates.$$
+
+    # the aqueous speciation network resolves as curated
+    if "$ROOT/bin/curate/check_speciation.py" > /tmp/check_speciation.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "speciation-gate" "$(tail -1 /tmp/check_speciation.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_speciation.py)\n" "speciation-gate"
+        cat /tmp/check_speciation.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_speciation.$$
+
+    # the model-species records carry charge + medium-tagged thermo
+    if "$ROOT/bin/curate/check_true_ions.py" > /tmp/check_true_ions.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ion-records-gate" "$(tail -1 /tmp/check_true_ions.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_true_ions.py)\n" "ion-records-gate"
+        cat /tmp/check_true_ions.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_true_ions.$$
+
+    # mineral records and their dissolution reactions
+    if "$ROOT/bin/curate/check_minerals.py" > /tmp/check_minerals.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "minerals-gate" "$(tail -1 /tmp/check_minerals.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_minerals.py)\n" "minerals-gate"
+        cat /tmp/check_minerals.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_minerals.$$
+
+    # the Pitzer pair catalogue
+    if "$ROOT/bin/curate/check_pitzer_pairs.py" > /tmp/check_pitzer_pairs.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pitzer-pairs-gate" "$(tail -1 /tmp/check_pitzer_pairs.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pitzer_pairs.py)\n" "pitzer-pairs-gate"
+        cat /tmp/check_pitzer_pairs.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_pitzer_pairs.$$
+
+    # the eNRTL pair catalogue
+    if "$ROOT/bin/curate/check_enrtl.py" > /tmp/check_enrtl.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "enrtl-gate" "$(tail -1 /tmp/check_enrtl.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_enrtl.py)\n" "enrtl-gate"
+        cat /tmp/check_enrtl.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_enrtl.$$
+
+    # the gas-liquid (Henry) records
+    if "$ROOT/bin/curate/check_gases.py" > /tmp/check_gases.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gases-gate" "$(tail -1 /tmp/check_gases.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_gases.py)\n" "gases-gate"
+        cat /tmp/check_gases.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_gases.$$
+
+    # the mixing-rule records
+    if "$ROOT/bin/curate/check_mixing.py" > /tmp/check_mixing.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "mixing-gate" "$(tail -1 /tmp/check_mixing.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_mixing.py)\n" "mixing-gate"
+        cat /tmp/check_mixing.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_mixing.$$
+
+    # the group-contribution group table
+    if "$ROOT/bin/curate/check_groups.py" > /tmp/check_groups.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "groups-gate" "$(tail -1 /tmp/check_groups.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_groups.py)\n" "groups-gate"
+        cat /tmp/check_groups.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_groups.$$
+
+    # the ion-exchange resin records
+    if "$ROOT/bin/curate/check_ionexchange.py" > /tmp/check_ionexchange.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ionexchange-gate" "$(tail -1 /tmp/check_ionexchange.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ionexchange.py)\n" "ionexchange-gate"
+        cat /tmp/check_ionexchange.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_ionexchange.$$
+
     # flashComplex gate: the DESIGN-DRIVER case must keep closing.  It lives
     # in docs/design/, not tutorials/, because sealing it is an unresolved
     # CURATION question (ten component records differ from the catalogue in
