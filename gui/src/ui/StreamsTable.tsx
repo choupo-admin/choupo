@@ -124,6 +124,15 @@ export function StreamsTable() {
   // show it as a kg/h column whenever any stream carries solids, so a
   // cyclone's capturedSolids stream isn't mysteriously empty.
   const hasSolids = result.streams.some((s) => (s.F_solid_mass ?? 0) > 1e-12);
+  //  pH is THE column a reactive case is read across: the same water at three
+  //  points of a plant differs by its pH before it differs by anything else.
+  //  The per-species detail belongs in the Detail view (a table with one
+  //  column per ion would be unreadable side-by-side), but the table has to
+  //  SAY that a chemistry was solved -- without it, flash18 looked like a
+  //  case with no speciation at all.  Shown only when some stream carries
+  //  one; a stream without (an all-vapour line has no aqueous phase) reads
+  //  as a dash, which is the honest mark, not a zero.
+  const hasSpeciation = result.streams.some((s) => s.speciation?.pH !== undefined);
   const mws = result.componentMolarMass;
   // Mass fractions need MWs; fall back gracefully if the solver
   // didn't emit them (older binary, or a build without).
@@ -152,6 +161,7 @@ export function StreamsTable() {
     if (key === "T") return s.T;
     if (key === "P") return s.P;
     if (key === "vf") return s.vf ?? -1;
+    if (key === "pH") return s.speciation?.pH ?? -1;
     if (key === "solids") return s.F_solid_mass ?? 0;
     if (key.startsWith("x:")) {
       const c = key.slice(2); const ps = perStream[s.name];
@@ -176,6 +186,7 @@ export function StreamsTable() {
     const headers = [
       "#", "Stream", "Role", `F (${prefs.flow})`,
       `T (${temperatureLabel(prefs.temperature)})`, `P (${prefs.pressure})`, "vf",
+      ...(hasSpeciation ? ["pH"] : []),
       ...(hasSolids ? ["solids (kg/h)"] : []),
       ...components.map((c) => `${fracPrefix}_${c}`),
     ];
@@ -189,6 +200,7 @@ export function StreamsTable() {
         kToDisplay(s.T, prefs.temperature),
         paToDisplay(s.P, prefs.pressure),
         s.vf ?? "",
+        ...(hasSpeciation ? [s.speciation?.pH ?? ""] : []),
         ...(hasSolids ? [(s.F_solid_mass ?? 0) > 1e-12 ? (s.F_solid_mass ?? 0) * 3600 : ""] : []),
         ...components.map((c) => (massBasis ? ps?.massFrac[c] : ps?.molFrac[c]) ?? ""),
       ];
@@ -229,6 +241,15 @@ export function StreamsTable() {
             </Table.Th>
             {hasSolids && (
               <Table.Th style={{ textAlign: "right", ...thSort }} onClick={() => toggleSort("solids")}>solids (kg/h){arrow("solids")}</Table.Th>
+            )}
+            {hasSpeciation && (
+              <Table.Th
+                style={{ textAlign: "right", ...thSort }}
+                title="pH of the aqueous phase, from the speciation the package solved — the per-species breakdown is in the Detail view"
+                onClick={() => toggleSort("pH")}
+              >
+                pH{arrow("pH")}
+              </Table.Th>
             )}
             {components.map((c) => (
               <Table.Th key={c} style={{ textAlign: "right", ...thSort }} onClick={() => toggleSort(`x:${c}`)}>
@@ -290,6 +311,13 @@ export function StreamsTable() {
                     {(s.F_solid_mass ?? 0) > 1e-12
                       ? ((s.F_solid_mass ?? 0) * 3600).toFixed(2)
                     : "—"}
+                  </Table.Td>
+                )}
+                {hasSpeciation && (
+                  <Table.Td style={{ textAlign: "right" }}>
+                    {s.speciation?.pH === undefined
+                      ? "—"
+                    : s.speciation.pH.toFixed(3)}
                   </Table.Td>
                 )}
                 {components.map((c) => {
