@@ -6,7 +6,8 @@ next work — no need to reconstruct it from scattered notes.  Companion to
 [`RELEASING.md`](RELEASING.md) (how to cut a release) — this file is *where we
 are and what to do next*.
 
-*Last synced 2026-07-23.  Verify any number against the tree before relying on it.*
+*Last synced 2026-07-31.  Verify any number against the tree before relying on it —
+and prefer `generated/releaseInventory.json` to any number written in prose.*
 
 ---
 
@@ -29,12 +30,16 @@ are and what to do next*.
   Publishing is a hand act, one command, in `RELEASING.md`.  **The top-bar
   badge (`Choupo-dev · <commit>`) is the staleness check** — if it is not the
   commit you pushed, the deploy did not land.
-- **Health:** full regression **299 / 0** (4 deliberate EXPECTED-FAILs);
-  GUI vitest ~1834; four quality gates green (doctrine, tree, retired-name,
-  seal-drift, element/ctrl balance).
-- **Scale:** 4 binaries, 49 unit-operation models, 288 runnable tutorials
-  (255 golden-master pinned); catalogue 247 components, 205 Henry pairs,
-  55 Pitzer + eNRTL sets.
+- **Health:** run `bin/runTests` — it prints the verdict, and a verdict copied
+  into prose is a verdict that drifts.  This line used to read "299 / 0" and
+  the suite had been at 344 / 0 for a while.
+- **Scale:** **do not read a count from here.**  The single source of truth is
+  `bin/curate/release_inventory.py` → `generated/releaseInventory.json`
+  (components, species, pair catalogues, unit-op models, runnable cases), and a
+  `runTests` gate fails when it goes stale.  CLAUDE.md §6 already says the
+  tally must not be hand-maintained "and that includes HERE" — this file was
+  carrying its own copy anyway (288 tutorials against 306 in the generated
+  inventory), which is the arity sin in the very document that warns about it.
 
 ## 2. The architecture in one page (pointers, not a re-derivation)
 
@@ -111,6 +116,26 @@ ones for day-to-day work:
    (`FixedBedAdsorber::energyLedgerGap()` names A4; flow reversal refuses as
    an A5 step).  Close them to complete the adsorption programme.
 
+## 4b. Waiting on Vítor (not blocked — each CHANGES WHAT THE ENGINE REFUSES)
+
+These are decisions, not tasks.  Work continues around them; none should be
+taken by a helper, because each one makes the engine refuse something it
+accepts today, and that is a policy call.
+
+1. **Unread dict keys.**  A misspelt key (`murphreeEficiency`) runs silently
+   with the default.  Proposal, with the three candidate strictness levels:
+   [`docs/design/unread-dict-keys-proposal.md`](docs/design/unread-dict-keys-proposal.md).
+2. **`role` vocabulary migration** — `data/tmp/_ROLE_VOCABULARY_GAP.md`.
+3. **flashComplex's 10 divergent component records** — adopt into the
+   catalogue, or keep the case out of `tutorials/`?  Its README carries the
+   numbers; this is the reason the hardest case the solver runs lives in
+   `docs/design/` and is gated separately.
+4. **Seal divergence: announce or refuse?**  The runtime now hashes every
+   record a sealed manifest claims and SAYS which diverged (2026-07-31).  It
+   does not refuse — editing your own case is exactly what a glass-box
+   simulator is for, and only Vítor should decide that a stale provenance line
+   stops a run.
+
 ## 5. Known debts (severity-ish)
 
 1. **SEAL DRIFT — awaiting Vítor's decision.**  Sealed copies differ from the
@@ -122,14 +147,12 @@ ones for day-to-day work:
 4. **Docs with partially-superseded "settled" sections** (a deeper pass than the
    2026-07-23 nomenclature sync — needs electrolyte-domain care, so do it with
    Vítor, not autonomously):
-   - `CLAUDE.md` §"Electrolyte data tree" says "**7 homes**" but two of the seven
-     were retired after that 2026-07-01 note: `phases/solid/` (minerals folded
-     into `components/` `solidPhases{}`, 2026-07-18) and `methods/` (a model's
-     reference rung now lives in the case's `thermoPhysPropDict`
-     `equilibrium.<phase>.standardState`); the "property PACKAGE" home is now the
-     inline dict.  So it is really ~4 standing data homes + the case dict.  The
-     live data homes in `data/standards/` are: `components/ species/ chemistry/
-     parameters/ assets/ mixtures/ utilities/`.
+   - ~~`CLAUDE.md` §"Electrolyte data tree" says "7 homes"~~ — **CLOSED
+     2026-07-28**: it now says 5, names the retired `methods/` and
+     `phases/solid/` explicitly, and tells the reader to verify against
+     `ls data/standards/` because the count has drifted once.  (A debt list
+     that still lists a paid debt is the same drift one level up, which is
+     why this line is struck rather than deleted.)
    - `docs/engine-capabilities.md` still narrates the retired `children`/`boundary`
      flowsheet grammar in places (343 lines, its own pass).
    Content is correct in the CODE; only the settled-note prose lags.
