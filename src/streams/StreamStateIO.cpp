@@ -514,13 +514,51 @@ ProcessStream readStreamState(const fs::path&       file,
 
         //  Read the totals, and the SOLVENT, which is a component and not a
         //  master (it is the medium the molalities are referenced to).
+        //  A KEY THAT NAMES A COMPONENT IS THAT COMPONENT, not a master.
+        //
+        //  The solvent was always read this way -- it is a component and not a
+        //  master, being the medium the molalities are referenced to -- but it
+        //  was the ONLY one, so every other non-species key fell through to
+        //  the master path and the reader went looking for a species record
+        //  that does not and will not exist.  A drowning-out crystalliser
+        //  wrote `ethanol` in its mother liquor and got "aqueous species
+        //  record ('species/ethanol.dat') is NOT in the case's constant/
+        //  tree -- re-run bin/choupo-import", which blames the seal for a
+        //  file no importer would ever install.
+        //
+        //  So the species basis could express a stream only when every
+        //  component in it was the solvent or dissolved: it was unusable for
+        //  mixed-solvent electrolyte cases, which is most of the
+        //  crystallisation corpus.
+        //
+        //  COMPONENT FIRST is also the correct precedence, not just the
+        //  convenient one: a derived neutral may be homonymous with a
+        //  component (CaCO3aq against the salt CaCO3 -- the `aq` suffix
+        //  exists for exactly this), so resolving the component name first is
+        //  what keeps the two identity spaces apart.
         std::map<std::string, scalar> mTot;      // master -> kmol/s
+        std::map<std::size_t, scalar> compTot;   // component index -> kmol/s
         scalar solventFlow = -1.0;
         const std::string solventName = thermo.comp(solventIdx).name();
         for (const auto& k : blk->keys())
         {
             if (k == "network" || k == "basis") continue;
             if (k == solventName) { solventFlow = blk->lookupScalar(k); continue; }
+            //  indexOf THROWS on an unknown name, so it cannot be used to
+            //  ask "is this a component?" -- the question has to be asked by
+            //  looking, or a species name aborts the read.
+            std::size_t ci = thermo.n();
+            for (std::size_t i = 0; i < thermo.n(); ++i)
+                if (thermo.comp(i).name() == k) { ci = i; break; }
+            if (ci < thermo.n() && !thermo.comp(ci).hasAqueousMapping())
+            {
+                //  A declared component that does NOT bridge to species: it is
+                //  carried as itself.  One that DOES bridge (the salt) must be
+                //  written in its ions here -- writing both would give the
+                //  same matter two homes in one block.
+                compTot[ci] += blk->lookupScalar(k);
+                continue;
+            }
             mTot[k] += blk->lookupScalar(k);
         }
         if (solventFlow < 0.0)
@@ -634,6 +672,8 @@ ProcessStream readStreamState(const fs::path&       file,
         }
         for (std::size_t c = 0; c < nc; ++c) overall[cols[c]] += nSol[c];
         overall[solventIdx] += solventFlow;
+        //  ...and the non-bridging components, carried as themselves.
+        for (const auto& [ci, v] : compTot) overall[ci] += v;
         (void)net;
     };
 
