@@ -204,9 +204,15 @@ ones for day-to-day work:
    batch22_wall_cooled pins the containment bracketing (t_50 856 s
    between the adiabatic 806 and isothermal 3036; T_max 312.3 K between
    T_wall and 336) with energy claimed at 2.7e-4; the desync sabotage
-   is caught by the witness golden.  STILL REFUSING, named: pressure
-   swing / blowdown (transient c_tot), flow transients (transient
-   Ergun), flow reversal — plus A6 cyclic steady state.  Close those to
+   is caught by the witness golden.  **batch23_tsa_cycles (2026-08-01)**
+   runs THREE full TSA cycles with today's grammar (fifteen ledgered
+   amendments, energy claimed across ten switches) and MEASURES the CSS
+   approach: end-of-cycle qbar 0.3151 → 0.2415 → 0.1748, ratio ~0.9,
+   not converged — the A6 question made visible.  A6 proper (declared
+   cycles, per-cycle snapshots, tri-state CSS verdict, stop-at-CSS) is
+   PROPOSED in the design note §7 → §4b decision queue.  STILL
+   REFUSING, named: pressure swing / blowdown (transient c_tot), flow
+   transients (transient Ergun), flow reversal.  Close those + A6 to
    complete the programme.
 
 ## 4b. Waiting on Vítor (not blocked — each CHANGES WHAT THE ENGINE REFUSES)

@@ -22,14 +22,19 @@
   KPIs are end-of-cycle values.  Every switch re-declares the feed
   commitment through the T1.5 ledger machinery (the T switches retire
   and redeclare the WHOLE commitment; the composition switches amend by
-  delta) -- ELEVEN feedAmendment records, and the campaign mass/element/
-  energy balances still close on records, never jumps.
+  delta) -- FIFTEEN feedAmendment records (three per switching instant:
+  the composition delta + the T retire/declare pair), and the campaign
+  mass/element/energy balances still close on records, never jumps.
 
   The A6 QUESTION this case makes visible (and does not yet verdict):
   does the bed state at successive cycle ends approach a fixed point --
-  the cyclic steady state?  The qbar_CO2 trajectory column shows the
-  approach (read it at t = 7200, 14400, 21600); the golden pins the
-  third-cycle end.  A first-class CSS verdict (declared cycles, per-
+  the cyclic steady state?  MEASURED (this case's own run): qbar_CO2 at
+  the three cycle ends is 0.3151 -> 0.2415 -> 0.1748 mol/kg -- a slow
+  geometric approach (ratio ~0.9; each purge leaves residual heat, the
+  next load starts warmer and holds less), NOT yet converged in three
+  cycles.  That unfinished convergence IS the pedagogical point: eyes
+  on a trajectory can see it, and only the A6 verdict machinery could
+  CLAIM it.  The golden pins the third-cycle end.  A first-class CSS verdict (declared cycles, per-
   cycle state snapshots, an invariance tolerance the case declares) is
   an ARCHITECTURE feature -- proposed in
   docs/design/fixed-bed-thermal-a5.md section 7, awaiting Vitor's
