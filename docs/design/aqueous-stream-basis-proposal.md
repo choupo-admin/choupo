@@ -385,17 +385,39 @@ default today, so nothing is wrong now; but a silent structural default is the
 pattern this project refuses everywhere else, and it should be a refusal or a
 required override.
 
-### 10.2 Slice B -- the solvent convention in a species-written file
+### 10.2 Slice B -- a species-written stream could not carry an antisolvent
+**SHIPPED 2026-07-31.**
 
-Twelve cases refuse because a file written in species still needs its solvent
-amount, and the mechanical rewrite did not carry it.  The refusal is correct;
-what is undecided is the CONVENTION: does a species-written stream name the
-solvent alongside the ions (as flash18 does, `water 97.0 kmol/h;`), and is
-that the only form?  flash18 answers it for one case by hand.  A general
-migration answers it for every author, and that is a decision about the file
-format, not a bug to fix.
+*This section first said the open question was the SOLVENT convention.  It was
+not: the convention was already decided and enforced -- name the solvent in the
+block, as flash18 does, and the reader refuses otherwise.  The twelve refusals
+were the probe dropping it, not the format being undecided.*
+
+The real gap sat one component further out.  Every key that was not the solvent
+fell through to the MASTER path, so a drowning-out crystalliser writing
+`ethanol` in its mother liquor got
+
+    ERROR: aqueous species record ('species/ethanol.dat') is NOT in the case's
+    constant/ record tree -- re-run `bin/choupo-import`
+
+blaming the seal for a file no importer will ever install, because ethanol is a
+component and never an aqueous species.  So the species basis could express a
+stream only when every component in it was the solvent or dissolved: unusable
+for mixed-solvent electrolyte cases, which is most of the crystallisation
+corpus.
+
+A key naming a package COMPONENT is now read as that component -- which is what
+the solvent already was, it was simply the only one.  COMPONENT FIRST is the
+correct precedence and not merely the convenient one: a derived neutral may be
+homonymous with a component (`CaCO3aq` against the salt `CaCO3`, which is what
+the `aq` suffix exists for).  A component that DOES bridge must still be written
+in its ions; accepting both would give one lot of matter two homes in one block.
+
+Verified by equivalence: `crystalliser06`'s motherLiquor written as
+`Cl / Na / water / ethanol` produces BYTE-IDENTICAL crystals.
 
 ### 10.3 What this changes about the endgame
+**Both slices shipped the same day the measurement was taken.**
 
 The measurement's useful surprise is the **zero**: no case took the species
 basis and produced a different answer.  The risk in general reconciliation was
