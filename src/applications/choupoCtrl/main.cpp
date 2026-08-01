@@ -60,6 +60,8 @@ Description
 #include "control/signal/Signal.H"
 #include "core/Banner.H"
 #include "core/Dictionary.H"
+#include "outerDriver/OuterDriver.H"
+#include "streams/StreamOverrides.H"
 #include "core/DisplayUnits.H"
 #include "materials/MaterialRegistry.H"
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
@@ -344,21 +346,45 @@ try
         throw std::runtime_error("constant/thermoPhysPropDict must declare"
             " `recordType thermophysicalPropertySystem;` (the ONE case"
             " grammar).");
+
+    // =====================================================================
+    //  THE CAMPAIGN AS A PURE FUNCTOR (the choupoSolve `simulate` posture):
+    //  given a flowsheet dict, build the package, the units and the
+    //  controllers FRESH, integrate the campaign, and return the result.
+    //  `writeOutputs` gates every artefact (trajectory.csv, instant dirs,
+    //  balanceTrajectory.*, the JSON) so an outer driver's inner
+    //  evaluations touch nothing on disk; `vb` gates the chatter.  This is
+    //  what lets system/outerDict wrap choupoCtrl exactly as it wraps
+    //  choupoSolve.
+    // =====================================================================
+    auto runCampaign = [&](const DictPtr& fsDict, bool writeOutputs, int vb)
+        -> SimulationResult
+    {
+    const int verbosity = vb;
+    thermoAnnounceLevel() = vb;
     ThermoPackage thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);
 
     // ---- Build dynamic units -----------------------------------------
-    auto unitList = flowsheetDict->lookupDictList("units");
+    auto unitList = fsDict->lookupDictList("units");
     if (unitList.empty())
         throw std::runtime_error("choupoCtrl: flowsheetDict has no units");
+
+    //  Seed initial holdup + inlet from 0/ INSIDE the functor: an outer
+    //  driver's dict clones do not carry runtime-inserted blocks, so each
+    //  pass seeds its own copy.  The authored-inline refusal still fires
+    //  (a clone mirrors the authored file); a dict this process already
+    //  seeded is skipped, never re-refused.
+    {
+        bool needSeed = false;
+        for (const auto& uDict : unitList)
+            if (!uDict->found("initial")) { needSeed = true; break; }
+        if (needSeed) seedDynamicUnitsFrom0(unitList);
+    }
 
     std::vector<std::unique_ptr<DynamicUnitOperation>> units;
     std::vector<std::string>                            unitNames;
     units.reserve(unitList.size());
     unitNames.reserve(unitList.size());
-
-    // Seed initial holdup + inlet from 0/ (single source of truth; inline
-    // initial{}/inlet{} does not exist) BEFORE each unit initialises itself.
-    seedDynamicUnitsFrom0(unitList);
 
     for (const auto& uDict : unitList)
     {
@@ -385,9 +411,9 @@ try
     // ---- Build controllers -------------------------------------------
     std::vector<std::unique_ptr<Controller>> controllers;
     std::vector<std::string>                  ctrlNames;
-    if (flowsheetDict->found("controllers"))
+    if (fsDict->found("controllers"))
     {
-        auto ctrlList = flowsheetDict->lookupDictList("controllers");
+        auto ctrlList = fsDict->lookupDictList("controllers");
         controllers.reserve(ctrlList.size());
         ctrlNames.reserve(ctrlList.size());
         for (const auto& cDict : ctrlList)
@@ -414,7 +440,7 @@ try
     //  The instant directory IS the real physical time (seconds).  Each unit
     //  contributes its HOLDUP internalState + an instantaneous outlet face.
     std::unique_ptr<SolutionWriter> solWriter;
-    if (solutionCtl.write)
+    if (solutionCtl.write && writeOutputs)
     {
         std::vector<std::string> compNames;
         compNames.reserve(thermo.n());
@@ -425,8 +451,9 @@ try
     }
 
     // ---- Trajectory CSV header --------------------------------------
-    std::ofstream csv("trajectory.csv");
-    if (!csv)
+    std::ofstream csv;
+    if (writeOutputs) csv.open("trajectory.csv");
+    if (writeOutputs && !csv)
         throw std::runtime_error("choupoCtrl: cannot open trajectory.csv");
     csv << "t";
     for (const auto& u : units)
@@ -585,7 +612,7 @@ try
         { if (available) { available = false; reason = why; } }
     };
     CtrlBalanceLedger ledger;
-    ledger.csv.open("balanceTrajectory.csv");
+    if (writeOutputs) ledger.csv.open("balanceTrajectory.csv");
     // Element columns are decided AT INIT: if every loaded formula parses,
     // the trajectory carries per-element series; otherwise the elemental
     // claim is withheld (named in the metadata sidecar, never a zero).
@@ -871,6 +898,7 @@ try
     // stepping) can never leave a sidecar claiming what the KPIs withdrew.
     auto writeLedgerMeta = [&]()
     {
+        if (!writeOutputs) return;
         std::ofstream meta("balanceTrajectory.meta");
         meta << "key,value\n"
              << "material_available," << (ledger.available ? 1 : 0)
@@ -1227,10 +1255,37 @@ try
                                   : ledger.energyReason) << "\n";
             }
         }
-        emitResultJson(std::cout, result);
+        if (writeOutputs) emitResultJson(std::cout, result);
+        return result;
+    }
+    };  // runCampaign
+
+    // ---- outerDict: the driver layer over the campaign functor ----------
+    //  Present -> the SAME OuterDriver architecture choupoSolve uses wraps
+    //  the dynamic campaign: the driver clones + mutates the flowsheet dict
+    //  (controller schedules included -- a piecewise-constant control
+    //  profile IS a Schedule), each inner evaluation runs silent and
+    //  writes nothing, and the driver's representative final pass is
+    //  emitted.  Absent -> one direct pass, byte-identical to before.
+    if (fs::exists("system/outerDict"))
+    {
+        auto outerDict = Dictionary::fromFile("system/outerDict");
+        OuterDriver::registerBuiltins();
+        auto driver = OuterDriver::New(outerDict);
+        driver->setSimulator([&](const DictPtr& d, const StreamOverrides&)
+            { return runCampaign(d, false, std::min(verbosity, 1)); });
+        driver->setFlowsheetDict(flowsheetDict);
+        const int rc = driver->run();
+        if (driver->hasFinalResult())
+            emitResultJson(std::cout, driver->finalResult());
+        return rc;
     }
 
-    return 0;
+    {
+        const SimulationResult result =
+            runCampaign(flowsheetDict, true, verbosity);
+        return result.converged ? 0 : 1;
+    }
 }
 catch (const std::exception& e)
 {

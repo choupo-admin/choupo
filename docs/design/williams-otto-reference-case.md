@@ -1,6 +1,9 @@
 # Williams-Otto reference case — primary specification and build plan
 
-Status: **anchors 1-3 SHIPPED 2026-08-01** (`ctrl12` the steady state to
+Status: **ALL FOUR ANCHORS SHIPPED 2026-08-01** (anchor 4: ctrl16, J =
+546.8 vs 551.8 published — 99.1 % from K = 5 single shooting via the
+first outerDict-over-choupoCtrl; §5.2's path constraint deferred, named).
+Originally: anchors 1-3 shipped (`ctrl12` the steady state to
 all printed digits; `ctrl13` the Fig.-2 step, 3.901 -> 4.446 klb/h;
 `ctrl14` the Fig.-4 PI tracking, peaks 4.634@14h / 22.89@8h on the
 figure's own shape).  Anchor 4 (the section-5 optima with the

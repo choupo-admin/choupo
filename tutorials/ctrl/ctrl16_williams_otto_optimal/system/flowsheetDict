@@ -1,0 +1,74 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl16_williams_otto_optimal / flowsheetDict
+
+  One unit, because the benchmark IS one equation set: the Williams-Otto
+  reactor + decanter + column + splitter fold into six ODEs (the recycle
+  term (1-eta)mu, the removed G, the 0.1 F_tE column retention are all
+  inside them -- see the unit's own header).  The five controls sit in
+  `operation`, declared SI: with the MW 453.592 convention (1 kmol == 1
+  klb) every numeral below IS the paper's value in klb/h.
+
+  The section-5.3 combined optimisation: system/outerDict shapes the two
+  profiles below to maximise J = yield - waste (alpha = beta = 1,
+  eq. 5.7), read straight off the plant's J_combined_klb_final KPI.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        plant;
+        type        williamsOttoPlant;
+
+        operation
+        {
+            F_fA    10.0  kmol/h;     // == 10 klb/h   (the paper's F*_fA)
+            F_fB    20.0  kmol/h;     // == 20 klb/h
+            mu      129.5 kmol/h;     // == 129.5 klb/h
+            eta     0.2;
+        }
+    }
+);
+
+controllers
+(
+    //  The K = 5 piecewise-constant CONTROL PROFILES the optimiser shapes:
+    //  a profile segment is a Schedule entry, and the outer driver varies
+    //  `controllers[i].schedule[j].value` by setScalarAtPath -- the same
+    //  programmatic-dict mechanism every steady optimisation uses.  Values
+    //  are SI (kmol/s == klb/h over 3600; K): the initials below are the
+    //  nominal u* held flat.
+    {
+        name         FfBprof;
+        type         Schedule;
+        actuator     { unit plant;  mv F_fB; }
+        schedule
+        (
+            { time 0;       value 5.5555556e-3; }
+            { time 72000;   value 5.5555556e-3; }
+            { time 144000;  value 5.5555556e-3; }
+            { time 216000;  value 5.5555556e-3; }
+            { time 288000;  value 5.5555556e-3; }
+        );
+    }
+    {
+        name         Tprof;
+        type         Schedule;
+        actuator     { unit plant;  mv T; }
+        schedule
+        (
+            { time 0;       value 322.2222; }
+            { time 72000;   value 322.2222; }
+            { time 144000;  value 322.2222; }
+            { time 216000;  value 322.2222; }
+            { time 288000;  value 322.2222; }
+        );
+    }
+);

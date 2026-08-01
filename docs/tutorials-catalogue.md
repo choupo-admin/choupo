@@ -156,6 +156,8 @@ annotated index of what each one demonstrates.
 
 | `ctrl14_williams_otto_pi` | **Runs under `choupoCtrl`.**  The paper's setpoint-tracking experiment (arXiv:2004.07614 §4.2, Fig. 4): the PI channel (F_fB, F_pP) of eq. 4.6 with the paper's own Skogestad-IMC tunings (K₃ᵖ = 0.069 dimensionless, K₃ⁱ = 1.282 h⁻¹ → 3.5611×10⁻⁴ s⁻¹, the one stated conversion) drives F_pP 3.90 → 4.5 klb/h.  The whole Fig.-4 shape lands: F_pP peaks at 4.634 klb/h @ 14 h (figure ~4.6 @ 10-15 h), F_fB peaks at 22.89 klb/h @ 8 h (figure ~22.9 @ 8 h) and settles on the ~21.1 plateau.  Starts AT ctrl12's converged x* with the PI on from t = 0 — the paper's t* = 100 h activation with the flat prefix removed |
 
+| `ctrl16_williams_otto_optimal` | **Runs under `choupoCtrl`.**  The §5.3 combined optimisation of arXiv:2004.07614 — and the first `system/outerDict` over a DYNAMIC campaign: the same OuterDriver architecture every steady optimisation uses, Nelder-Mead over `controllers[i].schedule[j].value` (a piecewise-constant control profile IS a Schedule), objective read off the plant's `J_combined_klb_final` ODE-state integral.  MEASURED: **J = 546.8 vs the published collocation optimum 551.8 — 99.1 % from 10 shooting variables** (yield 605.4/608.3, waste 58.6/56.5), 530 campaign evaluations in ~7 s, optimiser directions matching the paper's Fig. 8; the missing 0.9 % is the bang-bang fine structure a K = 5 profile cannot draw, stated up front and measured instead of hidden.  The §5.2 path-constrained variant (SQP over a noisy functor) stays deferred, named |
+
 
 ## Regression-focused cases
 

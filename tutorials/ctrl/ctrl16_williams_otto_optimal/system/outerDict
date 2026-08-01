@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  outerDict -- the section-5.3 combined optimisation (arXiv:2004.07614):
+
+      maximise  J = INT F_pP dt - INT F_wG dt      (eq. 5.7, alpha=beta=1)
+
+  over K = 5 piecewise-constant segments of F_fB(t) and T(t), tf = 100 h,
+  from the nominal steady state, bounds the paper's (0 <= F_fB <= 56 klb/h,
+  200 <= T <= 800 degR -> 111.1..444.4 K).  Nelder-Mead single shooting.
+
+  EXPECTATION, STATED UP FRONT (and kept after the measurement): the
+  paper's optimum (J = 608.3 - 56.5 = 551.8) is a 200-element collocation
+  solution whose F_fB is bang-bang; a 10-variable K = 5 shooting
+  parameterisation cannot represent that profile and lands below it.
+  MEASURED: J = 546.8 (yield 605.4, waste 58.6) in 388 Nelder-Mead
+  iterations / 530 campaign evaluations -- 99.1 % of the collocation
+  optimum from 10 variables, the remaining 0.9 % being exactly the
+  bang-bang fine structure this parameterisation cannot draw.  Raise K
+  and watch it close further.
+\*---------------------------------------------------------------------------*/
+
+type    optimization;
+method  nelderMead;
+
+variables
+(
+    { path controllers[0].schedule[0].value;  min 0.0;  max 1.5555556e-2;  initial 5.5555556e-3; }
+    { path controllers[0].schedule[1].value;  min 0.0;  max 1.5555556e-2;  initial 5.5555556e-3; }
+    { path controllers[0].schedule[2].value;  min 0.0;  max 1.5555556e-2;  initial 5.5555556e-3; }
+    { path controllers[0].schedule[3].value;  min 0.0;  max 1.5555556e-2;  initial 5.5555556e-3; }
+    { path controllers[0].schedule[4].value;  min 0.0;  max 1.5555556e-2;  initial 5.5555556e-3; }
+    { path controllers[1].schedule[0].value;  min 111.11;  max 444.44;  initial 322.2222; }
+    { path controllers[1].schedule[1].value;  min 111.11;  max 444.44;  initial 322.2222; }
+    { path controllers[1].schedule[2].value;  min 111.11;  max 444.44;  initial 322.2222; }
+    { path controllers[1].schedule[3].value;  min 111.11;  max 444.44;  initial 322.2222; }
+    { path controllers[1].schedule[4].value;  min 111.11;  max 444.44;  initial 322.2222; }
+);
+
+objective
+{
+    kind     kpi;
+    path     plant.J_combined_klb_final;
+    sense    maximise;
+}
+
+options
+{
+    maxIter   600;
+    tolF      1e-3;    // klb on a ~511 objective -- converged when the
+                       // simplex stops buying product
+}

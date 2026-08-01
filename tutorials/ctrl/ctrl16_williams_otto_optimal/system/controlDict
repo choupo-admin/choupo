@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl16_williams_otto_optimal  --  the section-5 optimisation anchor, on
+                                    the honest side of its own limits.
+
+  arXiv:2004.07614 section 5.3: maximise J = INT F_pP dt - INT F_wG dt
+  (alpha = beta = 1) over F_fB(t) and T(t), tf = 100 h, from the nominal
+  steady state.  Published optimum: yield 608.3, waste 56.5 -> J = 551.8,
+  computed by 200-finite-element collocation; the optimal F_fB is
+  bang-bang.
+
+  This case wraps the SAME campaign in the SAME OuterDriver architecture
+  every steady optimisation uses -- system/outerDict + Nelder-Mead over
+  `controllers[i].schedule[j].value` (a piecewise-constant control profile
+  IS a Schedule) -- with K = 5 segments per control.  MEASURED: J = 546.8
+  against the published 551.8 -- 99.1 % of the collocation optimum from
+  10 shooting variables, in 530 campaign evaluations (~7 s); the missing
+  0.9 % is the bang-bang fine structure a K = 5 profile cannot draw, and
+  the optimiser's directions match the paper's Fig. 8 (F_fB driven high,
+  T eased down toward ~540 degR).  The golden pins OUR optimum
+  (deterministic from the declared initials); the paper's number is the
+  ceiling the case teaches against.
+\*---------------------------------------------------------------------------*/
+
+application   choupoCtrl;
+description   "Williams-Otto section-5.3 combined optimisation: Nelder-Mead over two K=5 Schedule profiles, J measured against the published collocation optimum 551.8";
+
+verbosity     3;
+
+startTime       0;         // s
+endTime         360000;    // s  (100 h, the paper's tf)
+deltaT          60;        // s
+writeInterval   36000;     // s
