@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch21_tsa_hot_purge / system/controlDict
+
+  Load 0..3600 s (batch20's adiabatic feed), hot clean purge (400 K He)
+  3600..12000 s.  The golden pins the regeneration verdict against
+  batch19's COLD concentration swing: the hot purge must strip the bed
+  much further in the same purge window (q*(400 K) collapses via the
+  same van't Hoff dH_ads the energy balance prices), with the campaign
+  energy balance CLAIMED across the swing.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "T1.5 TSA half-cycle: adiabatic load to 3600 s, then 400 K clean He purge -- feed.T as the hot-purge control, the re-declared commitment ledgered OUT at 298 K / IN at 400 K, energy balance claimed across the swing";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         12000;    // s   (3600 load + 8400 hot purge)
+deltaT          0.05;     // s   (unused: thermal requires adaptive)
+writeInterval   100;      // s
+timeStepping    adaptive; // Rosenbrock23 (REQUIRED in thermal mode)

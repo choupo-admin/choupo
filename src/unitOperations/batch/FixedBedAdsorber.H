@@ -132,11 +132,17 @@ Description
     record (nothing exchanged); the campaign energy balance is CLAIMED on
     per-cell vessel enthalpy (gas + adsorbed at T_j, solid sensible
     cp_s(T_j - T0)) against boundary streams whose per-step packages
-    carry the outlet cell's own T.  Wall heat (T2), feed.T hot purge
-    (T1.5) and fixed stepping in thermal mode refuse by name -- gate
-    check_thermal_bed, sabotage-verified.  Witness:
-    batch20_thermal_breakthrough; design:
-    docs/design/fixed-bed-thermal-a5.md.
+    carry the outlet cell's own T.  T1.5: `feed.T` is the HOT-PURGE
+    control (thermal mode only -- isothermal still refuses, pointing at
+    the declaration that unlocks it): a feed at a new T re-declares the
+    WHOLE remaining commitment, retire OUT at T_old + declare IN at
+    T_new (pinned-P ideal-gas scaling; the enthalpy repricing rides in
+    the packages' own T), crossings freeze for every integrated species
+    and the pre-run claims (u_th, DT_ad) stay the ANNOUNCED values.
+    Wall heat (T2) and fixed stepping in thermal mode refuse by name --
+    gate check_thermal_bed, sabotage-verified both slices.  Witnesses:
+    batch20_thermal_breakthrough (T1), batch21_tsa_hot_purge (T1.5);
+    design: docs/design/fixed-bed-thermal-a5.md.
 
     In the ISOTHERMAL modes, energy stays outside the flow slice as
     before: A3's energyLedgerGap() names its gap and vesselEnthalpy()
@@ -256,7 +262,17 @@ private:
     //  DECLARED case data (operation.solidHeatCapacity{}, kLDF pattern).
     bool   thermal_ = false;
     scalar cpS_ = 0.0;        // solid heat capacity [J/(kg K)], declared
-    scalar cpgFeed_ = 0.0;    // feed-gas mixture Cp_ig at T_ [J/(mol K)]
+    scalar cpgFeed_ = 0.0;    // feed-gas mixture Cp_ig at Tfeed_ [J/(mol K)]
+    //  T1.5: the FEED temperature -- a CONTROL in thermal mode (the TSA
+    //  hot purge, recipe setParameter feed.T), the declared T otherwise.
+    //  cFeedTot_ = P/(R Tfeed): the feed's total concentration, which a
+    //  hot feed LOWERS at the pinned feed pressure.
+    scalar Tfeed_ = 0.0;
+    scalar cFeedTot_ = 0.0;
+    //  Frozen pre-run claims (announced at initialise; a later feed
+    //  switch must not silently rewrite what was claimed).
+    scalar uThAnn_ = 0.0;               // announced thermal-wave velocity
+    std::vector<scalar> dTadAnn_;       // announced DT_ad bound per species
     scalar Pout_ = 0.0;       // downstream pressure [Pa]
     scalar muGas_ = 0.0;      // optional declared test override [Pa.s]
     scalar dParticle_ = 0.0;  // adsorbent identity [m]

@@ -1,0 +1,96 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch21_tsa_hot_purge  --  THE T1.5 WITNESS: a real TSA half-cycle.
+
+  batch20's adiabatic bed run as LOAD -> HOT CLEAN PURGE in one campaign:
+
+      0 .. 3600 s     LOAD    -- 15% CO2/He at 298.15 K (batch20's feed;
+                                 the warm front is through by ~806 s)
+      3600 s          SWITCH  -- recipe, two setParameter events:
+                                   feed.CO2 = 0      (clean He purge)
+                                   feed.T   = 400 K  (the HOT purge)
+      3600 .. 12000 s PURGE   -- the hot clean carrier sweeps the bed:
+                                 q*(T) collapses via the van't Hoff b(T)
+                                 and desorption runs FAR faster than
+                                 batch19's cold concentration swing
+
+  This is the step the old refusal named: "thermal swing needs the
+  non-isothermal bed energy balance".  A5-T1 built that balance;
+  feed.T is now the hot-purge CONTROL (in thermal mode ONLY -- the
+  isothermal bed still refuses it, by name).
+
+  The LEDGER story is the point.  A feed at a new temperature re-declares
+  the WHOLE remaining commitment -- at the pinned feed pressure the total
+  concentration drops to P/(R*400) (composition preserved) and even
+  unchanged matter changes enthalpy -- so the switch retires the old
+  commitment (one OUT feedAmendment package, all species, at 298.15 K)
+  and declares the new one (one IN package at 400 K): the enthalpy
+  repricing rides in the packages' own T, and the campaign energy
+  balance stays CLAIMED across the swing, boundary streams alone.
+
+  Breakthrough crossings/integral freeze at the switch (they describe
+  the load step); the desorption story lives in c_out/qbar/T_out.  The
+  frozen pre-run anchors (u_th, DT_ad bound) keep their initialise
+  values -- a later switch never rewrites an announced claim.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name bed;
+        type fixedBedAdsorber;
+        solver { samplingInterval 2.0; rtol 1e-6; }
+        operation
+        {
+            adsorbent zeolite13X_A4; flowModel ergun;
+            energyBalance adiabatic;
+            solidHeatCapacity
+            {
+                value  [0 2 -2 -1 0] 920;   // J/(kg K)
+                scope  "packed 13X teaching bed, RUN-A5-T15";
+                source "declared teaching value (order of magnitude for zeolite pellets); curating a primary-cited cp onto the asset record is a separate act";
+            }
+            L 0.5 m; area 0.01 m2; eps 0.4; u 0.05 m/s;
+            T 298.15 K; P 1 bar; P_out 1 bar;
+            Dax [0 2 -1 0 0] 1e-4; nCells 25;
+            feed { molarComposition { CO2 0.15; He 0.85; } }
+            initial { molarComposition { He 1.0; } }
+            kLDF
+            {
+                basis solidFilm;
+                scope "2 mm synthetic A4 conservation anchor";
+                source "declared numerical comparison";
+                k { CO2 [0 0 -1 0 0] 0.05; }
+            }
+        }
+    }
+);
+
+//  The TSA switch: clean the feed AND heat it, in one recipe instant.
+//  feed.CO2 amends by the delta form (composition change); feed.T then
+//  re-declares the whole remaining commitment at 400 K (retire + declare,
+//  both ledgered).
+recipe
+(
+    {
+        time     3600;
+        action   setParameter;
+        unit     bed;
+        key      feed.CO2;
+        value    0.0;
+    }
+    {
+        time     3600;
+        action   setParameter;
+        unit     bed;
+        key      feed.T;
+        value    400.0;
+    }
+);

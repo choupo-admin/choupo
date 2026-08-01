@@ -29,13 +29,16 @@ ROOT = Path(__file__).resolve().parents[2]
 BATCH = ROOT / "build" / "linux64Gcc" / "choupoBatch"
 BASE = (ROOT / "tutorials" / "batch" / "adsorber"
         / "batch20_thermal_breakthrough")
+BASE21 = (ROOT / "tutorials" / "batch" / "adsorber"
+          / "batch21_tsa_hot_purge")
 
 failures = []
 
 
-def make_case(tmp: Path, tag: str, fs_edit=None, ctrl_edit=None) -> Path:
+def make_case(tmp: Path, tag: str, fs_edit=None, ctrl_edit=None,
+              base: Path = BASE) -> Path:
     case = tmp / f"probe_{tag}"
-    shutil.copytree(BASE, case, ignore=shutil.ignore_patterns(
+    shutil.copytree(base, case, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "[0-9]*", "resultJson*"))
     ctrl = case / "system" / "controlDict"
     txt = ctrl.read_text()
@@ -65,8 +68,8 @@ def sub(old: str, new: str):
 
 
 def expect_refusal(tmp: Path, tag: str, needles, fs_edit=None,
-                   ctrl_edit=None):
-    rc, out = run(make_case(tmp, tag, fs_edit, ctrl_edit))
+                   ctrl_edit=None, base: Path = BASE):
+    rc, out = run(make_case(tmp, tag, fs_edit, ctrl_edit, base))
     if rc == 0:
         failures.append(f"REFUSAL {tag}: expected nonzero exit, got 0"
                         " (the refusal is gone)")
@@ -125,6 +128,34 @@ def main() -> int:
                        ["must be isothermal or adiabatic"],
                        fs_edit=sub("energyBalance adiabatic;",
                                    "energyBalance jacket;"))
+
+        # ---- T1.5: the hot-purge control -------------------------------
+        def t15(t: str) -> str:
+            assert t.count("time     3600;") == 2, "batch21 probe rewrite"
+            return t.replace("time     3600;", "time     10;")
+        # POSITIVE: the switch fires, announces itself, and the whole
+        # commitment is re-declared as TWO ledgered packages (out+in).
+        rc, out = run(make_case(tmp, "t15_positive", fs_edit=t15,
+                                base=BASE21))
+        if rc != 0:
+            failures.append("T1.5 POSITIVE: expected exit 0, got"
+                            f" {rc}\n--- tail:\n" + out[-1200:])
+        else:
+            for n in ("T1.5 HOT-PURGE feed switch",
+                      "old commitment retired",
+                      "new commitment declared",
+                      "datum amendments (A5 feed switching)"):
+                if n not in out:
+                    failures.append(f"T1.5 POSITIVE: output lacks '{n}'")
+        # REFUSAL: the same recipe on an ISOTHERMAL ergun bed -- feed.T
+        # stays refused, pointing at the declaration that unlocks it.
+        expect_refusal(tmp, "t15_isothermal",
+                       ["DECLARED CONSTANT",
+                        "non-isothermal bed energy balance",
+                        "declare `energyBalance adiabatic;`"],
+                       fs_edit=lambda t: t15(t).replace(
+                           "energyBalance adiabatic;", ""),
+                       base=BASE21)
 
     if failures:
         print("check_thermal_bed: FAIL")

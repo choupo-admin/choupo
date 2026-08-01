@@ -187,11 +187,19 @@ ones for day-to-day work:
    5.7e-5 on batch20_thermal_breakthrough; t_50 806 s vs batch18's
    3042 — the warm bed holds less).  Design:
    docs/design/fixed-bed-thermal-a5.md; gate check_thermal_bed
-   (6 refusals, sabotage-verified).  STILL REFUSING, named: feed.T
-   (the TSA hot-purge control — T1.5, natural once this balance
-   exists), wall heat (T2), pressure swing / blowdown (transient
-   c_tot), flow transients (transient Ergun), flow reversal — plus A6
-   cyclic steady state.  Close those to complete the programme.
+   (6 refusals, sabotage-verified).  **T1.5 SHIPPED 2026-08-01: feed.T
+   is the TSA hot-purge control** (thermal mode only; the isothermal
+   refusal now points at the declaration that unlocks it) — a feed at a
+   new T re-declares the WHOLE remaining commitment (retire OUT at
+   T_old + declare IN at T_new, both ledgered; the molar ratio is the
+   pinned-P ideal-gas scaling and the enthalpy repricing rides in the
+   packages' own T).  Witness batch21_tsa_hot_purge: load → 400 K clean
+   purge in one campaign, ~97 % regenerated, energy CLAIMED across the
+   swing (1.6e-4 on 14300 kJ); sabotage: dropping the retire package
+   makes the campaign itself report the leak.  STILL REFUSING, named:
+   wall heat (T2), pressure swing / blowdown (transient c_tot), flow
+   transients (transient Ergun), flow reversal — plus A6 cyclic steady
+   state.  Close those to complete the programme.
 
 ## 4b. Waiting on Vítor (not blocked — each CHANGES WHAT THE ENGINE REFUSES)
 

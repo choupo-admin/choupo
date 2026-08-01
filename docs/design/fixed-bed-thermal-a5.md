@@ -1,11 +1,17 @@
 # A5 thermal: the non-isothermal fixed bed — design before code
 
-Status: DESIGN, written 2026-08-01 ahead of implementation (the A-series
-pattern: spec first, stencil audited, anchors named before the run).
-This is the step today's refusals promise by name ("thermal swing needs
-the non-isothermal bed energy balance").  Staged: **T1 = adiabatic,
-ergun-mode, one-temperature** (this note); T2 = wall heat exchange,
-named and deferred.
+Status: **T1 AND T1.5 SHIPPED 2026-08-01**, same day as this design
+(T1: batch20_thermal_breakthrough — energy CLAIMED at 5.7e-5, t_50
+806 s vs the isothermal 3042 s; T1.5: batch21_tsa_hot_purge — feed.T as
+the hot-purge control, the WHOLE commitment re-declared OUT at T_old /
+IN at T_new, ~97 % regenerated, energy claimed across the swing at
+1.6e-4; gate check_thermal_bed, both slices sabotage-verified).  One
+wording correction earned by the first run: DT_ad is announced as the
+all-heat-retained BOUND, because u_th < u_sh makes the heat LAG the
+front and the observed rise sits well below it.  T2 = wall heat
+exchange stays named and deferred.  Original design below, written
+2026-08-01 ahead of implementation (the A-series pattern: spec first,
+stencil audited, anchors named before the run).
 
 ## 1. Scope decisions (each one refuses out loud)
 

@@ -536,6 +536,10 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             + "': wallHeatTransfer is the T2 step of the thermal bed and"
             " is not built -- T1 is ADIABATIC (docs/design/"
             "fixed-bed-thermal-a5.md); remove the block");
+    //  T1.5: the feed starts at the declared T; in thermal mode
+    //  `setParameter feed.T` may later move it (the TSA hot purge).
+    Tfeed_    = T_;
+    cFeedTot_ = cTot_;
     if (thermal_)
         cpgFeed_ = thermo.Cp_ig(T_, yFeed);
 
@@ -656,6 +660,22 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                 * (eps_ + rhoB_ * qStarFeed_(a) / cIn_[a]);
         }
 
+    //  A5-T1 frozen pre-run claims (computed UNCONDITIONALLY -- the KPIs
+    //  report them at any verbosity, and a T1.5 feed switch must never
+    //  silently rewrite them).
+    if (thermal_)
+    {
+        uThAnn_ = u_ * cTot_ * cpgFeed_
+            / (eps_ * cTot_ * cpgFeed_ + rhoB_ * cpS_);
+        dTadAnn_.assign(nAds, -1.0);
+        for (std::size_t a = 0; a < nAds; ++a)
+        {
+            if (cIn_[a] <= 0.0 || k_[a] <= 0.0) continue;
+            dTadAnn_[a] = qStarFeed_(a) * (-dHAds_[a])
+                / (cpS_ + eps_ * cTot_ * cpgFeed_ / rhoB_);
+        }
+    }
+
     // -----------------------------------------------------------------
     //  The GLASS-BOX header: declared hypotheses, derived densities,
     //  dimensionless groups, the stiffness verdict and the Gershgorin
@@ -696,34 +716,29 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                          " (declared): pure advection, no dispersive flux\n";
         if (thermal_)
         {
-            //  A5-T1 anchors, printed BEFORE the run (design section 4):
-            //  the pure thermal-wave velocity and the adiabatic rise per
-            //  adsorbing species -- the equilibrium-theory claims the
-            //  computed fronts must respect.
-            const scalar uTh = u_ * cTot_ * cpgFeed_
-                / (eps_ * cTot_ * cpgFeed_ + rhoB_ * cpS_);
+            //  A5-T1 anchors, printed BEFORE the run (design section 4;
+            //  computed unconditionally just above -- frozen claims a
+            //  later T1.5 feed switch must never silently rewrite).
             std::cout << "  [fixedBedAdsorber '" << name_ << "'] A5-T1"
                          " ADIABATIC energy balance: one T per cell,"
                          " cp_s = " << cpS_ << " J/(kg K) (DECLARED case"
                          " data), feed-gas Cp_ig(T_feed) = " << cpgFeed_
                       << " J/(mol K); adsorbed-phase heat capacity"
                          " neglected (declared).  Pure thermal-wave"
-                         " velocity u_th = " << uTh << " m/s; the bed"
-                         " needs L/u_th = " << L_ / uTh << " s for the"
+                         " velocity u_th = " << uThAnn_ << " m/s; the bed"
+                         " needs L/u_th = " << L_ / uThAnn_ << " s for the"
                          " heat to LEAVE.\n";
             for (std::size_t a = 0; a < nAds; ++a)
             {
-                if (cIn_[a] <= 0.0 || k_[a] <= 0.0) continue;
-                const scalar dTad = qStarFeed_(a) * (-dHAds_[a])
-                    / (cpS_ + eps_ * cTot_ * cpgFeed_ / rhoB_);
+                if (dTadAnn_[a] < 0.0) continue;
                 const scalar uSh = u_
                     / (eps_ + rhoB_ * qStarFeed_(a) / cIn_[a]);
                 std::cout << "  [fixedBedAdsorber '" << name_ << "'] "
                           << compNames_[adsIdx_[a]] << ": adiabatic LIMIT"
                              " DT_ad = q*(-dH_ads)/(cp_s +"
-                             " eps c_tot cpg/rho_b) = " << dTad
+                             " eps c_tot cpg/rho_b) = " << dTadAnn_[a]
                           << " K -- the all-heat-retained BOUND; "
-                          << (uTh < uSh
+                          << (uThAnn_ < uSh
                               ? "u_th < u_sh: the heat LAGS the isothermal"
                                 " front, the coupled plateau sits BELOW"
                                 " this bound and the warm bed breaks"
@@ -1110,9 +1125,12 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
                 const scalar uIn = uface[j];
                 if (uIn > 0.0)
                 {
+                    //  T1.5: the feed face advects at the CURRENT feed
+                    //  temperature and concentration (the hot purge).
                     const bool feedFace = (j == 0);
-                    const scalar Tup  = feedFace ? T_ : cellT_(y, j - 1);
-                    scalar cup = cTot_;
+                    const scalar Tup  = feedFace ? Tfeed_
+                                                 : cellT_(y, j - 1);
+                    scalar cup = cFeedTot_;
                     if (!feedFace)
                     {
                         cup = 0.0;
@@ -1128,8 +1146,9 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
                 {
                     //  Same boundary convention as the species flux: the
                     //  downstream reservoir re-enters at feed conditions.
-                    const scalar Tdn  = (j + 1 < N_) ? cellT_(y, j + 1) : T_;
-                    scalar cdn = cTot_;
+                    const scalar Tdn  = (j + 1 < N_) ? cellT_(y, j + 1)
+                                                     : Tfeed_;
+                    scalar cdn = cFeedTot_;
                     scalar cpdn = cpgFeed_;
                     if (j + 1 < N_)
                     {
@@ -1691,7 +1710,9 @@ scalar FixedBedAdsorber::vesselEnthalpy(bool& ok, std::string& why) const
             }
             H += rhoB_ * A_ * dz_ * cpS_ * (Tj - T_) / 1000.0;   // kJ, solid
         }
-        //  The remaining feed commitment enters at the feed's declared T.
+        //  The remaining feed commitment enters at the CURRENT feed T
+        //  (T1.5: a hot purge re-declares both the matter and its
+        //  enthalpy; the switch-time jump is ledgered as amendments).
         for (std::size_t i = 0; i < compNames_.size(); ++i)
         {
             const scalar kmol =
@@ -1699,7 +1720,7 @@ scalar FixedBedAdsorber::vesselEnthalpy(bool& ok, std::string& why) const
                 / 1000.0;
             if (kmol == 0.0) continue;
             H += kmol * thermo_->speciesPhaseEnthalpy(
-                     i, T_, P_, "gas",
+                     i, Tfeed_, P_, "gas",
                      ThermoPackage::ReferenceContext::StandardPhase);
         }
     }
@@ -1767,12 +1788,98 @@ BatchState FixedBedAdsorber::discharge(scalar /*fraction*/)
 void FixedBedAdsorber::setOperationParameter(const std::string& key,
                                              scalar value)
 {
-    if (key == "T" || key == "feed.T" || key == "T_setpoint")
-        throw std::runtime_error("fixedBedAdsorber '" + name_ + "': T is a"
-            " DECLARED CONSTANT of this isothermal slice -- a thermal-swing"
-            " (TSA) step needs the non-isothermal bed energy balance, which"
-            " this unit does not carry yet; the isothermal feed switch"
-            " (key feed.<component>) is the cycle step that exists");
+    if (key == "T" || key == "T_setpoint")
+        throw std::runtime_error("fixedBedAdsorber '" + name_ + "': the"
+            " BED temperature cannot be set -- it is a DECLARED CONSTANT"
+            " of the isothermal slice and a computed STATE of the"
+            " adiabatic one (A5-T1); the control that exists is the FEED"
+            " (feed.<component>, and feed.T in thermal mode)");
+    if (key == "feed.T")
+    {
+        if (!thermal_)
+            throw std::runtime_error("fixedBedAdsorber '" + name_
+                + "': feed.T is refused here -- T is a DECLARED CONSTANT"
+                " of this isothermal slice, and a thermal-swing (TSA)"
+                " step needs the non-isothermal bed energy balance:"
+                " declare `energyBalance adiabatic;` (A5-T1, flowModel"
+                " ergun) and feed.T becomes the hot-purge control");
+        if (value <= 0.0)
+            throw std::runtime_error("fixedBedAdsorber '" + name_
+                + "': feed.T must be a positive absolute temperature");
+        if (value == Tfeed_) return;    // no-op re-declaration
+
+        //  T1.5, the TSA hot purge.  A feed at a NEW temperature is a
+        //  re-declaration of the WHOLE remaining commitment: at the
+        //  pinned feed pressure the total concentration moves to
+        //  P/(R T_new) (composition preserved), and even unchanged
+        //  matter changes ENTHALPY.  So the ledger takes the honest
+        //  full form -- RETIRE the old commitment (one OUT package, all
+        //  species, at T_old) and DECLARE the new one (one IN package
+        //  at T_new); the repricing rides in the packages' own T.
+        const scalar Told    = Tfeed_;
+        const scalar horizon = std::max(endTime_ - tNow_, 0.0);
+        const std::size_t n  = compNames_.size();
+
+        DatumAmendment outAm, inAm;
+        outAm.into = false;  outAm.pkg.n.assign(n, 0.0);
+        outAm.pkg.T = Told;  outAm.pkg.P = P_;  outAm.pkg.vf = 1.0;
+        inAm.into  = true;   inAm.pkg.n.assign(n, 0.0);
+        inAm.pkg.T = value;  inAm.pkg.P = P_;   inAm.pkg.vf = 1.0;
+
+        //  Ideal gas at the pinned feed P: every declared feed
+        //  concentration scales by T_old/T_new (composition preserved,
+        //  a clean-purge deficit preserved too -- cFeedTot_ is always
+        //  the ACTUAL Sum of cInAll_, never a nominal).
+        sVector yComp(n, 0.0);
+        for (std::size_t i = 0; i < n; ++i)
+            outAm.pkg.n[i] = A_ * u_ * cInAll_[i] * horizon / 1000.0;
+        Tfeed_ = value;
+        cFeedTot_ = 0.0;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            cInAll_[i] *= Told / Tfeed_;
+            cFeedTot_  += cInAll_[i];
+            inAm.pkg.n[i] = A_ * u_ * cInAll_[i] * horizon / 1000.0;
+        }
+        for (std::size_t i = 0; i < n; ++i)
+            yComp[i] = (cFeedTot_ > 0.0) ? cInAll_[i] / cFeedTot_ : 0.0;
+        for (std::size_t a = 0; a < adsIdx_.size(); ++a)
+        {
+            cIn_[a] = cInAll_[adsIdx_[a]];
+            //  Every integrated species' c_in just moved (same y, new
+            //  c_tot): the sampler's reference basis is gone for all.
+            feedSwitched_[a] = true;
+        }
+        cpgFeed_ = thermo_->Cp_ig(Tfeed_, yComp);
+
+        {
+            std::ostringstream w;
+            w << "hot-purge feed switch on '" << name_ << "': T_feed "
+              << Told << " -> " << Tfeed_ << " K at pinned P (c_feed,tot "
+              << (cFeedTot_ * Tfeed_ / Told) << " -> " << cFeedTot_
+              << " mol/m3, composition preserved), commitment re-declared"
+                 " over the remaining " << horizon << " s";
+            outAm.why = w.str() + " (old commitment retired)";
+            inAm.why  = w.str() + " (new commitment declared)";
+        }
+        if (outAm.pkg.totalMoles() > 0.0)
+            pendingAmendments_.push_back(std::move(outAm));
+        if (inAm.pkg.totalMoles() > 0.0)
+            pendingAmendments_.push_back(std::move(inAm));
+
+        if (verbosity_ >= 2)
+            std::cout << "  [fixedBedAdsorber '" << name_ << "'] T1.5"
+                         " HOT-PURGE feed switch: T_feed " << Told
+                      << " -> " << Tfeed_ << " K; c_feed,tot -> "
+                      << cFeedTot_ << " mol/m3 (P pinned, composition"
+                         " preserved), feed Cp_ig -> " << cpgFeed_
+                      << " J/(mol K).  The WHOLE remaining commitment is"
+                         " re-declared (OUT at " << Told << " K, IN at "
+                      << Tfeed_ << " K -- ledgered feedAmendment"
+                         " records); breakthrough crossings/integral"
+                         " FROZEN for every integrated species.\n";
+        return;
+    }
     if (key == "u")
         throw std::runtime_error("fixedBedAdsorber '" + name_ + "': u is a"
             " DECLARED CONSTANT -- a flow transient re-poses the momentum"
@@ -1882,11 +1989,15 @@ void FixedBedAdsorber::setOperationParameter(const std::string& key,
         }
 
         //  Ergun (A4-flow): every species is integrated, no difference
-        //  closure -- the named species amends alone.
+        //  closure -- the named species amends alone.  The new fraction
+        //  reads against the NOMINAL feed total at the CURRENT feed T
+        //  (T1.5: a hot purge lowered it), and cFeedTot_ stays the ACTUAL
+        //  sum the energy faces advect.
         const scalar cOld = cInAll_[ci];
-        const scalar cNew = value * cTot_;
+        const scalar cNew = value * P_ / (constant::R * Tfeed_);
         if (cNew == cOld) return;
         cInAll_[ci] = cNew;
+        cFeedTot_  += cNew - cOld;
         auto ait = std::find(adsIdx_.begin(), adsIdx_.end(), ci);
         if (ait != adsIdx_.end())
         {
@@ -1894,6 +2005,14 @@ void FixedBedAdsorber::setOperationParameter(const std::string& key,
                 static_cast<std::size_t>(ait - adsIdx_.begin());
             cIn_[a] = cNew;
             feedSwitched_[a] = true;
+        }
+        if (thermal_ && cFeedTot_ > 0.0)
+        {
+            //  The feed's mixture Cp follows its new composition.
+            sVector yComp(compNames_.size(), 0.0);
+            for (std::size_t i = 0; i < compNames_.size(); ++i)
+                yComp[i] = cInAll_[i] / cFeedTot_;
+            cpgFeed_ = thermo_->Cp_ig(Tfeed_, yComp);
         }
         amend(ci, cNew - cOld, sayWhy(comp, cOld, cNew));
         if (verbosity_ >= 2)
@@ -2004,19 +2123,18 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
     {
         //  The A5-T1 verdict trio: where the outlet T ended, how hot the
         //  bed got, and the pre-run equilibrium-theory anchors the run
-        //  had to respect (golden-pinned in the witness).
+        //  had to respect -- FROZEN claims (stored at initialise; a T1.5
+        //  feed switch must not silently rewrite what was announced).
         scalar tMax = 0.0;
         for (std::size_t j = 0; j < N_; ++j)
             tMax = std::max(tMax, cellT_(y_, j));
         k["T_out_final_K"] = cellT_(y_, N_ - 1);
         k["T_max_final_K"] = tMax;
-        k["u_thermal_wave_m_s"] = u_ * cTot_ * cpgFeed_
-            / (eps_ * cTot_ * cpgFeed_ + rhoB_ * cpS_);
+        k["u_thermal_wave_m_s"] = uThAnn_;
         for (std::size_t a = 0; a < nAds; ++a)
-            if (cIn_[a] > 0.0 && k_[a] > 0.0 && !feedSwitched_[a])
+            if (a < dTadAnn_.size() && dTadAnn_[a] >= 0.0)
                 k["dT_adiabatic_" + compNames_[adsIdx_[a]] + "_K"] =
-                    qStarFeed_(a) * (-dHAds_[a])
-                    / (cpS_ + eps_ * cTot_ * cpgFeed_ / rhoB_);
+                    dTadAnn_[a];
     }
     k["carrier_fabricated_mol"] = carrierFabricated_();
     {
