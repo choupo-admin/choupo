@@ -111,15 +111,23 @@ ones for day-to-day work:
    1.4e-7, second-order in deltaT: the residual is the ledger's trapezoid, not
    the physics).  Gate: `check_ctrl_balance` gained the claim, the refusal, the
    step-refinement order and a T-dependent-Cp fixture (all sabotage-verified).
-2. **Ctrl electrolyte Cp** — the dynamicCSTR's temperature ODE divides by
-   Sum n_i·Cp_i read from per-component `liquidHeatCapacity`, which a
-   dissolved salt cannot honestly declare (its enthalpy rides the aqueous
-   ionic tier).  The slice: take the vessel Cp as the T-derivative of the
-   SAME stored-H surface the canonical route prices (cp_aq for a
-   solution-tier solute), so an electrolyte package can enter choupoCtrl.
-   Witness-in-waiting: `ctrl10_brine_concentration` (EXPECTED-FAIL, its
-   `.expect-nonconvergence` names this item; delete that file when this
-   lands).  Was misattributed to roadmap #1 until 2026-08-01.
+2. **Ctrl electrolyte energy — the mixture-H state formulation.**  Half
+   of the original slice SHIPPED 2026-08-01: the vessel Cp is route-aware
+   (`cpSurface_`: declared liquid Cp, else the numerical T-derivative of
+   the component's own stored-H leg — one surface, one derivative), and
+   the canonical-route decision now PROBES the per-species surface and
+   quotes its own error instead of trusting `hasEnthalpyDatum` alone.
+   That probe is what keeps `ctrl10_brine_concentration` honestly
+   refused: an electrolyte salt's enthalpy is MIXTURE-level
+   (`aqueousSaltEnthalpy(m, T)`, molality-dependent) and the per-species
+   API refuses to pretend otherwise (forum #103).  The REMAINING half —
+   what actually runs ctrl10 — is the mixture-H state formulation for
+   dynamic vessels: store H(n, T) through `H_liquid_formation`, step it
+   with the partial-molar terms done right.  The `cpSurface_` numerical
+   fallback additionally awaits its first honest witness (a
+   solution-tier solute WITHOUT a declared liquid Cp — sucrose declares
+   one, glucose has no solution pair; do not fabricate a record for it).
+   Was misattributed to roadmap #1 until 2026-08-01.
 3. ~~**Williams-Otto reference case**~~ — **FIRST SLICE SHIPPED 2026-08-01**: the `williamsOttoPlant` unit (eqs. 3.6–3.11 verbatim, klb/h/°R internal, SI boundary, three conversions announced) + `ctrl12_williams_otto` landing on the published x* to all printed digits.  Remaining anchors (step responses, the four PI channels with the paper's tunings, the OuterDriver pairing on the §5 optima) stay banked in the design doc as the follow-on cases.  Originally: UNBLOCKED 2026-08-01 when Vítor
    supplied the primary PDF (arXiv:2004.07614v1) and the full spec is
    BANKED in `docs/design/williams-otto-reference-case.md` — the verbatim

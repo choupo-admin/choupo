@@ -193,6 +193,12 @@ private:
     //  inlet term and its heat of reaction are all the same surface.
     scalar hLiq_(std::size_t i, scalar T) const;
 
+    //- The vessel Cp of component i [J/(mol K)]: the declared liquid Cp
+    //  when present, else the numerical T-derivative of hLiq_ -- the SAME
+    //  surface, so a dissolved salt (no liquidHeatCapacity, honestly) is
+    //  priced by its aqueous leg's own cp_aq.  Roadmap #2.
+    scalar cpSurface_(std::size_t i, scalar T) const;
+
     //- ΔH_r(T) = Σ νᵢ hᵢ(T) [J/mol] from that same surface -- the reaction
     //  heat is a CONSEQUENCE of the stored enthalpy, never a second datum.
     scalar reactionEnthalpyAtT_(const ReactionSpec& rxn, scalar T) const;

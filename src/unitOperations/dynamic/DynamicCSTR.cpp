@@ -140,13 +140,6 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
         reactions_.push_back(std::move(r));
     }
 
-    // ---- Sanity: liquidHeatCapacity required for the energy balance --
-    for (std::size_t i = 0; i < N; ++i)
-        if (!thermo.comp(i).hasCpLiquid())
-            throw std::runtime_error("DynamicCSTR: component '"
-                + thermo.comp(i).name() + "' has no liquidHeatCapacity"
-                " entry in its.dat file (needed for the energy balance)");
-
     // ---- WHICH ENERGY EQUATION, and it is announced -----------------------
     //
     //  THE CANONICAL ROUTE.  The vessel stores H(n,T) = Σ nᵢ hᵢ(T) on the
@@ -180,9 +173,30 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
     std::string blocker;
     for (std::size_t i = 0; i < N; ++i)
     {
-        if (thermo.hasEnthalpyDatum(i)) continue;
+        //  The canonical route prices PER SPECIES, so the question is not
+        //  "does a datum exist somewhere" but "can the per-species leg
+        //  serve it" -- and the SURFACE is the authority on that, asked by
+        //  PROBE, never by name.  The distinction is real: an electrolyte
+        //  salt HAS an elements datum (the aqueous ion reference), but it
+        //  lives at the MIXTURE level (aqueousSaltEnthalpy(m,T) -- the
+        //  enthalpy depends on molality), and the per-species API refuses
+        //  to pretend otherwise (forum #103).  Such a vessel needs the
+        //  mixture-H state formulation, a NAMED next slice (DEV.md
+        //  roadmap #2), not a leg invented here.
+        if (thermo.hasEnthalpyDatum(i))
+        {
+            try { (void) hLiq_(i, T_); continue; }
+            catch (const std::exception& e)
+            {
+                canonicalEnergy_ = false;
+                if (!blocker.empty()) blocker += "; ";
+                blocker += thermo.comp(i).name() + std::string(" (per-species"
+                    " leg unavailable: ") + e.what() + ")";
+                continue;
+            }
+        }
         canonicalEnergy_ = false;
-        if (!blocker.empty()) blocker += ", ";
+        if (!blocker.empty()) blocker += "; ";
         blocker += thermo.comp(i).name();
     }
     if (canonicalEnergy_)
@@ -196,6 +210,40 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
                   << ".  The temperature is integrated as before; the"
                      " first-law ledger REFUSES, because this equation is not"
                      " the derivative of a stored H.\n";
+
+    // ---- The vessel Cp, per route (roadmap #2, 2026-08-01) ----------------
+    //
+    //  Whatever route the ODE takes, its denominator is Sum n_i*Cp_i.  On
+    //  the Cp/convective route the ONLY Cp there is is the declared
+    //  per-component liquidHeatCapacity, so it stays REQUIRED there -- the
+    //  old refusal, unchanged for the toy cases.
+    //
+    //  On the CANONICAL route the denominator must be the T-derivative of
+    //  the SAME stored-H surface the rest of the equation prices -- and a
+    //  DISSOLVED SALT has no liquidHeatCapacity to declare, honestly: its
+    //  enthalpy rides the aqueous ionic tier, whose own T-derivative (the
+    //  Criss-Cobble cp_aq under the standard-state leg) IS its heat
+    //  capacity.  So: a component with a declared liquid Cp uses it (the
+    //  surface integrates exactly that Cp on the liquid leg -- same
+    //  number); a component without one takes the numerical T-derivative
+    //  of speciesPhaseEnthalpy, ANNOUNCED -- one surface, one derivative,
+    //  no second home for the datum (this is what unblocked
+    //  ctrl10_brine_concentration).
+    for (std::size_t i = 0; i < N; ++i)
+    {
+        if (thermo.comp(i).hasCpLiquid()) continue;
+        if (!canonicalEnergy_)
+            throw std::runtime_error("DynamicCSTR: component '"
+                + thermo.comp(i).name() + "' has no liquidHeatCapacity"
+                " entry in its .dat file (needed for the Cp/convective"
+                " energy balance)");
+        std::cout << "  [energy] DynamicCSTR '" << name_ << "': '"
+                  << thermo.comp(i).name() << "' has no liquidHeatCapacity;"
+                     " its vessel Cp is the T-derivative of its own"
+                     " stored-H leg (for a dissolved solute, the aqueous"
+                     " standard-state cp_aq) -- one surface, one"
+                     " derivative.\n";
+    }
 
     // ---- start: explicit (default) vs steadyState seed ----------------
     //  ABSENT or `explicit`  => t=0 is the literal `initial{}` above
@@ -251,7 +299,8 @@ void DynamicCSTR::seedFromSteady()
     scalar CpTot = 0.0, CpInAvg = 0.0;
     for (std::size_t i = 0; i < N; ++i)
     {
-        const scalar cp = thermo_->comp(i).cpLiquid().Cp(T_);
+        const scalar cp = canonicalEnergy_ ? cpSurface_(i, T_)
+                                           : thermo_->comp(i).cpLiquid().Cp(T_);
         CpTot   += n_[i]   * cp;
         CpInAvg += z_in_[i] * cp;
     }
@@ -327,6 +376,21 @@ void DynamicCSTR::seedFromSteady()
 //  of one surface, or the ledger is subtracting numbers from different worlds
 //  and the residual it reports is the disagreement between them.
 // -----------------------------------------------------------------------
+scalar DynamicCSTR::cpSurface_(std::size_t i, scalar T) const
+{
+    //  The vessel Cp of component i: the declared liquid Cp when there is
+    //  one (the canonical surface integrates exactly it on the liquid leg,
+    //  so the two are the same number), and otherwise the NUMERICAL
+    //  T-derivative of the same stored-H leg the rest of the equation
+    //  prices -- central difference over 1 K, far below any physical Cp
+    //  variation, and structurally incapable of drifting from the surface
+    //  it differentiates.
+    if (thermo_->comp(i).hasCpLiquid())
+        return thermo_->comp(i).cpLiquid().Cp(T);
+    const scalar dT = 0.5;
+    return (hLiq_(i, T + dT) - hLiq_(i, T - dT)) / (2.0 * dT);
+}
+
 scalar DynamicCSTR::hLiq_(std::size_t i, scalar T) const
 {
     return thermo_->speciesPhaseEnthalpy(
@@ -433,7 +497,8 @@ sVector DynamicCSTR::derivatives_(const sVector& packed) const
     //  CpTot (in kJ/K) = Σ n_i · Cp_liq_i(T)   (Cp J/(mol·K) ≡ kJ/(kmol·K))
     scalar CpTot = 0.0;
     for (std::size_t i = 0; i < N; ++i)
-        CpTot += n[i] * thermo_->comp(i).cpLiquid().Cp(T);
+        CpTot += n[i] * (canonicalEnergy_ ? cpSurface_(i, T)
+                                          : thermo_->comp(i).cpLiquid().Cp(T));
 
     if (CpTot > 1.0e-30)
     {

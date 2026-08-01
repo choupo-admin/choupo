@@ -13,18 +13,26 @@
 #
 #   ERROR: DynamicCSTR: component 'NaCl' has no liquidHeatCapacity entry
 #
-# HISTORY, so this file cannot mislead again: it used to blame roadmap #1
-# (the stored-H(n,T) reformulation) and promise "delete this file when the
-# reformulation lands".  The reformulation LANDED (2026-08-01, see
-# ctrl11_esterification_jacket) and this case is still refused, correctly --
-# the blocker was never the functional.  What remains is narrower and has
-# its own name in DEV.md: the vessel's Cp sum must be the T-DERIVATIVE OF
-# THE SAME stored-H surface the canonical route prices (for a dissolved
-# salt that is the aqueous-tier cp_aq, exactly what speciesPhaseEnthalpy's
-# dissolved rung integrates), instead of demanding a per-component
-# liquidHeatCapacity that an electrolyte cannot honestly declare.
+# HISTORY, so this file cannot mislead again -- it has now been wrong about
+# its own blocker TWICE, and both corrections are worth keeping:
 #
-# Delete this file when THAT slice lands: the case should then run, and its
+#   1. It blamed roadmap #1 (the stored-H reformulation).  That landed
+#      (ctrl11) and did not unblock this case.
+#   2. It then blamed the per-component Cp requirement alone.  The vessel
+#      Cp is now route-aware (cpSurface_: declared liquid Cp, else the
+#      T-derivative of the component's own stored-H leg) -- and this case
+#      is STILL refused, correctly, because the probe-based route decision
+#      asks the SURFACE what it can serve, and the surface answers in its
+#      own words (quoted in the run's [energy] line): an electrolyte
+#      salt's enthalpy is MIXTURE-level -- aqueousSaltEnthalpy(m, T),
+#      molality-dependent -- and the per-species leg refuses to pretend
+#      otherwise (forum #103).  No per-species Cp, numerical or declared,
+#      can represent it.
+#
+# What actually unblocks this case is the MIXTURE-H state formulation for
+# the dynamic vessel (store H(n, T) through H_liquid_formation and step
+# it, partial-molar terms and all) -- DEV.md roadmap #2's remaining half.
+# Delete this file when THAT lands: the case should then run, and its
 # streamFaces should carry the two bases like every other stream in the
 # project.
-the dynamic energy balance divides by a per-component liquid Cp; a dissolved salt has none -- the vessel Cp must come from the stored-H surface (cp_aq), a named DEV.md slice
+the electrolyte salt's enthalpy is mixture-level (aqueousSaltEnthalpy(m,T)); no per-species vessel Cp can represent it -- needs the mixture-H state formulation (DEV.md #2)
