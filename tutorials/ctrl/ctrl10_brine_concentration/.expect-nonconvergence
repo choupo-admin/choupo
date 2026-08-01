@@ -1,10 +1,11 @@
 # ctrl10 is REFUSED, on purpose, and the refusal is the lesson.
 #
-# The dynamic CSTR's energy balance is a Cp/convective ODE: it needs a
-# liquidHeatCapacity per component.  A DISSOLVED SALT has none -- NaCl's
-# enthalpy rides the ionic route (aqueous inf-dilution reference + the
-# Criss-Cobble ion Cp(T) the builder announces two lines earlier), and a
-# "liquid Cp of NaCl" would be a fabricated number, not a missing one.
+# The dynamic CSTR needs a liquidHeatCapacity per component: whichever
+# energy route it takes, its temperature ODE divides by Sum n_i*Cp_i, and a
+# DISSOLVED SALT has no liquid Cp -- NaCl's enthalpy rides the ionic route
+# (aqueous inf-dilution reference + the Criss-Cobble ion Cp(T) the builder
+# announces two lines earlier), and a "liquid Cp of NaCl" would be a
+# fabricated number, not a missing one.
 #
 # So this case runs far enough to prove the PACKAGE reaches choupoCtrl -- the
 # Pitzer banner, the ion Cp(T) load, the molality VLE world all appear -- and
@@ -12,12 +13,18 @@
 #
 #   ERROR: DynamicCSTR: component 'NaCl' has no liquidHeatCapacity entry
 #
-# That is roadmap item #1 (DEV.md): reformulate the dynamicCSTR energy
-# equation around a stored U(n,T)/H(n,T) so the first-law ledger can CLAIM
-# closure instead of honestly refusing.  Until then the dynamic path is
-# MOLECULAR-ONLY on the energy side, and this case is what says so out loud.
+# HISTORY, so this file cannot mislead again: it used to blame roadmap #1
+# (the stored-H(n,T) reformulation) and promise "delete this file when the
+# reformulation lands".  The reformulation LANDED (2026-08-01, see
+# ctrl11_esterification_jacket) and this case is still refused, correctly --
+# the blocker was never the functional.  What remains is narrower and has
+# its own name in DEV.md: the vessel's Cp sum must be the T-DERIVATIVE OF
+# THE SAME stored-H surface the canonical route prices (for a dissolved
+# salt that is the aqueous-tier cp_aq, exactly what speciesPhaseEnthalpy's
+# dissolved rung integrates), instead of demanding a per-component
+# liquidHeatCapacity that an electrolyte cannot honestly declare.
 #
-# Delete this file when the reformulation lands: the case should then run,
-# and its streamFaces should carry the two bases like every other stream in
-# the project.
-the dynamic energy balance is Cp-per-component; a dissolved salt has no liquid Cp (roadmap #1)
+# Delete this file when THAT slice lands: the case should then run, and its
+# streamFaces should carry the two bases like every other stream in the
+# project.
+the dynamic energy balance divides by a per-component liquid Cp; a dissolved salt has none -- the vessel Cp must come from the stored-H surface (cp_aq), a named DEV.md slice

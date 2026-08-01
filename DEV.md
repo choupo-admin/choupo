@@ -111,20 +111,44 @@ ones for day-to-day work:
    1.4e-7, second-order in deltaT: the residual is the ledger's trapezoid, not
    the physics).  Gate: `check_ctrl_balance` gained the claim, the refusal, the
    step-refinement order and a T-dependent-Cp fixture (all sabotage-verified).
-2. **PC-SAFT association term** — the non-associating core is validated (~1 %);
+2. **Ctrl electrolyte Cp** — the dynamicCSTR's temperature ODE divides by
+   Sum n_i·Cp_i read from per-component `liquidHeatCapacity`, which a
+   dissolved salt cannot honestly declare (its enthalpy rides the aqueous
+   ionic tier).  The slice: take the vessel Cp as the T-derivative of the
+   SAME stored-H surface the canonical route prices (cp_aq for a
+   solution-tier solute), so an electrolyte package can enter choupoCtrl.
+   Witness-in-waiting: `ctrl10_brine_concentration` (EXPECTED-FAIL, its
+   `.expect-nonconvergence` names this item; delete that file when this
+   lands).  Was misattributed to roadmap #1 until 2026-08-01.
+3. **Williams-Otto reference case** — the natural sequel to `cavett01`
+   (2026-08-01): reactor + decanter + column + purge/recycle + the
+   published economic optimum, pairing with the OptimizationDriver.
+   DEFERRED for a session with open network: it is only worth building on
+   ONE coherent primary parameterisation, and every located source is
+   proxy-blocked from the hosted session (arXiv 2004.07614 pdf+abs+html,
+   the NTNU Skogestad-group theses, cache.org).  Fragments confirmed so
+   far via search snippets: k1 = 1.6599e6·exp(-6666.7/T), k2 =
+   k20·exp(-8333.3/T) with k20 quoted BOTH 7.2117e8 and 7.2177e8 across
+   the literature (a known variance -- pin whichever the chosen primary
+   uses, and say so), k3 = 2.6745e12·exp(-11111/T); column retention
+   paraphrased inconsistently (10% of E in bottoms vs P_bottoms = 0.1·mE)
+   -- another reason to work from one source, not a blend.
+4. **PC-SAFT association term** — the non-associating core is validated (~1 %);
    the association term is the next model growth (keep it separate from any
    migration/refactor).
-3. **New unit operations / catalogue expansion** — the strength area; add with
+5. **New unit operations / catalogue expansion** — the strength area; add with
    KPIs + a golden-master tutorial + the theory-guide section (a feature is
    incomplete without its manual).
-4. **solverDict consolidation** · **speciation aliases**.
-5. **Reports default-on beyond elementBalance** (mass/energy as normal
+6. **solverDict consolidation** · **speciation aliases**.
+7. **Reports default-on beyond elementBalance** (mass/energy as normal
    diagnostics — measure corpus impact first).
-6. **Pinch full programme** (real match sizing beyond the heuristic screen).
-7. **Adsorption A4-A6** — the fixed-bed energy ledger (A4) and the cycle /
-   cyclic-steady-state steps (A5-A6) still refuse in the code
-   (`FixedBedAdsorber::energyLedgerGap()` names A4; flow reversal refuses as
-   an A5 step).  Close them to complete the adsorption programme.
+8. **Pinch full programme** (real match sizing beyond the heuristic screen).
+9. **Adsorption A5-A6** — the cycle / cyclic-steady-state steps still
+   refuse in the code (flow reversal refuses as an A5 step).  A4's energy
+   ledger SHIPPED 2026-08-01: the adsorption duty is an exact state
+   difference on the adsorbed inventory, the ergun-mode campaign balance
+   claims at 6.7e-14 (batch18), and the A3 closure keeps a named gap.
+   Close A5-A6 to complete the adsorption programme.
 
 ## 4b. Waiting on Vítor (not blocked — each CHANGES WHAT THE ENGINE REFUSES)
 
