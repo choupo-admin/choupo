@@ -24,9 +24,10 @@
   and reports the answer as though it were the brine's.  So the unit uses
   3.968 and SAYS what it left out:
 
-      [Evaporator] NOTE: the concentrate carries 9.52e-01 mol/kg of
-                   nonvolatiles that are NOT 'NaCl' ... their own
-                   contribution to the boiling-point rise is NOT included.
+      [unmodelledSolutes] the liquid carries 0.952 mol/kg of dissolved
+                          sucrose -- not 'NaCl', and not represented by the
+                          single-salt electrolyte model ... their own
+                          contribution is NOT included.
 
   Which is the honest position: the sucrose really does depress the vapour
   pressure, and this package has no term for it.  A student can see the size
@@ -40,6 +41,12 @@
   The same distinction now governs the heat of dilution and the
   extrapolation guard: L_phi and its validity window are the salt's, so the
   molality tested against them is the salt's.
+
+  The sentence itself is not this unit's.  It is measured and worded in
+  thermo/electrolyte/UnmodelledSolutes and printed identically by the
+  crystallisation saturation --- see crystalliser09, where a wine lee holds
+  bitartrate while the package models potassium chloride.  Same omission,
+  same words, one place to correct them.
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;

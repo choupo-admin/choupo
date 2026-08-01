@@ -31,11 +31,13 @@ License
 #include "streams/StreamMass.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/electrolyte/ElectrolyteModel.H"
+#include "thermo/electrolyte/UnmodelledSolutes.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
 
 #include <cmath>
 #include <iomanip>
+#include <numeric>
 #include <iostream>
 #include <stdexcept>
 #include "thermo/vaporPressure/VaporPressureModel.H"
@@ -348,19 +350,22 @@ int Evaporator::solve(const DictPtr& dict,
 
         //  The BPE is now the SALT's alone.  If the liquor carries other
         //  nonvolatiles they still depress the vapour pressure, and this model
-        //  has nothing to price them with -- say so rather than let the sum
-        //  ride in through a model that was fitted on one salt.
-        const scalar mAll  = molality_solute(V_over_F);
-        const scalar mSalt = molality_salt(V_over_F);
-        if (verbosity >= 1 && mAll > mSalt * (1.0 + 1.0e-9))
-            std::cout << "[Evaporator] NOTE: the concentrate carries "
-                      << (mAll - mSalt) << " mol/kg of nonvolatiles that are"
-                         " NOT '" << thermo.electrolyte().soluteName()
-                      << "'.  The electrolyte a_w -- and therefore the BPE --"
-                         " is evaluated on the salt molality alone, because"
-                         " that is the basis the model was fitted on; their"
-                         " own contribution to the boiling-point rise is NOT"
-                         " included.\n";
+        //  has nothing to price them with -- measured and worded in one place
+        //  (thermo/electrolyte/UnmodelledSolutes), stated here.
+        if (verbosity >= 1)
+        {
+            sVector xL(n, 0.0);
+            const scalar Lf = std::max(1.0e-12, 1.0 - V_over_F);
+            for (std::size_t i = 0; i < n; ++i)
+                xL[i] = (i == iSolvent) ? 0.0 : z[i] / Lf;
+            xL[iSolvent] = std::max(0.0, 1.0 - std::accumulate(xL.begin(), xL.end(), scalar(0)));
+            const auto foreign = unmodelledSolutes(
+                thermo, xL, {iSolvent}, thermo.electrolyte().soluteIndex());
+            if (foreign.any())
+                std::cout << "  " << foreign.note(thermo.electrolyte().soluteName(),
+                                                  "The water activity, and so the"
+                                                  " boiling-point rise,") << "\n";
+        }
     }
     else
         BPE = K_b * molality_solute(V_over_F);     // ideal ebullioscopic fallback

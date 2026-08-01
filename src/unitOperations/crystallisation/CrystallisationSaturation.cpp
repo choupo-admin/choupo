@@ -21,8 +21,10 @@ License
 //  through the interface, so the COMPLETE type is needed here -- ThermoPackage
 //  only forward-declares it.
 #include "thermo/electrolyte/ElectrolyteModel.H"
+#include "thermo/electrolyte/UnmodelledSolutes.H"
 
 #include <cmath>
+#include <vector>
 #include <stdexcept>
 #include <string>
 
@@ -120,6 +122,22 @@ SatState crystSaturation(const ThermoPackage& thermo, const sVector& z, scalar F
         }
         r.m_sat = 0.5 * (lo + hi);
         r.c_sat = r.m_sat * r.MW_sol / 1000.0;
+
+        //  Everything else dissolved in the same liquor.  A wine lee holding
+        //  bitartrate while the package models potassium chloride, a brine
+        //  holding sugar -- the single-salt model prices none of it, and the
+        //  saturation it returns belongs to a cleaner liquid than the one in
+        //  the vessel.  Measured and worded in one place; the evaporator says
+        //  the identical thing about its own quantity.
+        {
+            std::vector<std::size_t> solventIdx{r.iSolv};
+            if (r.mixedSolvent) solventIdx.push_back(r.iAnti);
+            const auto foreign =
+                unmodelledSolutes(thermo, z, solventIdx, r.iSolute);
+            if (foreign.any())
+                r.notes.push_back(foreign.note(thermo.comp(r.iSolute).name(),
+                                               "The saturation"));
+        }
 
         if (r.mixedSolvent)
         {
