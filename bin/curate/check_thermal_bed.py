@@ -18,6 +18,12 @@ All probes are 60 s variants of batch20_thermal_breakthrough:
                wallHeatTransfer present     (T2, not built)
                energyBalance <junk>         (isothermal|adiabatic only)
 
+T2 division of labour: this gate fires the DECLARATION refusals and the
+announcements; the PHYSICS instrument is the witness golden -- the
+wall/ledger desync sabotage (cooling the T rows while dy[Q_wall] stays
+silent) shifts batch22's dH_vessels/energy_closure far past the golden
+tolerance, verified 2026-08-01.
+
 Exit 1 listing failures."""
 import shutil
 import subprocess
@@ -119,15 +125,40 @@ def main() -> int:
                        ["scope and source"],
                        fs_edit=sub('scope  "packed 13X teaching bed,'
                                    ' RUN-A5-T1";', ""))
-        expect_refusal(tmp, "wallHeat",
-                       ["wallHeatTransfer is the T2 step"],
+        expect_refusal(tmp, "wallContradiction",
+                       ["adiabatic CONTRADICTS a wallHeatTransfer block"],
                        fs_edit=sub("energyBalance adiabatic;",
                                    "energyBalance adiabatic;\n"
                                    "            wallHeatTransfer { }"))
         expect_refusal(tmp, "junkWord",
-                       ["must be isothermal or adiabatic"],
+                       ["must be isothermal, adiabatic or wallCooled"],
                        fs_edit=sub("energyBalance adiabatic;",
                                    "energyBalance jacket;"))
+
+        # ---- T2: the wall-cooled bed -----------------------------------
+        BASE22 = BASE21.parent / "batch22_wall_cooled"
+        rc, out = run(make_case(tmp, "t2_positive", base=BASE22))
+        if rc != 0:
+            failures.append(f"T2 POSITIVE: expected exit 0, got {rc}\n"
+                            + out[-1200:])
+        else:
+            for n in ("T2 WALL-COOLED energy balance",
+                      "wall NTU",
+                      "Q_wall STATE row"):
+                if n not in out:
+                    failures.append(f"T2 POSITIVE: output lacks '{n}'")
+        expect_refusal(tmp, "t2_noBlock",
+                       ["wallCooled needs",
+                        "wallHeatTransfer { h; T_wall; dBed; }"],
+                       fs_edit=lambda t: t.replace(
+                           "wallHeatTransfer", "retiredWall"),
+                       base=BASE22)
+        expect_refusal(tmp, "t2_zeroH",
+                       ["h must be > 0",
+                        "a zero wall is spelled `energyBalance adiabatic;`"],
+                       fs_edit=sub("h      [1 0 -3 -1 0] 5;",
+                                   "h      [1 0 -3 -1 0] 0;"),
+                       base=BASE22)
 
         # ---- T1.5: the hot-purge control -------------------------------
         def t15(t: str) -> str:

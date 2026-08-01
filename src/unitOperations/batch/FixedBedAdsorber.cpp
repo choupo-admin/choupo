@@ -489,24 +489,24 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
         {
             /* the explicit default -- identical to saying nothing */
         }
-        else if (eb == "adiabatic")
+        else if (eb == "adiabatic" || eb == "wallCooled")
         {
             if (!ergun_)
                 throw std::runtime_error("fixedBedAdsorber '" + name_
-                    + "': energyBalance adiabatic requires flowModel ergun"
+                    + "': energyBalance " + eb + " requires flowModel ergun"
                     " -- the constant-(u,P,T) closure pins c_tot = P/(RT)"
                     " BY DECLARATION, and a temperature field would"
                     " contradict the declared constant (A3 stays the"
                     " isothermal teaching model)");
             if (!adaptive_)
                 throw std::runtime_error("fixedBedAdsorber '" + name_
-                    + "': energyBalance adiabatic requires timeStepping"
+                    + "': energyBalance " + eb + " requires timeStepping"
                     " adaptive -- the printed Gershgorin bound covers the"
                     " ISOTHERMAL rows only, and a fixed step validated by"
                     " it would run the energy rows unguarded");
             if (!opDict->found("solidHeatCapacity"))
                 throw std::runtime_error("fixedBedAdsorber '" + name_
-                    + "': energyBalance adiabatic needs"
+                    + "': energyBalance " + eb + " needs"
                     " operation.solidHeatCapacity { value; scope; source; }"
                     " -- the solid's cp is DECLARED case data (the kLDF"
                     " pattern; curating a primary-cited cp onto the"
@@ -524,18 +524,52 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                     " entries -- a declared value states where it came"
                     " from (the kLDF pattern)");
             thermal_ = true;
+
+            //  T2: wall heat exchange -- one-knob discipline (design
+            //  section 6): wallCooled REQUIRES its block, adiabatic
+            //  REFUSES it (a contradiction), h <= 0 is refused because
+            //  `adiabatic` is the way to SAY zero.
+            if (eb == "wallCooled")
+            {
+                if (!opDict->found("wallHeatTransfer"))
+                    throw std::runtime_error("fixedBedAdsorber '" + name_
+                        + "': energyBalance wallCooled needs"
+                        " operation.wallHeatTransfer { h; T_wall; dBed; }"
+                        " -- the wall's film coefficient, temperature and"
+                        " the DECLARED bed diameter (never derived from"
+                        " the cross-section by a silent circle"
+                        " assumption)");
+                auto wht = opDict->subDict("wallHeatTransfer");
+                wallH_  = wht->lookupScalar("h", Dims::heatTransfer_h);
+                wallTw_ = wht->lookupScalar("T_wall", Dims::temperature);
+                const scalar dBed = wht->lookupScalar("dBed", Dims::length);
+                if (wallH_ <= 0.0)
+                    throw std::runtime_error("fixedBedAdsorber '" + name_
+                        + "': wallHeatTransfer.h must be > 0 -- a zero"
+                        " wall is spelled `energyBalance adiabatic;`");
+                if (wallTw_ <= 0.0 || dBed <= 0.0)
+                    throw std::runtime_error("fixedBedAdsorber '" + name_
+                        + "': wallHeatTransfer needs positive T_wall and"
+                        " dBed");
+                wallAv_ = 4.0 / dBed;
+                wallCooled_ = true;
+            }
+            else if (opDict->found("wallHeatTransfer"))
+                throw std::runtime_error("fixedBedAdsorber '" + name_
+                    + "': energyBalance adiabatic CONTRADICTS a"
+                    " wallHeatTransfer block -- declare `energyBalance"
+                    " wallCooled;` to use the wall, or remove the block");
         }
         else
             throw std::runtime_error("fixedBedAdsorber '" + name_
-                + "': energyBalance must be isothermal or adiabatic --"
-                " got '" + eb + "' (wall heat exchange is the named T2"
-                " step, not yet built)");
+                + "': energyBalance must be isothermal, adiabatic or"
+                " wallCooled -- got '" + eb + "'");
     }
-    if (opDict->found("wallHeatTransfer"))
+    if (!thermal_ && opDict->found("wallHeatTransfer"))
         throw std::runtime_error("fixedBedAdsorber '" + name_
-            + "': wallHeatTransfer is the T2 step of the thermal bed and"
-            " is not built -- T1 is ADIABATIC (docs/design/"
-            "fixed-bed-thermal-a5.md); remove the block");
+            + "': wallHeatTransfer is read only by the THERMAL bed --"
+            " declare `energyBalance wallCooled;` (flowModel ergun,"
+            " docs/design/fixed-bed-thermal-a5.md) or remove the block");
     //  T1.5: the feed starts at the declared T; in thermal mode
     //  `setParameter feed.T` may later move it (the TSA hot purge).
     Tfeed_    = T_;
@@ -545,11 +579,13 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
 
     // -----------------------------------------------------------------
     //  Packed state Y (spec section 2.1): c | q | M_in | M_out
-    //  (+ T_j per cell in thermal mode, appended after the ledger rows).
+    //  (+ T_j per cell in thermal mode, appended after the ledger rows;
+    //  + the Q_wall LEDGER STATE in wallCooled mode -- integrated in the
+    //  same ODE, never a posterior quadrature).
     // -----------------------------------------------------------------
     const std::size_t nFlow = ergun_ ? n : nAds;
     y_.assign(nFlow * N_ + nAds * N_ + 2 * nFlow
-              + (thermal_ ? N_ : 0), 0.0);
+              + (thermal_ ? N_ : 0) + (wallCooled_ ? 1 : 0), 0.0);
     if (thermal_)
         for (std::size_t j = 0; j < N_; ++j)
             y_[tOffset_() + j] = T_;
@@ -630,6 +666,12 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     if (thermal_)
         for (std::size_t j = 0; j < N_; ++j)
             atol_[tOffset_() + j] = 1.0e-7 * T_;   // K rows, spec-2.5 posture
+    if (wallCooled_)
+        //  Q_wall ledger row [J]: scale on the full-bed wall duty over the
+        //  span at a nominal 10 K approach -- same 1e-6 posture as M_in.
+        atol_[qwOffset_()] = std::max(
+            1.0e-6 * wallH_ * wallAv_ * A_ * L_ * 10.0
+                * std::max(tSpan, 1.0), 1.0e-9);
 
     // -----------------------------------------------------------------
     //  Visible state: gas hold-up per component, declared T/P, bed volume.
@@ -719,8 +761,9 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             //  A5-T1 anchors, printed BEFORE the run (design section 4;
             //  computed unconditionally just above -- frozen claims a
             //  later T1.5 feed switch must never silently rewrite).
-            std::cout << "  [fixedBedAdsorber '" << name_ << "'] A5-T1"
-                         " ADIABATIC energy balance: one T per cell,"
+            std::cout << "  [fixedBedAdsorber '" << name_ << "'] A5-"
+                      << (wallCooled_ ? "T2 WALL-COOLED" : "T1 ADIABATIC")
+                      << " energy balance: one T per cell,"
                          " cp_s = " << cpS_ << " J/(kg K) (DECLARED case"
                          " data), feed-gas Cp_ig(T_feed) = " << cpgFeed_
                       << " J/(mol K); adsorbed-phase heat capacity"
@@ -728,6 +771,20 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                          " velocity u_th = " << uThAnn_ << " m/s; the bed"
                          " needs L/u_th = " << L_ / uThAnn_ << " s for the"
                          " heat to LEAVE.\n";
+            if (wallCooled_)
+                std::cout << "  [fixedBedAdsorber '" << name_ << "'] T2"
+                             " wall: h = " << wallH_ << " W/(m2 K),"
+                             " T_wall = " << wallTw_ << " K, a_w = 4/dBed"
+                             " = " << wallAv_ << " 1/m (dBed DECLARED);"
+                             " wall NTU = h a_w L/(u c_feed cpg) = "
+                          << wallH_ * wallAv_ * L_
+                             / (u_ * cFeedTot_ * cpgFeed_)
+                          << ".  Removed heat accumulates in the Q_wall"
+                             " STATE row of the same ODE (never a"
+                             " posterior quadrature); h -> 0 recovers the"
+                             " adiabatic bed, large h approaches the"
+                             " isothermal one -- the model CONTAINS its"
+                             " limits.\n";
             for (std::size_t a = 0; a < nAds; ++a)
             {
                 if (dTadAnn_[a] < 0.0) continue;
@@ -879,6 +936,11 @@ std::size_t FixedBedAdsorber::outOffset_() const
 std::size_t FixedBedAdsorber::tOffset_() const
 {
     return outOffset_() + (ergun_ ? compNames_.size() : adsIdx_.size());
+}
+
+std::size_t FixedBedAdsorber::qwOffset_() const
+{
+    return tOffset_() + N_;   // after the T rows (wallCooled only)
 }
 
 scalar FixedBedAdsorber::cellT_(const sVector& y, std::size_t j) const
@@ -1165,7 +1227,17 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
                     src += (-dHAds_[a]) * dy[qOff + a * N_ + j];
                 src *= rhoB_;
 
-                dy[tOff + j] = (adv + src) / denom;
+                //  T2: the wall term -h a_w (T_j - T_wall), and the SAME
+                //  heat accumulating in the Q_wall ledger state (one ODE,
+                //  telescopic -- the M_in/M_out pattern).
+                scalar wall = 0.0;                       // J/(m3 s)
+                if (wallCooled_)
+                {
+                    wall = wallH_ * wallAv_ * (Tj - wallTw_);
+                    dy[qwOffset_()] += wall * A_ * dz_;  // W
+                }
+
+                dy[tOff + j] = (adv + src - wall) / denom;
             }
         }
         return dy;
@@ -1607,6 +1679,25 @@ scalar FixedBedAdsorber::adsorbedKmol_(std::size_t a) const
 std::vector<SimulationResult::EnergyRecord>
 FixedBedAdsorber::energyRecords(scalar tEnd)
 {
+    //  T2 wallCooled: the removed heat is a STATE ROW of the same ODE --
+    //  the record READS it (heat ADDED to the bed is negative when the
+    //  wall cools), never re-integrates anything.
+    if (wallCooled_)
+    {
+        SimulationResult::EnergyRecord er;
+        er.tStart      = startTime_;
+        er.tEnd        = tEnd;
+        er.unit        = name_;
+        er.kind        = "wallHeat";
+        er.T_service_K = wallTw_;
+        er.E_kJ        = -y_[qwOffset_()] / 1000.0;   // J -> kJ
+        er.E_valid     = true;
+        er.basis       = "wall-cooled bed: Q_wall = INT Sum_j h a_w"
+                         " (T_j - T_wall) A dz dt, integrated as a state"
+                         " row of the SAME ODE (the M_in/M_out ledger"
+                         " pattern) -- E is the heat ADDED to the bed";
+        return { er };
+    }
     //  A5-T1 adiabatic: NOTHING is exchanged with the environment -- the
     //  isosteric heat stays in the bed as the thermal wave, priced by
     //  vesselEnthalpy's per-cell sensible terms, and an "adsorption duty"
@@ -2131,6 +2222,8 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
         k["T_out_final_K"] = cellT_(y_, N_ - 1);
         k["T_max_final_K"] = tMax;
         k["u_thermal_wave_m_s"] = uThAnn_;
+        if (wallCooled_)
+            k["Q_wall_removed_kJ"] = y_[qwOffset_()] / 1000.0;
         for (std::size_t a = 0; a < nAds; ++a)
             if (a < dTadAnn_.size() && dTadAnn_[a] >= 0.0)
                 k["dT_adiabatic_" + compNames_[adsIdx_[a]] + "_K"] =

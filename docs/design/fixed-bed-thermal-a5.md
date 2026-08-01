@@ -1,6 +1,10 @@
 # A5 thermal: the non-isothermal fixed bed — design before code
 
-Status: **T1 AND T1.5 SHIPPED 2026-08-01**, same day as this design
+Status: **T1, T1.5 AND T2 ALL SHIPPED 2026-08-01**, same day as this
+design (T2: batch22_wall_cooled — the containment bracketing holds,
+t_50 856 s between 806 and 3036, Q_wall a state row read by the
+`wallHeat` record, energy claimed at 2.7e-4; the wall/ledger desync
+sabotage is caught by the witness golden).  Originally: T1 and T1.5
 (T1: batch20_thermal_breakthrough — energy CLAIMED at 5.7e-5, t_50
 806 s vs the isothermal 3042 s; T1.5: batch21_tsa_hot_purge — feed.T as
 the hot-purge control, the WHOLE commitment re-declared OUT at T_old /

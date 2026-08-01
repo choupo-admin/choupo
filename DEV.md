@@ -196,10 +196,18 @@ ones for day-to-day work:
    packages' own T).  Witness batch21_tsa_hot_purge: load → 400 K clean
    purge in one campaign, ~97 % regenerated, energy CLAIMED across the
    swing (1.6e-4 on 14300 kJ); sabotage: dropping the retire package
-   makes the campaign itself report the leak.  STILL REFUSING, named:
-   wall heat (T2), pressure swing / blowdown (transient c_tot), flow
-   transients (transient Ergun), flow reversal — plus A6 cyclic steady
-   state.  Close those to complete the programme.
+   makes the campaign itself report the leak.  **T2 SHIPPED 2026-08-01:
+   the WALL-COOLED bed** (`energyBalance wallCooled;` +
+   wallHeatTransfer{h;T_wall;dBed} — declared, one-knob-guarded) — the
+   removed heat integrates as a STATE ROW of the same ODE (the
+   M_in/M_out pattern), the `wallHeat` record reads that state, and
+   batch22_wall_cooled pins the containment bracketing (t_50 856 s
+   between the adiabatic 806 and isothermal 3036; T_max 312.3 K between
+   T_wall and 336) with energy claimed at 2.7e-4; the desync sabotage
+   is caught by the witness golden.  STILL REFUSING, named: pressure
+   swing / blowdown (transient c_tot), flow transients (transient
+   Ergun), flow reversal — plus A6 cyclic steady state.  Close those to
+   complete the programme.
 
 ## 4b. Waiting on Vítor (not blocked — each CHANGES WHAT THE ENGINE REFUSES)
 

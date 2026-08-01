@@ -1,0 +1,74 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch22_wall_cooled  --  THE T2 WITNESS: the bed between its two limits.
+
+  batch20's adiabatic bed with `energyBalance wallCooled;` -- the energy
+  row gains -h a_w (T_j - T_wall) and the bed sits BETWEEN the limits it
+  must contain:
+
+      h -> 0        batch20 (adiabatic:  t_50 =  806 s, T_max ~ 336 K)
+      h -> infinity batch18 (isothermal: t_50 = 3036 s, T = T_wall)
+
+  so the golden pins the BRACKETING:
+
+      t_50(adiabatic) < t_50(wallCooled) < t_50(isothermal)
+      T_wall < T_max(wallCooled) < T_max(adiabatic)
+
+  at h = 5 W/(m2 K), T_wall = 298.15 K, dBed 0.113 m DECLARED (never
+  derived from the cross-section by a silent circle assumption); the
+  engine announces a_w = 4/dBed and the wall NTU before integrating.
+
+  The LEDGER is the design point (docs/design/fixed-bed-thermal-a5.md
+  section 6): the removed heat integrates as ONE MORE STATE ROW of the
+  same ODE -- the M_in/M_out ledger-row pattern -- so the `wallHeat`
+  energy record READS a state (E = -Q_wall, T_service = T_wall) and the
+  campaign closure dH_vessels = Q_ledger + H_external holds with every
+  term a state function.  Guards: `adiabatic` + a wallHeatTransfer block
+  refuses (contradiction), `wallCooled` without one refuses, h <= 0
+  refuses (adiabatic is the way to SAY zero) -- gate check_thermal_bed.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name bed;
+        type fixedBedAdsorber;
+        solver { samplingInterval 2.0; rtol 1e-6; }
+        operation
+        {
+            adsorbent zeolite13X_A4; flowModel ergun;
+            energyBalance wallCooled;
+            solidHeatCapacity
+            {
+                value  [0 2 -2 -1 0] 920;   // J/(kg K)
+                scope  "packed 13X teaching bed, RUN-A5-T2";
+                source "declared teaching value (order of magnitude for zeolite pellets); curating a primary-cited cp onto the asset record is a separate act";
+            }
+            wallHeatTransfer
+            {
+                h      [1 0 -3 -1 0] 5;     // W/(m2 K), declared film
+                T_wall 298.15 K;            // the jacket/ambient sink
+                dBed   0.113 m;             // DECLARED bed diameter
+            }
+            L 0.5 m; area 0.01 m2; eps 0.4; u 0.05 m/s;
+            T 298.15 K; P 1 bar; P_out 1 bar;
+            Dax [0 2 -1 0 0] 1e-4; nCells 25;
+            feed { molarComposition { CO2 0.15; He 0.85; } }
+            initial { molarComposition { He 1.0; } }
+            kLDF
+            {
+                basis solidFilm;
+                scope "2 mm synthetic A4 conservation anchor";
+                source "declared numerical comparison";
+                k { CO2 [0 0 -1 0 0] 0.05; }
+            }
+        }
+    }
+);

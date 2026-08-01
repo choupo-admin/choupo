@@ -139,10 +139,17 @@ Description
     T_new (pinned-P ideal-gas scaling; the enthalpy repricing rides in
     the packages' own T), crossings freeze for every integrated species
     and the pre-run claims (u_th, DT_ad) stay the ANNOUNCED values.
-    Wall heat (T2) and fixed stepping in thermal mode refuse by name --
-    gate check_thermal_bed, sabotage-verified both slices.  Witnesses:
-    batch20_thermal_breakthrough (T1), batch21_tsa_hot_purge (T1.5);
-    design: docs/design/fixed-bed-thermal-a5.md.
+    T2: `energyBalance wallCooled;` + wallHeatTransfer{h;T_wall;dBed}
+    adds -h a_w (T_j - T_wall) to the energy row; the removed heat
+    integrates as a STATE ROW of the same ODE (the M_in/M_out ledger
+    pattern, never a posterior quadrature) and the `wallHeat` record
+    READS it.  One-knob guards: adiabatic+wall block contradicts,
+    wallCooled without the block refuses, h <= 0 refuses.  Fixed
+    stepping in thermal mode refuses by name -- gate check_thermal_bed
+    (refusals) + the witness goldens (physics; the wall/ledger desync
+    sabotage is caught there).  Witnesses: batch20 (T1), batch21 (T1.5),
+    batch22_wall_cooled (T2); design:
+    docs/design/fixed-bed-thermal-a5.md.
 
     In the ISOTHERMAL modes, energy stays outside the flow slice as
     before: A3's energyLedgerGap() names its gap and vesselEnthalpy()
@@ -263,6 +270,13 @@ private:
     bool   thermal_ = false;
     scalar cpS_ = 0.0;        // solid heat capacity [J/(kg K)], declared
     scalar cpgFeed_ = 0.0;    // feed-gas mixture Cp_ig at Tfeed_ [J/(mol K)]
+    //  T2: wall heat exchange (`energyBalance wallCooled;`) -- the T1 energy
+    //  row gains -h a_w (T_j - T_wall); the REMOVED heat integrates as one
+    //  more STATE ROW of the same ODE (never a posterior quadrature).
+    bool   wallCooled_ = false;
+    scalar wallH_  = 0.0;     // h [W/(m2 K)], declared
+    scalar wallTw_ = 0.0;     // T_wall [K], declared
+    scalar wallAv_ = 0.0;     // a_w = 4/dBed [1/m], from the DECLARED dBed
     //  T1.5: the FEED temperature -- a CONTROL in thermal mode (the TSA
     //  hot purge, recipe setParameter feed.T), the declared T otherwise.
     //  cFeedTot_ = P/(R Tfeed): the feed's total concentration, which a
@@ -362,6 +376,7 @@ private:
     std::size_t inOffset_() const;
     std::size_t outOffset_() const;
     std::size_t tOffset_() const;                // A5-T1: T rows (thermal only)
+    std::size_t qwOffset_() const;               // T2: the Q_wall state row
     scalar cellT_(const sVector& y, std::size_t j) const;  // T_ unless thermal
     scalar cpgCell_(const sVector& y, std::size_t j) const; // mixture Cp_ig [J/mol/K]
     scalar pressureCell_(const sVector& y, std::size_t j) const;
