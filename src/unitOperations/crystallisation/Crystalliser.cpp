@@ -326,48 +326,18 @@ int Crystalliser::solveEquilibrium(const DictPtr& dict,
                   << " kg " << sol.name() << " / kg " << solv.name() << "\n";
         if (mixedSolvent)
         {
-            //  NAME THE MODEL THAT ACTUALLY RAN, and say when it moved
-            //  nothing.  This was hardcoded "eNRTL", so a Pitzer package
-            //  printed a model name that was not its own -- and the pairwise
-            //  Pitzer carries no mixed-solvent term, so it also printed a
-            //  "drowning-out" whose m_sat came out equal to the aqueous datum.
-            //  A line claiming an effect the model does not compute is worse
-            //  than no line.
-            const bool moved =
-                std::abs(m_sat_eff - elecSolubility) > 1e-9 * std::abs(elecSolubility);
+            //  NAME THE MODEL THAT ACTUALLY RAN.  This was hardcoded "eNRTL",
+            //  so a Pitzer package printed a model name that was not its own.
             std::cout << "  Drowning-out (" << thermo.electrolyte().modelName()
                       << " mixed-solvent): x_" << thermo.comp(iAnti).name()
                       << " = " << std::setprecision(3) << xAnti << " (salt-free)  ->  m_sat = "
                       << m_sat_eff << " mol/kg  (aqueous datum " << elecSolubility << ")\n";
-            if (!moved)
-                std::cout << "  [drowningOut] m_sat is UNCHANGED from the"
-                             " aqueous datum: this model carries no"
-                             " mixed-solvent term, so the antisolvent is"
-                             " present in the material and absent from the"
-                             " saturation.\n";
-            //  THE TRANSFER TERM IS ABSENT, AND SAYS SO.
-            //
-            //  The mixed-solvent effect above lives entirely in gamma_pm; the
-            //  equilibrium constant it is solved against stays referenced to
-            //  infinite dilution in PURE WATER, which is not the medium these
-            //  ions are in.  Correcting that reference is the standard-state
-            //  transfer term -- ratified as a NAMED next slice (D3), with no
-            //  implementation authorised, and with one condition attached:
-            //  "never silently zero, never smuggled into a fitted constant".
-            //
-            //  It was silently zero.  The only statement of it anywhere was
-            //  the prose in one tutorial's own description field, which is the
-            //  author saying it, not the engine.  A student reading this run
-            //  saw a mixed-solvent saturation and nothing about the reference
-            //  it was computed against.
-            std::cout << "  [standardState] the equilibrium constant stays"
-                         " WATER-REFERENCED (infinite dilution in pure water)"
-                         " while the solvent is not water: the transfer"
-                         " correction for that difference is NOT applied"
-                         " (D3, docs/design/standard-state-transfer-adr.md)."
-                         "  The mixed-solvent effect above is carried by"
-                         " gamma_pm alone.\n";
         }
+        //  What the saturation left out is the RESOLVER's statement, printed
+        //  here rather than rewritten here -- the batch crystalliser prints
+        //  the same list from the same call.
+        for (const std::string& note : sat.notes)
+            std::cout << "  " << note << "\n";
         std::cout << "  Solute in = " << std::scientific << std::setprecision(3) << solute_in
                   << " kg/s  ->  crystals = " << crystal_mass << " kg/s,  dissolved = "
                   << solute_liq << " kg/s\n" << std::fixed

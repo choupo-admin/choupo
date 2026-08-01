@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/internalState -- the vessel's initial HOLDUP.
+
+  batch13's brine with an antisolvent added:
+
+      water     49.9584 kmol   900.00 kg
+      ethanol    5.5509 kmol   255.73 kg   (x = 0.100 of the salt-free liquid)
+      NaCl       8.8050 kmol   514.56 kg
+      total     64.3143 kmol
+
+  Solvent mass = 900.00 + 255.73 = 1155.73 kg, and the molality is on THAT
+  mass, because the saturation the charge is compared against is:
+
+      m  = 8805.0 mol / 1155.73 kg = 7.619 mol/kg
+      m_sat (Pitzer, 25 C)         = 6.144 mol/kg
+      S0                           = 1.240
+
+  Read on the water alone the same charge gives 9.783 mol/kg and S0 = 1.592.
+  Neither number is wrong on its own; putting them on the two sides of one
+  ratio is.
+
+  S0 is deliberately batch13's, so the two campaigns differ in exactly one
+  thing: whether an antisolvent is in the vessel.
+
+  Suspension volume: 0.900 (water) + 0.324 (ethanol, 789 kg/m3) + 0.238
+  (dissolved salt at the crystal density) ~ 1.46 m3.
+\*---------------------------------------------------------------------------*/
+
+time            0;
+application     batch;
+
+units
+{
+    "cryst"
+    {
+        T            298.15 K;          // 25 C, held (isothermal)
+        P            1.013 bar;
+        V            1.46;              // m³ suspension volume
+        totalMoles   64.3143;           // kmol
+        molarComposition  { water 0.776785;  ethanol 0.086309;  NaCl 0.136905; }
+    }
+}

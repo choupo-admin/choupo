@@ -131,9 +131,17 @@ private:
 
     std::size_t iSolute_ = 0, iSolv_ = 0;
     scalar      MW_sol_  = 0, MW_solv_ = 0;
+    //- The ANTISOLVENT, when the resolver found one (iAnti_ == n if it did
+    //  not).  It is carried here for ONE reason: c_sat_ below is expressed on
+    //  whatever solvent basis the resolver used, and in a mixed solvent that
+    //  basis is water PLUS antisolvent.  A supersaturation that divides by the
+    //  water alone is then measuring a ratio of two different things.
+    std::size_t iAnti_   = 0;
+    scalar      MW_anti_ = 0;
     //- Saturation at the (isothermal) campaign temperature, kg solute / kg
     //  solvent, resolved ONCE by the shared crystSaturation -- ion activity
-    //  for an electrolyte package, the solubility curve otherwise.
+    //  for an electrolyte package, the solubility curve otherwise.  The
+    //  "solvent" in that unit is the resolver's, not this model's.
     scalar      c_sat_   = 0;
     scalar      rho_c_   = 0, k_v_     = 0;
     scalar      T_       = 0, V_       = 0;  // isothermal T, suspension volume

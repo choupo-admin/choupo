@@ -80,12 +80,22 @@ void BatchCrystalliser::initialise(const DictPtr&       unitDict,
     //  curve -- silently, both routes returning a plausible number.
     //
     //  The batch charge is a fixed inventory, so `state_.n` plays the role of
-    //  z with F = 1: the resolver's `solvent_mass = F * z[iSolv] * MW_solv`
-    //  is then the charge's solvent mass in kg, which is what this model
-    //  already computed by hand.
+    //  z with F = 1: the resolver's `solvent_mass` is then the charge's
+    //  solvent mass in kg.
+    //
+    //  WHICH solvent, though, is the resolver's decision and not this model's.
+    //  With an antisolvent present the resolver puts BOTH liquids in the
+    //  denominator -- `F*(z[iSolv]*MW_solv + z[iAnti]*MW_anti)` -- because
+    //  that is the basis its molality, and therefore its c_sat, is on.  This
+    //  model divided by the water alone, so a mixed-solvent charge would have
+    //  compared kg salt / kg water against kg salt / kg (water + ethanol) and
+    //  called the quotient a supersaturation.  It never showed because no
+    //  batch case had an antisolvent; batch14 is that case.
     const SatState sat = crystSaturation(thermo, state_.n, 1.0, T_);
     iSolute_ = sat.iSolute;
     iSolv_   = sat.iSolv;
+    iAnti_   = sat.iAnti;
+    MW_anti_ = (sat.iAnti < n) ? thermo.comp(sat.iAnti).MW() : 0.0;
     c_sat_   = sat.c_sat;              // kg solute / kg solvent at T (isothermal)
     if (iSolute_ == n)
         throw std::runtime_error("BatchCrystalliser '" + name_ + "': no"
@@ -166,6 +176,12 @@ void BatchCrystalliser::initialise(const DictPtr&       unitDict,
         std::cout << "  [BatchCrystalliser] dH_cryst = " << dHcrystPerMol_
                   << " J/mol  [" << dHcrystSource_ << "]\n";
     }
+
+    //  The gaps the saturation left, in the resolver's words -- the same list
+    //  the steady crystalliser prints.  Nothing here decides what is missing;
+    //  a batch case reaching a mixed solvent used to reach it in silence.
+    for (const std::string& note : sat.notes)
+        std::cout << "  [BatchCrystalliser] " << note << "\n";
 }
 
 // ---- Energy ledger (phase (d)): latent duty as a mu3 state difference -----
@@ -253,7 +269,10 @@ scalar BatchCrystalliser::vesselEnthalpy(bool& ok, std::string& why) const
 
 scalar BatchCrystalliser::supersaturation_(scalar nSoluteDissolved) const
 {
-    const scalar solventMass = state_.n[iSolv_] * MW_solv_;     // kg (·1, kmol·kg/kmol)
+    //  The SAME solvent the resolver measured c_sat_ against: water, plus the
+    //  antisolvent when there is one.  Both sides of the ratio on one basis.
+    scalar solventMass = state_.n[iSolv_] * MW_solv_;           // kg (·1, kmol·kg/kmol)
+    if (iAnti_ < state_.n.size()) solventMass += state_.n[iAnti_] * MW_anti_;
     if (solventMass <= 0.0) return 1.0;
     const scalar c     = (nSoluteDissolved * MW_sol_) / solventMass;  // kg/kg
     //  c_sat_ was resolved ONCE by the shared crystSaturation -- by the ion

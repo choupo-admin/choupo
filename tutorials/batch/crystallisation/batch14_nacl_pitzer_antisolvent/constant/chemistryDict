@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch13_nacl_pitzer / constant/chemistryDict
+
+  WHICH solid phases this case admits -- availability, not presence.  The Ksp
+  and the crystal data (rho_p, k_v) live in the NaCl record's own
+  solidPhases.halite block; naming the phase here is what lets the package
+  hand them to the salt, and what lets the crystalliser ask for saturation.
+
+  Same declaration as the steady crystalliser05_nacl_pitzer: the two cases
+  differ in time regime, not in chemistry.
+\*---------------------------------------------------------------------------*/
+
+recordType    chemistrySystem;
+schemaVersion 1;
+
+equilibria
+{
+    solidPhases ( halite );
+}

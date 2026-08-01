@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch14_nacl_pitzer_antisolvent / flowsheetDict
+
+  One closed vessel, identical to batch13 except for the ethanol in the charge.
+  The unit declares no saturation of its own: it asks the thermodynamics the
+  case declares, and the case declares Pitzer -- which has nothing to say
+  about a second solvent, and says so.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        cryst;
+        type        batchCrystalliser;
+
+        crystallisation  naclBatchKinetics;   // -> constant/crystallisation
+    }
+);

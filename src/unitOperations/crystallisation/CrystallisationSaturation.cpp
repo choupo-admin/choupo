@@ -22,6 +22,7 @@ License
 //  only forward-declares it.
 #include "thermo/electrolyte/ElectrolyteModel.H"
 
+#include <cmath>
 #include <stdexcept>
 #include <string>
 
@@ -119,6 +120,41 @@ SatState crystSaturation(const ThermoPackage& thermo, const sVector& z, scalar F
         }
         r.m_sat = 0.5 * (lo + hi);
         r.c_sat = r.m_sat * r.MW_sol / 1000.0;
+
+        if (r.mixedSolvent)
+        {
+            //  The antisolvent is in the MATERIAL whatever the model does with
+            //  it; whether it is in the SATURATION depends on the model having
+            //  a mixed-solvent term.  The base-class gammaPMMixed ignores its
+            //  antisolvent arguments and returns the aqueous gamma, so a
+            //  pairwise Pitzer package reaches this point with m_sat exactly
+            //  equal to the datum it started from -- a drowning-out that drowns
+            //  nothing.  Detected by comparing, never by asking the model's
+            //  name.
+            if (std::abs(r.m_sat - elecSolubility) <= 1e-9 * std::abs(elecSolubility))
+                r.notes.push_back(
+                    "[drowningOut] m_sat is UNCHANGED from the aqueous datum:"
+                    " this model carries no mixed-solvent term, so the"
+                    " antisolvent is present in the material and absent from"
+                    " the saturation.");
+
+            //  THE TRANSFER TERM IS ABSENT, AND SAYS SO.
+            //
+            //  The mixed-solvent effect lives entirely in gamma_pm; the
+            //  equilibrium constant it is solved against stays referenced to
+            //  infinite dilution in PURE WATER, which is not the medium these
+            //  ions are in.  Correcting that reference is the standard-state
+            //  transfer term -- ratified as a NAMED next slice (D3), with no
+            //  implementation authorised, and one condition attached: "never
+            //  silently zero, never smuggled into a fitted constant".
+            r.notes.push_back(
+                "[standardState] the equilibrium constant stays"
+                " WATER-REFERENCED (infinite dilution in pure water) while the"
+                " solvent is not water: the transfer correction for that"
+                " difference is NOT applied (D3,"
+                " docs/design/standard-state-transfer-adr.md).  The"
+                " mixed-solvent effect above is carried by gamma_pm alone.");
+        }
     }
     else
         r.c_sat = thermo.comp(r.iSolute).c_sat(T_op);

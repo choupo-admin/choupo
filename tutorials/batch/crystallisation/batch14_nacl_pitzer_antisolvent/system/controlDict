@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch14_nacl_pitzer_antisolvent  --  a batch crystalliser whose charge holds
+                                       an ANTISOLVENT its model cannot use.
+
+  The sibling of batch13, one component apart.  batch13 is water + NaCl under
+  a Pitzer package; this case adds ethanol to the same charge and changes
+  nothing else.  A reader expects the ethanol to lower the solubility --- that
+  is what an antisolvent is for --- and the run says, in the engine's own
+  words, that it does not:
+
+      [drowningOut] m_sat is UNCHANGED from the aqueous datum: this model
+                    carries no mixed-solvent term ...
+
+  Pitzer here is the pairwise aqueous form: its parameters are regressed on
+  water, and there is no term in it that knows a second solvent exists.  The
+  ethanol is therefore REAL in the material balance and ABSENT from the
+  saturation, and the honest thing for the run to do is say so rather than
+  print a drowning-out that drowns nothing.  Its eNRTL sibling
+  (crystalliser06, steady) does move m_sat, 6.14 -> 0.885 mol/kg, so the two
+  side by side show what "the antisolvent effect" costs: not a component in
+  the list, a term in the model.
+
+  The second announcement is about the reference the saturation is solved
+  against.  Whatever gamma_pm does with the mixed solvent, the equilibrium
+  constant stays referenced to infinite dilution in PURE WATER --- the
+  standard-state transfer term is the named next slice (D3), unimplemented,
+  and the run states it instead of leaving it at zero in silence.
+
+  Both lines come from the SHARED saturation resolver, not from this unit:
+  the steady crystalliser prints the identical pair.  A gap that belongs to a
+  number should not depend on who prints it.
+
+  This case also fixed a defect it was built to exercise.  The batch
+  supersaturation divided the dissolved salt by the WATER mass while c_sat
+  came back on the resolver's mixed-solvent basis (water + ethanol) --- two
+  different denominators, one ratio, no complaint from either side.  With the
+  charge below it read S0 = 1.592 instead of 1.240 --- a 28 % overstatement of
+  the one number the whole population balance turns on, in a model where the
+  nucleation rate goes as a power of (S-1).
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Batch NaCl crystalliser with ethanol present: a pairwise-aqueous model announces the mixed-solvent term it does not carry";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         7200;     // s   (2 h)
+deltaT          2.0;      // s   (RK4 step)
+writeInterval   360;      // s

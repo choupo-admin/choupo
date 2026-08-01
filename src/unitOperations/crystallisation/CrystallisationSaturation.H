@@ -63,6 +63,7 @@ Description
 #include "core/Types.H"
 
 #include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -77,6 +78,20 @@ struct SatState
     scalar solvent_mass = 0.0;   // kg/s
     scalar xAnti = 0.0;
     scalar MW_sol = 0.0, MW_solv = 0.0;
+
+    //- What this saturation LEFT OUT, in the resolver's own words.
+    //
+    //  The saturation is shared; the statement of its gaps was not.  The
+    //  steady unit announced the missing mixed-solvent term and the missing
+    //  standard-state transfer term (D3) in prose written at the print site,
+    //  and the batch unit -- calling the SAME resolver, reaching the SAME
+    //  gaps -- announced neither.  That is the divergence this file was
+    //  created to end, one field later: a gap belongs to the number, not to
+    //  whoever happens to print it.
+    //
+    //  Filled by crystSaturation(); every caller prints them verbatim.  Empty
+    //  means the resolver has nothing to confess, which is itself a claim.
+    std::vector<std::string> notes;
 };
 
 //- Identify solute / solvent / (antisolvent) and resolve the saturation at
