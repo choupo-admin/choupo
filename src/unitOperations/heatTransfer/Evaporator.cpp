@@ -341,11 +341,18 @@ int Evaporator::solve(const DictPtr& dict,
     //   T_boil = T_sat_pure(P_op) + K_b · m_solute(x_L)
     // => P_op = P_sat_pure(T_boil − BPE ).
     scalar BPE;
+    //  The molality a_w is ACTUALLY evaluated at, carried to the report rather
+    //  than recomputed there.  A report that recomputes what it claims to
+    //  describe can describe something the model never did -- and did: this
+    //  line printed the salt molality while a_w had been handed the total, and
+    //  no reader (nor gate) could tell.
+    scalar awMolality = 0.0;
     if (useElectrolyte)
     {
         // Activity-based BPE: a_w * Psat_pure(T_boil) = Psat_pure(T_boil - BPE).
         // Clausius-Clapeyron -> BPE = -(R T_boil^2 / dHvap) ln a_w  (a_w<1 -> BPE>0).
-        const scalar aw = thermo.electrolyte().waterActivity(molality_salt(V_over_F), T_boil);
+        awMolality = molality_salt(V_over_F);
+        const scalar aw = thermo.electrolyte().waterActivity(awMolality, T_boil);
         BPE = -(constant::R * T_boil * T_boil / dHvap_solv(T_boil)) * std::log(aw);
 
         //  The BPE is now the SALT's alone.  If the liquor carries other
@@ -423,10 +430,7 @@ int Evaporator::solve(const DictPtr& dict,
                   << "  T_boil = T_steam − ΔT = " << std::setprecision(2)
                   << T_boil << " K  (" << (T_boil - 273.15) << " °C)\n"
                   << (useElectrolyte
-                        //  The molality a_w was ACTUALLY evaluated at -- the
-                        //  salt's, which is not the total-solute molality when
-                        //  the liquor carries anything else.
-                        ? ("  BPE = electrolyte a_w(m=" + std::to_string(molalitySalt)
+                        ? ("  BPE = electrolyte a_w(m=" + std::to_string(awMolality)
                            + ") -> " + std::to_string(BPE) + " K  (electrolyte model)\n")
                         : ("  BPE = K_b · m_solute = " + std::to_string(K_b)
                            + " · " + std::to_string(molality) + " = " + std::to_string(BPE) + " K\n"))

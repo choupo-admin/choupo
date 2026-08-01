@@ -607,6 +607,22 @@ PYEOF
     fi
     rm -f /tmp/bothbases.$$
 
+    # Solute-basis gate: a single-salt electrolyte model answers about its
+    # own salt, and the run names what else is dissolved.  Every failure it
+    # guards produced a plausible number -- the boiling-point rise of a
+    # liquid that does not exist, a supersaturation whose numerator and
+    # denominator were on different bases -- and the corpus had no case that
+    # could see any of them until evaporator09, crystalliser12 and batch14.
+    if "$ROOT/bin/curate/check_solute_basis.py" > /tmp/solutebasis.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "solute-basis-gate" "$(tail -1 /tmp/solutebasis.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_solute_basis.py)\n" "solute-basis-gate"
+        cat /tmp/solutebasis.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/solutebasis.$$
+
     # Unread-key gate: a key written and never read is a value that did
     # nothing while the author believes it did.  `murphreeEficiency` -- one
     # letter short -- ran the column ideal-tray and moved the distillate

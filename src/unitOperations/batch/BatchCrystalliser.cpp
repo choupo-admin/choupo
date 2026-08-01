@@ -140,6 +140,27 @@ void BatchCrystalliser::initialise(const DictPtr&       unitDict,
     if (S0 <= 1.0)
         throw std::runtime_error("BatchCrystalliser '" + name_ + "': the charge"
             " is not supersaturated at T (S0 <= 1) --- nothing will crystallise.");
+
+    //  PRINT THE NUMBER THE MODEL TURNS ON, and the basis it is on.
+    //
+    //  Growth and nucleation are both powers of (S-1), so S is the single
+    //  most consequential quantity here, and until now it was never shown.
+    //  It is also the quantity a wrong solvent basis corrupts silently: the
+    //  same charge reads 1.592 per kg of water and 1.240 per kg of (water +
+    //  antisolvent), and no other line in the run distinguishes them.  Naming
+    //  the basis is the difference between a student being able to check this
+    //  and having to trust it.
+    {
+        //  solventMass_() -- the SAME call supersaturation_ makes, not a
+        //  second copy of the sum.  Printing a basis you recomputed is how a
+        //  report ends up describing something the model did not do.
+        std::string basis = thermo.comp(iSolv_).name();
+        if (iAnti_ < n) basis += " + " + thermo.comp(iAnti_).name();
+        std::cout << "  [BatchCrystalliser] S0 = " << S0 << "  (c = "
+                  << (state_.n[iSolute_] * MW_sol_ / solventMass_())
+                  << " / c_sat = " << c_sat_ << " kg " << sol.name()
+                  << " per kg of " << basis << ")\n";
+    }
     if (j_ > 0.0)
         std::cout << "  [BatchCrystalliser] note: nucleation magma exponent j>0"
                   << " with no seed --- B0 starts at 0 (M_T=0); add a seed for"
@@ -267,12 +288,19 @@ scalar BatchCrystalliser::vesselEnthalpy(bool& ok, std::string& why) const
     return H;
 }
 
+//  The SAME solvent the resolver measured c_sat_ against: water, plus the
+//  antisolvent when there is one.  One function, so the ratio and the line
+//  that reports the ratio cannot end up on different bases.
+scalar BatchCrystalliser::solventMass_() const
+{
+    scalar m = state_.n[iSolv_] * MW_solv_;        // kg (·1, kmol·kg/kmol)
+    if (iAnti_ < state_.n.size()) m += state_.n[iAnti_] * MW_anti_;
+    return m;
+}
+
 scalar BatchCrystalliser::supersaturation_(scalar nSoluteDissolved) const
 {
-    //  The SAME solvent the resolver measured c_sat_ against: water, plus the
-    //  antisolvent when there is one.  Both sides of the ratio on one basis.
-    scalar solventMass = state_.n[iSolv_] * MW_solv_;           // kg (·1, kmol·kg/kmol)
-    if (iAnti_ < state_.n.size()) solventMass += state_.n[iAnti_] * MW_anti_;
+    const scalar solventMass = solventMass_();
     if (solventMass <= 0.0) return 1.0;
     const scalar c     = (nSoluteDissolved * MW_sol_) / solventMass;  // kg/kg
     //  c_sat_ was resolved ONCE by the shared crystSaturation -- by the ion

@@ -152,6 +152,9 @@ private:
     // Moments per m^3 of suspension (RK4 state, mirrored in state_.n[iSolute_]).
     scalar mu0_ = 0, mu1_ = 0, mu2_ = 0, mu3_ = 0;
 
+    // The molality basis: the solvent, plus the antisolvent when present.
+    scalar solventMass_() const;
+
     // Supersaturation from the dissolved-solute mole number.
     scalar supersaturation_(scalar nSoluteDissolved) const;
 
