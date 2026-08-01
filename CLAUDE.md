@@ -585,6 +585,42 @@ dynamicCSTR physical-energy claim honestly refuses (Cp/convective ODE ≠
 derivative of canonical U/H) until the model is reformulated.  Gates:
 check_element_composition / check_element_balance / check_ctrl_balance.
 
+**Ctrl FIRST LAW — three probed routes; the ledger CLAIMS (2026-08-01).**
+The dynamicCSTR's energy equation is chosen by PROBING the enthalpy surface
+(never by name): canonical per-species (stored H = Σnᵢhᵢ(T), the ODE its
+exact derivative — witness `ctrl11`, closure 1.4e-7, second-order in deltaT
+= the ledger's trapezoid, not the physics); **mixture-H** when the
+per-species leg cannot serve (the electrolyte salt is mixture-level,
+`aqueousSaltEnthalpy(m,T)` — the vessel stores TOTAL H as a STATE,
+dH/dt = Ḣin−Ḣout+Q on `H_liquid_formation`, partial-molar terms implicit,
+reactions inside the datum, T a Newton readout — witness `ctrl10`, 7.9e-11);
+Cp/convective for the datum-less toys, refusing as ever.  The route is
+ANNOUNCED with its reason.  choupoCtrl's balance ledger carries the energy
+rung on the same accepted-state trapezoid as material.  Gate:
+`check_ctrl_balance` (claim + refusal + step-order + T-dependent-Cp fixture,
+sabotage-verified).
+
+**outerDict over choupoCtrl (2026-08-01).**  The ctrl campaign is a PURE
+FUNCTOR (fresh units/controllers per evaluation; `writeOutputs` gates every
+artefact), so `system/outerDict` wraps the dynamic path with the SAME
+OuterDriver architecture as choupoSolve — a piecewise-constant control
+profile IS a `Schedule`, varied via `controllers[i].schedule[j].value`.
+Witness: `ctrl16_williams_otto_optimal`.  Trap learned: dict clones do NOT
+carry runtime-inserted blocks — the 0/-state seeding runs inside the
+functor, idempotent.
+
+**External-reference battery (2026-08-01).**  Beyond self-recorded goldens,
+cases pinned on PRIMARY published anchors, each stating what is and is not
+the portable part: `cavett01_recycle_train` (Rosen-Pauls spec verbatim;
+Wegstein DEFEATED on the real conditions, Newton 7 it; SRK products beside
+the published APR/FLOWTRAN tables) and the Williams-Otto four
+(`ctrl12`-`ctrl14`, `ctrl16`: the published x* to all digits, Fig.-2 step,
+Fig.-4 PI shape, §5.3 optimum at 99.1 % of the published collocation value
+from K=5 shooting — the gap stated up front and measured).  Spec + anchors:
+[`docs/design/williams-otto-reference-case.md`](docs/design/williams-otto-reference-case.md).
+Pattern for future references: one coherent primary source end to end,
+never a blend; provenance of every number stated in the case.
+
 **Batch campaign LEDGERS — material + energy (built 2026-07-11, forum
 #99/#101/#102).**  choupoBatch carries two structured ledgers: the MATERIAL
 ledger (one `TransferRecord` per material edge, per-package enthalpy at each
@@ -1088,9 +1124,10 @@ tutorials); `npm run typecheck`; `npm run build`.
 ## 13. WebAssembly build (`make wasm`)
 
 The WASM solver is the same C++ as the native binary, compiled with Emscripten
-into `gui/public/wasm/`.  **Default rebuild is `make wasm-gui`** (= choupoSolve
-+ choupoProps, the only two the GUI uses; never run two `make wasm`
-concurrently — they clobber `gui/public/wasm/`).
+into `gui/public/wasm/`.  **Default rebuild is `make wasm-gui`** (verified
+2026-08-01: the target now builds all four binaries into
+`gui/public/wasm/`; never run two `make wasm` concurrently — they clobber
+`gui/public/wasm/`).
 
 **IMPORTANT — rebuild WASM after adding/changing a unit op.**  The WASM build is
 SEPARATE from the native binary; a new built-in only appears in the browser
