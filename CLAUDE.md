@@ -646,7 +646,15 @@ fraction) jumps the datum — the jump is priced by the unit
 as `feedAmendment` records against the external boundary; mass/element/energy
 closures read the records (witness batch19_feed_switch_purge; gate
 check_feed_switch, sabotage-verified; T/u/P swings refuse by name).  Phase
-(f) — temporal utilities + cost — pending.
+(f), first half SHIPPED (forum #98.3-6 as amended by #99-5): every VALID
+ledger record with a service T is allocated to a catalogue utility by the
+SAME `pickForDuty` rule the steady report uses (phase-aware dutyPerKg —
+condensing steam is latent), campaign cost = Σ E·price, unserved records
+LISTED never dropped (`utility_*_kJ/kg/eur` + `utility_cost_eur_total`
+KPIs).  The TEMPORAL half — time-resolved utility demand / peak duty (a
+campaign total hides the peak that sizes the boiler) — stays pending and
+is an architecture change (per-segment records would need per-step duty
+increments): propose before building.
 
 **General heterogeneous-thermo solver — SETTLED 2026-07-06 (do NOT relitigate).**
 A flowsheet may run units in DIFFERENT thermo WORLDS on ONE global component set,
