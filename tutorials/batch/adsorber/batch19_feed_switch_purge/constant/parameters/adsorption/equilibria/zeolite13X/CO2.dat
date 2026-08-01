@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Adsorption equilibrium record --- CO2 on zeolite13X (batch13 ANCHOR copy).
+
+  What this IS: the case-local (self-contained) copy of the CO2/zeolite13X
+  pair record used by the batch13 breakthrough anchor.  Single-site Langmuir,
+
+      q = q_max * b(T) * p / (1 + b(T) * p)        [mol/kg, p in bar]
+
+  ANCHOR CONVENTION (the one deliberate difference vs the standards record):
+  tRef here is 298 K = the case's DECLARED operating temperature, so the
+  van't Hoff factor is exactly neutral and b(T) = b_298 = 9.0 1/bar to the
+  last bit.  The A3 spec anchors (t_st = 3040.512509 s, t_b5 = 2890.669098 s,
+  anchors_a3.py) were generated with b = 9.0 AT the run temperature; the
+  standards record anchors at 298.15 K, which at T = 298 K would van't-Hoff
+  b to 9.0826 1/bar and silently move every pinned number by ~0.4%.  q_max,
+  b and dH_ads are byte-identical to the standards teaching fit.
+
+  Log: the unit prints q*(c_in) = 2.872340426 mol/kg and t_st in its header.
+\*-----------------------------------------------------------------------------*/
+
+recordType      adsorptionIsotherm;
+schemaVersion   1;
+
+adsorbent       zeolite13X;
+adsorbate       CO2;
+
+model           langmuir;
+
+parameters
+{
+    q_max   5.0;      // saturation loading [mol/kg]
+    b_298   9.0;      // affinity at tRef [1/bar]
+    dH_ads  -45000;   // isosteric heat of adsorption [J/mol] (<0, exothermic)
+}
+
+tRef            298;                  // van't Hoff anchor [K] = the case's
+                                      // declared T (anchor convention above)
+loadingBasis    molPerKgAdsorbent;    // q = mol adsorbate per kg adsorbent
+pressureBasis   partialPressureBar;   // p = partial pressure in bar (b per bar)
+
+provenance
+{
+    origin    literature;
+    method    "Yang (1987/1997); Cavenati, Grande & Rodrigues, J. Chem. Eng. Data 49 (2004) 1095 -- representative 298 K teaching fit; re-fit from the primary before design use";
+    curation  "case-local anchor copy of the standards record, tRef re-anchored 298.15 -> 298 K = the run temperature so b(T) = b_298 exactly (A3 spec anchors_a3.py convention); q_max/b/dH_ads unchanged";
+}

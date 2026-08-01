@@ -1,0 +1,105 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch19_feed_switch_purge  --  THE A5 WITNESS: load, then switch the feed.
+
+  batch13's bed (CO2 15% in He on zeolite 13X, the A3 anchor), run through
+  a TWO-STEP cycle in one campaign:
+
+      0 .. 3600 s     LOAD    -- identical to batch13's feed; the front
+                                 arrives on the batch13 anchors (t_5 =
+                                 2890.7, t_50 = 3036.4, t_95 = 3204.2 s)
+      3600 s          SWITCH  -- recipe setParameter bed.feed.CO2 = 0:
+                                 the feed becomes pure He (concentration-
+                                 swing regeneration)
+      3600 .. 9000 s  PURGE   -- q*(c -> 0) = 0, the LDF drives the bed to
+                                 desorb; the favourable (Langmuir) isotherm
+                                 makes desorption the UNFAVOURABLE
+                                 direction -- watch the long tail on c_out
+
+  What the switch does, and where each consequence is VISIBLE:
+
+  * The feed commitment is DECLARED matter (the campaign datum owns
+    A*u*c_in*(endTime - t) of future feed).  Re-declaring the feed at
+    t = 3600 s AMENDS that commitment: the un-fed CO2 leaves the datum and
+    the extra He enters it, priced and recorded as `feedAmendment` ledger
+    records against the external boundary -- the campaign mass/element
+    balances read the records and still close (KPIs mass_kg_amend_in/out,
+    element_worst_closure_vs_declared_rel ~ 1e-14).
+
+  * The breakthrough sampler's reference basis (c_out/c_in) dies with the
+    old feed: crossings and integral FREEZE at their pre-switch values
+    (announced), so t_5/t_50/t_95 here must MATCH batch13's anchors -- the
+    frozen claim describes the first feed step.  The desorption wave lives
+    on in the trajectory's c_out_CO2 / qbar_CO2 columns.
+
+  * The adsorption duty stays an EXACT state difference on the adsorbed
+    inventory: E_adsorption = dH_ads * (n_ads(end) - n_ads(0)).  batch13
+    (load only) ledgers -413.6 kJ; here the purge takes part of the
+    loading back OUT, so |E| is SMALLER -- desorption is endothermic and
+    the ledger shows the heat returning, with no new formula anywhere.
+
+  * u, P, T stay DECLARED CONSTANTS: asking the bed for a thermal swing
+    (feed.T), a flow transient (u) or a blowdown (P) is REFUSED by name
+    (fired by bin/curate/check_feed_switch.py, batch12-style honesty).
+
+  The carrier-fabrication caveat of the constant-(u, P, T) closure applies
+  unchanged (forum #119): the declared residual explains the He element
+  closure, shown and never discounted.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        bed;
+        type        fixedBedAdsorber;
+
+        operation
+        {
+            adsorbent   zeolite13X;    // by NAME -- vendored under constant/
+            L           0.5   m;       // bed length
+            area        0.01  m2;      // cross-section
+            eps         0.4;           // interparticle void fraction
+            u           0.05  m/s;     // superficial, CONSTANT DECLARED
+            T           298   K;       // isothermal DECLARED (A5 thermal: refused)
+            P           1     bar;     // CONSTANT DECLARED (A5 pressure: refused)
+            Dax  [0 2 -1 0 0]  1e-4;   // m2/s -- axial dispersion DECLARED
+            nCells      100;           // axial mesh DECLARED -- absent = FATAL
+
+            feed    { molarComposition { CO2 0.15; He 0.85; } }
+            initial { molarComposition { He  1.0; } }   // clean bed: q = 0
+
+            kLDF
+            {
+                basis    solidFilm;    // dq/dt = k*(q* - q)
+                scope    "2 mm 13X beads, teaching bed RUN-A5-SWITCH";
+                source   "declared spec value (A3 anchor); Glueckauf k = 15 De/rp^2 gives the order";
+                k
+                {
+                    CO2  [0 0 -1 0 0]  0.05;   // 1/s
+                }
+            }
+        }
+    }
+);
+
+//  The A5 cycle step: at 3600 s (bed ~saturated, all three crossings
+//  behind us) the feed switches to pure He.  `value` is the NEW feed MOLE
+//  FRACTION -- the same quantity feed{molarComposition{}} declared; the
+//  carrier follows by difference under the pinned c_tot.
+recipe
+(
+    {
+        time     3600;
+        action   setParameter;
+        unit     bed;
+        key      feed.CO2;
+        value    0.0;
+    }
+);

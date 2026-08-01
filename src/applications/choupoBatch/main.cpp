@@ -584,6 +584,12 @@ try
     std::map<std::size_t, std::size_t> contSlot;   // unit idx -> transfers slot
     std::map<std::size_t, std::size_t> ventSlot;   // unit idx -> transfers slot
     sVector externalOut;                            // kmol, per component
+    //  Datum amendments (A5 feed switching): declared matter that entered
+    //  (amendIn) or left (amendOut) the campaign datum when a recipe
+    //  setParameter re-declared an open-boundary unit's feed commitment.
+    //  Ledgered as `feedAmendment` records; the closures below read them
+    //  so an amended declaration never reads as a leak.
+    sVector amendIn, amendOut;                      // kmol, per component
     // Enthalpy of ONE package at ITS OWN (T, n) -- kJ, elements datum.  The
     // integral of these per-package values is the TRANSPORTED enthalpy the
     // energy balance will read (forum #99-P0: a single end-temperature
@@ -743,6 +749,31 @@ try
             std::ostringstream d;
             d << "SET " << uN << "." << key << " = " << val;
             timeline.push_back({ tNow, "recipe", "setParameter", d.str(), trigger, uN, "" });
+            //  A parameter change may AMEND the campaign datum itself (the
+            //  fixed bed's feed commitment is declared matter): the unit
+            //  prices each amendment as a package and the ledger records
+            //  it against the external boundary -- the balance reads a
+            //  record where it would otherwise see a jump.
+            for (auto& am : findUnit(uN)->takeDatumAmendments())
+            {
+                SimulationResult::TransferRecord tr;
+                tr.tStart = tNow; tr.tEnd = tNow;
+                tr.from = am.into ? "(external boundary)" : uN;
+                tr.to   = am.into ? uN : "(external boundary)";
+                tr.kind = "feedAmendment";
+                addPackage(tr, tNow, am.pkg);
+                sVector& tgt = am.into ? amendIn : amendOut;
+                if (tgt.size() != thermo.n()) tgt.assign(thermo.n(), 0.0);
+                for (std::size_t c = 0;
+                     c < thermo.n() && c < am.pkg.n.size(); ++c)
+                    tgt[c] += am.pkg.n[c];
+                std::ostringstream ad;
+                ad << "FEED AMENDMENT " << am.pkg.totalMoles() << " kmol "
+                   << tr.from << " -> " << tr.to << " (" << am.why << ")";
+                timeline.push_back({ tNow, "recipe", "feedAmendment",
+                                     ad.str(), trigger, tr.from, tr.to });
+                transfers.push_back(std::move(tr));
+            }
         }
     };
     // A time trigger's description carries the SCHEDULED time; the entry's
@@ -1043,6 +1074,9 @@ try
             std::size_t d = 0;
             for (const auto& tr : transfers)
             {
+                //  feedAmendment rows were timelined at fire time (they
+                //  carry the trigger + the unit's own why-text there).
+                if (tr.kind == "feedAmendment") continue;
                 std::ostringstream det;
                 scalar nTot = 0.0;
                 for (const auto& [c, v] : tr.dn) nTot += v;
@@ -1085,22 +1119,38 @@ try
             }
             auto& ck = result.kpis["campaign"];
             scalar m0 = 0.0, mF = 0.0, mOut = 0.0;
+            scalar mAmendIn = 0.0, mAmendOut = 0.0;
             for (std::size_t i = 0; i < thermo.n(); ++i)
             {
                 m0  += inventory0[i] * thermo.comp(i).MW();
                 mF  += inventoryF[i] * thermo.comp(i).MW();
                 if (i < externalOut.size())
                     mOut += externalOut[i] * thermo.comp(i).MW();
+                if (i < amendIn.size())
+                    mAmendIn  += amendIn[i]  * thermo.comp(i).MW();
+                if (i < amendOut.size())
+                    mAmendOut += amendOut[i] * thermo.comp(i).MW();
             }
             // Robust closure (forum #99-P1): absolute residual normalised by
             // a robust scale -- mass created from an EMPTY initial inventory
-            // can never read as closed.
-            const scalar residual_kg = std::abs(mF + mOut - m0);
-            const scalar scale_kg    = std::max({ m0, mF + mOut, 1.0e-12 });
+            // can never read as closed.  Datum amendments (A5) enter as the
+            // ledgered records they are: matter drawn from the boundary
+            // joins the initial side, matter returned to it joins the final
+            // side.
+            const scalar residual_kg =
+                std::abs(mF + mOut + mAmendOut - m0 - mAmendIn);
+            const scalar scale_kg    = std::max({ m0 + mAmendIn,
+                                                  mF + mOut + mAmendOut,
+                                                  1.0e-12 });
             const scalar rel         = residual_kg / scale_kg;
             ck["mass_kg_initial"]      = m0;
             ck["mass_kg_final"]        = mF;
             ck["mass_kg_external_out"] = mOut;
+            if (!amendIn.empty() || !amendOut.empty())
+            {
+                ck["mass_kg_amend_in"]  = mAmendIn;
+                ck["mass_kg_amend_out"] = mAmendOut;
+            }
             // Molar totals are INFORMATIVE only: total moles are NOT a
             // conserved quantity in a reacting campaign (the laws are mass
             // and elements) -- the GUI shows them without a closure claim.
@@ -1115,6 +1165,14 @@ try
                 ck["moles_kmol_initial"]      = n0;
                 ck["moles_kmol_final"]        = nF;
                 ck["moles_kmol_external_out"] = nOut;
+                if (!amendIn.empty() || !amendOut.empty())
+                {
+                    scalar nAIn = 0.0, nAOut = 0.0;
+                    for (auto v : amendIn)  nAIn  += v;
+                    for (auto v : amendOut) nAOut += v;
+                    ck["moles_kmol_amend_in"]  = nAIn;
+                    ck["moles_kmol_amend_out"] = nAOut;
+                }
             }
             ck["mass_residual_kg"]     = residual_kg;
             ck["mass_closure_rel"]     = rel;
@@ -1200,8 +1258,11 @@ try
                         }
             for (std::size_t i = 0; i < thermo.n(); ++i)
             {
+                const scalar aIn  = (i < amendIn.size())  ? amendIn[i]  : 0.0;
+                const scalar aOut = (i < amendOut.size()) ? amendOut[i] : 0.0;
                 const scalar present = inventory0[i] + inventoryF[i]
-                    + (i < externalOut.size() ? externalOut[i] : 0.0);
+                    + (i < externalOut.size() ? externalOut[i] : 0.0)
+                    + aIn + aOut;
                 if (present == 0.0) continue;
                 markPartial(i);
                 const auto el = atomsOf(i);
@@ -1215,8 +1276,11 @@ try
                 }
                 for (const auto& [sym, na] : el)
                 {
-                    elem0[sym] += na * inventory0[i];
-                    elemF[sym] += na * (inventoryF[i]
+                    //  amendments enter like the mass closure: drawn-in
+                    //  matter on the initial side, returned matter on the
+                    //  final side (both are ledgered records).
+                    elem0[sym] += na * (inventory0[i] + aIn);
+                    elemF[sym] += na * (inventoryF[i] + aOut
                         + (i < externalOut.size() ? externalOut[i] : 0.0));
                 }
             }
@@ -1287,7 +1351,8 @@ try
             //  unexplained leak.  A residual the prediction does NOT explain
             //  still fails, declared or not.
             const scalar relAdjMass = anyDeclared
-                ? std::abs(mF + mOut - m0 - declared_kg) / scale_kg
+                ? std::abs(mF + mOut + mAmendOut - m0 - mAmendIn
+                           - declared_kg) / scale_kg
                 : rel;
             //  PARTIAL keeps the ELEMENTAL verdict on the declared atoms:
             //  they are real conservation constraints, and falling back to
@@ -1319,6 +1384,13 @@ try
                              " level (Sum(nu*MW) != 0); a curation note, not a"
                              " leak.\n";
             if (leak) result.converged = false;
+            if (verbosity >= 2 && (!amendIn.empty() || !amendOut.empty()))
+                std::cout << "\n[campaign] datum amendments (A5 feed"
+                             " switching): drawn from the boundary "
+                          << mAmendIn << " kg, returned to it " << mAmendOut
+                          << " kg -- ledgered feedAmendment records, read"
+                             " by the closures below (never discounted"
+                             " silently).";
             if (verbosity >= 2)
                 std::cout << "\n[campaign] mass balance: m0 = " << m0
                           << " kg = mF " << mF << " + external " << mOut
@@ -1396,13 +1468,22 @@ try
                 for (const auto& fb : u2->chargeFallbacks())
                     eMissing.push_back(fb);
             scalar Hext = 0.0;   // kJ leaving with unrouted external outlets
+                                 // (+ signed datum amendments, A5)
             for (const auto& tr : transfers)
             {
-                if (tr.kind != "external") continue;
-                if (tr.H_valid) Hext += tr.H_kJ;
-                else eMissing.push_back("external outlet '" + tr.from
-                    + "' -> " + tr.to + ": transported H unpriceable"
-                    + (tr.H_missing.empty() ? ""
+                if (tr.kind != "external" && tr.kind != "feedAmendment")
+                    continue;
+                //  A feedAmendment record drawn IN from the boundary
+                //  carries enthalpy INTO the datum -- signed by direction.
+                const scalar sgn =
+                    (tr.kind == "feedAmendment"
+                     && tr.to != "(external boundary)") ? -1.0 : 1.0;
+                if (tr.H_valid) Hext += sgn * tr.H_kJ;
+                else eMissing.push_back(
+                    std::string(tr.kind == "external"
+                        ? "external outlet '" : "datum amendment '")
+                    + tr.from + "' -> " + tr.to + ": transported H"
+                    " unpriceable" + (tr.H_missing.empty() ? ""
                        : " (" + tr.H_missing.front() + ")"));
             }
 

@@ -576,6 +576,8 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     tCross50_.assign(nAds, -1.0);
     tCross95_.assign(nAds, -1.0);
     tStoich_.assign(nAds, -1.0);
+    feedSwitched_.assign(nAds, false);
+    pendingAmendments_.clear();
     for (std::size_t a = 0; a < nAds; ++a)
         if (cIn_[a] > 0.0)
         {
@@ -1037,7 +1039,11 @@ void FixedBedAdsorber::sample_(scalar t)
     if (dt <= 0.0) return;
     for (std::size_t a = 0; a < nAds; ++a)
     {
-        if (cIn_[a] <= 0.0) continue;
+        //  A switched feed changes the sampler's reference basis: the
+        //  crossings/integral stay FROZEN at their pre-switch values (they
+        //  describe the first feed step, which is well-defined); the
+        //  desorption wave itself lives on in c_out/y_out.
+        if (cIn_[a] <= 0.0 || feedSwitched_[a]) continue;
         const scalar f = y_[(ergun_ ? adsIdx_[a] : a) * N_ + N_ - 1] / cIn_[a];
         integral_[a] += 0.5 * ((1.0 - fPrev_[a]) + (1.0 - f)) * dt;
         auto cross = [&](scalar level, scalar& tc)
@@ -1233,8 +1239,14 @@ sVector FixedBedAdsorber::materialInventory() const
                     qs += y_[qOffset_() + a * N_ + j];
             }
             const scalar holdup = eps_ * A_ * dz_ * cs + rhoB_ * A_ * dz_ * qs;
-            const scalar feedRemaining = A_ * u_ * cInAll_[i]
-                * (endTime_ - startTime_) - y_[inOffset_() + i];
+            //  Remaining commitment at the CURRENT feed over the remaining
+            //  window.  For a constant feed this equals total - M_in exactly
+            //  (M_in = A u c_in (t - start), telescopic); under an A5 feed
+            //  switch it stays the REAL remaining matter -- the switch-time
+            //  jump is ledgered as a feedAmendment record, never phantom
+            //  inventory.
+            const scalar feedRemaining =
+                A_ * u_ * cInAll_[i] * (endTime_ - tNow_);
             inv[i] = (holdup + feedRemaining) / 1000.0;
         }
         return inv;
@@ -1248,9 +1260,12 @@ sVector FixedBedAdsorber::materialInventory() const
             qs += y_[nAds * N_ + a * N_ + j];
         }
         const scalar holdup = eps_ * A_ * dz_ * cs + rhoB_ * A_ * dz_ * qs;
+        //  Same switch-safe form as the carrier below: the CURRENT feed
+        //  over the remaining window (== total - M_in for a constant feed,
+        //  since M_in = A u c_in (t - start) exactly; an A5 switch's jump
+        //  in the commitment is ledgered as a feedAmendment record).
         const scalar feedRemaining =
-            A_ * u_ * cIn_[a] * (endTime_ - startTime_)
-            - y_[2 * nAds * N_ + a];                        // total - M_in(t)
+            A_ * u_ * cIn_[a] * (endTime_ - tNow_);
         inv[adsIdx_[a]] = (holdup + feedRemaining) / 1000.0;  // kmol
     }
     // Carrier: gas hold-up by difference + its remaining feed commitment.
@@ -1429,8 +1444,9 @@ void FixedBedAdsorber::chargeFrom(const BatchState& /*src*/)
 {
     throw std::runtime_error("fixedBedAdsorber '" + name_ + "': recipe"
         " transfer INTO a fixed bed is refused -- the bed is a flow-through"
-        " unit fed by its declared feed{}; cycle step transitions (feed"
-        " switching, blowdown) arrive with A5");
+        " unit fed by its declared feed{}; to CHANGE that feed use the A5"
+        " isothermal feed switch (recipe setParameter, key"
+        " feed.<component>, value = new feed mole fraction)");
 }
 
 BatchState FixedBedAdsorber::dischargeAll()
@@ -1438,12 +1454,186 @@ BatchState FixedBedAdsorber::dischargeAll()
     throw std::runtime_error("fixedBedAdsorber '" + name_ + "': recipe"
         " transfer OUT of a fixed bed is refused -- the raffinate already"
         " leaves continuously (route it with dischargeTo); emptying a bed"
-        " is an A5 cycle step");
+        " (blowdown) is a pressure-swing step this isothermal constant-P"
+        " slice does not carry");
 }
 
 BatchState FixedBedAdsorber::discharge(scalar /*fraction*/)
 {
     return dischargeAll();   // same named refusal
+}
+
+// -----------------------------------------------------------------------
+//  A5, first step: the ISOTHERMAL feed switch (concentration-swing
+//  regeneration).  `feed.<component>` re-declares that species' feed mole
+//  fraction -- the SAME quantity the author declared in
+//  feed{molarComposition{}} -- so a loaded bed can be purged with clean
+//  carrier without leaving the physics this slice actually solves.  The
+//  swings that change a DECLARED CONSTANT of the model (T, u, P) refuse
+//  by name: each needs an equation this unit does not carry.
+//
+//  Every switch AMENDS the declared feed commitment: the campaign datum
+//  owned A*u*c_in*(endTime - t) of future feed at the old composition and
+//  owns a different amount at the new one.  That difference is real
+//  declared matter crossing the campaign boundary at the switch instant,
+//  and it leaves here as priced DatumAmendment packages the driver
+//  ledgers (kind `feedAmendment`) -- the balance reads a record, never a
+//  jump.  Under the A3 constant-(u, P, T) closure the carrier follows by
+//  difference (c_tot is pinned), so its counter-amendment ships too.
+// -----------------------------------------------------------------------
+void FixedBedAdsorber::setOperationParameter(const std::string& key,
+                                             scalar value)
+{
+    if (key == "T" || key == "feed.T" || key == "T_setpoint")
+        throw std::runtime_error("fixedBedAdsorber '" + name_ + "': T is a"
+            " DECLARED CONSTANT of this isothermal slice -- a thermal-swing"
+            " (TSA) step needs the non-isothermal bed energy balance, which"
+            " this unit does not carry yet; the isothermal feed switch"
+            " (key feed.<component>) is the cycle step that exists");
+    if (key == "u")
+        throw std::runtime_error("fixedBedAdsorber '" + name_ + "': u is a"
+            " DECLARED CONSTANT -- a flow transient re-poses the momentum"
+            " problem (transient Ergun), which this unit does not carry");
+    if (key == "P")
+        throw std::runtime_error("fixedBedAdsorber '" + name_ + "': P is a"
+            " DECLARED CONSTANT -- a pressure-swing (PSA) step (blowdown /"
+            " repressurisation) needs a transient total concentration,"
+            " which this unit does not carry");
+
+    if (key.rfind("feed.", 0) == 0)
+    {
+        const std::string comp = key.substr(5);
+        auto it = std::find(compNames_.begin(), compNames_.end(), comp);
+        if (it == compNames_.end())
+            throw std::runtime_error("fixedBedAdsorber '" + name_
+                + "': feed switch names '" + comp + "', which is not a"
+                " component of this case");
+        if (value < 0.0 || value > 1.0)
+            throw std::runtime_error("fixedBedAdsorber '" + name_
+                + "': feed." + comp + " is a feed MOLE FRACTION -- got "
+                + std::to_string(value) + ", need 0 <= y <= 1");
+        const std::size_t ci =
+            static_cast<std::size_t>(it - compNames_.begin());
+
+        const scalar horizon = std::max(endTime_ - tNow_, 0.0);
+        auto amend = [&](std::size_t cj, scalar dc, const std::string& why)
+        {
+            const scalar dKmol = A_ * u_ * std::abs(dc) * horizon / 1000.0;
+            if (dKmol <= 0.0) return;
+            DatumAmendment am;
+            am.into = (dc > 0.0);
+            am.pkg.n.assign(compNames_.size(), 0.0);
+            am.pkg.n[cj] = dKmol;
+            am.pkg.T  = T_;
+            am.pkg.P  = P_;
+            am.pkg.V  = 0.0;
+            am.pkg.vf = 1.0;   // the commitment is FEED GAS
+            am.why    = why;
+            pendingAmendments_.push_back(std::move(am));
+        };
+        auto sayWhy = [&](const std::string& nm, scalar cOld, scalar cNew)
+        {
+            std::ostringstream os;
+            os << "feed switch on '" << name_ << "': " << nm << " c_in "
+               << cOld << " -> " << cNew << " mol/m3 over the remaining "
+               << horizon << " s";
+            return os.str();
+        };
+
+        if (!ergun_)
+        {
+            //  A3 constant-(u, P, T): the carrier closes by difference from
+            //  the pinned c_tot -- it is DERIVED, so it cannot be set.
+            if (ci == carrierIdx_)
+                throw std::runtime_error("fixedBedAdsorber '" + name_
+                    + "': '" + comp + "' is the by-difference CARRIER of"
+                    " the constant-(u,P,T) closure -- set the adsorbing"
+                    " species' feed fractions; the carrier follows");
+            auto ait = std::find(adsIdx_.begin(), adsIdx_.end(), ci);
+            if (ait == adsIdx_.end())
+                throw std::runtime_error("fixedBedAdsorber '" + name_
+                    + "': '" + comp + "' is not an integrated species of"
+                    " this bed -- only isotherm-carrying (or declared"
+                    " transport-only) species have a switchable feed");
+            const std::size_t a =
+                static_cast<std::size_t>(ait - adsIdx_.begin());
+
+            const scalar cOld = cIn_[a];
+            const scalar cNew = value * cTot_;
+            scalar sumNew = 0.0;
+            for (std::size_t b = 0; b < adsIdx_.size(); ++b)
+                sumNew += (b == a) ? cNew : cIn_[b];
+            if (sumNew > cTot_ * (1.0 + 1.0e-12))
+                throw std::runtime_error("fixedBedAdsorber '" + name_
+                    + "': feed." + comp + " = " + std::to_string(value)
+                    + " drives the integrated feed fractions above 1 -- the"
+                    " by-difference carrier would go negative");
+            if (cNew == cOld) return;   // a no-op re-declaration: nothing
+                                        //   amends, nothing freezes
+
+            const scalar carOld = cInCarrier_;
+            cIn_[a]        = cNew;
+            cInAll_[ci]    = cNew;
+            cInCarrier_    = cTot_ - sumNew;
+            cInAll_[carrierIdx_] = cInCarrier_;
+
+            amend(ci, cNew - cOld, sayWhy(comp, cOld, cNew));
+            amend(carrierIdx_, cInCarrier_ - carOld,
+                  sayWhy(compNames_[carrierIdx_], carOld, cInCarrier_)
+                  + " (carrier, by difference)");
+            feedSwitched_[a] = true;
+
+            if (verbosity_ >= 2)
+                std::cout << "  [fixedBedAdsorber '" << name_ << "'] A5 feed"
+                             " switch: " << comp << " y_feed -> " << value
+                          << " (c_in " << cOld << " -> " << cNew
+                          << " mol/m3); carrier '"
+                          << compNames_[carrierIdx_]
+                          << "' follows by difference (" << carOld << " -> "
+                          << cInCarrier_ << " mol/m3).  Feed commitment"
+                             " amended over the remaining " << horizon
+                          << " s (ledgered as feedAmendment records);"
+                             " breakthrough crossings/integral for " << comp
+                          << " FROZEN at their pre-switch values.\n";
+            return;
+        }
+
+        //  Ergun (A4-flow): every species is integrated, no difference
+        //  closure -- the named species amends alone.
+        const scalar cOld = cInAll_[ci];
+        const scalar cNew = value * cTot_;
+        if (cNew == cOld) return;
+        cInAll_[ci] = cNew;
+        auto ait = std::find(adsIdx_.begin(), adsIdx_.end(), ci);
+        if (ait != adsIdx_.end())
+        {
+            const std::size_t a =
+                static_cast<std::size_t>(ait - adsIdx_.begin());
+            cIn_[a] = cNew;
+            feedSwitched_[a] = true;
+        }
+        amend(ci, cNew - cOld, sayWhy(comp, cOld, cNew));
+        if (verbosity_ >= 2)
+            std::cout << "  [fixedBedAdsorber '" << name_ << "'] A5 feed"
+                         " switch: " << comp << " y_feed -> " << value
+                      << " (c_in " << cOld << " -> " << cNew
+                      << " mol/m3, no difference closure in ergun mode)."
+                         "  Feed commitment amended over the remaining "
+                      << horizon << " s (ledgered as feedAmendment"
+                         " records); breakthrough crossings/integral"
+                         " FROZEN where the species is integrated.\n";
+        return;
+    }
+
+    BatchUnitOperation::setOperationParameter(key, value);
+}
+
+std::vector<BatchUnitOperation::DatumAmendment>
+FixedBedAdsorber::takeDatumAmendments()
+{
+    std::vector<DatumAmendment> out;
+    out.swap(pendingAmendments_);
+    return out;
 }
 
 // -----------------------------------------------------------------------
@@ -1529,21 +1719,24 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
     for (std::size_t a = 0; a < nAds; ++a)
     {
         const std::string& nm = compNames_[adsIdx_[a]];
-        if (cIn_[a] > 0.0)
-        {
-            if (k_[a] > 0.0 && tStoich_[a] > 0.0)
-            {
-                k["t_stoichiometric_" + nm] = tStoich_[a];
-                k["retention_factor_" + nm] =
-                    eps_ + rhoB_ * qStarFeed_(a) / cIn_[a];
-            }
-            if (tCross5_[a]  >= 0.0) k["t_breakthrough_5pct_" + nm]  = tCross5_[a];
-            if (tCross50_[a] >= 0.0) k["t_50_" + nm]                 = tCross50_[a];
-            if (tCross95_[a] >= 0.0) k["t_breakthrough_95pct_" + nm] = tCross95_[a];
-            k["integral_anchor_" + nm]      = integral_[a];
+        //  Two families (A5): FROZEN claims describe the first feed step
+        //  and survive a feed switch (crossings, integral, the pre-run
+        //  t_st); LIVE feed-referenced diagnostics need the CURRENT feed
+        //  as their basis and retire the moment it is switched.
+        const bool liveFeed = (cIn_[a] > 0.0 && !feedSwitched_[a]);
+        if (liveFeed && k_[a] > 0.0 && tStoich_[a] > 0.0)
+            k["retention_factor_" + nm] =
+                eps_ + rhoB_ * qStarFeed_(a) / cIn_[a];
+        if (k_[a] > 0.0 && tStoich_[a] > 0.0)
+            k["t_stoichiometric_" + nm] = tStoich_[a];
+        if (tCross5_[a]  >= 0.0) k["t_breakthrough_5pct_" + nm]  = tCross5_[a];
+        if (tCross50_[a] >= 0.0) k["t_50_" + nm]                 = tCross50_[a];
+        if (tCross95_[a] >= 0.0) k["t_breakthrough_95pct_" + nm] = tCross95_[a];
+        if (cIn_[a] > 0.0 || feedSwitched_[a])
+            k["integral_anchor_" + nm] = integral_[a];
+        if (liveFeed)
             k["c_out_over_cin_final_" + nm] =
                 y_[(ergun_ ? adsIdx_[a] : a) * N_ + N_ - 1] / cIn_[a];
-        }
         // closure + qbar (same expressions as the trajectory columns)
         scalar cs = 0.0, qs = 0.0;
         for (std::size_t j = 0; j < N_; ++j)

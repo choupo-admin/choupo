@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch19_feed_switch_purge / system/controlDict
+
+  Time control for the A5 load-then-purge cycle on the batch13 bed.  The
+  load step is batch13's (stoichiometric front at t_st = 3040.5 s, printed
+  pre-run); the switch fires at 3600 s (recipe, flowsheetDict) and the
+  purge runs to 9000 s -- long enough for the desorption tail to hand a
+  visible fraction of the loading back, short of full regeneration (the
+  favourable isotherm makes desorption slow; that asymmetry IS the
+  lesson).
+
+  timeStepping adaptive: the stiff Rosenbrock23, exactly as batch13.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "A5 feed switch: CO2/He load to 3600 s (batch13 anchors), then pure-He purge to 9000 s -- amended feed commitment ledgered, frozen breakthrough KPIs, desorption duty as the same state difference";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         9000;     // s   (3600 load + 5400 purge)
+deltaT          0.05;     // s   (only relevant in timeStepping fixed)
+writeInterval   300;      // s   (trajectory row + <t>/bed.profile)
+timeStepping    adaptive; // Rosenbrock23

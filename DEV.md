@@ -163,12 +163,20 @@ ones for day-to-day work:
 7. **Reports default-on beyond elementBalance** (mass/energy as normal
    diagnostics — measure corpus impact first).
 8. **Pinch full programme** (real match sizing beyond the heuristic screen).
-9. **Adsorption A5-A6** — the cycle / cyclic-steady-state steps still
-   refuse in the code (flow reversal refuses as an A5 step).  A4's energy
-   ledger SHIPPED 2026-08-01: the adsorption duty is an exact state
-   difference on the adsorbed inventory, the ergun-mode campaign balance
-   claims at 6.7e-14 (batch18), and the A3 closure keeps a named gap.
-   Close A5-A6 to complete the adsorption programme.
+9. **Adsorption A5-A6** — A4's energy ledger SHIPPED 2026-08-01 (duty =
+   exact state difference; ergun campaign claims at machine level —
+   2.6e-15 on batch18 since the A5 exact-commitment form, was 6.7e-14; A3
+   keeps its named gap).  **A5 first step SHIPPED 2026-08-01: the
+   ISOTHERMAL FEED SWITCH** (`setParameter feed.<component>`,
+   concentration-swing regeneration) — the commitment jump is ledgered as
+   `feedAmendment` records (the new DatumAmendment hook), the breakthrough
+   sampler freezes its pre-switch claims, and batch19_feed_switch_purge
+   witnesses load-then-purge with the duty handing −413.6 → −23.7 kJ
+   back; gate `check_feed_switch` fires 6 named refusals
+   (sabotage-verified both ways).  STILL REFUSING, named: thermal swing
+   (needs the non-isothermal bed balance), pressure swing / blowdown
+   (transient c_tot), flow transients (transient Ergun), flow reversal —
+   plus A6 cyclic steady state.  Close those to complete the programme.
 
 ## 4b. Waiting on Vítor (not blocked — each CHANGES WHAT THE ENGINE REFUSES)
 

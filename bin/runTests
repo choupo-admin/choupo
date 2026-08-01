@@ -651,6 +651,20 @@ PYEOF
     fi
     rm -f /tmp/drillin.$$
 
+    # A5 feed-switch gate: the bed's isothermal feed switch runs + ledgers
+    # its datum amendments, and the T/u/P swing refusals are real (fired
+    # through the recipe path, asserted on the named messages -- both
+    # directions sabotage-verified 2026-08-01).
+    if "$ROOT/bin/curate/check_feed_switch.py" > /tmp/feedswitch.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "feed-switch-gate" "$(tail -1 /tmp/feedswitch.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_feed_switch.py)\n" "feed-switch-gate"
+        cat /tmp/feedswitch.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/feedswitch.$$
+
     # ---- Curation gates that existed but never RAN ----------------------
     # Eleven gates sat in bin/curate/ unwired; seven were not even
     # executable.  Two were stale -- check_ion_pins read the retired

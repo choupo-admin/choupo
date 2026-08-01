@@ -90,18 +90,33 @@ Description
 
     OPEN-boundary campaign accounting: the bed is flow-through, so its
     materialInventory() = bed hold-up (gas + solid) PLUS the remaining part
-    of the DECLARED feed commitment A*u*c_in*(endTime - startTime) -- the
-    feed is declared material, so the campaign datum owns it from t = 0 and
-    the campaign mass/element balance verifies exactly the FV ledger
-    closure.  The raffinate leaves through takeContinuousDischarge() as a
-    real external-outlet ledger record.  KNOWN declared error, priced
-    aloud: holding u AND c_tot constant while the bed removes adsorbate
-    FABRICATES carrier moles at exactly the net uptake rate (the roll-up
-    the constant-u declaration hides) and A3 reports it as a declared
-    residual.  In A4 every species ledger closes directly,
-    `declaredMaterialResidual()` is empty, and `carrier_fabricated_mol` is the
-    numerical continuity residual.  Recipe chargeFrom / discharge are
-    REFUSED, named (a bed is not a batch vessel; step transitions are A5).
+    of the DECLARED feed commitment, A*u*c_in*(endTime - t) at the CURRENT
+    feed -- the feed is declared material, so the campaign datum owns it
+    from t = 0 and the campaign mass/element balance verifies exactly the
+    FV ledger closure.  The raffinate leaves through
+    takeContinuousDischarge() as a real external-outlet ledger record.
+    KNOWN declared error, priced aloud: holding u AND c_tot constant while
+    the bed removes adsorbate FABRICATES carrier moles at exactly the net
+    uptake rate (the roll-up the constant-u declaration hides) and A3
+    reports it as a declared residual.  In A4 every species ledger closes
+    directly, `declaredMaterialResidual()` is empty, and
+    `carrier_fabricated_mol` is the numerical continuity residual.  Recipe
+    chargeFrom / discharge are REFUSED, named (a bed is not a batch
+    vessel).
+
+    A5, first step -- the ISOTHERMAL FEED SWITCH (concentration-swing
+    regeneration): recipe `setParameter feed.<component> = <y>` re-declares
+    that species' feed mole fraction mid-campaign (A3: the carrier follows
+    by difference and cannot be set itself; ergun: the species amends
+    alone).  Each switch AMENDS the declared feed commitment; the jump is
+    priced and handed to choupoBatch as DatumAmendment packages, ledgered
+    against the external boundary (kind `feedAmendment`) so the campaign
+    balances read records, never jumps.  The breakthrough crossings /
+    integral FREEZE at their pre-switch values (the first feed step stays
+    the claim; the desorption wave lives in c_out/qbar).  T, u and P stay
+    DECLARED CONSTANTS: thermal swing, flow transients and blowdown each
+    refuse by name (gate: check_feed_switch, sabotage-verified).
+    Witness: batch19_feed_switch_purge.
 
     Energy remains outside this isothermal flow slice. energyLedgerGap() names
     it and vesselEnthalpy()
@@ -164,10 +179,22 @@ public:
         energyRecords(scalar tEnd) override;
 
     // A fixed bed is flow-through, not a batch vessel: recipe transfers
-    // in/out are refused, named (step transitions arrive with A5).
+    // in/out are refused, named.  The A5 cycle step that DOES exist is the
+    // isothermal FEED SWITCH below.
     void       chargeFrom(const BatchState& src) override;
     BatchState dischargeAll() override;
     BatchState discharge(scalar fraction) override;
+
+    //  A5 (first step): the ISOTHERMAL feed switch.  `feed.<component>`
+    //  re-declares that species' feed MOLE FRACTION mid-campaign (the same
+    //  quantity the author declared in feed{molarComposition{}}), enabling
+    //  concentration-swing regeneration -- load, then purge with clean
+    //  carrier.  u, P, T stay declared constants: the thermal and pressure
+    //  swings each need physics this slice does not carry and refuse by
+    //  name.  Every switch amends the declared feed commitment; the
+    //  amendment is priced and handed to the driver as ledger records.
+    void setOperationParameter(const std::string& key, scalar value) override;
+    std::vector<DatumAmendment> takeDatumAmendments() override;
 
     void noteTimeAdvanced(scalar t) override;
 
@@ -257,6 +284,13 @@ private:
     std::vector<scalar> integral_;           // trapezoid of (1 - c_out/c_in) [s]
     std::vector<scalar> tCross5_, tCross50_, tCross95_;   // <0 = not crossed
     std::vector<scalar> tStoich_;            // analytic t_st per species [s]
+    //  A feed switch changes the sampler's reference basis: the frozen
+    //  crossings/integral keep describing the PRE-switch feed step
+    //  (announced), and the live feed-referenced diagnostics retire.
+    std::vector<bool> feedSwitched_;
+
+    // ---- A5 feed-switch amendments awaiting the driver ------------------
+    std::vector<DatumAmendment> pendingAmendments_;
 
     // ---- continuous-discharge marks (shed accounting) -------------------
     std::vector<scalar> shedMark_;           // M_out already handed over [mol]

@@ -258,6 +258,27 @@ public:
     // bubble-T seed.
     virtual void notifyStateChanged() {}
 
+    // ---- Datum amendments (A5 feed switching) ---------------------------
+    //  An open-boundary unit counts its DECLARED feed commitment as
+    //  campaign matter from t = 0 (the fixed bed's materialInventory).
+    //  When a recipe setParameter re-declares that feed mid-campaign, the
+    //  commitment changes DISCONTINUOUSLY -- matter enters or leaves the
+    //  campaign datum without flowing through any equipment.  That jump
+    //  must be LEDGERED, never absorbed: the unit prices each amendment as
+    //  a package at the commitment's own (T, P, phase) and the driver
+    //  records it against the external boundary (kind `feedAmendment`), so
+    //  the campaign mass/element/energy balances read a record where they
+    //  would otherwise see a leak.  Drained by choupoBatch right after the
+    //  setOperationParameter that caused it.  Default: none.
+    struct DatumAmendment
+    {
+        bool        into = false;  // true: matter ENTERS the datum from the
+                                   //   boundary; false: returned to it
+        BatchState  pkg;           // the amended matter (n >= 0, own T/P/vf)
+        std::string why;           // human-readable cause, for the timeline
+    };
+    virtual std::vector<DatumAmendment> takeDatumAmendments() { return {}; }
+
     // ---- Thermo attachment (phase (b), forum #98.3-1) --------------------
     //  The driver attaches the case's thermo package right after
     //  initialise(), so the BASE chargeFrom can price packages on the

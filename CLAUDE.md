@@ -637,8 +637,16 @@ claims a verdict ONLY when every piece is ledgered and priceable — otherwise
 UNAVAILABLE quoting each `energyLedgerGap()` verbatim.  Reference cases:
 recipe01 (react-then-distil INTO a receiver; vessels retain all mass, closure ~1e-15), recipe02 (T-programme + impulses,
 2e-15), still06/batch08 (adversarial validity).  Heat-of-crystallisation is
-SHARED steady↔batch (`CrystallisationHeat.{H,cpp}`).  Phase (f) — temporal
-utilities + cost — pending.
+SHARED steady↔batch (`CrystallisationHeat.{H,cpp}`).  **DATUM AMENDMENTS
+(A5, 2026-08-01):** an open-boundary unit's declared feed commitment is
+campaign matter from t = 0, so a recipe that RE-DECLARES the feed (the fixed
+bed's isothermal feed switch, `setParameter feed.<component>` = new mole
+fraction) jumps the datum — the jump is priced by the unit
+(`takeDatumAmendments()`, `BatchUnitOperation::DatumAmendment`) and ledgered
+as `feedAmendment` records against the external boundary; mass/element/energy
+closures read the records (witness batch19_feed_switch_purge; gate
+check_feed_switch, sabotage-verified; T/u/P swings refuse by name).  Phase
+(f) — temporal utilities + cost — pending.
 
 **General heterogeneous-thermo solver — SETTLED 2026-07-06 (do NOT relitigate).**
 A flowsheet may run units in DIFFERENT thermo WORLDS on ONE global component set,
