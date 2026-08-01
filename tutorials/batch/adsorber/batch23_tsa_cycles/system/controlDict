@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch23_tsa_cycles / system/controlDict
+
+  Three 7200 s TSA cycles (3600 load + 3600 hot purge each), ending
+  EXACTLY at the third cycle boundary so the final KPIs are
+  end-of-cycle values.  Read qbar_CO2 in trajectory.csv at t = 7200,
+  14400, 21600 to watch the approach to the cyclic steady state --
+  the A6 question, made visible with today's grammar.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Toward A6: three hand-declared TSA cycles (cold load / 400 K purge) in one campaign -- eleven ledgered feed amendments, balances closed, final KPIs at the cycle boundary; the CSS verdict machinery stays a named proposal";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         21600;    // s   (3 x 7200: ends ON the cycle boundary)
+deltaT          0.05;     // s   (unused: thermal requires adaptive)
+writeInterval   300;      // s
+timeStepping    adaptive; // Rosenbrock23 (REQUIRED in thermal mode)

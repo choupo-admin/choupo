@@ -1,0 +1,90 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch23_tsa_cycles  --  toward A6: three FULL TSA cycles, hand-declared.
+
+  batch21's half-cycle repeated three times in ONE campaign, with the
+  recipe grammar that already exists -- nothing new in the engine:
+
+      cycle k (k = 0,1,2), each 7200 s:
+          t = 7200k          feed.T   = 298.15 K   (cold again)   [k>0]
+                             feed.CO2 = 0.15       (feed returns) [k>0]
+          t = 7200k + 3600   feed.CO2 = 0          (clean purge)
+                             feed.T   = 400 K      (hot purge)
+
+  ending EXACTLY at the third cycle boundary (21600 s), so the FINAL
+  KPIs are end-of-cycle values.  Every switch re-declares the feed
+  commitment through the T1.5 ledger machinery (the T switches retire
+  and redeclare the WHOLE commitment; the composition switches amend by
+  delta) -- ELEVEN feedAmendment records, and the campaign mass/element/
+  energy balances still close on records, never jumps.
+
+  The A6 QUESTION this case makes visible (and does not yet verdict):
+  does the bed state at successive cycle ends approach a fixed point --
+  the cyclic steady state?  The qbar_CO2 trajectory column shows the
+  approach (read it at t = 7200, 14400, 21600); the golden pins the
+  third-cycle end.  A first-class CSS verdict (declared cycles, per-
+  cycle state snapshots, an invariance tolerance the case declares) is
+  an ARCHITECTURE feature -- proposed in
+  docs/design/fixed-bed-thermal-a5.md section 7, awaiting Vitor's
+  decision; this case is deliberately its cheap, grammar-free witness.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name bed;
+        type fixedBedAdsorber;
+        solver { samplingInterval 2.0; rtol 1e-6; }
+        operation
+        {
+            adsorbent zeolite13X_A4; flowModel ergun;
+            energyBalance adiabatic;
+            solidHeatCapacity
+            {
+                value  [0 2 -2 -1 0] 920;   // J/(kg K)
+                scope  "packed 13X teaching bed, RUN-A6-CYCLES";
+                source "declared teaching value (order of magnitude for zeolite pellets); curating a primary-cited cp onto the asset record is a separate act";
+            }
+            L 0.5 m; area 0.01 m2; eps 0.4; u 0.05 m/s;
+            T 298.15 K; P 1 bar; P_out 1 bar;
+            Dax [0 2 -1 0 0] 1e-4; nCells 25;
+            feed { molarComposition { CO2 0.15; He 0.85; } }
+            initial { molarComposition { He 1.0; } }
+            kLDF
+            {
+                basis solidFilm;
+                scope "2 mm synthetic A4 conservation anchor";
+                source "declared numerical comparison";
+                k { CO2 [0 0 -1 0 0] 0.05; }
+            }
+        }
+    }
+);
+
+//  Three hand-declared TSA cycles.  Order matters at each instant: the
+//  T switch fires FIRST (rescales every feed concentration to the new
+//  P/(R T), commitment re-declared), the composition switch second
+//  (reads its fraction against the nominal total at the CURRENT T).
+recipe
+(
+    // -- cycle 0: load 0..3600, hot purge 3600..7200
+    { time 3600;  action setParameter; unit bed; key feed.CO2; value 0.0;   }
+    { time 3600;  action setParameter; unit bed; key feed.T;   value 400.0; }
+    // -- cycle 1
+    { time 7200;  action setParameter; unit bed; key feed.T;   value 298.15;}
+    { time 7200;  action setParameter; unit bed; key feed.CO2; value 0.15;  }
+    { time 10800; action setParameter; unit bed; key feed.CO2; value 0.0;   }
+    { time 10800; action setParameter; unit bed; key feed.T;   value 400.0; }
+    // -- cycle 2
+    { time 14400; action setParameter; unit bed; key feed.T;   value 298.15;}
+    { time 14400; action setParameter; unit bed; key feed.CO2; value 0.15;  }
+    { time 18000; action setParameter; unit bed; key feed.CO2; value 0.0;   }
+    { time 18000; action setParameter; unit bed; key feed.T;   value 400.0; }
+);
