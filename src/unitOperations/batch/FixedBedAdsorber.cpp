@@ -499,6 +499,19 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     shedMark_.assign(nFlow, 0.0);
     shedMarkCarrier_ = 0.0;
 
+    // ---- A4 energy: the isosteric heat per integrated species, read ONCE
+    //      from the same isotherm records the equilibrium runs on.  dH_ads
+    //      is a MANDATORY field of every isotherm model (it is what the
+    //      van't Hoff b(T) is built from), so there is no missing-datum
+    //      branch here: a bed that loaded is a bed whose duty is priceable.
+    dHAds_.assign(nAds, 0.0);
+    nAds0_.assign(nAds, 0.0);
+    for (std::size_t a = 0; a < nAds; ++a)
+    {
+        dHAds_[a] = ads_->isotherm(compNames_[adsIdx_[a]])->dHAds();
+        nAds0_[a] = adsorbedKmol_(a);
+    }
+
     // Reusable partial-pressure map (values rewritten per cell through
     // cached iterators -- Adsorbent::loading is the ONLY isotherm locus).
     pMap_.clear();
@@ -683,10 +696,19 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                      " model_closure_* columns test the DISCRETISATION,"
                      " not physical conservation.  A4's velocity update"
                      " (Ergun) removes the error physically.\n";
-        std::cout << "  [fixedBedAdsorber '" << name_ << "'] energy: not"
-                     " ledgered in this isothermal flow slice -- the campaign"
-                     " energy balance will report UNAVAILABLE naming this"
-                     " gap\n";
+        if (ergun_)
+            std::cout << "  [fixedBedAdsorber '" << name_ << "'] energy (A4):"
+                         " adsorption duty LEDGERED -- Q = Sum dH_ads*dn_ads"
+                         " (exact state difference, isosteric heats from the"
+                         " isotherm records), inventory priced gas +"
+                         " (gas + dH_ads) adsorbed at the held T\n";
+        else
+            std::cout << "  [fixedBedAdsorber '" << name_ << "'] energy: the"
+                         " adsorption duty is ledgered, but the campaign"
+                         " energy claim stays UNAVAILABLE under the"
+                         " constant-(u, P, T) closure -- the fabricated"
+                         " carrier's enthalpy is a real error of the flow"
+                         " model (declare `flowModel ergun` to close it)\n";
     }
 
     // Fixed-step RK4 must sit under the printed bound -- REFUSED otherwise
@@ -1270,6 +1292,7 @@ BatchState FixedBedAdsorber::takeContinuousDischarge()
     out.T = T_;
     out.P = P_;
     out.V = 0.0;
+    out.vf = 1.0;   // the raffinate is a GAS -- priced on the gas leg
 
     if (ergun_)
     {
@@ -1300,18 +1323,106 @@ BatchState FixedBedAdsorber::takeContinuousDischarge()
     return out;
 }
 
+// -----------------------------------------------------------------------
+//  A4 energy (roadmap #7, first half): the adsorption duty and the priced
+//  open-boundary inventory.
+//
+//  The bed is isothermal by declaration, so the whole energy story is the
+//  crystalliser's, one phase over: taking up dn moles releases the isosteric
+//  heat, and the environment must remove it to hold T.  The adsorbed
+//  inventory n_ads,i = rho_b*A*dz*Sum_cells q_ij is PURE STATE, so the duty
+//  is an exact state difference (the batch-ledger doctrine: never a
+//  quadrature), and dH_ads comes from the SAME isotherm record whose van't
+//  Hoff b(T) already consumes it -- one datum, two readers, no second home.
+// -----------------------------------------------------------------------
+scalar FixedBedAdsorber::adsorbedKmol_(std::size_t a) const
+{
+    scalar qs = 0.0;
+    for (std::size_t j = 0; j < N_; ++j)
+        qs += y_[qOffset_() + a * N_ + j];
+    return rhoB_ * A_ * dz_ * qs / 1000.0;                 // mol -> kmol
+}
+
+std::vector<SimulationResult::EnergyRecord>
+FixedBedAdsorber::energyRecords(scalar tEnd)
+{
+    scalar E = 0.0;                                        // kJ, heat ADDED
+    for (std::size_t a = 0; a < adsIdx_.size(); ++a)
+        E += dHAds_[a] * (adsorbedKmol_(a) - nAds0_[a]);   // J/mol * kmol
+
+    SimulationResult::EnergyRecord er;
+    er.tStart      = startTime_;
+    er.tEnd        = tEnd;
+    er.unit        = name_;
+    er.kind        = "adsorption";
+    er.T_service_K = T_;   // isothermal: the coolant serves at the held T
+    er.E_kJ        = E;    // dH_ads < 0: adsorbing RELEASES heat, so the
+                           // heat ADDED to hold T is negative
+    er.E_valid     = true;
+    er.basis       = "isothermal fixed bed: Q = Sum_i dH_ads,i * dn_ads,i,"
+                     " n_ads = rho_b*A*Sum_cells(q_i*dz) (exact state"
+                     " difference); dH_ads isosteric, from the adsorbent's"
+                     " own isotherm records (the van't Hoff datum)";
+    return { er };
+}
+
 scalar FixedBedAdsorber::vesselEnthalpy(bool& ok, std::string& why) const
 {
-    ok  = false;
-    why = "open fixed-bed inventory (gas + adsorbed phase + declared feed"
-          " commitment) not priceable on the elements datum until A4"
-          " (dH_ads/Cp wiring)";
-    return 0.0;
+    //  The A3 constant-(u, P, T) closure FABRICATES carrier at the net
+    //  uptake rate (declaredMaterialResidual).  Matter and its enthalpy
+    //  cannot be made to close by pricing harder -- the error is the flow
+    //  model's, and the honest verdict is the named refusal until the case
+    //  declares the A4 velocity update.
+    if (!ergun_)
+    {
+        ok  = false;
+        why = "the declared constant-(u,P,T) closure fabricates carrier at"
+              " the net uptake rate, so the inventory's enthalpy differs"
+              " from real matter by construction -- declare `flowModel"
+              " ergun` (A4) for a physically conserved bed";
+        return 0.0;
+    }
+
+    //  Ergun mode: everything in the open-boundary inventory is either GAS
+    //  at the held (T, P) or ADSORBED at h_gas + dH_ads (the isosteric
+    //  convention: the differential heat is the whole phase distinction this
+    //  isothermal slice carries).  The feed commitment is gas at the same T
+    //  -- the bed is isothermal by declaration, feed included.
+    ok = true;
+    scalar H = 0.0;
+    const sVector inv = materialInventory();               // kmol, ALL matter
+    for (std::size_t i = 0; i < compNames_.size(); ++i)
+    {
+        if (inv[i] == 0.0) continue;
+        if (!thermo_->hasEnthalpyDatum(i))
+        {
+            ok  = false;
+            why = "no elements-datum enthalpy for gas '" + compNames_[i]
+                + "' (needs standardThermochemistry)";
+            return 0.0;
+        }
+        H += inv[i] * thermo_->speciesPhaseEnthalpy(
+                 i, T_, P_, "gas",
+                 ThermoPackage::ReferenceContext::StandardPhase);   // kJ
+    }
+    //  The adsorbed share of that inventory sits h = h_gas + dH_ads below
+    //  the gas it came from (dH_ads < 0).
+    for (std::size_t a = 0; a < adsIdx_.size(); ++a)
+        H += dHAds_[a] * adsorbedKmol_(a);                 // kJ
+    return H;
 }
 
 std::string FixedBedAdsorber::energyLedgerGap() const
 {
-    return "isothermal fixed bed: energy not ledgered (A4)";
+    //  Ergun (A4-flow) mode: the duty is ledgered above and the vessel
+    //  prices -- nothing withheld.  The A3 closure keeps a NAMED gap for
+    //  the same reason vesselEnthalpy refuses there: the fabricated carrier
+    //  makes the physical energy balance wrong by construction, and a
+    //  verdict on it would be decorative.
+    if (ergun_) return "";
+    return "constant-(u,P,T) closure: fabricated carrier (see"
+           " declaredMaterialResidual) makes the physical energy balance"
+           " unclaimable -- declare `flowModel ergun` (A4) to close it";
 }
 
 void FixedBedAdsorber::chargeFrom(const BatchState& /*src*/)

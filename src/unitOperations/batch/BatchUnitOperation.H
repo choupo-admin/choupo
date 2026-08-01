@@ -72,6 +72,15 @@ struct BatchState
     scalar  P = 0;   // pressure [bar]
     scalar  V = 0;   // volume [m³]
 
+    //- The phase this package's enthalpy is priced in.  Every batch vessel's
+    //  content and every still's condensate is a LIQUID, which is why the
+    //  campaign's packageH() could price vf = 0 for years without being
+    //  wrong.  The fixed bed's effluent is the first GAS package, and
+    //  pricing a gas on the liquid leg costs Hvap per mole -- a basis
+    //  mismatch the energy residual then reports as physics.  The default
+    //  keeps every existing producer byte-identical.
+    scalar  vf = 0.0;   // 0 = liquid (historic default), 1 = gas
+
     scalar totalMoles() const
     {
         scalar s = 0;

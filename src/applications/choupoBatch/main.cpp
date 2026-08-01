@@ -609,9 +609,13 @@ try
         if (!ok) return 0.0;
         try
         {
-            // liquid package (condensed distillate / vessel contents)
+            //  Priced in the package's OWN phase.  pkg.vf is 0 for every
+            //  vessel content and condensate (the historic default) and 1
+            //  for a gas package (the fixed bed's effluent); pricing a gas
+            //  on the liquid leg costs Hvap per mole, and the residual it
+            //  produces reads exactly like a first-law violation.
             return thermo.H_stream_formation(pkg.T, pkg.P > 0 ? pkg.P * 1.0e5 : 1.0e5,
-                                   0.0, z) * nTot;   // J/mol * kmol = kJ
+                                   pkg.vf, z) * nTot;   // J/mol * kmol = kJ
         }
         catch (const std::exception&)
         {

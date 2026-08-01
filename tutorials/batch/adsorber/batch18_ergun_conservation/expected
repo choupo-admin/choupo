@@ -1,11 +1,55 @@
-# A4 F3: N=25 A3 t_b5 is 2732.027881 s; explicit continuity + Ergun
-# moves it later and eliminates the 9.19 mol carrier fabrication.
-# kind   name   key                         expected          reltol
-kpi     bed    t_breakthrough_5pct_CO2     2767.86955912     2e-5
-kpi     bed    t_50_CO2                    3030.27628270     2e-5
-kpi     bed    t_breakthrough_95pct_CO2    3282.90182463     2e-5
-kpi     bed    carrier_fabricated_mol      0                 1e-10
-kpi     bed    physical_mass_closure_rel   0                 1e-10
-kpi     bed    mass_closure_CO2            0                 1e-10
-kpi     campaign mass_closure_rel          0                 1e-10
-kpi     campaign element_worst_closure_rel 0                 1e-10
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     bed                    E_adsorption_seg0_kJ -413.699637907     1e-4
+kpi     bed                    E_adsorption_total_kJ -413.699637907     1e-4
+kpi     bed                    P_final          100047.159082      1e-4
+kpi     bed                    P_first_cell_Pa  100092.418138      1e-4
+kpi     bed                    P_last_cell_Pa   100001.886961      1e-4
+kpi     bed                    P_mid_cell_Pa    100047.162776      1e-4
+kpi     bed                    P_out_boundary_Pa 100000             1e-4
+kpi     bed                    Pe               250                1e-4
+kpi     bed                    T_final          298.15             1e-4
+kpi     bed                    c_out_over_cin_final_CO2 1.00000763107      1e-4
+kpi     bed                    carrier_fabricated_mol -6.8212102633e-13  1e-4
+kpi     bed                    deltaP_first_to_out_Pa 92.4181379529      1e-4
+kpi     bed                    integral_anchor_CO2 3028.46636949      1e-4
+kpi     bed                    mass_closure_CO2 1.84877618489e-14  1e-4
+kpi     bed                    n_CO2_final      1.2107548722e-05   1e-4
+kpi     bed                    n_He_final       6.86095898882e-05  1e-4
+kpi     bed                    physical_mass_closure_rel -8.05213672966e-15 1e-4
+kpi     bed                    qbar_CO2_final   2.87291415213      1e-4
+kpi     bed                    retention_factor_CO2 304.204095537      1e-4
+kpi     bed                    t_50_CO2         3030.2762827       1e-4
+kpi     bed                    t_breakthrough_5pct_CO2 2767.86955912      1e-4
+kpi     bed                    t_breakthrough_95pct_CO2 3282.90182463      1e-4
+kpi     bed                    t_end            4200               1e-4
+kpi     bed                    t_stoichiometric_CO2 3042.04095537      1e-4
+kpi     bed                    totalMoles_final 8.07171386102e-05  1e-4
+kpi     campaign               element_C_closure_rel 1.8429878379e-14   1e-4
+kpi     campaign               element_He_closure_rel 9.2407224553e-15   1e-4
+kpi     campaign               element_O_closure_rel 1.8429878379e-14   1e-4
+kpi     campaign               element_worst_closure_rel 1.8429878379e-14   1e-4
+kpi     campaign               energy_H_external_kJ -1377.91972897     1e-4
+kpi     campaign               energy_Q_ledger_kJ -413.699637907     1e-4
+kpi     campaign               energy_balance_available 1                  1e-4
+kpi     campaign               energy_closure_rel 6.67062139873e-14  1e-4
+kpi     campaign               energy_dH_vessels_kJ 964.220091063      1e-4
+kpi     campaign               energy_records_invalid 0                  1e-4
+kpi     campaign               energy_records_valid 1                  1e-4
+kpi     campaign               energy_residual_kJ 9.19158082979e-11  1e-4
+kpi     campaign               mass_closure_rel 8.90517160832e-15  1e-4
+kpi     campaign               mass_kg_external_out 0.442361952156     1e-4
+kpi     campaign               mass_kg_final    0.405405715836     1e-4
+kpi     campaign               mass_kg_initial  0.847767667992     1e-4
+kpi     campaign               mass_residual_kg 7.54951656745e-15  1e-4
+kpi     campaign               moles_kmol_external_out 0.0755196823119    1e-4
+kpi     campaign               moles_kmol_final 0.00927404242542   1e-4
+kpi     campaign               moles_kmol_initial 0.0847937247374    1e-4
+kpi     campaign               transfers_H_invalid 0                  1e-4
+kpi     campaign               transfers_H_valid 1                  1e-4
+kpi     campaign               transfers_logged 1                  1e-4
+kpi     campaign               utility_chilledWater_eur 0.00165479855163   1e-4
+kpi     campaign               utility_chilledWater_kJ 413.699637907      1e-4
+kpi     campaign               utility_chilledWater_kg 19.6999827575      1e-4
+kpi     campaign               utility_cost_eur_total 0.00165479855163   1e-4

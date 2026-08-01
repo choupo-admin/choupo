@@ -1,6 +1,8 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
+kpi     bed                    E_adsorption_seg0_kJ -413.617021183     1e-4
+kpi     bed                    E_adsorption_total_kJ -413.617021183     1e-4
 kpi     bed                    P_final          100000             1e-4
 kpi     bed                    Pe               250                1e-4
 kpi     bed                    T_final          298                1e-4
@@ -26,12 +28,19 @@ kpi     campaign               element_worst_closure_rel 0.113036230334     1e-4
 kpi     campaign               element_worst_closure_vs_declared_rel 1.4016106937e-14   1e-4
 kpi     campaign               energy_balance_available 0                  1e-4
 kpi     campaign               energy_records_invalid 0                  1e-4
-kpi     campaign               energy_records_valid 0                  1e-4
+kpi     campaign               energy_records_valid 1                  1e-4
 kpi     campaign               mass_closure_rel 0.041571197711     1e-4
 kpi     campaign               mass_kg_external_out 0.479659308795     1e-4
 kpi     campaign               mass_kg_final    0.4053249432       1e-4
 kpi     campaign               mass_kg_initial  0.848194396684     1e-4
 kpi     campaign               mass_residual_kg 0.0367898553108    1e-4
+kpi     campaign               moles_kmol_external_out 0.0847556864411    1e-4
+kpi     campaign               moles_kmol_final 0.00927220906099   1e-4
+kpi     campaign               moles_kmol_initial 0.0848364061424    1e-4
 kpi     campaign               transfers_H_invalid 0                  1e-4
 kpi     campaign               transfers_H_valid 1                  1e-4
 kpi     campaign               transfers_logged 1                  1e-4
+kpi     campaign               utility_chilledWater_eur 0.00165446808473   1e-4
+kpi     campaign               utility_chilledWater_kJ 413.617021183      1e-4
+kpi     campaign               utility_chilledWater_kg 19.6960486277      1e-4
+kpi     campaign               utility_cost_eur_total 0.00165446808473   1e-4

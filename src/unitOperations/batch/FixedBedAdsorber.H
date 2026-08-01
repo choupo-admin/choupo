@@ -157,6 +157,12 @@ public:
     scalar vesselEnthalpy(bool& ok, std::string& why) const override;
     std::string energyLedgerGap() const override;
 
+    //  A4 energy: the adsorption duty as an exact state difference on the
+    //  adsorbed inventory, Q = Sum_i dH_ads,i * dn_ads,i -- the isosteric
+    //  heat from the SAME isotherm records the equilibrium runs on.
+    std::vector<SimulationResult::EnergyRecord>
+        energyRecords(scalar tEnd) override;
+
     // A fixed bed is flow-through, not a batch vessel: recipe transfers
     // in/out are refused, named (step transitions arrive with A5).
     void       chargeFrom(const BatchState& src) override;
@@ -224,6 +230,11 @@ private:
     //   y_[2*nAds*N + nAds + a]        M_out_a [mol]
     sVector y_;
     std::vector<scalar> hold0_;   // initial bed hold-up per integrated species [mol]
+
+    // ---- A4 energy (per INTEGRATED species) -----------------------------
+    std::vector<scalar> dHAds_;   // isosteric heat [J/mol, <0], from the record
+    std::vector<scalar> nAds0_;   // adsorbed inventory at t = start [kmol]
+    scalar adsorbedKmol_(std::size_t a) const;   // rho_b*A*Sum q dz, state
 
     // ---- time integration (owned) ---------------------------------------
     bool   adaptive_        = true;    // controlDict timeStepping
