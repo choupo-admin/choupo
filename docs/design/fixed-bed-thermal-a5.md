@@ -93,3 +93,40 @@ IS the TSA regeneration step — but T of the FEED is a new control
 (`feed.T` today refuses).  T1 keeps that refusal (feed enters at the
 initial declared T); lifting it is the natural T1.5 once the energy
 balance exists, and the refusal text will say so.
+
+## 6. T2 — wall heat exchange (designed 2026-08-01, after T1/T1.5 shipped)
+
+Grammar: `energyBalance wallCooled;` + a REQUIRED
+`wallHeatTransfer { h [W/(m2 K)]; T_wall [K]; dBed [m]; }` block.
+One-knob discipline, each refusing out loud: `adiabatic` WITH a
+wallHeatTransfer block is a contradiction; `wallCooled` without one is
+incomplete; h <= 0 is refused (`adiabatic` is the way to SAY zero).
+dBed is DECLARED, never derived from the cross-section by a silent
+circle assumption; the engine announces a_w = 4/dBed and the wall
+NTU = h a_w L / (u c_feed cpg).
+
+Physics: the T1 energy row gains  - h a_w (T_j - T_wall)  in its
+numerator (per bed volume).  The LEDGER is the design point: the
+removed heat is carried as ONE MORE STATE ROW of the same ODE,
+
+    dQ_wall/dt = Sum_j h a_w (T_j - T_wall) A dz      [W]
+
+-- the M_in/M_out ledger-row pattern (gate G3) and the Williams-Otto
+objective-integral pattern, never a posterior quadrature.
+energyRecords() then READS A STATE: kind `wallHeat`,
+E = -Q_wall (heat ADDED is negative when the wall cools),
+T_service = T_wall; the campaign balance closes
+dH_vessels = Q_ledger + H_external with every term a state function.
+
+Containment anchors (the thermal model must CONTAIN its limits):
+h -> 0 recovers batch20's adiabatic run; h large drives the bed toward
+the isothermal batch18 (t_50 -> 2768 s at N = 25, T_max -> T_wall).
+The witness (batch22_wall_cooled) sits between the two and the golden
+pins the bracketing:
+
+    t_50(adiabatic) < t_50(wallCooled) < t_50(isothermal)
+    T_wall < T_max(wallCooled) < T_max(adiabatic)
+
+Gate: check_thermal_bed extends with the wallCooled positive + the
+three declaration refusals; the old blanket "wallHeatTransfer is T2,
+not built" refusal retires WITH this slice.
