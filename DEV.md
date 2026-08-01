@@ -159,7 +159,12 @@ ones for day-to-day work:
 5. **New unit operations / catalogue expansion** — the strength area; add with
    KPIs + a golden-master tutorial + the theory-guide section (a feature is
    incomplete without its manual).
-6. **solverDict consolidation** · **speciation aliases**.
+6. **solverDict consolidation** · **speciation aliases** — SCOPED
+   2026-08-01, decision now in §4b: the four solver-option homes are
+   mapped with file:line evidence and three options posed
+   (recommendation: document + lint the silently-ignored solverDict, no
+   grammar move) in
+   [`docs/design/solverdict-consolidation-scope.md`](docs/design/solverdict-consolidation-scope.md).
 7. **Reports default-on beyond elementBalance** (mass/energy as normal
    diagnostics — measure corpus impact first).
 8. **Pinch full programme** (real match sizing beyond the heuristic screen).
@@ -205,6 +210,14 @@ accepts today, and that is a policy call.
    does not refuse — editing your own case is exactly what a glass-box
    simulator is for, and only Vítor should decide that a stale provenance line
    stops a run.
+5. **solverDict consolidation + speciation aliases (roadmap #6)** —
+   scoped 2026-08-01,
+   [`docs/design/solverdict-consolidation-scope.md`](docs/design/solverdict-consolidation-scope.md):
+   pick option A/B/C for the four solver-option homes (recommendation A —
+   document + lint, no grammar move), and say whether speciation aliases
+   are wanted at all given the settled `pitzer` ≠ `pitzerHMW` key
+   contract.  Also the TEMPORAL half of phase (f) (time-resolved utility
+   demand / peak duty) — an architecture change, proposal-first.
 
 ## 5. Known debts (severity-ish)
 
