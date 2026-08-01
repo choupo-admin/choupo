@@ -570,6 +570,15 @@ try
         scalar  prevT = 0.0;
         bool    havePrev = false;
         std::string energyReason;         // first refusing energy claim
+        //  ---- ENERGY, on exactly the same footing as the material rung ----
+        //  A stored functional whose change is measured against what crossed
+        //  the boundary.  It exists here only when EVERY unit claims a
+        //  physical functional; one refusal withholds the rung and names it,
+        //  the same way a dimension mismatch withholds the material one.
+        bool    energyAvailable = true;
+        scalar  H0 = 0.0, Hcur = 0.0;     // kJ, stored
+        scalar  cumHin = 0.0, cumHout = 0.0, cumQ = 0.0;   // kJ
+        scalar  prevHin = 0.0, prevHout = 0.0, prevQ = 0.0; // kW
         std::ofstream csv;
 
         void refuse(const std::string& why)
@@ -614,11 +623,17 @@ try
                 + std::to_string(er.unaccountedMassFraction) + " kg/kg)";
         }
     };
+    //  The instantaneous energy rates that ride with the material ones.
+    //  Gathered in the SAME sweep, from the SAME snapshots, so the two rungs
+    //  can never be sampled at different states.
+    struct EnergyRates { scalar hIn = 0, hOut = 0, q = 0, stored = 0; };
+    EnergyRates erates;
     auto gatherRates = [&](sVector& in, sVector& out, sVector& inv) -> bool
     {
         in.assign(ledger.comps.size(), 0.0);
         out.assign(ledger.comps.size(), 0.0);
         inv.assign(ledger.comps.size(), 0.0);
+        erates = EnergyRates{};
         for (const auto& u : units)
         {
             const auto bs = u->balanceSnapshot();
@@ -658,8 +673,37 @@ try
                 for (std::size_t i = 0; i < acc.size(); ++i)
                     acc[i] += fc.molarFlows[i];
             }
-            if (!bs.physicalEnergyAvailable && ledger.energyReason.empty())
-                ledger.energyReason = u->name() + ": " + bs.energyReason;
+            if (!bs.physicalEnergyAvailable)
+            {
+                if (ledger.energyReason.empty())
+                    ledger.energyReason = u->name() + ": " + bs.energyReason;
+                ledger.energyAvailable = false;
+            }
+            else
+            {
+                erates.stored += bs.storedEnergy_kJ;
+                erates.q      += bs.heatInput_kW;
+                for (const auto& fc : bs.faces)
+                {
+                    if (fc.role == BalanceFace::Role::internal_) continue;
+                    if (!std::isfinite(fc.enthalpyFlow_kW))
+                    { ledger.energyAvailable = false;
+                      if (ledger.energyReason.empty())
+                          ledger.energyReason = u->name() + ": non-finite enthalpy"
+                              " flow on face '" + fc.id + "'";
+                      continue; }
+                    ((fc.direction == BalanceFace::Direction::in)
+                        ? erates.hIn : erates.hOut) += fc.enthalpyFlow_kW;
+                }
+                if (!std::isfinite(bs.storedEnergy_kJ)
+                    || !std::isfinite(bs.heatInput_kW))
+                {
+                    ledger.energyAvailable = false;
+                    if (ledger.energyReason.empty())
+                        ledger.energyReason = u->name() + ": non-finite stored"
+                            " energy or heat input";
+                }
+            }
         }
         return true;
     };
@@ -672,6 +716,9 @@ try
         if (!gatherRates(in, out, inv)) return;
         ledger.prevIn = std::move(in);
         ledger.prevOut = std::move(out);
+        ledger.prevHin = erates.hIn;
+        ledger.prevHout = erates.hOut;
+        ledger.prevQ = erates.q;
         ledger.prevT = tNow;
         ledger.havePrev = true;
     };
@@ -690,6 +737,13 @@ try
                 ledger.cumIn[i]  += 0.5 * (ledger.prevIn[i]  + in[i])  * dt2;
                 ledger.cumOut[i] += 0.5 * (ledger.prevOut[i] + out[i]) * dt2;
             }
+            //  SAME trapezoid, same interval, same accepted states: the two
+            //  rungs are integrated together or they are integrated
+            //  differently, and a difference in quadrature would show up as
+            //  a first-law residual that is really a numerics artefact.
+            ledger.cumHin  += 0.5 * (ledger.prevHin  + erates.hIn)  * dt2;
+            ledger.cumHout += 0.5 * (ledger.prevHout + erates.hOut) * dt2;
+            ledger.cumQ    += 0.5 * (ledger.prevQ    + erates.q)    * dt2;
         }
         // Promotion: a component entering the accounted set at t > 0
         // (inventory or boundary flow becomes nonzero) promotes its
@@ -700,8 +754,12 @@ try
                 markElemRelevant(i);
         ledger.prevIn = std::move(in);
         ledger.prevOut = std::move(out);
+        ledger.prevHin = erates.hIn;
+        ledger.prevHout = erates.hOut;
+        ledger.prevQ = erates.q;
         ledger.prevT = tNow;
         ledger.Ncur = inv;
+        ledger.Hcur = erates.stored;
         if (ledger.csv.is_open())
         {
             // MASS and ELEMENTS are the conservation laws; total moles are
@@ -737,6 +795,12 @@ try
                 ledger.csv << "," << aInv << ","
                            << ((aInv - a0) - (aIn - aOut));
             }
+            if (ledger.energyAvailable)
+                ledger.csv << "," << erates.stored << "," << ledger.cumHin
+                           << "," << ledger.cumHout << "," << ledger.cumQ
+                           << ","
+                           << ((erates.stored - ledger.H0)
+                               - (ledger.cumHin - ledger.cumHout + ledger.cumQ));
             ledger.csv << "\n";
         }
     };
@@ -758,6 +822,8 @@ try
             sVector in, out, inv;
             if (gatherRates(in, out, inv)) ledger.N0 = inv;
             ledger.Ncur = ledger.N0;
+            ledger.H0 = erates.stored;
+            ledger.Hcur = ledger.H0;
             // Parse every formula ONCE: the element columns exist only when
             // the whole component set decomposes.
             compAtoms.resize(ledger.comps.size());
@@ -792,6 +858,10 @@ try
                 for (const auto& e : ledgerElems)
                     ledger.csv << ",elem_" << e << "_inventory_kmolatom"
                                << ",elem_" << e << "_residual_kmolatom";
+                if (ledger.energyAvailable)
+                    ledger.csv << ",energy_stored_kJ,energy_in_cum_kJ,"
+                                  "energy_out_cum_kJ,energy_heat_cum_kJ,"
+                                  "energy_residual_kJ";
                 ledger.csv << "\n";
             }
         }
@@ -817,12 +887,17 @@ try
              << "\n";
         if (!ledgerElemsAvailable || ledgerElemsPartial)
             meta << "elements_reason,\"" << ledgerElemsReason << "\"\n";
-        meta << "energy_available,0\n"
-             << "energy_reason,\""
-             << (ledger.energyReason.empty()
-                 ? std::string("no dynamic units expose an energy"
-                               " functional")
-                 : ledger.energyReason) << "\"\n";
+        const bool energyClaimed = ledger.available && ledger.energyAvailable;
+        meta << "energy_available," << (energyClaimed ? 1 : 0) << "\n";
+        if (energyClaimed)
+            meta << "energy_functional,H\n"
+                 << "energy_datum,elements-298.15K\n";
+        else
+            meta << "energy_reason,\""
+                 << (ledger.energyReason.empty()
+                     ? std::string("no dynamic units expose an energy"
+                                   " functional")
+                     : ledger.energyReason) << "\"\n";
     };
     writeLedgerMeta();
     // The t = startTime row: inventory at the initial state, zero
@@ -845,6 +920,8 @@ try
             }
             ledger.csv << "," << a0 << ",0";
         }
+        if (ledger.energyAvailable)
+            ledger.csv << "," << ledger.H0 << ",0,0,0,0";
         ledger.csv << "\n";
     }
 
@@ -1028,7 +1105,13 @@ try
         {
             auto& bk = result.kpis["balance"];
             bk["material_available"] = ledger.available ? 1.0 : 0.0;
-            bk["energy_balance_available"] = 0.0;   // honest: see energyReason
+            //  The energy rung, on the same footing as the material one: a
+            //  claim when every unit's ODE is the exact derivative of a
+            //  stored functional, a named refusal otherwise.  It was pinned
+            //  at 0.0 with a comment because no dynamic unit could claim it;
+            //  the dynamicCSTR now can, on the canonical route.
+            const bool energyClaimed = ledger.available && ledger.energyAvailable;
+            bk["energy_balance_available"] = energyClaimed ? 1.0 : 0.0;
             if (!ledger.available)
             {
                 std::cout << "\n[balance] ledger UNAVAILABLE -- "
@@ -1105,11 +1188,43 @@ try
                                   ? "  (PARTIAL -- " + ledgerElemsReason + ")"
                                   : std::string()) << "\n";
                 }
-                std::cout << "[balance] energy: UNAVAILABLE -- "
-                          << (ledger.energyReason.empty()
-                              ? std::string("no dynamic units expose an"
-                                            " energy functional")
-                              : ledger.energyReason) << "\n";
+                if (energyClaimed)
+                {
+                    //  H(t) - H(0)  vs  INTEGRAL(Hdot_in - Hdot_out + Q).
+                    //  Not a check on the physics -- the ODE was DERIVED from
+                    //  this identity -- but a check that the derivation
+                    //  survived the integrator, the controller firings and
+                    //  the trapezoid.  A residual here is numerics, and its
+                    //  size is the step-size lesson.
+                    const scalar dH  = ledger.Hcur - ledger.H0;
+                    const scalar net = ledger.cumHin - ledger.cumHout + ledger.cumQ;
+                    const scalar res = dH - net;
+                    const scalar scale = std::max({ std::abs(ledger.H0),
+                                                    std::abs(ledger.Hcur),
+                                                    std::abs(ledger.cumHin),
+                                                    std::abs(ledger.cumHout),
+                                                    std::abs(ledger.cumQ),
+                                                    1.0e-30 });
+                    bk["energy_functional_H"]   = 1.0;
+                    bk["energy_kJ_initial"]     = ledger.H0;
+                    bk["energy_kJ_final"]       = ledger.Hcur;
+                    bk["energy_kJ_in_cum"]      = ledger.cumHin;
+                    bk["energy_kJ_out_cum"]     = ledger.cumHout;
+                    bk["energy_kJ_heat_cum"]    = ledger.cumQ;
+                    bk["energy_residual_kJ"]    = res;
+                    bk["energy_closure_rel"]    = std::abs(res) / scale;
+                    std::cout << "[balance] energy: H(t)-H(0) = "
+                              << std::scientific << std::setprecision(4) << dH
+                              << " kJ vs integral(in-out+Q) = " << net
+                              << " kJ, closure " << (std::abs(res) / scale)
+                              << "  (functional H, elements datum)\n";
+                }
+                else
+                    std::cout << "[balance] energy: UNAVAILABLE -- "
+                              << (ledger.energyReason.empty()
+                                  ? std::string("no dynamic units expose an"
+                                                " energy functional")
+                                  : ledger.energyReason) << "\n";
             }
         }
         emitResultJson(std::cout, result);

@@ -1,0 +1,70 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl11_esterification_jacket  --  the first ctrl case whose FIRST LAW closes.
+
+  Every other case under tutorials/ctrl/ runs on the fictitious species compA
+  and compB.  They carry no standardThermochemistry, deliberately: a made-up
+  substance has no elements and no heat of formation, so there is no datum for
+  an energy balance to be on.  The ledger said so and refused -- correctly,
+  and, for as long as the corpus had nothing else, invisibly.
+
+  This case is a real esterification (AcOH + EtOH -> EtOAc + H2O, the same
+  chemistry as cstr06_jacketed) under PID jacket control.  All four species
+  carry the elements datum, so the vessel's stored enthalpy H(n,T) exists, the
+  temperature ODE is that H's exact derivative, and the run CLAIMS:
+
+      [balance] energy: H(t)-H(0) = ... kJ vs integral(in-out+Q) = ... kJ
+
+  The residual is NOT a test of the physics -- the ODE was derived from that
+  identity, so it cannot disagree with it analytically.  It measures what the
+  INTEGRATOR did to the identity: RK4 at this step size, the controller firing
+  and re-basing the trapezoid, the accepted-state sampling.  Halve deltaT and
+  it falls by four, which says which of those dominates:
+
+      deltaT [s]     energy_closure_rel
+        1.0            5.70e-07
+        0.5            1.42e-07        <- shipped
+        0.25           3.56e-08
+        0.125          8.90e-09
+
+  Second order, cleanly.  RK4 is fourth; the TRAPEZOID that accumulates the
+  boundary fluxes is second, so what this number measures is the quadrature
+  on the ledger, not the error in the trajectory.  Worth knowing before
+  reading any first-law residual as a physical statement -- here and in the
+  batch campaign ledgers, which teach the same lesson in the other time
+  regime.
+
+  WHAT THIS CASE DOES NOT PROVE.  All four species declare a CONSTANT liquid
+  Cp, and with a constant Cp the exact inlet term INT(Cp dT) and the
+  linearisation Cp(T)*(T_in - T) are literally the same number.  So this case
+  exercises the ledger identity and the temperature-dependent heat of
+  reaction, and says nothing at all about the inlet term.  The gate
+  (bin/curate/check_ctrl_balance.py) carries a fixture that gives ethanol's
+  Cp a slope for exactly that reason -- with it, the linearisation costs a
+  factor of 400 in the closure.
+
+  What to look at:
+      * the balance trajectory gains five energy columns that a compA case
+        does not have at all -- the columns exist only where the claim does;
+      * its metadata sidecar says energy_available,1 with the functional and
+        the datum named;
+      * ctrl01 beside it still says energy_available,0 and names the species
+        that has no datum.  Both are correct; the difference is the data.
+\*---------------------------------------------------------------------------*/
+
+application   choupoCtrl;
+description   "Jacketed esterification CSTR under PID temperature control: the first ctrl case whose stored enthalpy exists, so the first-law ledger claims closure instead of refusing";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         600;      // s
+deltaT          0.5;      // s
+writeInterval   10;       // s

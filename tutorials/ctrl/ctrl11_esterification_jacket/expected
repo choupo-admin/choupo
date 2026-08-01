@@ -1,0 +1,37 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     TC1                    MV_final         360.338985371    1e-4
+kpi     TC1                    PV_final         364.93860506     1e-4
+kpi     TC1                    SP_final         365              1e-4
+kpi     balance                element_C_closure_rel 1.32609972386e-14 1e-4
+kpi     balance                element_H_closure_rel 1.31993181817e-14 1e-4
+kpi     balance                element_O_closure_rel 1.32609972386e-14 1e-4
+kpi     balance                element_worst_closure_rel 1.32609972386e-14 1e-4
+kpi     balance                energy_balance_available 1                1e-4
+kpi     balance                energy_closure_rel 1.42432856618e-07 1e-4
+kpi     balance                energy_functional_H 1                1e-4
+kpi     balance                energy_kJ_final  -28146.0243548   1e-4
+kpi     balance                energy_kJ_heat_cum -1199.4769622    1e-4
+kpi     balance                energy_kJ_in_cum -65562.9346941   1e-4
+kpi     balance                energy_kJ_initial -27888.8423982   1e-4
+kpi     balance                energy_kJ_out_cum -66505.2391723   1e-4
+kpi     balance                energy_residual_kJ -0.00947253119534 1e-4
+kpi     balance                mass_closure_rel 1.31121976253e-14 1e-4
+kpi     balance                mass_kg_final    4.032598         1e-4
+kpi     balance                mass_kg_in_cum   9.55089          1e-4
+kpi     balance                mass_kg_initial  4.032598         1e-4
+kpi     balance                mass_kg_out_cum  9.55089          1e-4
+kpi     balance                mass_residual_kg -1.25233157178e-13 1e-4
+kpi     balance                material_available 1                1e-4
+kpi     reactor                F_in_final       0.0003           1e-4
+kpi     reactor                T_final          364.938817894    1e-4
+kpi     reactor                n_aceticAcid_final 0.0111333560427  1e-4
+kpi     reactor                n_ethanol_final  0.0111333560427  1e-4
+kpi     reactor                n_ethylAcetate_final 0.0268666439573  1e-4
+kpi     reactor                n_water_final    0.0268666439573  1e-4
+kpi     reactor                t_end            600              1e-4
+kpi     reactor                z_in_aceticAcid_final 0.5              1e-4
+kpi     reactor                z_in_ethanol_final 0.5              1e-4
+kpi     reactor                z_in_ethylAcetate_final 0                1e-4
+kpi     reactor                z_in_water_final 0                1e-4

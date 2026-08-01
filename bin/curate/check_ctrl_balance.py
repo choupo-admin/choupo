@@ -12,12 +12,19 @@ Causal proofs (Codex-ratified), all built as temp variants of ctrl01:
      accepted steps; closure holds and is rtol-insensitive (1e-6 vs 1e-8).
   5. TOY formulas (unmodified ctrl01): the elemental claim is withheld
      naming the species; material stays available.
-  6. ENERGY: available = 0 with the named model reason -- always, until the
-     dynamicCSTR is reformulated on a canonical functional.
+  6. ENERGY, both ways.  A toy case (compA/compB carry no formation datum
+     ON PURPOSE) must still refuse, naming the model reason.  ctrl11, whose
+     four real species DO carry the elements datum, must CLAIM: the vessel
+     stores H(n,T), the ODE is its exact derivative, and the run reports the
+     closure.  The residual there is quadrature, not physics -- so halving
+     deltaT must cut it by about four (the trapezoid's own order).  A claim
+     that nothing can withdraw, and a refusal nothing can lift, would both
+     be decoration.
   (7. Mixed ODE/non-ODE adaptive refusal exists in code; not provable from
      today's corpus -- every ctrl unit type is ODE-form.)
 
 Exit 1 listing failures."""
+import hashlib
 import json
 import re
 import shutil
@@ -30,6 +37,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CTRL = ROOT / "build" / "linux64Gcc" / "choupoCtrl"
 BASE = ROOT / "tutorials" / "ctrl" / "ctrl01_cstr_temp_control"
 ADAPT = ROOT / "tutorials" / "ctrl" / "ctrl03_adaptive_disturbance"
+CANON = ROOT / "tutorials" / "ctrl" / "ctrl11_esterification_jacket"
 
 
 GHOST = ("name ghostCut;\nformula pseudo;\nMW 100.0;\nrole nonvolatile;\n"
@@ -213,6 +221,132 @@ def main():
                 bad.append("toy: metadata sidecar does not name the withheld"
                            " elemental claim")
 
+        # ---- 6b. the CANONICAL route: the claim exists, and is earned ----
+        #  Run ctrl11 twice, at its shipped step and at half of it.  The
+        #  claim must appear, close, and the residual must fall like the
+        #  trapezoid it comes from.
+        canon = {}
+        for dt in ("0.5", "0.25"):
+            c = Path(tmp) / ("canon" + dt.replace(".", "_"))
+            shutil.copytree(CANON, c)
+            cd = c / "system" / "controlDict"
+            cd.write_text(re.sub(r"^deltaT\s+\S+;", "deltaT %s;" % dt,
+                                 cd.read_text(), flags=re.M))
+            rr = subprocess.run([str(CTRL)], cwd=str(c), capture_output=True,
+                                text=True, timeout=900)
+            if rr.returncode != 0:
+                bad.append("canonical dt=%s: exited %d -- %s"
+                           % (dt, rr.returncode, (rr.stdout + rr.stderr)[-400:]))
+                continue
+            out = rr.stdout + rr.stderr
+            bk = balance_kpis(out)
+            if bk is None:
+                bad.append("canonical dt=%s: no balance KPIs" % dt)
+                continue
+            canon[dt] = (bk, out, c)
+
+        if "0.5" in canon:
+            bk, out, c = canon["0.5"]
+            if bk.get("energy_balance_available") != 1:
+                bad.append("canonical: ctrl11's four species all carry the"
+                           " elements datum, so the first-law ledger must"
+                           " CLAIM -- a refusal here means the canonical"
+                           " route did not engage.")
+            if bk.get("energy_functional_H") != 1:
+                bad.append("canonical: the claimed functional must be named H")
+            rel = bk.get("energy_closure_rel")
+            if rel is None or rel > 1.0e-5:
+                bad.append("canonical: energy closure %s -- the ODE IS the"
+                           " derivative of the stored H, so anything above"
+                           " quadrature error means the two surfaces have"
+                           " drifted apart." % rel)
+            if "CANONICAL route" not in out:
+                bad.append("canonical: the route taken is not announced."
+                           "  Two different energy equations must never be"
+                           " chosen in silence.")
+            meta = (c / "balanceTrajectory.meta").read_text()
+            if "energy_available,1" not in meta:
+                bad.append("canonical: the metadata sidecar does not carry"
+                           " the claim the KPIs make")
+            if "energy_functional,H" not in meta or "elements" not in meta:
+                bad.append("canonical: the sidecar claims energy without"
+                           " naming the functional and the datum")
+            head = (c / "balanceTrajectory.csv").read_text().splitlines()[0]
+            for col in ("energy_stored_kJ", "energy_residual_kJ"):
+                if col not in head:
+                    bad.append("canonical: trajectory column '%s' missing --"
+                               " the columns must exist exactly where the"
+                               " claim does." % col)
+
+        if len(canon) == 2:
+            r1 = canon["0.5"][0].get("energy_closure_rel")
+            r2 = canon["0.25"][0].get("energy_closure_rel")
+            if r1 and r2 and not (2.5 < r1 / r2 < 6.0):
+                bad.append("canonical: halving deltaT changed the energy"
+                           " residual by x%.2f, not the ~4 of a second-order"
+                           " trapezoid.  The residual is supposed to be"
+                           " QUADRATURE; a different order means it is"
+                           " something else." % (r1 / r2))
+
+        # ---- 6c. the discriminating fixture: a T-DEPENDENT liquid Cp ------
+        #
+        #  ctrl11's four species all declare a CONSTANT liquid Cp, and with a
+        #  constant Cp the exact inlet term INT(Cp dT) and the linearisation
+        #  Cp(T)*(T_in - T) are the same number.  So the shipped case proves
+        #  the ledger identity and the T-dependent heat of reaction, and
+        #  proves NOTHING about the inlet term -- a fact worth stating rather
+        #  than discovering later.
+        #
+        #  This fixture makes the difference exist: ethanol's liquid Cp gains
+        #  a slope, its sealed hash is re-stamped (the case is sealed, and a
+        #  gate that leaned on seal divergence being non-fatal would be
+        #  leaning on a decision that is still open), and the claim must
+        #  still close.  It closes only if the ODE's inlet term really is the
+        #  enthalpy difference, because dh_liq/dT IS Cp_liq by construction
+        #  (ThermoPackage::speciesPhaseEnthalpy).
+        cvar = Path(tmp) / "canonTdep"
+        shutil.copytree(CANON, cvar)
+        eth = cvar / "constant" / "components" / "ethanol.dat"
+        txt = eth.read_text()
+        txt = re.sub(r"(liquidHeatCapacity\s*\{[^}]*?coefficients\s*)\([^)]*\)",
+                     r"\1(60.0  0.15)", txt, count=1, flags=re.S)
+        eth.write_text(txt)
+        man = cvar / "constant" / "propertyManifest"
+        mtxt = man.read_text()
+        newhash = hashlib.sha256(eth.read_bytes()).hexdigest()
+        mtxt = re.sub(r'("components/ethanol\.dat"\s*\{[^}]*?sha256\s*)"[0-9a-f]{64}"',
+                      r'\1"%s"' % newhash, mtxt, count=1, flags=re.S)
+        man.write_text(mtxt)
+        rr = subprocess.run([str(CTRL)], cwd=str(cvar), capture_output=True,
+                            text=True, timeout=900)
+        if rr.returncode != 0:
+            bad.append("canonicalTdep: exited %d -- %s"
+                       % (rr.returncode, (rr.stdout + rr.stderr)[-400:]))
+        else:
+            out = rr.stdout + rr.stderr
+            if "diverge" in out.lower() or "sha256" in out.lower():
+                bad.append("canonicalTdep: the fixture did not re-stamp the"
+                           " seal cleanly -- fix the fixture, do not let the"
+                           " gate depend on a seal warning.")
+            bk = balance_kpis(out)
+            if bk is None or bk.get("energy_balance_available") != 1:
+                bad.append("canonicalTdep: the claim disappeared when a"
+                           " liquid Cp gained a slope")
+            elif bk.get("energy_closure_rel", 1.0) > 1.0e-5:
+                bad.append("canonicalTdep: energy closure %s with a"
+                           " T-dependent Cp.  The inlet term must be the"
+                           " enthalpy DIFFERENCE, not Cp(T) times a"
+                           " temperature difference."
+                           % bk.get("energy_closure_rel"))
+
+        #  And the negative: a toy case must have no energy columns at all.
+        case, r = make_case(tmp, "toyCols", BASE)
+        if r.returncode == 0:
+            head = (case / "balanceTrajectory.csv").read_text().splitlines()[0]
+            if "energy_stored_kJ" in head:
+                bad.append("toy: energy columns written for a ledger that"
+                           " refuses the energy claim")
+
         # ---- 7+8. relevance: an absent PARTIAL component never
         #      contaminates; a late-entering one promotes the state --------
         case, r = make_case(tmp, "ghostAbsent", BASE, real_formulas=True,
@@ -248,7 +382,8 @@ def main():
         return 1
     print("ctrl-balance gate: accepted-state ledger closes mass+atoms"
           " (washout, dn!=0 reaction, adaptive rtol-insensitive); claims"
-          " honest (elements withheld on toys, energy refused with reason)")
+          " honest (elements withheld on toys, energy refused without a"
+          " datum and CLAIMED with one -- residual second-order in deltaT)")
     return 0
 
 

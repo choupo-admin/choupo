@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/internalState -- the vessel's HOLDUP at t = 0.
+
+  5 L of a partly reacted charge at the feed temperature: the reactor is
+  started from a plausible operating inventory rather than from pure
+  reactants, so the first-law transient is driven by the jacket and the
+  reaction, not by a step in composition the model was never asked about.
+
+      acetic acid   0.030 kmol
+      ethanol       0.030 kmol
+      ethyl acetate 0.008 kmol
+      water         0.008 kmol
+      total         0.076 kmol   (~5 L of liquid)
+\*---------------------------------------------------------------------------*/
+
+units
+{
+    "reactor"
+    {
+        type        dynamicCSTR;
+        T           340.0;
+        P           101300.0;
+        V           0.005;
+        holdupMolar
+        {
+            ethanol        0.030;
+            water          0.008;
+            aceticAcid     0.030;
+            ethylAcetate   0.008;
+        }
+    }
+}

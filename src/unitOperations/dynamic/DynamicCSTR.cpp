@@ -147,6 +147,56 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
                 + thermo.comp(i).name() + "' has no liquidHeatCapacity"
                 " entry in its.dat file (needed for the energy balance)");
 
+    // ---- WHICH ENERGY EQUATION, and it is announced -----------------------
+    //
+    //  THE CANONICAL ROUTE.  The vessel stores H(n,T) = Σ nᵢ hᵢ(T) on the
+    //  project's ONE datum (elements at 298.15 K), and the first law for an
+    //  open system at constant P is dH/dt = Ḣ_in − Ḣ_out + Q.  Substituting
+    //  dnᵢ/dt from the material balance leaves
+    //
+    //      Σ nᵢ Cpᵢ(T) dT/dt = Σ ṅ_in,ᵢ [hᵢ(T_in) − hᵢ(T)]
+    //                          + UA (T_j − T)
+    //                          − Σ_r r_r V ΔH_r(T)
+    //
+    //  with ΔH_r(T) = Σ νᵢ hᵢ(T) -- the SAME resolver, the same datum.  Note
+    //  what the outlet term did: it cancelled exactly, because the stream
+    //  leaves at the tank's own state.  That is the whole point of the
+    //  reformulation: written this way the ODE IS the derivative of a stored
+    //  H, so the ledger can subtract two numbers and get zero.
+    //
+    //  THE Cp/CONVECTIVE ROUTE.  The previous form used
+    //  F_in·Cp_in(T)·(T_in − T) -- the linearisation of that integral with Cp
+    //  frozen at T -- and a ΔH_r frozen at the INITIAL temperature.  Neither
+    //  is the derivative of anything, which is why the ledger refused.
+    //
+    //  A model that cannot reach the datum keeps the old equation, because
+    //  the honest alternative is not running: the ctrl toy species compA and
+    //  compB carry no standardThermochemistry ON PURPOSE (a fictitious
+    //  substance has no elements and no heat of formation), and their cases
+    //  are about control, not about the first law.  What is NOT acceptable is
+    //  choosing between two different energy equations in silence, so the
+    //  route is decided once, here, and printed with the reason.
+    canonicalEnergy_ = true;
+    std::string blocker;
+    for (std::size_t i = 0; i < N; ++i)
+    {
+        if (thermo.hasEnthalpyDatum(i)) continue;
+        canonicalEnergy_ = false;
+        if (!blocker.empty()) blocker += ", ";
+        blocker += thermo.comp(i).name();
+    }
+    if (canonicalEnergy_)
+        std::cout << "  [energy] DynamicCSTR '" << name_ << "': CANONICAL"
+                     " route -- the vessel stores H(n,T) on the elements datum"
+                     " and the ODE is its exact derivative, so the first-law"
+                     " ledger CLAIMS closure.\n";
+    else
+        std::cout << "  [energy] DynamicCSTR '" << name_ << "': Cp/convective"
+                     " route -- no elements-datum enthalpy for " << blocker
+                  << ".  The temperature is integrated as before; the"
+                     " first-law ledger REFUSES, because this equation is not"
+                     " the derivative of a stored H.\n";
+
     // ---- start: explicit (default) vs steadyState seed ----------------
     //  ABSENT or `explicit`  => t=0 is the literal `initial{}` above
     //                           (byte-identical to every existing case).
@@ -267,6 +317,42 @@ void DynamicCSTR::seedFromSteady()
 // -----------------------------------------------------------------------
 //  Arrhenius rate: r = k(T) · ∏_j (n_j / V)^{order_j}    [kmol/(m³·s)]
 // -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
+//  ONE enthalpy surface for the whole vessel.
+//
+//  h_i(T) comes from the canonical per-species phase leg
+//  (ThermoPackage::speciesPhaseEnthalpy, elements datum), which is the same
+//  function H_liquid_formation and reactionHeat read.  That is the point: the
+//  stored H, the inlet enthalpy and the heat of reaction must be three views
+//  of one surface, or the ledger is subtracting numbers from different worlds
+//  and the residual it reports is the disagreement between them.
+// -----------------------------------------------------------------------
+scalar DynamicCSTR::hLiq_(std::size_t i, scalar T) const
+{
+    return thermo_->speciesPhaseEnthalpy(
+        //  P_ is held in bar here (the liquid balance never used it); the
+        //  package's API is SI, so convert rather than hand it a number that
+        //  is 1e5 times too small and hope the liquid leg ignores it.
+        i, T, P_ * 1.0e5, "liquid",
+        ThermoPackage::ReferenceContext::StandardPhase);
+}
+
+scalar DynamicCSTR::reactionEnthalpyAtT_(const ReactionSpec& rxn, scalar T) const
+{
+    scalar dH = 0.0;
+    for (std::size_t s = 0; s < rxn.comps.size(); ++s)
+        dH += rxn.nu[s] * hLiq_(rxn.comps[s], T);
+    return dH;                                    // J/mol
+}
+
+scalar DynamicCSTR::storedEnthalpy_() const
+{
+    scalar H = 0.0;
+    for (std::size_t i = 0; i < n_.size(); ++i)
+        H += n_[i] * hLiq_(i, T_);                // kmol · J/mol = kJ
+    return H;
+}
+
 scalar DynamicCSTR::rateOfReaction_(const ReactionSpec& rxn,
                                     scalar               T,
                                     const sVector&       n,
@@ -336,7 +422,11 @@ sVector DynamicCSTR::derivatives_(const sVector& packed) const
         const scalar rr = rateOfReaction_(rxn, T, n, V_);   // kmol/(m³·s)
         for (std::size_t s = 0; s < rxn.comps.size(); ++s)
             dydt[rxn.comps[s]] += rxn.nu[s] * rr * V_;       // kmol/s
-        heatRxn += rxn.dH * rr * V_;                         // kJ/s (dH J/mol · kmol/s = kJ/s)
+        //  ΔH_r AT THE CURRENT T on the canonical route.  Frozen at the
+        //  initial T it is a constant that no stored H has as a derivative --
+        //  and on a reactor that swings 40 K it is also simply wrong.
+        const scalar dHr = canonicalEnergy_ ? reactionEnthalpyAtT_(rxn, T) : rxn.dH;
+        heatRxn += dHr * rr * V_;                            // kJ/s (dH J/mol · kmol/s = kJ/s)
     }
 
     // ---- Energy balance ----------------------------------------------
@@ -347,12 +437,30 @@ sVector DynamicCSTR::derivatives_(const sVector& packed) const
 
     if (CpTot > 1.0e-30)
     {
-        scalar CpInAvg = 0.0;
-        for (std::size_t i = 0; i < N; ++i)
-            CpInAvg += z_in_[i] * thermo_->comp(i).cpLiquid().Cp(T);
-        const scalar convective = F_in_ * CpInAvg * (T_in_ - T);  // kJ/s
-        const scalar jacket     = (UA_ / 1000.0) * (T_jacket_ - T); // kJ/s
-        dydt[N] = (convective + jacket - heatRxn) / CpTot;          // K/s
+        scalar convective = 0.0;                                   // kJ/s
+        if (canonicalEnergy_)
+        {
+            //  The EXACT inlet term: what the feed's enthalpy has to change by
+            //  on arriving at the tank's temperature.  The outlet does not
+            //  appear because it leaves at T -- it cancelled when dn/dt was
+            //  substituted, and that cancellation is what makes this the
+            //  derivative of a stored H rather than a resemblance to one.
+            for (std::size_t i = 0; i < N; ++i)
+            {
+                const scalar nDot = F_in_ * z_in_[i];              // kmol/s
+                if (nDot == 0.0) continue;
+                convective += nDot * (hLiq_(i, T_in_) - hLiq_(i, T));  // kJ/s
+            }
+        }
+        else
+        {
+            scalar CpInAvg = 0.0;
+            for (std::size_t i = 0; i < N; ++i)
+                CpInAvg += z_in_[i] * thermo_->comp(i).cpLiquid().Cp(T);
+            convective = F_in_ * CpInAvg * (T_in_ - T);            // kJ/s
+        }
+        const scalar jacket = (UA_ / 1000.0) * (T_jacket_ - T);    // kJ/s
+        dydt[N] = (convective + jacket - heatRxn) / CpTot;         // K/s
     }
     return dydt;
 }
@@ -476,6 +584,9 @@ BalanceSnapshot DynamicCSTR::balanceSnapshot() const
     in.direction = BalanceFace::Direction::in;
     in.role = BalanceFace::Role::boundary;
     in.molarFlows.assign(nDotIn_.begin(), nDotIn_.end());
+    if (canonicalEnergy_)
+        for (std::size_t i = 0; i < N; ++i)
+            in.enthalpyFlow_kW += nDotIn_[i] * hLiq_(i, T_in_);   // kmol/s·J/mol = kW
     bs.faces.push_back(std::move(in));
 
     // Outlet face: constant volume => F_out = F_in at the tank composition.
@@ -489,21 +600,45 @@ BalanceSnapshot DynamicCSTR::balanceSnapshot() const
     if (nTot > 0.0)
         for (std::size_t i = 0; i < N; ++i)
             outF.molarFlows[i] = F_in_ * n_[i] / nTot;
+    //  The outlet leaves AT THE TANK'S STATE -- that is the CSTR assumption,
+    //  and it is why the outlet term cancels out of the temperature ODE.  The
+    //  ledger still needs it explicitly: the ODE's cancellation is between
+    //  two things the balance reports separately.
+    if (canonicalEnergy_)
+        for (std::size_t i = 0; i < N; ++i)
+            outF.enthalpyFlow_kW += outF.molarFlows[i] * hLiq_(i, T_);
     bs.faces.push_back(std::move(outF));
 
     bs.materialAvailable = true;
     bs.materialReason.clear();
 
-    // Energy: the ODE Sum(n Cp) dT/dt = F Cp_in (Tin - T) + UA (Tj - T)
-    // - r V dH is not, by construction, the exact derivative of a canonical
-    // stored U(n,T) or H(n,T) with the same enthalpy fluxes -- a physical
-    // first law is not representable until the model is reformulated on one
-    // consistent functional and datum.  The claim honestly refuses.
-    bs.functional = BalanceSnapshot::EnergyFunctional::none;
-    bs.physicalEnergyAvailable = false;
-    bs.energyReason = "the dynamicCSTR energy equation is a Cp/convective"
-        " model, not the exact derivative of a stored U(n,T) or H(n,T);"
-        " a physical first-law closure requires the model reformulation";
+    // ---- Energy ---------------------------------------------------------
+    //  The refusal that stood here was correct about the equation it was
+    //  describing.  On the canonical route it is no longer that equation:
+    //  the vessel stores H(n,T) = Σ nᵢ hᵢ(T) on the elements datum, the
+    //  temperature ODE is that H's exact derivative (see derivatives_), and
+    //  every face above carries its enthalpy on the SAME surface -- so
+    //  dH/dt − (Ḣ_in − Ḣ_out + Q) is zero by construction, and the ledger has
+    //  something real to measure instead of a resemblance to check.
+    //
+    //  Off that route the old sentence still holds word for word, and still
+    //  refuses.
+    if (canonicalEnergy_)
+    {
+        bs.functional = BalanceSnapshot::EnergyFunctional::H;
+        bs.physicalEnergyAvailable = true;
+        bs.energyReason.clear();
+        bs.storedEnergy_kJ = storedEnthalpy_();
+        bs.heatInput_kW    = (UA_ / 1000.0) * (T_jacket_ - T_);   // kW
+    }
+    else
+    {
+        bs.functional = BalanceSnapshot::EnergyFunctional::none;
+        bs.physicalEnergyAvailable = false;
+        bs.energyReason = "the dynamicCSTR energy equation is a Cp/convective"
+            " model, not the exact derivative of a stored U(n,T) or H(n,T);"
+            " a physical first-law closure requires the model reformulation";
+    }
     return bs;
 }
 

@@ -68,6 +68,12 @@ struct BalanceFace
     Role                 role = Role::internal_;
     std::vector<scalar>  molarFlows;       // kmol/s, aligned with the
                                            // snapshot's componentNames
+    //- Enthalpy carried across this face [kW], on the ELEMENTS datum, signed
+    //  by the face's own direction (always >= 0 for a real flow; the
+    //  direction says which side of the balance it lands on).  Meaningful
+    //  only when the snapshot claims a physical energy functional; ignored
+    //  otherwise, never guessed.
+    scalar               enthalpyFlow_kW = 0.0;
 };
 
 struct BalanceSnapshot
@@ -88,6 +94,15 @@ struct BalanceSnapshot
     EnergyFunctional          functional = EnergyFunctional::none;
     bool                      physicalEnergyAvailable = false;
     std::string               energyReason = "no energy functional declared";
+
+    //- The STORED energy the functional names [kJ] -- the state whose change
+    //  the ledger measures.  With `functional == H` this is Σ nᵢ hᵢ(T) on the
+    //  elements datum, the same surface every face's enthalpyFlow_kW uses.
+    scalar                    storedEnergy_kJ = 0.0;
+    //- Heat crossing the boundary into the unit [kW] (a jacket, a coil, an
+    //  electrical input): everything that is NOT carried by a material face.
+    //  Positive = added to the contents.
+    scalar                    heatInput_kW = 0.0;
 };
 
 } // namespace Choupo

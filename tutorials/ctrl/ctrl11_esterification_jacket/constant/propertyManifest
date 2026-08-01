@@ -1,0 +1,100 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-08-01";
+    importerVersion    "2";
+    records
+    {
+        "chemistry/HAc-formation.dat"
+        {
+            type          imported;
+            sha256        "40c443e24aaf11a4d7b1d13381d514f4ed959cfdce64ae4ab373f4f0e5af5c55";
+            origin        "data/standards/chemistry/HAc-formation.dat";
+            originSha256  "3a3360d5ce2c31f63faa492dc748aa8c2039d35e6be81c54c7d653b77bd37506";
+            release       Choupo-2607;
+        }
+        "chemistry/water-dissociation.dat"
+        {
+            type          imported;
+            sha256        "63a8e7d2c83deda7eb1b6254cb7788b180acc12bde7d9b0400fb440e8e11463f";
+            origin        "data/standards/chemistry/water-dissociation.dat";
+            originSha256  "b2ae1698798cd472c4e75d1c4b186e1ac762852b40512a998ba247a22a0b9a80";
+            release       Choupo-2607;
+        }
+        "components/aceticAcid.dat"
+        {
+            type          imported;
+            sha256        "a879008c21b019ea83fb7910e54d5bc6247d2cfb8dfd20fdc8c8a70bccb2fe36";
+            origin        "data/standards/components/aceticAcid.dat";
+            originSha256  "335a69b7611e08ac3c6f9747a891c5583b6081ff3823be83959c0c6f0b264b72";
+            release       Choupo-2607;
+        }
+        "components/ethanol.dat"
+        {
+            type          imported;
+            sha256        "74deafe861d657881887071276552fc99b4b5a7f17135cb683508a090686f9a9";
+            origin        "data/standards/components/ethanol.dat";
+            originSha256  "29609267bbcd43a09d915f94aaead90bc1fd9907314209e6a95ecf8e587cb93b";
+            release       Choupo-2607;
+        }
+        "components/ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "76ae06b7a29934ba7d2cfbf322c5ac7aad4a2d7605e8f3c5adea0164ccc6371f";
+            origin        "data/standards/components/ethylAcetate.dat";
+            originSha256  "635adb496feb0fccbfecf7bf30ce19356687c14615feec781b8a172e8dfcdfbb";
+            release       Choupo-2607;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
+            origin        "data/standards/components/water.dat";
+            originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
+            release       Choupo-2607;
+        }
+        "species/Acetate.dat"
+        {
+            type          imported;
+            sha256        "3663f523177f24566c4969c00412898727314fd0a299bc555a134130398da6cf";
+            origin        "data/standards/species/Acetate.dat";
+            originSha256  "3663f523177f24566c4969c00412898727314fd0a299bc555a134130398da6cf";
+            release       Choupo-2607;
+        }
+        "species/H.dat"
+        {
+            type          imported;
+            sha256        "5f7f840a1531361ef597c17d69da45c4688596c5f7e1b53b9cb4e6f9d452dac3";
+            origin        "data/standards/species/H.dat";
+            originSha256  "5f7f840a1531361ef597c17d69da45c4688596c5f7e1b53b9cb4e6f9d452dac3";
+            release       Choupo-2607;
+        }
+        "species/OH.dat"
+        {
+            type          imported;
+            sha256        "28ff219ee9665fceed266e921d37f5e1603213f9fc69ed39b9135526c884ab85";
+            origin        "data/standards/species/OH.dat";
+            originSha256  "28ff219ee9665fceed266e921d37f5e1603213f9fc69ed39b9135526c884ab85";
+            release       Choupo-2607;
+        }
+    }
+}

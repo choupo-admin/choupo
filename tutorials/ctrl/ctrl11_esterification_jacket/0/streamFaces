@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/streamFaces -- the boundary FEED, per component.
+
+  Equimolar acid + ethanol at 340 K, 3.0e-4 kmol/s: with the 0.076 kmol
+  holdup that is a residence time of about 250 s, so the 600 s window covers
+  roughly two and a half turnovers.
+
+  The flows are per component and AUTHORITATIVE -- never a total plus a
+  renormalised composition, so a disturbance in one species cannot hide
+  inside the fractions.
+\*---------------------------------------------------------------------------*/
+
+time            0;
+faces
+{
+    "reactor.feed"
+    {
+        bc          inlet;
+        T           340.0;
+        P           101300.0;
+        molarFlows
+        {
+            ethanol        1.5e-04;
+            water          0.0;
+            aceticAcid     1.5e-04;
+            ethylAcetate   0.0;
+        }
+    }
+}

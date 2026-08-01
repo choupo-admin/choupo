@@ -170,11 +170,35 @@ private:
     // Reactions
     std::vector<ReactionSpec>  reactions_;
 
+    // ---- The energy equation this vessel is actually integrating -------
+    //  TRUE  = the canonical route: the vessel stores H(n,T) on the elements
+    //          datum and the ODE is its exact derivative, so the first-law
+    //          ledger can CLAIM closure.
+    //  FALSE = the Cp/convective route, kept for a model that cannot reach
+    //          the datum at all (the fictitious ctrl toy species, which carry
+    //          no heat of formation on purpose).  The ledger refuses, as it
+    //          always has.
+    //  Decided ONCE in initialise() and printed there with the reason: two
+    //  different energy equations must never be chosen in silence.
+    bool canonicalEnergy_ = false;
+
     // ---- Helpers ----------------------------------------------------
     scalar rateOfReaction_(const ReactionSpec& rxn,
                            scalar T,
                            const sVector& n,
                            scalar V) const;
+
+    //- Pure-component liquid enthalpy on the ELEMENTS datum [kJ/kmol == J/mol].
+    //  The canonical per-species phase leg, so the vessel's stored H, its
+    //  inlet term and its heat of reaction are all the same surface.
+    scalar hLiq_(std::size_t i, scalar T) const;
+
+    //- ΔH_r(T) = Σ νᵢ hᵢ(T) [J/mol] from that same surface -- the reaction
+    //  heat is a CONSEQUENCE of the stored enthalpy, never a second datum.
+    scalar reactionEnthalpyAtT_(const ReactionSpec& rxn, scalar T) const;
+
+    //- The vessel's stored enthalpy Σ nᵢ hᵢ(T) [kJ] (canonical route only).
+    scalar storedEnthalpy_() const;
 
     // packed = (n_0..n_{N-1}, T)  → dydt of same packing
     sVector derivatives_(const sVector& packed) const;

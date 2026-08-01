@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl11_esterification_jacket / flowsheetDict
+
+  One jacketed vessel and one PID loop -- the same shape as ctrl01, so the
+  two can be read side by side.  What differs is the chemistry: real species
+  with a formation datum instead of numerical stand-ins, which is the whole
+  reason this case can carry an energy claim and ctrl01 cannot.
+
+  The reaction declares NO dH_rxn.  On the elements datum the heat of
+  reaction is Sum(nu_i h_i(T)) -- a consequence of the same enthalpy surface
+  the vessel stores, not a second number to keep in step with it.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+
+        operation
+        {
+            UA           400.0;            // W/K   (a real jacket, not a toy)
+            T_jacket     340.0 K;          // K     (initial; the controller takes over)
+        }
+
+        reaction    esterification_etac;
+    }
+);
+
+controllers
+(
+    {
+        name         TC1;
+        type         PID;
+
+        measurement  { unit reactor;  cv T; }
+        actuator     { unit reactor;  mv T_jacket; }
+
+        setpoint     365.0;     // K
+
+        gains
+        {
+            Kp       6.0;
+            Ki       0.05;
+            Kd       0.0;
+        }
+
+        output
+        {
+            min      300.0;
+            max      420.0;
+            bias     340.0;     // the jacket idles at the feed temperature
+        }
+    }
+);

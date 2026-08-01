@@ -97,10 +97,20 @@ ones for day-to-day work:
 
 ## 4. Roadmap for the development line (candidate work, priority-ish)
 
-1. **Ctrl physical energy** — reformulate `dynamicCSTR`'s energy equation around a
-   stored `U(n,T)`/`H(n,T)` so the first-law ledger can CLAIM closure (today it
-   honestly refuses).  The most "physical" open item; the honesty refusal is the
-   contract to replace, not to hide.
+1. ~~**Ctrl physical energy**~~ — **DONE 2026-08-01.**  `dynamicCSTR` is
+   reformulated on a stored `H(n,T)` (elements datum): the inlet term is the
+   exact enthalpy difference `Σ ṅ_in,ᵢ[hᵢ(T_in) − hᵢ(T)]` and `ΔH_r` is
+   evaluated at the CURRENT T, both from `speciesPhaseEnthalpy` — the surface
+   whose `dh/dT` IS the declared liquid Cp, which is what makes the ODE the
+   exact derivative rather than a resemblance.  The ledger now CLAIMS: stored
+   H, per-face enthalpy flows, jacket heat, `energy_*` KPIs, five trajectory
+   columns and `energy_available,1` in the sidecar.  A model that cannot reach
+   the datum keeps the old equation and the old refusal — the ctrl toy species
+   carry no heat of formation on purpose — and the route taken is ANNOUNCED,
+   never chosen in silence.  Witness `ctrl11_esterification_jacket` (closure
+   1.4e-7, second-order in deltaT: the residual is the ledger's trapezoid, not
+   the physics).  Gate: `check_ctrl_balance` gained the claim, the refusal, the
+   step-refinement order and a T-dependent-Cp fixture (all sabotage-verified).
 2. **PC-SAFT association term** — the non-associating core is validated (~1 %);
    the association term is the next model growth (keep it separate from any
    migration/refactor).
@@ -148,7 +158,11 @@ accepts today, and that is a policy call.
 
 1. **SEAL DRIFT — awaiting Vítor's decision.**  Sealed copies differ from the
    live catalogue (comment-only origin changes); no mass reseal without his call.
-2. **ctrl physical-energy refusal** = roadmap #1.
+2. ~~**ctrl physical-energy refusal**~~ — **PAID 2026-08-01** (roadmap #1
+   above).  What remains is narrower and named: the claim covers
+   `dynamicCSTR`; any future dynamic unit type must fill `storedEnergy_kJ` /
+   `enthalpyFlow_kW` / `heatInput_kW` or the whole rung withholds, which is
+   the intended default (a unit that says nothing claims nothing).
 3. **`constant/electrolyte/` transitional adapters** — the multi-ion speciation
    front-end still reads case-local `speciation.dat`/`ions.dat` sidecars in a
    couple of tutorials; fold into the sealed `species/`+`chemistry/` closure.
