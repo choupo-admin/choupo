@@ -120,19 +120,18 @@ ones for day-to-day work:
    Witness-in-waiting: `ctrl10_brine_concentration` (EXPECTED-FAIL, its
    `.expect-nonconvergence` names this item; delete that file when this
    lands).  Was misattributed to roadmap #1 until 2026-08-01.
-3. **Williams-Otto reference case** — the natural sequel to `cavett01`
-   (2026-08-01): reactor + decanter + column + purge/recycle + the
-   published economic optimum, pairing with the OptimizationDriver.
-   DEFERRED for a session with open network: it is only worth building on
-   ONE coherent primary parameterisation, and every located source is
-   proxy-blocked from the hosted session (arXiv 2004.07614 pdf+abs+html,
-   the NTNU Skogestad-group theses, cache.org).  Fragments confirmed so
-   far via search snippets: k1 = 1.6599e6·exp(-6666.7/T), k2 =
-   k20·exp(-8333.3/T) with k20 quoted BOTH 7.2117e8 and 7.2177e8 across
-   the literature (a known variance -- pin whichever the chosen primary
-   uses, and say so), k3 = 2.6745e12·exp(-11111/T); column retention
-   paraphrased inconsistently (10% of E in bottoms vs P_bottoms = 0.1·mE)
-   -- another reason to work from one source, not a blend.
+3. **Williams-Otto reference case** — UNBLOCKED 2026-08-01: Vítor
+   supplied the primary PDF (arXiv:2004.07614v1) and the full spec is
+   BANKED in `docs/design/williams-otto-reference-case.md` — the verbatim
+   ODEs (3.6–3.11), kinetics (a_i, b_i, ρ in the klb/h/°R convention,
+   noting the paper's "Réaumur" lapse for Rankine), and four validation
+   anchors, headed by the published steady state x* = (3.27, 7.47, 1.12,
+   9.81, 1.69, 0.22) klb at u* = (10, 20, 580, 129.5, 0.2).  Build plan
+   in the same document: a `williamsOttoPlant` dynamic unit (verbatim
+   equations, SI at the dict boundary), then ctrl12 pinned on x*, then
+   the step/PI/OuterDriver cases.  The earlier search-snippet fragments
+   (k20 7.2117e8 vs 7.2177e8) belong to the DIFFERENT Forbes-Marlin RTO
+   lineage — never blend the two parameterisations.
 4. **PC-SAFT association term** — the non-associating core is validated (~1 %);
    the association term is the next model growth (keep it separate from any
    migration/refactor).
