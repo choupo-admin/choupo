@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  solverDict -- the numerical strategy, which on THIS flowsheet is the whole
+  point.  Wegstein per-component acceleration on the two torn mixer outlets:
+  the method Cavett's paper made standard for exactly this trap (loop
+  intermediates that direct substitution moves by a whisker per pass).
+  Swap to `recycleSolver Newton;` and re-run to compare -- both must land on
+  the same answer; only the path differs.
+\*---------------------------------------------------------------------------*/
+
+tearStreams      ( mixed1  mixed2 );
+recycleSolver    Wegstein;
+recycleTol       1e-6;
+recycleMaxIter   300;

@@ -1,0 +1,48 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- phi-phi SRK for the Cavett recycle train.
+
+  One cubic for both phases (K_i = phi_L,i / phi_V,i at the two roots), the
+  same declared world as flash09.  All binary interaction parameters are at
+  their vdW-one-fluid default k_ij = 0: this case's subject is the RECYCLE
+  TOPOLOGY and its convergence, not the mixture thermodynamics, and a
+  16-component hydrocarbon set at k_ij = 0 is the standard undressed cubic.
+  (The N2-CH4 pair in the catalogue could dress one of the 120 pairs; adding
+  one measured pair to an otherwise bare matrix would be noise wearing a
+  citation, so none is declared.)
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( N2 CO2 H2S CH4 ethane propane isoButane nButane
+             isopentane nPentane nHexane nHeptane nOctane nNonane
+             nDecane nUndecane );
+
+equilibrium
+{
+    formulation phiPhi;
+
+    equationOfState
+    {
+        model      SRK;
+        mixingRule vanDerWaalsOneFluid;
+    }
+
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

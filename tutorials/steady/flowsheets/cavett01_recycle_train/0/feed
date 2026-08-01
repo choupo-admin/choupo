@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly.
+
+     A wide C1-C11 natural-gasoline feed with the classic light sours -- the
+     SERVICE of Cavett's train.  These flows are Choupo's own (declared in
+     system/controlDict); the topology carries the citation.  Total
+     273.4 kmol/h at the FL1 condition. ---*/
+
+componentMolarFlows
+{
+    N2            3.6 kmol/h;
+    CO2          49.7 kmol/h;
+    H2S           3.4 kmol/h;
+    CH4          30.0 kmol/h;
+    ethane       24.0 kmol/h;
+    propane      22.9 kmol/h;
+    isoButane     6.0 kmol/h;
+    nButane      15.4 kmol/h;
+    isopentane    7.9 kmol/h;
+    nPentane     11.3 kmol/h;
+    nHexane      17.6 kmol/h;
+    nHeptane     26.1 kmol/h;
+    nOctane      18.4 kmol/h;
+    nNonane      16.7 kmol/h;
+    nDecane       8.3 kmol/h;
+    nUndecane    12.1 kmol/h;
+}
+
+T               322.04 K;
+P               19.0 bar;

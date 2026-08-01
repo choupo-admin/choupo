@@ -1,0 +1,81 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  cavett01_recycle_train / flowsheetDict -- the classic four-flash,
+  three-recycle separation train (topology after R. H. Cavett, 1963).
+
+      feed ──► MIX1 ──► FL1 ──► V1  (gas product)
+                 ▲        │
+                 │        ▼ L1
+                 │      MIX2 ──► FL2 ──► V2 ──► back to MIX1
+                 │        ▲▲      │
+                 │        ││      ▼ L2
+                 │        ││    FL3 ──► V3 ──► back to MIX2
+                 │        ││      │
+                 │        ││      ▼ L3
+                 │        │└──── FL4 ──► V4 ──► back to MIX2
+                 │        │       │
+                 │        │       ▼ L4  (liquid product)
+
+  Each flash's LIQUID cascades down the pressure train; each lower flash's
+  VAPOUR climbs back up.  The intermediates (propane and the butanes) are
+  too heavy to leave with V1 and too light to leave with L4, so they pile
+  up in the three loops -- direct substitution creeps, which is exactly why
+  Cavett built it.  TWO tears close all three loops at once: cut the two
+  mixer outlets and every remaining stream is computable in the declared
+  order (the sequential-plan contract validates that claim, it is not an
+  assertion in a comment).
+
+  The declared order runs the four flashes FIRST, off the torn mixer
+  outlets, then the mixers -- so both tears are honest backward edges.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        FL1;
+        type        isothermalFlash;
+        in          mixed1;
+        outputs     ( L1  V1 );
+        operation   { T 322.04 K;  P 19.0 bar; }
+    }
+    {
+        name        FL2;
+        type        isothermalFlash;
+        in          mixed2;
+        outputs     ( L2  V2 );
+        operation   { T 322.04 K;  P 16.5 bar; }
+    }
+    {
+        name        FL3;
+        type        isothermalFlash;
+        in          L2;
+        outputs     ( L3  V3 );
+        operation   { T 322.04 K;  P 8.6 bar; }
+    }
+    {
+        name        FL4;
+        type        isothermalFlash;
+        in          L3;
+        outputs     ( L4  V4 );
+        operation   { T 322.04 K;  P 1.7 bar; }
+    }
+    {
+        name        MIX1;
+        type        mixer;
+        inputs      ( feed  V2 );
+        outputs     ( mixed1 );
+    }
+    {
+        name        MIX2;
+        type        mixer;
+        inputs      ( L1  V3  V4 );
+        outputs     ( mixed2 );
+    }
+);

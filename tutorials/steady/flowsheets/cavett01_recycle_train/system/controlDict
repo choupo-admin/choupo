@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  cavett01_recycle_train  --  the field's oldest recycle benchmark, run
+                              under the sequential-plan contract.
+
+  TOPOLOGY AFTER: R. H. Cavett, "Application of numerical methods to the
+  convergence of simulated processes involving recycle loops", Proc. API 43
+  (1963) 57.  Four PT-flashes and two adiabatic mixers in a pressure
+  cascade; three vapour recycles; two products (V1 gas, L4 liquid).  It is
+  the problem the flowsheeting literature has used ever since to exercise
+  tear-stream convergence -- the intermediate components circle the loops,
+  direct substitution creeps, and acceleration (Wegstein's method, in the
+  original) earns its keep.
+
+  WHAT IS THE BENCHMARK HERE, AND WHAT IS NOT.  The benchmark is the
+  TOPOLOGY and its convergence behaviour: the 2-tear cut of a 3-loop
+  flowsheet, validated by Flowsheet::validateSequentialPlan, and the outer
+  solver driving 32 tear unknowns to closure.  The stream VALUES are not: they
+  were never portable -- Cavett's 1963 numbers depend on his K-value
+  correlations, and every simulator since reports its own thermodynamics'
+  answer on the shared topology.  This case declares SRK (k_ij = 0) and
+  reports SRK's answer.
+
+  PROVENANCE, STATED PLAINLY: the feed composition and the four (T, P)
+  pairs below are Choupo's own choices in the spirit of the original
+  natural-gasoline service (wide C1-C11 + N2/CO2/H2S feed, descending
+  pressure train).  The primary 1963 table was not verifiable from a
+  primary source when this case was authored; if it is later verified, a
+  variant carrying it can be added beside this one.  Nothing in this case
+  cites a number it cannot source -- the citation above is for the
+  FLOWSHEET, which is what it validates.
+
+  Things worth watching in the log:
+    * [plan] announces the two cuts (mixed1, mixed2) and validates the
+      declared order -- four flashes first, off the torn mixer outlets,
+      then the two mixers closing the loops;
+    * the iteration counts: 225 Wegstein passes vs 11 Newton iterations on
+      the same two tears (edit system/solverDict and re-run -- the 1963
+      lesson in two runs; both land on the same answer to the declared
+      1e-6, e.g. propane in L4: 6.023826 vs 6.023831 kmol/h);
+    * propane and the butanes: 174.3 kmol/h of propane circulates in
+      `mixed2` against 22.9 in the feed -- a 7.6x loop buildup, the
+      creeping-intermediate trap Cavett wrote about; it still leaves the
+      boundary exactly (16.88 in V1 + 6.02 in L4 = 22.90 fed).
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Cavett (1963) four-flash three-recycle train: 2 tears close 3 loops; SRK phi-phi; the classic tear-convergence benchmark topology";
+
+verbosity     3;
