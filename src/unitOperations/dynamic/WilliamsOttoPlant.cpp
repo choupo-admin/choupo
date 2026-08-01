@@ -161,10 +161,38 @@ sVector WilliamsOttoPlant::rates_(const sVector& m) const
     return d;
 }
 
+sVector WilliamsOttoPlant::odeState() const
+{
+    sVector y(m_);
+    y.push_back(yield_);
+    y.push_back(waste_);
+    return y;
+}
+
+void WilliamsOttoPlant::setOdeState(const sVector& y)
+{
+    m_.assign(y.begin(), y.begin() + 6);
+    yield_ = y[6];
+    waste_ = y[7];
+}
+
 sVector WilliamsOttoPlant::odeDerivative(const sVector& y) const
 {
     //  The driver's clock is SI seconds; the model's rates are per hour.
-    sVector d = rates_(y);
+    //  Rows 6 and 7 integrate the section-5 objectives alongside the
+    //  masses: d(yield)/dt = F_pP, d(waste)/dt = F_wG  [klb/h] -- state
+    //  rows, so BOTH integrators accumulate them with their own order.
+    const sVector m(y.begin(), y.begin() + 6);
+    sVector d = rates_(m);
+    scalar mt = 0.0; for (auto v : m) mt += std::max<scalar>(v, 0.0);
+    scalar FpP = 0.0, FwG = 0.0;
+    if (mt > 0.0)
+    {
+        FpP = std::max<scalar>(0.0, mu_ * m[4] / mt - 0.1 * mu_ * m[3] / mt);
+        FwG = mu_ * m[5] / mt;
+    }
+    d.push_back(FpP);
+    d.push_back(FwG);
     for (auto& v : d) v /= 3600.0;
     return d;
 }
@@ -179,13 +207,24 @@ void WilliamsOttoPlant::step(scalar /*t*/, scalar dt)
         for (std::size_t i = 0; i < a.size(); ++i) r[i] = a[i] + c * b[i];
         return r;
     };
-    const sVector k1 = rates_(m_);
-    const sVector k2 = rates_(axpy(m_, h / 2, k1));
-    const sVector k3 = rates_(axpy(m_, h / 2, k2));
-    const sVector k4 = rates_(axpy(m_, h, k3));
+    //  The full ODE state (masses + the two objective integrals) through
+    //  one RK4 -- the same packing the adaptive path uses.
+    sVector y = odeState();
+    auto f = [&](const sVector& yy)
+    {
+        sVector d = odeDerivative(yy);
+        for (auto& v : d) v *= 3600.0;      // back to per-hour for h below
+        return d;
+    };
+    const sVector k1 = f(y);
+    const sVector k2 = f(axpy(y, h / 2, k1));
+    const sVector k3 = f(axpy(y, h / 2, k2));
+    const sVector k4 = f(axpy(y, h, k3));
+    for (std::size_t i = 0; i < y.size(); ++i)
+        y[i] += h / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]);
     for (std::size_t i = 0; i < 6; ++i)
-        m_[i] = std::max<scalar>(0.0,
-            m_[i] + h / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]));
+        y[i] = std::max<scalar>(0.0, y[i]);
+    setOdeState(y);
 }
 
 // ---- Derived boundary streams [klb/h], eqs. (3.4), (3.5), (3.19) ----------
@@ -215,13 +254,19 @@ sVector WilliamsOttoPlant::stateVector() const
     //  quantities its figures plot and its anchors quote.
     v.push_back(FpP_());
     v.push_back(FwG_());
+    //  The running section-5 integrals and their combined objective
+    //  (alpha = beta = 1, eq. 5.7) -- klb, in the labels' own words.
+    v.push_back(yield_);
+    v.push_back(waste_);
+    v.push_back(yield_ - waste_);
     return v;
 }
 
 std::vector<std::string> WilliamsOttoPlant::stateLabels() const
 {
     return { "wo_A", "wo_B", "wo_C", "wo_E", "wo_P", "wo_G", "T",
-             "F_pP_klbh", "F_wG_klbh" };
+             "F_pP_klbh", "F_wG_klbh",
+             "yield_klb", "waste_klb", "J_combined_klb" };
 }
 
 ContinuousStream WilliamsOttoPlant::outletStream() const

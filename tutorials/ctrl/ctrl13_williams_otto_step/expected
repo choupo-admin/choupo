@@ -14,11 +14,14 @@ kpi     balance                mass_residual_kg 0.00401300573503   1e-4
 kpi     balance                material_available 1                  1e-4
 kpi     plant                  F_pP_klbh_final  4.44568758172      1e-4
 kpi     plant                  F_wG_klbh_final  1.90791543668      1e-4
+kpi     plant                  J_combined_klb_final 529.364471374      1e-4
 kpi     plant                  T_final          322.2222           1e-4
 kpi     plant                  t_end            720000             1e-4
+kpi     plant                  waste_klb_final  289.918503749      1e-4
 kpi     plant                  wo_A_final       4.32174114699      1e-4
 kpi     plant                  wo_B_final       12.1472026114      1e-4
 kpi     plant                  wo_C_final       1.49898578669      1e-4
 kpi     plant                  wo_E_final       21.3907805309      1e-4
 kpi     plant                  wo_G_final       0.642928031189     1e-4
 kpi     plant                  wo_P_final       3.6371827957       1e-4
+kpi     plant                  yield_klb_final  819.282975123      1e-4

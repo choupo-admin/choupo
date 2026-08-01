@@ -91,8 +91,8 @@ public:
     void step(scalar t, scalar dt) override;
 
     bool    hasOdeForm() const override { return true; }
-    sVector odeState()   const override { return m_; }
-    void    setOdeState(const sVector& y) override { m_ = y; }
+    sVector odeState()   const override;
+    void    setOdeState(const sVector& y) override;
     sVector odeDerivative(const sVector& y) const override;
     std::size_t odeNPositive() const override { return m_.size(); }
 
@@ -118,6 +118,11 @@ private:
     //  (A, B, C, E, P, G) -- matched to the case's component order at
     //  initialise by NAME, never by position.
     sVector m_;
+
+    //- The section-5 objective integrals, carried as ODE STATES so fixed
+    //  RK4 and the adaptive integrator both accumulate them exactly:
+    //  yield_ = INT F_pP dt and waste_ = INT F_wG dt  [klb], eqs. (5.4)/(5.5).
+    scalar yield_ = 0.0, waste_ = 0.0;
     std::vector<std::size_t> comp_;   // package index of A,B,C,E,P,G
 
     //- The five controls, in the paper's internal units.

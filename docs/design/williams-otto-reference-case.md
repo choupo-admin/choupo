@@ -95,8 +95,28 @@ Controls u = (F_fA, F_fB, T, μ, η).
    - Waste minimisation (5.4): total waste ≈ 0 (degenerate — kills yield).
    - Yield maximisation (5.5) under path constraint F_wG ≤ 1: yield
      ∫F_pP dt = 611.3 (bang-bang F_fB); total waste 86.3.
-   - Combined (5.7, α = β = 1): yield 608.3, waste 56.5.
-   These pair with the OuterDriver later; the steady case comes first.
+   - Combined (5.7, α = β = 1): yield 608.3, waste 56.5 → J = 551.8.
+
+   ANCHOR-4 BUILD PLAN (design settled 2026-08-01; integrals SHIPPED):
+   the plant now carries yield_klb = ∫F_pP dt, waste_klb = ∫F_wG dt and
+   J_combined_klb as ODE STATES (exact under both integrators), so any
+   outer loop reads the objective as a plain KPI.  The vehicle is the
+   EXISTING architecture end to end: a piecewise-constant control
+   profile IS a Schedule controller; varying it programmatically IS
+   setScalarAtPath on `controllers[i].schedule[j].value`; the optimiser
+   IS OptimizationDriver (nelderMead, objective kpi
+   plant.J_combined_klb_final, sense maximise).  The ONE missing piece
+   is choupoCtrl reading system/outerDict: extract the campaign
+   (main.cpp lines ~180-1230) into a pure functor
+   `SimulationResult runCampaign(flowsheetDict, ...)` with a no-write
+   mode for inner evaluations, then hand it to the driver exactly as
+   choupoSolve does.  Target problem: §5.3 combined (bounds only —
+   Nelder-Mead's honest domain; the §5.2 PATH constraint needs SQP over
+   a noisy campaign functor and is deferred, named).  EXPECTATION,
+   stated up front: K-segment single shooting will land BELOW the
+   paper's 200-element collocation optimum (their F_fB is bang-bang);
+   the case reports its own J beside 551.8 and the gap IS the
+   parameterisation — say so, measure it vs K.
 
 ## Build plan (next session)
 
