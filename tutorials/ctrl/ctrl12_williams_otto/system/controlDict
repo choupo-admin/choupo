@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl12_williams_otto  --  the Williams-Otto plant lands on its PUBLISHED
+                            steady state.
+
+  PRIMARY SOURCE: Schmid, Teichert, Chioua, Schindler & Bortz, "Simulation
+  and optimal control of the Williams-Otto process using Pyomo",
+  arXiv:2004.07614v1 (2020) -- the model is eqs. (3.6)-(3.11) implemented
+  VERBATIM in src/unitOperations/dynamic/WilliamsOttoPlant.{H,cpp}; the
+  spec, unit conventions and every anchor are in
+  docs/design/williams-otto-reference-case.md.  Original process:
+  Williams & Otto, AIEE Trans. 80 (1961) 458.
+
+  THE RUN: from the paper's own initial state x0 = (10, 1, 0, 0, 0, 0) klb
+  under the nominal controls u* = (10, 20, 580 degR, 129.5, 0.2), the
+  plant must settle onto the PUBLISHED fixed point, eq. (4.8):
+
+      x* = (m_A, m_B, m_C, m_E, m_P, m_G)
+         = (3.27, 7.47, 1.12, 9.81, 1.69, 0.22) klb
+
+  and the derived streams onto the figure levels: F_pP ~ 3.90 klb/h
+  (Fig. 2 pre-step) and F_wG ~ 1.22 klb/h (Fig. 3).  The golden pins the
+  final masses -- an EXTERNAL anchor, not a self-recorded one: any
+  correct implementation of the primary equations lands here.
+
+  With the MW 453.592 convention (1 kmol == 1 klb) the trajectory columns
+  read directly in the paper's units; T = 322.2222 K is 580 degR exactly.
+  400 h of simulated time (Fig. 2 shows the state flat well before 100 h;
+  the margin is for the slow m_E tail).
+
+  What the ledger claims and refuses, both correctly: MATERIAL closes
+  (the five boundary faces -- two feeds, waste, product, purge -- against
+  the reactor inventory); ELEMENTS withhold by name (fictitious species,
+  no formulas); ENERGY refuses by name (no formation data can honestly
+  exist).  The refusals are the same posture as ctrl01's toys.
+\*---------------------------------------------------------------------------*/
+
+application   choupoCtrl;
+description   "Williams-Otto plant (arXiv:2004.07614 eqs. 3.6-3.11 verbatim) settling onto the published steady state x* = (3.27, 7.47, 1.12, 9.81, 1.69, 0.22) klb";
+
+verbosity     3;
+
+startTime       0;         // s
+endTime         1440000;   // s  (400 h)
+deltaT          60;        // s  (RK4; fastest time constant ~0.18 h = 640 s)
+writeInterval   72000;     // s  (20 h -> 20 frames)

@@ -120,7 +120,7 @@ ones for day-to-day work:
    Witness-in-waiting: `ctrl10_brine_concentration` (EXPECTED-FAIL, its
    `.expect-nonconvergence` names this item; delete that file when this
    lands).  Was misattributed to roadmap #1 until 2026-08-01.
-3. **Williams-Otto reference case** — UNBLOCKED 2026-08-01: Vítor
+3. ~~**Williams-Otto reference case**~~ — **FIRST SLICE SHIPPED 2026-08-01**: the `williamsOttoPlant` unit (eqs. 3.6–3.11 verbatim, klb/h/°R internal, SI boundary, three conversions announced) + `ctrl12_williams_otto` landing on the published x* to all printed digits.  Remaining anchors (step responses, the four PI channels with the paper's tunings, the OuterDriver pairing on the §5 optima) stay banked in the design doc as the follow-on cases.  Originally: UNBLOCKED 2026-08-01 when Vítor
    supplied the primary PDF (arXiv:2004.07614v1) and the full spec is
    BANKED in `docs/design/williams-otto-reference-case.md` — the verbatim
    ODEs (3.6–3.11), kinetics (a_i, b_i, ρ in the klb/h/°R convention,

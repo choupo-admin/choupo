@@ -28,6 +28,7 @@ License
 
 #include "DynamicUnitOperation.H"
 #include "DynamicCSTR.H"
+#include "WilliamsOttoPlant.H"
 
 #include <map>
 #include <memory>
@@ -74,6 +75,9 @@ void DynamicUnitOperation::registerBuiltins()
     registerType("dynamicCSTR",
         []() -> std::unique_ptr<DynamicUnitOperation>
         { return std::make_unique<DynamicCSTR>(); });
+    registerType("williamsOttoPlant",
+        []() -> std::unique_ptr<DynamicUnitOperation>
+        { return std::make_unique<WilliamsOttoPlant>(); });
 }
 
 // ---- Default MV/CV: throw -----------------------------------------------
