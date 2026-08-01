@@ -1,0 +1,47 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  evaporator09_nacl_sucrose_brine  --  a liquor with TWO nonvolatiles, and a
+                                       model that was fitted on one of them.
+
+  evaporator06 concentrates a clean NaCl brine: everything dissolved is the
+  salt, so "the molality" is unambiguous.  This case adds sucrose --- an
+  ordinary situation, a brine that also carries organics --- and the word
+  stops being unambiguous:
+
+      m(all dissolved) = 4.920 mol/kg      the COLLIGATIVE molality
+      m(NaCl)          = 3.968 mol/kg      the Pitzer model's own basis
+
+  The boiling-point elevation is computed from the water activity, and the
+  Pitzer parameters behind that activity were regressed on sodium chloride in
+  water.  Handing them 4.920 asks them about a solution they have never seen
+  and reports the answer as though it were the brine's.  So the unit uses
+  3.968 and SAYS what it left out:
+
+      [Evaporator] NOTE: the concentrate carries 9.52e-01 mol/kg of
+                   nonvolatiles that are NOT 'NaCl' ... their own
+                   contribution to the boiling-point rise is NOT included.
+
+  Which is the honest position: the sucrose really does depress the vapour
+  pressure, and this package has no term for it.  A student can see the size
+  of what is missing (a fifth of the dissolved matter) instead of finding it
+  quietly absorbed into a salt correlation.
+
+  The colligative reading is not thrown away --- it is published as the
+  `molality` KPI, beside `molality_salt`.  Two names, because they are two
+  quantities.
+
+  The same distinction now governs the heat of dilution and the
+  extrapolation guard: L_phi and its validity window are the salt's, so the
+  molality tested against them is the salt's.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Evaporating a brine that also carries sugar: the electrolyte BPE is computed on the salt molality, and the rest is announced, not absorbed";
+verbosity     3;

@@ -170,17 +170,39 @@ int Evaporator::solve(const DictPtr& dict,
     // -------------------------------------------------------------------
     //  Helpers
     // -------------------------------------------------------------------
-    // Molality helper (used for BPE in the P_op back-calculation).
-    auto molality_solute = [&](scalar VoF) -> scalar
+    //  TWO molalities, because there are two questions.
+    //
+    //  The ebullioscopic constant is COLLIGATIVE: K_b*m needs the molality of
+    //  everything dissolved, whatever it is.  The electrolyte model is not
+    //  colligative: it was regressed on ONE salt, and handing it the sum of
+    //  every nonvolatile in the feed asks it about a solution it has never
+    //  seen.  The helper below took the sum and served both callers, so a
+    //  liquor carrying a salt AND anything else nonvolatile got its water
+    //  activity and its heat of dilution evaluated at a molality that was
+    //  partly some other substance -- silently, since the number is plausible.
+    //
+    //  `which` = n (the package size) means "everything dissolved".
+    auto molality_of = [&](scalar VoF, std::size_t which) -> scalar
     {
         const scalar Lf = 1.0 - VoF;
         if (Lf <= 1.0e-12) return 1.0e3;
-        scalar x_sol = 0.0;
+        scalar x_sol = 0.0, x_all = 0.0;
         for (std::size_t i = 0; i < n; ++i)
-            if (i != iSolvent) x_sol += z[i] / Lf;
-        const scalar x_solv = 1.0 - x_sol;
-        if (x_solv <= 1.0e-9) return 1.0e3;
+        {
+            if (i == iSolvent) continue;
+            x_all += z[i] / Lf;
+            if (which == n || i == which) x_sol += z[i] / Lf;
+        }
+        const scalar x_solv = 1.0 - x_all;      // the SOLVENT mass is the basis
+        if (x_solv <= 1.0e-9) return 1.0e3;     //   whichever solute is counted
         return x_sol * 1000.0 / (x_solv * MW_solv);
+    };
+    //- Colligative: every dissolved species.
+    auto molality_solute = [&](scalar VoF) { return molality_of(VoF, n); };
+    //- The electrolyte model's own basis: its salt alone.
+    auto molality_salt = [&](scalar VoF)
+    {
+        return molality_of(VoF, useElectrolyte ? thermo.electrolyte().soluteIndex() : n);
     };
 
     auto dHvap_solv = [&](scalar T) -> scalar
@@ -198,8 +220,8 @@ int Evaporator::solve(const DictPtr& dict,
     {
         if (!lphiFitted) return 0.0;
         const auto& el = thermo.electrolyte();
-        const scalar m_in  = molality_solute(0.0);
-        const scalar m_out = molality_solute(VoF);
+        const scalar m_in  = molality_salt(0.0);
+        const scalar m_out = molality_salt(VoF);
         const scalar n_salt_mol_s = F_in_kmols * 1000.0 * z[el.soluteIndex()];
         return n_salt_mol_s * (el.apparentMolarEnthalpy(m_out, T_boil)
                              - el.apparentMolarEnthalpy(m_in,  T_feed));
@@ -321,8 +343,24 @@ int Evaporator::solve(const DictPtr& dict,
     {
         // Activity-based BPE: a_w * Psat_pure(T_boil) = Psat_pure(T_boil - BPE).
         // Clausius-Clapeyron -> BPE = -(R T_boil^2 / dHvap) ln a_w  (a_w<1 -> BPE>0).
-        const scalar aw = thermo.electrolyte().waterActivity(molality_solute(V_over_F), T_boil);
+        const scalar aw = thermo.electrolyte().waterActivity(molality_salt(V_over_F), T_boil);
         BPE = -(constant::R * T_boil * T_boil / dHvap_solv(T_boil)) * std::log(aw);
+
+        //  The BPE is now the SALT's alone.  If the liquor carries other
+        //  nonvolatiles they still depress the vapour pressure, and this model
+        //  has nothing to price them with -- say so rather than let the sum
+        //  ride in through a model that was fitted on one salt.
+        const scalar mAll  = molality_solute(V_over_F);
+        const scalar mSalt = molality_salt(V_over_F);
+        if (verbosity >= 1 && mAll > mSalt * (1.0 + 1.0e-9))
+            std::cout << "[Evaporator] NOTE: the concentrate carries "
+                      << (mAll - mSalt) << " mol/kg of nonvolatiles that are"
+                         " NOT '" << thermo.electrolyte().soluteName()
+                      << "'.  The electrolyte a_w -- and therefore the BPE --"
+                         " is evaluated on the salt molality alone, because"
+                         " that is the basis the model was fitted on; their"
+                         " own contribution to the boiling-point rise is NOT"
+                         " included.\n";
     }
     else
         BPE = K_b * molality_solute(V_over_F);     // ideal ebullioscopic fallback
@@ -353,7 +391,8 @@ int Evaporator::solve(const DictPtr& dict,
     sVector y_cond(n, 0.0);
     y_cond[iSolvent] = 1.0;
 
-    const scalar molality = molality_solute(V_over_F);
+    const scalar molality     = molality_solute(V_over_F);   // colligative: all solutes
+    const scalar molalitySalt = molality_salt(V_over_F);      // the electrolyte model's own
     const scalar dT       = dT_achieved;
     const scalar economy  = (F_steam_kmols > 0.0)
                           ? (V_over_F * F_in_kmols) / F_steam_kmols
@@ -379,7 +418,10 @@ int Evaporator::solve(const DictPtr& dict,
                   << "  T_boil = T_steam − ΔT = " << std::setprecision(2)
                   << T_boil << " K  (" << (T_boil - 273.15) << " °C)\n"
                   << (useElectrolyte
-                        ? ("  BPE = electrolyte a_w(m=" + std::to_string(molality)
+                        //  The molality a_w was ACTUALLY evaluated at -- the
+                        //  salt's, which is not the total-solute molality when
+                        //  the liquor carries anything else.
+                        ? ("  BPE = electrolyte a_w(m=" + std::to_string(molalitySalt)
                            + ") -> " + std::to_string(BPE) + " K  (electrolyte model)\n")
                         : ("  BPE = K_b · m_solute = " + std::to_string(K_b)
                            + " · " + std::to_string(molality) + " = " + std::to_string(BPE) + " K\n"))
@@ -395,9 +437,9 @@ int Evaporator::solve(const DictPtr& dict,
                       << std::fixed << std::setprecision(2)
                       << (Q_dilution(V_over_F, T_boil) / 1000.0)
                       << " kW   (L_phi: m " << std::setprecision(2)
-                      << molality_solute(0.0) << " -> "
-                      << molality_solute(V_over_F)
-                      << " mol/kg, calorimetric fit)\n";
+                      << molality_salt(0.0) << " -> "
+                      << molality_salt(V_over_F)
+                      << " mol/kg salt, calorimetric fit)\n";
         std::cout << "==================================================================\n\n";
     }
 
@@ -407,7 +449,11 @@ int Evaporator::solve(const DictPtr& dict,
     if (lphiFitted)
     {
         const scalar mMax = thermo.electrolyte().lphiValidityMax();
-        const scalar mOut = molality_solute(V_over_F);
+        //  The window is the SALT's fit window, so the molality tested against
+        //  it must be the salt's too -- otherwise a sugar in the liquor could
+        //  trip (or, at the other end, mask) an extrapolation warning about a
+        //  curve it has nothing to do with.
+        const scalar mOut = molality_salt(V_over_F);
         if (mMax > 0.0 && mOut > mMax)
         {
             const std::string msg =
@@ -469,7 +515,10 @@ int Evaporator::solve(const DictPtr& dict,
     kpis_["T_steam"]       = T_steam;
     kpis_["BPE"]           = BPE;
     kpis_["dT"]            = dT;
-    kpis_["molality"]      = molality;
+    kpis_["molality"]      = molality;      // all dissolved species (colligative)
+    //  Published separately, not folded in: with more than one nonvolatile the
+    //  two are different numbers and the BPE is computed from THIS one.
+    if (useElectrolyte) kpis_["molality_salt"] = molalitySalt;
     kpis_["V_over_F"]      = V_over_F;
     kpis_["A"]             = A;                                          // m^2  SI (user-provided HARDWARE)
     kpis_["U"]             = U;                                          // W/m^2/K  SI (hardware)
