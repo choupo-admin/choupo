@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  chemistryDict -- the case's ACTIVE-CHEMISTRY SELECTION (one home, ratified
+  2026-07-18): WHICH solid phases are admitted in the chemistry network.
+  Availability, not presence: the Ksp/dH facts live in the phase/component
+  records, and only an OPERATION (here the crystalliser) asks for saturation
+  or crystallisation.
+\*---------------------------------------------------------------------------*/
+recordType    chemistrySystem;
+schemaVersion 1;
+
+equilibria
+{
+    solidPhases ( halite );
+}

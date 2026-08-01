@@ -326,9 +326,25 @@ int Crystalliser::solveEquilibrium(const DictPtr& dict,
                   << " kg " << sol.name() << " / kg " << solv.name() << "\n";
         if (mixedSolvent)
         {
-            std::cout << "  Drowning-out (eNRTL mixed-solvent): x_" << thermo.comp(iAnti).name()
+            //  NAME THE MODEL THAT ACTUALLY RAN, and say when it moved
+            //  nothing.  This was hardcoded "eNRTL", so a Pitzer package
+            //  printed a model name that was not its own -- and the pairwise
+            //  Pitzer carries no mixed-solvent term, so it also printed a
+            //  "drowning-out" whose m_sat came out equal to the aqueous datum.
+            //  A line claiming an effect the model does not compute is worse
+            //  than no line.
+            const bool moved =
+                std::abs(m_sat_eff - elecSolubility) > 1e-9 * std::abs(elecSolubility);
+            std::cout << "  Drowning-out (" << thermo.electrolyte().modelName()
+                      << " mixed-solvent): x_" << thermo.comp(iAnti).name()
                       << " = " << std::setprecision(3) << xAnti << " (salt-free)  ->  m_sat = "
                       << m_sat_eff << " mol/kg  (aqueous datum " << elecSolubility << ")\n";
+            if (!moved)
+                std::cout << "  [drowningOut] m_sat is UNCHANGED from the"
+                             " aqueous datum: this model carries no"
+                             " mixed-solvent term, so the antisolvent is"
+                             " present in the material and absent from the"
+                             " saturation.\n";
             //  THE TRANSFER TERM IS ABSENT, AND SAYS SO.
             //
             //  The mixed-solvent effect above lives entirely in gamma_pm; the

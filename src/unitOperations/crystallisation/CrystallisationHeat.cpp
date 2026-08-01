@@ -65,6 +65,19 @@ scalar crystallisationHeatPerMol(const ThermoPackage& thermo,
         // FINITE-CONCENTRATION correction L2_bar(m_sat): ONLY when the Pitzer
         // T-slots are calorimetrically fitted AND the path is aqueous (the
         // mixed-solvent L_phi is its own future fit).
+        //  MIXED SOLVENT: the finite-concentration correction is DROPPED, and
+        //  the basis must say so.  L_phi is fitted on the aqueous surface, and
+        //  its mixed-solvent counterpart is a named future fit -- so skipping
+        //  it here is right.  What was wrong is that `source` went on reading
+        //  "dH_soln_inf (electrolyte dissolutionEnthalpy, ion-derived)", the
+        //  same string an aqueous case with no fit at all produces.  That
+        //  string travels into every duty record's basis, so a drowning-out
+        //  campaign recorded a heat whose omitted correction was invisible in
+        //  the record that exists to explain it.
+        if (mixedSolvent && el.calorimetricFit())
+            source += "  ** L2_bar(m_sat) NOT applied: the calorimetric L_phi"
+                      " fit is aqueous and the solvent is mixed (its"
+                      " mixed-solvent counterpart is an unfitted gap) **";
         if (!mixedSolvent && el.calorimetricFit())
         {
             const scalar L2 = el.partialMolarRelativeEnthalpy(m_sat, T_op);
