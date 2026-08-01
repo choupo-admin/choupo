@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/internalState -- the plant AT its nominal steady state (ctrl12's
+  converged x*, machine-accurate; the paper's eq. 4.8 quotes it to three
+  figures).  The paper activates its PI at t* = 100 h with the process
+  already settled -- starting AT the settled state with the PI on from
+  t = 0 is the same experiment with the flat prefix removed, which is
+  exactly the segment Fig. 4 plots.
+\*---------------------------------------------------------------------------*/
+
+time            0;
+application     ctrl;
+
+units
+{
+    "plant"
+    {
+        T            322.2222 K;      // 580 degR exactly
+        P            1.013 bar;
+        V            1.0;             // formal; the model derives V = m/rho0
+        holdupMolar
+        {
+            wo_A    3.27262793643;    // kmol == klb -- ctrl12's converged
+            wo_B    7.4750732018;     //   steady state (paper: 3.27, 7.47,
+            wo_C    1.11667013681;    //   1.12, 9.81, 1.69, 0.22)
+            wo_E    9.8141821039;
+            wo_P    1.6922563266;
+            wo_G    0.22288935632;
+        }
+    }
+}

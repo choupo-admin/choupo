@@ -154,6 +154,8 @@ annotated index of what each one demonstrates.
 
 | `ctrl13_williams_otto_step` | **Runs under `choupoCtrl`.**  The paper's first experiment (arXiv:2004.07614 §3.2, Fig. 2), reproduced: a `Schedule` steps F_fB 20→21 klb/h at t* = 100 h and F_pP climbs between the two plateaus the figure draws — ours 3.901 → 4.446 klb/h against the paper's ~3.9 → ~4.4-4.5, with the masses landing on the Fig. 2 levels (m_B → 12.15, m_E → 21.4 klb).  F_pP and F_wG ride the trajectory as first-class columns in the paper's own units, said so in the label (`F_pP_klbh`) |
 
+| `ctrl14_williams_otto_pi` | **Runs under `choupoCtrl`.**  The paper's setpoint-tracking experiment (arXiv:2004.07614 §4.2, Fig. 4): the PI channel (F_fB, F_pP) of eq. 4.6 with the paper's own Skogestad-IMC tunings (K₃ᵖ = 0.069 dimensionless, K₃ⁱ = 1.282 h⁻¹ → 3.5611×10⁻⁴ s⁻¹, the one stated conversion) drives F_pP 3.90 → 4.5 klb/h.  The whole Fig.-4 shape lands: F_pP peaks at 4.634 klb/h @ 14 h (figure ~4.6 @ 10-15 h), F_fB peaks at 22.89 klb/h @ 8 h (figure ~22.9 @ 8 h) and settles on the ~21.1 plateau.  Starts AT ctrl12's converged x* with the PI on from t = 0 — the paper's t* = 100 h activation with the flat prefix removed |
+
 
 ## Regression-focused cases
 

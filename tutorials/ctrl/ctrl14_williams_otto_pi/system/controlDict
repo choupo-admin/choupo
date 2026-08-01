@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl14_williams_otto_pi  --  the paper's setpoint-tracking experiment
+                               (section 4.2, Figure 4), reproduced.
+
+  The control channel (F_fB, F_pP) of eq. (4.6) with the paper's own
+  Skogestad-IMC tunings drives the product stream from its nominal
+  3.90 klb/h to the setpoint 4.5 klb/h.  Figure 4's shape: F_fB overshoots
+  to ~23 klb/h around 10 h after activation, backs off, settles ~21;
+  F_pP overshoots to ~4.6 and settles onto 4.5 by ~40 h.
+
+  The paper activates its PI at t* = 100 h with the plant already settled;
+  here the plant STARTS at the settled state (ctrl12's converged x*,
+  machine-accurate) with the PI on from t = 0 -- the same experiment with
+  the flat prefix removed, which is exactly the segment the figure plots.
+
+  Gain conversion, stated once: K3prop = 0.069 is a klb/h-per-klb/h ratio
+  and survives the SI boundary unchanged; K3int = 1.282 per hour becomes
+  3.5611e-4 per second.  The golden pins the settled F_pP on the setpoint
+  and F_fB on its Fig. 4 plateau.
+\*---------------------------------------------------------------------------*/
+
+application   choupoCtrl;
+description   "Williams-Otto PI channel (F_fB, F_pP), paper eq. 4.6 with the section-4.1 tunings: F_pP tracks 3.90 -> 4.5 klb/h with the Fig. 4 overshoot";
+
+verbosity     3;
+
+startTime       0;         // s
+endTime         360000;    // s  (100 h -- Fig. 4's window after activation)
+deltaT          60;        // s
+writeInterval   7200;      // s  (2 h -> 50 frames, the transient visible)

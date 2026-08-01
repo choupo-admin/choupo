@@ -1,0 +1,68 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl14_williams_otto_pi / flowsheetDict
+
+  One unit, because the benchmark IS one equation set: the Williams-Otto
+  reactor + decanter + column + splitter fold into six ODEs (the recycle
+  term (1-eta)mu, the removed G, the 0.1 F_tE column retention are all
+  inside them -- see the unit's own header).  The five controls sit in
+  `operation`, declared SI: with the MW 453.592 convention (1 kmol == 1
+  klb) every numeral below IS the paper's value in klb/h.
+
+  The paper's control channel (F_fB, F_pP), eq. (4.6), with the
+  Skogestad-IMC gains of section 4.1: K3prop = 0.069 (dimensionless --
+  klb/h per klb/h survives the SI conversion unchanged) and
+  K3int = 1.282 per HOUR, declared per second (1.282/3600 =
+  3.5611111e-4).  Bias = F*_fB (bumpless), setpoint F_pP = 4.5 klb/h =
+  1.25e-3 kmol/s, output bounded to the paper's 0 <= F_fB <= 56 klb/h.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        plant;
+        type        williamsOttoPlant;
+
+        operation
+        {
+            F_fA    10.0  kmol/h;     // == 10 klb/h   (the paper's F*_fA)
+            F_fB    20.0  kmol/h;     // == 20 klb/h
+            mu      129.5 kmol/h;     // == 129.5 klb/h
+            eta     0.2;
+        }
+    }
+);
+
+controllers
+(
+    {
+        name         PC1;
+        type         PID;
+
+        measurement  { unit plant;  cv F_pP; }
+        actuator     { unit plant;  mv F_fB; }
+
+        setpoint     1.25e-3;         // 4.5 klb/h in kmol/s
+
+        gains
+        {
+            Kp       0.069;           // paper K3prop, dimensionless
+            Ki       3.5611111e-4;    // paper K3int = 1.282 / h  -> per s
+            Kd       0.0;
+        }
+
+        output
+        {
+            min      0.0;
+            max      1.5555556e-2;    // 56 klb/h
+            bias     5.5555556e-3;    // F*_fB = 20 klb/h (bumpless)
+        }
+    }
+);
