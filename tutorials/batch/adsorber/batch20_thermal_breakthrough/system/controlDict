@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch20_thermal_breakthrough / system/controlDict
+
+  Time control for the A5-T1 adiabatic breakthrough.  The isothermal
+  batch18 saturates by 4200 s; the ADIABATIC front breaks through MUCH
+  earlier (t_50 ~ 806 s vs 3042: the warm bed holds less), and the
+  THERMAL wave crawls (u_th = 7.96e-5 m/s, L/u_th ~ 6280 s).  The
+  12000 s window shows the honest COUPLED story: outlet T rises to
+  ~336 K (well below the announced 140 K BOUND -- the heat lags the
+  front), then stays WARM long past L/u_th because the cooling
+  upstream keeps re-adsorbing and shipping its heat downstream; the
+  bed MEAN T decays (325.5 K at 6000 s -> 315.6 K at 12000 s) while
+  c_out/c_in creeps toward 1 (0.823 at end).  Full cold saturation
+  lies far beyond this window -- the case declares that instead of
+  paying tens of simulated hours for the tail.
+
+  timeStepping adaptive is REQUIRED in thermal mode (the fixed-step
+  Gershgorin bound covers the isothermal rows only -- the engine
+  refuses `fixed` here, by name).
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "A5-T1 adiabatic CO2/He breakthrough (ergun, one T per cell): thermal wave + earlier front vs batch18, anchors u_th and DT_ad announced pre-run, campaign energy on vessel enthalpy alone";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         12000;    // s   (> L/u_th: the thermal wave must LEAVE)
+deltaT          0.05;     // s   (unused: thermal requires adaptive)
+writeInterval   100;      // s
+timeStepping    adaptive; // Rosenbrock23 (REQUIRED in thermal mode)

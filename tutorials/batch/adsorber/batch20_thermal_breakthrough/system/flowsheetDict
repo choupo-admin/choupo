@@ -1,0 +1,79 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch20_thermal_breakthrough  --  THE A5-T1 WITNESS: the adiabatic bed.
+
+  batch18's ergun-mode bed (15% CO2/He, N = 25) with the energy balance
+  DECLARED: `energyBalance adiabatic;` -- one temperature per cell, the
+  isosteric heat staying IN the bed as a travelling thermal wave instead
+  of being removed by an unnamed coolant.  Design record:
+  docs/design/fixed-bed-thermal-a5.md.
+
+  What the engine announces BEFORE integrating (equilibrium theory):
+
+    * pure thermal-wave velocity
+          u_th = u c_tot cpg / (eps c_tot cpg + rho_b cp_s)
+      and the time L/u_th the heat needs to LEAVE the bed;
+    * the adiabatic LIMIT DT_ad = q*(-dH_ads)/(cp_s + eps c_tot cpg/rho_b)
+      -- the all-heat-retained BOUND.  Here u_th < u_sh: the heat LAGS
+      the front, so the observed outlet-T rise sits well BELOW the bound
+      (~ +38 K vs the 140 K limit) while the WARM bed breaks through far
+      earlier than batch18's isothermal front (t_50 ~ 806 s vs 3042 s --
+      q*(T) falls via the van't Hoff b(T), the SAME datum the energy
+      source term uses; one dH_ads, three readers).
+
+  The golden pins T_out/T_max, both anchors, the early crossings, and the
+  campaign ENERGY closure -- claimed, adiabatically, on vessel enthalpy
+  against the boundary streams alone (per-step raffinate packages carry
+  the outlet cell's own T).
+
+  cp_s enters as DECLARED case data (the kLDF pattern -- scope + source
+  say where the number came from; curating a primary-cited cp onto the
+  adsorbent asset record is a separate curation act).  The adsorbed-phase
+  heat capacity is neglected, declared.  Feed enters at the declared T;
+  the raffinate package leaves at the OUTLET CELL's own T so the material
+  ledger carries the thermal wave's enthalpy.
+
+  Adiabatic means NO energy record: nothing is exchanged with the
+  environment; the campaign energy balance closes on vessel enthalpy
+  (per-cell pricing: gas + adsorbed at T_j, solid sensible cp_s(T_j-T0))
+  against the boundary streams alone.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name bed;
+        type fixedBedAdsorber;
+        solver { samplingInterval 2.0; rtol 1e-6; }
+        operation
+        {
+            adsorbent zeolite13X_A4; flowModel ergun;
+            energyBalance adiabatic;
+            solidHeatCapacity
+            {
+                value  [0 2 -2 -1 0] 920;   // J/(kg K)
+                scope  "packed 13X teaching bed, RUN-A5-T1";
+                source "declared teaching value (order of magnitude for zeolite pellets); curating a primary-cited cp onto the asset record is a separate act";
+            }
+            L 0.5 m; area 0.01 m2; eps 0.4; u 0.05 m/s;
+            T 298.15 K; P 1 bar; P_out 1 bar;
+            Dax [0 2 -1 0 0] 1e-4; nCells 25;
+            feed { molarComposition { CO2 0.15; He 0.85; } }
+            initial { molarComposition { He 1.0; } }
+            kLDF
+            {
+                basis solidFilm;
+                scope "2 mm synthetic A4 conservation anchor";
+                source "declared numerical comparison";
+                k { CO2 [0 0 -1 0 0] 0.05; }
+            }
+        }
+    }
+);

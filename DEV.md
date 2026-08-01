@@ -178,10 +178,20 @@ ones for day-to-day work:
    sampler freezes its pre-switch claims, and batch19_feed_switch_purge
    witnesses load-then-purge with the duty handing −413.6 → −23.7 kJ
    back; gate `check_feed_switch` fires 6 named refusals
-   (sabotage-verified both ways).  STILL REFUSING, named: thermal swing
-   (needs the non-isothermal bed balance), pressure swing / blowdown
-   (transient c_tot), flow transients (transient Ergun), flow reversal —
-   plus A6 cyclic steady state.  Close those to complete the programme.
+   (sabotage-verified both ways).  **A5-T1 SHIPPED 2026-08-01: the
+   ADIABATIC bed** (`energyBalance adiabatic;`, ergun-only — the A3
+   closure pins c_tot by declaration and refuses) — one T per cell, the
+   van't Hoff isotherm fed the LOCAL T, equilibrium-theory anchors
+   (u_th, the ΔT_ad bound) announced pre-run, the campaign energy
+   balance CLAIMED adiabatically on per-cell vessel enthalpy (closes
+   5.7e-5 on batch20_thermal_breakthrough; t_50 806 s vs batch18's
+   3042 — the warm bed holds less).  Design:
+   docs/design/fixed-bed-thermal-a5.md; gate check_thermal_bed
+   (6 refusals, sabotage-verified).  STILL REFUSING, named: feed.T
+   (the TSA hot-purge control — T1.5, natural once this balance
+   exists), wall heat (T2), pressure swing / blowdown (transient
+   c_tot), flow transients (transient Ergun), flow reversal — plus A6
+   cyclic steady state.  Close those to complete the programme.
 
 ## 4b. Waiting on Vítor (not blocked — each CHANGES WHAT THE ENGINE REFUSES)
 

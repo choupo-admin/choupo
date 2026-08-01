@@ -118,10 +118,31 @@ Description
     refuse by name (gate: check_feed_switch, sabotage-verified).
     Witness: batch19_feed_switch_purge.
 
-    Energy remains outside this isothermal flow slice. energyLedgerGap() names
-    it and vesselEnthalpy()
+    A5-T1 -- the ADIABATIC bed (`energyBalance adiabatic;`, ergun mode
+    ONLY: the A3 closure pins c_tot = P/(RT) by declaration and a
+    temperature field would contradict it -- refused).  One temperature
+    per cell (declared local gas-solid equilibrium), appended as state
+    rows after the ledgers; the van't Hoff isotherm is fed the CELL's own
+    T -- the same dH_ads datum drives b(T), the energy source term and
+    the ledger, one datum, three readers.  cp_s is DECLARED case data
+    (operation.solidHeatCapacity{value;scope;source;}, the kLDF pattern);
+    adsorbed-phase heat capacity neglected, declared.  Announced pre-run:
+    u_th, L/u_th, and the all-heat-retained BOUND DT_ad (with the
+    u_th-vs-u_sh verdict on which wave leads).  Adiabatic = NO energy
+    record (nothing exchanged); the campaign energy balance is CLAIMED on
+    per-cell vessel enthalpy (gas + adsorbed at T_j, solid sensible
+    cp_s(T_j - T0)) against boundary streams whose per-step packages
+    carry the outlet cell's own T.  Wall heat (T2), feed.T hot purge
+    (T1.5) and fixed stepping in thermal mode refuse by name -- gate
+    check_thermal_bed, sabotage-verified.  Witness:
+    batch20_thermal_breakthrough; design:
+    docs/design/fixed-bed-thermal-a5.md.
+
+    In the ISOTHERMAL modes, energy stays outside the flow slice as
+    before: A3's energyLedgerGap() names its gap and vesselEnthalpy()
     answers ok=false -- the campaign energy balance reports UNAVAILABLE
-    quoting the gap verbatim, never a decorative closure.
+    quoting the gap verbatim, never a decorative closure; ergun-isothermal
+    ledgers the adsorption duty and prices the vessel at the held T.
 
     Outputs: trajectory extras c_out/y_out/qbar/closure per component;
     axial profiles `<t>/<unit>.profile` (columns z, c_i..., q_i...) written
@@ -229,6 +250,13 @@ private:
     scalar dz_   = 0.0;      // L/N [m]
     scalar cTot_ = 0.0;      // P/(R T) [mol/m3], constant by declaration
     bool   ergun_ = false;    // A4: all species integrated, P derived, u algebraic
+    //  A5-T1: adiabatic one-temperature energy balance (ergun mode ONLY --
+    //  the A3 closure pins c_tot by declaration and a temperature field
+    //  would contradict it).  T_j becomes a state row per cell; cp_s is
+    //  DECLARED case data (operation.solidHeatCapacity{}, kLDF pattern).
+    bool   thermal_ = false;
+    scalar cpS_ = 0.0;        // solid heat capacity [J/(kg K)], declared
+    scalar cpgFeed_ = 0.0;    // feed-gas mixture Cp_ig at T_ [J/(mol K)]
     scalar Pout_ = 0.0;       // downstream pressure [Pa]
     scalar muGas_ = 0.0;      // optional declared test override [Pa.s]
     scalar dParticle_ = 0.0;  // adsorbent identity [m]
@@ -317,6 +345,9 @@ private:
     std::size_t qOffset_() const;
     std::size_t inOffset_() const;
     std::size_t outOffset_() const;
+    std::size_t tOffset_() const;                // A5-T1: T rows (thermal only)
+    scalar cellT_(const sVector& y, std::size_t j) const;  // T_ unless thermal
+    scalar cpgCell_(const sVector& y, std::size_t j) const; // mixture Cp_ig [J/mol/K]
     scalar pressureCell_(const sVector& y, std::size_t j) const;
     scalar ergunVelocity_(scalar pLeft, scalar pRight, scalar distance,
                           const sVector& cLeft, const sVector& cRight) const;
