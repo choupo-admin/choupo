@@ -325,9 +325,33 @@ int Crystalliser::solveEquilibrium(const DictPtr& dict,
                   << "  Solubility c_sat(T_op) = " << std::setprecision(3) << c_sat
                   << " kg " << sol.name() << " / kg " << solv.name() << "\n";
         if (mixedSolvent)
+        {
             std::cout << "  Drowning-out (eNRTL mixed-solvent): x_" << thermo.comp(iAnti).name()
                       << " = " << std::setprecision(3) << xAnti << " (salt-free)  ->  m_sat = "
                       << m_sat_eff << " mol/kg  (aqueous datum " << elecSolubility << ")\n";
+            //  THE TRANSFER TERM IS ABSENT, AND SAYS SO.
+            //
+            //  The mixed-solvent effect above lives entirely in gamma_pm; the
+            //  equilibrium constant it is solved against stays referenced to
+            //  infinite dilution in PURE WATER, which is not the medium these
+            //  ions are in.  Correcting that reference is the standard-state
+            //  transfer term -- ratified as a NAMED next slice (D3), with no
+            //  implementation authorised, and with one condition attached:
+            //  "never silently zero, never smuggled into a fitted constant".
+            //
+            //  It was silently zero.  The only statement of it anywhere was
+            //  the prose in one tutorial's own description field, which is the
+            //  author saying it, not the engine.  A student reading this run
+            //  saw a mixed-solvent saturation and nothing about the reference
+            //  it was computed against.
+            std::cout << "  [standardState] the equilibrium constant stays"
+                         " WATER-REFERENCED (infinite dilution in pure water)"
+                         " while the solvent is not water: the transfer"
+                         " correction for that difference is NOT applied"
+                         " (D3, docs/design/standard-state-transfer-adr.md)."
+                         "  The mixed-solvent effect above is carried by"
+                         " gamma_pm alone.\n";
+        }
         std::cout << "  Solute in = " << std::scientific << std::setprecision(3) << solute_in
                   << " kg/s  ->  crystals = " << crystal_mass << " kg/s,  dissolved = "
                   << solute_liq << " kg/s\n" << std::fixed
