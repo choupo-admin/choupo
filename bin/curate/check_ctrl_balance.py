@@ -339,6 +339,34 @@ def main():
                            " temperature difference."
                            % bk.get("energy_closure_rel"))
 
+        # ---- 6d. the MIXTURE-H route: the electrolyte tank claims --------
+        #  ctrl10's salt has no per-species leg (aqueousSaltEnthalpy(m,T) is
+        #  mixture-level), so the vessel stores TOTAL H as a state and the
+        #  claim must come from THAT route, announced as such, and close.
+        c10 = ROOT / "tutorials" / "ctrl" / "ctrl10_brine_concentration"
+        rr = subprocess.run([str(CTRL)], cwd=str(c10), capture_output=True,
+                            text=True, timeout=900)
+        if rr.returncode != 0:
+            bad.append("mixtureH: ctrl10 exited %d -- the electrolyte tank"
+                       " must RUN now (the refusal was retired 2026-08-01)"
+                       % rr.returncode)
+        else:
+            out = rr.stdout + rr.stderr
+            if "MIXTURE-H route" not in out:
+                bad.append("mixtureH: ctrl10 did not announce the MIXTURE-H"
+                           " route -- two energy equations must never be"
+                           " chosen in silence")
+            bk = balance_kpis(out)
+            if bk is None or bk.get("energy_balance_available") != 1:
+                bad.append("mixtureH: ctrl10's first-law ledger must CLAIM"
+                           " (functional H stored as a state)")
+            elif bk.get("energy_closure_rel", 1.0) > 1.0e-8:
+                bad.append("mixtureH: ctrl10 energy closure %s -- the vessel"
+                           " integrates dH/dt against the same faces the"
+                           " ledger prices; anything above integration noise"
+                           " means two surfaces."
+                           % bk.get("energy_closure_rel"))
+
         #  And the negative: a toy case must have no energy columns at all.
         case, r = make_case(tmp, "toyCols", BASE)
         if r.returncode == 0:

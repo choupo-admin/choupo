@@ -1,0 +1,34 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     TC1                    MV_final         360                1e-4
+kpi     TC1                    PV_final         310.319973652      1e-4
+kpi     TC1                    SP_final         313.15             1e-4
+kpi     balance                element_Cl_closure_rel 7.17019034075e-16  1e-4
+kpi     balance                element_H_closure_rel 3.40011338976e-16  1e-4
+kpi     balance                element_Na_closure_rel 7.17019034075e-16  1e-4
+kpi     balance                element_O_closure_rel 3.40011338976e-16  1e-4
+kpi     balance                element_worst_closure_rel 7.17019034075e-16  1e-4
+kpi     balance                energy_balance_available 1                  1e-4
+kpi     balance                energy_closure_rel 7.85289304221e-11  1e-4
+kpi     balance                energy_functional_H 1                  1e-4
+kpi     balance                energy_kJ_final  -853632.741074     1e-4
+kpi     balance                energy_kJ_heat_cum 2658.78680029      1e-4
+kpi     balance                energy_kJ_in_cum -87796.8114225     1e-4
+kpi     balance                energy_kJ_initial -856154.995722     1e-4
+kpi     balance                energy_kJ_out_cum -87660.279337      1e-4
+kpi     balance                energy_residual_kJ -6.72329360896e-05 1e-4
+kpi     balance                mass_closure_rel 3.77845348292e-16  1e-4
+kpi     balance                mass_kg_final    58.7660019975      1e-4
+kpi     balance                mass_kg_in_cum   6.02632424651      1e-4
+kpi     balance                mass_kg_initial  58.766001975       1e-4
+kpi     balance                mass_kg_out_cum  6.02632422399      1e-4
+kpi     balance                mass_residual_kg -2.22044604925e-14 1e-4
+kpi     balance                material_available 1                  1e-4
+kpi     tank                   F_in_final       0.0005             1e-4
+kpi     tank                   T_final          310.336973483      1e-4
+kpi     tank                   n_NaCl_final     0.150000000557     1e-4
+kpi     tank                   n_water_final    2.77546499944      1e-4
+kpi     tank                   t_end            600                1e-4
+kpi     tank                   z_in_NaCl_final  0.051273902        1e-4
+kpi     tank                   z_in_water_final 0.948726098        1e-4

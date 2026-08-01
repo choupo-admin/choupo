@@ -111,7 +111,15 @@ ones for day-to-day work:
    1.4e-7, second-order in deltaT: the residual is the ledger's trapezoid, not
    the physics).  Gate: `check_ctrl_balance` gained the claim, the refusal, the
    step-refinement order and a T-dependent-Cp fixture (all sabotage-verified).
-2. **Ctrl electrolyte energy — the mixture-H state formulation.**  Half
+2. ~~**Ctrl electrolyte energy — the mixture-H state formulation.**~~ —
+   **BOTH HALVES SHIPPED 2026-08-01.**  The dynamicCSTR now carries THREE
+   probed, announced energy routes: canonical per-species; MIXTURE-H (the
+   vessel stores TOTAL H as a state and integrates dH/dt = Hin − Hout + Q
+   on `H_liquid_formation` — partial-molar terms implicit in the state,
+   reactions inside the datum, T a Newton readout from the same surface);
+   and Cp/convective (toys, refusing as ever).  `ctrl10` RUNS and CLAIMS
+   at 7.9e-11; its `.expect-nonconvergence` is deleted per its own
+   instruction.  Gate: check_ctrl_balance §6d.  Originally: half
    of the original slice SHIPPED 2026-08-01: the vessel Cp is route-aware
    (`cpSurface_`: declared liquid Cp, else the numerical T-derivative of
    the component's own stored-H leg — one surface, one derivative), and

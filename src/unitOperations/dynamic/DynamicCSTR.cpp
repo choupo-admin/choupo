@@ -199,11 +199,40 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
         if (!blocker.empty()) blocker += "; ";
         blocker += thermo.comp(i).name();
     }
+    //  When the per-species leg cannot serve, ask the MIXTURE surface
+    //  before falling back: the electrolyte tank's whole problem is that
+    //  its salt's enthalpy exists only at mixture level, and
+    //  H_liquid_formation is exactly the surface that prices it (the
+    //  aqueous ion reference + L_phi).  Probed, like everything else.
+    mixtureH_ = false;
+    if (!canonicalEnergy_)
+    {
+        try
+        {
+            H_ = 0.0;
+            scalar nt = 0.0; for (auto v : n_) nt += v;
+            H_ = nt * hMix_(n_, T_);                       // kJ
+            (void) hMix_(z_in_, T_in_);                    // the inlet leg too
+            mixtureH_ = true;
+        }
+        catch (const std::exception&) { mixtureH_ = false; }
+    }
+
     if (canonicalEnergy_)
         std::cout << "  [energy] DynamicCSTR '" << name_ << "': CANONICAL"
                      " route -- the vessel stores H(n,T) on the elements datum"
                      " and the ODE is its exact derivative, so the first-law"
                      " ledger CLAIMS closure.\n";
+    else if (mixtureH_)
+        std::cout << "  [energy] DynamicCSTR '" << name_ << "': MIXTURE-H"
+                     " route -- the per-species leg cannot serve (" << blocker
+                  << "), but the mixture surface H_liquid_formation prices"
+                     " the whole holdup, so the vessel stores TOTAL H as a"
+                     " STATE and integrates dH/dt = Hin - Hout + Q directly;"
+                     " T is a readout recovered from H(n,T) on the same"
+                     " surface.  Reactions and partial-molar terms need no"
+                     " separate pricing: the state carries them.  The"
+                     " first-law ledger CLAIMS closure.\n";
     else
         std::cout << "  [energy] DynamicCSTR '" << name_ << "': Cp/convective"
                      " route -- no elements-datum enthalpy for " << blocker
@@ -231,6 +260,7 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
     //  ctrl10_brine_concentration).
     for (std::size_t i = 0; i < N; ++i)
     {
+        if (mixtureH_) break;   // dH/dt needs no per-component Cp at all
         if (thermo.comp(i).hasCpLiquid()) continue;
         if (!canonicalEnergy_)
             throw std::runtime_error("DynamicCSTR: component '"
@@ -391,6 +421,40 @@ scalar DynamicCSTR::cpSurface_(std::size_t i, scalar T) const
     return (hLiq_(i, T + dT) - hLiq_(i, T - dT)) / (2.0 * dT);
 }
 
+scalar DynamicCSTR::hMix_(const sVector& n, scalar T) const
+{
+    scalar nt = 0.0;
+    for (auto v : n) nt += std::max<scalar>(v, 0.0);
+    if (nt <= 0.0) return 0.0;
+    sVector x(n.size(), 0.0);
+    for (std::size_t i = 0; i < n.size(); ++i)
+        x[i] = std::max<scalar>(n[i], 0.0) / nt;
+    //  THE mixture surface -- the same H_liquid_formation every balance
+    //  reads, electrolyte aqueous-ion branch included.
+    return thermo_->H_liquid_formation(T, x);            // J/mol
+}
+
+scalar DynamicCSTR::TfromH_(const sVector& n, scalar H, scalar Tguess) const
+{
+    //  1-D Newton on the SAME surface, derivative taken numerically from it
+    //  (one surface, one derivative -- the cpSurface_ principle at mixture
+    //  level).  H in kJ; hMix in J/mol == kJ/kmol; n in kmol.
+    scalar nt = 0.0;
+    for (auto v : n) nt += std::max<scalar>(v, 0.0);
+    if (nt <= 0.0) return Tguess;
+    scalar T = Tguess;
+    for (int it = 0; it < 50; ++it)
+    {
+        const scalar r  = nt * hMix_(n, T) - H;          // kJ
+        const scalar cp = nt * (hMix_(n, T + 0.5) - hMix_(n, T - 0.5));  // kJ/K
+        if (std::abs(cp) < 1.0e-30) break;
+        const scalar dT = -r / cp;
+        T += std::max<scalar>(-25.0, std::min<scalar>(25.0, dT));
+        if (std::abs(dT) < 1.0e-10) return T;
+    }
+    return T;
+}
+
 scalar DynamicCSTR::hLiq_(std::size_t i, scalar T) const
 {
     return thermo_->speciesPhaseEnthalpy(
@@ -464,7 +528,10 @@ sVector DynamicCSTR::derivatives_(const sVector& packed) const
     const std::size_t N = packed.size() - 1;
     sVector n(N);
     for (std::size_t i = 0; i < N; ++i) n[i] = packed[i];
-    const scalar T = packed[N];
+    //  On the mixture-H route the last row is the STORED ENTHALPY, and T is
+    //  the readout recovered from it on the same surface.  Everywhere else
+    //  the last row is T itself.
+    const scalar T = mixtureH_ ? TfromH_(n, packed[N], T_) : packed[N];
 
     scalar nTot = 0.0;
     for (auto v : n) nTot += std::max<scalar>(v, 0.0);
@@ -494,6 +561,18 @@ sVector DynamicCSTR::derivatives_(const sVector& packed) const
     }
 
     // ---- Energy balance ----------------------------------------------
+    if (mixtureH_)
+    {
+        //  dH/dt = Hdot_in - Hdot_out + Q, every enthalpy on the ONE
+        //  mixture surface.  No reaction term (the elements datum already
+        //  carries it inside H) and no partial-molar terms (they live
+        //  implicitly in the state).
+        const scalar Hin  = F_in_ * hMix_(nDotIn_.empty() ? z_in_ : z_in_, T_in_);  // kW
+        const scalar Hout = F_in_ * hMix_(n, T);                                    // kW
+        const scalar Q    = (UA_ / 1000.0) * (T_jacket_ - T);                       // kW
+        dydt[N] = Hin - Hout + Q;                                                   // kJ/s
+        return dydt;
+    }
     //  CpTot (in kJ/K) = Σ n_i · Cp_liq_i(T)   (Cp J/(mol·K) ≡ kJ/(kmol·K))
     scalar CpTot = 0.0;
     for (std::size_t i = 0; i < N; ++i)
@@ -535,7 +614,7 @@ void DynamicCSTR::step(scalar /*t*/, scalar dt)
     const std::size_t N = n_.size();
     sVector y(N + 1);
     for (std::size_t i = 0; i < N; ++i) y[i] = n_[i];
-    y[N] = T_;
+    y[N] = mixtureH_ ? H_ : T_;   // the last row is H on the mixture-H route
 
     auto axpy = [](const sVector& a, scalar c, const sVector& b)
     {
@@ -554,17 +633,19 @@ void DynamicCSTR::step(scalar /*t*/, scalar dt)
 
     for (std::size_t i = 0; i < N; ++i)
         n_[i] = std::max<scalar>(y[i], 0.0);
-    T_ = y[N];
+    if (mixtureH_) { H_ = y[N];  T_ = TfromH_(n_, H_, T_); }
+    else           T_ = y[N];
 }
 
 // ---- Packed-ODE form (the adaptive driver) ------------------------------
-//  Pack/unpack mirror step()'s convention EXACTLY: (n_0..n_{N-1}, T).
+//  Pack/unpack mirror step()'s convention EXACTLY: (n_0..n_{N-1}, T) -- or
+//  (n_0..n_{N-1}, H) on the mixture-H route, where T is the readout.
 sVector DynamicCSTR::odeState() const
 {
     const std::size_t N = n_.size();
     sVector y(N + 1);
     for (std::size_t i = 0; i < N; ++i) y[i] = n_[i];
-    y[N] = T_;
+    y[N] = mixtureH_ ? H_ : T_;
     return y;
 }
 
@@ -573,7 +654,8 @@ void DynamicCSTR::setOdeState(const sVector& y)
     const std::size_t N = n_.size();
     for (std::size_t i = 0; i < N; ++i)
         n_[i] = std::max<scalar>(y[i], 0.0);
-    T_ = y[N];
+    if (mixtureH_) { H_ = y[N];  T_ = TfromH_(n_, H_, T_); }
+    else           T_ = y[N];
 }
 
 sVector DynamicCSTR::stateVector() const
@@ -695,6 +777,23 @@ BalanceSnapshot DynamicCSTR::balanceSnapshot() const
         bs.energyReason.clear();
         bs.storedEnergy_kJ = storedEnthalpy_();
         bs.heatInput_kW    = (UA_ / 1000.0) * (T_jacket_ - T_);   // kW
+    }
+    else if (mixtureH_)
+    {
+        //  The stored H IS the state on this route, and the faces are
+        //  priced on the same mixture surface it lives on.
+        bs.functional = BalanceSnapshot::EnergyFunctional::H;
+        bs.physicalEnergyAvailable = true;
+        bs.energyReason.clear();
+        bs.storedEnergy_kJ = H_;
+        bs.heatInput_kW    = (UA_ / 1000.0) * (T_jacket_ - T_);   // kW
+        for (auto& fc : bs.faces)
+        {
+            if (fc.direction == BalanceFace::Direction::in)
+                fc.enthalpyFlow_kW = F_in_ * hMix_(z_in_, T_in_);
+            else
+                fc.enthalpyFlow_kW = F_in_ * hMix_(n_, T_);
+        }
     }
     else
     {

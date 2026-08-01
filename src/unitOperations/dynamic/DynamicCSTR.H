@@ -178,9 +178,36 @@ private:
     //          the datum at all (the fictitious ctrl toy species, which carry
     //          no heat of formation on purpose).  The ledger refuses, as it
     //          always has.
+    //  A third route sits above both when the PER-SPECIES leg cannot serve
+    //  but the MIXTURE surface can (the electrolyte tank): mixtureH_ below.
     //  Decided ONCE in initialise() and printed there with the reason: two
     //  different energy equations must never be chosen in silence.
     bool canonicalEnergy_ = false;
+
+    // ---- The MIXTURE-H route (roadmap #2, second half, 2026-08-01) -------
+    //  Engaged when a component's enthalpy is MIXTURE-level (the electrolyte
+    //  salt: aqueousSaltEnthalpy(m,T), molality-dependent) so no per-species
+    //  leg exists.  The vessel then stores TOTAL H [kJ] as a STATE beside n,
+    //  and the first law is integrated directly:
+    //
+    //      dH/dt = Hdot_in - Hdot_out + UA (T_j - T)
+    //
+    //  with every Hdot priced on H_liquid_formation -- the SAME mixture
+    //  surface every balance reads.  Two structural gifts of this form: the
+    //  partial-molar terms live implicitly in the state (no dH/dn_i is ever
+    //  needed), and reactions DROP OUT of the energy equation entirely (the
+    //  elements datum already carries the heat of reaction inside H).
+    //  T becomes a READOUT, recovered from H(n,T) = H by a 1-D Newton on
+    //  the same surface at every evaluation.
+    bool   mixtureH_ = false;
+    scalar H_ = 0.0;          // stored total enthalpy [kJ] (mixtureH_ state)
+
+    //- Mixture molar enthalpy [J/mol == kJ/kmol] on the elements datum, at
+    //  composition n (any positive scaling) and temperature T.
+    scalar hMix_(const sVector& n, scalar T) const;
+
+    //- Recover T from the stored H for holdup n: solve n_tot*hMix(n,T) = H.
+    scalar TfromH_(const sVector& n, scalar H, scalar Tguess) const;
 
     // ---- Helpers ----------------------------------------------------
     scalar rateOfReaction_(const ReactionSpec& rxn,
