@@ -134,3 +134,33 @@ pins the bracketing:
 Gate: check_thermal_bed extends with the wallCooled positive + the
 three declaration refusals; the old blanket "wallHeatTransfer is T2,
 not built" refusal retires WITH this slice.
+
+## 7. A6 — cyclic steady state (PROPOSAL, awaiting Vítor's decision)
+
+What exists TODAY (batch23_tsa_cycles, no new grammar): N hand-declared
+TSA cycles in one recipe, ending exactly on a cycle boundary so the
+final KPIs are end-of-cycle values; the qbar trajectory shows the
+approach to the cyclic steady state, and every switch is ledgered.
+
+What a first-class A6 needs, and why it is an ARCHITECTURE decision
+(proposal-first, per the standing rule):
+
+1. **Declared cycles.**  A `cycle { period; steps ( ... ); repeat N; }`
+   recipe grammar -- repetition becomes structure instead of a
+   hand-unrolled event list.  This touches the recipe grammar every
+   batch case reads: Vítor's call.
+2. **Per-cycle state snapshots.**  The bed (or the driver) records its
+   packed state at each declared cycle boundary -- the cycle-k ledger
+   the CSS verdict compares.  New unit/driver surface.
+3. **The CSS verdict, tri-state and declared.**  CONVERGED when
+   ||state_k - state_{k-1}|| / ||state_k|| falls below a tolerance the
+   CASE declares (never a silent default); NOT-CONVERGED-YET with the
+   measured trend otherwise; UNAVAILABLE when cycles are not declared.
+   The norm and its components (c, q, T rows) stated in the verdict.
+4. **Stop-at-CSS (optional, later).**  `repeat untilCSS;` -- run until
+   the verdict converges or a declared cycle cap refuses.  Touches the
+   time loop's exit condition; strictly after 1-3.
+
+Estimated shape: (1)+(2)+(3) is one contained slice over choupoBatch's
+recipe reader + a `cycleSnapshots()` hook; (4) is separate.  Decision
+requested before any of it is built.
