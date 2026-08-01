@@ -665,6 +665,20 @@ PYEOF
     fi
     rm -f /tmp/feedswitch.$$
 
+    # solverDict-lint gate: a system/solverDict in a batch/ctrl case is a
+    # file nobody reads -- announced by name with the cost stated (the
+    # unread-keys posture), never refused; clean cases stay silent
+    # (sabotage-verified 2026-08-01).
+    if "$ROOT/bin/curate/check_solverdict_lint.py" > /tmp/sdlint.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "solverdict-lint-gate" "$(tail -1 /tmp/sdlint.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_solverdict_lint.py)\n" "solverdict-lint-gate"
+        cat /tmp/sdlint.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sdlint.$$
+
     # ---- Curation gates that existed but never RAN ----------------------
     # Eleven gates sat in bin/curate/ unwired; seven were not even
     # executable.  Two were stale -- check_ion_pins read the retired

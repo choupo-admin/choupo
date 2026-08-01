@@ -57,8 +57,13 @@ OpenFOAM ancestry puts them exactly where they are.
   solverDict = steady flowsheet numerics; unit `solver{}` = per-unit
   integrator choice; controlDict = time control including adaptive
   error tolerances.  One authoritative docs/ai section + a lint check
-  that flags a `solverDict` in a batch/ctrl case (today it would be
-  silently ignored — that part is a real bug regardless of option).
+  that flags a `solverDict` in a batch/ctrl case.  **The lint half
+  SHIPPED 2026-08-01** (it was a real bug regardless of the A/B/C
+  choice): choupoBatch and choupoCtrl announce a present-but-unread
+  `system/solverDict` by name with the cost stated, run continuing —
+  the unread-keys posture; gate `check_solverdict_lint`
+  (positive + negative per binary, sabotage-verified).  The docs/ai
+  section and the A/B/C choice itself remain with Vítor.
 * **B — one home.**  `system/solverDict` becomes the numerics home for
   all four binaries (per-unit and per-driver subdicts); controlDict
   keeps only time SEMANTICS (start/end/write).  Honest but touches the

@@ -248,6 +248,17 @@ try
     DisplayUnits::instance().readPrecision(controlDict);
 
     const int verbosity = static_cast<int>(controlDict->lookupScalarOrDefault("verbosity", 3));
+    //  A whole FILE nobody reads is the unread-key defect one level up
+    //  (scoping: docs/design/solverdict-consolidation-scope.md): only the
+    //  steady flowsheet reads system/solverDict, so its presence in a ctrl
+    //  case means every value in it did nothing.  Announced, never refused
+    //  -- the unread-keys posture (DEV.md 4b, decided 2026-07-31).
+    if (verbosity >= 1 && fs::exists("system/solverDict"))
+        std::cerr << "[dict] system/solverDict is present but choupoCtrl"
+                     " does not read it -- every value in it had NO effect"
+                     " on this run.  Ctrl numerics live in controlDict"
+                     " `timeStepping` / `timeSteppingControl {}`"
+                     " (rtol, atol, deltaT0, deltaTmax).\n";
     //  The manifest says it verifies its claimed records by sha256.  The
     //  importer did, and the offline gate does; the RUNTIME never did -- so
     //  an edited mirrored record ran and MOVED THE ANSWER while the manifest
