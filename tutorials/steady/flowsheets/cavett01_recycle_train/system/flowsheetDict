@@ -7,75 +7,88 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  cavett01_recycle_train / flowsheetDict -- the classic four-flash,
-  three-recycle separation train (topology after R. H. Cavett, 1963).
+  cavett01_recycle_train / flowsheetDict -- the Cavett problem on its
+  PRIMARY specification (Cavett 1963; Rosen & Pauls 1977; Rosen, CACHE
+  News Fall 2005; Seader & Henley 1998, Exercise 10.35).
 
-      feed ──► MIX1 ──► FL1 ──► V1  (gas product)
-                 ▲        │
-                 │        ▼ L1
-                 │      MIX2 ──► FL2 ──► V2 ──► back to MIX1
-                 │        ▲▲      │
-                 │        ││      ▼ L2
-                 │        ││    FL3 ──► V3 ──► back to MIX2
-                 │        ││      │
-                 │        ││      ▼ L3
-                 │        │└──── FL4 ──► V4 ──► back to MIX2
-                 │        │       │
-                 │        │       ▼ L4  (liquid product)
+  The flowsheet is a four-theoretical-stage NEAR-ISOTHERMAL distillation
+  (pressure, not temperature, changes stage to stage -- the Gunther
+  arrangement, US 3,575,077): FL1 is the partial condenser, FL4 the
+  partial reboiler, and the FEED enters at the second stage.  Each stage's
+  liquid cascades DOWN; each stage's vapour climbs back UP -- those three
+  up-going vapours are the recycles R1, R2, R3 of the literature.
 
-  Each flash's LIQUID cascades down the pressure train; each lower flash's
-  VAPOUR climbs back up.  The intermediates (propane and the butanes) are
-  too heavy to leave with V1 and too light to leave with L4, so they pile
-  up in the three loops -- direct substitution creeps, which is exactly why
-  Cavett built it.  TWO tears close all three loops at once: cut the two
-  mixer outlets and every remaining stream is computable in the declared
-  order (the sequential-plan contract validates that claim, it is not an
-  assertion in a comment).
+           P1 (vapour product)
+            ▲
+           FL1  (100 F, 800 psia)
+            ▲│
+        V2  ││ L1
+       (R1) │▼
+    feed ─► M2 ─► FL2  (120 F, 270 psia)
+            ▲       │
+        V3  │       ▼ L2
+       (R2) │      M3 ─► FL3  (96 F, 49 psia)
+            │       ▲      │
+            │   V4  │      ▼ L3
+            │  (R3) │     FL4  (85 F, 13 psia)
+            │       │      │
+            └───────┘      ▼
+                          P2 (liquid product)
 
-  The declared order runs the four flashes FIRST, off the torn mixer
-  outlets, then the mixers -- so both tears are honest backward edges.
+  HISTORY OF THIS DICT: the first commit of this case carried a
+  reconstructed wiring (feed into FL1's mixer; V4 into FL2's) built from
+  paraphrases, with the header saying so.  The primary source then became
+  available and showed BOTH edges wrong -- the feed enters FL2 and V4
+  recycles to FL3.  The reconstruction is gone; what you read is the
+  documented flowsheet.  A topology built from paraphrase and one built
+  from the source differed in 2 edges out of 11 -- worth remembering when
+  citing anything from memory.
+
+  TWO tears still close all three loops: cut the two mixer outlets and
+  every stream is computable in the declared order (validated by the
+  sequential-plan contract, not asserted here).
 \*---------------------------------------------------------------------------*/
 
 units
 (
     {
-        name        FL1;
-        type        isothermalFlash;
-        in          mixed1;
-        outputs     ( L1  V1 );
-        operation   { T 322.04 K;  P 19.0 bar; }
-    }
-    {
         name        FL2;
         type        isothermalFlash;
         in          mixed2;
         outputs     ( L2  V2 );
-        operation   { T 322.04 K;  P 16.5 bar; }
+        operation   { T 322.039 K;  P 18.6159 bar; }   // 120 F, 270 psia
     }
     {
         name        FL3;
         type        isothermalFlash;
-        in          L2;
+        in          mixed3;
         outputs     ( L3  V3 );
-        operation   { T 322.04 K;  P 8.6 bar; }
+        operation   { T 308.706 K;  P 3.3784 bar; }    // 96 F, 49 psia
     }
     {
         name        FL4;
         type        isothermalFlash;
         in          L3;
-        outputs     ( L4  V4 );
-        operation   { T 322.04 K;  P 1.7 bar; }
+        outputs     ( P2  V4 );
+        operation   { T 302.594 K;  P 0.8963 bar; }    // 85 F, 13 psia
     }
     {
-        name        MIX1;
-        type        mixer;
-        inputs      ( feed  V2 );
-        outputs     ( mixed1 );
+        name        FL1;
+        type        isothermalFlash;
+        in          V2;
+        outputs     ( L1  P1 );
+        operation   { T 310.928 K;  P 55.1581 bar; }   // 100 F, 800 psia
     }
     {
-        name        MIX2;
+        name        M2;
         type        mixer;
-        inputs      ( L1  V3  V4 );
+        inputs      ( feed  L1  V3 );
         outputs     ( mixed2 );
+    }
+    {
+        name        M3;
+        type        mixer;
+        inputs      ( L2  V4 );
+        outputs     ( mixed3 );
     }
 );

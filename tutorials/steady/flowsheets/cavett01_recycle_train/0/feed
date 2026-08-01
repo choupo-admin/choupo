@@ -10,30 +10,33 @@
      componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly.
 
-     A wide C1-C11 natural-gasoline feed with the classic light sours -- the
-     SERVICE of Cavett's train.  These flows are Choupo's own (declared in
-     system/controlDict); the topology carries the citation.  Total
-     273.4 kmol/h at the FL1 condition. ---*/
+     THE PRIMARY FEED (Rosen, CACHE News Fall 2005, Fig. 3; Rosen & Pauls,
+     Comput. Chem. Eng. 1 (1977) 11): the original table is in lbmol/hr at
+     120 F, 270 psia, total 27340.6.  Declared here in kmol/h WITH THE SAME
+     NUMERALS -- a uniform x0.4536 scale of every flow, which changes no
+     composition, no K-value and no convergence behaviour; only the absolute
+     throughput.  Stated so nobody mistakes the unit for a transcription
+     error. ---*/
 
 componentMolarFlows
 {
-    N2            3.6 kmol/h;
-    CO2          49.7 kmol/h;
-    H2S           3.4 kmol/h;
-    CH4          30.0 kmol/h;
-    ethane       24.0 kmol/h;
-    propane      22.9 kmol/h;
-    isoButane     6.0 kmol/h;
-    nButane      15.4 kmol/h;
-    isopentane    7.9 kmol/h;
-    nPentane     11.3 kmol/h;
-    nHexane      17.6 kmol/h;
-    nHeptane     26.1 kmol/h;
-    nOctane      18.4 kmol/h;
-    nNonane      16.7 kmol/h;
-    nDecane       8.3 kmol/h;
-    nUndecane    12.1 kmol/h;
+    N2            358.2 kmol/h;
+    CO2          4965.6 kmol/h;
+    H2S           339.4 kmol/h;
+    CH4          2995.5 kmol/h;
+    ethane       2395.5 kmol/h;
+    propane      2291.0 kmol/h;
+    isoButane     604.1 kmol/h;
+    nButane      1539.9 kmol/h;
+    isopentane    790.4 kmol/h;
+    nPentane     1129.9 kmol/h;
+    nHexane      1764.7 kmol/h;
+    nHeptane     2606.7 kmol/h;
+    nOctane      1844.5 kmol/h;
+    nNonane      1669.0 kmol/h;
+    nDecane       831.7 kmol/h;
+    nUndecane    1214.5 kmol/h;
 }
 
-T               322.04 K;
-P               19.0 bar;
+T               322.039 K;
+P               18.6159 bar;

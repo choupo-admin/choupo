@@ -7,51 +7,69 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  cavett01_recycle_train  --  the field's oldest recycle benchmark, run
-                              under the sequential-plan contract.
+  cavett01_recycle_train  --  the field's oldest recycle benchmark, on its
+                              PRIMARY specification.
 
-  TOPOLOGY AFTER: R. H. Cavett, "Application of numerical methods to the
-  convergence of simulated processes involving recycle loops", Proc. API 43
-  (1963) 57.  Four PT-flashes and two adiabatic mixers in a pressure
-  cascade; three vapour recycles; two products (V1 gas, L4 liquid).  It is
-  the problem the flowsheeting literature has used ever since to exercise
-  tear-stream convergence -- the intermediate components circle the loops,
-  direct substitution creeps, and acceleration (Wegstein's method, in the
-  original) earns its keep.
+  SOURCES.  R. H. Cavett, "Application of Numerical Methods to the
+  Convergence of Simulated Processes Involving Recycle Loops", Proc. API
+  43 (1963) 57.  Specification and published solutions: E. M. Rosen &
+  A. C. Pauls, Comput. Chem. Eng. 1 (1977) 11 (FLOWTRAN); E. M. Rosen,
+  "VMGSim: Revisiting the Cavett Problem", CACHE News, Fall 2005 (feed
+  table, stage conditions, and both solutions side by side); also Seader &
+  Henley, Separation Process Principles (1998), Exercise 10.35.
 
-  WHAT IS THE BENCHMARK HERE, AND WHAT IS NOT.  The benchmark is the
-  TOPOLOGY and its convergence behaviour: the 2-tear cut of a 3-loop
-  flowsheet, validated by Flowsheet::validateSequentialPlan, and the outer
-  solver driving 32 tear unknowns to closure.  The stream VALUES are not: they
-  were never portable -- Cavett's 1963 numbers depend on his K-value
-  correlations, and every simulator since reports its own thermodynamics'
-  answer on the shared topology.  This case declares SRK (k_ij = 0) and
-  reports SRK's answer.
+  THE SPEC, from Rosen (2005), Fig. 3:
+      stage        T          P
+      FL1        100 F     800 psia     (310.928 K, 55.1581 bar)
+      FL2        120 F     270 psia     (322.039 K, 18.6159 bar)
+      FL3         96 F      49 psia     (308.706 K,  3.3784 bar)
+      FL4         85 F      13 psia     (302.594 K,  0.8963 bar)
+      feed       120 F     270 psia,  16 components, total 27340.6
+  (original flows lbmol/hr; declared in 0/feed as kmol/h with the same
+  numerals -- a uniform scale, stated there.)  The flowsheet is a
+  four-stage NEAR-ISOTHERMAL distillation (Gunther, US 3,575,077): FL1 the
+  partial condenser, FL4 the partial reboiler, feed on stage 2; products
+  P1 (FL1 vapour) and P2 (FL4 liquid).
 
-  PROVENANCE, STATED PLAINLY: the feed composition and the four (T, P)
-  pairs below are Choupo's own choices in the spirit of the original
-  natural-gasoline service (wide C1-C11 + N2/CO2/H2S feed, descending
-  pressure train).  The primary 1963 table was not verifiable from a
-  primary source when this case was authored; if it is later verified, a
-  variant carrying it can be added beside this one.  Nothing in this case
-  cites a number it cannot source -- the citation above is for the
-  FLOWSHEET, which is what it validates.
+  WHAT THE RUN SHOWS, measured on this spec:
 
-  Things worth watching in the log:
-    * [plan] announces the two cuts (mixed1, mixed2) and validates the
-      declared order -- four flashes first, off the torn mixer outlets,
-      then the two mixers closing the loops;
-    * the iteration counts: 225 Wegstein passes vs 11 Newton iterations on
-      the same two tears (edit system/solverDict and re-run -- the 1963
-      lesson in two runs; both land on the same answer to the declared
-      1e-6, e.g. propane in L4: 6.023826 vs 6.023831 kmol/h);
-    * propane and the butanes: 174.3 kmol/h of propane circulates in
-      `mixed2` against 22.9 in the feed -- a 7.6x loop buildup, the
-      creeping-intermediate trap Cavett wrote about; it still leaves the
-      boundary exactly (16.88 in V1 + 6.02 in L4 = 22.90 fed).
+    * Newton on the two torn mixer outlets: 7 iterations to |r| = 4e-9.
+      Wegstein per-component acceleration STALLS: 300 iterations
+      limit-cycling at |dtear| ~ 1.4e-2, exit 1, no converged/ written --
+      the contract behaving exactly as ratified.  On the primary
+      conditions the 1963 pathology is not slow, it is DEFEATING: propane
+      circulates at 35716 kmol/h in mixed2 against 2291 fed (a 15.6x loop
+      buildup), and the accelerator chases a moving inventory.  (Swap
+      `recycleSolver` in system/solverDict to see both.)
+
+    * The K-MODEL SENSITIVITY, quantified against the published
+      solutions.  This case declares SRK (k_ij = 0); Rosen's 2005 table
+      solves the same spec with an advanced Peng-Robinson package, beside
+      the 1977 FLOWTRAN values.  Our lights agree to <1 % (N2 358.2
+      exact, CH4 2995.4 vs 2995.3, ethane in P1 2383.8 vs 2378.3) and the
+      loop intermediates carry the model difference (isoButane in P1:
+      153.9 here, 197.7 APR, 198.2 FLOWTRAN) -- stream values were never
+      the portable part of this benchmark, and here is the measurement of
+      exactly how un-portable, component by component.
+
+    * A published table is not scripture: Rosen points out the 1977
+      FLOWTRAN ethane row is internally inconsistent (2883.2 in P1 where
+      the component balance wants ~2383.2 -- a transcription slip, 502
+      mol/h of imbalance in print for 28 years).  Our SRK P1 ethane lands
+      at 2383.8.  Check the source's own balance before trusting it: this
+      case's P1+P2 closes against the feed to 0.05 kmol/h worst-component
+      (~1e-5 relative, the declared tear tolerance).
+
+  HISTORY.  The first commit of this case ran a topology reconstructed
+  from paraphrases (primary blocked from the hosted session) and said so
+  in this header.  The primary arrived and showed 2 of 11 edges wrong
+  (feed entered the wrong mixer; V4 recycled one stage too high) plus
+  soft conditions where the real ones are sharp.  Everything above is
+  from the source; the lesson about citing from memory is kept in the
+  flowsheetDict header.
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description   "Cavett (1963) four-flash three-recycle train: 2 tears close 3 loops; SRK phi-phi; the classic tear-convergence benchmark topology";
+description   "Cavett (1963) four-flash recycle benchmark on the primary Rosen-Pauls spec: 2 tears, Newton 7 it (Wegstein defeated), SRK vs published APR/FLOWTRAN products";
 
 verbosity     3;

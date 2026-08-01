@@ -8,14 +8,15 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   solverDict -- the numerical strategy, which on THIS flowsheet is the whole
-  point.  Wegstein per-component acceleration on the two torn mixer outlets:
-  the method Cavett's paper made standard for exactly this trap (loop
-  intermediates that direct substitution moves by a whisker per pass).
-  Swap to `recycleSolver Newton;` and re-run to compare -- both must land on
-  the same answer; only the path differs.
+  point.  On the primary Rosen-Pauls conditions the 1963 pathology DEFEATS
+  Wegstein per-component acceleration outright: 300 iterations limit-cycling
+  at |dtear| ~ 1.4e-2, exit 1, no converged/ (the contract as ratified).
+  Newton on the same two torn mixer outlets: 7 iterations to 4e-9.  Swap
+  `recycleSolver Wegstein;` back in to watch the defeat -- the case is the
+  measurement, not the anecdote.
 \*---------------------------------------------------------------------------*/
 
-tearStreams      ( mixed1  mixed2 );
-recycleSolver    Wegstein;
+tearStreams      ( mixed2  mixed3 );
+recycleSolver    Newton;
 recycleTol       1e-6;
 recycleMaxIter   300;
