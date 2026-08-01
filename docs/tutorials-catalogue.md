@@ -152,6 +152,8 @@ annotated index of what each one demonstrates.
 
 | `ctrl12_williams_otto` | **Runs under `choupoCtrl`.**  The Williams-Otto plant (arXiv:2004.07614, eqs. 3.6–3.11 implemented VERBATIM as the `williamsOttoPlant` unit — reactor + decanter + column + purge/recycle folded into six mass ODEs) settling from the paper's own x₀ onto the PUBLISHED steady state: our (3.2726, 7.4751, 1.1167, 9.8142, 1.6923, 0.2229) klb against the paper's (3.27, 7.47, 1.12, 9.81, 1.69, 0.22) — an EXTERNAL golden anchor, not a self-recorded one.  The MW 453.592 convention (1 kmol ≡ 1 klb) makes every case numeral the paper's; material closes at 4×10⁻¹⁰, elements and energy refuse by name (fictitious species).  Next anchors banked in `docs/design/williams-otto-reference-case.md`: the F_fB step, the four tuned PI channels, the optimisation values for the OuterDriver |
 
+| `ctrl13_williams_otto_step` | **Runs under `choupoCtrl`.**  The paper's first experiment (arXiv:2004.07614 §3.2, Fig. 2), reproduced: a `Schedule` steps F_fB 20→21 klb/h at t* = 100 h and F_pP climbs between the two plateaus the figure draws — ours 3.901 → 4.446 klb/h against the paper's ~3.9 → ~4.4-4.5, with the masses landing on the Fig. 2 levels (m_B → 12.15, m_E → 21.4 klb).  F_pP and F_wG ride the trajectory as first-class columns in the paper's own units, said so in the label (`F_pP_klbh`) |
+
 
 ## Regression-focused cases
 

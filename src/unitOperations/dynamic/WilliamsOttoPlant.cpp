@@ -210,12 +210,18 @@ sVector WilliamsOttoPlant::stateVector() const
 {
     sVector v(m_);
     v.push_back(T_R_ / 1.8);      // K, so the trajectory stays SI-readable
+    //  The two benchmark responses, as first-class trajectory columns --
+    //  in the paper's klb/h, SAID SO in the label, because these are the
+    //  quantities its figures plot and its anchors quote.
+    v.push_back(FpP_());
+    v.push_back(FwG_());
     return v;
 }
 
 std::vector<std::string> WilliamsOttoPlant::stateLabels() const
 {
-    return { "wo_A", "wo_B", "wo_C", "wo_E", "wo_P", "wo_G", "T" };
+    return { "wo_A", "wo_B", "wo_C", "wo_E", "wo_P", "wo_G", "T",
+             "F_pP_klbh", "F_wG_klbh" };
 }
 
 ContinuousStream WilliamsOttoPlant::outletStream() const

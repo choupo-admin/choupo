@@ -9,6 +9,8 @@ kpi     balance                mass_kg_initial  4989.512           1e-4
 kpi     balance                mass_kg_out_cum  5437391.60103      1e-4
 kpi     balance                mass_residual_kg 0.00218069130187   1e-4
 kpi     balance                material_available 1                  1e-4
+kpi     plant                  F_pP_klbh_final  3.90161524936      1e-4
+kpi     plant                  F_wG_klbh_final  1.22338475064      1e-4
 kpi     plant                  T_final          322.2222           1e-4
 kpi     plant                  t_end            1440000            1e-4
 kpi     plant                  wo_A_final       3.27262793643      1e-4

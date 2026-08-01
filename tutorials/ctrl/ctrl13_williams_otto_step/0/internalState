@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/internalState -- the paper's own initial state (section 3.2):
+
+      x0 = (m_A, m_B, m_C, m_E, m_P, m_G) = (10, 1, 0, 0, 0, 0) klb
+
+  With the MW 453.592 convention, the holdupMolar numerals below in kmol
+  ARE those klb values.  T = 322.2222 K is 580 degrees Rankine exactly
+  (the paper's T*); V is a formal entry the folded plant does not use
+  (its volume follows from Sum m_i/rho0 inside the equations).
+\*---------------------------------------------------------------------------*/
+
+time            0;
+application     ctrl;
+
+units
+{
+    "plant"
+    {
+        T            322.2222 K;      // 580 degR exactly
+        P            1.013 bar;
+        V            1.0;             // formal; the model derives V = m/rho0
+        holdupMolar
+        {
+            wo_A    10.0;             // kmol == klb
+            wo_B     1.0;
+            wo_C     0.0;
+            wo_E     0.0;
+            wo_P     0.0;
+            wo_G     0.0;
+        }
+    }
+}

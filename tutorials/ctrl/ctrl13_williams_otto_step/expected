@@ -1,0 +1,24 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     FeedStep               MV_final         0.0058333333       1e-4
+kpi     FeedStep               PV_final         0                  1e-4
+kpi     FeedStep               SP_final         0.0058333333       1e-4
+kpi     balance                energy_balance_available 0                  1e-4
+kpi     balance                mass_closure_rel 1.45035580918e-09  1e-4
+kpi     balance                mass_kg_final    19794.220051       1e-4
+kpi     balance                mass_kg_in_cum   2766911.20181      1e-4
+kpi     balance                mass_kg_initial  4989.512           1e-4
+kpi     balance                mass_kg_out_cum  2752106.49778      1e-4
+kpi     balance                mass_residual_kg 0.00401300573503   1e-4
+kpi     balance                material_available 1                  1e-4
+kpi     plant                  F_pP_klbh_final  4.44568758172      1e-4
+kpi     plant                  F_wG_klbh_final  1.90791543668      1e-4
+kpi     plant                  T_final          322.2222           1e-4
+kpi     plant                  t_end            720000             1e-4
+kpi     plant                  wo_A_final       4.32174114699      1e-4
+kpi     plant                  wo_B_final       12.1472026114      1e-4
+kpi     plant                  wo_C_final       1.49898578669      1e-4
+kpi     plant                  wo_E_final       21.3907805309      1e-4
+kpi     plant                  wo_G_final       0.642928031189     1e-4
+kpi     plant                  wo_P_final       3.6371827957       1e-4

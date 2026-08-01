@@ -1,0 +1,56 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl13_williams_otto_step / flowsheetDict
+
+  One unit, because the benchmark IS one equation set: the Williams-Otto
+  reactor + decanter + column + splitter fold into six ODEs (the recycle
+  term (1-eta)mu, the removed G, the 0.1 F_tE column retention are all
+  inside them -- see the unit's own header).  The five controls sit in
+  `operation`, declared SI: with the MW 453.592 convention (1 kmol == 1
+  klb) every numeral below IS the paper's value in klb/h.
+
+  u* of eq. (3.20) plus the paper's FIRST simulation experiment
+  (section 3.2, Fig. 2): a Schedule steps F_fB from 20 to 21 klb/h at
+  t* = 100 h.  The MV crosses the boundary in SI (kmol/s), so the step
+  values below are 20/3600 and 21/3600 -- the paper's numbers over the
+  one declared conversion.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        plant;
+        type        williamsOttoPlant;
+
+        operation
+        {
+            F_fA    10.0  kmol/h;     // == 10 klb/h   (the paper's F*_fA)
+            F_fB    20.0  kmol/h;     // == 20 klb/h
+            mu      129.5 kmol/h;     // == 129.5 klb/h
+            eta     0.2;
+        }
+    }
+);
+
+controllers
+(
+    {
+        name         FeedStep;
+        type         Schedule;
+
+        actuator     { unit plant;  mv F_fB; }
+
+        schedule
+        (
+            { time 0;       value 5.5555556e-3; }   // 20 klb/h in kmol/s
+            { time 360000;  value 5.8333333e-3; }   // 21 klb/h at t* = 100 h
+        );
+    }
+);
