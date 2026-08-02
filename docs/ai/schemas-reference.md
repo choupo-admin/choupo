@@ -5,11 +5,11 @@
      to the hand-curated unit-ops.md (which has groupings, prose and
      worked examples); this file is the alphabetical schema dump. -->
 
-*60 of 76 registered operations carry a schema and are documented below.*
+*64 of 76 registered operations carry a schema and are documented below.*
 
 **Not documented here** — these operations are registered and runnable but have no `.schema.json` yet, so the GUI has no property editor for them and this reference cannot describe their fields.  Read `unit-ops.md`, the tutorials, or the header comment of the implementing class instead; adding a schema file is what removes a name from this list:
 
-> `electrolyteActivity`, `enrtlMixedSolvent`, `enrtlMultiSalt`, `estimateComponent`, `evaporativeDryer`, `gibbsMap`, `heatTransferBench`, `kinetics1D`, `pneumaticConveyor`, `propertyScanBinary`, `propertyScanTernary`, `psa`, `psychrometricChart`, `purePhaseDiagram`, `scalingScan`, `tsaTwinBed`
+> `evaporativeDryer`, `gibbsMap`, `heatTransferBench`, `kinetics1D`, `pneumaticConveyor`, `propertyScanBinary`, `propertyScanTernary`, `psa`, `psychrometricChart`, `purePhaseDiagram`, `scalingScan`, `tsaTwinBed`
 
 ## `FUG`  (FUG operation)
 
@@ -257,6 +257,16 @@ Electrodialysis stack: N cell pairs of alternating cation/anion-exchange membran
 | `E_electrodes` |   | number | - | Lumped electrode + electrode-rinse voltage, added to the stack voltage; raw SI (volts), announced. |
 | `membrane` | ✓ | string | — | Resolved by name (kind IEM), e.g. CMX_AMX; supplies the area resistances and counter-ion transport numbers. |
 
+## `electrolyteActivity`  (electrolyteActivity operation)
+
+Mean-ionic activity and osmotic coefficients of the salt the CASE's declared thermophysical system carries — the package's own electrolyte surface, exercised directly. Where `pitzerActivity` names its salt by two ions and is the model's bench, this op takes the salt from the declaration and is the PACKAGE's bench: the numbers here are exactly what the flowsheet units will see, which is the point of running it before them.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `molality` |   | object | — | `{ from ...; to ...; n ...; }` — the molality range to sweep. |
+| `temperature` |   | number | K | Defaults to 298.15 K. |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
 ## `elementalComposition`  (elementalComposition operation)
 
 Glass-box surface of the ONE shared formula parser (src/thermo/ElementComposition) that every balance diagnostic uses. Decomposes chemical formulas into their per-element atom counts and reports them, so the parser a student relies on for the element balance can be exercised and read directly. Give `formulas`, `components`, or both; a formula it cannot parse is REFUSED by name rather than silently skipped.
@@ -267,6 +277,30 @@ Glass-box surface of the ONE shared formula parser (src/thermo/ElementCompositio
 | `components` |   | array[string] | — | Component names whose declared `formula` is looked up and decomposed. A component with no declared formula keeps its honest refusal. |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
+## `enrtlMixedSolvent`  (enrtlMixedSolvent operation)
+
+Mixed-solvent eNRTL bench: the mean-ionic activity coefficient of a salt in water-alcohol mixtures, regressed system by system against published data. The case SPELLS OUT the binary tau parameters and the alcohol's own constants so it reads as its own citation — defaults exist (the published water-ethanol-NaCl set) but a case that states them teaches where every number came from. Each entry of `systems` is one solvent composition with its Debye-Hückel A_phi and its measured (m, gamma) points; the op reports the deviation per system.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `salt` |   | object | — | The four eNRTL binary interaction parameters of the salt with each solvent (e.g. tau_OH_ca / tau_ca_OH for water, tau_C2_ca / tau_ca_C2 f… |
+| `alcohol` |   | object | — | The co-solvent's own eNRTL constants: `{ X ...; Z ...; MW ...; }`. |
+| `systems` | ✓ | array[object] | — | One entry per solvent composition: `{ wtAlcohol <wt%>; Aphi <A_phi>; data ( { m ...; gamma ...; } ... ); }` — the alcohol mass fraction, … |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `enrtlMultiSalt`  (enrtlMultiSalt operation)
+
+Multi-salt symmetric eNRTL bench: the mean-ionic gammas of two (or more) salts sharing an ion, swept across the mixing fraction at constant total molality — the Harned-rule experiment. Two formulations run side by side by declaration: `published` (the industrial expressions exactly as printed) and `refined` (gamma as the EXACT Gibbs-Duhem-consistent derivative of the same excess Gibbs energy, the chain rule kept through the composition-dependent mixing rules). The difference between them is measured, not asserted.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `salts` | ✓ | array[object] | — | `( { cation Na; anion Cl; } { cation K; anion Cl; } ... )` — each salt by its two ions; stoichiometry derives from the charges. |
+| `totalMolality` |   | number | mol/kg | Held constant while the salt fractions sweep; defaults to 4.0. |
+| `sweepPoints` |   | integer | - | Defaults to 21. |
+| `tauEE` |   | number | - | The salt-salt interaction parameter; defaults to 0 (none fitted). |
+| `formulation` |   | string | — | published (default) = the industrial expressions as printed; refined = the Gibbs-Duhem-exact derivative of the same G_ex. |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
 ## `equilibriumReactor`  (equilibriumReactor operation)
 
 Reactor taken to CHEMICAL EQUILIBRIUM over the reactions the unit names in its `reactions ( <name> ... );` key — blocks of the case's `constant/reactions` library. The extents solve equilibrium constants computed from the same elements/formation datum every other reactor uses, so the answer is a property of the curated thermochemistry and not of a separately entered K. The pedagogical contrast with `gibbsReactor` is the declared SET: here these reactions equilibrate; there the mixture finds its own minimum over all species.
@@ -274,6 +308,22 @@ Reactor taken to CHEMICAL EQUILIBRIUM over the reactions the unit names in its `
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `T` |   | number | K | Isothermal operating temperature (a fired reformer holds it). Omit to hold the feed temperature. |
+
+## `estimateComponent`  (estimateComponent operation)
+
+Group-contribution estimation of a component's constants — curation made visible, like the fit ops: the estimate is computed, compared against a reference where one is given, and written as a promotable draft, never silently into the catalogue.  THREE routes by `model`: a group method (Joback for small molecules, vanKrevelen for a polymer repeat unit) decomposes the molecule into `groups`; a scalar-anchored method (RiaziDaubert) builds a petroleum PSEUDO-component from `anchors { Tb; SG; }` and needs no groups — the record it writes says loudly that a cut is a LUMP of hundreds of species, not a molecule; and the polymer route adds a `polymer {}` block whose packing factor k is visible, never hidden, because rho = M0/(k·Vw) and k IS the assumption.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `component` |   | string | — | Names the estimate in the report and the output record. |
+| `model` |   | string | — | Defaults to Joback. |
+| `groups` |   | array[object] | — | `( { group CH3; count 2; } ... )` — the molecule's decomposition in the model's own group vocabulary.  Required by the GROUP methods; a s… |
+| `derived` |   | object | — | Additional quantities computed FROM the estimated constants (e.g. an Ambrose-Walton vapour-pressure curve), each labelled as doubly derived. |
+| `reference` |   | object | — | Published constants to compare the estimate against, with their `source` cited; the report shows the per-property deviation. `validation`… |
+| `validation` |   | object | — |  |
+| `anchors` |   | object | — | Measured scalars that anchor the estimate.  For a petroleum cut (RiaziDaubert) this IS the input — `{ Tb ...; SG ...; }` — and `groups` i… |
+| `polymer` |   | object | — | vanKrevelen route: `{ packing k; }` — the packing factor V/Vw, the fraction of space the chains do NOT fill. Default 1.60 (amorphous/glas… |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
 ## `evaporator`  (evaporator operation)
 

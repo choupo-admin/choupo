@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/electrolyteActivity.schema.json",
+  "title": "electrolyteActivity operation",
+  "description": "Mean-ionic activity and osmotic coefficients of the salt the CASE's declared thermophysical system carries — the package's own electrolyte surface, exercised directly. Where `pitzerActivity` names its salt by two ions and is the model's bench, this op takes the salt from the declaration and is the PACKAGE's bench: the numbers here are exactly what the flowsheet units will see, which is the point of running it before them.",
+  "type": "object",
+  "properties": {
+    "molality": {
+      "type": "object",
+      "title": "Molality scan",
+      "description": "`{ from ...; to ...; n ...; }` — the molality range to sweep.",
+      "properties": {
+        "from": {
+          "type": "number",
+          "minimum": 0,
+          "title": "First molality",
+          "unit": "mol/kg"
+        },
+        "to": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Last molality",
+          "unit": "mol/kg"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Number of points",
+          "unit": "-"
+        }
+      }
+    },
+    "temperature": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature",
+      "description": "Defaults to 298.15 K.",
+      "unit": "K"
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

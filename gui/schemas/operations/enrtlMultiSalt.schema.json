@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/enrtlMultiSalt.schema.json",
+  "title": "enrtlMultiSalt operation",
+  "description": "Multi-salt symmetric eNRTL bench: the mean-ionic gammas of two (or more) salts sharing an ion, swept across the mixing fraction at constant total molality — the Harned-rule experiment. Two formulations run side by side by declaration: `published` (the industrial expressions exactly as printed) and `refined` (gamma as the EXACT Gibbs-Duhem-consistent derivative of the same excess Gibbs energy, the chain rule kept through the composition-dependent mixing rules). The difference between them is measured, not asserted.",
+  "type": "object",
+  "properties": {
+    "salts": {
+      "type": "array",
+      "title": "Salts",
+      "minItems": 1,
+      "description": "`( { cation Na; anion Cl; } { cation K; anion Cl; } ... )` — each salt by its two ions; stoichiometry derives from the charges.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "cation": {
+            "type": "string",
+            "title": "Cation species"
+          },
+          "anion": {
+            "type": "string",
+            "title": "Anion species"
+          }
+        },
+        "required": [
+          "cation",
+          "anion"
+        ]
+      }
+    },
+    "totalMolality": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Total molality",
+      "description": "Held constant while the salt fractions sweep; defaults to 4.0.",
+      "unit": "mol/kg"
+    },
+    "sweepPoints": {
+      "type": "integer",
+      "minimum": 2,
+      "title": "Sweep points",
+      "description": "Defaults to 21.",
+      "unit": "-"
+    },
+    "tauEE": {
+      "type": "number",
+      "title": "Ion-ion tau",
+      "description": "The salt-salt interaction parameter; defaults to 0 (none fitted).",
+      "unit": "-"
+    },
+    "formulation": {
+      "type": "string",
+      "enum": [
+        "published",
+        "refined"
+      ],
+      "title": "Gamma formulation",
+      "description": "published (default) = the industrial expressions as printed; refined = the Gibbs-Duhem-exact derivative of the same G_ex."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "salts"
+  ],
+  "additionalProperties": false
+}

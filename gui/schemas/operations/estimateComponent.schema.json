@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/estimateComponent.schema.json",
+  "title": "estimateComponent operation",
+  "description": "Group-contribution estimation of a component's constants — curation made visible, like the fit ops: the estimate is computed, compared against a reference where one is given, and written as a promotable draft, never silently into the catalogue.  THREE routes by `model`: a group method (Joback for small molecules, vanKrevelen for a polymer repeat unit) decomposes the molecule into `groups`; a scalar-anchored method (RiaziDaubert) builds a petroleum PSEUDO-component from `anchors { Tb; SG; }` and needs no groups — the record it writes says loudly that a cut is a LUMP of hundreds of species, not a molecule; and the polymer route adds a `polymer {}` block whose packing factor k is visible, never hidden, because rho = M0/(k·Vw) and k IS the assumption.",
+  "type": "object",
+  "properties": {
+    "component": {
+      "type": "string",
+      "title": "Component name",
+      "description": "Names the estimate in the report and the output record."
+    },
+    "model": {
+      "type": "string",
+      "title": "Estimation model",
+      "description": "Defaults to Joback."
+    },
+    "groups": {
+      "type": "array",
+      "title": "Structural groups",
+      "minItems": 1,
+      "description": "`( { group CH3; count 2; } ... )` — the molecule's decomposition in the model's own group vocabulary.  Required by the GROUP methods; a scalar-anchored estimator (RiaziDaubert) runs from `anchors` instead and declares none.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "title": "Group name"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "title": "Occurrences",
+            "unit": "-"
+          }
+        },
+        "required": [
+          "group",
+          "count"
+        ]
+      }
+    },
+    "derived": {
+      "type": "object",
+      "title": "Derived-property requests",
+      "description": "Additional quantities computed FROM the estimated constants (e.g. an Ambrose-Walton vapour-pressure curve), each labelled as doubly derived."
+    },
+    "reference": {
+      "type": "object",
+      "title": "Reference values",
+      "description": "Published constants to compare the estimate against, with their `source` cited; the report shows the per-property deviation. `validation` is accepted as a synonym."
+    },
+    "validation": {
+      "type": "object",
+      "title": "Reference values (synonym)"
+    },
+    "anchors": {
+      "type": "object",
+      "title": "Anchor data",
+      "description": "Measured scalars that anchor the estimate.  For a petroleum cut (RiaziDaubert) this IS the input — `{ Tb ...; SG ...; }` — and `groups` is absent, since a lump has no molecule to decompose."
+    },
+    "polymer": {
+      "type": "object",
+      "title": "Polymer options",
+      "description": "vanKrevelen route: `{ packing k; }` — the packing factor V/Vw, the fraction of space the chains do NOT fill. Default 1.60 (amorphous/glassy); crystalline packs denser (~1.43). It is a declared, visible assumption — change it and watch rho move, which is the lesson.",
+      "properties": {
+        "packing": {
+          "type": "number",
+          "exclusiveMinimum": 1,
+          "title": "Packing factor k = V/Vw",
+          "unit": "-"
+        },
+        "state": {
+          "type": "string",
+          "title": "Chain state",
+          "description": "Label for the report (amorphous by default); the physics is carried by `packing`, not by this word."
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

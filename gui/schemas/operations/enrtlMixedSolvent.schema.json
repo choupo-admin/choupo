@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/enrtlMixedSolvent.schema.json",
+  "title": "enrtlMixedSolvent operation",
+  "description": "Mixed-solvent eNRTL bench: the mean-ionic activity coefficient of a salt in water-alcohol mixtures, regressed system by system against published data. The case SPELLS OUT the binary tau parameters and the alcohol's own constants so it reads as its own citation — defaults exist (the published water-ethanol-NaCl set) but a case that states them teaches where every number came from. Each entry of `systems` is one solvent composition with its Debye-Hückel A_phi and its measured (m, gamma) points; the op reports the deviation per system.",
+  "type": "object",
+  "properties": {
+    "salt": {
+      "type": "object",
+      "title": "Salt tau parameters",
+      "description": "The four eNRTL binary interaction parameters of the salt with each solvent (e.g. tau_OH_ca / tau_ca_OH for water, tau_C2_ca / tau_ca_C2 for the alcohol). Keys are the published table's own names.",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "alcohol": {
+      "type": "object",
+      "title": "Alcohol constants",
+      "description": "The co-solvent's own eNRTL constants: `{ X ...; Z ...; MW ...; }`.",
+      "properties": {
+        "X": {
+          "type": "number",
+          "title": "X",
+          "unit": "-"
+        },
+        "Z": {
+          "type": "number",
+          "title": "Z",
+          "unit": "-"
+        },
+        "MW": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Molar mass",
+          "unit": "-"
+        }
+      }
+    },
+    "systems": {
+      "type": "array",
+      "title": "Solvent compositions with data",
+      "minItems": 1,
+      "description": "One entry per solvent composition: `{ wtAlcohol <wt%>; Aphi <A_phi>; data ( { m ...; gamma ...; } ... ); }` — the alcohol mass fraction, the Debye-Hückel constant OF THAT MIXTURE, and the measured points the prediction is held against.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "wtAlcohol": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "title": "Alcohol mass percent",
+            "unit": "-"
+          },
+          "Aphi": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "title": "Debye-Hückel A_phi of the mixture",
+            "unit": "-"
+          },
+          "data": {
+            "type": "array",
+            "title": "Measured (m, gamma) points",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "m": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "title": "Molality",
+                  "unit": "mol/kg"
+                },
+                "gamma": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "title": "Measured mean-ionic gamma",
+                  "unit": "-"
+                }
+              },
+              "required": [
+                "m",
+                "gamma"
+              ]
+            }
+          }
+        },
+        "required": [
+          "wtAlcohol",
+          "Aphi",
+          "data"
+        ]
+      }
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "systems"
+  ],
+  "additionalProperties": false
+}
