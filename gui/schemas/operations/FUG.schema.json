@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/FUG.schema.json",
+  "title": "FUG operation",
+  "description": "Shortcut distillation by Fenske-Underwood-Gilliland — the SAME unit as `shortcutColumn` under the method's own initials; both read the identical operation block. Preliminary column design by the Fenske-Underwood-Gilliland shortcut method. Returns N_min (Fenske), R_min (Underwood), the stage count N (Gilliland) and the feed stage (Kirkbride). Assumes constant relative volatility; not valid for azeotropes.",
+  "type": "object",
+  "properties": {
+    "lightKey": {
+      "type": "string",
+      "title": "Light key",
+      "description": "The more-volatile key component."
+    },
+    "heavyKey": {
+      "type": "string",
+      "title": "Heavy key",
+      "description": "The less-volatile key component."
+    },
+    "recoveryLK": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Light-key recovery to distillate",
+      "description": "Fraction of the feed light key leaving in the distillate.",
+      "unit": "-"
+    },
+    "recoveryHK": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Heavy-key recovery to distillate",
+      "description": "Fraction of the feed heavy key leaving in the distillate.",
+      "unit": "-"
+    },
+    "refluxRatio": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Operating reflux ratio",
+      "description": "Operating reflux ratio R; must exceed R_min. Use this or refluxFactor.",
+      "unit": "-"
+    },
+    "refluxFactor": {
+      "type": "number",
+      "exclusiveMinimum": 1,
+      "title": "Reflux factor R / R_min",
+      "description": "Operating reflux as a multiple of the minimum, R/R_min. Use this or refluxRatio.",
+      "unit": "-"
+    }
+  },
+  "required": [
+    "lightKey",
+    "heavyKey",
+    "recoveryLK",
+    "recoveryHK"
+  ],
+  "additionalProperties": false
+}

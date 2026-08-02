@@ -191,6 +191,35 @@ def uses_in_props(op: str):
 #  own header said it would be.  The gate now holds the plain contract: every
 #  schema accepts every case that runs.  Do not reintroduce a baseline -- a
 #  disagreement is a schema to fix, not a line to record.
+def alias_groups():
+    """Operation names that construct the SAME C++ class, from the registry.
+
+    Derived, never hand-listed: the explicit reg("name", make_unique<Class>)
+    calls ARE the aliasing (CLAUDE.md's no-macro registration makes the grep
+    exact), so a new alias joins its group with no edit here.  Two names for
+    one unit read one operation block, so their schemas must agree on
+    `properties` and `required` -- the descriptions may differ (that is what
+    an alias-specific note is for), the CONTRACT may not.  Without this, the
+    alias copies were three files that had to stay equal with nothing making
+    them: the standing drift of the arity doctrine, one directory over.
+    """
+    pairs = []
+    for rel in ("src/unitOperations/UnitOperation.cpp",
+                "src/propertyOps/PropertyOperation.cpp"):
+        f = ROOT / rel
+        if not f.is_file():
+            print(f"check_schema_coverage: {rel} not found -- the registry "
+                  "moved; fix the path here")
+            sys.exit(1)
+        pairs += re.findall(
+            r'reg\("([A-Za-z0-9_]+)",\s*\[\]\{ return std::make_unique<'
+            r"([A-Za-z0-9]+)>", f.read_text())
+    by_cls = {}
+    for name, cls in pairs:
+        by_cls.setdefault(cls, []).append(name)
+    return {cls: sorted(ns) for cls, ns in by_cls.items() if len(ns) > 1}
+
+
 def main() -> int:
     schemas = sorted(SCHEMAS.glob("*.schema.json"))
     if len(schemas) < 20:
@@ -225,6 +254,27 @@ def main() -> int:
                     "without it -- the engine defaults it, so the schema is "
                     "over-strict")
 
+    # ---- alias agreement: one class, one contract -----------------------
+    nAlias = 0
+    for cls, names in sorted(alias_groups().items()):
+        have = [(n, SCHEMAS / f"{n}.schema.json") for n in names
+                if (SCHEMAS / f"{n}.schema.json").exists()]
+        if len(have) < 2:
+            continue
+        nAlias += 1
+        ref_name, ref_path = have[0]
+        ref = json.loads(ref_path.read_text())
+        for n, sp in have[1:]:
+            s = json.loads(sp.read_text())
+            if (s.get("properties") != ref.get("properties")
+                    or sorted(s.get("required", []))
+                    != sorted(ref.get("required", []))):
+                failures.append(
+                    f"ALIAS DRIFT: {n} and {ref_name} both construct {cls} "
+                    "and read the same operation block, but their schemas "
+                    "disagree on properties/required -- one unit, one "
+                    "contract; edit them together")
+
     if failures:
         print("check_schema_coverage: FAIL")
         for f in failures:
@@ -232,8 +282,9 @@ def main() -> int:
         return 1
     print(f"check_schema_coverage: OK -- {len(schemas)} schema(s), "
           f"{exercised} exercised by the corpus over {checked} case use(s); "
-          "no schema rejects a key a running case uses, and none marks "
-          "required a key a running case omits")
+          "no schema rejects a key a running case uses, none marks required "
+          f"a key a running case omits, and {nAlias} registry-derived alias "
+          "group(s) agree property-for-property")
     return 0
 
 

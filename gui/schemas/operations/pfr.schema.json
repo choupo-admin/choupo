@@ -13,7 +13,7 @@
       "exclusiveMinimum": 0,
       "title": "Reactor volume",
       "description": "Total reactor volume; RK4 integrates over the residence-time interval [0, V_R / Q_feed].",
-      "unit": "m^3",
+      "unit": "m3",
       "default": 0.005
     },
     "nSteps": {

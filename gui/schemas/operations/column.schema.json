@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/column.schema.json",
+  "title": "column operation",
+  "description": "Multistage distillation column — the SAME unit as `distillationColumn` under its shorter name; both read the identical operation block. Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes.",
+  "type": "object",
+  "required": [
+    "nStages",
+    "refluxRatio",
+    "distillateRate"
+  ],
+  "properties": {
+    "nStages": {
+      "type": "integer",
+      "minimum": 2,
+      "title": "Internal stages",
+      "description": "Equilibrium stages between condenser and reboiler. Total stages = nStages + 2.",
+      "default": 20
+    },
+    "feedStage": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Feed stage",
+      "description": "1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which is required once there is more than one input stream.",
+      "default": 10
+    },
+    "refluxRatio": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Reflux ratio",
+      "description": "L/D, liquid returned to the column over distillate withdrawn.",
+      "default": 2.0
+    },
+    "distillateRate": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Distillate flow",
+      "description": "Top product molar flow rate.",
+      "unit": "kmol/s",
+      "default": 0.5
+    },
+    "P": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Operating pressure",
+      "description": "Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted.",
+      "unit": "Pa"
+    },
+    "feedQuality": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "title": "Feed quality q",
+      "description": "Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour.",
+      "default": 1.0
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "WangHenke",
+        "simultaneous"
+      ],
+      "title": "Solution method",
+      "description": "WangHenke (sequential bubble-point, the default, fine for ideal systems) or simultaneous (rigorous MESH Newton, stable through an azeotrope where the bubble-point route is not). Also settable in the unit's `model` slot."
+    },
+    "feeds": {
+      "type": "array",
+      "title": "Multiple feeds",
+      "description": "Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream enters where. Replaces the single `feedStage`.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "stream": {
+            "type": "string",
+            "title": "Input stream name"
+          },
+          "stage": {
+            "type": "integer",
+            "minimum": 1,
+            "title": "Stage it enters",
+            "unit": "-"
+          },
+          "quality": {
+            "type": "number",
+            "title": "Feed quality q of this feed",
+            "unit": "-"
+          }
+        },
+        "required": [
+          "stream",
+          "stage"
+        ]
+      }
+    },
+    "sideDraws": {
+      "type": "array",
+      "title": "Side draws",
+      "description": "Product withdrawn between the ends. A draw's phase decides which internal traffic it removes, so it is a separation decision, not just a flow.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "stage": {
+            "type": "integer",
+            "minimum": 1,
+            "title": "Stage drawn from",
+            "unit": "-"
+          },
+          "rate": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "title": "Draw rate",
+            "unit": "kmol/s"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "liquid",
+              "vapour",
+              "vapor",
+              "V"
+            ],
+            "title": "Phase drawn",
+            "description": "Defaults to liquid."
+          }
+        },
+        "required": [
+          "stage",
+          "rate"
+        ]
+      }
+    },
+    "murphreeEfficiency": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Murphree tray efficiency",
+      "description": "Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Below 1 the run announces that the stages are no longer theoretical.",
+      "unit": "-"
+    },
+    "hydraulics": {
+      "type": "object",
+      "title": "Tray hydraulics (rating pass)",
+      "description": "Present = run a hydraulic RATING on the converged profile, which the stage equations never do: can the trays pass the traffic? Give `diameter` to rate an existing tower (how close to flood is each tray?); omit it to have the diameter SIZED to the `floodFraction` target. Reports entrainment flooding, downcomer flooding and weeping — a column that floods separates nothing, and the MESH solution does not notice.",
+      "properties": {
+        "trayType": {
+          "type": "string",
+          "title": "Tray type",
+          "description": "e.g. sieve."
+        },
+        "diameter": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tower diameter",
+          "description": "Given = rating mode; omitted = the diameter is sized to floodFraction.",
+          "unit": "m"
+        },
+        "traySpacing": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tray spacing",
+          "unit": "m"
+        },
+        "weirHeight": {
+          "type": "number",
+          "minimum": 0,
+          "title": "Weir height",
+          "unit": "m"
+        },
+        "weirLengthFraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Weir length / tower diameter",
+          "unit": "-"
+        },
+        "holeDiameter": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Hole diameter",
+          "unit": "m"
+        },
+        "holeAreaFraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Hole area / active area",
+          "unit": "-"
+        },
+        "downcomerAreaFraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Downcomer area / tower area",
+          "unit": "-"
+        },
+        "orificeCoefficient": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Orifice coefficient C_o",
+          "description": "Read off the Liebson chart; it is chart data, not a fluid property.",
+          "unit": "-"
+        },
+        "floodFraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Design flood fraction",
+          "unit": "-"
+        },
+        "K2": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Weep-point constant K2",
+          "description": "From the weep chart at the operating h_w + h_ow.",
+          "unit": "-"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

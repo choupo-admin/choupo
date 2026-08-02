@@ -5,11 +5,41 @@
      to the hand-curated unit-ops.md (which has groupings, prose and
      worked examples); this file is the alphabetical schema dump. -->
 
-*50 of 76 registered operations carry a schema and are documented below.*
+*55 of 76 registered operations carry a schema and are documented below.*
 
 **Not documented here** — these operations are registered and runnable but have no `.schema.json` yet, so the GUI has no property editor for them and this reference cannot describe their fields.  Read `unit-ops.md`, the tutorials, or the header comment of the implementing class instead; adding a schema file is what removes a name from this list:
 
-> `column`, `electrodialysisStack`, `electrolyteActivity`, `enrtlMixedSolvent`, `enrtlMultiSalt`, `estimateComponent`, `evaporativeDryer`, `exchange`, `extract`, `FUG`, `gibbsMap`, `heatTransferBench`, `ionExchanger`, `kinetics1D`, `membraneSW`, `MHeatX`, `pneumaticConveyor`, `propertyScanBinary`, `propertyScanTernary`, `psa`, `psychrometricChart`, `purePhaseDiagram`, `REquil`, `scalingScan`, `spiralWoundModule`, `tsaTwinBed`
+> `electrodialysisStack`, `electrolyteActivity`, `enrtlMixedSolvent`, `enrtlMultiSalt`, `estimateComponent`, `evaporativeDryer`, `exchange`, `gibbsMap`, `heatTransferBench`, `ionExchanger`, `kinetics1D`, `membraneSW`, `pneumaticConveyor`, `propertyScanBinary`, `propertyScanTernary`, `psa`, `psychrometricChart`, `purePhaseDiagram`, `scalingScan`, `spiralWoundModule`, `tsaTwinBed`
+
+## `FUG`  (FUG operation)
+
+Shortcut distillation by Fenske-Underwood-Gilliland — the SAME unit as `shortcutColumn` under the method's own initials; both read the identical operation block. Preliminary column design by the Fenske-Underwood-Gilliland shortcut method. Returns N_min (Fenske), R_min (Underwood), the stage count N (Gilliland) and the feed stage (Kirkbride). Assumes constant relative volatility; not valid for azeotropes.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `lightKey` | ✓ | string | — | The more-volatile key component. |
+| `heavyKey` | ✓ | string | — | The less-volatile key component. |
+| `recoveryLK` | ✓ | number | - | Fraction of the feed light key leaving in the distillate. |
+| `recoveryHK` | ✓ | number | - | Fraction of the feed heavy key leaving in the distillate. |
+| `refluxRatio` |   | number | - | Operating reflux ratio R; must exceed R_min. Use this or refluxFactor. |
+| `refluxFactor` |   | number | - | Operating reflux as a multiple of the minimum, R/R_min. Use this or refluxRatio. |
+
+## `MHeatX`  (MHeatX operation)
+
+Multi-stream heat exchanger — the SAME unit as `multiStreamHX` under its compact name; both read the identical operation block. Multi-stream heat exchanger: several hot and cold streams exchanging in one block, each leaving at a declared target. The unit checks that the composite duties BALANCE to within a declared tolerance and refuses a set of targets that does not — an unbalanced multi-stream box is an energy leak, not a design.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `outlet` | ✓ | object | — | One sub-dict per stream NAME, each `{ T ...; vf ...; }`. The vapour fraction defaults to the inlet's, so a sensible-only stream needs onl… |
+| `tolerance` |   | number | - | Fractional imbalance allowed between the total hot and cold duties; defaults to 0.01. Exceeding it REFUSES the run rather than reporting … |
+
+## `REquil`  (REquil operation)
+
+Equilibrium reactor — the SAME unit as `equilibriumReactor` under its compact name; both read the identical operation block. Reactor taken to CHEMICAL EQUILIBRIUM over the reactions the unit names in its `reactions ( <name> ... );` key — blocks of the case's `constant/reactions` library. The extents solve equilibrium constants computed from the same elements/formation datum every other reactor uses, so the answer is a property of the curated thermochemistry and not of a separately entered K. The pedagogical contrast with `gibbsReactor` is the declared SET: here these reactions equilibrate; there the mixture finds its own minimum over all species.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `T` |   | number | K | Isothermal operating temperature (a fired reformer holds it). Omit to hold the feed temperature. |
 
 ## `absorber`  (absorber operation)
 
@@ -77,6 +107,24 @@ Bubble-point temperature at fixed pressure: the T at which the first vapour bubb
 |---|:-:|---|---|---|
 | `P` | ✓ | number | Pa | System pressure at which the bubble point is evaluated. |
 
+## `column`  (column operation)
+
+Multistage distillation column — the SAME unit as `distillationColumn` under its shorter name; both read the identical operation block. Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `nStages` | ✓ | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
+| `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
+| `refluxRatio` | ✓ | number | — | L/D, liquid returned to the column over distillate withdrawn. |
+| `distillateRate` | ✓ | number | kmol/s | Top product molar flow rate. |
+| `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
+| `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
+| `method` |   | string | — | WangHenke (sequential bubble-point, the default, fine for ideal systems) or simultaneous (rigorous MESH Newton, stable through an azeotro… |
+| `feeds` |   | array[object] | — | Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream en… |
+| `sideDraws` |   | array[object] | — | Product withdrawn between the ends. A draw's phase decides which internal traffic it removes, so it is a separation decision, not just a … |
+| `murphreeEfficiency` |   | number | - | Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Below 1 the run announces that the st… |
+| `hydraulics` |   | object | — | Present = run a hydraulic RATING on the converged profile, which the stage equations never do: can the trays pass the traffic? Give `diam… |
+
 ## `compressor`  (compressor operation)
 
 Gas-phase compressor. Given the shaft power and isentropic efficiency, the discharge pressure, discharge temperature and compression ratio follow from the isentropic-then-efficiency energy balance.
@@ -136,7 +184,7 @@ Continuous stirred-tank reactor. Reactor volume is the only parameter; temperatu
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `V_R` | ✓ | number | m^3 | Total liquid volume held in the CSTR. |
+| `V_R` | ✓ | number | m3 | Total liquid volume held in the CSTR. |
 | `thermalMode` |   | string | - | isothermal (default; `T` holds and the duty is the result), adiabatic (the energy balance sets T), or heatExchange (a jacket removes UA·(… |
 | `T` |   | number | K | The held temperature in isothermal mode; defaults to the feed temperature. |
 | `T_guess` |   | number | K | First guess for the energy-balance Newton. NOT cosmetic: an adiabatic or jacketed CSTR can have up to THREE steady states, and the Newton… |
@@ -219,6 +267,16 @@ Single-effect evaporator sized by its heat-transfer surface. The duty follows fr
 | `area` | ✓ | number | m2 | Steam-chest surface. With U, this fixes the duty and therefore the evaporation rate. |
 | `U` | ✓ | number | W/m2/K | Steam-to-liquor overall coefficient, referred to `area`. |
 | `Tref` |   | number | K | Datum for the reported enthalpies; defaults to 298.15 K. It shifts the printed H values, never the duty or the split. |
+
+## `extract`  (extract operation)
+
+Liquid-liquid extraction column — the SAME unit as `extractor` under its shorter name; both read the identical operation block. Counter-current multistage liquid-liquid extraction column. Each stage is a liquid-liquid equilibrium split at the operating temperature, so the separation is a consequence of the declared activity model and not of an entered distribution coefficient — change the model and the answer moves, which is the point.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `stages` | ✓ | integer | - | Number of theoretical counter-current stages. |
+| `solvent` |   | string | — | The component that identifies the extract phase. Naming it removes the ambiguity of which of the two liquids is which. |
+| `temperature` |   | number | K | Isothermal column temperature; defaults to the feed temperature. |
 
 ## `extractor`  (extractor operation)
 
@@ -370,7 +428,7 @@ Isothermal plug-flow reactor. The volume is integrated by RK4; nSteps controls t
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `V_R` | ✓ | number | m^3 | Total reactor volume; RK4 integrates over the residence-time interval [0, V_R / Q_feed]. |
+| `V_R` | ✓ | number | m3 | Total reactor volume; RK4 integrates over the residence-time interval [0, V_R / Q_feed]. |
 | `nSteps` |   | integer | - | Axial steps along the tube; defaults to 100. |
 | `writeInterval` |   | integer | - | Write every Nth step to the axial profile; 0 (default) writes none. |
 | `thermalMode` |   | string | - | isothermal (default), adiabatic, or heatExchange — the last removing U·(a/V)·(T − T_coolant) along the tube. Any other word is REFUSED. |

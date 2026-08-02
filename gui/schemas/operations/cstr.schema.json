@@ -13,7 +13,7 @@
       "exclusiveMinimum": 0,
       "title": "Reactor volume",
       "description": "Total liquid volume held in the CSTR.",
-      "unit": "m^3",
+      "unit": "m3",
       "default": 0.005
     },
     "thermalMode": {

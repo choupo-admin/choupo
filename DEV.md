@@ -448,10 +448,21 @@ accepts today, and that is a policy call.
    schema-less operation has no GUI property editor, and it cannot be
    validated.  Worth clearing in batches by family (the props-bench ops are
    the largest cluster, then the reactors, then the heat units).
-   **Batch 1 landed 2026-08-02: 41 of 76.**  Nine written against the real
-   contracts — `elementalComposition`, `vleConsistency`, `hConsistency`,
-   `heatCapacityFit`, `vaporPressureFit`, `conversionReactor`,
-   `equilibriumReactor`, `pipe`, `extractor`.
+   **The COUNT is generated — read it from the header of
+   `docs/ai/schemas-reference.md`, never from here** (this entry carried
+   "41 of 76" for exactly one batch before drifting, which is the §6 lesson
+   re-taught).  Batches land a family at a time, each schema written from the
+   op's source and a case that runs it.  The Fable-5 audit (2026-08-02) added
+   two things worth knowing: the registry derives EIGHT alias groups (two
+   names, one class, one operation block — `flash`≡`isothermalFlash`,
+   `column`≡`distillationColumn`, `FUG`≡`shortcutColumn`, `REquil`≡
+   `equilibriumReactor`, `extract`≡`extractor`, `MHeatX`≡`multiStreamHX`,
+   `condenser`/`boiler`≡`phaseChanger`, `membraneSW`≡`spiralWoundModule`),
+   and `check_schema_coverage` now REFUSES alias schemas that disagree on
+   properties/required — the groups are derived from the `reg(...)` calls,
+   never hand-listed, so a new alias joins its group with no edit.  The
+   "not documented" list stopped lying by omission the same day: five ops it
+   listed as schema-less were aliases of documented ones.
    **And the batch produced the check that matters more than the batch.**
    `check_schema_coverage` holds every schema against the CORPUS: a case in
    `tutorials/` runs, so every key it uses is real and every key it omits is
