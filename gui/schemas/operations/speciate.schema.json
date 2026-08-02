@@ -91,6 +91,28 @@
       "required": [
         "file"
       ]
+    },
+    "networkScope": {
+      "type": "string",
+      "enum": [
+        "full",
+        "restricted"
+      ],
+      "title": "Speciation network scope",
+      "description": "full (default): every curated chemistry record reachable from the feed. restricted: only the records admitted in network ( ... ) -- requires network AND reason; the run announces the restriction, results carry a networkRestricted label, and choupo-import seals exactly the admitted records (D-R1, approved 2026-08-02)."
+    },
+    "network": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Admitted chemistry records",
+      "description": "Record file stems (e.g. water-dissociation) admitted when networkScope is restricted. Every name must resolve to a loaded chemistry record and be reachable from the feed; pairing with networkScope full refuses (two authorities)."
+    },
+    "reason": {
+      "type": "string",
+      "title": "Restriction reason",
+      "description": "Required with networkScope restricted: WHY the network is deliberately smaller (e.g. HMW theta/psi were fitted to a non-pairing treatment). A reduced network with no stated reason is a trap for the next reader."
     }
   },
   "required": [],

@@ -813,6 +813,9 @@ Aqueous speciation: distributes the declared analytical totals over the curated 
 | `diagSpecies` |   | array[string] | — | Their activity coefficients are emitted as named KPIs, so a golden test can lock them. |
 | `verifyGlobal` |   | string | — | Sweeps EVERY curated Pitzer binary against the closed single-salt kernel instead of only the case's own ions. Expensive, and belongs to t… |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+| `networkScope` |   | string | — | full (default): every curated chemistry record reachable from the feed. restricted: only the records admitted in network ( ... ) -- requi… |
+| `network` |   | array[string] | — | Record file stems (e.g. water-dissociation) admitted when networkScope is restricted. Every name must resolve to a loaded chemistry recor… |
+| `reason` |   | string | — | Required with networkScope restricted: WHY the network is deliberately smaller (e.g. HMW theta/psi were fitted to a non-pairing treatment… |
 
 ## `spiralWoundModule`  (spiralWoundModule operation)
 
