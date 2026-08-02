@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/H2Tart-formation.dat -- the neutral tartaric acid as the sum of
+  its fully dissociated form:   Tart2- + 2 H+  <=>  H2Tart
+
+  logK25 = pKa1 + pKa2 = 7.32 (literature, 25 C); dH = hf(H2Tart, aq)
+  - hf(Tart2-, aq) from Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys.
+  Chem. 80 (2006) 899-903, Table 5 -- the same study that supplies the
+  crystal datum in components/tartaricAcid.dat and the heat of solution in
+  parameters/solution/tartaricAcid-water.dat, so the whole tartrate family
+  is priced from one material in one work.
+
+  This record and Tart-formation.dat are algebraic INVERSES of each other,
+  written from the two different masters a case may declare; the closure
+  activates whichever one its feed reaches and reports the other unreachable.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H2Tart; masters ( { ion Tart; nu 1; } { ion H; nu 2; } );
+      logK25 7.32; dH -4900; source "pKa1+pKa2=7.32 (lit. 25 C); dH=hf(H2Tart,aq)-hf(Tart) [Kochergina 2006]";

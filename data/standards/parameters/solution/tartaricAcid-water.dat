@@ -17,7 +17,10 @@
 
   so a NEUTRAL molecular H2Tart can close an aqueous energy balance WITHOUT an
   ideal-gas/Watson vapour leg (which a decomposing solid cannot supply).  The
-  dissociated route is separate: HTart-/Tart2- live in electrolyte/ions.dat.
+  dissociated route is separate: the neutral master and its two conjugate
+  bases are model species (species/H2Tart.dat, HTart.dat, Tart.dat) and the
+  two dissociations are network records (chemistry/HTart-formation.dat,
+  chemistry/Tart-formation.dat).
 \*---------------------------------------------------------------------------*/
 
 solute      tartaricAcid;

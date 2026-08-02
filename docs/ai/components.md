@@ -236,10 +236,14 @@ Each carries ρ, F_M (Guthrie), σ_y, max T, max P.
     (one typed file per model species) and the pair parameters in
     `constant/parameters/` (`Pitzer/pairs/<c>-<a>.dat`, `eNRTL/<c>-<a>.dat`),
     sealed by the case's `propertyManifest` — the same per-record mechanism as
-    `constant/components/<name>.dat`.  (A residual case-local
-    `constant/electrolyte/speciation.dat` delta exists in two speciation
-    tutorials as a transitional adapter of the speciate op — a known dev debt,
-    not the architecture.)
+    `constant/components/<name>.dat`.  A reaction the case adds to the curated
+    network is one file per reaction under `constant/chemistry/`, which
+    shadows the catalogue record of the same name.  (One tutorial still
+    carries a `constant/electrolyte/speciation.dat` — the single remaining use
+    of that older form, for the one thing the per-file merge cannot say: a
+    *deliberately reduced* network, where the case needs fewer reactions than
+    the catalogue offers.  Every other use of that file now refuses, naming
+    the per-file home to write instead.)
 - `relativePermittivity <eps>;` — static dielectric constant (25 °C); on an
   **antisolvent** (e.g. ethanol 24.3) it drives the mixed-solvent eNRTL
   (drowning-out). The electrolyte models are temperature-dependent: `eps_w(T)` /

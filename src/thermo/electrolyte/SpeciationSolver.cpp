@@ -231,8 +231,40 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
         if (!cl.empty())
         {
             caseDict = Dictionary::fromFile(cl.string());
-            caseReplaces =
-                (caseDict->lookupWordOrDefault("speciationMode", "extend") == "replace");
+            const std::string mode =
+                caseDict->lookupWordOrDefault("speciationMode", "extend");
+            if (mode != "extend" && mode != "replace")
+                throw std::runtime_error("speciation: speciationMode '" + mode
+                    + "' is not one of extend / replace");
+            //  THE `extend` LEG IS RETIRED (2026-08-02).  Adding reactions to
+            //  the curated network is exactly what constant/chemistry/ does --
+            //  scanRecordDir merges the case directory over the catalogue by
+            //  FILENAME, case-only records appended -- so an `extend` sidecar
+            //  is a second home for the same act, and a worse one: it merges
+            //  by SPECIES, so it can silently take over a curated reaction
+            //  where the directory merge would have to be told which file it
+            //  is replacing.  `replace` is NOT retired with it: declaring a
+            //  DELIBERATELY RESTRICTED network -- the Pitzer-HMW verification
+            //  must exclude the sulfate ion pairs or it double-counts what
+            //  the ternary terms already carry -- has no canonical home yet,
+            //  and dropping the leg would silently change that case's
+            //  physics.  It stays, announced, until it gets one.
+            if (mode != "replace")
+                throw std::runtime_error("speciation: " + cl.string()
+                    + " declares `speciationMode extend` (or defaults to it),"
+                      " and that leg is RETIRED -- adding reactions to the"
+                      " curated network is what constant/chemistry/ already"
+                      " does.  Write ONE file per reaction at"
+                      " constant/chemistry/<species>-formation.dat"
+                      " (recordType aqueousSpeciation; species; masters ( {"
+                      " ion; nu; } ... ); logK25; dH; source) and delete this"
+                      " file; a case-local file SHADOWS the catalogue record"
+                      " of the same NAME, which is the merge you wanted said"
+                      " out loud.  data/standards/chemistry/ holds the shape"
+                      " to copy.  (`speciationMode replace` is still read: it"
+                      " declares a deliberately RESTRICTED network, which has"
+                      " no canonical home yet.)");
+            caseReplaces = true;
             for (const auto& e : caseDict->lookupDictList("reactions"))
                 caseReactions.push_back(e);
         }

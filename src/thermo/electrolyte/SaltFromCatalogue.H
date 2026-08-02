@@ -196,13 +196,26 @@ inline DictPtr rawSpeciesRecord(const std::string& species)
 // flat record, or nullptr.
 inline DictPtr findAqueousSpecies(const std::string& species)
 {
-    const fs::path cl = caseElectrolytePath("ions.dat");
-    if (!cl.empty())
-    {
-        auto d = parsedOnce(cl);
-        for (const auto& i : d->lookupDictList("ions"))
-            if (i->lookupWord("species") == species) return i;
-    }
+    //  RETIRED 2026-08-02.  `constant/electrolyte/ions.dat` was a monolith
+    //  LIST of inline identities, read FIRST and whole-row-first-wins -- so it
+    //  SHADOWED the very record it duplicated.  It did, in the corpus: the
+    //  tartrate case shipped Tart and HTart in the sidecar while
+    //  constant/species/Tart.dat and HTart.dat sat beside it holding the same
+    //  four numbers, and a correction to the curated record would have been
+    //  silently ignored.  Every field the sidecar could carry (formula,
+    //  charge, MW, hfAq/sAq/cpAq, radius/D0) has a canonical home in the
+    //  typed per-species record, so this leg bought nothing but a second
+    //  home.  Refuse it by name rather than keep reading it.
+    const fs::path legacyIons = caseElectrolytePath("ions.dat");
+    if (!legacyIons.empty())
+        throw std::runtime_error("electrolyte: " + legacyIons.string()
+            + " is the RETIRED monolith identity list -- it shadowed the typed"
+              " per-species records instead of extending them, which is the"
+              " arity failure it existed to avoid.  Write ONE file per species"
+              " at constant/species/<name>.dat (recordType modelSpecies;"
+              " name; formula; charge; MW { value; unit } and, where curated,"
+              " aqueousThermo { hfAq { value; unit } }) and delete this file;"
+              " data/standards/species/ holds the shape to copy.");
     DictPtr rec = rawSpeciesRecord(species);
     if (rec) return bridgeTrueIon(rec, species);
     if (records::sealed())

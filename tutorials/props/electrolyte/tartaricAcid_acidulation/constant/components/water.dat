@@ -16,6 +16,18 @@ name        water;
 formula     H2O;
 CAS         7732-18-5;
 
+//  The substance-level fact the SystemClassifier contract requires of every
+//  component inside an electrolyte system (settled 2026-07-26; ABSENT is
+//  UNKNOWN and is refused there, with the curation remedy named).  The
+//  solvent takes no part in the speciation NETWORK as a solute: it IS the
+//  medium.  Its autoprotolysis is a network reaction with its own record,
+//  and its VLE is the Raoult leg (p_w = a_w * psat) declared by the phase's
+//  property method -- not an equilibrium constant.
+//  PROMOTED from the flashComplex case 2026-08-02: it was the ONE genuinely
+//  case-carried fact among ten records, and its absence here is why that
+//  case had to mirror water at all.
+aqueousSpeciation  none;
+
 MW          18.015;
 Tc          647.14;
 Pc          220.64;

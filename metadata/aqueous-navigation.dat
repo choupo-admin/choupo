@@ -107,8 +107,9 @@ speciesNavigation
     O2    { familyRoots ( oxygen );     }
 
     // --- organics ---------------------------------------------------------
-    Tart  { familyRoots ( tartrate );   }
-    HTart { familyRoots ( tartrate );   }
+    Tart   { familyRoots ( tartrate );  }
+    HTart  { familyRoots ( tartrate );  }
+    H2Tart { familyRoots ( tartrate );  }   // the neutral master of the family
 }
 
 // The CLOSED vocabulary of process topics.  A topic that is an unambiguous

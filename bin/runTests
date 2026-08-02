@@ -737,6 +737,22 @@ PYEOF
     fi
     rm -f /tmp/cycss.$$
 
+    # Electrolyte-sidecar gate: of the constant/electrolyte/ legs, the two
+    # with a canonical home are RETIRED and refuse by name (the ions.dat
+    # identity monolith -> constant/species/; `speciationMode extend` ->
+    # constant/chemistry/), the one without a home survives, announced
+    # (`replace`, a deliberately restricted network).  Sabotage-verified
+    # 2026-08-02: restoring either read makes its refusal probe exit 0.
+    if "$ROOT/bin/curate/check_electrolyte_sidecars.py" > /tmp/elsc.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "electrolyte-sidecar-gate" "$(tail -1 /tmp/elsc.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_electrolyte_sidecars.py)\n" "electrolyte-sidecar-gate"
+        cat /tmp/elsc.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/elsc.$$
+
     # ---- Curation gates that existed but never RAN ----------------------
     # Eleven gates sat in bin/curate/ unwired; seven were not even
     # executable.  Two were stale -- check_ion_pins read the retired

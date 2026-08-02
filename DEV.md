@@ -346,9 +346,38 @@ accepts today, and that is a policy call.
    `dynamicCSTR`; any future dynamic unit type must fill `storedEnergy_kJ` /
    `enthalpyFlow_kW` / `heatInput_kW` or the whole rung withholds, which is
    the intended default (a unit that says nothing claims nothing).
-3. **`constant/electrolyte/` transitional adapters** — the multi-ion speciation
-   front-end still reads case-local `speciation.dat`/`ions.dat` sidecars in a
-   couple of tutorials; fold into the sealed `species/`+`chemistry/` closure.
+3. **`constant/electrolyte/` sidecars** — **two legs of three PAID 2026-08-02;
+   what remains is ONE named capability, not a migration.**  Measured rather
+   than assumed, and the measurement split the debt cleanly:
+   - `ions.dat` and `speciationMode extend` each duplicated a canonical home
+     (`constant/species/<name>.dat` and `constant/chemistry/` respectively),
+     and the duplication was live: `tartaricAcid_acidulation` shipped Tart and
+     HTart in the sidecar while `constant/species/Tart.dat` / `HTart.dat` sat
+     beside them holding the same four numbers — read FIRST, so the sidecar
+     *shadowed* the curated record it copied.  The half-finished migration was
+     the cause: the two ions had been promoted to the catalogue on 2026-07-18,
+     the neutral master `H2Tart` and the three dissociation reactions had not.
+     Promoted them (`species/H2Tart.dat`, `chemistry/{H2Tart,HTart,Tart}-formation.dat`,
+     all Kochergina 2006 as the rest of the family already was), re-sealed the
+     case, results **byte-identical** (same 9-activated / 1-unreachable
+     closure, same log K's, CSVs unchanged).  Both legs now **refuse** with
+     their canonical remedy named.
+   - `speciationMode replace` **stays**, and stays deliberately.  It declares a
+     RESTRICTED network: `pitzer_seawater_verify` must exclude the sulfate ion
+     pairs or it double-counts what the HMW ternary terms already carry.
+     There is no canonical way to say that — `scanRecordDir` merges, it never
+     subtracts — and "just don't mirror the records" does not survive contact
+     with `bin/choupo-import`, whose closure is REACHABILITY-based and pulls
+     every excluded record straight back.  The leg runs, announces its
+     restriction on every run, and waits for a home.
+   **The open question, for Vítor:** where does a case DECLARE that its
+   speciation network is deliberately reduced?  The natural home is the
+   `equilibrium { aqueous { speciation {} } }` block the case already carries
+   (the one-knob rule: the case declares, the engine obeys and announces), with
+   `choupo-import` reading the same declaration so the closure honours it.
+   That is an architecture change, so it is proposed, not built.
+   Gate: `check_electrolyte_sidecars` (2 refusals sabotage-verified + the
+   corpus scan + the converted case's network + the survivor's announcement).
 4. **Docs with partially-superseded "settled" sections** (a deeper pass than the
    2026-07-23 nomenclature sync — needs electrolyte-domain care, so do it with
    Vítor, not autonomously):

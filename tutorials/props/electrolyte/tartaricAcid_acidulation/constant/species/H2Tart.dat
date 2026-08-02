@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/H2Tart.dat -- ONE model species, ONE typed file.
+
+  The NEUTRAL, undissociated aqueous tartaric acid: the speciation MASTER of
+  the tartrate family, from which HTart- and Tart2- are formed by the two
+  dissociation records in chemistry/.  Its two conjugate bases were curated
+  here on 2026-07-18 (species/HTart.dat, species/Tart.dat) but the master
+  itself stayed behind in a case-local sidecar -- so the family had two homes
+  and the neutral one was reachable from exactly one tutorial.  This record
+  closes that: the family is now whole in the catalogue.
+
+  Homonymy note (the `aq` suffix rule): the crystalline substance is the
+  COMPONENT `tartaricAcid`, not `H2Tart`, so there is no name clash to
+  disambiguate and the bare name stands.
+
+  An `aqueousThermo { hfAq }` is deliberately ABSENT here.  The datum exists
+  and is primary-cited -- Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys.
+  Chem. 80 (2006) 899-903, Table 5 gives Hf(H2Tart, sln, H2O, hypothetical
+  nondissociated, 298.15 K) = -1295.9 kJ/mol, and it is already quoted in
+  parameters/solution/tartaricAcid-water.dat -- but writing it HERE is a
+  change of physics, not a change of address: the aqueous energy rung would
+  start pricing the neutral master where today it does not.  This record was
+  written as a MOVE and nothing else, so the value waits for a slice that
+  measures what it does.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    H2Tart;
+formula     "H2C4H4O6";
+charge  0;
+MW { value 150.087; unit g/mol;}

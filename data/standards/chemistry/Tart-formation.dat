@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/Tart-formation.dat -- both dissociations of tartaric acid at once,
+  written from the neutral master:   H2Tart  <=>  Tart2- + 2 H+
+
+  logK25 = -(pKa1 + pKa2) = -7.32 (literature, 25 C); dH = hf(Tart2-)
+  - hf(H2Tart, aq) from Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys.
+  Chem. 80 (2006) 899-903, Table 5.
+
+  The inverse of H2Tart-formation.dat (see the note there): a case declares
+  one master and the closure activates the record reachable from it.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species Tart; masters ( { ion H2Tart; nu 1; } { ion H; nu -2; } );
+      logK25 -7.32; dH 4900; source "pKa1+pKa2=7.32 (lit. 25 C); dH=hf(Tart)-hf(H2Tart) [Kochergina 2006]";

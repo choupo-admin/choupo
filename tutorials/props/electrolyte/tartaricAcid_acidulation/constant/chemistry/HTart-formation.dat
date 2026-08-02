@@ -1,0 +1,15 @@
+// [imported] origin "data/standards/chemistry/HTart-formation.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/HTart-formation.dat -- the first dissociation of tartaric acid,
+  written from the neutral master:   H2Tart  <=>  HTart- + H+
+
+  logK25 = -pKa1 = -2.98 (literature, 25 C); dH = hf(HTart-) + hf(H+)
+  - hf(H2Tart, aq) from Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys.
+  Chem. 80 (2006) 899-903, Table 5.  Hand-curated organic chemistry -- NOT
+  from the PHREEQC inorganic import that supplies most of this directory.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species HTart; masters ( { ion H2Tart; nu 1; } { ion H; nu -1; } );
+      logK25 -2.98; dH 3800; source "pKa1=2.98 (lit. 25 C); dH=hf(HTart)+hf(H)-hf(H2Tart) [Kochergina 2006]";
