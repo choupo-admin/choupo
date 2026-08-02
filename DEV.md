@@ -378,9 +378,17 @@ accepts today, and that is a policy call.
    That is an architecture change, so it is proposed, not built.
    Gate: `check_electrolyte_sidecars` (2 refusals sabotage-verified + the
    corpus scan + the converted case's network + the survivor's announcement).
-4. **Docs with partially-superseded "settled" sections** (a deeper pass than the
-   2026-07-23 nomenclature sync — needs electrolyte-domain care, so do it with
-   Vítor, not autonomously):
+4. ~~**Docs with partially-superseded "settled" sections**~~ — **both named
+   bullets CLOSED (2026-07-28 and 2026-08-02); kept struck, not deleted, for
+   the same reason the first bullet gives.**  The original caveat — *needs
+   electrolyte-domain care, do it with Vítor, not autonomously* — held for the
+   electrolyte bullet and was honoured; the flowsheet-grammar bullet was not
+   electrolyte-domain and was closed by measuring the reader.  What remains is
+   the standing risk, not a task: a settled-note that lags its own code is
+   invisible until someone follows it, which is why both fixes ended in a
+   GATE rather than in a correction (`check_doctrine` now covers
+   `engine-capabilities.md`; `check_doc_references` covers every path and case
+   name the AI docs mention).
    - ~~`CLAUDE.md` §"Electrolyte data tree" says "7 homes"~~ — **CLOSED
      2026-07-28**: it now says 5, names the retired `methods/` and
      `phases/solid/` explicitly, and tells the reader to verify against
