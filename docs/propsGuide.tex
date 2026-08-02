@@ -488,7 +488,7 @@ $\sim0$ to $\sim65\,$\textdegree C \newline {\scriptsize two liquids (LLE)}
 \addlinespace
 $\sim65$ to $\sim100\,$\textdegree C \newline {\scriptsize boiling (VLLE)}
  & Antoine $P^{\mathrm{sat}}$ $+$ $\gamma$--$\phi$ $+$ three-phase flash (Gibbs minimisation); ethanol/water + ternary azeotrope ($\sim64.9\,$\textdegree C)
- & azeotrope sensitivity --- a small $\gamma$ error moves the column design; bubble-point (Wang--Henke) distillation is unstable \emph{through} an azeotrope (use \code{method simultaneous}). \\
+ & azeotrope sensitivity --- a small $\gamma$ error moves the column design; bubble-point (Wang--Henke) distillation is unstable \emph{through} an azeotrope (use \code{model simultaneous}). \\
 \addlinespace
 $\sim100$ to $\sim290\,$\textdegree C \newline {\scriptsize vapour $\to$ near-critical}
  & cubic EoS (\code{SRK}/\code{PR}) with $k_{ij}$; departure functions $H-H^\circ$, $S-S^\circ$, $Z$
@@ -984,15 +984,21 @@ aromatic $=$CH$-$& 26.73 & 0.0082 & $\ \ 0.0011$ & $\ \ 2.09$ \\
 \end{tabular}
 \end{center}
 
-\subsection{The structure is identity: \code{jobackGroups} and \code{bin/estimate}}
+\subsection{The structure is identity: the \code{groups\{\}} block and \code{bin/estimate}}
 
 The molecular structure belongs \emph{with the substance}, like the formula:
-a component's \code{.dat} declares its groups once,
+a component's \code{.dat} declares its groups once, method-keyed inside
+one \code{groups\{\}} block,
 \begin{lstlisting}
-jobackGroups { CH3 2; ketone 1; }     // acetone = 2 x CH3 + 1 x >C=O
+groups
+{
+    joback ( { group CH3; count 2; } { group ketone; count 1; } );
+    unifac ( { group CH3; count 1; } { group CH3CO; count 1; } );
+}
 \end{lstlisting}
-(the sibling of the UNIFAC \code{groups\{\}} block --- a different table, the
-same idea), and estimation needs no case at all:
+(one home for every decomposition --- Joback and UNIFAC are different
+tables, so each method keys its own list), and estimation needs no case
+at all:
 \begin{lstlisting}
 bin/estimate acetone            # case-local first, then the standard catalogue
 bin/estimate path/to/new.dat    # or an explicit file
