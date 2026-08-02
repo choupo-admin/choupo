@@ -424,15 +424,21 @@ The dispatcher (\code{src/unitOperations/flowsheet/Flowsheet.cpp})
 runs the SM loop:
 
 \begin{enumerate}[leftmargin=*,nosep,topsep=2pt]
-  \item \textbf{Load streams.}  \code{readSourceStream()} parses
-        every top-level \code{streams \{ \dots \}} entry into a
-        \code{ProcessStream}, applying flash-on-import to complete
-        the thermodynamic state (\S\ref{ch:stream-as-state}).
+  \item \textbf{Load streams.}  \code{readStateDir()} parses the
+        case's \file{0/} directory --- one file per stream, the
+        complete initial state --- into \code{ProcessStream}s,
+        applying flash-on-import to complete
+        the thermodynamic state (\S\ref{ch:stream-as-state}).  (A
+        \code{streams \{\}} block inside \file{flowsheetDict} is
+        refused: topology lives in the dict, numbers live in
+        \file{0/}.)
   \item \textbf{Topological order.}  Read \code{units (\dots)} in
         the order written.  For acyclic flowsheets (the DAG case)
         this order \emph{is} the calculation order.  For recycles,
         the user declares \code{tearStreams (\dots)} and the
-        executive iterates Wegstein over the tear-stream guesses.
+        executive solves the tear variables --- Newton on the tears
+        by default, Wegstein selectable
+        (\code{recycleSolver}).
   \item \textbf{Per-unit dispatch.}  \code{runUnit()} builds the
         augmented unit dict (injects each input stream's
         $T,P,F,\zv$ as sub-dicts; merges \code{solverDict} defaults;
@@ -13245,25 +13251,25 @@ $P_{\!\text{op}}$; the simulator computes it from physics and
 emits it as a KPI (\code{evap.P}) and as the pressure stamped on
 both liquid and vapour output streams.
 
-\subsection{What \emph{TU} write vs what the simulator gives back}
+\subsection{What \emph{you} write vs what the simulator gives back}
 
 \begin{center}\small
 \begin{tabular}{@{}lll@{}}
 \toprule
 Variable                            & In Mode 2, this is\ldots             & Where it shows up \\
 \midrule
-$F_{\!\text{feed}}, T_{\!\text{feed}}, \zv_{\!\text{feed}}$ & USER INPUT     & \code{streams.feed} \\
-$P_{\!\text{steam}}$                 & USER INPUT                          & \code{streams.liveSteam.P} \\
-\code{state saturatedVapour}         & USER FLAG                           & \code{streams.liveSteam.state} \\
-$T_{\!\text{steam}}$                 & COMPUTED ($P$+state, stream parser) & \code{streams.liveSteam.T} \\
-$F_{\!\text{steam}}$                 & USER INPUT (often via \$variable)  & \code{streams.liveSteam.F} \\
+$F_{\!\text{feed}}, T_{\!\text{feed}}, \zv_{\!\text{feed}}$ & USER INPUT     & \file{0/feed} \\
+$P_{\!\text{steam}}$                 & USER INPUT                          & \code{P} in \file{0/liveSteam} \\
+\code{state saturatedVapour}         & USER FLAG                           & \code{state} in \file{0/liveSteam} \\
+$T_{\!\text{steam}}$                 & COMPUTED ($P$+state, stream parser) & \code{T} in \file{0/liveSteam} \\
+$F_{\!\text{steam}}$                 & USER INPUT (often via \$variable)  & \code{F} in \file{0/liveSteam} \\
 $A$, $U$                             & USER INPUT (hardware)               & \code{operation.\{area,U\}} \\
 $Q$                                  & COMPUTED, eq.~\eqref{eq:evap-Q-chest} & KPI \code{evap.duty} \\
 $\Delta T$                           & COMPUTED, eq.~\eqref{eq:evap-dT}    & KPI \code{evap.dT} \\
 $T_{\!\text{boil}}$                  & COMPUTED, eq.~\eqref{eq:evap-dT}    & KPI \code{evap.T\_boil} \\
 $V/F$                                & COMPUTED, eq.~\eqref{eq:evap-energy}& KPI \code{evap.V\_over\_F} \\
 $P_{\!\text{op}}$                    & COMPUTED, eq.~\eqref{eq:evap-Tboil-BPE} & KPI \code{evap.P} \\
-$\xv_L$ (concentrate composition)    & COMPUTED, species mass balance      & \code{streams.productConc.z} \\
+$\xv_L$ (concentrate composition)    & COMPUTED, species mass balance      & \file{converged/productConc} \\
 BPE                                  & COMPUTED, $K_b \, m_{\!\text{solute}}$ & KPI \code{evap.BPE} \\
 \bottomrule
 \end{tabular}
@@ -13275,7 +13281,7 @@ for every evaporator case --- there is no mode switch.
 
 \subsection{Why mode-switching inside the unit op was wrong}
 
-The path from to went through two redesigns whose
+The path to this form went through two redesigns whose
 common mistake was offering \emph{alternative spec modes} inside
 the unit op:
 
