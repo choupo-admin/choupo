@@ -2,47 +2,158 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/fitParameters.schema.json",
   "title": "fitParameters operation",
-  "description": "Levenberg-Marquardt regression of thermophysical-model parameters against experimental data. Outputs a fit log (chi^2 and parameter trajectory per iteration) and a parity CSV (model vs experiment at the optimum).",
+  "description": "Levenberg-Marquardt regression of thermophysical-model parameters against experimental data, and the SCORING of a package as it stands. Two modes, and the difference matters: `fit` (default) adjusts the listed parameters and writes a fit log (chi^2 and the parameter trajectory per iteration) plus a parity CSV at the optimum; `evaluate` changes nothing and only scores — 'how good are the pairs I already have against MY data?' — so in that mode a `parameters` list is OPTIONAL and, when present, is a pinned what-if whose entries carry `value` rather than the fit vocabulary of initial/min/max.",
   "type": "object",
   "properties": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "fit",
+        "evaluate"
+      ],
+      "title": "Mode",
+      "description": "`fit` (default) adjusts the parameters; `evaluate` only scores the package as assembled. Any other word is REFUSED."
+    },
     "parameters": {
       "type": "array",
-      "title": "Parameters to fit",
-      "description": "Each entry is a scalar in the declared thermophysical system to vary, with bounds and an initial guess. `path` is dot-separated (e.g. `activityModel.pairs[0].a_ij`).",
+      "title": "Parameters to vary",
+      "description": "One entry per scalar. REQUIRED in `fit` mode (an empty list is refused there); optional in `evaluate` mode. A `fit` entry gives `initial` and usually bounds; an `evaluate` entry gives `value` — mixing the two vocabularies is refused. The scalar is identified either by `path` (dot-separated into the thermophysical system, e.g. `activityModel.pairs[0].a_ij`) or by `name` where the residual's own model names its parameters (e.g. an isotherm's `q_max`).",
       "items": {
         "type": "object",
         "properties": {
-          "path":    { "type": "string", "title": "Dot-path into the thermophysical system" },
-          "initial": { "type": "number", "title": "Initial guess" },
-          "min":     { "type": "number", "title": "Lower bound" },
-          "max":     { "type": "number", "title": "Upper bound" }
-        },
-        "required": ["path", "initial", "min", "max"]
-      },
-      "minItems": 1
+          "path": {
+            "type": "string",
+            "title": "Dot-path into the thermophysical system"
+          },
+          "name": {
+            "type": "string",
+            "title": "Model-local parameter name"
+          },
+          "initial": {
+            "type": "number",
+            "title": "Initial guess (fit mode)"
+          },
+          "min": {
+            "type": "number",
+            "title": "Lower bound"
+          },
+          "max": {
+            "type": "number",
+            "title": "Upper bound"
+          },
+          "value": {
+            "type": "number",
+            "title": "Pinned value (evaluate mode)"
+          }
+        }
+      }
     },
     "residual": {
       "type": "object",
-      "title": "Residual definition",
-      "description": "What to fit against (e.g. T_bubble at a fixed P) and the experimental data points.",
+      "title": "What is being fitted",
+      "description": "The quantity the residual measures and the data it measures against. `kind` selects the residual family; the remaining keys are that family's own.",
       "properties": {
-        "kind": { "type": "string", "title": "Residual kind (e.g. T_bubble)" },
-        "P":    { "type": "number", "title": "Pressure (when applicable)", "unit": "Pa" },
+        "kind": {
+          "type": "string",
+          "title": "Residual kind",
+          "description": "e.g. T_bubble for VLE, isotherm for adsorption."
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Components of the binary"
+        },
+        "P": {
+          "type": "number",
+          "title": "Pressure, when the residual is isobaric",
+          "unit": "Pa"
+        },
+        "adsorbent": {
+          "type": "string",
+          "title": "Adsorbent (isotherm residuals)"
+        },
+        "adsorbate": {
+          "type": "string",
+          "title": "Adsorbate (isotherm residuals)"
+        },
+        "model": {
+          "type": "string",
+          "title": "Model being fitted, e.g. langmuir"
+        },
+        "tRef": {
+          "type": "number",
+          "title": "van't Hoff reference temperature",
+          "unit": "K"
+        },
+        "dataset": {
+          "type": "string",
+          "title": "Dataset file",
+          "description": "Path to a self-describing dataset dict, relative to the case."
+        },
         "data": {
           "type": "array",
-          "title": "Experimental data (flat pairs of x, y)",
-          "items": { "type": "number" }
+          "items": {
+            "type": "number"
+          },
+          "title": "Inline data",
+          "description": "Flat grid, as an alternative to `dataset`."
         }
       },
-      "required": ["kind", "data"]
+      "required": [
+        "kind"
+      ]
     },
     "options": {
       "type": "object",
-      "title": "LM options",
-      "description": "Levenberg-Marquardt loop settings (lambda, tolerance, maxIter).",
-      "additionalProperties": true
+      "title": "Solver options",
+      "description": "Levenberg-Marquardt controls. Every one is an explicit, announced aid — never a silent default that hides a hard fit.",
+      "properties": {
+        "maxIter": {
+          "type": "integer",
+          "minimum": 1,
+          "title": "Iteration cap",
+          "unit": "-"
+        },
+        "tolerance": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Convergence tolerance",
+          "unit": "-"
+        },
+        "lambda0": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Initial LM damping",
+          "unit": "-"
+        },
+        "fdStep": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Finite-difference step for the Jacobian",
+          "unit": "-"
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "title": "Output files",
+      "description": "Where the fit artefacts go. `proposal` additionally writes a promotable record into the PRIVATE tier (data/local/), never into the curated catalogue — promoting it is a separate, human curation act.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        },
+        "proposal": {
+          "type": "string",
+          "title": "Proposal record to write under data/local/"
+        }
+      }
     }
   },
-  "required": ["parameters", "residual"],
-  "additionalProperties": true
+  "required": [
+    "residual"
+  ],
+  "additionalProperties": false
 }

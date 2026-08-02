@@ -69,12 +69,18 @@ Reactor specified by a FRACTIONAL CONVERSION rather than by kinetics — the siz
 
 ## `crystalliser`  (crystalliser operation)
 
-Crystalliser producing a magma (crystals plus saturated mother liquor). The `equilibrium` model cools the solution to the operating temperature and crystallises the excess from the solubility curve; the `MSMPR` model solves the continuous vessel by the method of moments for supersaturation and the particle-size distribution.
+Crystalliser, in one of three model depths selected by the unit's `model` slot: `equilibrium` (the supersaturation is relieved completely — no kinetics, no vessel size), `msmpr` (a mixed-suspension mixed-product-removal population balance with mean sizes) and the binned population balance that resolves the full size distribution. The deeper models need `volume`; the equilibrium model does not read it. The heat of crystallisation is NOT entered here for a curated solute — it is derived from the substance's own record (a molecular solute's `solubility { dHcryst }`, an electrolyte's ion-derived dissolution enthalpy), and the same shared resolver serves the steady and batch paths so they can never diverge.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `operatingTemperature` | ✓ | number | K | Temperature the crystalliser holds; sets the mother-liquor saturation and the yield. |
-| `volume` |   | number | m3 | Suspension volume of the continuous vessel (MSMPR only); sets the residence time tau = V/Q. Ignored by the equilibrium model. |
+| `operatingTemperature` | ✓ | number | K | Vessel temperature. With the solubility curve it fixes the supersaturation and therefore the yield. |
+| `volume` |   | number | m3 | Required by the `msmpr` and population-balance models (it sets the residence time); not read by the `equilibrium` model. |
+| `solute` |   | string | — | Which component crystallises, when the mixture holds more than one candidate. Naming it removes the ambiguity rather than letting the eng… |
+| `solidsRecovery` |   | number | - | Fraction of the formed crystals that leaves in the cake; the remainder returns with the mother liquor. Defaults to 1.0 (a perfect separat… |
+| `cakeMoisture` |   | number | - | Mass fraction of mother liquor retained in the cake; defaults to 0.10. It carries dissolved solute with it, so it changes the recovered p… |
+| `bins` |   | integer | - | Population-balance model only: number of size classes; defaults to 64. |
+| `Lmax` |   | number | m | Population-balance model only: upper edge of the size grid; defaults to 1e-3 m. A distribution that piles up against it is a sign the gri… |
+| `dHcryst` |   | number | J/mol | Electrolyte path only: an explicit, announced override of the ion-derived duty, for a salt whose dissolution enthalpy is not curated. A m… |
 
 ## `cstr`  (cstr operation)
 
@@ -113,11 +119,16 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `nStages` | ✓ | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
-| `feedStage` | ✓ | integer | — | 1-indexed stage where the feed enters (1 = top tray below the condenser). |
+| `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
 | `refluxRatio` | ✓ | number | — | L/D, liquid returned to the column over distillate withdrawn. |
 | `distillateRate` | ✓ | number | kmol/s | Top product molar flow rate. |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
 | `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
+| `method` |   | string | — | WangHenke (sequential bubble-point, the default, fine for ideal systems) or simultaneous (rigorous MESH Newton, stable through an azeotro… |
+| `feeds` |   | array[object] | — | Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream en… |
+| `sideDraws` |   | array[object] | — | Product withdrawn between the ends. A draw's phase decides which internal traffic it removes, so it is a separation decision, not just a … |
+| `murphreeEfficiency` |   | number | - | Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Below 1 the run announces that the st… |
+| `hydraulics` |   | object | — | Present = run a hydraulic RATING on the converged profile, which the stage equations never do: can the trays pass the traffic? Give `diam… |
 
 ## `electricLoad`  (electricLoad operation)
 
@@ -147,14 +158,13 @@ Reactor taken to CHEMICAL EQUILIBRIUM over the reactions the unit names in its `
 
 ## `evaporator`  (evaporator operation)
 
-Single-effect evaporator with a feed liquid and heating steam, producing concentrated liquid, solvent vapour and condensate. From the area, overall HTC and pressure it computes V/F, duty Q, boiling temperature (with boiling-point elevation K_b·m_solute) and steam demand via Q = U·A·ΔT.
+Single-effect evaporator sized by its heat-transfer surface. The duty follows from Q = U·A·dT across the steam chest, and the vessel's operating PRESSURE is a RESULT, not an input: the boiling temperature carries the boiling-point elevation of the concentrated liquor (T_boil = T_sat,pure(P_op) + K_b·m_solute), so P_op = P_sat,pure(T_boil − K_b·m_solute) is read back from the answer and reported as a KPI. Chain effects by wiring one unit's vapour to the next one's steam inlet — a multiple-effect train is topology, not an operation key.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `P` | ✓ | number | Pa | Vapour-side pressure; sets the solvent saturation temperature. The boiling point is T_sat + K_b·m_solute (boiling-point elevation). |
-| `area` | ✓ | number | m^2 | Heat-transfer surface area of the tube bundle or heating jacket. |
-| `U` | ✓ | number | W/(m^2.K) | Overall coefficient across the heating-side film, tube wall and boiling-side film. |
-| `Tref` |   | number | K | Reference for the sensible-heat integrals; only differences enter the balance. |
+| `area` | ✓ | number | m2 | Steam-chest surface. With U, this fixes the duty and therefore the evaporation rate. |
+| `U` | ✓ | number | W/m2/K | Steam-to-liquor overall coefficient, referred to `area`. |
+| `Tref` |   | number | K | Datum for the reported enthalpies; defaults to 298.15 K. It shifts the printed H values, never the duty or the split. |
 
 ## `extractor`  (extractor operation)
 
@@ -168,13 +178,15 @@ Counter-current multistage liquid-liquid extraction column. Each stage is a liqu
 
 ## `fitParameters`  (fitParameters operation)
 
-Levenberg-Marquardt regression of thermophysical-model parameters against experimental data. Outputs a fit log (chi^2 and parameter trajectory per iteration) and a parity CSV (model vs experiment at the optimum).
+Levenberg-Marquardt regression of thermophysical-model parameters against experimental data, and the SCORING of a package as it stands. Two modes, and the difference matters: `fit` (default) adjusts the listed parameters and writes a fit log (chi^2 and the parameter trajectory per iteration) plus a parity CSV at the optimum; `evaluate` changes nothing and only scores — 'how good are the pairs I already have against MY data?' — so in that mode a `parameters` list is OPTIONAL and, when present, is a pinned what-if whose entries carry `value` rather than the fit vocabulary of initial/min/max.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `parameters` | ✓ | array[object] | — | Each entry is a scalar in the declared thermophysical system to vary, with bounds and an initial guess. `path` is dot-separated (e.g. `ac… |
-| `residual` | ✓ | object | — | What to fit against (e.g. T_bubble at a fixed P) and the experimental data points. |
-| `options` |   | object | — | Levenberg-Marquardt loop settings (lambda, tolerance, maxIter). |
+| `mode` |   | string | — | `fit` (default) adjusts the parameters; `evaluate` only scores the package as assembled. Any other word is REFUSED. |
+| `parameters` |   | array[object] | — | One entry per scalar. REQUIRED in `fit` mode (an empty list is refused there); optional in `evaluate` mode. A `fit` entry gives `initial`… |
+| `residual` | ✓ | object | — | The quantity the residual measures and the data it measures against. `kind` selects the residual family; the remaining keys are that fami… |
+| `options` |   | object | — | Levenberg-Marquardt controls. Every one is an explicit, announced aid — never a silent default that hides a hard fit. |
+| `output` |   | object | — | Where the fit artefacts go. `proposal` additionally writes a promotable record into the PRIVATE tier (data/local/), never into the curate… |
 
 ## `gasSolidSplitter`  (gasSolidSplitter operation)
 
@@ -278,6 +290,7 @@ Single-point property evaluation: at a given (T, P, composition) the thermo pack
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `state` | ✓ | object | — | The (T, P, composition) at which properties are evaluated. |
+| `properties` |   | array[string] | — | What to compute at the declared state. Fixed names (Z, molarVolume, v_molar, T_bubble, viscosity, surface_tension, thermal_conductivity, … |
 
 ## `propertyScan1D`  (propertyScan1D operation)
 

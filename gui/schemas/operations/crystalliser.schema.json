@@ -2,22 +2,63 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/crystalliser.schema.json",
   "title": "crystalliser operation",
-  "description": "Crystalliser producing a magma (crystals plus saturated mother liquor). The `equilibrium` model cools the solution to the operating temperature and crystallises the excess from the solubility curve; the `MSMPR` model solves the continuous vessel by the method of moments for supersaturation and the particle-size distribution.",
+  "description": "Crystalliser, in one of three model depths selected by the unit's `model` slot: `equilibrium` (the supersaturation is relieved completely — no kinetics, no vessel size), `msmpr` (a mixed-suspension mixed-product-removal population balance with mean sizes) and the binned population balance that resolves the full size distribution. The deeper models need `volume`; the equilibrium model does not read it. The heat of crystallisation is NOT entered here for a curated solute — it is derived from the substance's own record (a molecular solute's `solubility { dHcryst }`, an electrolyte's ion-derived dissolution enthalpy), and the same shared resolver serves the steady and batch paths so they can never diverge.",
   "type": "object",
   "properties": {
     "operatingTemperature": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Operating temperature",
-      "description": "Temperature the crystalliser holds; sets the mother-liquor saturation and the yield.",
+      "description": "Vessel temperature. With the solubility curve it fixes the supersaturation and therefore the yield.",
       "unit": "K"
     },
     "volume": {
       "type": "number",
       "exclusiveMinimum": 0,
-      "title": "Working volume",
-      "description": "Suspension volume of the continuous vessel (MSMPR only); sets the residence time tau = V/Q. Ignored by the equilibrium model.",
+      "title": "Working suspension volume",
+      "description": "Required by the `msmpr` and population-balance models (it sets the residence time); not read by the `equilibrium` model.",
       "unit": "m3"
+    },
+    "solute": {
+      "type": "string",
+      "title": "Crystallising solute",
+      "description": "Which component crystallises, when the mixture holds more than one candidate. Naming it removes the ambiguity rather than letting the engine pick."
+    },
+    "solidsRecovery": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "title": "Solids recovery",
+      "description": "Fraction of the formed crystals that leaves in the cake; the remainder returns with the mother liquor. Defaults to 1.0 (a perfect separation).",
+      "unit": "-"
+    },
+    "cakeMoisture": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "title": "Cake moisture",
+      "description": "Mass fraction of mother liquor retained in the cake; defaults to 0.10. It carries dissolved solute with it, so it changes the recovered purity, not only the wetness.",
+      "unit": "-"
+    },
+    "bins": {
+      "type": "integer",
+      "minimum": 2,
+      "title": "Size-distribution bins",
+      "description": "Population-balance model only: number of size classes; defaults to 64.",
+      "unit": "-"
+    },
+    "Lmax": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Largest resolved size",
+      "description": "Population-balance model only: upper edge of the size grid; defaults to 1e-3 m. A distribution that piles up against it is a sign the grid is too short.",
+      "unit": "m"
+    },
+    "dHcryst": {
+      "type": "number",
+      "title": "Heat of crystallisation override",
+      "description": "Electrolyte path only: an explicit, announced override of the ion-derived duty, for a salt whose dissolution enthalpy is not curated. A molecular solute takes its value from its own `solubility { dHcryst }` record and this key does not apply.",
+      "unit": "J/mol"
     }
   },
   "required": ["operatingTemperature"],

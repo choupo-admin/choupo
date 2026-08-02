@@ -2,39 +2,31 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/evaporator.schema.json",
   "title": "evaporator operation",
-  "description": "Single-effect evaporator with a feed liquid and heating steam, producing concentrated liquid, solvent vapour and condensate. From the area, overall HTC and pressure it computes V/F, duty Q, boiling temperature (with boiling-point elevation K_b·m_solute) and steam demand via Q = U·A·ΔT.",
+  "description": "Single-effect evaporator sized by its heat-transfer surface. The duty follows from Q = U·A·dT across the steam chest, and the vessel's operating PRESSURE is a RESULT, not an input: the boiling temperature carries the boiling-point elevation of the concentrated liquor (T_boil = T_sat,pure(P_op) + K_b·m_solute), so P_op = P_sat,pure(T_boil − K_b·m_solute) is read back from the answer and reported as a KPI. Chain effects by wiring one unit's vapour to the next one's steam inlet — a multiple-effect train is topology, not an operation key.",
   "type": "object",
   "properties": {
-    "P": {
-      "type": "number",
-      "exclusiveMinimum": 0,
-      "title": "Operating pressure",
-      "description": "Vapour-side pressure; sets the solvent saturation temperature. The boiling point is T_sat + K_b·m_solute (boiling-point elevation).",
-      "unit": "Pa"
-    },
     "area": {
       "type": "number",
       "exclusiveMinimum": 0,
-      "title": "Heat-exchange area",
-      "description": "Heat-transfer surface area of the tube bundle or heating jacket.",
-      "unit": "m^2"
+      "title": "Heat-transfer area",
+      "description": "Steam-chest surface. With U, this fixes the duty and therefore the evaporation rate.",
+      "unit": "m2"
     },
     "U": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Overall heat-transfer coefficient",
-      "description": "Overall coefficient across the heating-side film, tube wall and boiling-side film.",
-      "unit": "W/(m^2.K)"
+      "description": "Steam-to-liquor overall coefficient, referred to `area`.",
+      "unit": "W/m2/K"
     },
     "Tref": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Enthalpy reference temperature",
-      "description": "Reference for the sensible-heat integrals; only differences enter the balance.",
-      "unit": "K",
-      "default": 298.15
+      "description": "Datum for the reported enthalpies; defaults to 298.15 K. It shifts the printed H values, never the duty or the split.",
+      "unit": "K"
     }
   },
-  "required": ["P", "area", "U"],
+  "required": ["area", "U"],
   "additionalProperties": false
 }

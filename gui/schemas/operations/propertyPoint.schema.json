@@ -10,13 +10,41 @@
       "title": "Thermodynamic state",
       "description": "The (T, P, composition) at which properties are evaluated.",
       "properties": {
-        "T":           { "type": "number", "exclusiveMinimum": 0, "title": "Temperature", "unit": "K" },
-        "P":           { "type": "number", "exclusiveMinimum": 0, "title": "Pressure",    "unit": "Pa" },
-        "composition": { "type": "object", "title": "Mole composition (Sum xi = 1)" }
+        "T": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Temperature",
+          "unit": "K"
+        },
+        "P": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Pressure",
+          "unit": "Pa"
+        },
+        "composition": {
+          "type": "object",
+          "title": "Mole composition (Sum xi = 1)"
+        }
       },
-      "required": ["T", "P", "composition"]
+      "required": [
+        "T",
+        "P",
+        "composition"
+      ]
+    },
+    "properties": {
+      "type": "array",
+      "title": "Properties to evaluate",
+      "description": "What to compute at the declared state. Fixed names (Z, molarVolume, v_molar, T_bubble, viscosity, surface_tension, thermal_conductivity, ...) and per-component patterns (Psat_<comp>, gamma_<comp>, y_eq_<comp>) — the same vocabulary the scan operations use. Omit to report the operation's default set.",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
     }
   },
-  "required": ["state"],
+  "required": [
+    "state"
+  ],
   "additionalProperties": true
 }
