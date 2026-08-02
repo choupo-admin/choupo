@@ -350,9 +350,10 @@ Gas = methane (already carries `{Tc,Pc,ω}`).  New EOS = `pcSaft`, needing
    block (research path: a `constant/components/methane.dat` overlay carrying
    *only* that block; promotion path: the same block in the standard `.dat`,
    primary-cited).
-3. k_ij → the `data/standards/parameters/eos/` catalogue (the shipped
-   cubic home is `parameters/SRK/<i>-<j>.dat`; a new EOS family adds
-   its own keyed folder there) or inline.
+3. k_ij → one folder per EOS family under `data/standards/parameters/`,
+   keyed by pair: the shipped cubic home is
+   `data/standards/parameters/SRK/<i>-<j>.dat`, and a new family adds its
+   own folder beside it.  Or inline.
 4. The run prints `[thermo] EOS = PCSAFT — methane: m,sigma,epsilon/k from
    eosParameters.PCSAFT [Gross&Sadowski 2001] origin: regressed`; a missing
    block fails with a remedy.

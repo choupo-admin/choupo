@@ -52,10 +52,14 @@ Dict form (in a `propsDict`):
 
 The dataset is self-describing with **mandatory units**:
 
-    columns ( { name x[ethanol]; unit frac; role independent; }
-              { name T;          unit K;    role independent; }
-              { name y[ethanol]; unit frac; role dependent;   } );
+    columns ( { name x[ethanol]; unit frac; }
+              { name T;          unit K;    }
+              { name y[ethanol]; unit frac; } );
     data ( 0.019 368.65 0.170   ... );
+
+The op accepts the model-scan aliases too, so ONE dataset can serve both the
+experimental overlay and this test: `T_bubble` for `T`, `y_eq_<component>` for
+`y[<component>]`, and `-` / `dimensionless` / `mol/mol` for `frac`.
 
 **Reading it (GUI `VleConsistencyPlot`, 3 views):** *ln γ* (the data-derived
 coefficients), *GD area* (ln(γ1/γ2) vs x with the signed area shaded), *GD

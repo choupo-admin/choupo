@@ -199,7 +199,7 @@ report  { file optimization_history.csv; }
 NOT an outerDict.  Levenberg-Marquardt on dotted property-package parameters
 vs experimental data, with identifiability statistics and an opt-in
 promote-proposal writer.  Full recipe + the identifiability lesson:
-`patterns.md` §4; tutorial `tutorials/props/old/fitNRTL01_ethanol_water`.
+`patterns.md` §4; tutorial `tutorials/steady/optimisation/fitNRTL01_ethanol_water`.
 
 **RETIRED `fitBinaryPair`** — the factory throws, naming `fitParameters`
 (choupoProps) as the replacement; `fitNRTL01_ethanol_water` was migrated to

@@ -227,8 +227,10 @@ Each carries ρ, F_M (Guthrie), σ_y, max T, max P.
 - `role <volatile|solute|nonvolatile|radical>;` — drives K-value choice.
 - `dissociation <nu>;` — ions per formula (for osmotic pressure).
 - `electrolyte { cation <ion>; anion <ion>; solubility <m_sat>; dissolutionEnthalpy <J/mol>; }`
-  — a dissociating salt for the `pitzer` / `eNRTL` activity models (ions index
-  `data/standards/electrolyte/{ions,pairs,enrtl}.dat`). `solubility` is the measured
+  — a dissociating salt for the `pitzer` / `eNRTL` activity models (the ions are
+  `data/standards/species/<ion>.dat`, one typed file each; their pair parameters
+  are `data/standards/parameters/Pitzer/pairs/<c>-<a>.dat` and
+  `data/standards/parameters/eNRTL/<c>-<a>.dat`). `solubility` is the measured
   m_sat [mol/kg] at 25 °C; the optional `dissolutionEnthalpy` [J/mol] sets the
   van't Hoff temperature shift of the solubility product `Ksp(T)` (omit it and `Ksp`
   is held flat in T — fine for NaCl, whose solubility is nearly T-independent).

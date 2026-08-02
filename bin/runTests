@@ -753,6 +753,22 @@ PYEOF
     fi
     rm -f /tmp/elsc.$$
 
+    # Doc-reference gate: every repo path and tutorial case name mentioned in
+    # the AI-facing docs (what bin/llmctx feeds an assistant) must exist.  A
+    # dead path there is an instruction the reader follows into nothing.
+    # Deliberate absences (the gitignored private tier, retired homes named as
+    # retired, worked-example placeholders) are listed WITH their reason, and
+    # the gate also fires when one of them quietly comes true.
+    if "$ROOT/bin/curate/check_doc_references.py" > /tmp/docref.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "doc-reference-gate" "$(tail -1 /tmp/docref.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_doc_references.py)\n" "doc-reference-gate"
+        cat /tmp/docref.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/docref.$$
+
     # ---- Curation gates that existed but never RAN ----------------------
     # Eleven gates sat in bin/curate/ unwired; seven were not even
     # executable.  Two were stale -- check_ion_pins read the retired

@@ -30,7 +30,7 @@ doesn't reach the `^` form.)
 ### UNIFAC: no `=` in a group name (alkenes/alkynes absent)
 Same tokenizer limitation: `=` is not a word character, so UNIFAC subgroup
 names that contain it — the alkene/alkyne groups `CH2=CH`, `CH=CH`, `C=C` — are
-NOT in `data/standards/unifac/groups.dat` and cannot be declared.  UNIFAC works
+NOT in `data/standards/parameters/UNIFAC/groups.dat` and cannot be declared.  UNIFAC works
 for saturated families (alkanes, aromatics, alcohols, ketones, esters, ethers,
 acids, amines, chloro, water); a system needing an alkene group must use a
 fitted activity model (NRTL/UNIQUAC) instead.  (Fixable by extending the

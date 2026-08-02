@@ -172,10 +172,11 @@ underscore.  Symbols like `@`, `&`, `#`, `?` break shell expansion,
 URL encoding, and tooling — and the case-style distinction already
 carries the hierarchy.
 
-**Exception**: archived tutorials under `tutorials/props/old/` keep
-their pre-convention names (camelCase folders + lowercase units / streams)
-as historical regression fodder.  Authoring new cases follows the
-convention above.
+**Exception**: a number of older `tutorials/props/` cases keep their
+pre-convention names — no `NN` index, plain lowercase words
+(`compare_vle_etoh_water`, `enthalpy_naoh_water`, `h_surface_identity`).
+They are kept as regression fodder and are not renamed.  Authoring new
+cases follows the convention above.
 
 ## Tutorial layout
 
@@ -197,7 +198,7 @@ dispatches automatically:
 ```sh
 runCase tutorials/steady/flash/flash01_benzene_toluene
 runCase tutorials/batch/reactor/batch05_crystalliser
-runCase tutorials/props/propertyScan01_psat_ethanol
+runCase tutorials/props/scan/scan2d01_co2_compressibility
 ```
 
 The shipped tutorials are indexed in `docs/tutorials-catalogue.md`.  Common
@@ -238,9 +239,9 @@ starters to compare against when answering "write me a case for X":
 | Sweep | `sensitivity01_column_reflux` |
 | Optimisation (Nelder-Mead) | `optim01_column_reflux` |
 | Fit NRTL pair | `fitNRTL01_ethanol_water` |
-| Property point (JANAF audit) | `propertyPoint01_ideal_gas` |
-| 1D property scan | `propertyScan01_psat_ethanol` |
-| 2D property scan (Z(T,P)) | `propertyScan04_z_co2_grid` |
+| Property point (enthalpy-surface audit) | `h_surface_identity` |
+| 1D property scan | `phase01_water_full` |
+| 2D property scan (Z(T,P)) | `scan2d01_co2_compressibility` |
 | Batch reactor (isothermal) | `batch01_first_order` |
 | Adiabatic batch | `batch02_adiabatic` |
 | Rayleigh batch distillation | `still01_benzene_toluene` |

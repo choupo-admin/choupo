@@ -178,7 +178,8 @@ src/
 ├── thermo/              Component, ThermoPackage, Database, phase/, vaporPressure/,
 │                         activityCoefficient/, equationOfState/, heatCapacity/,
 │                         membrane/ (Membrane + MembraneRegistry)
-├── materials/           Material + MaterialRegistry (loads data/materials/*.dat)
+├── materials/           Material + MaterialRegistry (reads the flat
+│                       data/standards/assets/ home, kind constructionMaterial)
 ├── solver/              NewtonRaphson (1-D), NewtonND (n-D), Wegstein,
 │                         StabilityTest (Michelsen TPD)
 ├── unitOperations/
@@ -832,9 +833,12 @@ resolution/MODEL half (a deliberate name twin — root = level-3 deep reference)
 the **arity doctrine** (`docs/ai/data-doctrine.md`) is a SLICE under it
 (reference selection folds into the formulation, per the one-knob rule above).
 The flat-components O(1) lookup (§7 below,
-2026-06-07) is preserved by `generated/indexes/`+`flatCaches/` — any basis
-split is SOURCE-layout, never a runtime directory-walk, so the two decisions do
-not conflict.  **General basis reconciliation (the engine carrying the
+2026-06-07) survives because it needs no machinery to survive: `Database.cpp`
+resolves `components/<name>.dat` by exact-name path concatenation, so any basis
+split is SOURCE-layout, never a runtime directory-walk, and the two decisions do
+not conflict.  (This sentence used to credit `generated/indexes/` and
+`flatCaches/`, neither of which was ever built — a doc claiming machinery that
+does not exist sends the next reader looking for it.)  **General basis reconciliation (the engine carrying the
 aqueous-species basis through every stream) stays `[ROADMAP]`** — build via a
 vertical spike end-to-end through all layers BEFORE any mass migration.  **Grammar
 consolidated 2026-07-04** (professors+students fora, `docs/design/thermo-grammar-*`):

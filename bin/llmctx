@@ -37,10 +37,12 @@
 #   bin/llmctx | xclip         # copy to clipboard (Linux)
 #   bin/llmctx | pbcopy        # copy to clipboard (macOS)
 #
-# Total context is ~1500 lines (well within a 200k-token window) and is
-# designed to teach an LLM everything it needs to author a Choupo case.
-# For an LLM working ON the source code (not authoring cases), point it
-# at CLAUDE.md instead -- that's the developer-oriented doc.
+# The kit is designed to teach an LLM everything it needs to author a
+# Choupo case.  Its SIZE is reported on stderr when the script runs -- a
+# line count written down here is a derivative with a second home, and the
+# one that used to sit in this comment said ~1500 while the kit had grown
+# past 5600.  For an LLM working ON the source code (not authoring cases),
+# point it at CLAUDE.md instead -- that's the developer-oriented doc.
 set -euo pipefail
 
 # Repo root from this script's location: bin/llmctx -> repo root is one up.
@@ -57,19 +59,54 @@ fi
 # the user actually picks from), then components (what ships), then patterns
 # (recipes the user copies), then pitfalls (things that bite).
 ORDER=(
+    start-here
     overview
     dict-syntax
     case-layout
     thermo
     unit-ops
+    energy
     outer-drivers
     components
+    data-doctrine
     curation-protocol
     patterns
     pitfalls
     consistency
     extending
+    schemas-reference
 )
+
+# A file docs/ai/ carries that the case-authoring kit deliberately OMITS,
+# with the reason.  Everything else is emitted -- including a file added
+# after this script was last edited, which is appended at the end rather
+# than dropped.  ORDER used to be the ONLY list, so it was silently also
+# the membership test: start-here, energy, data-doctrine and
+# schemas-reference existed for months and reached no assistant, because
+# adding a doc and adding it HERE were two acts and only one got done.
+EXCLUDE=(
+    gui-credo            # GUI design principles -- for someone changing the
+                         # GUI, not for someone authoring a case
+)
+
+in_list() {
+    local needle="$1"; shift
+    local x
+    for x in "$@"; do [ "$x" = "$needle" ] && return 0; done
+    return 1
+}
+
+# Anything present but unlisted goes last, so a new doc is INCLUDED by
+# default; the alternative failure (a doc nobody reads) is the one that
+# already happened.
+EXTRA=()
+for f in "$AI_DIR"/*.md; do
+    name="$(basename "$f" .md)"
+    in_list "$name" "${ORDER[@]}"   && continue
+    in_list "$name" "${EXCLUDE[@]}" && continue
+    EXTRA+=("$name")
+done
+ORDER+=("${EXTRA[@]+"${EXTRA[@]}"}")
 
 cat <<'EOF'
 <!--
@@ -82,13 +119,15 @@ write a `flowsheetDict` / `propsDict` for Choupo.  Start at the overview,
 write the case, and when in doubt cite which file you pulled the fact from.
 
 If you're a HUMAN: paste this whole file into a fresh chat with Claude /
-ChatGPT and then ask your question.  ~1500 lines, well under any modern
-context window.
+ChatGPT and then ask your question.  It is well under any modern context
+window; the exact size is printed on stderr when you generate it.
 ================================================================================
 -->
 
 EOF
 
+lines=0
+emitted=()
 for name in "${ORDER[@]}"; do
     f="$AI_DIR/${name}.md"
     if [ ! -f "$f" ]; then
@@ -99,4 +138,16 @@ for name in "${ORDER[@]}"; do
     printf '<!-- docs/ai/%s.md -->\n' "$name"
     printf '<!-- ============================================================ -->\n\n'
     cat "$f"
+    lines=$(( lines + $(wc -l < "$f") ))
+    emitted+=("$name")
 done
+
+# Report the kit's real shape on stderr -- stdout is the kit itself, and the
+# size is a number nobody should have to keep in sync by hand.
+{
+    printf 'llmctx: %d file(s), %d lines of docs/ai content\n' \
+           "${#emitted[@]}" "$lines"
+    if [ "${#EXCLUDE[@]}" -gt 0 ]; then
+        printf 'llmctx: omitted on purpose: %s\n' "${EXCLUDE[*]}"
+    fi
+} >&2

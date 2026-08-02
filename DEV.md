@@ -390,8 +390,31 @@ accepts today, and that is a policy call.
    - `docs/engine-capabilities.md` still narrates the retired `children`/`boundary`
      flowsheet grammar in places (343 lines, its own pass).
    Content is correct in the CODE; only the settled-note prose lags.
-5. **`docs/ai/{consistency,extending,gui-credo}.md`** were not re-read in the v2
-   scrub (no retired-token hits, but unverified end-to-end).
+5. ~~**`docs/ai/{consistency,extending,gui-credo}.md`** were not re-read in the
+   v2 scrub~~ — **PAID 2026-08-02 for the two that carry executable claims, and
+   generalised.**  `consistency.md` and `extending.md` were verified end to end
+   against the code — op registered, tutorials present, dict forms and counts
+   correct — and each had exactly one defect: `consistency.md` showed a `role`
+   key that `vleConsistency` does not read (only `Kinetics1D` does), and its
+   dataset example omitted the model-scan column aliases the op accepts.
+   Nothing in `extending.md` was wrong; the one suspected phantom
+   (`userOp02_component_splitter`) turned out to exist — a truncated `ls`, not
+   a doc bug, which is the third time this campaign that measuring changed the
+   answer.
+   What the pass *did* find is a different failure class, and a mechanical one:
+   **reference rot**.  Seven dead paths and case names across the AI docs — an
+   archive directory dissolved into the categorised layout, three starter-table
+   cases renamed out from under the table, UNIFAC groups at their
+   pre-Migration-2 address, a `parameters/eos/` folder never built, the
+   materials registry still pointed at a top-level materials folder that
+   Migration 4 folded into the flat assets home, and CLAUDE.md crediting
+   `generated/indexes/`+`flatCaches/` for machinery that never existed.  All
+   fixed; `check_doc_references` now verifies every path and case name in
+   `docs/ai/*.md` + CLAUDE.md + DEV.md, with deliberate absences listed *with
+   their reason* and a check that fires when one of them quietly comes true.
+   Sabotage-verified.
+   Still unread: `gui-credo.md` (411 lines, GUI-design prose rather than
+   checkable claims — its paths and case names now pass the gate).
 6. **Landing mobile** — the 390 px responsive fix WAS applied (`b9f17421a`,
    `f7b69592f`: minWidth:0 + clamp + wrap).  Not a standing debt, but no fresh
    390 px screenshot confirms it end-to-end (Codex: prove clean or it stays
