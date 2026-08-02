@@ -21,6 +21,8 @@ License
 
 #include <filesystem>
 #include <iostream>
+#include <stdexcept>   // the onDivergence refusal throws; g++ lends this
+                       // transitively, emscripten's libc++ does not
 #include <string>
 #include <vector>
 
@@ -29,12 +31,32 @@ namespace records {
 
 namespace fs = std::filesystem;
 
+//  Function-local statics: ONE home for the verdict, reachable by the
+//  binaries without a global and without a second copy of the logic.
+static std::string& verdict_()
+{
+    static std::string v = "unsealed";
+    return v;
+}
+static std::vector<std::string>& divergedRecords_()
+{
+    static std::vector<std::string> r;
+    return r;
+}
+
+const std::string& sealVerdict() { return verdict_(); }
+const std::vector<std::string>& sealDivergedRecords() { return divergedRecords_(); }
+
 int verifySeal(int verbosity)
 {
     static bool done = false;
     static int  divergences = 0;
     if (done) return divergences;
     done = true;
+    //  The verdict starts UNSEALED and is only ever raised by evidence:
+    //  every early return below leaves a case that made no claim saying so.
+    verdict_() = "unsealed";
+    divergedRecords_().clear();
 
     DictPtr m = nearestManifest();
     if (!m || !m->found("records")) return 0;
@@ -85,6 +107,11 @@ int verifySeal(int verbosity)
     }
 
     divergences = static_cast<int>(changed.size() + missing.size());
+    //  A manifest exists and was checkable, so a claim IS now made -- which
+    //  of the two it is depends only on the hashes.
+    verdict_() = (divergences == 0) ? "verified" : "diverged";
+    for (const auto& k : changed) divergedRecords_().push_back(k);
+    for (const auto& k : missing) divergedRecords_().push_back(k);
     if (divergences == 0) return 0;
 
     //  Loud, and specific about what the divergence COSTS: not "you did
@@ -107,6 +134,30 @@ int verifySeal(int verbosity)
                      " re-import (bin/choupo-import) to make the manifest"
                      " describe them again, or keep the edit and know the"
                      " provenance line is now stale.\n";
+    }
+
+    //  The REFUSAL is the CASE's to declare, never the engine's to infer
+    //  (forum 2026-08-02: the first-year must be able to edit a record and
+    //  learn from it; the doctoral student archiving her thesis appendix
+    //  wants the run to STOP if the bytes moved -- and that is a property
+    //  of what she is doing, not of the case or of the engine's taste).
+    //  Default `announce`; an archival copy declares `onDivergence refuse;`.
+    const std::string onDiv = m->lookupWordOrDefault("onDivergence", "announce");
+    if (onDiv != "announce" && onDiv != "refuse")
+        throw std::runtime_error("propertyManifest: onDivergence '" + onDiv
+            + "' is not one of announce / refuse");
+    if (onDiv == "refuse")
+    {
+        std::string names;
+        for (const auto& k : divergedRecords_())
+            names += (names.empty() ? "" : ", ") + k;
+        throw std::runtime_error("propertyManifest declares `onDivergence"
+            " refuse;` and " + std::to_string(divergences) + " record(s) no"
+            " longer match what it claims (" + names + ") -- this case is"
+            " declared ARCHIVAL, so a moved byte stops the run rather than"
+            " producing a result under a provenance line that is no longer"
+            " true.  Re-import to reseal, or set `onDivergence announce;`"
+            " to keep exploring.");
     }
     return divergences;
 }

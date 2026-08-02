@@ -272,11 +272,29 @@ accepts today, and that is a policy call.
    REFUSAL with an order-of-magnitude logK, and promoting that into the
    frozen tier is the fabrication the project forbids.  The provenance
    blocker on moving the case into `tutorials/` is therefore GONE.
-4. **Seal divergence: announce or refuse?**  The runtime now hashes every
-   record a sealed manifest claims and SAYS which diverged (2026-07-31).  It
-   does not refuse — editing your own case is exactly what a glass-box
-   simulator is for, and only Vítor should decide that a stale provenance line
-   stops a run.
+4. ~~**Seal divergence: announce or refuse?**~~  **DECIDED AND BUILT
+   2026-08-02 — and the binary was the wrong question.**  Vítor sent it to
+   a professors-AND-students forum; seating the students first dissolved
+   it.  The first-year edits a record on purpose (that is how he learns
+   what it does) and a refusal teaches him only that Choupo is fragile;
+   the masters student writes "runs on Choupo-2607" in her thesis and
+   needs to not quote the tool wrongly; the doctoral student names the
+   answer — those are different situations, and the engine must not guess
+   which one she is in.  The MEASUREMENT settled the rest: `verifySeal()`
+   returned a divergence count that ALL THREE binaries discarded, so the
+   divergence lived on stderr and a golden from a diverged run was
+   byte-indistinguishable from one from a verified run.  So: the verdict
+   is now TRI-STATE and reaches the RESULT (`seal.verdict` =
+   verified | diverged+named records | unsealed, and **unsealed is never
+   verified** — sealing nothing is not passing); `announce` stays the
+   DEFAULT; and the refusal exists as the CASE's declaration
+   (`onDivergence refuse;` inside `propertyManifest{}`, the archival
+   posture).  Auto-resealing is rejected outright — silently rewriting the
+   manifest to match edited files destroys the only evidence anything
+   moved.  Forum:
+   [`docs/design/seal-divergence-forum-2026-08-02.md`](docs/design/seal-divergence-forum-2026-08-02.md);
+   gate `check_seal_verdict` (sabotage-verified: forcing the verdict to
+   "verified" fails it on the diverged AND unsealed probes).
 5. **solverDict consolidation + speciation aliases (roadmap #6)** —
    scoped 2026-08-01,
    [`docs/design/solverdict-consolidation-scope.md`](docs/design/solverdict-consolidation-scope.md):

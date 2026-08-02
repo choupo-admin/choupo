@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ResultEmitter.H"
+#include "thermo/SealCheck.H"
 
 #include <cmath>
 #include <iomanip>
@@ -81,6 +82,29 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     os << "<<<Choupo:result-begin>>>\n";
     os << "{ \"version\": 1,\n";
     os << "  \"converged\": " << (r.converged ? "true" : "false") << ",\n";
+
+    //  ---- the provenance seal, tri-state (forum 2026-08-02) -------------
+    //  Read HERE, at the ONE point every result passes through, so the
+    //  verdict travels with the artefact instead of dying on stderr.  A
+    //  golden, a report or a converged/ directory produced by a diverged
+    //  run now says so; `unsealed` is emitted as itself and never as
+    //  "verified", because a case that sealed nothing makes no claim.
+    {
+        const std::string& v = records::sealVerdict();
+        os << "  \"seal\": { \"verdict\": " << esc(v);
+        const auto& dr = records::sealDivergedRecords();
+        if (!dr.empty())
+        {
+            os << ", \"divergedRecords\": [";
+            for (std::size_t i = 0; i < dr.size(); ++i)
+            {
+                if (i) os << ", ";
+                os << esc(dr[i]);
+            }
+            os << "]";
+        }
+        os << " },\n";
+    }
 
     // ---- components ------------------------------------------------------
     os << "  \"components\": [";

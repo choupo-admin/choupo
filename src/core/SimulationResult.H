@@ -370,6 +370,24 @@ struct SimulationResult
     // runs.  The .ods / .csv cash-flow spreadsheet is built from this.
     EconomicsSummary                                              economics;
     bool                                                           converged = true;
+
+    //  ---- Provenance seal, tri-state (forum 2026-08-02) -----------------
+    //  The manifest's claim and its RETRACTION must travel together.  Until
+    //  now verifySeal() returned a divergence count that all three binaries
+    //  discarded, so the divergence lived on stderr and nowhere else -- and
+    //  a golden recorded from a diverged run was byte-indistinguishable
+    //  from one recorded from a verified run, while every report and
+    //  converged/ directory inherited the release name.
+    //
+    //    "verified"  a manifest exists and every claimed record hashes as
+    //                claimed -- this case reproduces the release it names
+    //    "diverged"  a manifest exists and sealDivergedRecords lists what
+    //                no longer matches
+    //    "unsealed"  no manifest -- NO CLAIM IS MADE, which is NOT the same
+    //                as passing (reporting "no divergences" for a case that
+    //                sealed nothing would be the lie this field ends)
+    std::string                                sealVerdict = "unsealed";
+    std::vector<std::string>                   sealDivergedRecords;
 };
 
 } // namespace Choupo

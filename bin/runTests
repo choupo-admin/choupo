@@ -708,6 +708,20 @@ PYEOF
     fi
     rm -f /tmp/volat.$$
 
+    # Seal-verdict gate: the manifest's claim and its RETRACTION travel
+    # together -- the tri-state verdict reaches the RESULT (it used to die
+    # on stderr while every artefact inherited the release name), and the
+    # refusal is the CASE's to declare.  Sabotage-verified 2026-08-02.
+    if "$ROOT/bin/curate/check_seal_verdict.py" > /tmp/sealv.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "seal-verdict-gate" "$(tail -1 /tmp/sealv.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_seal_verdict.py)\n" "seal-verdict-gate"
+        cat /tmp/sealv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sealv.$$
+
     # ---- Curation gates that existed but never RAN ----------------------
     # Eleven gates sat in bin/curate/ unwired; seven were not even
     # executable.  Two were stale -- check_ion_pins read the retired

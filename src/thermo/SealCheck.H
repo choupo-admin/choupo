@@ -56,6 +56,9 @@ Description
 
 #pragma once
 
+#include <string>
+#include <vector>
+
 namespace Choupo {
 namespace records {
 
@@ -64,6 +67,15 @@ namespace records {
 //  is sealed once; re-checking per lookup would put a digest on the hot
 //  path).  Returns the number of divergences found.
 int verifySeal(int verbosity);
+
+//  The verdict of the LAST verifySeal() call, for the result to carry.
+//  "verified" | "diverged" | "unsealed" -- and `unsealed` is NOT `verified`:
+//  a case that sealed nothing makes no reproducibility claim, and saying
+//  "no divergences" about it would be the lie this verdict exists to end.
+//  `sealDivergedRecords()` names what moved (empty unless diverged).
+//  Forum: docs/design/seal-divergence-forum-2026-08-02.md.
+const std::string&              sealVerdict();
+const std::vector<std::string>& sealDivergedRecords();
 
 } // namespace records
 } // namespace Choupo
