@@ -5,11 +5,11 @@
      to the hand-curated unit-ops.md (which has groupings, prose and
      worked examples); this file is the alphabetical schema dump. -->
 
-*55 of 76 registered operations carry a schema and are documented below.*
+*60 of 76 registered operations carry a schema and are documented below.*
 
 **Not documented here** — these operations are registered and runnable but have no `.schema.json` yet, so the GUI has no property editor for them and this reference cannot describe their fields.  Read `unit-ops.md`, the tutorials, or the header comment of the implementing class instead; adding a schema file is what removes a name from this list:
 
-> `electrodialysisStack`, `electrolyteActivity`, `enrtlMixedSolvent`, `enrtlMultiSalt`, `estimateComponent`, `evaporativeDryer`, `exchange`, `gibbsMap`, `heatTransferBench`, `ionExchanger`, `kinetics1D`, `membraneSW`, `pneumaticConveyor`, `propertyScanBinary`, `propertyScanTernary`, `psa`, `psychrometricChart`, `purePhaseDiagram`, `scalingScan`, `spiralWoundModule`, `tsaTwinBed`
+> `electrolyteActivity`, `enrtlMixedSolvent`, `enrtlMultiSalt`, `estimateComponent`, `evaporativeDryer`, `gibbsMap`, `heatTransferBench`, `kinetics1D`, `pneumaticConveyor`, `propertyScanBinary`, `propertyScanTernary`, `psa`, `psychrometricChart`, `purePhaseDiagram`, `scalingScan`, `tsaTwinBed`
 
 ## `FUG`  (FUG operation)
 
@@ -240,6 +240,23 @@ Shaft sink / electrical generator. Hardware-free apart from the generator effici
 |---|:-:|---|---|---|
 | `eta` |   | number | - | Shaft-to-electrical efficiency (0 < eta <= 1); default 1.0. The (1-eta) fraction is dissipated as heat and reported as the W_losses KPI. |
 
+## `electrodialysisStack`  (electrodialysisStack operation)
+
+Electrodialysis stack: N cell pairs of alternating cation/anion-exchange membranes moving salt from the diluate to the concentrate under a DC current. Give `current` to impose the amperage, or `targetDemin` to ask for a demineralisation fraction and let the current be solved. The run checks the applied current against the LIMITING current from the film model and announces the margin — above i_lim the diluate boundary layer is ion-depleted and water splitting takes over, which is a regime, not a bigger number. The DC power (P = U·I) is published on an energy wire as W_electric, mirroring the shaft-wire convention, so a rectifier (`electricLoad`) absorbs it.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `N_cellpairs` | ✓ | integer | - |  |
+| `membraneArea` | ✓ | number | m2 |  |
+| `channelThickness` | ✓ | number | m |  |
+| `channelLength` |   | number | m | Used by the Leveque film correlation; defaults to 0.5 m. |
+| `linearVelocity` |   | number | m/s | Defaults to 0.05 m/s. |
+| `current` |   | number | - | Imposed-current form. Raw SI (amperes). Give this OR targetDemin. |
+| `targetDemin` |   | number | - | Solved-current form: fraction of the diluate's salt to remove; the current is the result. |
+| `xi` |   | number | - | Fraction of the charge that moves salt; defaults to 0.9, announced. |
+| `E_electrodes` |   | number | - | Lumped electrode + electrode-rinse voltage, added to the stack voltage; raw SI (volts), announced. |
+| `membrane` | ✓ | string | — | Resolved by name (kind IEM), e.g. CMX_AMX; supplies the area resistances and counter-ion transport numbers. |
+
 ## `elementalComposition`  (elementalComposition operation)
 
 Glass-box surface of the ONE shared formula parser (src/thermo/ElementComposition) that every balance diagnostic uses. Decomposes chemical formulas into their per-element atom counts and reports them, so the parser a student relies on for the element balance can be exercised and read directly. Give `formulas`, `components`, or both; a formula it cannot parse is REFUSED by name rather than silently skipped.
@@ -267,6 +284,21 @@ Single-effect evaporator sized by its heat-transfer surface. The duty follows fr
 | `area` | ✓ | number | m2 | Steam-chest surface. With U, this fixes the duty and therefore the evaporation rate. |
 | `U` | ✓ | number | W/m2/K | Steam-to-liquor overall coefficient, referred to `area`. |
 | `Tref` |   | number | K | Datum for the reported enthalpies; defaults to 298.15 K. It shifts the printed H values, never the duty or the split. |
+
+## `exchange`  (exchange operation)
+
+Ion-exchange equilibrium on the props bench: the declared water contacts a resin at a declared dose and the op reports the exchanged composition, the resin loading and the pH. The `exchange {}` block accepts resin, resinDose and CEC and NOTHING else — the capacity nameplate lives in the resin's own record, and an unknown key refuses by name with the grammar. `pH solve;` asks for the proton balance to be solved rather than given.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `analyticalTotals` |   | object | — | The water being softened: `{ Ca 84 mg/L; Na 363 mg/L; ... }`. |
+| `totals` |   | object | — |  |
+| `pH` |   | ? | — | A number to fix it, or the word `solve` to compute it from the network. |
+| `temperature` |   | number | K |  |
+| `exchange` | ✓ | object | — | REQUIRED. `{ resin <name>; resinDose <v> <L/kg\|kg/kg>; }` — resin and dose; `CEC` may override the record's capacity for a what-if. |
+| `equilibrate` |   | object | — | As in `speciate`: let the NAMED minerals precipitate to SI = 0. |
+| `diagSpecies` |   | array[string] | — |  |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
 ## `extract`  (extract operation)
 
@@ -381,6 +413,18 @@ Single-stream heater. Given the thermal power Q (positive heats, negative cools)
 | `Q` |   | number | W | Absolute thermal power delivered to the stream (positive heats, negative cools). The outlet temperature is a RESULT, never a spec — `Tout… |
 | `Tref` |   | number | K | Reference for the enthalpy integrals; only differences enter the balance. |
 
+## `ionExchanger`  (ionExchanger operation)
+
+Ion-exchange contactor on a flowsheet stream: the feed's ions equilibrate with a resin dosed per unit of water, and the outlet carries the softened composition. The resin (kind ionExchangeResin, e.g. SAC_Na) brings its own capacity and selectivity data; the case only decides the CONTACT — resin and dose — never the chemistry, which stays with the declared aqueous system.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `resin` | ✓ | string | — | Resolved by exact name in the assets catalogue or the case's constant/electrolyte/resins/. |
+| `resinDose` |   | number | - | Bed volume contacted per mass of water (X_total = CEC × dose); the announce shows the arithmetic. |
+| `bedVolume` |   | number | m3 | Alternative dosing form: the absolute bed volume. |
+| `pH` |   | number | - | Fixes the proton balance; omit to have the pH SOLVED from the network. |
+| `activityModel` |   | string | — | Per-ion gamma model for the equilibrium, where the case's declared system does not already fix it. |
+
 ## `isothermEval`  (isothermEval operation)
 
 Evaluates a curated adsorption isotherm — the loading of one adsorbate on one adsorbent as a function of pressure and temperature — from the adsorbent record's own parameters. The glass-box surface of what a fixed-bed or TSA unit uses internally, so the isotherm a breakthrough case runs on can be plotted and checked before the bed is ever solved.
@@ -404,6 +448,29 @@ Isothermal two-phase flash at fixed T and P. Both are optional overrides of the 
 | `phaseSet` |   | string | - | Which phases the flash is allowed to find. `auto` makes the phase set a RESULT rather than an input — the engine decides from what it alr… |
 | `alphaRich` |   | string | — | Labels which of two liquids is which, for a liquid-liquid split. A label, not a constraint: it names the phases in the report without ste… |
 | `betaRich` |   | string | — | The counterpart of alphaRich. |
+
+## `membraneSW`  (membraneSW operation)
+
+Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its compact name; both read the identical operation block. Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. Hardware in one of two forms — explicit (`area` + `length`, optionally `elements` in series) or nominal (`moduleDiameter` + `nModules`). One inlet, two outlets bound positionally: retentate first, permeate second.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `membrane` | ✓ | string | — | Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s. |
+| `area` |   | number | m2 | Explicit-hardware form, together with `length`. The alternative is the nominal form: `moduleDiameter` + `nModules`. |
+| `length` |   | number | m |  |
+| `elements` |   | integer | - | A multi-element pressure vessel: the retentate of one element feeds the next. |
+| `moduleDiameter` |   | number | m | Nominal form: the area and length follow from the standard module size. |
+| `nModules` |   | number | - | Nominal form: how many modules in parallel (fractional allowed for a design pass). |
+| `P_permeate` | ✓ | number | Pa |  |
+| `dP_feed_total` |   | number | Pa | Total friction drop along the feed channel, applied linearly. The `pressureDrop { model SchockMiquel; }` block computes it from the space… |
+| `interElementDP` |   | number | Pa | Extra drop between elements of a multi-element vessel (interconnectors). |
+| `k_film` |   | number | m/s | Constant concentration-polarisation film coefficient. The `massTransfer {}` block computes it from a correlation instead. |
+| `nNodes` |   | integer | - | Discretisation along the module; defaults to 100. |
+| `rho_feed` |   | number | kg/m3 | Defaults to 1000 kg/m3. |
+| `transport` |   | string | — | The inner J_w–c_m–c_p problem: `solutionDiffusion` (default) or `DSPM-DE` (the pore-flow model for NF, with its announced internal Davies). |
+| `osmotic` |   | object | — | Absent = van't Hoff (dilute). `{ model Pitzer; beta0 ...; beta1 ...; Cphi ...; }` prices phi(I) for a concentrated brine — at seawater st… |
+| `pressureDrop` |   | object | — | Computes the feed-channel drop from the spacer geometry instead of taking `dP_feed_total`. |
+| `massTransfer` |   | object | — | Computes k_film from a Sherwood correlation instead of taking it as a constant. |
 
 ## `mixer`  (mixer operation)
 
@@ -558,6 +625,29 @@ Aqueous speciation: distributes the declared analytical totals over the curated 
 | `diagSpecies` |   | array[string] | — | Their activity coefficients are emitted as named KPIs, so a golden test can lock them. |
 | `verifyGlobal` |   | string | — | Sweeps EVERY curated Pitzer binary against the closed single-salt kernel instead of only the case's own ions. Expensive, and belongs to t… |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `spiralWoundModule`  (spiralWoundModule operation)
+
+Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. Hardware in one of two forms — explicit (`area` + `length`, optionally `elements` in series) or nominal (`moduleDiameter` + `nModules`). One inlet, two outlets bound positionally: retentate first, permeate second.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `membrane` | ✓ | string | — | Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s. |
+| `area` |   | number | m2 | Explicit-hardware form, together with `length`. The alternative is the nominal form: `moduleDiameter` + `nModules`. |
+| `length` |   | number | m |  |
+| `elements` |   | integer | - | A multi-element pressure vessel: the retentate of one element feeds the next. |
+| `moduleDiameter` |   | number | m | Nominal form: the area and length follow from the standard module size. |
+| `nModules` |   | number | - | Nominal form: how many modules in parallel (fractional allowed for a design pass). |
+| `P_permeate` | ✓ | number | Pa |  |
+| `dP_feed_total` |   | number | Pa | Total friction drop along the feed channel, applied linearly. The `pressureDrop { model SchockMiquel; }` block computes it from the space… |
+| `interElementDP` |   | number | Pa | Extra drop between elements of a multi-element vessel (interconnectors). |
+| `k_film` |   | number | m/s | Constant concentration-polarisation film coefficient. The `massTransfer {}` block computes it from a correlation instead. |
+| `nNodes` |   | integer | - | Discretisation along the module; defaults to 100. |
+| `rho_feed` |   | number | kg/m3 | Defaults to 1000 kg/m3. |
+| `transport` |   | string | — | The inner J_w–c_m–c_p problem: `solutionDiffusion` (default) or `DSPM-DE` (the pore-flow model for NF, with its announced internal Davies). |
+| `osmotic` |   | object | — | Absent = van't Hoff (dilute). `{ model Pitzer; beta0 ...; beta1 ...; Cphi ...; }` prices phi(I) for a concentrated brine — at seawater st… |
+| `pressureDrop` |   | object | — | Computes the feed-channel drop from the spacer geometry instead of taking `dP_feed_total`. |
+| `massTransfer` |   | object | — | Computes k_film from a Sherwood correlation instead of taking it as a constant. |
 
 ## `splitter`  (splitter operation)
 

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/ionExchanger.schema.json",
+  "title": "ionExchanger operation",
+  "description": "Ion-exchange contactor on a flowsheet stream: the feed's ions equilibrate with a resin dosed per unit of water, and the outlet carries the softened composition. The resin (kind ionExchangeResin, e.g. SAC_Na) brings its own capacity and selectivity data; the case only decides the CONTACT — resin and dose — never the chemistry, which stays with the declared aqueous system.",
+  "type": "object",
+  "properties": {
+    "resin": {
+      "type": "string",
+      "title": "Resin",
+      "description": "Resolved by exact name in the assets catalogue or the case's constant/electrolyte/resins/."
+    },
+    "resinDose": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Resin dose",
+      "description": "Bed volume contacted per mass of water (X_total = CEC × dose); the announce shows the arithmetic.",
+      "unit": "-"
+    },
+    "bedVolume": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Bed volume",
+      "description": "Alternative dosing form: the absolute bed volume.",
+      "unit": "m3"
+    },
+    "pH": {
+      "type": "number",
+      "title": "Given pH",
+      "description": "Fixes the proton balance; omit to have the pH SOLVED from the network.",
+      "unit": "-"
+    },
+    "activityModel": {
+      "type": "string",
+      "title": "Aqueous activity model",
+      "description": "Per-ion gamma model for the equilibrium, where the case's declared system does not already fix it."
+    }
+  },
+  "required": [
+    "resin"
+  ],
+  "additionalProperties": false
+}

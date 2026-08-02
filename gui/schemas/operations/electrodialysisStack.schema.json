@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/electrodialysisStack.schema.json",
+  "title": "electrodialysisStack operation",
+  "description": "Electrodialysis stack: N cell pairs of alternating cation/anion-exchange membranes moving salt from the diluate to the concentrate under a DC current. Give `current` to impose the amperage, or `targetDemin` to ask for a demineralisation fraction and let the current be solved. The run checks the applied current against the LIMITING current from the film model and announces the margin — above i_lim the diluate boundary layer is ion-depleted and water splitting takes over, which is a regime, not a bigger number. The DC power (P = U·I) is published on an energy wire as W_electric, mirroring the shaft-wire convention, so a rectifier (`electricLoad`) absorbs it.",
+  "type": "object",
+  "properties": {
+    "N_cellpairs": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Cell pairs",
+      "unit": "-"
+    },
+    "membraneArea": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Area per membrane",
+      "unit": "m2"
+    },
+    "channelThickness": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Spacer gap",
+      "unit": "m"
+    },
+    "channelLength": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Flow-path length",
+      "description": "Used by the Leveque film correlation; defaults to 0.5 m.",
+      "unit": "m"
+    },
+    "linearVelocity": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Cross-flow velocity",
+      "description": "Defaults to 0.05 m/s.",
+      "unit": "m/s"
+    },
+    "current": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Applied current",
+      "description": "Imposed-current form. Raw SI (amperes). Give this OR targetDemin.",
+      "unit": "-"
+    },
+    "targetDemin": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Target demineralisation",
+      "description": "Solved-current form: fraction of the diluate's salt to remove; the current is the result.",
+      "unit": "-"
+    },
+    "xi": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Current efficiency",
+      "description": "Fraction of the charge that moves salt; defaults to 0.9, announced.",
+      "unit": "-"
+    },
+    "E_electrodes": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Electrode overpotential",
+      "description": "Lumped electrode + electrode-rinse voltage, added to the stack voltage; raw SI (volts), announced.",
+      "unit": "-"
+    },
+    "membrane": {
+      "type": "string",
+      "title": "Ion-exchange membrane pair",
+      "description": "Resolved by name (kind IEM), e.g. CMX_AMX; supplies the area resistances and counter-ion transport numbers."
+    }
+  },
+  "required": [
+    "N_cellpairs",
+    "membraneArea",
+    "channelThickness",
+    "membrane"
+  ],
+  "additionalProperties": false
+}

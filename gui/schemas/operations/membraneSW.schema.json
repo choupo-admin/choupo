@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/membraneSW.schema.json",
+  "title": "membraneSW operation",
+  "description": "Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its compact name; both read the identical operation block. Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. Hardware in one of two forms — explicit (`area` + `length`, optionally `elements` in series) or nominal (`moduleDiameter` + `nModules`). One inlet, two outlets bound positionally: retentate first, permeate second.",
+  "type": "object",
+  "properties": {
+    "membrane": {
+      "type": "string",
+      "title": "Membrane",
+      "description": "Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s."
+    },
+    "area": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Membrane area",
+      "description": "Explicit-hardware form, together with `length`. The alternative is the nominal form: `moduleDiameter` + `nModules`.",
+      "unit": "m2"
+    },
+    "length": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Module length",
+      "unit": "m"
+    },
+    "elements": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Elements in series",
+      "description": "A multi-element pressure vessel: the retentate of one element feeds the next.",
+      "unit": "-"
+    },
+    "moduleDiameter": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Nominal module diameter",
+      "description": "Nominal form: the area and length follow from the standard module size.",
+      "unit": "m"
+    },
+    "nModules": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Parallel modules",
+      "description": "Nominal form: how many modules in parallel (fractional allowed for a design pass).",
+      "unit": "-"
+    },
+    "P_permeate": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Permeate pressure",
+      "unit": "Pa"
+    },
+    "dP_feed_total": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Feed-channel pressure drop",
+      "description": "Total friction drop along the feed channel, applied linearly. The `pressureDrop { model SchockMiquel; }` block computes it from the spacer geometry instead.",
+      "unit": "Pa"
+    },
+    "interElementDP": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Inter-element pressure drop",
+      "description": "Extra drop between elements of a multi-element vessel (interconnectors).",
+      "unit": "Pa"
+    },
+    "k_film": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Film mass-transfer coefficient",
+      "description": "Constant concentration-polarisation film coefficient. The `massTransfer {}` block computes it from a correlation instead.",
+      "unit": "m/s"
+    },
+    "nNodes": {
+      "type": "integer",
+      "minimum": 2,
+      "title": "Axial nodes",
+      "description": "Discretisation along the module; defaults to 100.",
+      "unit": "-"
+    },
+    "rho_feed": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Feed density override",
+      "description": "Defaults to 1000 kg/m3.",
+      "unit": "kg/m3"
+    },
+    "transport": {
+      "type": "string",
+      "title": "Transport law",
+      "description": "The inner J_w–c_m–c_p problem: `solutionDiffusion` (default) or `DSPM-DE` (the pore-flow model for NF, with its announced internal Davies)."
+    },
+    "osmotic": {
+      "type": "object",
+      "title": "Osmotic-pressure model",
+      "description": "Absent = van't Hoff (dilute). `{ model Pitzer; beta0 ...; beta1 ...; Cphi ...; }` prices phi(I) for a concentrated brine — at seawater strength phi ~ 0.92, so van't Hoff OVERSTATES the back-pressure and the difference is flux.",
+      "properties": {
+        "model": {
+          "type": "string",
+          "title": "Model name",
+          "description": "vanHoff or Pitzer."
+        },
+        "beta0": {
+          "type": "number",
+          "title": "Pitzer beta0",
+          "unit": "-"
+        },
+        "beta1": {
+          "type": "number",
+          "title": "Pitzer beta1",
+          "unit": "-"
+        },
+        "Cphi": {
+          "type": "number",
+          "title": "Pitzer Cphi",
+          "unit": "-"
+        }
+      }
+    },
+    "pressureDrop": {
+      "type": "object",
+      "title": "Channel-friction model",
+      "description": "Computes the feed-channel drop from the spacer geometry instead of taking `dP_feed_total`.",
+      "properties": {
+        "model": {
+          "type": "string",
+          "title": "Correlation",
+          "description": "e.g. SchockMiquel (dP/dz = lambda rho u^2 / 2 d_h)."
+        },
+        "channelHeight": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Channel height",
+          "unit": "m"
+        },
+        "spacerPorosity": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Spacer porosity",
+          "unit": "-"
+        },
+        "viscosity": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Feed viscosity",
+          "unit": "Pa.s"
+        }
+      }
+    },
+    "massTransfer": {
+      "type": "object",
+      "title": "Concentration-polarisation model",
+      "description": "Computes k_film from a Sherwood correlation instead of taking it as a constant.",
+      "properties": {
+        "model": {
+          "type": "string",
+          "title": "Correlation name"
+        },
+        "diffusivity": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Solute diffusivity",
+          "unit": "m2/s"
+        },
+        "channelHeight": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Channel height",
+          "unit": "m"
+        },
+        "spacerPorosity": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Spacer porosity",
+          "unit": "-"
+        },
+        "viscosity": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Feed viscosity",
+          "unit": "Pa.s"
+        }
+      }
+    }
+  },
+  "required": [
+    "membrane",
+    "P_permeate"
+  ],
+  "additionalProperties": false
+}

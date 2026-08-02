@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/exchange.schema.json",
+  "title": "exchange operation",
+  "description": "Ion-exchange equilibrium on the props bench: the declared water contacts a resin at a declared dose and the op reports the exchanged composition, the resin loading and the pH. The `exchange {}` block accepts resin, resinDose and CEC and NOTHING else — the capacity nameplate lives in the resin's own record, and an unknown key refuses by name with the grammar. `pH solve;` asks for the proton balance to be solved rather than given.",
+  "type": "object",
+  "properties": {
+    "analyticalTotals": {
+      "type": "object",
+      "title": "Analytical totals",
+      "description": "The water being softened: `{ Ca 84 mg/L; Na 363 mg/L; ... }`."
+    },
+    "totals": {
+      "type": "object",
+      "title": "Analytical totals (synonym)"
+    },
+    "pH": {
+      "title": "pH",
+      "description": "A number to fix it, or the word `solve` to compute it from the network."
+    },
+    "temperature": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature",
+      "unit": "K"
+    },
+    "exchange": {
+      "type": "object",
+      "title": "Resin contact",
+      "description": "REQUIRED. `{ resin <name>; resinDose <v> <L/kg|kg/kg>; }` — resin and dose; `CEC` may override the record's capacity for a what-if.",
+      "properties": {
+        "resin": {
+          "type": "string",
+          "title": "Resin name"
+        },
+        "resinDose": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Dose",
+          "unit": "-"
+        },
+        "CEC": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Capacity override",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "resin",
+        "resinDose"
+      ]
+    },
+    "equilibrate": {
+      "type": "object",
+      "title": "Allowed precipitation",
+      "description": "As in `speciate`: let the NAMED minerals precipitate to SI = 0.",
+      "properties": {
+        "minerals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Solids allowed to precipitate"
+        }
+      },
+      "required": [
+        "minerals"
+      ]
+    },
+    "diagSpecies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Species to pin as diagnostics"
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "exchange"
+  ],
+  "additionalProperties": false
+}
