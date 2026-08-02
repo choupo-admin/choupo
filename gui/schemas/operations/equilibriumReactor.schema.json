@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/equilibriumReactor.schema.json",
+  "title": "equilibriumReactor operation",
+  "description": "Reactor taken to CHEMICAL EQUILIBRIUM over the reactions the unit names in its `reactions ( <name> ... );` key — blocks of the case's `constant/reactions` library. The extents solve equilibrium constants computed from the same elements/formation datum every other reactor uses, so the answer is a property of the curated thermochemistry and not of a separately entered K. The pedagogical contrast with `gibbsReactor` is the declared SET: here these reactions equilibrate; there the mixture finds its own minimum over all species.",
+  "type": "object",
+  "properties": {
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Reactor temperature",
+      "description": "Isothermal operating temperature (a fired reformer holds it). Omit to hold the feed temperature.",
+      "unit": "K"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

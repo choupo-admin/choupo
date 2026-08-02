@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/heatCapacityFit.schema.json",
+  "title": "heatCapacityFit operation",
+  "description": "Least-squares polynomial fit of measured heat-capacity data, producing the `coefficients ( ... )` list a component record carries. The fit is a CURATION act made visible: the residuals and the recovered coefficients are reported so the student can judge the fit before promoting it into a `.dat`.",
+  "type": "object",
+  "properties": {
+    "component": {
+      "type": "string",
+      "title": "Component",
+      "description": "The component the data belongs to; used to label the report and to compare against any already-curated correlation."
+    },
+    "degree": {
+      "type": "integer",
+      "minimum": 0,
+      "title": "Polynomial degree",
+      "description": "Degree of the fitted polynomial in T; defaults to 2.",
+      "unit": "-"
+    },
+    "dataset": {
+      "type": "string",
+      "title": "Measured dataset",
+      "description": "Path to a self-describing dataset dict (a `columns ( { name ...; unit ...; } ... )` block plus a flat `data ( ... )` grid), relative to the case directory. Units are MANDATORY on every column."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "dataset"
+  ],
+  "additionalProperties": false
+}

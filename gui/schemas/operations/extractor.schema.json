@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/extractor.schema.json",
+  "title": "extractor operation",
+  "description": "Counter-current multistage liquid-liquid extraction column. Each stage is a liquid-liquid equilibrium split at the operating temperature, so the separation is a consequence of the declared activity model and not of an entered distribution coefficient — change the model and the answer moves, which is the point.",
+  "type": "object",
+  "properties": {
+    "stages": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Equilibrium stages",
+      "description": "Number of theoretical counter-current stages.",
+      "unit": "-"
+    },
+    "solvent": {
+      "type": "string",
+      "title": "Solvent component",
+      "description": "The component that identifies the extract phase. Naming it removes the ambiguity of which of the two liquids is which."
+    },
+    "temperature": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Operating temperature",
+      "description": "Isothermal column temperature; defaults to the feed temperature.",
+      "unit": "K"
+    }
+  },
+  "required": [
+    "stages"
+  ],
+  "additionalProperties": false
+}

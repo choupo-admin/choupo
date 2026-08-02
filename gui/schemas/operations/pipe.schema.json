@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/pipe.schema.json",
+  "title": "pipe operation",
+  "description": "Pipe-segment pressure drop. Single-phase by default (Darcy-Weisbach with the friction factor from the `model` slot — Churchill, Haaland or Colebrook); declaring a `twoPhase` block switches to a gas-liquid multiplier method. Elevation is signed: a rise costs pressure. The outlet stream is the inlet at the reduced pressure — a pipe transports, it does not separate.",
+  "type": "object",
+  "properties": {
+    "geometry": {
+      "type": "object",
+      "title": "Line geometry",
+      "description": "The physical line. Diameter, length and roughness are required; elevation change and fittings are optional.",
+      "properties": {
+        "D": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Internal diameter",
+          "unit": "m"
+        },
+        "L": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Straight length",
+          "unit": "m"
+        },
+        "roughness": {
+          "type": "number",
+          "minimum": 0,
+          "title": "Absolute roughness",
+          "description": "Wall roughness eps (4.6e-5 m for commercial steel).",
+          "unit": "m"
+        },
+        "dz": {
+          "type": "number",
+          "title": "Elevation change",
+          "description": "Outlet height minus inlet height. Positive (a rise) costs pressure.",
+          "unit": "m"
+        },
+        "fittings": {
+          "type": "array",
+          "title": "Fittings",
+          "description": "`( { K <loss coefficient>; count <n>; } ... )` — resistance coefficients; `count` defaults to 1.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "K": {
+                "type": "number",
+                "minimum": 0,
+                "title": "Loss coefficient",
+                "unit": "-"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1,
+                "title": "How many",
+                "unit": "-"
+              }
+            },
+            "required": [
+              "K"
+            ]
+          }
+        }
+      },
+      "required": [
+        "D",
+        "L",
+        "roughness"
+      ]
+    },
+    "viscosity": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Liquid viscosity override",
+      "description": "Use the declared liquid viscosity instead of the package's model. An explicit, announced aid for the case where a trace dissolved component has no viscosity correlation — never a silent default.",
+      "unit": "Pa.s"
+    },
+    "twoPhase": {
+      "type": "object",
+      "title": "Two-phase method",
+      "description": "Present = solve the segment as gas-liquid flow. Absent = single-phase.",
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": [
+            "LockhartMartinelli",
+            "homogeneous"
+          ],
+          "title": "Two-phase model",
+          "description": "LockhartMartinelli (separated-flow multiplier, the validated air-water route) or homogeneous (mixture properties)."
+        },
+        "gasViscosity": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Gas viscosity override",
+          "unit": "Pa.s"
+        },
+        "surfaceTension": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Surface tension override",
+          "unit": "N/m"
+        }
+      }
+    }
+  },
+  "required": [
+    "geometry"
+  ],
+  "additionalProperties": false
+}

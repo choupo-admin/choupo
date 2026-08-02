@@ -448,6 +448,29 @@ accepts today, and that is a policy call.
    schema-less operation has no GUI property editor, and it cannot be
    validated.  Worth clearing in batches by family (the props-bench ops are
    the largest cluster, then the reactors, then the heat units).
+   **Batch 1 landed 2026-08-02: 41 of 76.**  Nine written against the real
+   contracts — `elementalComposition`, `vleConsistency`, `hConsistency`,
+   `heatCapacityFit`, `vaporPressureFit`, `conversionReactor`,
+   `equilibriumReactor`, `pipe`, `extractor`.
+   **And the batch produced the check that matters more than the batch.**
+   `check_schema_coverage` holds every schema against the CORPUS: a case in
+   `tutorials/` runs, so every key it uses is real and every key it omits is
+   optional.  It caught two of my own nine within minutes —
+   `conversionReactor` takes a bare `conversion` with the reaction named at
+   unit level, and `equilibriumReactor` names its reactions at unit level too,
+   where I had invented an inline stoichiometry block that exists nowhere.  A
+   schema written from the header comment instead of from a running case is
+   fabrication, and this is what catches it.
+   It also found **82 disagreements across 18 pre-existing schemas** — each one
+   a schema that would REJECT a case the engine runs (`additionalProperties`
+   is false everywhere) or that marks required a key a running case omits.
+   Worst: `evaporator`, `fitParameters`, `crystalliser`, `propertyPoint`,
+   `distillationColumn`.  They sit in `bin/curate/schema_coverage_baseline.txt`
+   as a RATCHET, not a whitelist: anything new fails, and a baseline line that
+   stops firing fails too, so the file can only shrink and is deleted when
+   empty.  Both directions sabotage-verified.  **This is the next batch's
+   work: read the op's source and a running case, correct the SCHEMA, strike
+   the line.**
    *Related fix, same slice:* `bin/regen-llm-docs` was reading three
    directories that Migrations 2 and 4 had moved, and its `_list_section`
    answered "(directory not present)" instead of failing — so a blind

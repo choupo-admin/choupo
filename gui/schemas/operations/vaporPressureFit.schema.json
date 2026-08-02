@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/vaporPressureFit.schema.json",
+  "title": "vaporPressureFit operation",
+  "description": "Least-squares fit of measured vapour-pressure data to the Antoine form, producing the A, B and C a component record carries. Like `heatCapacityFit`, this is curation made visible: the residuals are reported beside the coefficients so the fit is judged, not just taken.",
+  "type": "object",
+  "properties": {
+    "component": {
+      "type": "string",
+      "title": "Component",
+      "description": "The component the data belongs to; used to label the report and to compare against any already-curated correlation."
+    },
+    "dataset": {
+      "type": "string",
+      "title": "Measured dataset",
+      "description": "Path to a self-describing dataset dict (a `columns ( { name ...; unit ...; } ... )` block plus a flat `data ( ... )` grid), relative to the case directory. Units are MANDATORY on every column."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "dataset"
+  ],
+  "additionalProperties": false
+}

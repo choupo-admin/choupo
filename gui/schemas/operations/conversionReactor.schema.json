@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/conversionReactor.schema.json",
+  "title": "conversionReactor operation",
+  "description": "Reactor specified by a FRACTIONAL CONVERSION rather than by kinetics — the sizing-free first pass a flowsheet usually starts from. Two forms: a single reaction named at UNIT level (`reaction <name>;`) takes a bare `conversion`; several reactions take a `conversions ( { reaction <name>; conversion <0..1>; } ... )` list. The duty follows from the elements/formation datum (dH_rxn(T) = sum nu_i h_i(T)), so every reacting species needs a `standardThermochemistry` block, and a conversion set that would drive a component negative is REFUSED by name rather than clipped.",
+  "type": "object",
+  "properties": {
+    "conversion": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "title": "Fractional conversion",
+      "description": "Single-reaction form: the fraction of the limiting reactant consumed by the reaction the unit names in its `reaction <name>;` key.",
+      "unit": "-"
+    },
+    "conversions": {
+      "type": "array",
+      "title": "Per-reaction conversions",
+      "description": "Multi-reaction form: one entry per reaction, each naming a block of the case's `constant/reactions` library.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reaction": {
+            "type": "string",
+            "title": "Reaction name"
+          },
+          "conversion": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "title": "Fractional conversion",
+            "unit": "-"
+          }
+        },
+        "required": [
+          "reaction",
+          "conversion"
+        ]
+      }
+    },
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Outlet temperature",
+      "description": "Isothermal operating temperature. Omit to hold the feed temperature; the duty is then the result.",
+      "unit": "K"
+    }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "conversion"
+      ]
+    },
+    {
+      "required": [
+        "conversions"
+      ]
+    }
+  ],
+  "additionalProperties": false
+}

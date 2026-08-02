@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/hConsistency.schema.json",
+  "title": "hConsistency operation",
+  "description": "Enthalpy-surface identity audit: checks that the assembled package's enthalpy route is internally consistent for the named components at one temperature. A pure numerical identity on the package's own H surface — it needs no experimental data and answers a question the tutorials cannot: whether the rungs a component's record pins actually compose.",
+  "type": "object",
+  "properties": {
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Components to audit",
+      "description": "The components whose enthalpy route is checked."
+    },
+    "temperature": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Audit temperature",
+      "description": "Temperature at which the identity is evaluated; defaults to 350 K.",
+      "unit": "K"
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "components"
+  ],
+  "additionalProperties": false
+}

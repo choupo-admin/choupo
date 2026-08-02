@@ -5,11 +5,11 @@
      to the hand-curated unit-ops.md (which has groupings, prose and
      worked examples); this file is the alphabetical schema dump. -->
 
-*32 of 76 registered operations carry a schema and are documented below.*
+*41 of 76 registered operations carry a schema and are documented below.*
 
 **Not documented here** — these operations are registered and runnable but have no `.schema.json` yet, so the GUI has no property editor for them and this reference cannot describe their fields.  Read `unit-ops.md`, the tutorials, or the header comment of the implementing class instead; adding a schema file is what removes a name from this list:
 
-> `activityCoefficients`, `boiler`, `column`, `condenser`, `conversionReactor`, `electrodialysisStack`, `electrolyteActivity`, `elementalComposition`, `enrtlMixedSolvent`, `enrtlMultiSalt`, `equilibriumReactor`, `estimateComponent`, `evaporativeDryer`, `exchange`, `extract`, `extractor`, `flash`, `FUG`, `gibbsMap`, `hConsistency`, `heatCapacityFit`, `heatTransferBench`, `ionExchanger`, `isothermEval`, `kinetics1D`, `membraneSW`, `MHeatX`, `multiStreamHX`, `phaseChanger`, `pipe`, `pitzerActivity`, `pneumaticConveyor`, `propertyScanBinary`, `propertyScanTernary`, `psa`, `psychrometricChart`, `purePhaseDiagram`, `REquil`, `scalingScan`, `speciate`, `spiralWoundModule`, `tsaTwinBed`, `vaporPressureFit`, `vleConsistency`
+> `activityCoefficients`, `boiler`, `column`, `condenser`, `electrodialysisStack`, `electrolyteActivity`, `enrtlMixedSolvent`, `enrtlMultiSalt`, `estimateComponent`, `evaporativeDryer`, `exchange`, `extract`, `flash`, `FUG`, `gibbsMap`, `heatTransferBench`, `ionExchanger`, `isothermEval`, `kinetics1D`, `membraneSW`, `MHeatX`, `multiStreamHX`, `phaseChanger`, `pitzerActivity`, `pneumaticConveyor`, `propertyScanBinary`, `propertyScanTernary`, `psa`, `psychrometricChart`, `purePhaseDiagram`, `REquil`, `scalingScan`, `speciate`, `spiralWoundModule`, `tsaTwinBed`
 
 ## `absorber`  (absorber operation)
 
@@ -56,6 +56,16 @@ Gas-phase compressor. Given the shaft power and isentropic efficiency, the disch
 |---|:-:|---|---|---|
 | `W_shaft` | ✓ | number | W | Mechanical power delivered to the gas (positive). |
 | `eta` | ✓ | number | - | Isentropic efficiency w_isentropic / w_real (0 < eta <= 1). Lower eta dissipates more shaft work as heat. |
+
+## `conversionReactor`  (conversionReactor operation)
+
+Reactor specified by a FRACTIONAL CONVERSION rather than by kinetics — the sizing-free first pass a flowsheet usually starts from. Two forms: a single reaction named at UNIT level (`reaction <name>;`) takes a bare `conversion`; several reactions take a `conversions ( { reaction <name>; conversion <0..1>; } ... )` list. The duty follows from the elements/formation datum (dH_rxn(T) = sum nu_i h_i(T)), so every reacting species needs a `standardThermochemistry` block, and a conversion set that would drive a component negative is REFUSED by name rather than clipped.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `conversion` |   | number | - | Single-reaction form: the fraction of the limiting reactant consumed by the reaction the unit names in its `reaction <name>;` key. |
+| `conversions` |   | array[object] | — | Multi-reaction form: one entry per reaction, each naming a block of the case's `constant/reactions` library. |
+| `T` |   | number | K | Isothermal operating temperature. Omit to hold the feed temperature; the duty is then the result. |
 
 ## `crystalliser`  (crystalliser operation)
 
@@ -117,6 +127,24 @@ Shaft sink / electrical generator. Hardware-free apart from the generator effici
 |---|:-:|---|---|---|
 | `eta` |   | number | - | Shaft-to-electrical efficiency (0 < eta <= 1); default 1.0. The (1-eta) fraction is dissipated as heat and reported as the W_losses KPI. |
 
+## `elementalComposition`  (elementalComposition operation)
+
+Glass-box surface of the ONE shared formula parser (src/thermo/ElementComposition) that every balance diagnostic uses. Decomposes chemical formulas into their per-element atom counts and reports them, so the parser a student relies on for the element balance can be exercised and read directly. Give `formulas`, `components`, or both; a formula it cannot parse is REFUSED by name rather than silently skipped.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `formulas` |   | array[string] | — | Formula strings to decompose, e.g. ( H2O CaSO4:2H2O C6H5OH ). Parsed exactly as the element balance parses them. |
+| `components` |   | array[string] | — | Component names whose declared `formula` is looked up and decomposed. A component with no declared formula keeps its honest refusal. |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `equilibriumReactor`  (equilibriumReactor operation)
+
+Reactor taken to CHEMICAL EQUILIBRIUM over the reactions the unit names in its `reactions ( <name> ... );` key — blocks of the case's `constant/reactions` library. The extents solve equilibrium constants computed from the same elements/formation datum every other reactor uses, so the answer is a property of the curated thermochemistry and not of a separately entered K. The pedagogical contrast with `gibbsReactor` is the declared SET: here these reactions equilibrate; there the mixture finds its own minimum over all species.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `T` |   | number | K | Isothermal operating temperature (a fired reformer holds it). Omit to hold the feed temperature. |
+
 ## `evaporator`  (evaporator operation)
 
 Single-effect evaporator with a feed liquid and heating steam, producing concentrated liquid, solvent vapour and condensate. From the area, overall HTC and pressure it computes V/F, duty Q, boiling temperature (with boiling-point elevation K_b·m_solute) and steam demand via Q = U·A·ΔT.
@@ -127,6 +155,16 @@ Single-effect evaporator with a feed liquid and heating steam, producing concent
 | `area` | ✓ | number | m^2 | Heat-transfer surface area of the tube bundle or heating jacket. |
 | `U` | ✓ | number | W/(m^2.K) | Overall coefficient across the heating-side film, tube wall and boiling-side film. |
 | `Tref` |   | number | K | Reference for the sensible-heat integrals; only differences enter the balance. |
+
+## `extractor`  (extractor operation)
+
+Counter-current multistage liquid-liquid extraction column. Each stage is a liquid-liquid equilibrium split at the operating temperature, so the separation is a consequence of the declared activity model and not of an entered distribution coefficient — change the model and the answer moves, which is the point.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `stages` | ✓ | integer | - | Number of theoretical counter-current stages. |
+| `solvent` |   | string | — | The component that identifies the extract phase. Naming it removes the ambiguity of which of the two liquids is which. |
+| `temperature` |   | number | K | Isothermal column temperature; defaults to the feed temperature. |
 
 ## `fitParameters`  (fitParameters operation)
 
@@ -157,6 +195,27 @@ Gibbs reactor: equilibrium composition from minimising the total Gibbs free ener
 | `P` | ✓ | number | Pa | Pressure at which the equilibrium is evaluated; enters the ideal-gas chemical potential mu = mu_pure(T) + RT ln(y_i P / 1 bar). |
 | `elements` | ✓ | array[string] | — | Chemical elements for the atom-balance constraints (one per element). Each species lists its atom counts in this order. |
 | `species` | ✓ | array[object] | — | Candidate species in the equilibrium mixture, each with its atom counts (one per element). |
+
+## `hConsistency`  (hConsistency operation)
+
+Enthalpy-surface identity audit: checks that the assembled package's enthalpy route is internally consistent for the named components at one temperature. A pure numerical identity on the package's own H surface — it needs no experimental data and answers a question the tutorials cannot: whether the rungs a component's record pins actually compose.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `components` | ✓ | array[string] | — | The components whose enthalpy route is checked. |
+| `temperature` |   | number | K | Temperature at which the identity is evaluated; defaults to 350 K. |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `heatCapacityFit`  (heatCapacityFit operation)
+
+Least-squares polynomial fit of measured heat-capacity data, producing the `coefficients ( ... )` list a component record carries. The fit is a CURATION act made visible: the residuals and the recovered coefficients are reported so the student can judge the fit before promoting it into a `.dat`.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `component` |   | string | — | The component the data belongs to; used to label the report and to compare against any already-curated correlation. |
+| `degree` |   | integer | - | Degree of the fitted polynomial in T; defaults to 2. |
+| `dataset` | ✓ | string | — | Path to a self-describing dataset dict (a `columns ( { name ...; unit ...; } ... )` block plus a flat `data ( ... )` grid), relative to t… |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
 ## `heatExchanger`  (heatExchanger operation)
 
@@ -201,6 +260,16 @@ Isothermal plug-flow reactor. The volume is integrated by RK4; nSteps controls t
 | `V_R` | ✓ | number | m^3 | Total reactor volume; RK4 integrates over the residence-time interval [0, V_R / Q_feed]. |
 | `nSteps` |   | integer | — | Number of RK4 integration steps along the reactor length. |
 | `writeInterval` |   | integer | — | Interval for printing the (V, T, conversion) profile; 0 prints only the end point. |
+
+## `pipe`  (pipe operation)
+
+Pipe-segment pressure drop. Single-phase by default (Darcy-Weisbach with the friction factor from the `model` slot — Churchill, Haaland or Colebrook); declaring a `twoPhase` block switches to a gas-liquid multiplier method. Elevation is signed: a rise costs pressure. The outlet stream is the inlet at the reduced pressure — a pipe transports, it does not separate.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `geometry` | ✓ | object | — | The physical line. Diameter, length and roughness are required; elevation change and fittings are optional. |
+| `viscosity` |   | number | Pa.s | Use the declared liquid viscosity instead of the package's model. An explicit, announced aid for the case where a trace dissolved compone… |
+| `twoPhase` |   | object | — | Present = solve the segment as gas-liquid flow. Absent = single-phase. |
 
 ## `propertyPoint`  (propertyPoint operation)
 
@@ -321,4 +390,27 @@ Isenthalpic throttle (Joule-Thomson let-down). Hardware-only: the single knob is
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `P` | ✓ | number | Pa | Outlet (let-down) pressure. Must be below the inlet pressure — a valve can only drop pressure. T_out and the vapour fraction follow from … |
+
+## `vaporPressureFit`  (vaporPressureFit operation)
+
+Least-squares fit of measured vapour-pressure data to the Antoine form, producing the A, B and C a component record carries. Like `heatCapacityFit`, this is curation made visible: the residuals are reported beside the coefficients so the fit is judged, not just taken.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `component` |   | string | — | The component the data belongs to; used to label the report and to compare against any already-curated correlation. |
+| `dataset` | ✓ | string | — | Path to a self-describing dataset dict (a `columns ( { name ...; unit ...; } ... )` block plus a flat `data ( ... )` grid), relative to t… |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `vleConsistency`  (vleConsistency operation)
+
+Gibbs-Duhem thermodynamic-consistency test on MEASURED binary VLE data. Back-computes the activity coefficients from the data itself by modified Raoult (gamma_i = y_i P / (x_i Psat_i(T))), then reports the pointwise Gibbs-Duhem residual, the Herington area test (pass if |D-J| < 10) and the infinite-dilution gammas. Needs measured y: a bubble-T-vs-x set alone cannot run it, and testing an NRTL or Wilson CURVE is a tautology since those are consistent by construction. The CSV carries x1, lnGamma1, lnGamma2, lnRatio, gdResidual.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `component` | ✓ | string | — | The component whose x and y columns the dataset carries; it becomes component 1 of the binary. |
+| `partner` |   | string | — | The second component. REQUIRED when the package holds more than two components; inferred otherwise. |
+| `dataset` | ✓ | string | — | Path to a self-describing dataset dict (a `columns ( { name ...; unit ...; } ... )` block plus a flat `data ( ... )` grid), relative to t… |
+| `state` |   | object | — | `{ P ...; }` — the isobar the data was measured at. May also be given as a bare top-level `P`. |
+| `P` |   | number | Pa | The measurement isobar, when not given inside `state`. |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 

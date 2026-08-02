@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/vleConsistency.schema.json",
+  "title": "vleConsistency operation",
+  "description": "Gibbs-Duhem thermodynamic-consistency test on MEASURED binary VLE data. Back-computes the activity coefficients from the data itself by modified Raoult (gamma_i = y_i P / (x_i Psat_i(T))), then reports the pointwise Gibbs-Duhem residual, the Herington area test (pass if |D-J| < 10) and the infinite-dilution gammas. Needs measured y: a bubble-T-vs-x set alone cannot run it, and testing an NRTL or Wilson CURVE is a tautology since those are consistent by construction. The CSV carries x1, lnGamma1, lnGamma2, lnRatio, gdResidual.",
+  "type": "object",
+  "properties": {
+    "component": {
+      "type": "string",
+      "title": "Reference component",
+      "description": "The component whose x and y columns the dataset carries; it becomes component 1 of the binary."
+    },
+    "partner": {
+      "type": "string",
+      "title": "Binary partner",
+      "description": "The second component. REQUIRED when the package holds more than two components; inferred otherwise."
+    },
+    "dataset": {
+      "type": "string",
+      "title": "Measured dataset",
+      "description": "Path to a self-describing dataset dict (a `columns ( { name ...; unit ...; } ... )` block plus a flat `data ( ... )` grid), relative to the case directory. Units are MANDATORY on every column."
+    },
+    "state": {
+      "type": "object",
+      "title": "Held state",
+      "description": "`{ P ...; }` — the isobar the data was measured at. May also be given as a bare top-level `P`.",
+      "properties": {
+        "P": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Pressure",
+          "unit": "Pa"
+        }
+      }
+    },
+    "P": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Pressure",
+      "description": "The measurement isobar, when not given inside `state`.",
+      "unit": "Pa"
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "component",
+    "dataset"
+  ],
+  "additionalProperties": false
+}

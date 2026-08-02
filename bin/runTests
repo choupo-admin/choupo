@@ -784,6 +784,22 @@ PYEOF
     fi
     rm -f /tmp/regen.$$
 
+    # Schema/corpus agreement: a .schema.json drives the GUI property editor
+    # AND docs/ai/schemas-reference.md, so a schema that disagrees with the
+    # engine makes both wrong.  The corpus arbitrates -- a case in tutorials/
+    # runs, so every key it uses is real and every key it omits is optional.
+    # Carries a SHRINKING baseline of the disagreements that pre-date it;
+    # anything new fails, and so does a baseline line that stops firing.
+    if "$ROOT/bin/curate/check_schema_coverage.py" > /tmp/schcov.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "schema-coverage-gate" "$(tail -1 /tmp/schcov.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_schema_coverage.py)\n" "schema-coverage-gate"
+        head -30 /tmp/schcov.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/schcov.$$
+
     # ---- Curation gates that existed but never RAN ----------------------
     # Eleven gates sat in bin/curate/ unwired; seven were not even
     # executable.  Two were stale -- check_ion_pins read the retired
