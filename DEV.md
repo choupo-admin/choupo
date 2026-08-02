@@ -231,6 +231,44 @@ ones for day-to-day work:
 
 ## 4b. Waiting on Vítor (not blocked — each CHANGES WHAT THE ENGINE REFUSES)
 
+**DECISIONS 2026-08-02 (Vítor, after an external second opinion).**  The
+rulings, verbatim in spirit; each item below is annotated where it lives:
+
+1. **PC-SAFT association: APPROVED**, 2B+4C for the first phase, with
+   three amendments: (i) the internal site representation must NOT be
+   structurally locked to 2B/4C (extensible without a rewrite); (ii)
+   watch the nested iteration (density solver × association fixed point)
+   — consistent tolerances, no numerically noisy derivatives; (iii)
+   WIDEN the validation: intermediate quantities too (site fractions
+   X^A, the association contribution itself), plus an explicit proof
+   that with no association block the behaviour is byte-identical to
+   the current core.
+2. **Pinch: APPROVED, P1 ONLY for now** ("recomendar, nunca reescrever"
+   ratified).  Document the method's hypotheses explicitly (constant
+   CP segments, phase-change treatment) so students don't over-trust it.
+3. **solverDict: the SILENT ignoring must disappear NOW** (incompatible
+   with the philosophy).  Consolidation later ONLY if the four homes
+   are truly redundant; if they are different configuration LEVELS,
+   keep them but make the levels explicit in the grammar — so the next
+   step is the characterization, then the lint/refusal.
+4. **Seal drift: NO mass reseal.**  Seals preserve case history;
+   reseal a case only when that case is genuinely revised.  Debt #1 is
+   thereby CLOSED as policy.
+5. **Curation:** (a) definition-category errors are correctable by the
+   assistant WITH a logged review trail — fluorine F2 = 0 EXECUTED
+   2026-08-02 (this commit); (b) neopentane measured value PROMOTED
+   (same commit; the process05 overlay stays — its nPentane twin
+   carries sample-specific values, axiom 4); (c) ring-strain compounds
+   are HIGH priority and the WHOLE CLASS should be surveyed, not just
+   two — new survey task.
+6. **P-swing (PSA): DO NOT ship** until the energy balance carries the
+   expansion-work term (eps·dP/dt).  Explicit refusal over an
+   incomplete model.  P1/P2 stay parked behind the term.
+7. **Restricted speciation: APPROVED** with two conditions: the reduced
+   network must still pass the mathematical consistency checks (mass,
+   charge, stoichiometry), and every result from a reduced model must
+   be clearly LABELLED as such.
+
 These are decisions, not tasks.  Work continues around them; none should be
 taken by a helper, because each one makes the engine refuse something it
 accepts today, and that is a policy call.

@@ -51,9 +51,9 @@ triplePoint
 
 standardThermochemistry
 {
-    dHf_298   -155280;      // J/mol ideal-gas -- provenance: see the structured dHf_298 block below
-    dGf_298   -5940;      // J/mol  ideal-gas [Joback]
-    s_298     311.891;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S]
+    dHf_298   -168050;      // J/mol ideal-gas, MEASURED -- see the structured dHf_298 block below
+    dGf_298   -17070;       // J/mol  [DERIVED: dHf - 298.15*(s_298 - Sum S_elements), CODATA element S]
+    s_298     306.390;      // J/(mol*K) third-law absolute (matches the process05 case overlay)
 }
 
 groups
@@ -65,12 +65,10 @@ provenance
 {
     dHf_298
     {
-        origin           estimated;
-        method           "Joback";
-        methodVersion    "joback-poling5e-table2-2";
-        input            joback;
-        inputFingerprint "C:1,CH3:4";
-        uncertainty      { status unquantified; reason "bulk-import band ~9 kJ/mol, primary basis not verified"; }
+        origin           measured;
+        method           "combustion calorimetry";
+        citation         "Prosen & Rossini, J. Res. Natl. Bur. Stand. 34 (1945) 263 (heats of formation of the paraffins); s_298 third-law, TRC/Scott 1974";
+        note             "PROMOTED 2026-08-02 from the Joback estimate (-155,280; ~13 kJ/mol off) under Vitor's ruling: a good measured value prevails over a group estimate (docs/design/curation-backlog-estimated-records.md P2).  Values mirror the human-reviewed process05 case overlay.  FOR REVIEW.";
     }
 
     constants      "CoolProp 7.2.0 -- Lemmon-JCED-2006";

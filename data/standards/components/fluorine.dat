@@ -50,9 +50,9 @@ triplePoint
 
 standardThermochemistry
 {
-    dHf_298   -435550;      // J/mol ideal-gas -- provenance: see the structured dHf_298 block below
-    dGf_298   -440500;      // J/mol  ideal-gas [Joback]
-    s_298     219.402;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S]
+    dHf_298   0;            // J/mol -- F2 is an ELEMENT in its standard state: 0 BY DEFINITION
+    dGf_298   0;            // J/mol -- same definition
+    s_298     202.791;      // J/(mol*K) third-law absolute [CODATA key values, F2(g)]
 }
 
 groups { joback ( { group F; count 2; } ); }
@@ -61,12 +61,10 @@ provenance
 {
     dHf_298
     {
-        origin           estimated;
-        method           "Joback";
-        methodVersion    "joback-poling5e-table2-2";
-        input            joback;
-        inputFingerprint "F:2";
-        uncertainty      { status unquantified; reason "bulk-import band ~9 kJ/mol, primary basis not verified"; }
+        origin           definition;
+        method           "element standard state";
+        citation         "IUPAC convention: an element in its reference state has dHf = dGf = 0 at 298.15 K; s_298 from CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev 1989), F2(g) S = 202.791 J/(mol K)";
+        note             "CATEGORY-ERROR correction 2026-08-02: the record carried a Joback ESTIMATE (-435,550 J/mol) for an element -- a definition violation, not an estimation choice; corrected under Vitor's ruling that definition errors are correctable with a logged review trail (docs/design/curation-backlog-estimated-records.md P0).  FOR REVIEW.";
     }
 
     constants      "CoolProp 7.2.0 -- deReuck-BOOK-1990";
