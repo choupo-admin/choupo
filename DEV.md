@@ -165,8 +165,22 @@ ones for day-to-day work:
    (recommendation: document + lint the silently-ignored solverDict, no
    grammar move) in
    [`docs/design/solverdict-consolidation-scope.md`](docs/design/solverdict-consolidation-scope.md).
-7. **Reports default-on beyond elementBalance** (mass/energy as normal
-   diagnostics — measure corpus impact first).
+7. ~~**Reports default-on beyond elementBalance**~~ — **DONE 2026-08-02.**
+   Corpus impact measured as the entry demanded: the full suite ran with the
+   three defaults live across the 120 steady cases that declare no
+   `reports {}`, 384 PASS / 0 FAIL, goldens untouched (KPI-based, and the
+   reports write artefacts, not KPIs).  massBalance and energyBalance joined
+   elementBalance as default diagnostics of every converged steady run.  The
+   design point worth keeping: **refusal posture follows provenance.**  A
+   DECLARED `energyBalance {}` on a missing enthalpy datum keeps its hard
+   ERROR — the author asked for a verdict and cannot have one — while the
+   DEFAULT instance reports the SAME facts (curation remedy included, the
+   machine-readable `status,REFUSED` artefact still written) as
+   `energyBalance UNAVAILABLE` on stdout, because absence of curated data is
+   not an error of a case that never claimed an energy closure.  The per-unit
+   gap line follows the same register.  `enabled false;` opts out per report,
+   independently.  Gate: `check_default_reports` (defaults + both postures +
+   the REFUSED artefact + independent opt-out; sabotage-verified).
 8. **Pinch full programme** (real match sizing beyond the heuristic screen).
 9. **Adsorption A5-A6** — A4's energy ledger SHIPPED 2026-08-01 (duty =
    exact state difference; ergun campaign claims at machine level —

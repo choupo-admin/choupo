@@ -738,22 +738,27 @@ try
     // driver's representative pass (the replay at the optimum).
     auto runReports = [&](SimulationResult& result) {
         if (!result.converged) return;
-        // The ELEMENT balance is a DEFAULT diagnostic of every converged
-        // steady run (2026-07-19): atom conservation is the invariant a
-        // reacting flowsheet is judged by, so it cannot depend on each case
-        // discovering an opt-in block.  A declared `elementBalance {...}`
-        // keeps full control (including `enabled false;` to opt out); on
-        // missing formulas the report refuses honestly (UNAVAILABLE with
-        // named reasons), so pseudo-component cases stay truthful.
-        bool declaredElementBalance = false;
+        // THE THREE BALANCES ARE DEFAULT DIAGNOSTICS of every converged
+        // steady run -- conservation is the curriculum, so none of them may
+        // depend on each case discovering an opt-in block.  elementBalance
+        // led (2026-07-19); massBalance and energyBalance joined 2026-08-02
+        // (roadmap #7, corpus impact measured across the full suite first).
+        // A declared block keeps full control (including `enabled false;` to
+        // opt out).  Refusal posture differs by provenance, deliberately:
+        // a DECLARED energyBalance keeps its hard ERROR on a missing
+        // enthalpy datum (the author asked for a verdict and cannot have
+        // one), while the DEFAULT instance reports UNAVAILABLE with the
+        // named reasons -- absence of curated data is not an error of a
+        // case that never claimed an energy closure, and a default
+        // diagnostic must be honest without being accusatory (the
+        // elementBalance precedent, exactly).
+        std::set<std::string> declaredKinds;
         if (reportsDict)
             for (const auto& key : reportsDict->keys())
             {
                 try {
-                    if (reportsDict->subDict(key)
-                            ->lookupWordOrDefault("type", key)
-                        == "elementBalance")
-                        declaredElementBalance = true;
+                    declaredKinds.insert(reportsDict->subDict(key)
+                        ->lookupWordOrDefault("type", key));
                 } catch (const std::exception&) {}
             }
         ThermoPackage thermoForReports;
@@ -790,7 +795,14 @@ try
         auto chain = reportsDict
             ? Report::buildChain(reportsDict)
             : std::vector<std::pair<std::unique_ptr<Report>, DictPtr>>{};
-        if (!declaredElementBalance)
+        if (!declaredKinds.count("massBalance"))
+            chain.emplace_back(Report::New("massBalance"),
+                Dictionary::fromString("", "<default massBalance>"));
+        if (!declaredKinds.count("energyBalance"))
+            chain.emplace_back(Report::New("energyBalance"),
+                Dictionary::fromString("onMissingDatum unavailable;",
+                                       "<default energyBalance>"));
+        if (!declaredKinds.count("elementBalance"))
             chain.emplace_back(Report::New("elementBalance"),
                 Dictionary::fromString("", "<default elementBalance>"));
         for (auto& [rep, opts] : chain) rep->run(opts, rctx);

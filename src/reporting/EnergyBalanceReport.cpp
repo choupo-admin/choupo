@@ -46,6 +46,10 @@ namespace Choupo {
 void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
 {
     const scalar Tref = dict->lookupScalarOrDefault("Tref", 298.15);
+    //  The default instance's soft posture (see the refusal site below) also
+    //  governs the per-unit gap line: same fact, same register.
+    const bool softGaps =
+        dict->lookupWordOrDefault("onMissingDatum", "error") == "unavailable";
     const auto topo = reporting::readTopology(ctx.flowsheetDict, ctx.result);
 
     const std::filesystem::path dir = ctx.outDir("energyBalance", "balances");
@@ -119,7 +123,9 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             e = reporting::unitEnergyBalance(lookup(u.ins), lookup(u.outs),
                                              ctx.thermo, Tref);
         } catch (const std::exception& ex) {
-            std::cerr << "WARNING: energyBalance: unit '" << u.name
+            (softGaps ? std::cout : std::cerr)
+                      << (softGaps ? "  [report] energyBalance gap: unit '"
+                                   : "WARNING: energyBalance: unit '") << u.name
                       << "' has no elements-datum enthalpy -- " << ex.what()
                       << "  (curate the standardThermochemistry block; the per-unit "
                          "closure is reported as a gap, not a sensible "
@@ -316,7 +322,24 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                 << "The ENERGY balance is REFUSED; the mass balance is "
                    "unaffected (it needs no enthalpy datum).";
 
-            std::cerr << "ERROR: energyBalance: " << msg.str() << "\n";
+            //  Refusal POSTURE follows provenance (2026-08-02, the
+            //  default-on wave).  A DECLARED energyBalance keeps the hard
+            //  ERROR: the author asked for a verdict and cannot have one.
+            //  The DEFAULT instance (main.cpp passes `onMissingDatum
+            //  unavailable;`) reports the SAME facts as UNAVAILABLE --
+            //  absence of curated data is not an error of a case that never
+            //  claimed an energy closure, and a default diagnostic must be
+            //  honest without being accusatory (the elementBalance
+            //  precedent).  Both write the same REFUSED artefact; only the
+            //  console register differs.
+            const bool asUnavailable = softGaps;
+            if (asUnavailable)
+                std::cout << "  [report] energyBalance UNAVAILABLE -- "
+                          << msg.str()
+                          << "  (default diagnostic; declare `reports {"
+                             " energyBalance {} }` for the hard refusal)\n";
+            else
+                std::cerr << "ERROR: energyBalance: " << msg.str() << "\n";
 
             const std::filesystem::path gpath = dir / "globalEnergyBoundary.csv";
             std::ofstream g(gpath);
@@ -336,7 +359,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                   << "gap_streams," << join(gapStreams, " ") << "\n";
                 g.close();
             }
-            if (ctx.verbosity >= 1)
+            if (ctx.verbosity >= 1 && !asUnavailable)
                 std::cout << "  [report] globalEnergyBoundary -> REFUSED ("
                           << nGap << " boundary stream(s) with no enthalpy "
                              "datum)\n";

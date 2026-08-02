@@ -800,6 +800,23 @@ PYEOF
     fi
     rm -f /tmp/schcov.$$
 
+    # Default-reports gate: the three balances (mass / energy / element) are
+    # DEFAULT diagnostics of every converged steady run -- conservation is
+    # the curriculum, so none may depend on an opt-in block.  The default
+    # energyBalance reports a missing enthalpy datum as UNAVAILABLE (same
+    # facts, no ERROR register); a DECLARED one keeps the hard ERROR.
+    # Sabotage-verified 2026-08-02: removing the massBalance default fails
+    # the DEFAULTS probe by name.
+    if "$ROOT/bin/curate/check_default_reports.py" > /tmp/defrep.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "default-reports-gate" "$(tail -1 /tmp/defrep.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_default_reports.py)\n" "default-reports-gate"
+        cat /tmp/defrep.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/defrep.$$
+
     # ---- Curation gates that existed but never RAN ----------------------
     # Eleven gates sat in bin/curate/ unwired; seven were not even
     # executable.  Two were stale -- check_ion_pins read the retired
