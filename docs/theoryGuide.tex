@@ -812,7 +812,7 @@ pH solved), a molecular co-volatile through $\gamma\,x\,P^{\mathrm{sat}}$.
 \textbf{course concept} & \textbf{engine declaration} & \textbf{tutorial} \\
 \hline
 Raoult + $\gamma(x)$              & \texttt{gammaPhi} (NRTL, Wilson, \dots) & flash01--03 \\
-$\hat\varphi$ from an EoS          & \texttt{phiPhi} (SRK, PC-SAFT)          & flash09\_n2ch4 \\
+$\hat\varphi$ from an EoS          & \texttt{phiPhi} (SRK, PC-SAFT)          & flash09\_n2ch4\_stryjek \\
 Henry, dilute solute               & \texttt{diluteSolution}; Henry pairs    & flash08 \\
 $\gamma_\pm$ on molality           & \texttt{electrolyteGammaPhi}            & crystallisers \\
 law of mass action, pH             & the speciation network                  & flash09--13 \\
@@ -6781,7 +6781,7 @@ runs hot and an \emph{absorber} runs cold
 (Chapter~\ref{ch:absorber}).
 
 \paragraph{Worked example: $\mathrm{CO_2}$ in water.}  The standard
-catalogue ships \code{henrysLaw/CO2-water.dat} with $H_{\mathrm{ref}}
+catalogue ships \code{parameters/Henry/CO2-water.dat} with $H_{\mathrm{ref}}
 = 1.64\times10^{8}~\mathrm{Pa}$ ($=1640$~bar) at $T_{\mathrm{ref}} =
 298.15~\mathrm K$ and $\Delta H_{\mathrm{diss}} = -19\,400~\mathrm
 {J\,mol^{-1}}$ (Sander, 2015).  At $25~^\circ\mathrm C$ and $P =
@@ -7071,7 +7071,7 @@ Eq.~\eqref{eq:srk-pv} rearranges to the cubic
    \label{eq:srk-cubic}
 \end{equation}
 Choupo solves Eq.~\eqref{eq:srk-cubic} \emph{analytically} by
-Cardano's method (\code{cardano\_vapourRoot}), not by iteration ---
+Cardano's method (\code{cardano\_root}), not by iteration ---
 a cubic has a closed-form solution, so there is no Newton loop and no
 initial guess to get wrong.  The discriminant
 $\Delta = R_d^2/4 + Q_d^3/27$ of the depressed cubic decides the
