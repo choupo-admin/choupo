@@ -3764,10 +3764,11 @@ parameters --- the quantity most sensitive to a fit.
 \paragraph{Pairs and the ideal-default rule.}
 Binary parameter sets are tabulated in the DECHEMA Vapor--Liquid
 Equilibrium Data Collection or regressed from data; the tutorials carry
-literature values from Reid--Prausnitz--Poling \cite{RPP}. The
+literature values from the DECHEMA bank (each pair file's
+\code{provenance} block cites its primary). The
 simulator resolves each pair in a fixed precedence
 (\code{locatePairFile}): an inline \code{pairs(...)} block in the
-the case's declared system, then a per-node
+case's declared system, then a per-node
 \file{constant/parameters/NRTL/<a>-<b>.dat}, then the case root, then
 \file{data/standards/parameters/NRTL/}. For an $N_c$-component mixture
 there are $N_c(N_c-1)/2$ binaries; NRTL is a strictly \emph{pairwise}
@@ -3974,9 +3975,11 @@ systems (e.g. the LLE Gibbs-minimisation of Chapter~\ref{ch:lle-gibbs}) the simu
 falls back to NRTL or UNIQUAC, which carry the extra freedom needed for a
 double-well $\Gex$.
 
-\paragraph{Parameter sources.} Binary $(A_{ij},A_{ji})$ sets live in
-\file{data/standards/parameters/Wilson/<i>-<j>.dat} (or a case-local
-\file{constant/parameters/Wilson/}); a pair with no file anywhere
+\paragraph{Parameter sources.} Binary $(A_{ij},A_{ji})$ sets resolve
+from a case-local \file{constant/parameters/Wilson/<i>-<j>.dat}, then
+\file{data/standards/parameters/Wilson/} --- though the standard tree
+currently ships no Wilson pairs, so the tutorials declare theirs inline
+in the case's thermophysical system; a pair with no parameters anywhere
 \emph{defaults to ideal} for that binary ($\Lambda=1$, no contribution)
 and the run announces it aloud rather than aborting --- the same
 no-silent-crutch hybrid used by NRTL. Literature values are tabulated in
@@ -3984,8 +3987,8 @@ the DECHEMA collection and Reid--Prausnitz--Poling \cite{RPP}; fit your
 own with the parameter-estimation driver of Chapter~\ref{ch:lm}.
 
 \begin{example}[Wilson $\gamma$ for ethanol(1)/water(2) at 350\,K, $x_1=0.20$]
-Parameters $A_{12}=1157.95$, $A_{21}=4081.65$\,J/mol (the values shipped
-in the \file{ethanol-water.dat} Wilson pair) and liquid molar volumes
+Parameters $A_{12}=1157.95$, $A_{21}=4081.65$\,J/mol (the values the
+\file{flash03\_wilson\_ethanol\_water} tutorial declares inline) and liquid molar volumes
 $V_1^L=5.87\times10^{-5}$, $V_2^L=1.81\times10^{-5}$\,m$^3$/mol. With
 $\Rgas T = 8.314\times350 = 2910$\,J/mol:
 \[
@@ -4001,10 +4004,10 @@ $S_2=x_2+x_1\Lambda_{21}=0.80+0.20(0.797)=0.959$. Then from
    \ln\gamma_1 = 1 - \ln 0.366
      - \!\left[\frac{x_1\Lambda_{11}}{S_1}+\frac{x_2\Lambda_{21}}{S_2}\right]
    = 1 - (-1.005) - \!\left[\tfrac{0.20}{0.366}+\tfrac{0.80\cdot0.797}{0.959}\right]
-   \approx 0.84,
+   \approx 0.79,
 \]
-so $\gamma_1\approx2.3$. Ethanol is strongly non-ideal here --- the same
-qualitative verdict as the NRTL example above, with a different model and
+so $\gamma_1\approx2.2$. Ethanol is strongly non-ideal here --- the same
+qualitative verdict as the NRTL worked example below, with a different model and
 two fewer parameters.
 \end{example}
 
@@ -4097,10 +4100,12 @@ surface areas (Bondi, 1968):
 \end{equation}
 These are not fitted --- they are tabulated constants the student
 \emph{cites} (Poling--Prausnitz--O'Connell \cite{RPP}, Table 8E;
-original values in \cite{Abrams1975}). In the dict they live in an
-\code{rq \{ \dots \}} block, one $\{r;\,q;\}$ pair per component; the
-engine refuses to run if any is missing (no silent default for a
-structural property). From $r$ and $q$ the model builds, at a given
+original values in \cite{Abrams1975}). Each standard component carries
+its own \code{uniquac \{ r; q; \}} block in its \file{.dat}, from which
+the engine fills the model's \code{rq \{ \dots \}} block automatically;
+an inline \code{rq \{ \dots \}} entry in the declared system always
+wins, and a component with $r,q$ nowhere refuses to run (no silent
+default for a structural property). From $r$ and $q$ the model builds, at a given
 composition, the \emph{segment fraction} $\phi_i$ and \emph{area
 fraction} $\theta_i$:
 \begin{equation}
@@ -4147,9 +4152,10 @@ with $u_{ij}$ the $i$--$j$ interaction energy. Note $\tau_{ii} = 1$ and
 the matrix is asymmetric ($\tau_{ij}\neq\tau_{ji}$); each binary
 contributes \emph{two} energies $a_{ij}, a_{ji}$ --- one fewer than NRTL,
 which also needs $\alpha$. The engine stores $a_{ij}$ in \emph{kelvin}
-and supports an optional linear extension
-$a^{\mathrm{eff}}_{ij} = a_{ij} + b_{ij}\,T$ for sets fitted over a wide
-temperature range (most literature sets use $a$ alone, $b=0$). The
+and supports an optional polynomial extension
+$a^{\mathrm{eff}}_{ij} = a_{ij} + b_{ij}\,T + c_{ij}\,T^2$ for sets
+fitted over a wide temperature range (most literature sets use $a$
+alone, $b=c=0$). The
 residual activity coefficient is
 \begin{equation}
    \ln \gamma_i^{R}
@@ -4213,8 +4219,8 @@ $\sum x_j l_j = -1.944$, giving $\ln\gamma_1^{C}=0.398$.
 
 \emph{Step 4 --- residual} (Eq.~\ref{eq:uniquac-res}):
 $\sum_j\theta_j\tau_{j1}=0.260+0.740(0.531)=0.653$, the second sum
-evaluates to $0.247$, so
-$\ln\gamma_1^{R}=1.972\,[\,1-\ln 0.653 - 0.247\,]=0.501$.
+evaluates to $1.172$, so
+$\ln\gamma_1^{R}=1.972\,[\,1-\ln 0.653 - 1.172\,]=0.501$.
 
 \emph{Result:} $\ln\gamma_1 = 0.398+0.501=0.899 \Rightarrow
 \gamma_1\approx 2.46$ (and $\gamma_2\approx 1.12$). Driving $x_1\to 0$
@@ -4236,7 +4242,7 @@ three-way model comparison on identical components.
 \begin{example}[NRTL $\gamma$ for ethanol/water at 350\,K, $x_1 = 0.20$]
 Components $1=$ethanol, $2=$water. Literature parameters (the same set
 carried in \file{data/standards/parameters/NRTL/ethanol-water.dat},
-from \cite{RPP}):
+from the DECHEMA bank its provenance cites):
 $a_{12} = -0.8009,\ b_{12} = 246.18\,\mathrm{K},\ a_{21} = 3.4578,\
 b_{21} = -586.0809\,\mathrm{K},\ \alpha = 0.30$.
 
@@ -4259,15 +4265,15 @@ $S_1 = x_1 + G_{21}x_2 = 0.20 + 0.5857(0.80) = 0.6686$ and
 $S_2 = G_{12}x_1 + x_2 = 1.0297(0.20) + 0.80 = 1.0059$, so
 \[
 \ln\gamma_1
-= \frac{\tau_{21}G_{21}x_2}{S_1}
-+ \frac{x_2 G_{12}}{S_2}\!\left[\tau_{12}-\frac{\tau_{12}G_{12}x_1}{S_2}\right]
-= 1.250 + (-0.063) = 1.186,
+= x_2^2\!\left[\tau_{21}\Bigl(\frac{G_{21}}{S_1}\Bigr)^{\!2}
++ \frac{\tau_{12}G_{12}}{S_2^2}\right]
+= 0.64\,[\,1.368 - 0.099\,] = 0.812,
 \]
-giving $\gamma_1 \approx 3.27$.
+giving $\gamma_1 \approx 2.25$.
 
 \emph{Step 3 --- read it.} Ethanol is strongly non-ideal at this
 dilute composition; Raoult's law ($\gamma_1=1$) would under-predict the
-ethanol partial pressure threefold. Pushing $x_1\to0$ in the same
+ethanol partial pressure more than twofold. Pushing $x_1\to0$ in the same
 formula gives the infinite-dilution value $\gamma_1^\infty \approx 5.4$
 --- the steepest, most fit-sensitive point of the curve. At the other
 end the same parameters place the well-known minimum-boiling azeotrope
@@ -4466,11 +4472,13 @@ each \emph{pure}-component group composition $X^{(i)}$ via
 \eqref{eq:unifac-res}; (5) returns $\gamma_i = \exp(\ln\gamma_i^C +
 \ln\gamma_i^R)$. The pure-component $\Gamma_k^{(i)}$ are temperature
 dependent (through $\Psi$), so they are recomputed at every call rather
-than cached. The author declares each component's groups in the
-\code{activityModel} block: \code{model UNIFAC;} then a
-\code{groups\{\dots\}} sub-dict listing \code{group}/\code{count} per
-component. A component absent from \code{groups} falls back to
-$\gamma_i = 1$ and logs the gap (no silent crutch).
+than cached. Each component's decomposition lives in its own
+\file{.dat}: a \code{groups \{ unifac ( \{ group ...; count ...; \} ...
+); \}} block, from which the engine assembles the model (a case-local
+component overlay serves for a pedagogical alternative; an inline
+\code{groups\{\}} block in the \code{activityModel} is refused). A
+participating component with no group decomposition is an \emph{error}
+with a remedy, never a silent $\gamma_i = 1$ (no silent crutch).
 
 \begin{example}[Decomposing acetone $+$ $n$-hexane]
 Acetone $=$ 1 \code{CH3CO} $+$ 1 \code{CH3}; $n$-hexane $=$ 2 \code{CH3}
@@ -7405,12 +7413,12 @@ terms yields the \emph{Rachford-Rice equation}:
   ({x}, { 0.45*1.2/(1+x*1.2) + 0.55*(-0.55)/(1-x*0.55) });
 % root marker
 \addplot[only marks, mark=*, mark size=2.6pt, mark options={red!80!black}]
-   coordinates {(0.503,0)};
+   coordinates {(0.360,0)};
 \node[anchor=south west, font=\scriptsize, text=red!70!black]
-   at (axis cs:0.50,0.05) {unique root $\beta^*$};
+   at (axis cs:0.36,0.05) {unique root $\beta^*$};
 % endpoints
 \addplot[only marks, mark=square*, mark size=2pt, mark options={gray!55!black}]
-   coordinates {(0,0.237) (1,-0.298)};
+   coordinates {(0,0.237) (1,-0.427)};
 \node[anchor=west, font=\scriptsize, text=gray!40!black] at (axis cs:0.02,0.40)
    {$g(0)>0$};
 \node[anchor=east, font=\scriptsize, text=gray!40!black] at (axis cs:0.98,-0.45)
@@ -7460,21 +7468,21 @@ Two properties make Rachford-Rice numerically pleasant:
 % the monotone-decreasing branch through the window (a smooth curve)
 \draw[very thick, blue!70!black]
       plot[smooth, domain=-1.7:3.2, samples=80]
-      ({\x}, {0.9/(\x-3.6) - 0.9/(\x+2.1) + 0.18});
+      ({\x}, {0.9/(\x+2.1) - 0.9/(3.6-\x) + 0.18});
 % endpoint sign markers
-\fill[red!70!black] (0,{0.9/(0-3.6) - 0.9/(0+2.1)+0.18}) circle (1.6pt)
-      node[above left, font=\scriptsize, red!60!black]{$g(0)>0$};
-\fill[red!70!black] (2,{0.9/(2-3.6) - 0.9/(2+2.1)+0.18}) circle (1.6pt)
+\fill[red!70!black] (0,0.359) circle (1.6pt)
+      node[above right, font=\scriptsize, red!60!black]{$g(0)>0$};
+\fill[red!70!black] (2,-0.163) circle (1.6pt)
       node[below right, font=\scriptsize, red!60!black]{$g(1)<0$};
 % the root
 \draw[orange!80!black, thick, dashed]
-      (1.32,0) -- (1.32,-0.9) node[below, font=\scriptsize]{$\beta^\ast$};
-\fill[orange!85!black] (1.32,0) circle (1.8pt);
+      (1.51,0) -- (1.51,-0.9) node[below, font=\scriptsize]{$\beta^\ast$};
+\fill[orange!85!black] (1.51,0) circle (1.8pt);
 % Newton tangent hint
-\draw[violet!70!black, thick] (0.55,1.05) -- (1.75,-0.45)
+\draw[violet!70!black, thick] (-0.2,0.40) -- (2.3,-0.20)
       node[pos=0.0, above, font=\scriptsize, violet!60!black]{Newton tangent};
-\fill[violet!70!black] (0.7,0.86) circle (1.4pt)
-      node[above left, font=\scriptsize, violet]{$\beta^{(0)}$};
+\fill[violet!70!black] (0.25,0.294) circle (1.4pt)
+      node[above right, font=\scriptsize, violet]{$\beta^{(0)}$};
 \end{tikzpicture}
 \caption{Why Rachford--Rice is tame.  Each term has a pole where
 $1+\beta(K_i{-}1)=0$; for a genuine two-phase mixture all the poles lie
@@ -7536,23 +7544,24 @@ point.
 A feed at $\zv = (0.40,\, 0.60)$ (benzene then toluene), $T = 370\,K$,
 
 
-$P = 1\,$bar.  At this temperature, Antoine gives
-$\Psat_1 \approx 1.46\,$bar and $\Psat_2 \approx 0.61\,$bar. Ideal
-solution: $\gamma_i = 1$, so $K_1 = 1.46$ and $K_2 = 0.61$.
+$P = 1\,$bar.  At this temperature, Antoine (the coefficients in the
+component \file{.dat} files) gives
+$\Psat_1 \approx 1.651\,$bar and $\Psat_2 \approx 0.674\,$bar. Ideal
+solution: $\gamma_i = 1$, so $K_1 = 1.651$ and $K_2 = 0.674$.
 
 Rachford-Rice:
 \[
-   g(\beta) \;=\; \frac{0.40 \cdot 0.46}{1 + 0.46 \beta} \,+\,
-                  \frac{0.60 \cdot (-0.39)}{1 - 0.39 \beta} \;=\; 0.
+   g(\beta) \;=\; \frac{0.40 \cdot 0.651}{1 + 0.651 \beta} \,+\,
+                  \frac{0.60 \cdot (-0.326)}{1 - 0.326 \beta} \;=\; 0.
 \]
-At $\beta = 0$: $g = 0.184 - 0.234 = -0.050$. At $\beta = 1$:
-$g = 0.126 - 0.383 = -0.257$. Both endpoints are negative --- so this
-feed is below the bubble point. Iterating Newton on $g$ starting from
-$\beta_0 = -0.1$ converges quickly to $\beta \approx -0.13$, which is
-unphysical: confirmation that the mixture is sub-cooled at $370\,K$. To
-get a two-phase split we need $T \gtrsim 375\,$K. This is exactly the
-\code{flash01\_benzene\_toluene} setup; the simulator will report the
-unphysical $\beta$ and warn.
+At $\beta = 0$: $g = 0.260 - 0.196 = 0.065$. At $\beta = 1$:
+$g = 0.158 - 0.290 = -0.132$. The endpoints straddle zero --- the feed
+flashes. Newton on $g$ from any interior start lands on
+$\beta \approx 0.304$ in three iterations, and then
+\eqref{eq:xy-from-K} gives $x_1 = 0.40/(1 + 0.651\cdot0.304) = 0.334$
+and $y_1 = K_1 x_1 = 0.551$. This is exactly the
+\code{flash01\_benzene\_toluene} setup; the tutorial's golden master
+pins $V/F = 0.30398$.
 \end{example}
 
 \begin{figure}[ht]\centering
@@ -11174,11 +11183,17 @@ lennardJones
 \end{lstlisting}
 
 \begin{tutoriallink}
-\textbf{Status note.}  No viscosity model is wired into any unit
-op.  When this lands (v1.x), the call site will be
-\code{ProcessStream::viscosity(T, x)} consumed by
-\code{HeatExchanger}, \code{PFR} (for the Reynolds number), and
-\code{DistillationColumn} (for flooding checks).
+\textbf{Status note.}  Viscosity is wired in: the call surface is
+\code{ThermoPackage::viscosityGas(T, y)} /
+\code{viscosityLiquid(T, x)}, fed by the declared
+\code{transport \{ viscosity \{ model Chung; \} \}} and
+\code{liquidViscosity \{ model Andrade; \}} blocks of
+\file{thermoPhysPropDict}.  Consumers include the pipe (Reynolds
+number and friction factor, with an announced
+\code{operation.viscosity} override), the heat-exchanger HTC
+correlations, the spray dryer, and the packed-bed Ergun pressure
+drop.  A unit that needs a viscosity no declared model provides
+refuses loudly with the remedy --- no silent default.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
@@ -11238,20 +11253,27 @@ similar.  Either way, gas thermal conductivity is a derived quantity
 in this scheme --- no new fitted parameter beyond those already in
 $\mu$ and $c_p$.
 
-\subsection{Data-file extension (v1.x)}
+\subsection{Declaring the models}
 
-Sato-Riedel needs no coefficients; modified Eucken needs none either
-once $\mu$ and $c_p$ are in place.  The data file just declares
-which model to use:
+Sato-Riedel needs no coefficients; Eucken needs none either
+once $\mu$ and $c_p$ are in place.  The case's \file{thermoPhysPropDict}
+just declares which model to use, inside the \code{transport} block:
 \begin{lstlisting}
-thermalConductivityLiq  { model SatoRiedel; }
-thermalConductivityGas  { model modifiedEucken; }
+transport
+{
+    thermalConductivity  { model Eucken; }      // gas (needs a viscosity model)
+    liquidConductivity   { model SatoRiedel; }  // liquid
+}
 \end{lstlisting}
 
 \begin{tutoriallink}
-\textbf{Status note.}  $\kappa$ is not consumed by any unit
-op.  When the cubic EOS work brings real-gas heat exchangers
-(v1.x), the call site will be \code{ProcessStream::kappa(T, x)}.
+\textbf{Status note.}  $\kappa$ is wired in: the call surface is
+\code{ThermoPackage::thermalConductivityGas(T, y)} /
+\code{thermalConductivityLiquid(T, x)}, consumed by the
+heat-transfer-coefficient correlations of the heat exchanger and by
+the spray dryer.  Eucken needs the gas viscosity, so a viscosity
+model must be declared alongside; a unit that needs $\kappa$ with no
+declared model refuses loudly.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
@@ -11326,24 +11348,29 @@ each binary $D_{ij}$ to a matrix that combines them rigorously.
 Reid Chapter~12 treats this in depth; we will not need it before
 v1.x of the simulator.
 
-\subsection{Data-file extension (v1.x)}
+\subsection{Where the ingredient data live}
 
-Single-component files carry no diffusivity entries (diffusion is a
-pair property).  Binary pairs get their own files alongside
-\file{constant/parameters/}:
+The pair property itself is computed, never stored; what each
+component's \file{.dat} carries are the \emph{per-component}
+ingredients --- the Fuller atomic-volume sum and, for a solvent, the
+Wilke-Chang association factor:
 \begin{lstlisting}
-data/standards/diffusionVolumes/ethanol.dat  // for Fuller
-{ sumV  50.36; }                              // atomic-volume sum
-
-data/standards/associationFactors/water.dat   // for Wilke-Chang
-{ phi   2.6; }
+diffusionVolume    50.36;   // Fuller Sigma-v, in the component's .dat
+associationFactor  2.6;     // Wilke-Chang phi (water; solvents only)
 \end{lstlisting}
+The case then declares the models in the \code{transport} block of
+\file{thermoPhysPropDict}: \code{diffusivity \{ model Fuller; \}} for
+the gas and \code{liquidDiffusivity \{ model WilkeChang; \}} for the
+dilute liquid (the latter needs a \code{liquidViscosity} model
+alongside, since Wilke-Chang divides by the solvent viscosity).
 
 \begin{tutoriallink}
-\textbf{Status note.}  Diffusivity is unused.  When mass-transfer
-correlations land (post-v1, for the membrane/NF chapter that
-motivates the project) the call site will be
-\code{ProcessStream::Dij(T, P, x, i, j)}.
+\textbf{Status note.}  Diffusivity is wired in: the call surface is
+\code{ThermoPackage::diffusivityGas(T, P, i, j)} /
+\code{diffusivityLiquid(T, i, j)}, consumed by the spiral-wound
+membrane's mass-transfer correlations, the fixed-bed adsorber, the
+spray dryer, and the electrodialysis stack.  A missing
+\code{diffusionVolume} refuses by name with the remedy.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
@@ -11427,10 +11454,12 @@ his Eq.~(12-3.5) when v1.x of the simulator needs it.
 Notice the pattern: every mixture rule reduces to the pure-component
 value when $x_i = 1$, and most are weighted means (linear,
 logarithmic, or harmonic) of the pure values with an interaction
-correction.  When in doubt, the simulator should default to the
-weighted mean and warn the user; refinements (Grunberg-Nissan,
-Filippov, Maxwell-Stefan) get switched on by an explicit
-\code{mixingRule} key in the dict.
+correction.  The engine ships exactly the rules of this
+chapter --- Wilke, the log-mole-fraction (Grunberg-Nissan) average,
+mass-fraction $\kappa$, Wassiljewa/Mason-Saxena --- and a
+\code{mixingRule} key is deliberately \emph{not} selectable yet: the
+builder refuses it by name rather than letting a refinement switch on
+by accident.
 \end{intuition}
 
 % ---------------------------------------------------------------------

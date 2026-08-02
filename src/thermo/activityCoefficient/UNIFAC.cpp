@@ -113,8 +113,9 @@ UNIFAC::UNIFAC(const DictPtr& dict, const std::vector<std::string>& names)
     {
         if (!Rmap.count(s))
             throw std::runtime_error("UNIFAC: subgroup '" + s +
-                "' is not in data/standards/unifac/groups.dat -- add it (with a"
-                " cited R_k/Q_k) or fix the group name in activityModel.groups.");
+                "' is not in data/standards/parameters/UNIFAC/groups.dat -- add"
+                " it (with a cited R_k/Q_k) or fix the group name in the"
+                " component's `groups { unifac (...) }` block.");
         sgIndex_[s] = subgroupList_.size();
         subgroupList_.push_back(s);
         Rk_.push_back(Rmap[s]);
