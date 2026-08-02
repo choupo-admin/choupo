@@ -7097,10 +7097,13 @@ branch: $\Delta > 0$ gives one real root (single fluid phase);
 $\Delta \le 0$ gives three real roots, evaluated through the
 trigonometric form $w_k = 2\sqrt[3]{r}\cos\!\bigl((\phi +
 2\pi k)/3\bigr)$.  When three roots exist the \emph{largest above
-$B$} is the vapour root (largest molar volume); the smallest would be
-the liquid root.  Choupo's EoS path returns the \textbf{vapour
-root} throughout --- it is the $\hat\varphi_i$ supplier for the
-gas phase of the $\gamma$-$\varphi$ flash.
+$B$} is the vapour root (largest molar volume); the smallest is
+the liquid root.  The $\gamma$-$\varphi$ path keeps the \textbf{vapour
+root} (\code{SRK::phi}) as the $\hat\varphi_i$ supplier for the gas
+phase; the phi-phi world (\code{vleWorld phiPhi;},
+Chapter~\ref{ch:fugacity}) also takes the \textbf{liquid root}
+(\code{SRK::phiLiquid}) for its
+$K_i=\hat\varphi_i^L/\hat\varphi_i^V$ ratio.
 
 \begin{figure}[ht]\centering
 \begin{tikzpicture}[
@@ -7184,13 +7187,13 @@ cubic), Choupo evaluates \cite{Sandler}
      &= \Rgas T\,(Z - 1)
         + \frac{T\,\dfrac{\mathrm d a_{\mathrm{mix}}}{\mathrm dT}
                 - a_{\mathrm{mix}}}{b_{\mathrm{mix}}}\,
-          \ln\!\frac{Z}{Z + B},
+          \ln\!\frac{Z + B}{Z},
         \label{eq:srk-HR}\\[4pt]
    S^{\mathrm R}(T,P,\yv)
      &= \Rgas\,\ln(Z - B)
         + \frac{1}{b_{\mathrm{mix}}}\,
           \frac{\mathrm d a_{\mathrm{mix}}}{\mathrm dT}\,
-          \ln\!\frac{Z}{Z + B}.
+          \ln\!\frac{Z + B}{Z}.
         \label{eq:srk-SR}
 \end{align}
 These are \code{SRK::H\_residual} and \code{SRK::S\_residual} line for
@@ -7245,15 +7248,15 @@ $\omega = 0.225$ and $\Rgas = 8.314$~J\,mol$^{-1}$K$^{-1}$:
 \]
 \[
    a_c = 0.42747\,\frac{8.314^2 \times 304.13^2}{7.377\times10^6}
-       = 0.366~\mathrm{Pa\,m^6\,mol^{-2}}.
+       = 0.370~\mathrm{Pa\,m^6\,mol^{-2}}.
 \]
 The Soave slope $m = 0.48508 + 1.55171(0.225) -
-0.15613(0.225)^2 = 0.827$.  At $T = 320$~K, $T_r = 1.052$, so
-$\sqrt{T_r} = 1.026$ and $\alpha = [1 + 0.827(1 - 1.026)]^2 =
-0.957$, giving $a(320) = 0.350$~Pa\,m$^6$\,mol$^{-2}$.  At $P = 50$~bar
-these yield $A = a P/(\Rgas T)^2 = 0.247$, $B = bP/(\Rgas T) =
+0.15613(0.225)^2 = 0.826$.  At $T = 320$~K, $T_r = 1.052$, so
+$\sqrt{T_r} = 1.026$ and $\alpha = [1 + 0.826(1 - 1.026)]^2 =
+0.958$, giving $a(320) = 0.355$~Pa\,m$^6$\,mol$^{-2}$.  At $P = 50$~bar
+these yield $A = a P/(\Rgas T)^2 = 0.251$, $B = bP/(\Rgas T) =
 0.0558$, and the Cardano vapour root of Eq.~\eqref{eq:srk-cubic} is
-$Z \approx 0.80$ --- a 20\% departure from the ideal gas, exactly the
+$Z \approx 0.78$ --- a 22\% departure from the ideal gas, exactly the
 regime where keeping \code{model idealGas} would corrupt both the
 energy balance and the fugacity coefficient.
 \end{example}
@@ -7270,8 +7273,10 @@ poor for strongly hydrogen-bonded or associating fluids (water,
 alcohols, acids --- where the activity-coefficient $\gamma$-route of
 Chapter~\ref{ch:activity} is the right tool for the liquid), and the
 van~der~Waals one-fluid mixing rule degrades for very asymmetric or
-polar mixtures.  Choupo returns the \emph{vapour} root only; it is
-not (yet) a liquid-density or full-VLLE EoS engine, and a single
+polar mixtures.  Choupo's cubics serve the \emph{fugacity} routes
+(the vapour root under $\gamma$-$\varphi$, both roots under the
+phi-phi world); liquid \emph{density} still comes from Rackett, it is
+not (yet) a full-VLLE EoS engine, and a single
 $k_{ij}$ cannot rescue a system the underlying $\alpha$-function gets
 wrong.  As always: all models are wrong, some are useful --- SRK/PR
 earn their keep precisely where the ideal gas stops being so and
