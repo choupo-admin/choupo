@@ -564,7 +564,7 @@ reference rung of every group, and every pair parameter with its source file.
 \textbf{Axis} & \textbf{Slot} & \textbf{What it fixes}\\
 \midrule
 components & \texttt{components ( ... )} & identity; a salt's \texttt{dissociatesTo} names its ions\\
-phases & \texttt{phases}, \texttt{phases/solid} data & which phases exist; $\rho_p$, $k_v$ for solids\\
+phases & \texttt{phases}; the component's own \texttt{solidPhases\{\}} block & which phases exist; $\rho_p$, $k_v$ for solids (retired \texttt{phases/solid/} kept as a legacy read only)\\
 model per PHASE & \texttt{equilibrium \{ formulation ...; liquid \{...\} vapour \{...\} \}} & ONE Gibbs surface per phase --- the \texttt{formulation} selects the VLE world\\
 convention per GROUP & reference rungs (\texttt{referenceBasis}) & renormalisations of one surface: solvent on Raoult, solutes on Henry, ions on aqueous infinite dilution\\
 correlation per COMPONENT & the component \texttt{.dat} (+ overrides) & pure-species data; legal for transport and pure correlations, never for the equilibrium surface\\
@@ -864,10 +864,14 @@ data/standards/
   species/<name>.dat               one modelSpecies file per species
                                    (Na, Cl, CO2aq, O2): formula + charge +
                                    medium-tagged thermo; never fed to a flowsheet
-  phases/solid/<phase>.dat         crystal phase (rho_p, k_v): halite, sylvite
-  chemistry/.../<name>.dat         an equilibrium: dissolution, speciation
+  (a crystal phase lives in its COMPONENT's own solidPhases{} block:
+   rho_p, k_v and the dissolution equilibrium of its own solid --
+   the phases/solid/ directory is RETIRED, legacy read only)
+  chemistry/<name>.dat             FLAT; an equilibrium: dissolution,
+                                   speciation (recordType names the family)
   parameters/.../<i>-<j>.dat       a pair: NRTL, Pitzer, eNRTL
-  methods/<name>.dat           a model declaration (+ its reference basis)
+  (methods/ is RETIRED: the reference basis is a consequence of the
+   declared formulation -- the one-knob rule)
   (the system is declared INLINE in the case's constant/thermoPhysPropDict
    -- THE CENTRE; there is no shared package catalogue)
 \end{lstlisting}

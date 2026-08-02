@@ -1023,11 +1023,14 @@ data/standards/
   species/<name>.dat           one modelSpecies file per species:
                                formula + charge + medium-tagged thermo
                                (charge 0 for O2/N2(aq); never fed to a flowsheet)
-  phases/solid/<phase>.dat     crystalline phase (rho_p, k_v)
-  chemistry/                   REAL equilibria (stoichiometry + K + dH):
-    salts/                       calorimetric dissolution anchors
-    mineralSolubility/           PHREEQC mineral logK/dH (speciation engine)
-    aqueousSpeciation/  gasLiquid/  ionExchange/
+  (crystalline-phase data -- rho_p, k_v and the salt's own dissolution
+   anchor -- lives in the COMPONENT's solidPhases{} block; the old
+   phases/solid/<phase>.dat is a legacy read only)
+  chemistry/<name>.dat         FLAT (Migration 5): REAL equilibria
+                               (stoichiometry + K + dH); each record's
+                               recordType names its family
+                               (aqueousSpeciation / gasLiquidEquilibrium /
+                               ionExchangeEquilibrium) -- never a subfolder
   parameters/
     Pitzer/{pairs,lambda,psi}/...             Pitzer binaries + ternaries
     eNRTL/<c>-<a>.dat                         eNRTL tau pairs
@@ -1075,9 +1078,10 @@ pair is resolved by cation--anion name from the parameter catalogue.
 component list; (2)~identifies the ONE salt as the component whose standards
 record carries \code{dissociatesTo}, and takes its identity (MW, role) from
 \code{components/<salt>.dat}; (3)~classifies the ions by charge sign from
-each ion's \code{species/<name>.dat}; (4)~loads the crystal (\(\rho_p, k_v\)) from
-\code{phases/solid/} and the saturation anchor from \code{chemistry/salts/},
-both by the phase name the package's \code{chemistry.salts} declares;
+each ion's \code{species/<name>.dat}; (4)~loads the crystal (\(\rho_p, k_v\)) and the saturation anchor from
+the salt component's own \code{solidPhases\{\}} block, by the phase name the
+package's \code{chemistry.salts} declares (the retired
+\code{phases/solid/<phase>.dat} stays readable for old external cases only);
 (5)~assembles the Pitzer/eNRTL kernel through the same
 \file{SaltFromCatalogue} helpers the legacy path used --- byte-identical by
 construction; (6)~mounts the \code{ThermoPackage}.  \textbf{It loads and
