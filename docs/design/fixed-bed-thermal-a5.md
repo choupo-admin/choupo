@@ -164,3 +164,44 @@ What a first-class A6 needs, and why it is an ARCHITECTURE decision
 Estimated shape: (1)+(2)+(3) is one contained slice over choupoBatch's
 recipe reader + a `cycleSnapshots()` hook; (4) is separate.  Decision
 requested before any of it is built.
+## 8. P-swing — blowdown / repressurisation (PROPOSAL, no code)
+
+The standing refusals say "pressure swing needs transient c_tot" and
+"flow transients need transient Ergun".  The T1/T1.5 machinery changes
+the honest decomposition: in ERGUN mode every interior and outlet
+velocity is ALREADY algebraic from the pressure field -- only the inlet
+is an imposed flux.  So:
+
+* **P1 -- outlet-pressure switch** (`setParameter P_out`, ergun+thermal
+  only).  A declared P_out(t) step is the T1.5 pattern applied to the
+  downstream boundary: the existing face machinery drains the bed, the
+  vented gas already flows through the M_out ledger rows (telescopic),
+  and no boundary changes KIND.  Contained.
+* **P2 -- feed-valve closure** (`setParameter u = 0`, ergun only).  In
+  ergun mode u_ is nothing but the imposed inlet flux, so closing the
+  valve does not re-pose any interior problem; the remaining feed
+  commitment retires through the SAME DatumAmendment machinery the
+  T1.5 hot purge uses (one OUT package, whole commitment).  The frozen
+  pre-run claims (t_st, atol scales) keep their announced values.
+  Contained -- the old "transient Ergun" refusal was written for A3
+  and over-reaches in ergun mode; the refusal text should say so.
+* **P3 -- countercurrent steps** (blowdown/purge through the FEED end,
+  flow reversal).  The inlet boundary changes KIND (imposed flux ->
+  pressure boundary).  This is the real architecture step; stays
+  refused, named.
+
+THE PHYSICS COST, named before any code: the T1 energy equation was
+written at constant pressure -- the expansion-work term vanished.  A
+depressurising cell cools, and without that term the energy CLAIM
+would survive numerically while lying physically.  P1/P2 therefore
+REQUIRE adding the ideal-gas expansion term (+ eps dP_j/dt in the
+energy-row numerator, the U-vs-H bookkeeping difference), and the
+witness must SHOW blowdown cooling.  Anchors: the ideal-gas inventory
+ratio n_end/n_0 = P_end/P_0 for an inert isothermal bed; the energy
+closure with the new term; the vented-gas ledger closing against the
+inventory drop.
+
+Decision requested: P1+P2 (with the dP/dt term) as one slice --
+together with T1.5 they complete a co-current Skarstrom cycle minus
+the countercurrent purge -- and P3's refusal text updated to name
+exactly the boundary-kind change it waits for.
