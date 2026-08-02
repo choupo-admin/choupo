@@ -219,14 +219,12 @@ See `thermo.md`.
 A user-written reaction whose stoichiometry doesn't conserve mass
 (e.g. ethanol → water with no other species) corrupts the case
 silently — the solver runs, the streams "balance" in moles but mass
-is lost.  The `massBalance` report catches it:
-
-```
-reports { massBalance {} }
-```
-
-Then check `reports/balances/massBalance.csv`: if `closure_pct` ≠ 100%
-for a species, the reaction is at fault.
+is lost.  The `massBalance` report catches it, and since 2026-08-02 it
+runs **by default** on every converged steady case (as do
+`elementBalance` and `energyBalance`) — no `reports {}` block needed.
+Check `reports/balances/massBalance.csv`: if `closure_pct` ≠ 100%
+for a species, the reaction is at fault.  (Declare
+`reports { massBalance { enabled false; } }` only to opt out.)
 
 ### Reversible reaction without `standardThermochemistry` on every species
 For `reversible true;`, the reverse rate is `k_fwd / K_eq(T)` with

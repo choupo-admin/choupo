@@ -165,6 +165,15 @@ flowsheet.
 `elementBalance` / `energyBalance` / `utilities` / `utilityAllocation` /
 `profiles` / `computed` / `design` / `economics` / `energyStreams` /
 `spreadsheet` (consolidated coloured `.ods`), all selectable per case.
+**The three balances run by DEFAULT on every converged steady run**
+(elementBalance since 2026-07-19; massBalance + energyBalance joined
+2026-08-02) — conservation is the curriculum, so none of them depends on a
+case discovering an opt-in block.  A declared block keeps full control,
+including `enabled false;` to opt out per report.  Refusal posture follows
+provenance: the *default* energyBalance reports a missing enthalpy datum as
+`UNAVAILABLE` (same facts, curation remedy included, the machine-readable
+`status,REFUSED` artefact still written); a *declared* `energyBalance {}`
+keeps the hard ERROR, because its author asked for a verdict.
 `utilityAllocation` sizes each duty to a utility by T-level; its result is
 also emitted in the run JSON (the GUI reads it).
 

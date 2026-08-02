@@ -577,7 +577,14 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   PROPS BENCH).
 
 **Balance diagnostics, three levels (2026-07-19): total mass · per-element
-atoms · energy — engine-owned, GUI only draws.**  ONE shared formula parser
+atoms · energy — engine-owned, GUI only draws.  ALL THREE run by DEFAULT on
+every converged steady run (2026-08-02, roadmap #7):** conservation is the
+curriculum, so none depends on a case declaring `reports {}`; a declared
+block keeps control (`enabled false;` opts out per report), and the refusal
+posture follows provenance — the *default* energyBalance reports a missing
+enthalpy datum as UNAVAILABLE with the remedy (the `status,REFUSED` artefact
+still written), a *declared* one keeps the hard ERROR.  Gate:
+check_default_reports.  ONE shared formula parser
 (`src/thermo/ElementComposition`; `elementalComposition` props op = its
 glass-box surface); steady `elementBalance` report (boundary atoms, its own
 artefact beside massBalance); choupoCtrl accepted-step ledger

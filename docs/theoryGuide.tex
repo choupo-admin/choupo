@@ -2349,7 +2349,7 @@ in the liquid follow from $c_p^{\mathrm{liq}}$:
 \end{equation}
 With the polynomial $c_p^{\mathrm{liq}} = a_0 + a_1 T + a_2 T^2 + \dots$
 shipped in the data file, the integral is term-by-term elementary;
-the simulator evaluates it in \file{src/thermo/heatCapacity/Polynomial.cpp},
+the simulator evaluates it in \file{src/thermo/heatCapacity/PolynomialCp.cpp},
 called via \code{Component::Hliq\_pure(T, Tref)}.
 
 The vapour enthalpy of a pure component sits a latent heat above the
@@ -2787,7 +2787,7 @@ enthalpy of \emph{solution}, $\Delta h_{\mathrm{soln}} =
 its definition names \emph{two} species, sucrose \emph{and water}.  That
 is \emph{arity-2} data, and it does not live in \file{sucrose.dat} --- it
 lives in a by-name catalogue tier,
-\file{data/standards/solution/sucrose-water.dat}, exactly as the
+\file{data/standards/parameters/solution/sucrose-water.dat}, exactly as the
 infinite-dilution ion enthalpies live in
 \file{data/standards/species/<ion>.dat} on the
 $h^{\circ}_f(\mathrm{H}^+_{aq})=0$ convention.  Water is ubiquitous
@@ -3152,7 +3152,7 @@ composition range must integrate to zero:
 This is the celebrated Redlich-Kister consistency test.  When the
 \code{fitParameters} regression fits NRTL or Wilson parameters to a
 $(x_1, T_{\mathrm{bubble}})$ dataset (the
-\file{tutorials/fitNRTL01\_ethanol\_water} case), the chosen
+\file{tutorials/steady/optimisation/fitNRTL01\_ethanol\_water} case), the chosen
 functional form for $G^E$ \emph{automatically} satisfies
 Eq.~\eqref{eq:integral-gd} by construction --- NRTL and Wilson are
 both derived from a $G^E$ model, and any pair of $\ln \gamma_i$
@@ -3193,14 +3193,14 @@ $\approx 75.4$~J/(mol·K)), this evaluates to
 \]
 At 100~kmol/h that is a duty of about
 $7{,}212 \cdot 10^5 / 3600 \approx 200~\mathrm{kW}$ --- which is
-exactly what \code{tutorials/hx01\_heater} reports when you run it.
+exactly what \code{tutorials/steady/heat/hx01\_heater} reports when you run it.
 Every step uses only Eqs.~\eqref{eq:integral-href}--\eqref{eq:integral-hmix}
 and the polynomial $c_p$ from the data file.
 
 \begin{tutoriallink}
-\code{runCase tutorials/hx01\_heater} executes the duty calculation
+\code{runCase tutorials/steady/heat/hx01\_heater} executes the duty calculation
 above end-to-end and writes the result to the run log.  Modify
-\file{tutorials/hx01\_heater/system/flowsheetDict} to change
+\file{tutorials/steady/heat/hx01\_heater/system/flowsheetDict} to change
 $T_{\mathrm{out}}$ and watch how $Q$ scales linearly with
 $\Delta T$ --- a direct consequence of constant $c_p$.
 \end{tutoriallink}
@@ -4380,7 +4380,7 @@ and surface parameters
 \end{equation}
 These are exactly the UNIQUAC $r_i, q_i$, which is why UNIFAC and
 UNIQUAC share the combinatorial term. In the simulator $R_k, Q_k$ live
-in \file{data/standards/unifac/groups.dat} (Hansen \emph{et al.}
+in \file{data/standards/parameters/UNIFAC/groups.dat} (Hansen \emph{et al.}
 \cite{Hansen1991}, open-literature original-UNIFAC values).
 
 \paragraph{Combinatorial term (Staverman--Guggenheim).} Purely
@@ -4441,7 +4441,7 @@ solution. The \emph{main-group} interaction parameter $a_{mn}$ [K] is
 asymmetric ($a_{mn} \ne a_{nm}$); groups in the same main group have
 $a_{mn} = 0$ (so $\Psi_{mn} = 1$). These are the only adjustable numbers
 in the whole model, and they are \emph{universal}, not per-binary ---
-\file{data/standards/unifac/interactions.dat} (Hansen \emph{et al.}
+\file{data/standards/parameters/UNIFAC/interactions.dat} (Hansen \emph{et al.}
 \cite{Hansen1991}). The implementation in
 \file{src/thermo/activityCoefficient/UNIFAC.cpp} uses this
 single-parameter $a_{mn}$ (original UNIFAC); the later
@@ -5445,7 +5445,7 @@ is one of a handful of \code{PitzerForm} calls:
         +\beta^{(2)}_{ca}\,g(\alpha_2\sqrt I)$, with
         $g(x)=2\bigl[1-(1+x)e^{-x}\bigr]/x^2$ --- the binary pair term,
         per (cation, anion) read from the shared catalogue
-        \file{data/standards/electrolyte/pairs.dat}.  The $\beta^{(2)}$
+        \file{data/standards/parameters/Pitzer/pairs/}.  The $\beta^{(2)}$
         slot is the 2:2 ion-pairing term ($\alpha_1=1.4$, $\alpha_2=12$);
         it is zero for 1:1/2:1/1:2 salts.
   \item $B'_{ca}=\bigl[\beta^{(1)}_{ca}\,g'(\alpha_1\sqrt I)
@@ -5461,7 +5461,7 @@ is one of a handful of \code{PitzerForm} calls:
         $\Phi'_{ij}=E'_{\theta\,ij}(I)$ --- the \emph{like-sign} mixing
         parameter (\S\ref{sec:hmw-etheta}).  $\theta_{ij}$ and the
         triplet $\psi_{ijk}$ are read from
-        \file{data/standards/electrolyte/mixing.dat}; an absent entry is
+        \file{data/standards/parameters/Pitzer/theta/ and psi/}; an absent entry is
         $0$.
 \end{itemize}
 
@@ -7609,7 +7609,7 @@ superheated vapour.}
 \end{figure}
 
 \begin{tutoriallink}
-\file{tutorials/flash01\_benzene\_toluene} --- run with
+\file{tutorials/steady/flash/flash01\_benzene\_toluene} --- run with
 \code{verbosity 3} and watch the Newton trace converge in 3--4
 iterations.
 \end{tutoriallink}
@@ -8537,7 +8537,7 @@ Hessian splits into two terms and why one of them can be dropped;
 how the resulting Gauss-Newton step can overshoot; Levenberg's
 damping fix; Marquardt's invariance fix; and the simple
 trust-region rule the simulator uses to update the damping. The
-runnable case is \file{tutorials/fitNRTL01\_ethanol\_water/}.
+runnable case is \file{tutorials/steady/optimisation/fitNRTL01\_ethanol\_water/}.
 \end{whatyoulllearn}
 
 \subsection{A different question}
@@ -8896,7 +8896,7 @@ No external library, no auto-differentiation, no hand-coded analytical
 Jacobian: a deliberate constraint for pedagogical visibility.
 
 \begin{tutoriallink}
-\code{runCase tutorials/fitNRTL01\_ethanol\_water} produces the full
+\code{runCase tutorials/steady/optimisation/fitNRTL01\_ethanol\_water} produces the full
 LM trace, the per-point residual breakdown, and writes the proposal
 file \code{constant/parameters/NRTL/ethanol-water.fit-<date>.dat}.
 See the case's \file{README.md} for the promote-by-\code{mv} step.
@@ -8997,7 +8997,7 @@ diverged at iteration~2.
 \end{semilogyaxis}
 \end{tikzpicture}
 \caption{Levenberg-Marquardt $\chi^2$ history for the ethanol/water
-NRTL fit in \file{tutorials/fitNRTL01\_ethanol\_water} (real run, all
+NRTL fit in \file{tutorials/steady/optimisation/fitNRTL01\_ethanol\_water} (real run, all
 20 iterations).  The solid blue line tracks the best $\chi^2$ achieved
 so far --- the parameters that are carried forward.  The red crosses
 are trial $\chi^2$ values the LM proposed but \emph{rejected} because
@@ -10222,7 +10222,7 @@ ignored entirely.  This is why \code{solver::sqp} prints the active set
 and its multipliers every iteration and again in the closing KKT
 certificate --- the shadow prices \emph{are} the design answer, not a
 diagnostic.  The tutorial
-\file{tutorials/steady/optimisation/optim05\_economic\_design}
+\file{tutorials/steady/optimisation/optim05\_reactor\_npv}
 maximises a small plant's NPV against a capital budget and a capacity
 cap and reads the binding cap's shadow price straight off the
 certificate.
@@ -12636,7 +12636,7 @@ analytic solution
    \qquad \mathrm{Da} = k\,\tau,
 \end{equation}
 where $\tau = V_R / Q$ is the residence time. The simulator reproduces
-this to machine precision in \code{tutorials/cstr01\_first\_order}.
+this to machine precision in \code{tutorials/steady/reactors/cstr01\_first\_order}.
 
 \subsection{Worked example}
 
@@ -12649,7 +12649,7 @@ $\xi = 0.5\,c_{A,0}\,Q = 0.5$ mol/s.
 \end{example}
 
 \begin{tutoriallink}
-\file{tutorials/cstr01\_first\_order} --- includes the analytic check in
+\file{tutorials/steady/reactors/cstr01\_first\_order} --- includes the analytic check in
 the case output.
 \end{tutoriallink}
 
@@ -12968,7 +12968,7 @@ backmixing effect.
 \end{example}
 
 \begin{tutoriallink}
-\file{tutorials/pfr01\_first\_order} --- prints conversion every
+\file{tutorials/steady/reactors/pfr01\_first\_order} --- prints conversion every
 \code{writeInterval} steps along the axial coordinate; the final
 $X = 0.667$ matches \eqref{eq:pfr-X-firstorder} to RK4 truncation
 error.
@@ -14528,7 +14528,7 @@ multipliers on the element-balance constraints, one $\pi_j$ per
 element --- and walks through the water-gas-shift tutorial
 end-to-end.  The implementation is in
 \file{src/unitOperations/reactor/GibbsReactor.cpp}, and the runnable
-case is \file{tutorials/gibbs01\_water\_gas\_shift/}.
+case is \file{tutorials/steady/gibbs/gibbs01\_water\_gas\_shift/}.
 \end{whatyoulllearn}
 
 \subsection{The problem}
@@ -14762,7 +14762,7 @@ H$_2$     & $-117.8$  & $-17.7$\\
 \end{tabular}
 \end{center}
 
-Running \code{./choupoSolve tutorials/gibbs01\_water\_gas\_shift}
+Running \code{./choupoSolve tutorials/steady/gibbs/gibbs01\_water\_gas\_shift}
 gives, after six Newton steps with residual decay
 $[0.499 \to 0.235 \to 0.142 \to 0.015 \to 2.1{\times}10^{-4} \to
 4.3{\times}10^{-8}]$:
@@ -14834,7 +14834,7 @@ reactions that corresponds to.
 \end{itemize}
 
 \begin{tutoriallink}
-\code{runCase tutorials/gibbs01\_water\_gas\_shift} executes the
+\code{runCase tutorials/steady/gibbs/gibbs01\_water\_gas\_shift} executes the
 worked example above.  Try editing
 \file{system/flowsheetDict} to change the reactor $T$ to 1000~K and
 watch $K_{\mathrm{eq}}$ drop (the WGS is mildly exothermic, so the
@@ -15161,9 +15161,9 @@ The remedy for both is Naphtali-Sandholm equation-oriented Newton
 \cite{NS} --- on the roadmap.
 
 \begin{tutoriallink}
-\file{tutorials/column01\_benzene\_toluene} --- the ideal case, converges
+\file{tutorials/steady/distillation/column01\_benzene\_toluene} --- the ideal case, converges
 in 30--50 outer iterations. \\
-\file{tutorials/sensitivity01\_column\_reflux} --- the same column swept
+\file{tutorials/steady/optimisation/sensitivity01\_column\_reflux} --- the same column swept
 over $R \in [1.5, 5]$ by the outer driver.
 \end{tutoriallink}
 
@@ -19691,7 +19691,7 @@ effect. They are \emph{not} a substitute for a vendor quote.
 \end{pitfall}
 
 \begin{tutoriallink}
-\file{tutorials/process02\_with\_design} --- the canonical end-to-end:
+\file{tutorials/steady/flowsheets/process02\_with\_design} --- the canonical end-to-end:
 two-unit flowsheet ($\to$ CSTR + flash), \code{postDict} declares
 sizing for both, Guthrie costing in EUR$_{2026}$ at the user-chosen
 CEPCI. The output table shows $F_M$, $F_P$, $C_{\mathrm{purchased}}$,
@@ -19975,7 +19975,7 @@ original UNIFAC paper.
 Schiller, M., \& Gmehling, J., ``Vapor-Liquid Equilibria by UNIFAC Group
 Contribution. 5.\ Revision and Extension'', \emph{Ind. Eng. Chem. Res.},
 30, 2352--2355 (1991). The revised original-UNIFAC $R_k/Q_k$ and
-main-group $a_{mn}$ tables bundled in \file{data/standards/unifac/}.
+main-group $a_{mn}$ tables bundled in \file{data/standards/parameters/UNIFAC/}.
 
 \bibitem{Abrams1975} Abrams, D. S., \& Prausnitz, J. M., ``Statistical
 Thermodynamics of Liquid Mixtures: A New Expression for the Excess Gibbs
