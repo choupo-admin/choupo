@@ -1,22 +1,34 @@
 #!/usr/bin/env python3
-"""A5-T1 thermal-bed gate: the adiabatic one-temperature bed announces its
-anchors, and every scope decision of the design refuses out loud
-(docs/design/fixed-bed-thermal-a5.md).
+"""Thermal-bed gate (A5-T1 + T1.5 + T2): the one-temperature bed announces
+its anchors, and every scope decision of the design refuses out loud
+(docs/design/fixed-bed-thermal-a5.md sections 1-6).
 
-All probes are 60 s variants of batch20_thermal_breakthrough:
+All probes are 60 s variants of the three thermal witnesses --
+batch20_thermal_breakthrough (T1), batch21_tsa_hot_purge (T1.5) and
+batch22_wall_cooled (T2):
 
-  POSITIVE   the short adiabatic run completes (exit 0) and announces the
-             A5-T1 header, the adiabatic LIMIT wording (a BOUND, never a
-             promised plateau) and the thermal-wave velocity u_th.
-  REFUSALS   each fired through the real initialise, asserted on exit != 0
-             AND the named reason:
+  POSITIVES (3)
+    T1    the adiabatic run completes (exit 0) and announces the A5-T1
+          header, the adiabatic LIMIT wording (a BOUND, never a promised
+          plateau) and the thermal-wave velocity u_th.
+    T1.5  the hot-purge switch fires, announces itself, and re-declares
+          the WHOLE commitment as two ledgered packages (retire + declare).
+    T2    the wall-cooled run announces the T2 header, the wall NTU and
+          the Q_wall STATE row.
+  REFUSALS (9)  each fired through the real initialise or recipe path,
+                asserted on exit != 0 AND the named reason:
                thermal + constantVelocity   (A3 pins c_tot by declaration)
                thermal + timeStepping fixed (Gershgorin covers isothermal
                                              rows only)
                missing solidHeatCapacity    (declared case data, kLDF)
                solidHeatCapacity w/o scope  (a value states its origin)
-               wallHeatTransfer present     (T2, not built)
-               energyBalance <junk>         (isothermal|adiabatic only)
+               adiabatic + wallHeatTransfer (a contradiction -- NOT the
+                                             retired "T2 not built")
+               energyBalance <junk>         (isothermal|adiabatic|wallCooled)
+               wallCooled w/o its block     (incomplete declaration)
+               wallHeatTransfer.h <= 0      (adiabatic is how to say zero)
+               feed.T on an isothermal bed  (points at the declaration
+                                             that unlocks it)
 
 T2 division of labour: this gate fires the DECLARATION refusals and the
 announcements; the PHYSICS instrument is the witness golden -- the
@@ -193,10 +205,12 @@ def main() -> int:
         for f in failures:
             print("  -", f)
         return 1
-    print("check_thermal_bed: OK -- adiabatic bed announces its anchors"
-          " (u_th + the DT_ad BOUND) and 6 scope refusals fire named"
-          " (A3 pin, fixed stepping, missing/undocumented cp_s, T2 wall,"
-          " unknown word)")
+    print("check_thermal_bed: OK -- 3 positives (T1 anchors u_th/DT_ad"
+          " bound, T1.5 hot-purge retire+declare, T2 wall NTU + Q_wall"
+          " state row) and 9 refusals fire named (A3 pin, fixed stepping,"
+          " missing/undocumented cp_s, adiabatic+wall contradiction,"
+          " unknown word, wallCooled w/o block, zero h, feed.T while"
+          " isothermal)")
     return 0
 
 
