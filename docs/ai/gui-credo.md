@@ -65,7 +65,7 @@ strip — all three were removed.  The layout is now:
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│  File Streams Plots Log Thermo Case Reports … [▶ Run]    │  32 px header
+│  File <context-dependent workspaces> …        [▶ Run]    │  32 px header
 ├──────────────────────────────────────────────────────────┤
 │                                                          │
 │                FlowCanvas (full screen)        ┌───────┐ │
@@ -85,11 +85,24 @@ strip — all three were removed.  The layout is now:
   shows the run toasts) but no longer renders the button.
 - **Canvas (everything below).**  The flowsheet fills the viewport.
 - **Workspaces, opened on demand from the top menu.**  Each menu
-  item (Streams / Plots / Log / Thermo / Case; Reports is a
-  placeholder) is a **toggle** that swaps the canvas for that
-  workspace; clicking it again — or pressing **Esc** — returns to the
-  canvas.  At most one workspace is open at a time.  This replaces the
-  old always-on bottom tabs.
+  item is a **toggle** that swaps the canvas for that workspace;
+  clicking it again — or pressing **Esc** — returns to the canvas.  At
+  most one workspace is open at a time.  This replaces the old
+  always-on bottom tabs.
+  **The lineup is CONTEXT-DEPENDENT, and the authority on it is the
+  `WORKSPACES` table in `gui/src/ui/MenuBar.tsx`** — this file states
+  the rule, never a copy of the list (an earlier revision carried one
+  and it drifted: it still named a "Thermo" workspace years of edits
+  after Thermo became a TAB inside Props, and called Reports a
+  placeholder long after it shipped utilities + global balances).  The
+  rule: each case TYPE exposes only the workspaces that mean something
+  for it, so a lit-but-dead button never shows — a props case gets the
+  props set, a batch/ctrl case gets the time set (plus the Control
+  Room only when a PID is actually declared), a steady case gets the
+  full set (incl. Variables, Pinch — greyed until a run yields duties
+  — and Reports), and a blank boot shows no tabs at all except the
+  standalone Explorer.  "Explore" is in every set because the explorer
+  synthesizes its own transient case.
 - **Selection card (floating, top-right).**  Appears only when
   something is selected; shows the selected unit's "hardware"
   parameters and its latest-run KPIs, or a stream's conditions.  It is
@@ -109,7 +122,7 @@ chemical-process simulation is not CFD; some adaptations are needed.
 |---|---|---|---|
 | **Left panel** | Pipeline Browser: source + applied filters | **None.**  The flowsheet canvas is full-screen; case files live in the on-demand **Case** workspace, not a permanent tree | An always-on left tree where clicking does little was "nojo" — a docked panel earns its pixels only if it is constantly useful.  The case files are one menu click away instead. |
 | **Right panel** | Properties of selected filter | **Floating selection card** (top-right): the selected node's hardware + run KPIs, or a stream's conditions.  Vanishes when nothing is selected | A docked Properties panel is mostly empty most of the time.  A card that appears on selection and gets out of the way otherwise keeps the canvas dominant. |
-| **View modes** | Render View / Spreadsheet / Plot / etc. swap on the central canvas | **On-demand workspaces** (Streams / Plots / Log / Thermo / Case) opened from the top menu; each toggles over the canvas, Esc returns | Done in Fase A/B (2026-05-27).  The earlier bottom-tab strip was removed; workspaces are the canvas-view-mode pattern this row once flagged for "Layer 2". |
+| **View modes** | Render View / Spreadsheet / Plot / etc. swap on the central canvas | **On-demand workspaces** opened from the top menu (context-dependent lineup — see §2.5; `MenuBar.tsx` is the authority); each toggles over the canvas, Esc returns | Done in Fase A/B (2026-05-27).  The earlier bottom-tab strip was removed; workspaces are the canvas-view-mode pattern this row once flagged for "Layer 2". |
 | **Multi-view split** | Yes (4-up layout) | **No — pop-outs (new tab) instead** | Pop-outs let the user multi-monitor or window-tile, with the same outcome and far less code.  Browser tabs are persistent and survive a Choupo crash. |
 | **Time controls** | Timeline + slider for transient runs | Not yet — `choupoBatch` / `choupoCtrl` trajectories have static plots | Layer 2 work. |
 | **Color By field selector** | Yes | Not yet | Layer 2 work — colour streams by T / dominant component / phase. |
@@ -194,7 +207,8 @@ SEEING the fork is the lesson.
   own root case (fractal drill-in).
 - **Click on the canvas pane** → `selectNode(null)`.  The selection
   card disappears (the canvas is the resting state — there is no
-  ThermoSummary fallback; Thermo lives in its own workspace).
+  ThermoSummary fallback; the thermo summary lives as the ThermoView
+  TAB inside the Props workspace).
 
 ### Direct manipulation of the layout (view-only, persisted)
 The flowsheet is a layout the user can arrange; none of this writes
@@ -351,10 +365,11 @@ this Credo before proposing**.
 - **Sector** — a sub-flowsheet folder in a fractal case (e.g.
   `concentration/`, `drying/` inside the plant case).
 - **Workspace** — a content mode that toggles over the canvas,
-  opened from the top menu (Streams / Plots / Log / Thermo / Case;
-  Reports is a placeholder).  At most one is open; Esc closes it back
-  to the canvas.  (Older docs called these "views / bottom tabs"; the
-  bottom-tab strip was removed in the Fase A/B redesign.)
+  opened from the top menu; the lineup is context-dependent per case
+  type and `gui/src/ui/MenuBar.tsx` is its authority (§2.5).  At most
+  one is open; Esc closes it back to the canvas.  (Older docs called
+  these "views / bottom tabs"; the bottom-tab strip was removed in the
+  Fase A/B redesign.)
 - **Selection card** — the floating top-right overlay showing the
   selected node's hardware + KPIs (or a stream's conditions).  Appears
   on selection, vanishes on deselect.  NOT a docked right panel.

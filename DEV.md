@@ -434,8 +434,21 @@ accepts today, and that is a policy call.
    `docs/ai/*.md` + CLAUDE.md + DEV.md, with deliberate absences listed *with
    their reason* and a check that fires when one of them quietly comes true.
    Sabotage-verified.
-   Still unread: `gui-credo.md` (411 lines, GUI-design prose rather than
-   checkable claims — its paths and case names now pass the gate).
+   ~~Still unread: `gui-credo.md`~~ — **READ END-TO-END 2026-08-02** (the
+   Fable-5 audit's follow-up), and the "prose rather than checkable claims"
+   excuse was wrong: its claims WERE checkable against `gui/src/`, and five
+   of them were stale.  The credo — the self-declared single source of truth
+   an assistant must read before proposing any GUI change — still described
+   a "Thermo" workspace (Thermo is a TAB inside Props; no such workspace key
+   exists), called Reports a placeholder (it ships utilities + global
+   balances), and carried a fixed workspace list where the real menu is
+   CONTEXT-DEPENDENT per case type with Explore/Variables/Control/Pinch.
+   Everything else verified: shell components, selection model, pop-out
+   mechanics (Blob + 30 s revoke), defensive rendering, explorer guard-rails
+   and chrome budget, duty stubs reading utilityAllocation, tab citizenship.
+   Fixed per the arity lesson: the credo now states the RULE (context-gated
+   workspaces, lit-but-dead never shows) and names `MenuBar.tsx` as the
+   authority on the lineup, instead of carrying a copy of the list.
 6. **Operation-schema coverage: 32 of 76** — found 2026-08-02 while paying
    debt #5, and now MEASURED and PUBLISHED rather than latent.
    `docs/ai/schemas-reference.md` called itself *"every shipped operation"*
