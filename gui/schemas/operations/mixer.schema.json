@@ -4,6 +4,14 @@
   "title": "mixer operation",
   "description": "Adiabatic stream mixer. Sums the inlet component flows and closes the energy balance Sum H_in = H_out (Newton-1D in T_out) for the outlet temperature. No operating parameters.",
   "type": "object",
-  "properties": {},
+  "properties": {
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Imposed outlet temperature",
+      "description": "Present = the mixer is ISOTHERMAL at this temperature and the duty is the result. Absent = adiabatic mixing, and the outlet temperature follows from the enthalpy balance (the normal case).",
+      "unit": "K"
+    }
+  },
   "additionalProperties": false
 }

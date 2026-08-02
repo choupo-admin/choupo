@@ -9,7 +9,7 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Shaft power",
-      "description": "Mechanical power delivered to the liquid (positive).",
+      "description": "Mechanical power delivered to the liquid (positive). One of W_shaft / P_out / dP fixes the duty. It may also arrive over an ENERGY WIRE instead of being written here: a consumer declaring `energyInputs ( { from <unit>.<port>; kind <work|heat>; target <key>; } )` has the value written into its operation block before solve, and the unit reads it exactly as if the author had typed it.  That is why this key is not marked required — the schema describes what an AUTHOR writes, and a wired value is not authored.",
       "unit": "W"
     },
     "eta": {
@@ -19,8 +19,24 @@
       "title": "Pump efficiency",
       "description": "Hydraulic and mechanical efficiency, useful v·dP work / shaft work (0 < eta <= 1). The (1-eta) fraction heats the liquid.",
       "unit": "-"
+    },
+    "P_out": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Discharge pressure",
+      "description": "Specify the outlet pressure instead of the power; the shaft work follows from v·dP/eta.",
+      "unit": "Pa"
+    },
+    "dP": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Pressure rise",
+      "description": "Specify the rise instead of the outlet pressure or the power.",
+      "unit": "Pa"
     }
   },
-  "required": ["W_shaft", "eta"],
+  "required": [
+    "eta"
+  ],
   "additionalProperties": false
 }

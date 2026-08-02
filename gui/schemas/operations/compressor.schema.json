@@ -9,7 +9,7 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Shaft power",
-      "description": "Mechanical power delivered to the gas (positive).",
+      "description": "Mechanical power delivered to the gas (positive). It may also arrive over an ENERGY WIRE instead of being written here: a consumer declaring `energyInputs ( { from <unit>.<port>; kind <work|heat>; target <key>; } )` has the value written into its operation block before solve, and the unit reads it exactly as if the author had typed it.  That is why this key is not marked required — the schema describes what an AUTHOR writes, and a wired value is not authored.",
       "unit": "W"
     },
     "eta": {
@@ -21,6 +21,8 @@
       "unit": "-"
     }
   },
-  "required": ["W_shaft", "eta"],
+  "required": [
+    "eta"
+  ],
   "additionalProperties": false
 }

@@ -8,7 +8,7 @@
     "Q": {
       "type": "number",
       "title": "Thermal power",
-      "description": "Thermal power delivered to the stream; positive heats, negative cools.",
+      "description": "Absolute thermal power delivered to the stream (positive heats, negative cools). The outlet temperature is a RESULT, never a spec — `Tout` is REFUSED by name, and for 'I need T_out = X' wrap the unit in a DesignSpec that manipulates $Q against a target on this unit's T_out. It may also arrive over an ENERGY WIRE instead of being written here: a consumer declaring `energyInputs ( { from <unit>.<port>; kind <work|heat>; target <key>; } )` has the value written into its operation block before solve, and the unit reads it exactly as if the author had typed it.  That is why this key is not marked required — the schema describes what an AUTHOR writes, and a wired value is not authored.",
       "unit": "W"
     },
     "Tref": {
@@ -20,6 +20,6 @@
       "default": 298.15
     }
   },
-  "required": ["Q"],
+  "required": [],
   "additionalProperties": false
 }

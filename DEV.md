@@ -464,13 +464,26 @@ accepts today, and that is a policy call.
    It also found **82 disagreements across 18 pre-existing schemas** — each one
    a schema that would REJECT a case the engine runs (`additionalProperties`
    is false everywhere) or that marks required a key a running case omits.
-   Worst: `evaporator`, `fitParameters`, `crystalliser`, `propertyPoint`,
-   `distillationColumn`.  They sit in `bin/curate/schema_coverage_baseline.txt`
-   as a RATCHET, not a whitelist: anything new fails, and a baseline line that
-   stops firing fails too, so the file can only shrink and is deleted when
-   empty.  Both directions sabotage-verified.  **This is the next batch's
-   work: read the op's source and a running case, correct the SCHEMA, strike
-   the line.**
+   **All 82 CLEARED the same day** (batches 2 and 3), and the shrinking
+   baseline that held them was deleted with the last line, exactly as its own
+   header said it would be — the gate now holds the plain contract, and a
+   disagreement is a schema to fix rather than a line to record.  What the
+   clearing found, over and above wrong types: **schemas documenting a RETIRED
+   interface.**  `evaporator` demanded a `P` the unit never reads (it is a
+   KPI — the boiling-point elevation sets it, so P is read back from the
+   answer); `solidDryer` declared `airTemperature` and `relativeHumidity`,
+   both retired when the dryer was rewritten to take a real hot-air stream,
+   and its source says so in as many words.  Neither would have run.
+   The general rule the clearing settled, worth keeping: **a schema describes
+   what an AUTHOR writes.**  A key delivered by an energy wire
+   (`energyInputs … target <key>`) is written into the operation block before
+   solve and read "exactly as if the author had typed it" — so `W_shaft` on a
+   pump or compressor and `Q` on a heater are required by the ENGINE and not
+   by the schema.
+   One parser bug found and fixed on the way: the checker read words out of
+   quoted STRINGS, so `rationale "NRTL captures it"` reported `NRTL` as an
+   operation parameter.  Strings are blanked now, and `rationale`/`provenance`
+   joined `source` as author annotations no schema claims.
    *Related fix, same slice:* `bin/regen-llm-docs` was reading three
    directories that Migrations 2 and 4 had moved, and its `_list_section`
    answered "(directory not present)" instead of failing — so a blind

@@ -2,26 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/solidDryer.schema.json",
   "title": "solidDryer operation",
-  "description": "Contact / through-circulation solid dryer. A wet solid is dried toward the equilibrium moisture set by the air relative humidity and the solid's GAB sorption isotherm: X_final = min(X_in, X_eq). Computes the water removed and the duty.",
+  "description": "Convective solid dryer taking TWO real input streams — a wet solid and a hot-air stream — and producing a dry solid and a humid exhaust. It has NO operation parameters, and that absence is the design: the air stream BRINGS the heat (as its own sensible cooling) and CARRIES AWAY the moisture, so the energy balance closes on real streams with no phantom duty. The earlier `airTemperature` and `relativeHumidity` parameters were retired with that rewrite — the air temperature is the inlet stream's, and the humidity follows from its composition. The drying kinetics are a named reference at unit level (`dryingCurve <name>;` into `constant/dryingKinetics`), not an operation key.",
   "type": "object",
-  "properties": {
-    "airTemperature": {
-      "type": "number",
-      "exclusiveMinimum": 0,
-      "title": "Drying-air temperature",
-      "description": "Temperature of the drying air; sets the sorption isotherm.",
-      "unit": "K"
-    },
-    "relativeHumidity": {
-      "type": "number",
-      "minimum": 0,
-      "maximum": 1,
-      "title": "Drying-air relative humidity",
-      "description": "Relative humidity (water activity) of the drying air; the GAB isotherm sets the equilibrium moisture X_eq from it.",
-      "unit": "-",
-      "default": 0.1
-    }
-  },
-  "required": ["airTemperature"],
+  "properties": {},
+  "required": [],
   "additionalProperties": false
 }

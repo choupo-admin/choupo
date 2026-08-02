@@ -9,23 +9,136 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Heat-transfer area",
-      "description": "Exchanger surface area; larger area raises NTU.",
+      "description": "Heat-transfer surface. SIMPLE mode only — with U it fixes the duty. A geometry-mode exchanger computes both from its hardware instead, which is why neither is required here.",
       "unit": "m2"
     },
     "U": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Overall heat-transfer coefficient",
-      "description": "Overall U for the surface (film, wall and fouling lumped). NTU = U·area / C_min.",
+      "description": "Overall coefficient, referred to `area`. SIMPLE mode only; in geometry mode it EMERGES from the shell- and tube-side correlations and is reported rather than entered.",
       "unit": "W/m2/K"
     },
     "flow": {
       "type": "string",
       "title": "Flow arrangement",
       "description": "Counter-current (default) or co-current.",
-      "enum": ["counter", "co"]
+      "enum": [
+        "counter",
+        "co"
+      ]
+    },
+    "passes": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Tube passes",
+      "description": "Number of tube passes, for the LMTD correction factor; defaults to 1.",
+      "unit": "-"
+    },
+    "tubeStream": {
+      "type": "string",
+      "title": "Tube-side stream",
+      "description": "Which of the two inlets runs through the tubes. Required in geometry mode: shell and tube side see different correlations, so the assignment changes the answer and is not the engine's to guess."
+    },
+    "geometry": {
+      "type": "object",
+      "title": "Shell-and-tube hardware",
+      "description": "Present = GEOMETRY mode: U is computed from the two film coefficients and the wall, instead of being entered. This is the rating/design route.",
+      "properties": {
+        "shellID": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Shell inside diameter",
+          "unit": "m"
+        },
+        "tubeOD": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tube outside diameter",
+          "unit": "m"
+        },
+        "tubeID": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tube inside diameter",
+          "unit": "m"
+        },
+        "tubeLength": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tube length",
+          "unit": "m"
+        },
+        "nTubes": {
+          "type": "integer",
+          "minimum": 1,
+          "title": "Number of tubes",
+          "unit": "-"
+        },
+        "passes": {
+          "type": "integer",
+          "minimum": 1,
+          "title": "Tube passes",
+          "unit": "-"
+        },
+        "tubePitch": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tube pitch",
+          "unit": "m"
+        },
+        "tubePattern": {
+          "type": "string",
+          "title": "Tube layout",
+          "description": "e.g. triangular or square — it changes the shell-side crossflow area."
+        },
+        "baffleSpacing": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Baffle spacing",
+          "unit": "m"
+        },
+        "wallMaterial": {
+          "type": "string",
+          "title": "Wall material",
+          "description": "Resolved by name in the assets catalogue for its thermal conductivity."
+        }
+      }
+    },
+    "shellSide": {
+      "type": "object",
+      "title": "Shell-side film model",
+      "description": "Which correlation prices the shell-side film coefficient.",
+      "properties": {
+        "model": {
+          "type": "string",
+          "title": "Correlation name"
+        }
+      }
+    },
+    "tubeSide": {
+      "type": "object",
+      "title": "Tube-side film model",
+      "description": "Which correlation prices the tube-side film coefficient.",
+      "properties": {
+        "model": {
+          "type": "string",
+          "title": "Correlation name"
+        }
+      }
+    },
+    "design": {
+      "type": "object",
+      "title": "Design specification",
+      "description": "Turns the geometry pass into a DESIGN: solve the hardware for a declared target instead of rating what is given.",
+      "properties": {
+        "spec": {
+          "type": "string",
+          "title": "What is being solved for"
+        }
+      }
     }
   },
-  "required": ["area", "U"],
+  "required": [],
   "additionalProperties": false
 }

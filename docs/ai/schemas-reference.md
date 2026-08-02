@@ -54,7 +54,7 @@ Gas-phase compressor. Given the shaft power and isentropic efficiency, the disch
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `W_shaft` | ✓ | number | W | Mechanical power delivered to the gas (positive). |
+| `W_shaft` |   | number | W | Mechanical power delivered to the gas (positive). It may also arrive over an ENERGY WIRE instead of being written here: a consumer declar… |
 | `eta` | ✓ | number | - | Isentropic efficiency w_isentropic / w_real (0 < eta <= 1). Lower eta dissipates more shaft work as heat. |
 
 ## `conversionReactor`  (conversionReactor operation)
@@ -89,6 +89,12 @@ Continuous stirred-tank reactor. Reactor volume is the only parameter; temperatu
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `V_R` | ✓ | number | m^3 | Total liquid volume held in the CSTR. |
+| `thermalMode` |   | string | - | isothermal (default; `T` holds and the duty is the result), adiabatic (the energy balance sets T), or heatExchange (a jacket removes UA·(… |
+| `T` |   | number | K | The held temperature in isothermal mode; defaults to the feed temperature. |
+| `T_guess` |   | number | K | First guess for the energy-balance Newton. NOT cosmetic: an adiabatic or jacketed CSTR can have up to THREE steady states, and the Newton… |
+| `UA` |   | number | W/K | Overall coefficient times area for the jacket. Required by `thermalMode heatExchange`. |
+| `T_coolant` |   | number | K | Jacket-side temperature. Required by `thermalMode heatExchange`. |
+| `catalystLoading` |   | number | kg/m3 | Mass of catalyst per unit reactor volume, for a rate expressed per kg of catalyst. |
 
 ## `cyclone`  (cyclone operation)
 
@@ -207,6 +213,9 @@ Gibbs reactor: equilibrium composition from minimising the total Gibbs free ener
 | `P` | ✓ | number | Pa | Pressure at which the equilibrium is evaluated; enters the ideal-gas chemical potential mu = mu_pure(T) + RT ln(y_i P / 1 bar). |
 | `elements` | ✓ | array[string] | — | Chemical elements for the atom-balance constraints (one per element). Each species lists its atom counts in this order. |
 | `species` | ✓ | array[object] | — | Candidate species in the equilibrium mixture, each with its atom counts (one per element). |
+| `mode` |   | string | - | isothermal (default; `T` holds and the duty is the result) or adiabatic. In adiabatic mode `T` is the Newton's SEED, not the answer. |
+| `Q` |   | number | kJ/kmol | Heat added per kmol of feed, for a non-adiabatic non-isothermal case; defaults to 0. |
+| `approachTemperature` |   | number | K | Solve the equilibrium at (T − this), the standard way of admitting that a real reactor does not reach it. Defaults to 0 (full equilibrium… |
 
 ## `hConsistency`  (hConsistency operation)
 
@@ -235,9 +244,15 @@ Two-stream heat exchanger. THREE modes via `model`: epsNTU (default) rates from 
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `area` | ✓ | number | m2 | Exchanger surface area; larger area raises NTU. |
-| `U` | ✓ | number | W/m2/K | Overall U for the surface (film, wall and fouling lumped). NTU = U·area / C_min. |
+| `area` |   | number | m2 | Heat-transfer surface. SIMPLE mode only — with U it fixes the duty. A geometry-mode exchanger computes both from its hardware instead, wh… |
+| `U` |   | number | W/m2/K | Overall coefficient, referred to `area`. SIMPLE mode only; in geometry mode it EMERGES from the shell- and tube-side correlations and is … |
 | `flow` |   | string | — | Counter-current (default) or co-current. |
+| `passes` |   | integer | - | Number of tube passes, for the LMTD correction factor; defaults to 1. |
+| `tubeStream` |   | string | — | Which of the two inlets runs through the tubes. Required in geometry mode: shell and tube side see different correlations, so the assignm… |
+| `geometry` |   | object | — | Present = GEOMETRY mode: U is computed from the two film coefficients and the wall, instead of being entered. This is the rating/design r… |
+| `shellSide` |   | object | — | Which correlation prices the shell-side film coefficient. |
+| `tubeSide` |   | object | — | Which correlation prices the tube-side film coefficient. |
+| `design` |   | object | — | Turns the geometry pass into a DESIGN: solve the hardware for a declared target instead of rating what is given. |
 
 ## `heater`  (heater operation)
 
@@ -245,7 +260,7 @@ Single-stream heater. Given the thermal power Q (positive heats, negative cools)
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `Q` | ✓ | number | W | Thermal power delivered to the stream; positive heats, negative cools. |
+| `Q` |   | number | W | Absolute thermal power delivered to the stream (positive heats, negative cools). The outlet temperature is a RESULT, never a spec — `Tout… |
 | `Tref` |   | number | K | Reference for the enthalpy integrals; only differences enter the balance. |
 
 ## `isothermalFlash`  (isothermalFlash operation)
@@ -256,12 +271,17 @@ Isothermal two-phase flash at fixed T and P. Both are optional overrides of the 
 |---|:-:|---|---|---|
 | `T` |   | number | K | Override the feed temperature; if omitted, the flash uses the feed T. |
 | `P` |   | number | Pa | Override the feed pressure; if omitted, the flash uses the feed P. |
+| `phaseSet` |   | string | - | Which phases the flash is allowed to find. `auto` makes the phase set a RESULT rather than an input — the engine decides from what it alr… |
+| `alphaRich` |   | string | — | Labels which of two liquids is which, for a liquid-liquid split. A label, not a constraint: it names the phases in the report without ste… |
+| `betaRich` |   | string | — | The counterpart of alphaRich. |
 
 ## `mixer`  (mixer operation)
 
 Adiabatic stream mixer. Sums the inlet component flows and closes the energy balance Sum H_in = H_out (Newton-1D in T_out) for the outlet temperature. No operating parameters.
 
-*(no operation-block fields)*
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `T` |   | number | K | Present = the mixer is ISOTHERMAL at this temperature and the duty is the result. Absent = adiabatic mixing, and the outlet temperature f… |
 
 ## `pfr`  (pfr operation)
 
@@ -270,8 +290,13 @@ Isothermal plug-flow reactor. The volume is integrated by RK4; nSteps controls t
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `V_R` | ✓ | number | m^3 | Total reactor volume; RK4 integrates over the residence-time interval [0, V_R / Q_feed]. |
-| `nSteps` |   | integer | — | Number of RK4 integration steps along the reactor length. |
-| `writeInterval` |   | integer | — | Interval for printing the (V, T, conversion) profile; 0 prints only the end point. |
+| `nSteps` |   | integer | - | Axial steps along the tube; defaults to 100. |
+| `writeInterval` |   | integer | - | Write every Nth step to the axial profile; 0 (default) writes none. |
+| `thermalMode` |   | string | - | isothermal (default), adiabatic, or heatExchange — the last removing U·(a/V)·(T − T_coolant) along the tube. Any other word is REFUSED. |
+| `U` |   | number | W/m2/K | Required by `thermalMode heatExchange`. |
+| `areaPerVolume` |   | number | m2/m3 | Tube surface per unit reactor volume. Required by `thermalMode heatExchange`. |
+| `T_coolant` |   | number | K | Required by `thermalMode heatExchange`. |
+| `catalystLoading` |   | number | kg/m3 | Mass of catalyst per unit reactor volume. |
 
 ## `pipe`  (pipe operation)
 
@@ -321,8 +346,10 @@ Incompressible-liquid pump. Given the shaft power and efficiency, the discharge 
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `W_shaft` | ✓ | number | W | Mechanical power delivered to the liquid (positive). |
+| `W_shaft` |   | number | W | Mechanical power delivered to the liquid (positive). One of W_shaft / P_out / dP fixes the duty. It may also arrive over an ENERGY WIRE i… |
 | `eta` | ✓ | number | - | Hydraulic and mechanical efficiency, useful v·dP work / shaft work (0 < eta <= 1). The (1-eta) fraction heats the liquid. |
+| `P_out` |   | number | Pa | Specify the outlet pressure instead of the power; the shaft work follows from v·dP/eta. |
+| `dP` |   | number | Pa | Specify the rise instead of the outlet pressure or the power. |
 
 ## `shortcutColumn`  (shortcutColumn operation)
 
@@ -339,12 +366,9 @@ Preliminary column design by the Fenske-Underwood-Gilliland shortcut method. Ret
 
 ## `solidDryer`  (solidDryer operation)
 
-Contact / through-circulation solid dryer. A wet solid is dried toward the equilibrium moisture set by the air relative humidity and the solid's GAB sorption isotherm: X_final = min(X_in, X_eq). Computes the water removed and the duty.
+Convective solid dryer taking TWO real input streams — a wet solid and a hot-air stream — and producing a dry solid and a humid exhaust. It has NO operation parameters, and that absence is the design: the air stream BRINGS the heat (as its own sensible cooling) and CARRIES AWAY the moisture, so the energy balance closes on real streams with no phantom duty. The earlier `airTemperature` and `relativeHumidity` parameters were retired with that rewrite — the air temperature is the inlet stream's, and the humidity follows from its composition. The drying kinetics are a named reference at unit level (`dryingCurve <name>;` into `constant/dryingKinetics`), not an operation key.
 
-| Field | Required | Type | Unit | Description |
-|---|:-:|---|---|---|
-| `airTemperature` | ✓ | number | K | Temperature of the drying air; sets the sorption isotherm. |
-| `relativeHumidity` |   | number | - | Relative humidity (water activity) of the drying air; the GAB isotherm sets the equilibrium moisture X_eq from it. |
+*(no operation-block fields)*
 
 ## `splitter`  (splitter operation)
 
@@ -360,7 +384,7 @@ Single-stage rotary-atomiser spray dryer producing powder and exhaust air. Compu
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `wheelDiameter` | ✓ | number | m | Diameter of the atomiser wheel; with the feed rate it sets the droplet size. |
+| `wheelDiameter` |   | number | m | Rotary-wheel atomiser only, and only in the flat form — inside an `atomiser { model rotaryWheel; }` block it lives there instead. A press… |
 | `wheelSpeed` |   | number | rpm | Rotational speed of the atomiser wheel; faster spinning gives smaller droplets (d32 ~ N^-0.6, Friedman correlation). |
 | `liquidViscosity` |   | number | Pa.s | Dynamic viscosity of the feed liquid, used in the atomisation correlation. |
 | `surfaceTension` |   | number | N/m | Surface tension of the feed liquid, used in the atomisation correlation. |
@@ -368,6 +392,7 @@ Single-stage rotary-atomiser spray dryer producing powder and exhaust air. Compu
 | `chamberDiameter` |   | number | m | Diameter of the drying chamber; sets the gas superficial velocity v_gas = Q_gas/(pi D^2/4) and hence the residence time. |
 | `chamberHeight` |   | number | m | Height the particle falls through; residence time = chamberHeight / particle fall velocity, which sets the residual moisture. |
 | `flow` |   | string | — | Co-current (v_particle = v_gas + v_terminal) or counter-current (v_particle = v_terminal - v_gas). |
+| `atomiser` |   | object | — | Selects HOW the feed is broken into droplets, which sets the droplet size and therefore the drying time. Absent, the rotary-wheel keys ar… |
 
 ## `steamTables`  (steamTables operation)
 
@@ -378,6 +403,7 @@ IAPWS-IF97 industrial water/steam properties. This is a propsDict operation unde
 | `point` |   | object | — | One state point. Reports v, rho, h, u, s, cp, cv, w and the IF97 region, printed and stored as diagnostics (psat at T rides along as a fr… |
 | `saturation` |   | object | — | Temperature scan along the saturation line: psat plus the saturated liquid/vapour pairs (v, h, s) and h_fg per row. Valid over 273.15-623… |
 | `isobar` |   | object | — | h, s, v and cp versus temperature at fixed pressure. A subcritical isobar's saturation crossing is ANNOUNCED before the scan, so the h/s/… |
+| `output` |   | object | — | `{ file <name>.csv; }` — required by the `saturation` and `isobar` scans, optional for `point` (it writes a one-row CSV). |
 
 ## `stripper`  (stripper operation)
 

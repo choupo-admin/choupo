@@ -4,7 +4,9 @@
   "title": "cstr operation",
   "description": "Continuous stirred-tank reactor. Reactor volume is the only parameter; temperature is taken from the feed stream.",
   "type": "object",
-  "required": ["V_R"],
+  "required": [
+    "V_R"
+  ],
   "properties": {
     "V_R": {
       "type": "number",
@@ -13,6 +15,52 @@
       "description": "Total liquid volume held in the CSTR.",
       "unit": "m^3",
       "default": 0.005
+    },
+    "thermalMode": {
+      "type": "string",
+      "enum": [
+        "isothermal",
+        "adiabatic",
+        "heatExchange"
+      ],
+      "title": "Thermal mode",
+      "description": "isothermal (default; `T` holds and the duty is the result), adiabatic (the energy balance sets T), or heatExchange (a jacket removes UA·(T − T_coolant)). Any other word is REFUSED.",
+      "unit": "-"
+    },
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Reactor temperature",
+      "description": "The held temperature in isothermal mode; defaults to the feed temperature.",
+      "unit": "K"
+    },
+    "T_guess": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature seed",
+      "description": "First guess for the energy-balance Newton. NOT cosmetic: an adiabatic or jacketed CSTR can have up to THREE steady states, and the Newton lands on the one this seed is nearest — sweep it to find them all. An explicit, author-owned aid, in the no-silent-crutch sense.",
+      "unit": "K"
+    },
+    "UA": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Jacket UA",
+      "description": "Overall coefficient times area for the jacket. Required by `thermalMode heatExchange`.",
+      "unit": "W/K"
+    },
+    "T_coolant": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Coolant temperature",
+      "description": "Jacket-side temperature. Required by `thermalMode heatExchange`.",
+      "unit": "K"
+    },
+    "catalystLoading": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Catalyst loading",
+      "description": "Mass of catalyst per unit reactor volume, for a rate expressed per kg of catalyst.",
+      "unit": "kg/m3"
     }
   },
   "additionalProperties": false

@@ -23,7 +23,9 @@
       "type": "array",
       "title": "Atomic elements",
       "description": "Chemical elements for the atom-balance constraints (one per element). Each species lists its atom counts in this order.",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "minItems": 1
     },
     "species": {
@@ -33,19 +35,56 @@
       "items": {
         "type": "object",
         "properties": {
-          "name":  { "type": "string", "title": "Component name (must be in the declared component set)" },
+          "name": {
+            "type": "string",
+            "title": "Component name (must be in the declared component set)"
+          },
           "atoms": {
             "type": "array",
             "title": "Atom counts (one per element)",
-            "items": { "type": "integer", "minimum": 0 }
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         },
-        "required": ["name", "atoms"],
+        "required": [
+          "name",
+          "atoms"
+        ],
         "additionalProperties": false
       },
       "minItems": 1
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "isothermal",
+        "adiabatic"
+      ],
+      "title": "Mode",
+      "description": "isothermal (default; `T` holds and the duty is the result) or adiabatic. In adiabatic mode `T` is the Newton's SEED, not the answer.",
+      "unit": "-"
+    },
+    "Q": {
+      "type": "number",
+      "title": "Imposed duty",
+      "description": "Heat added per kmol of feed, for a non-adiabatic non-isothermal case; defaults to 0.",
+      "unit": "kJ/kmol"
+    },
+    "approachTemperature": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Equilibrium approach",
+      "description": "Solve the equilibrium at (T − this), the standard way of admitting that a real reactor does not reach it. Defaults to 0 (full equilibrium) and is ANNOUNCED when non-zero.",
+      "unit": "K"
     }
   },
-  "required": ["T", "P", "elements", "species"],
+  "required": [
+    "T",
+    "P",
+    "elements",
+    "species"
+  ],
   "additionalProperties": false
 }

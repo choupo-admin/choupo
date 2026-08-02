@@ -4,7 +4,9 @@
   "title": "pfr operation",
   "description": "Isothermal plug-flow reactor. The volume is integrated by RK4; nSteps controls the spatial discretisation.",
   "type": "object",
-  "required": ["V_R"],
+  "required": [
+    "V_R"
+  ],
   "properties": {
     "V_R": {
       "type": "number",
@@ -17,16 +19,55 @@
     "nSteps": {
       "type": "integer",
       "minimum": 1,
-      "title": "RK4 steps",
-      "description": "Number of RK4 integration steps along the reactor length.",
-      "default": 100
+      "title": "Integration steps",
+      "description": "Axial steps along the tube; defaults to 100.",
+      "unit": "-"
     },
     "writeInterval": {
       "type": "integer",
       "minimum": 0,
-      "title": "Profile log interval",
-      "description": "Interval for printing the (V, T, conversion) profile; 0 prints only the end point.",
-      "default": 0
+      "title": "Profile write interval",
+      "description": "Write every Nth step to the axial profile; 0 (default) writes none.",
+      "unit": "-"
+    },
+    "thermalMode": {
+      "type": "string",
+      "enum": [
+        "isothermal",
+        "adiabatic",
+        "heatExchange"
+      ],
+      "title": "Thermal mode",
+      "description": "isothermal (default), adiabatic, or heatExchange — the last removing U·(a/V)·(T − T_coolant) along the tube. Any other word is REFUSED.",
+      "unit": "-"
+    },
+    "U": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Wall coefficient",
+      "description": "Required by `thermalMode heatExchange`.",
+      "unit": "W/m2/K"
+    },
+    "areaPerVolume": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Heat-transfer area per volume",
+      "description": "Tube surface per unit reactor volume. Required by `thermalMode heatExchange`.",
+      "unit": "m2/m3"
+    },
+    "T_coolant": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Coolant temperature",
+      "description": "Required by `thermalMode heatExchange`.",
+      "unit": "K"
+    },
+    "catalystLoading": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Catalyst loading",
+      "description": "Mass of catalyst per unit reactor volume.",
+      "unit": "kg/m3"
     }
   },
   "additionalProperties": false

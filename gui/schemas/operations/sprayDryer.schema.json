@@ -9,7 +9,7 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Atomiser disc diameter",
-      "description": "Diameter of the atomiser wheel; with the feed rate it sets the droplet size.",
+      "description": "Rotary-wheel atomiser only, and only in the flat form — inside an `atomiser { model rotaryWheel; }` block it lives there instead. A pressure-nozzle dryer declares neither.",
       "unit": "m"
     },
     "wheelSpeed": {
@@ -60,12 +60,43 @@
     },
     "flow": {
       "type": "string",
-      "enum": ["co", "counter"],
+      "enum": [
+        "co",
+        "counter"
+      ],
       "title": "Gas/droplet flow direction",
       "description": "Co-current (v_particle = v_gas + v_terminal) or counter-current (v_particle = v_terminal - v_gas).",
       "default": "co"
+    },
+    "atomiser": {
+      "type": "object",
+      "title": "Atomiser sub-model",
+      "description": "Selects HOW the feed is broken into droplets, which sets the droplet size and therefore the drying time. Absent, the rotary-wheel keys are read from the operation block itself (the historical flat form).",
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": [
+            "rotaryWheel",
+            "pressureNozzle"
+          ],
+          "title": "Atomiser model",
+          "description": "rotaryWheel needs wheelDiameter and wheelSpeed; pressureNozzle takes its pressure drop from the feed stream against the chamber pressure."
+        },
+        "wheelDiameter": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Wheel diameter",
+          "unit": "m"
+        },
+        "wheelSpeed": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Wheel speed",
+          "unit": "rpm"
+        }
+      }
     }
   },
-  "required": ["wheelDiameter"],
+  "required": [],
   "additionalProperties": false
 }

@@ -18,6 +18,28 @@
       "title": "Operating pressure",
       "description": "Override the feed pressure; if omitted, the flash uses the feed P.",
       "unit": "Pa"
+    },
+    "phaseSet": {
+      "type": "string",
+      "enum": [
+        "VL",
+        "LL",
+        "VLLE",
+        "auto"
+      ],
+      "title": "Phase set",
+      "description": "Which phases the flash is allowed to find. `auto` makes the phase set a RESULT rather than an input — the engine decides from what it already trusts and ANNOUNCES the set it chose, which is what the case dicts claimed all along while still making the author type it.",
+      "unit": "-"
+    },
+    "alphaRich": {
+      "type": "string",
+      "title": "Component rich in the alpha liquid",
+      "description": "Labels which of two liquids is which, for a liquid-liquid split. A label, not a constraint: it names the phases in the report without steering the Gibbs minimisation."
+    },
+    "betaRich": {
+      "type": "string",
+      "title": "Component rich in the beta liquid",
+      "description": "The counterpart of alphaRich."
     }
   },
   "additionalProperties": false

@@ -41,18 +41,42 @@ STRUCTURAL = {
     "name", "type", "model", "in", "inputs", "outputs", "operation",
     "boundary", "thermo", "reaction", "reactions", "crystallisation",
     "dryingCurve", "energyInputs", "energyOutputs", "designSpec",
-    #  A provenance citation the AUTHOR writes for the reader: it appears on
-    #  14 propsDict files and is read by no operation, so it is an annotation
-    #  that survives into the dict, not a parameter any schema should claim.
-    "source",
+    #  Annotations the AUTHOR writes for the reader, collected by
+    #  choupoProps main for the report rather than by any operation: a
+    #  provenance citation, a free-text reason, a provenance sub-dict.  They
+    #  survive into the dict as documentation, so no schema should claim them.
+    "source", "rationale", "provenance",
 }
 
 failures = []
 
 
 def strip_comments(t: str) -> str:
-    t = re.sub(r"/\*.*?\*/", "", t, flags=re.S)
-    return re.sub(r"//[^\n]*", "", t)
+    """Comments out, quoted STRINGS blanked.
+
+    A string body is not grammar: `rationale "NRTL captures it"` is one key
+    and a sentence, and reading the sentence for keys reported `NRTL` and
+    `compare` as operation parameters of propertyScan1D.  Blanking (rather
+    than deleting) keeps every offset, so a later brace scan still balances.
+    A `//` inside a string is likewise not a comment.
+    """
+    out, i, n = [], 0, len(t)
+    while i < n:
+        if t.startswith("/*", i):
+            j = t.find("*/", i + 2)
+            j = n if j < 0 else j + 2
+            out.append(" " * (j - i)); i = j
+        elif t.startswith("//", i):
+            j = t.find("\n", i)
+            j = n if j < 0 else j
+            out.append(" " * (j - i)); i = j
+        elif t[i] == '"':
+            j = t.find('"', i + 1)
+            j = n if j < 0 else j + 1
+            out.append(" " * (j - i)); i = j
+        else:
+            out.append(t[i]); i += 1
+    return "".join(out)
 
 
 def block_after(text: str, start: int):
@@ -161,23 +185,12 @@ def uses_in_props(op: str):
     return out
 
 
-BASELINE = ROOT / "bin" / "curate" / "schema_coverage_baseline.txt"
-
-
-def load_baseline() -> set:
-    """The disagreements that existed when this gate was written.
-
-    A RATCHET, not a whitelist.  Anything NOT listed fails immediately, so no
-    new disagreement can appear; and a listed entry that stops firing ALSO
-    fails, so landing a fix forces the line out of the file.  The list can
-    only shrink, and when it is empty this mechanism is deleted.
-    """
-    if not BASELINE.exists():
-        return set()
-    return {ln.strip() for ln in BASELINE.read_text().splitlines()
-            if ln.strip() and not ln.startswith("#")}
-
-
+#  There WAS a baseline here: 82 disagreements across 18 schemas that
+#  pre-dated this gate, held as a ratchet that could only shrink.  It was
+#  cleared on 2026-08-02 and the mechanism was deleted with it, exactly as its
+#  own header said it would be.  The gate now holds the plain contract: every
+#  schema accepts every case that runs.  Do not reintroduce a baseline -- a
+#  disagreement is a schema to fix, not a line to record.
 def main() -> int:
     schemas = sorted(SCHEMAS.glob("*.schema.json"))
     if len(schemas) < 20:
@@ -212,31 +225,15 @@ def main() -> int:
                     "without it -- the engine defaults it, so the schema is "
                     "over-strict")
 
-    base = load_baseline()
-    fired = {f for f in failures if f in base}
-    fresh = [f for f in failures if f not in base]
-    stale = sorted(base - fired)
-
-    if fresh or stale:
+    if failures:
         print("check_schema_coverage: FAIL")
-        for f in fresh:
-            print("  - NEW:", f)
-        for f in stale:
-            print("  - FIXED (drop this line from"
-                  f" {BASELINE.relative_to(ROOT)}):", f)
+        for f in failures:
+            print("  -", f)
         return 1
-    if base:
-        print(f"check_schema_coverage: OK -- {len(schemas)} schema(s), "
-              f"{exercised} exercised over {checked} case use(s); no NEW "
-              f"disagreement.  {len(base)} pre-existing one(s) remain in "
-              f"{BASELINE.name} and the gate fails the moment one is fixed "
-              "without being struck from that file, so the list can only "
-              "shrink")
-    else:
-        print(f"check_schema_coverage: OK -- {len(schemas)} schema(s), "
-              f"{exercised} exercised by the corpus over {checked} case "
-              "use(s); no schema rejects a key a running case uses, and none "
-              "marks required a key a running case omits")
+    print(f"check_schema_coverage: OK -- {len(schemas)} schema(s), "
+          f"{exercised} exercised by the corpus over {checked} case use(s); "
+          "no schema rejects a key a running case uses, and none marks "
+          "required a key a running case omits")
     return 0
 
 
