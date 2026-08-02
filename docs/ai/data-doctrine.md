@@ -335,7 +335,7 @@ suppress.
 | Property | Value / source | Arity / Kind | Home |
 |---|---|---|---|
 | MW, role, Vliq, `solid{rho_p,k_v}` | 342.297; nonvolatile; 1590 kg/m³; k_v 0.524 | arity-1 intrinsic | `components/sucrose.dat` (kept) |
-| crystalline ΔH_f, S° | −2226.1 kJ/mol, 392.4 J/mol·K, **phase solid** | arity-1 intrinsic | `components/sucrose.dat` `standardThermochemistry{}` (kept) |
+| crystalline ΔH_f, S° | −2226.1 kJ/mol, 392.4 J/mol·K, **referenceState pureSolid** | arity-1 intrinsic | `components/sucrose.dat` `standardThermochemistry{}` (kept) |
 | ΔH_soln (crystal → aqueous) | +5.40 kJ/mol [Putnam & Kilday 1986] | arity-2 (solute+water) | `solution/sucrose-water.dat`; `sucrose.dat` references by name |
 | c_sat(T) solubility (kg/kg water) | existing block | strictly arity-2 SLE | **tolerated legacy** in `sucrose.dat`; comment upgraded "solvent = water, declared" |
 | sorption isotherm (this powder) | measured per sample | sample-specific arity-1 | **case** `constant/components/sucrose.dat` overlay (whole `sorption{}` block) |

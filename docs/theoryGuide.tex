@@ -2272,12 +2272,13 @@ field & unit & meaning, and where it is consumed\\
   Critical temperature.  Sets the upper bound of every saturation
   curve (vapour and liquid become indistinguishable at $T_c$) and is
   the explicit input to the Watson correlation \eqref{eq:integral-watson}.
-  Also fed forward to a future SRK/PR EOS.
+  Also feeds the SRK/PR $\alpha(T,\omega)$ (Chapter~\ref{ch:cubic-eos})
+  and the Wilson $K$-value seed \eqref{eq:wilson-K}.
   \\
 \code{Pc}        & bar          &
-  Critical pressure.  Carried for the same future EOS work and for
-  acentric-factor consistency checks.  Not yet read by the
-  ideal-gas $\varphi$.
+  Critical pressure.  Feeds the SRK/PR $a, b$ parameters, the Wilson
+  $K$-value seed \eqref{eq:wilson-K}, and the Chung viscosity
+  estimate (Chapter~\ref{ch:viscosity}).
   \\
 \code{omega}     & --           &
   Pitzer's \emph{acentric factor}, defined as
@@ -2285,7 +2286,8 @@ field & unit & meaning, and where it is consumed\\
   Zero for spherical molecules (argon, methane), positive for
   elongated and hydrogen-bonded ones (acetic acid is on the high
   side at 0.47 because of its dimerisation in the vapour).  Used by
-  SRK/PR's $\alpha(T, \omega)$; carries it inertly.
+  SRK/PR's $\alpha(T, \omega)$, the Wilson $K$-value seed, and the
+  Chung viscosity estimate.
   \\
 \code{Tb}        & K            &
   Normal boiling point ($P^{\mathrm{sat}}(T_b) = 1$~atm).  Anchors
@@ -2662,7 +2664,7 @@ up); on the elements datum the liquid is $h^{\mathrm{ig}} -
 \label{fig:enthalpy-ladder}
 \end{figure}
 
-\subsection{Which rung does the data file pin? The \code{phase} keyword}
+\subsection{Which rung does the data file pin? The \code{referenceState} keyword}
 \label{sec:gibbs-phase}
 
 The ladder of Figure~\ref{fig:enthalpy-ladder} shows that the formation
@@ -2675,7 +2677,7 @@ differently:
   \item NIST and JANAF tabulate $\Delta h^{\circ}_{f,i}$ in the
         \textbf{ideal-gas state at $298.15$~K, $1~\mathrm{bar}$} for
         compounds that can be brought to the gas phase --- water,
-        ethanol, methane, the 45 standard volatiles and radicals
+        ethanol, methane, and the bulk of the volatiles and radicals
         shipped with Choupo.  This is the standard convention
         used internally for every species.
   \item For \textbf{crystalline non-volatiles} that decompose before
@@ -2687,17 +2689,18 @@ differently:
         is the \textbf{liquid} datum.
 \end{itemize}
 
-Choupo records the chosen rung as a one-word field inside the
-component's \code{standardThermochemistry} block.  Every entry in
-\file{data/standards/components/} declares it explicitly:
+Choupo records the chosen rung as a one-word
+\code{referenceState} field inside the component's
+\code{standardThermochemistry} block --- the thermodynamic
+\emph{standard state} the values are on, not merely a physical phase:
 
 \begin{lstlisting}[language=dict]
 standardThermochemistry
 {
     dHf_298   -241826.0;        // J/mol  (ideal-gas reference)
     s_298     188.834;          // J/(mol*K)  (third-law absolute)
-    phase     gas;              // <-- tells the solver which rung
-}
+    referenceState  idealGas;   // <-- tells the solver which rung
+}                               //     (the default when absent)
 \end{lstlisting}
 
 \begin{lstlisting}[language=dict]
@@ -2705,7 +2708,7 @@ standardThermochemistry                  // sucrose, from NIST WebBook
 {
     dHf_298   -2226100.0;       // J/mol  (crystalline)
     s_298         392.4;        // J/(mol*K)
-    phase     solid;            // <-- never goes through a gas leg
+    referenceState  pureSolid;  // <-- never goes through a gas leg
 }
 \end{lstlisting}
 
@@ -2714,14 +2717,14 @@ asks for $h_i^{\mathrm{liq}}(T)$ on the elements datum, the solver
 builds a path through the ladder:
 
 \begin{align*}
-   \text{natural \code{phase = gas}}: &\quad
+   \code{referenceState = idealGas}: &\quad
        h_i^{\mathrm{liq}}(T) = \Delta h^{\circ}_{f,i}
         + \int_{298.15}^{T} c_p^{\mathrm{ig}}\,dT
         - \Delta h^{\mathrm{vap}}(T) \\
-   \text{natural \code{phase = liquid}}: &\quad
+   \code{referenceState = pureLiquid}: &\quad
        h_i^{\mathrm{liq}}(T) = \Delta h^{\circ}_{f,i}
         + \int_{298.15}^{T} c_p^{\mathrm{liq}}\,dT \\
-   \text{natural \code{phase = solid}}: &\quad
+   \code{referenceState = pureSolid}: &\quad
        h_i^{\mathrm{liq}}(T) \approx \Delta h^{\circ}_{f,i}
         + \int_{298.15}^{T} c_p^{\mathrm{liq}}\,dT
         \qquad (c_p^{\mathrm{solid}}\!\approx c_p^{\mathrm{liq}},\;
@@ -2731,8 +2734,8 @@ builds a path through the ladder:
 That is why a sucrose-bearing fermentation stream
 \textbf{does not need an ideal-gas $c_p$ for sucrose}: the solver
 never integrates through a sucrose vapour leg, because sucrose's
-natural rung is on the solid line of the ladder and \code{phase = solid}
-tells it so.  Forcing every species through a strict-IG path --- as a
+natural rung is on the solid line of the ladder and
+\code{referenceState pureSolid;} tells it so.  Forcing every species through a strict-IG path --- as a
 naive strict-IG implementation would --- would require the case
 author to invent an artificial $c_p^{\mathrm{ig}}$ for crystalline
 sucrose just so the equations work.  Choupo refuses that compromise:
@@ -2741,8 +2744,8 @@ and the energy-balance report still closes through the reactor because
 every species carries its own $\Delta h^{\circ}_f$.
 
 \begin{intuition}
-Think of \code{phase} as the answer to ``starting from the elements,
-where on the ladder does the data sheet stop?''  For gases the table
+Think of \code{referenceState} as the answer to ``starting from the
+elements, where on the ladder does the data sheet stop?''  For gases the table
 stops at the top rung (ideal gas at $298$~K).  For sucrose it stops at
 the bottom rung (the crystal).  When the energy balance later asks the
 liquid enthalpy at some other temperature, the solver knows how to
@@ -2753,13 +2756,14 @@ numbers).
 \end{intuition}
 
 \paragraph{Default for backward compatibility.}
-If \code{phase} is absent the solver assumes \code{gas} (the
-NIST / JANAF convention, correct for the overwhelming majority of
-volatile species).  All standard-catalogue components have been
-audited and declare \code{phase} explicitly.  Per-case overlays under
-\file{<case>/constant/components/<name>.dat} are subject to the same
-rule: new entries should always declare \code{phase} so the datum is
-unambiguous at the source of truth.
+If \code{referenceState} is absent the solver assumes \code{idealGas}
+(the NIST / JANAF convention, correct for the overwhelming majority of
+volatile species); the standard catalogue's condensed-phase records
+(sucrose, glucose, and the other non-volatiles) declare
+\code{pureSolid} / \code{pureLiquid} explicitly.  Per-case overlays
+under \file{<case>/constant/components/<name>.dat} follow the same
+rule: a non-gas datum must declare its \code{referenceState} so the
+datum is unambiguous at the source of truth.
 
 \subsection{Where every number comes from --- the three questions
             a black-box tool won't answer}
@@ -3048,7 +3052,7 @@ With $T_c = 591.95$~K, $T_b = 391.05$~K, $\Delta h^{\mathrm{vap}}_{T_b}
    \;=\; 24390 \cdot
    \left(\frac{591.95 - 350}{591.95 - 391.05}\right)^{0.38}
    \;\approx\; 24390 \cdot (1.2042)^{0.38}
-   \;\approx\; 26{,}120~\mathrm{J/mol}.
+   \;\approx\; 26{,}180~\mathrm{J/mol}.
 \]
 Acetic acid is harder to evaporate at 350~K than at its boiling point
 (by $\sim 7\%$).  The trend is universal: $\Delta h^{\mathrm{vap}}$

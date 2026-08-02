@@ -497,16 +497,17 @@ void Component::readFromDict(const DictPtr& d)
     // ---- Optional Gibbs-formation block (consumed by the Gibbs reactor) ----
     // standardThermochemistry
     // {
-    //     dHf_298    -241830;       // J/mol, in the natural phase below
-    //     s_298         188.83;     // J/(mol·K), third-law absolute
-    //     phase       gas;          // OPTIONAL.  Phase in which dHf_298 is
-    //                               // tabulated.  Defaults to "gas" (the
-    //                               // NIST / JANAF convention).
-    //                               // Set "liquid" for solvents tabulated
-    //                               // in liquid form; set "solid" for
-    //                               // crystalline nonvolatiles (sucrose)
-    //                               // whose Hf cannot be referenced to gas
-    //                               // because the compound never vaporises.
+    //     dHf_298    -241830;         // J/mol, on the referenceState below
+    //     s_298         188.83;       // J/(mol·K), third-law absolute
+    //     referenceState  idealGas;   // OPTIONAL.  Standard state the values
+    //                                 // are tabulated on.  Defaults to
+    //                                 // idealGas (the NIST / JANAF
+    //                                 // convention).  pureLiquid for data
+    //                                 // tabulated in liquid form; pureSolid
+    //                                 // for crystalline nonvolatiles
+    //                                 // (sucrose) whose Hf cannot be
+    //                                 // referenced to gas because the
+    //                                 // compound never vaporises.
     // }
     // dHf_298 (formation), s_298 (ABSOLUTE third-law entropy), dGf_298 (optional --
     // formation Gibbs, used for validation; the engine derives G from dHf + s + the

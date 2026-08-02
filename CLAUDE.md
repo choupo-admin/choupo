@@ -898,7 +898,7 @@ third-party databank values.  Never mix those ownership boundaries.
 * **`components/` stays PHYSICALLY FLAT — do NOT relitigate (settled 2026-06-07).**
   The loader resolves `components/<name>.dat` by EXACT NAME (`Database.cpp`,
   O(1) path concat, replicated across the tools); category (solid/fluid/family)
-  already lives INSIDE each `.dat` (`role`, `standardThermochemistry.phase`), and a
+  already lives INSIDE each `.dat` (`role`, `standardThermochemistry.referenceState`), and a
   species can be e.g. solid AND fluid — so no single folder is its true home.
   Browsability is a VIEW problem (a generated `INDEX.md` + an optional,
   absence-tolerant `tags ( … );` field), not a storage problem, until well past
