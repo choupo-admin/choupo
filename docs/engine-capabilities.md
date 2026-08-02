@@ -237,7 +237,9 @@ front-end.
 ## 7. Fractal multi-sector flowsheets
 
 `unit ⊂ sector ⊂ plant`, a recursive `flowsheetDict` shape (leaf: `type` +
-`operation` + `boundary`; composite: `children` + `connections` + `boundary`),
+`operation` + `inputs ( … )` / `outputs ( … )`, with a `boundary { inlets;
+outlets; }` block accepted as the legacy spelling; composite: `sectors` +
+`connections` + `boundary`),
 `Flowsheet::flattenNode` descends with namespacing, and folder-level
 `controlDict` / `thermoPhysPropDict` / `constant/components` walk UP the tree so a
 sector runs isolated AND the full plant runs.
@@ -246,7 +248,12 @@ sector runs isolated AND the full plant runs.
 
 ## 8. Standard database catalogue
 
-### `data/standards/components/` (22 in this listing; 56 total in catalogue)
+### `data/standards/components/`
+
+The catalogue SIZE is generated, never written here: read
+`generated/releaseInventory.json` (or run `bin/curate/release_inventory.py`).
+This section describes the SHAPE of a component record; the count it used to
+carry said 56 while the tree held several times that.
 
 benzene, toluene, water, ethanol, methanol, nHexane, aceticAcid,
 ethylAcetate, nButanol, **CO, CO2, H2, CH4, O2, N2, NO** (the seven
@@ -263,18 +270,26 @@ data file pin?" and ai/thermo.md).  Non-volatile solutes carry MW +
 pressure); Antoine and Cp blocks are not required on solutes and the VLE
 machinery treats them as K_i = 0.
 
-### `data/standards/assets/` (4)
+### `data/standards/assets/`
 
-carbonSteel, SS304, SS316, aluminium.  Each carries: ρ, F_M (Guthrie),
-σ_y, maxT, maxP.
+ONE flat home for every piece of equipment-side material (Migration 4,
+2026-07-16); a record says WHAT it is in its own `kind` field rather than by
+which folder it sits in.  `grep kind data/standards/assets/*.dat` is the
+authority on the lineup; the kinds and what each record carries:
 
-### `data/standards/assets/` (2)
-
-SW30HR (canonical seawater-RO archetype), NF270 (loose-NF archetype).  Each
-carries: A_w (water permeability, m/(s·bar)) + a
-`permeabilities { <solute> <B_s>;... }` sub-dict with the per-solute
-solution-diffusion permeability B_s (m/s) + ratings (P_max, T_max, pH range,
-nominal MWCO).
+- **`constructionMaterial`** — carbonSteel, SS304, SS316, aluminium.  ρ, F_M
+  (Guthrie), σ_y, maxT, maxP.
+- **`RO`** / **`NF`** — SW30HR (the seawater-RO archetype), NF270 and
+  NF270_dspmde (loose-NF, the second carrying the DSPM-DE parameterisation).
+  A_w (water permeability, m/(s·bar)) + a
+  `permeabilities { <solute> <B_s>;... }` sub-dict with the per-solute
+  solution-diffusion permeability B_s (m/s) + ratings (P_max, T_max, pH range,
+  nominal MWCO).
+- **`IEM`** — CMX_AMX, the cation/anion ion-exchange membrane pair used by the
+  electrodialysis units.
+- **`adsorbent`** — zeolite13X, zeolite5A, activatedCarbon: the isotherm and
+  bed properties the fixed-bed and TSA cases run on.
+- **`ionExchangeResin`** — SAC_Na, the strong-acid resin of the softener.
 
 ### `data/standards/utilities/` (9)
 

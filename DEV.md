@@ -387,8 +387,21 @@ accepts today, and that is a policy call.
      `ls data/standards/` because the count has drifted once.  (A debt list
      that still lists a paid debt is the same drift one level up, which is
      why this line is struck rather than deleted.)
-   - `docs/engine-capabilities.md` still narrates the retired `children`/`boundary`
-     flowsheet grammar in places (343 lines, its own pass).
+   - ~~`docs/engine-capabilities.md` still narrates the retired
+     `children`/`boundary` flowsheet grammar~~ — **CLOSED 2026-08-02**, and
+     the debt entry itself was half wrong: `children` is genuinely gone, but
+     **`boundary` is LIVE** — `Flowsheet.cpp` reads `boundary { inlets;
+     outlets; }` at composite level (ChemicalPlantTutorial and hda both use
+     it) and accepts it on a leaf as the legacy spelling of
+     `inputs`/`outputs`.  Only the composite word was wrong, and it is fixed
+     with the leaf's preferred grammar stated beside it.  Two hand-maintained
+     counts went with it (a components tally reading 56 against a tree several
+     times that — the count is generated, so the doc now says where to read it
+     — and two sections both titled `assets/`, from before Migration 4
+     flattened them, now one section keyed by the `kind` field).  The durable
+     fix is that `engine-capabilities.md` is now a `check_doctrine` teaching
+     surface: it was outside that list, which is how it kept teaching a
+     grammar the reader had stopped accepting.
    Content is correct in the CODE; only the settled-note prose lags.
 5. ~~**`docs/ai/{consistency,extending,gui-credo}.md`** were not re-read in the
    v2 scrub~~ — **PAID 2026-08-02 for the two that carry executable claims, and

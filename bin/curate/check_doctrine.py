@@ -25,6 +25,12 @@ SURFACES = (
     + [ROOT / "docs" / f for f in (
         "userGuide.tex", "theoryGuide.tex", "tutorialsGuide.tex",
         "propsGuide.tex", "explorerGuide.tex", "designGuide.tex",
+        #  engine-capabilities.md is the capabilities NARRATIVE a user reads
+        #  to learn what the engine does -- as much a teaching surface as the
+        #  guides, and it was outside this list until 2026-08-02, which is how
+        #  it kept describing the retired `children` composite grammar long
+        #  after the reader stopped accepting it.
+        "engine-capabilities.md",
         "tutorials-catalogue.md")]
     + sorted((ROOT / "docs").glob("tutorialsGuide-*.tex"))
     + sorted((ROOT / "tutorials").rglob("system/flowsheetDict"))
