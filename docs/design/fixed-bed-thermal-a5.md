@@ -232,3 +232,54 @@ Decision requested: P1+P2 (with the dP/dt term) as one slice --
 together with T1.5 they complete a co-current Skarstrom cycle minus
 the countercurrent purge -- and P3's refusal text updated to name
 exactly the boundary-kind change it waits for.
+
+## 9. The expansion term, DERIVED (2026-08-02) — and what it costs
+
+Section 8 said P1/P2 "require adding `+ eps dP/dt`".  Doing the algebra
+before the code changed the shape of the answer, so the derivation is
+recorded here rather than discovered mid-implementation.
+
+Energy balance on a cell of fixed volume, gas + solid, internal-energy
+basis (the only correct basis when the volume is fixed and P moves):
+
+    d/dt[ eps c_tot u_g + rho_b u_s ]
+        = -(1/dz) d/dz[ u_sup c_tot h_g ]
+          + rho_b Sum_i (-dH_ads,i) dq_i/dt
+          - h a_w (T - T_wall)
+
+For an ideal gas `u_g = h_g - RT`, so `eps c_tot u_g = eps c_tot h_g -
+eps P`, and the accumulation carries `- eps dP/dt`.  Moving it to the
+right gives the `+ eps dP/dt` of section 8 — but that form is IMPLICIT,
+because `P_j = R T_j c_tot,j` contains `dT/dt`.  Substituting and
+collecting:
+
+    [ eps c_tot (cpg - R) + rho_b cp_s ] dT/dt
+        = advection + adsorption - wall + eps R T dc_tot/dt
+
+and `cpg - R = cvg`.  So the correct general form is **cv in the
+accumulation, plus an explicit `eps R T dc_tot/dt` source** — fully
+explicit, with `dc_tot/dt` already available as the sum of the species
+rows the material equations just computed.  No implicit solve, no new
+datum.
+
+**What it costs, stated before it is built.**  The shipped T1/T2 form
+uses `cpg` in the accumulation and no source term.  That is the
+CONSTANT-PRESSURE form, and it is correct for what those cases declare
+(P pinned, Ergun drop ~1e-3 of P).  The general form is not a bug fix —
+it is a widening — but it is NOT numerically inert: `cp` vs `cv` moves
+the gas accumulation by 28 %, which is **0.023 % of the total** because
+`rho_b cp_s` dominates by three orders of magnitude.  Small, but not
+zero: batch20, batch21, batch22 and batch23 would all need re-recording.
+
+**Therefore the sequencing is:** the widening is its own slice, with its
+own re-recorded goldens and a stated reason, and P1/P2 land on top of
+it.  Bundling them would hide a corpus-wide numerical change inside a
+feature commit, and the four goldens would move for a reason the diff
+does not show.  The containment anchors survive the widening unchanged
+(h -> 0 still recovers adiabatic; large h still approaches isothermal),
+and they are the check that the widening did not break the model.
+
+Recommended to Vítor rather than done at 06:20 with nobody awake: moving
+four thermal goldens is a judgement about the corpus, and "faz como
+achares melhor" is not a licence to make a physics-visible change
+invisible.
