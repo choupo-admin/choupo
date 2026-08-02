@@ -753,6 +753,19 @@ PYEOF
     fi
     rm -f /tmp/elsc.$$
 
+    # D-R1 restricted-network gate (approved 2026-08-02): the declared
+    # `networkScope restricted` announces + labels + refuses its five
+    # dishonest shapes; sabotage-verified (no-op parser -> 7 probes fail).
+    if "$ROOT/bin/curate/check_restricted_network.py" > /tmp/rnet.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "restricted-network-gate" "$(tail -1 /tmp/rnet.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_restricted_network.py)\n" "restricted-network-gate"
+        cat /tmp/rnet.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rnet.$$
+
     # Doc-reference gate: every repo path and tutorial case name mentioned in
     # the AI-facing docs (what bin/llmctx feeds an assistant) must exist.  A
     # dead path there is an instruction the reader follows into nothing.

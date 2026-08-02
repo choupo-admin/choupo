@@ -861,3 +861,30 @@ transient `timeStepping`/`timeSteppingControl` in a steady case is
 announced by choupoSolve the same way.  Announced, never refused — the
 unread-keys posture.  Consolidation of the homes stays open ONLY if this
 table proves unteachable (DEV.md §4b decision 3).
+
+## `networkScope restricted` — a deliberately smaller speciation network
+
+By default a speciation run activates every curated chemistry record
+reachable from the feed (`networkScope full`).  A case whose physics
+DEMANDS a reduced network — e.g. an HMW Pitzer verification whose θ/ψ
+were fitted to a non-pairing treatment, so admitting the sulfate ion
+pairs would double-count — declares it, in the props `speciate` op or in
+`equilibrium { aqueous { speciation {} } }`:
+
+```
+networkScope restricted;
+network      ( water-dissociation );   // admitted chemistry records, by file stem
+reason       "HMW theta/psi were fitted to a NON-pairing major-ion treatment; ...";
+```
+
+Rules (each refusal exists because its absence produces a wrong answer):
+`restricted` requires a non-empty `network` AND a non-empty `reason`; every
+admitted name must match a loaded chemistry record AND be reachable from
+the feed; `full` alongside a `network` list refuses (two authorities).
+The run announces the restriction and quotes the reason; results carry a
+`networkRestricted` label; `bin/choupo-import` seals exactly the admitted
+records, so a re-import can never silently un-restrict the physics.  The
+reduced network passes the same charge/stoichiometry verification as the
+full one.  Reference: `tutorials/props/electrolyte/pitzer_seawater_verify`;
+gate `check_restricted_network`.  (The old `constant/electrolyte/`
+sidecar is fully retired.)

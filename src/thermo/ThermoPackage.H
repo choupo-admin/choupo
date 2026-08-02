@@ -370,6 +370,11 @@ public:
         std::string              activityModel;   // davies | Pitzer | eNRTL
         std::vector<std::string> masters;         // the speciation network
         std::vector<std::string> solidPhases;     // admitted (constant/chemistryDict)
+        DictPtr                  speciationBlock; // the case's raw speciation{}
+                                                  // sub-dict -- carried WHOLE so
+                                                  // the D-R1 networkScope parse
+                                                  // has exactly one home
+                                                  // (SpeciationSolver::applyNetworkScope)
 
         // THE component -> aqueous-species bridge, stoichiometric and
         // DECLARED (a component's `aqueousMapping` block, or its legacy

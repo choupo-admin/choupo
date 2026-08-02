@@ -144,6 +144,9 @@ Description
 #include <string>
 #include <vector>
 
+namespace Choupo { class Dictionary;
+                   using DictPtr = std::shared_ptr<Dictionary>; }
+
 namespace Choupo {
 namespace electrolyte {
 
@@ -178,6 +181,9 @@ struct SpeciationReaction
     double      dH     = 0.0;                         // [J/mol] reaction enthalpy
     KTcorrection kt;                                  // analytic K(T) (optional)
     std::string source;
+    std::string record;                               // source file STEM
+                                                      // (chemistry/<record>.dat) --
+                                                      // the D-R1 admitted-list key
 };
 
 struct GasEntry
@@ -346,6 +352,12 @@ struct SpeciationResult
                                             //   range (announced, never silent)
     bool                          daviesExceeded = false;  // I above ~0.5 mol/kg
 
+    //  D-R1 label (Vitor's 2026-08-02 condition 2): a result computed on a
+    //  deliberately RESTRICTED network says so, and carries the declared
+    //  reason -- every consumer can (and the speciate op does) surface it.
+    bool                          restrictedNetwork = false;
+    std::string                   restrictionReason;
+
     // Equilibrium precipitation (only when SpeciationInput::equilibrate set).
     // mineral -> n_p [mol transferred to the solid per kg water]; an ALLOWED
     // mineral that stayed dissolved (evicted, n < 0 -> 0) reports 0.0.
@@ -401,6 +413,24 @@ public:
     const std::vector<MineralEntry>&       minerals()  const { return minerals_;  }
     const std::vector<GasEntry>&           gases()     const { return gases_;     }
 
+    // D-R1 (approved 2026-08-02): a case may declare its speciation network
+    // DELIBERATELY SMALLER than the reachable curated closure --
+    //     speciation { networkScope restricted;
+    //                  network ( water-dissociation ... );   // record stems
+    //                  reason  "..."; }
+    // ONE parse, every caller (the props speciate op and the reactive
+    // builder both route through here -- never a second copy).  Refusals:
+    // restricted without `network`; restricted without `reason`; a name that
+    // matches no loaded chemistry record; `full` alongside a `network` list
+    // (two authorities on one set).  Reachability of every admitted record
+    // is verified at solve() -- a restriction that admits an unreachable
+    // record is a false claim about the model.  The reduced network passes
+    // the SAME per-record charge/stoichiometry verification as the full one
+    // (it is the same loader); results carry the restricted label + reason.
+    void applyNetworkScope(const DictPtr& speciationBlock);
+    bool restricted() const { return restricted_; }
+    const std::string& restrictionReason() const { return restrictionReason_; }
+
     // Load the cation-exchange half-reaction network from exchange.dat (case
     // overlay first, then standards; nearest wins WHOLE -- same eclipse rule as
     // speciation.dat).  Returns the network keyed by bound-species name.  Throws
@@ -446,6 +476,8 @@ private:
     std::vector<SpeciationReaction> reactions_;
     std::vector<MineralEntry>       minerals_;
     std::vector<GasEntry>           gases_;     // optional `gases` section
+    bool                            restricted_ = false;   // D-R1 declared scope
+    std::string                     restrictionReason_;    // the declared why
     mutable std::map<std::string, double> masterCharge_;  // ions.dat cache (lazy)
     std::shared_ptr<AqueousActivity> activity_;  // per-ion aqueous gamma model
     std::string                     activityName_;  // its registered name (announce)

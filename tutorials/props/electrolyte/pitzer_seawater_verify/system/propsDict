@@ -81,6 +81,13 @@ operations
         type        speciate;
         analyticalTotals      { Na 1.0 mol/kg; Cl 1.0 mol/kg; }
         pH          7.0;
+        // D-R1: the DELIBERATELY restricted network (water self-ionisation
+        // only).  The HMW theta/psi were fitted to a NON-pairing major-ion
+        // treatment -- admitting the catalogue's sulfate ion pairs would
+        // double-count what the ternary terms already carry.
+        networkScope restricted;
+        network      ( water-dissociation );
+        reason       "HMW theta/psi were fitted to a NON-pairing major-ion treatment; admitting the sulfate ion pairs would double-count what the Pitzer virial and ternary terms already carry";
         diagSpecies ( Na Cl );          // gamma_Na, gamma_Cl pinned
         output      { file reduction_nacl.csv; }
     }
@@ -92,6 +99,9 @@ operations
         analyticalTotals      { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
                       K 0.01058 mol/kg; Cl 0.5658 mol/kg; SO4 0.02926 mol/kg; }
         pH          8.1;                // typical surface seawater (given)
+        networkScope restricted;        // D-R1 -- same restriction as PIN A
+        network      ( water-dissociation );
+        reason       "HMW theta/psi were fitted to a NON-pairing major-ion treatment; admitting the sulfate ion pairs would double-count what the Pitzer virial and ternary terms already carry";
         diagSpecies ( Na Cl K Mg Ca SO4 );
         output      { file seawater.csv; }
     }

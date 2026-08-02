@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""The `constant/electrolyte/` sidecars: two legs RETIRED, one SURVIVING and
-named.
+"""The `constant/electrolyte/` sidecars: ALL legs retired (the last one,
+`speciationMode replace`, converted 2026-08-02 to D-R1's declared
+`networkScope restricted` -- see check_restricted_network for that side).
 
 Design record: DEV.md section 5 debt 3.
 
@@ -83,19 +84,15 @@ def main() -> int:
         print(f"check_electrolyte_sidecars: {PROPS} missing -- build first")
         return 1
 
-    # ---- CORPUS: neither retired form may regrow anywhere ------------------
+    # ---- CORPUS: the sidecar directory may not regrow ANYWHERE -------------
+    #      (all three legs are retired now; the restriction that kept
+    #      `replace` alive has its canonical home in D-R1's networkScope.)
     for f in sorted((ROOT / "tutorials").rglob("constant/electrolyte/*.dat")):
         rel = f.relative_to(ROOT)
-        if f.name == "ions.dat":
-            failures.append(f"CORPUS: {rel} is the retired identity monolith"
-                            " -- write constant/species/<name>.dat instead")
-        elif f.name == "speciation.dat":
-            mode = re.search(r"\bspeciationMode\s+(\w+)\s*;", f.read_text())
-            if not mode or mode.group(1) != "replace":
-                failures.append(f"CORPUS: {rel} does not declare"
-                                " `speciationMode replace;` -- the extend leg"
-                                " is retired; write one file per reaction"
-                                " under constant/chemistry/")
+        failures.append(f"CORPUS: {rel} -- constant/electrolyte/ is fully"
+                        " retired (species -> constant/species/, reactions ->"
+                        " constant/chemistry/, a deliberate restriction ->"
+                        " `networkScope restricted` in the speciation block)")
 
     # ---- POSITIVE: the converted case builds its network canonically -------
     if (TART / "constant" / "electrolyte").exists():
@@ -127,16 +124,14 @@ def main() -> int:
                             " 1-unreachable network the sidecar produced --"
                             f" got {m.groups() if m else 'no match'}")
 
-    # ---- SURVIVOR: `replace` still runs, and says so ----------------------
-    rc, out = run(PITZ)
-    if rc != 0:
-        failures.append(f"SURVIVOR: pitzer_seawater_verify exited {rc} -- the"
-                        " restricted-network leg must keep working until it"
-                        " has a canonical home")
-    elif "REPLACES the standard catalogue (1 reactions)" not in out:
-        failures.append("SURVIVOR: the restriction is not announced -- a case"
-                        " running on a deliberately reduced network must say"
-                        " so on every run")
+    # ---- CONVERTED SURVIVOR: the restriction now lives in the declaration --
+    #      (D-R1, approved 2026-08-02; the deep checks are
+    #      check_restricted_network's -- here only the sidecar absence.)
+    if (PITZ / "constant" / "electrolyte").exists():
+        failures.append("CONVERTED: pitzer_seawater_verify still ships a"
+                        " constant/electrolyte/ sidecar -- it converted to"
+                        " `networkScope restricted` and the directory must"
+                        " stay gone")
 
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
@@ -152,36 +147,28 @@ def main() -> int:
               "constant/species/<name>.dat",
               "arity failure"])
 
-        # ---- REFUSAL: the retired extend leg ------------------------------
-        case = copy(tmp, PITZ, "extend")
+        # ---- REFUSAL: ANY speciation.dat sidecar (whole file retired) -----
+        case = copy(tmp, PITZ, "sidecar")
         f = case / SIDECAR
-        f.write_text(f.read_text().replace("speciationMode replace;",
-                                           "speciationMode extend;"))
-        want(run(case), "extendLeg",
-             ["`speciationMode extend`", "RETIRED",
-              "constant/chemistry/<species>-formation.dat",
-              "replace"])
-
-        # ---- REFUSAL: a mode word that is neither -------------------------
-        case = copy(tmp, PITZ, "bogus")
-        f = case / SIDECAR
-        f.write_text(f.read_text().replace("speciationMode replace;",
-                                           "speciationMode merge;"))
-        want(run(case), "bogusMode",
-             ["speciationMode 'merge' is not one of extend / replace"])
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text("speciationMode replace;\nreactions ( );\n")
+        want(run(case), "sidecarRetired",
+             ["constant/electrolyte/speciation.dat sidecar is"
+              " RETIRED",
+              "networkScope restricted;",
+              "pitzer_seawater_verify"])
 
     if failures:
         print("check_electrolyte_sidecars: FAIL")
         for x in failures:
             print("  -", x)
         return 1
-    print("check_electrolyte_sidecars: OK -- the identity monolith and the"
-          " `extend` leg are retired and refuse by name with their canonical"
-          " remedy; the converted tartrate case builds the SAME 9-activated"
-          " network from constant/species/ + constant/chemistry/ with no"
-          " sidecar; the one surviving leg (`replace`, a deliberately"
-          " restricted network with no canonical home yet) still runs and"
-          " announces its restriction on every run")
+    print("check_electrolyte_sidecars: OK -- constant/electrolyte/ is fully"
+          " retired: every leg refuses by name with its canonical remedy"
+          " (species -> constant/species/, reactions -> constant/chemistry/,"
+          " restriction -> networkScope restricted), the tartrate case builds"
+          " its 9-activated network canonically, and the converted seawater"
+          " case ships no sidecar")
     return 0
 
 

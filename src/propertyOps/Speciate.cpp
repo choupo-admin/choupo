@@ -311,6 +311,11 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     }
 
     electrolyte::SpeciationSolver solver(model);
+    //  D-R1: the op dict may declare a deliberately restricted network
+    //  (networkScope restricted; network ( ... ); reason "...";).  ONE
+    //  parse, in the solver -- the reactive builder routes through the
+    //  same method.
+    solver.applyNetworkScope(dict);
     const auto res = solver.solve(in, verbosity);
 
     // -- species table CSV ------------------------------------------------------
@@ -327,6 +332,10 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     diag_["I"]  = res.I;
     diag_["aw"] = res.aw;
     diag_["pH"] = res.pH;     // solved (electroneutrality) or echoed (given)
+    //  D-R1 label (Vitor's condition 2): a result from a reduced model is
+    //  identifiable in the golden-master surface too, not only the console.
+    if (res.restrictedNetwork)
+        diag_["networkRestricted"] = 1.0;
     for (const auto& [mineral, si] : res.SI)
         diag_["SI_" + mineral] = si;   // POST-equilibration when equilibrate set
     // n_<m>: precipitated amount [mol/kg] per ALLOWED mineral (reads 0.000 for

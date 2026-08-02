@@ -1372,6 +1372,8 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
             {
                 auto sp = a->subDict("speciation");
                 if (sp->found("masters")) aq.masters = sp->lookupWordList("masters");
+                aq.speciationBlock = sp;   // D-R1: the networkScope trio rides
+                                           // whole to the ONE parse in the solver
             }
         }
         if (chem) aq.solidPhases = chem->solidPhases;

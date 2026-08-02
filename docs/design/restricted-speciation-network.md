@@ -124,6 +124,12 @@ ordinary case free of ceremony.
 
 ## 7. Status
 
-**Proposed, awaiting Vítor.**  Until then the `replace` leg stays, runs, and
-announces its restriction on every run; `check_electrolyte_sidecars` pins that
-it is the *only* surviving use, so a second one cannot appear quietly.
+**APPROVED by Vítor 2026-08-02** (with two conditions: the reduced network
+passes the same consistency machinery as the full one, and results are
+clearly labelled) — **and BUILT the same day**: reader + five refusals in
+`SpeciationSolver::applyNetworkScope` (one parse, both callers), the
+announcement + `networkRestricted` label, the importer intersection,
+`pitzer_seawater_verify` converted and re-sealed to exactly its admitted
+record, the whole `constant/electrolyte/` sidecar retired, gate
+`check_restricted_network` (sabotage-verified: a no-op parser fails 7
+probes).

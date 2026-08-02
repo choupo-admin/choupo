@@ -297,7 +297,7 @@ def closure_of(pp_path, caseDir, std, AQ):
             # conflict machinery's job (rule 1), never a silent skip.
             recs[rel] = src
 
-    def reachable_speciation_closure(seed_ions, has_exchange):
+    def reachable_speciation_closure(seed_ions, has_exchange, admitted=None):
         # (Codex seal-audit 2026-07-18) the closure is the REACHABLE physical
         # subgraph, never the whole databank: fixed-point over the chemistry
         # network -- a reaction activates when every master it needs is
@@ -345,6 +345,13 @@ def closure_of(pp_path, caseDir, std, AQ):
                     ok = has_exchange and masters <= reach
                 else:
                     ok = masters <= reach and (not sites or has_exchange)
+                    # D-R1: a case-declared `networkScope restricted` is
+                    # READABLE here -- the seal mirrors exactly the admitted
+                    # aqueousSpeciation records, so a re-import can never
+                    # silently un-restrict the physics (the sidecar era's
+                    # worst failure mode).
+                    if ok and admitted is not None:
+                        ok = fname.rsplit(".", 1)[0] in admitted
                 if ok:
                     activated[fname] = kind
                     if product:
@@ -726,7 +733,20 @@ def closure_of(pp_path, caseDir, std, AQ):
             seeds.add("X")                       # the exchange site
         # a flowsheet scaling{} audit runs on the module bulk: the package's
         # ion basis is the seed set (already in `ions` via speciesMap union)
-        reach = reachable_speciation_closure(seeds, has_exchange)
+        # D-R1: when EVERY speciate op declares `networkScope restricted`,
+        # the union of their admitted lists bounds the aqueousSpeciation
+        # records the seal carries.  One unrestricted op anywhere keeps the
+        # full reachable closure (it needs it).
+        admitted = None
+        spec_ops = len(re.findall(r'\btype\s+speciate\s*;', props_ops))
+        restr    = len(re.findall(r'\bnetworkScope\s+restricted\s*;', props_ops))
+        if spec_ops and restr == spec_ops:
+            adm = set()
+            for nm in re.finditer(r'\bnetwork\s*\(([^)]*)\)', props_ops):
+                adm |= set(nm.group(1).split())
+            if adm:
+                admitted = adm
+        reach = reachable_speciation_closure(seeds, has_exchange, admitted)
         ions |= {r for r in reach if r in AQ}   # species catalogue = reachable
         want_reachable_minerals(reach)
         nonlocal_flags["reach"] = reach

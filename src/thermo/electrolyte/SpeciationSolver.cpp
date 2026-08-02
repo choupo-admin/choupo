@@ -224,52 +224,38 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
         // Dictionary does not remember its file, and a duplicate-species
         // refusal that cannot name the two files is not actionable.
         std::vector<std::string> recordSource;
-        DictPtr caseDict;   // the case-local file (holds the gases sidecar, if any)
         const fs::path cl = caseElectrolytePath("speciation.dat");
-        bool caseReplaces = false;
-        std::vector<DictPtr> caseReactions;
         if (!cl.empty())
         {
-            caseDict = Dictionary::fromFile(cl.string());
-            const std::string mode =
-                caseDict->lookupWordOrDefault("speciationMode", "extend");
-            if (mode != "extend" && mode != "replace")
-                throw std::runtime_error("speciation: speciationMode '" + mode
-                    + "' is not one of extend / replace");
-            //  THE `extend` LEG IS RETIRED (2026-08-02).  Adding reactions to
-            //  the curated network is exactly what constant/chemistry/ does --
-            //  scanRecordDir merges the case directory over the catalogue by
-            //  FILENAME, case-only records appended -- so an `extend` sidecar
-            //  is a second home for the same act, and a worse one: it merges
-            //  by SPECIES, so it can silently take over a curated reaction
-            //  where the directory merge would have to be told which file it
-            //  is replacing.  `replace` is NOT retired with it: declaring a
-            //  DELIBERATELY RESTRICTED network -- the Pitzer-HMW verification
-            //  must exclude the sulfate ion pairs or it double-counts what
-            //  the ternary terms already carry -- has no canonical home yet,
-            //  and dropping the leg would silently change that case's
-            //  physics.  It stays, announced, until it gets one.
-            if (mode != "replace")
-                throw std::runtime_error("speciation: " + cl.string()
-                    + " declares `speciationMode extend` (or defaults to it),"
-                      " and that leg is RETIRED -- adding reactions to the"
-                      " curated network is what constant/chemistry/ already"
-                      " does.  Write ONE file per reaction at"
-                      " constant/chemistry/<species>-formation.dat"
-                      " (recordType aqueousSpeciation; species; masters ( {"
-                      " ion; nu; } ... ); logK25; dH; source) and delete this"
-                      " file; a case-local file SHADOWS the catalogue record"
-                      " of the same NAME, which is the merge you wanted said"
-                      " out loud.  data/standards/chemistry/ holds the shape"
-                      " to copy.  (`speciationMode replace` is still read: it"
-                      " declares a deliberately RESTRICTED network, which has"
-                      " no canonical home yet.)");
-            caseReplaces = true;
-            for (const auto& e : caseDict->lookupDictList("reactions"))
-                caseReactions.push_back(e);
+            //  THE WHOLE SIDECAR IS RETIRED (2026-08-02).  `extend` fell
+            //  first (constant/chemistry/ already does that merge, aloud);
+            //  `replace` -- declaring a deliberately RESTRICTED network --
+            //  survived only until the restriction had a canonical home.
+            //  It has one now (D-R1, approved 2026-08-02): the case's own
+            //  speciation block declares
+            //      networkScope restricted;
+            //      network      ( <chemistry record stems> ... );
+            //      reason       "...";
+            //  which admits CURATED records by name instead of restating a
+            //  reaction inline, and which bin/choupo-import can READ (the
+            //  sidecar was invisible to its reachability closure -- a
+            //  re-import silently un-restricted the physics).
+            throw std::runtime_error("speciation: " + cl.string()
+                + " -- the constant/electrolyte/speciation.dat sidecar is"
+                  " RETIRED.  To ADD reactions: one file per reaction under"
+                  " constant/chemistry/ (recordType aqueousSpeciation)."
+                  "  To RESTRICT the network: declare\n"
+                  "    networkScope restricted;\n"
+                  "    network      ( <record stem> ... );   // e.g."
+                  " water-dissociation\n"
+                  "    reason       \"...\";\n"
+                  " in the case's speciation block (the props speciate op, or"
+                  " equilibrium { aqueous { speciation {} } }) and delete this"
+                  " file.  tutorials/props/electrolyte/pitzer_seawater_verify"
+                  " shows the converted shape.");
         }
-        // Base = the standards tree, UNLESS the case replaces it.
-        if (cl.empty() || !caseReplaces)
+        // Base = the standards tree (the sidecar that could replace it is
+        // retired; a restriction is DECLARED and filters after the load).
         {
             // Migration 5: chemistry/ is ONE flat home; each record's
             // recordType names its family (aqueousSpeciation /
@@ -298,27 +284,8 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                 }
             }
         }
-        // Case reactions: replace -> they ARE the network; extend -> overlay by species
-        // name (override a tree record of the same species, else append).
-        for (const auto& e : caseReactions)
-        {
-            const std::string sp = e->lookupWord("species");
-            auto it = std::find_if(records.begin(), records.end(),
-                [&](const DictPtr& r){ return r->lookupWord("species") == sp; });
-            const std::string here = "the case `reactions` block";
-            if (it != records.end())
-            {
-                recordSource[std::size_t(it - records.begin())] = here;
-                *it = e;
-            }
-            else
-            {
-                records.push_back(e);
-                recordSource.push_back(here);
-            }
-        }
-        // ONE FORMATION REACTION PER SPECIES.  The case overlay above replaces
-        // in place, so a species reached twice HERE means two catalogue
+        // ONE FORMATION REACTION PER SPECIES.  The constant/chemistry/ merge
+        // shadows in place, so a species reached twice HERE means two catalogue
         // records both form it -- and the network would carry the species
         // twice, two equations for one unknown, on whichever K the last file
         // happened to bring.  There is no defensible answer between two K's;
@@ -337,14 +304,20 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                         " '" + sp + "':\n    " + it->second + "\n    " + src
                         + "\nA species is formed by exactly one reaction; keep"
                           " the curated record and delete or rename the other"
-                          " (a case delta belongs in the case's"
-                          " constant/electrolyte/speciation.dat, which overrides"
-                          " by species instead of duplicating it).");
+                          " (a case delta belongs in constant/chemistry/,"
+                          " where a file of the SAME NAME shadows the"
+                          " catalogue record instead of duplicating it).");
             }
         }
-        for (const auto& e : records)
+        for (std::size_t ri = 0; ri < records.size(); ++ri)
         {
+            const auto& e = records[ri];
             SpeciationReaction r;
+            //  The record FILE STEM is the D-R1 admitted-list key
+            //  (`network ( water-dissociation ... )` names records, not
+            //  species -- the F2 files are named by REACTION).
+            if (ri < recordSource.size())
+                r.record = fs::path(recordSource[ri]).stem().string();
             r.species = e->lookupWord("species");
             // IDENTITY HAS ONE HOME (F2 commit 1).  A species that owns its
             // own species/<id>.dat carries charge/formula THERE; its reaction
@@ -387,23 +360,10 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                                        r.species, r.masters, r.z, reactions_);
             reactions_.push_back(std::move(r));
         }
-        // Optional `gases` section: gas dissolution (Henry) constants for the
-        // OPEN-system option (absence-tolerant -- a closed-only catalogue is
-        // complete without it).
-        if (caseDict && caseDict->found("gases"))
-            for (const auto& e : caseDict->lookupDictList("gases"))
-            {
-                GasEntry g;
-                g.gas     = e->lookupWord("gas");
-                g.species = e->lookupWord("species");
-                g.logK25  = e->lookupScalar("logK25");
-                g.hasDH   = e->found("dH");
-                if (g.hasDH) g.dH = e->lookupScalar("dH");
-                g.kt      = readKT(e);
-                g.source  = e->lookupWordOrDefault("source", "undeclared");
-                gases_.push_back(std::move(g));
-            }
-        else if (cl.empty() || !caseReplaces)
+        // Gas dissolution (Henry) constants for the OPEN-system option
+        // (absence-tolerant -- a closed-only catalogue is complete without
+        // it).  The retired sidecar's `gases` section died with it; the
+        // per-file records below are the one home.
         {
             // Standards tier: gas dissolution (Henry) constants live per-file under
             // chemistry/ (recordType gasLiquidEquilibrium)  (the monolith speciation.dat `gases` sidecar is
@@ -458,12 +418,6 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                 }
             }
         }
-        if (!cl.empty() && thermoAnnounce())   // case-local meets the standards tier: loud
-            std::cerr << "[overlay] speciation: case-local " << cl.string()
-                      << (caseReplaces ? " REPLACES the standard catalogue ("
-                                       : " EXTENDS the standard catalogue (+"
-                                         + std::to_string(caseReactions.size()) + " case, ")
-                      << reactions_.size() << " reactions)\n";
     }
 
     {
@@ -766,6 +720,8 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
     } coutGuard;
 
     SpeciationResult out;
+    out.restrictedNetwork = restricted_;         // D-R1 label: the result says
+    out.restrictionReason = restrictionReason_;  // it ran on a reduced model
     const double T      = in.T;
     const bool   solveH = in.solvePH;            // H+ an unknown, electroneutrality closes
     const double a_H = std::pow(10.0, -in.pH);   // used only when pH is GIVEN
@@ -1021,6 +977,26 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         }
         act.push_back(std::move(a));
     }
+    //  D-R1 rule 3: every ADMITTED record must be reachable from this feed's
+    //  masters.  A restriction that admits an unreachable record restricts
+    //  nothing on that name -- a false claim about the model, refused (the
+    //  author either mis-spelt the record or the feed changed under the
+    //  declaration).
+    if (restricted_)
+        for (const auto& t : trace)
+            if (!t.on)
+                throw std::runtime_error("speciation: networkScope restricted"
+                    " admits '" + t.species + "' but it is unreachable from"
+                    " this feed (" + t.why + ").  An admitted record the"
+                    " closure can never activate is a false claim about the"
+                    " model -- drop it from `network ( ... )` or fix the"
+                    " analysis.");
+    if (verbosity >= 2 && in.announceClosure && restricted_)
+        std::cout << "  [chemistry] RESTRICTED network (networkScope"
+                     " restricted): " << reactions_.size()
+                  << " admitted record(s), the reachable curated closure is"
+                     " deliberately NOT used.\n  [chemistry]   reason: "
+                  << restrictionReason_ << "\n";
     if (verbosity >= 2 && in.announceClosure && !trace.empty())
     {
         std::size_t on = 0;
@@ -2253,6 +2229,74 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         }
     }
     return out;
+}
+
+// ---- D-R1: the declared admitted set (approved 2026-08-02) ------------------
+//  ONE parse for every caller (props speciate op + reactive builder).  The
+//  four refusals each exist because their absence produces a wrong answer:
+//  see the design record docs/design/restricted-speciation-network.md.
+void SpeciationSolver::applyNetworkScope(const DictPtr& speciationBlock)
+{
+    if (!speciationBlock) return;
+    const std::string scope =
+        speciationBlock->lookupWordOrDefault("networkScope", "full");
+    const bool hasList = speciationBlock->found("network");
+
+    if (scope == "full")
+    {
+        if (hasList)
+            throw std::runtime_error("speciation: `networkScope full` (or"
+                " absent) together with a `network ( ... )` list is TWO"
+                " authorities on one set -- declare `networkScope"
+                " restricted;` if the list is meant, or delete the list.");
+        return;                                  // today's behaviour, unchanged
+    }
+    if (scope != "restricted")
+        throw std::runtime_error("speciation: networkScope '" + scope
+            + "' is not one of full / restricted");
+
+    if (!hasList)
+        throw std::runtime_error("speciation: `networkScope restricted`"
+            " requires a non-empty `network ( <record> ... )` -- the admitted"
+            " chemistry records, by file stem (e.g. water-dissociation).");
+    const auto admitted = speciationBlock->lookupWordList("network");
+    if (admitted.empty())
+        throw std::runtime_error("speciation: `networkScope restricted` with"
+            " an EMPTY `network ( )` admits nothing -- a speciation-free case"
+            " should simply not declare a speciation block.");
+    const std::string reason =
+        speciationBlock->lookupWordOrDefault("reason", "");
+    if (reason.empty())
+        throw std::runtime_error("speciation: `networkScope restricted`"
+            " requires a non-empty `reason \"...\"` -- a reduced network"
+            " with no stated reason is a trap for the next reader; the"
+            " reason is the part a student actually needs.");
+
+    //  Every admitted name must resolve to a LOADED record.
+    std::vector<SpeciationReaction> kept;
+    for (const auto& name : admitted)
+    {
+        bool found = false;
+        for (auto& r : reactions_)
+            if (r.record == name)
+            {
+                kept.push_back(r);
+                found = true;
+                break;
+            }
+        if (!found)
+        {
+            std::string have;
+            for (const auto& r : reactions_)
+                have += (have.empty() ? "" : ", ") + r.record;
+            throw std::runtime_error("speciation: networkScope restricted"
+                " admits '" + name + "' but no loaded chemistry record has"
+                " that file stem.  Loaded records: " + have + ".");
+        }
+    }
+    reactions_ = std::move(kept);
+    restricted_ = true;
+    restrictionReason_ = reason;
 }
 
 } // namespace electrolyte

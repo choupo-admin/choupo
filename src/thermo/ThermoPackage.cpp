@@ -145,8 +145,14 @@ const electrolyte::SpeciationSolver& ThermoPackage::speciator() const
             "    equilibrium { aqueous { activityModel { model davies; } } }\n"
             "(independent of `formulation`).  No default is applied.");
     if (!speciator_)
+    {
         speciator_ = std::make_unique<electrolyte::SpeciationSolver>(
             aqueous_.activityModel);
+        //  D-R1: a declared `networkScope restricted` travels with the case's
+        //  speciation{} block; the parse (and its four refusals) lives in the
+        //  solver -- one home, both callers.
+        speciator_->applyNetworkScope(aqueous_.speciationBlock);
+    }
     return *speciator_;
 }
 
