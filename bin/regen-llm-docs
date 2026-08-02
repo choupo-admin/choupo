@@ -257,35 +257,73 @@ def _components_footer() -> str:
     # (Henry pairs / membranes / materials / binary pairs / field-glossary).
     # These read directly from data/standards/ too, so they're easy to keep
     # alongside the auto-gen table.
+    #  Migrations 2 (2026-07-16, pair tables -> parameters/<model>/) and 4
+    #  (assets flattened, keyed by a `kind` field) moved every one of these.
+    #  The generator kept reading the OLD paths and _list_section answered
+    #  "(directory not present)" for all three -- so a blind regen published a
+    #  catalogue claiming Choupo ships no Henry pairs, no membranes and no
+    #  materials.  Absence is now an ERROR, not a rendering: a generator whose
+    #  input moved must stop, never quietly print nothing.
     return _list_section(
         "## Henry's-law pairs",
-        REPO / "data" / "standards" / "henrysLaw",
-        "Each ships van't Hoff temperature dependence.",
-    ) + "\n" + _list_section(
+        REPO / "data" / "standards" / "parameters" / "Henry",
+        "One `<gas>-<solvent>.dat` per pair; each ships its temperature "
+        "dependence and its convention profile.",
+    ) + "\n" + _kind_section(
         "## Membranes",
-        REPO / "data" / "standards" / "membranes",
-        "Each carries A_w + per-solute B_s + ratings (P_max, T_max, pH, MWCO).",
-    ) + "\n" + _list_section(
-        "## Materials",
-        REPO / "data" / "standards" / "materials",
+        ("NF", "RO", "IEM"),
+        "Each carries A_w + per-solute B_s + ratings (P_max, T_max, pH, MWCO); "
+        "the ion-exchange pair carries its transport numbers.",
+    ) + "\n" + _kind_section(
+        "## Adsorbents and resins",
+        ("adsorbent", "ionExchangeResin"),
+        "Isotherm and bed properties for the fixed-bed, TSA and softener units.",
+    ) + "\n" + _kind_section(
+        "## Construction materials",
+        ("constructionMaterial",),
         "Each carries ρ, F_M (Guthrie), σ_y, max T, max P.",
     ) + "\n\n" + _glossary()
 
 
-def _list_section(title: str, dirpath: Path, blurb: str) -> str:
-    out = [title, "", blurb, ""]
-    if dirpath.is_dir():
-        items = sorted(p.stem for p in dirpath.glob("*.dat"))
-        if items:
-            out.append("| Name |")
-            out.append("|---|")
-            for it in items:
-                out.append(f"| `{it}` |")
-        else:
-            out.append("*(none shipped)*")
-    else:
-        out.append("*(directory not present)*")
+def _rows(title: str, blurb: str, items: list[str]) -> str:
+    out = [title, "", blurb, "", "| Name |", "|---|"]
+    out += [f"| `{it}` |" for it in items]
     return "\n".join(out)
+
+
+def _list_section(title: str, dirpath: Path, blurb: str) -> str:
+    if not dirpath.is_dir():
+        raise SystemExit(
+            f"regen-llm-docs: {dirpath} does not exist.  This generator's "
+            "input moved; fix the path here rather than publishing a catalogue "
+            "section that says nothing ships."
+        )
+    items = sorted(p.stem for p in dirpath.glob("*.dat"))
+    if not items:
+        raise SystemExit(f"regen-llm-docs: {dirpath} is empty -- refusing to "
+                         "publish an empty catalogue section.")
+    return _rows(title, blurb, items)
+
+
+#  The flat assets home (Migration 4): a record says WHAT it is in its own
+#  `kind` field, so the section is a FILTER, never a directory.
+def _kind_section(title: str, kinds: tuple, blurb: str) -> str:
+    d = REPO / "data" / "standards" / "assets"
+    if not d.is_dir():
+        raise SystemExit(f"regen-llm-docs: {d} does not exist -- the assets "
+                         "home moved again; fix the path here.")
+    items = []
+    for f in sorted(d.glob("*.dat")):
+        m = re.search(r"^\s*kind\s+(\w+)\s*;", f.read_text(), re.M)
+        if m and m.group(1) in kinds:
+            items.append(f.stem)
+    if not items:
+        raise SystemExit(
+            f"regen-llm-docs: no assets record carries kind in {kinds} -- "
+            "either the vocabulary changed or the records moved; fix this "
+            "filter rather than publishing an empty section."
+        )
+    return _rows(title, blurb, sorted(items))
 
 
 def _glossary() -> str:
@@ -310,9 +348,32 @@ def _glossary() -> str:
 
 # ============================================================ Schemas
 
+#  The registered operation names, read from the ONE place that decides them:
+#  the explicit registerBuiltins() calls (CLAUDE.md section 5 -- no macro
+#  self-registration, so a grep of `reg("name"` IS the registry).  Fail-closed:
+#  a moved or renamed registration file must stop the generator, never quietly
+#  shrink the coverage denominator and make the gap look smaller than it is.
+def _registered_ops() -> set:
+    names: set = set()
+    for rel in ("src/unitOperations/UnitOperation.cpp",
+                "src/propertyOps/PropertyOperation.cpp"):
+        f = REPO / rel
+        if not f.is_file():
+            raise SystemExit(f"regen-llm-docs: {rel} not found -- the operation "
+                             "registry moved; fix this path rather than "
+                             "publishing a coverage figure computed from less "
+                             "than the whole registry.")
+        found = set(re.findall(r'reg\("([A-Za-z0-9_]+)"', f.read_text()))
+        if not found:
+            raise SystemExit(f"regen-llm-docs: no reg(\"...\") calls in {rel} -- "
+                             "the registration form changed; fix the pattern.")
+        names |= found
+    return names
+
+
 def render_schemas_md() -> str:
     out: list[str] = [
-        "# Schemas reference — every shipped operation, by JSON schema",
+        "# Schemas reference — the shipped operations that carry a JSON schema",
         "",
         "<!-- AUTO-GENERATED by bin/regen-llm-docs from gui/schemas/operations/.",
         "     Edit the .schema.json files and re-run.  This file is complementary",
@@ -321,8 +382,27 @@ def render_schemas_md() -> str:
         "",
     ]
     files = sorted(SCHEMA_DIR.glob("*.schema.json"))
-    out.append(f"*{len(files)} schemas shipped.*")
+    have = {f.name[:-len(".schema.json")] for f in files}
+    missing = sorted(_registered_ops() - have, key=str.lower)
+    out.append(f"*{len(files)} of {len(have) + len(missing)} registered "
+               f"operations carry a schema and are documented below.*")
     out.append("")
+    if missing:
+        #  The title used to promise "every shipped operation" while covering
+        #  well under half of them.  A reference that silently omits an op is
+        #  worse than one that names the omission: an assistant reading this
+        #  file concludes the op does not exist.  So the gap is PUBLISHED, and
+        #  it shrinks by writing schema files, never by editing this line.
+        out.append("**Not documented here** — these operations are registered "
+                   "and runnable but have no `.schema.json` yet, so the GUI "
+                   "has no property editor for them and this reference cannot "
+                   "describe their fields.  Read `unit-ops.md`, the tutorials, "
+                   "or the header comment of the implementing class instead; "
+                   "adding a schema file is what removes a name from this "
+                   "list:")
+        out.append("")
+        out.append("> " + ", ".join(f"`{m}`" for m in missing))
+        out.append("")
     for f in files:
         out.extend(render_one_schema(f))
         out.append("")

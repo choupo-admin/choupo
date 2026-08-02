@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/steamTables.schema.json",
+  "title": "steamTables operation",
+  "description": "IAPWS-IF97 industrial water/steam properties. This is a propsDict operation under choupoProps (like propertyPoint), NOT a flowsheet unit. At startup it self-checks the transcribed coefficients against the release verification tables and REFUSES the run on any deviation above 1e-8. Give exactly ONE mode block per operation: point, saturation or isobar. CSV columns are canonical SI (h, u, s, cp, cv in J/kg-based units). Tutorial tutorials/props/steam/steam01_if97_verification locks every release verification table as a golden KPI at reltol 1e-8.",
+  "type": "object",
+  "properties": {
+    "point": {
+      "type": "object",
+      "title": "Single (p,T) state",
+      "description": "One state point. Reports v, rho, h, u, s, cp, cv, w and the IF97 region, printed and stored as diagnostics (psat at T rides along as a free verification pin). An output { file ...; } block is optional here and writes a one-row CSV.",
+      "properties": {
+        "P": { "type": "number", "exclusiveMinimum": 0, "title": "Pressure", "unit": "Pa" },
+        "T": { "type": "number", "exclusiveMinimum": 0, "title": "Temperature", "unit": "K" }
+      },
+      "required": ["P", "T"],
+      "additionalProperties": false
+    },
+    "saturation": {
+      "type": "object",
+      "title": "Saturation-line scan",
+      "description": "Temperature scan along the saturation line: psat plus the saturated liquid/vapour pairs (v, h, s) and h_fg per row. Valid over 273.15-623.15 K only — above that the liquid side is region 3 and the scan is refused loudly. An output { file ...; } block is required.",
+      "properties": {
+        "from": { "type": "number", "title": "First temperature", "unit": "K" },
+        "to":   { "type": "number", "title": "Last temperature",  "unit": "K" },
+        "n":    { "type": "integer", "minimum": 2, "title": "Number of points", "unit": "-" }
+      },
+      "required": ["from", "to", "n"],
+      "additionalProperties": false
+    },
+    "isobar": {
+      "type": "object",
+      "title": "Isobaric scan",
+      "description": "h, s, v and cp versus temperature at fixed pressure. A subcritical isobar's saturation crossing is ANNOUNCED before the scan, so the h/s/v jump is expected rather than surprising. Regions 3 and 5 are refused loudly. An output { file ...; } block is required.",
+      "properties": {
+        "P":    { "type": "number", "exclusiveMinimum": 0, "title": "Pressure", "unit": "Pa" },
+        "from": { "type": "number", "title": "First temperature", "unit": "K" },
+        "to":   { "type": "number", "title": "Last temperature",  "unit": "K" },
+        "n":    { "type": "integer", "minimum": 2, "title": "Number of points", "unit": "-" }
+      },
+      "required": ["P", "from", "to", "n"],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "required": ["point"] },
+    { "required": ["saturation"] },
+    { "required": ["isobar"] }
+  ],
+  "additionalProperties": false
+}

@@ -769,6 +769,21 @@ PYEOF
     fi
     rm -f /tmp/docref.$$
 
+    # Generated-doc drift: docs/ai/components.md and schemas-reference.md are
+    # RENDERED from data/standards/components/ and gui/schemas/operations/.
+    # bin/regen-llm-docs has carried a --check mode since it was written and it
+    # ran nowhere, so components.md advertised 56 components while the tree
+    # held 247 -- in the very file an assistant reads to pick component names.
+    if "$ROOT/bin/regen-llm-docs" --check > /tmp/regen.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "generated-doc-gate" "$(tail -1 /tmp/regen.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/regen-llm-docs, then commit the result)\n" "generated-doc-gate"
+        head -40 /tmp/regen.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/regen.$$
+
     # ---- Curation gates that existed but never RAN ----------------------
     # Eleven gates sat in bin/curate/ unwired; seven were not even
     # executable.  Two were stale -- check_ion_pins read the retired

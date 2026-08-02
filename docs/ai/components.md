@@ -32,108 +32,146 @@ the solutes' `binaryParameters` (the Henry's-law pairs table below names the
 shipped files), and a declared-but-missing pair REFUSES at assembly.  See
 `thermo.md` → "diluteSolution".
 
-*56 components currently shipped.*
+**The private tier (`data/local/`).**  Beside the curated catalogue the engine
+reads a second, gitignored home for your OWN records.  The public repository
+ships it EMPTY on purpose (a `README.md` and nothing else), so nothing below
+depends on it and no third-party databank values are redistributed here.  When
+you do populate it — `bin/curate/chemsep_to_choupo.py` writes there, as do
+`fitParameters` proposals — precedence is `inline / case-local / snapshot >
+standards > local > idealDefault`: the case always wins, and among the shared
+catalogues **standards beats local**, so local only ever fills gaps.  Every
+consumption is announced `[local] UNVERIFIED` and carried in the result
+provenance.  Treat an imported record with care: a typical import brings MW,
+Tc, Pc, omega and Tb plus a PREDICTIVE (Ambrose-Walton) vapour pressure, and
+leaves Cp, formation thermochemistry, transport and group data absent — good
+enough to screen a flash, not good enough for an energy or reaction balance.
+
+The component COUNT is not written here: this whole section below
+`AUTO-GENERATED` is produced by `bin/regen-llm-docs` from the `.dat` files
+themselves, and the heading it writes is the count.  (A number typed into this
+paragraph by hand said 56 for long enough that the tree reached 247 without it
+noticing — which is the same second-home failure the doctrine warns about, one
+level up.)
 <!-- END-PROSE -->
-
-## Extended catalogue (`data/local/`)
-
-Choupo also ships an **extended, unverified tier**. At the current snapshot the
-file-level inventory is 194 records in `data/standards/components/` and 625 in
-`data/local/components/`; overlapping names and identities mean these counts
-must not be added and advertised as an equal-quality compound total. The GUI
-shows proposals separately and the engine prints `[local]` whenever one is
-actually used.
-
-The ChemSep v8.3 import contributes 279 new proposal files after CAS
-deduplication. Each carries the source-file SHA-256, Artistic-2.0 licence,
-record name and per-property `Origin`. The imported pure-component skeleton is
-normally:
-
-- `MW`, `Tc`, `Pc`, `omega`, `Tb`: source database values, `origin literature`;
-- `vaporPressure`: **predictive** Ambrose-Walton from `Tc/Pc/omega`, not a
-  measured vapour-pressure correlation;
-- `Cp`, formation thermochemistry, transport, `Vliq`, Joback and UNIFAC groups:
-  absent unless another explicitly identified source already supplied them.
-
-Therefore these records are useful for screening flashes and cubic-EOS work,
-but a component with missing Cp/formation data is not ready for an energy or
-reaction calculation. Run the gap report and inspect the Property Explorer
-provenance before choosing one.
-
-ChemSep also stages 748 NRTL/UNIQUAC/Wilson records under
-`data/local/parameters/`. Pair resolution is lower-precedence than the
-standard library and is announced as `[local]`; missing pairs still
-ideal-default loudly. The records passed the deterministic identity, source
-hash and unit-conversion audit in `data/local/CHEMSEP-PAIR-AUDIT.md`, but
-their imported DECHEMA parameters have no captured temperature range and must
-be checked against project VLE data before design use.
-
-Maintainer regeneration and gates:
-
-```sh
-python3 bin/curate/chemsep_to_choupo.py --dry-run
-python3 bin/curate/chemsep_to_choupo.py
-python3 bin/curate/reconcile_chemsep_collisions.py --prune-resolved
-python3 bin/curate/audit_proposed.py
-python3 bin/curate/validate_components.py
-python3 bin/curate/audit_chemsep_pairs.py
-```
 
 <!-- AUTO-GENERATED below this line by bin/regen-llm-docs. -->
 <!-- Edit the .dat files in data/standards/components/, then re-run. -->
 
-## Components (56 entries)
+## Components (247 entries)
 
 ### Volatile (curated for VLE)
 
 | Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
+| `1Butene` | 56.1063 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `aceticAcid` | 60.052 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `acetone` | 58.080 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F |
+| `acetylene` | 26.038 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `Ar` | 39.948 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `benzene` | 78.114 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, μ_L |
-| `C2H2` | 26.038 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `C2H4` | 28.054 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `C2H6` | 30.070 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `C3H6` | 42.081 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `C3H8` | 44.097 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `C4H10` | 58.123 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `C8H18` | 114.231 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `carbonylSulfide` | 60.0751 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `cis2Butene` | 56.1063 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `CO` | 28.010 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
 | `compA` | 30.0 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
 | `compB` | 50.0 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
 | `compC` | 50.0 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `cyclohexane` | 84.1595 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `cyclopentane` | 70.1329 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `cyclopropane` | 42.0810 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `D2` | 4.0282 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | — |   |
+| `Dichloroethane` | 98.9590 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `diethylEther` | 74.1216 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `dimethylCarbonate` | 90.0779 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `dimethylEther` | 46.0684 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ethane` | 30.070 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `ethanol` | 46.069 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, μ_L |
 | `ethylAcetate` | 88.106 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ethylBenzene` | 106.1650 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ethylene` | 28.054 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `ethyleneOxide` | 44.0526 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `fluorine` | 37.9968 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | — |   |
 | `H2` | 2.016 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
 | `H2O2` | 34.0147 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `HCHO` | 30.026 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `HCN` | 27.026 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `He` | 4.0026 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `heavyWater` | 20.0275 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `hexamethyldisiloxane` | 162.3775 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `hfe143m` | 100.0400 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `isoButane` | 58.1222 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `isoButene` | 56.1063 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `isohexane` | 86.1754 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `isopentane` | 72.1488 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `krypton` | 83.7980 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | — |   |
+| `MD3M` | 384.8390 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `MD4M` | 458.9933 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `MDM` | 236.5315 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
 | `methanol` | 32.042 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, μ_L |
+| `methylAcetate` | 74.079 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylLinoleate` | 294.4721 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylLinolenate` | 292.4562 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylOleate` | 296.4879 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylPalmitate` | 270.4507 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | — |   |
+| `methylStearate` | 298.5038 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | — |   |
+| `mXylene` | 106.1650 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `N2` | 28.013 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F |
 | `N2O` | 44.013 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `nButane` | 58.123 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `nButanol` | 74.122 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nDecane` | 142.2817 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nDodecane` | 170.3348 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `neon` | 20.1790 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | — |   |
+| `neopentane` | 72.1488 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nHeptane` | 100.2020 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `nHexane` | 86.178 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nNonane` | 128.2551 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `NO` | 30.006 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `NO2` | 46.006 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `nOctane` | 114.231 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `novec649` | 316.0438 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nPentane` | 72.1488 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nUndecane` | 156.3083 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `O2` | 31.999 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
 | `O3` | 47.9982 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `toluene` | 92.141 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, μ_L |
+| `OrthoDeuterium` | 4.0282 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | — |   |
+| `OrthoHydrogen` | 2.0159 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | — |   |
+| `oXylene` | 106.1650 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ParaDeuterium` | 4.0282 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | — |   |
+| `ParaHydrogen` | 2.0159 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | — |   |
+| `propane` | 44.096 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `propylene` | 42.081 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `propyne` | 40.0600 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `pXylene` | 106.1650 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R11` | 137.3680 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R113` | 187.3750 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R12` | 120.9130 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R1234yf` | 114.0416 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R1234zeE` | 114.0416 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R1234zeZ` | 114.0416 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R134a` | 102.0320 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R13I1` | 195.9104 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R143a` | 84.0410 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R21` | 102.9227 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R218` | 188.0193 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R22` | 86.4680 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R236EA` | 152.0384 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R245fa` | 134.0479 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R32` | 52.0240 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R365MFC` | 148.0745 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `RC318` | 200.0312 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `SF6` | 146.0554 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `toluene` | 92.141 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, Σv_F, μ_L |
+| `trans2Butene` | 56.1063 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `water` | 18.015 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, Σv_F, μ_L |
+| `Xe` | 131.2930 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | — |   |
 
 ### Permanent gas / combustion species
 
 | Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
-| `C` | 12.011 | (volatile) | — | ✓ | — | ✓ | — | — | — | — |   |
-| `CH3` | 15.0345 | (volatile) | — | ✓ | — | ✓ | — | — | — | — |   |
-| `H` | 1.008 | (volatile) | — | ✓ | — | ✓ | — | — | — | — |   |
-| `HO2` | 33.0067 | (volatile) | — | ✓ | — | ✓ | — | — | — | — |   |
-| `N` | 14.007 | (volatile) | — | ✓ | — | ✓ | — | — | — | — |   |
-| `NH` | 15.0146 | (volatile) | — | ✓ | — | ✓ | — | — | — | — |   |
-| `NH2` | 16.0226 | (volatile) | — | ✓ | — | ✓ | — | — | — | — |   |
-| `O` | 15.999 | (volatile) | — | ✓ | — | ✓ | — | — | — | — |   |
-| `OH` | 17.008 | (volatile) | — | ✓ | — | ✓ | — | — | — | — |   |
+| `H2SO4` | 98.079 | (volatile) | — | — | ✓ | ✓ | — | — | — | ✓ |   |
+| `H3PO4` | 97.995 | (volatile) | — | — | — | ✓ | ✓ | — | — | — |   |
+| `HNO3` | 63.013 | (volatile) | — | — | ✓ | ✓ | — | — | — | ✓ |   |
 
 ### Soluble gas (Henry)
 
@@ -144,60 +182,397 @@ python3 bin/curate/audit_chemsep_pairs.py
 | `CO2` | 44.010 | solute | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F |
 | `H2S` | 34.082 | solute | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `HCl` | 36.461 | solute | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `NH3` | 17.030 | solute | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `NH3` | 17.030 | solute | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `SO2` | 64.065 | solute | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
 
 ### Non-volatile solute
 
 | Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
+| `acetaldehyde` | 44.053 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `C` | 12.011 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `C2H` | 25.03 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `C2H3` | 27.046 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `C2H5` | 29.062 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `C2O` | 40.021 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `C3H3` | 39.057 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `C3H5` | 41.073 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `C3H7` | 43.089 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `C4H2` | 50.06 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `C4H4` | 52.076 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `C5H5` | 65.095 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `C6H5` | 77.106 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `CaCl2` | 110.98 | nonvolatile | — | — | — | — | — | — | — | — | ν=3 |
+| `CH` | 13.019 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `CH2` | 14.027 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `CH2_S` | 14.027 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `CH2CO` | 42.037 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `CH2OH` | 31.034 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `CH3` | 15.0345 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `CH3CO` | 43.045 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `CH3O` | 31.034 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `CH3O2` | 47.033 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `Cl` | 35.45 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `ClO` | 51.449 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `CN` | 26.018 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `CS` | 44.071 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `CS2` | 76.131 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `dowthermA` | 165.8 | nonvolatile | — | — | ✓ | — | — | — | — | ✓ |   |
+| `glucose` | 180.16 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
+| `H` | 1.008 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `HCCO` | 41.029 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `HCO` | 29.018 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `hitecSalt` | 87.4 | nonvolatile | — | — | ✓ | — | — | — | — | ✓ |   |
+| `HNO` | 31.014 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `HO2` | 33.0067 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `HOCl` | 52.457 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `HONO` | 47.013 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `HSO` | 49.067 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `HSO3` | 81.065 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `LiCl` | 42.394 | nonvolatile | — | — | ✓ | — | — | — | — | — |   |
+| `MgSO4` | 120.37 | nonvolatile | — | — | — | — | — | — | — | — | ν=2 |
+| `N` | 14.007 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `N2H2` | 30.03 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `N2H3` | 31.038 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `N2H4` | 32.046 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `NaCl` | 58.44 | nonvolatile | — | — | — | — | — | ✓ | — | — | ν=2 |
+| `NaOH` | 39.997 | nonvolatile | — | — | — | — | — | ✓ | — | — | ν=2 |
+| `NCO` | 42.017 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `NH` | 15.0146 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `NH2` | 16.0226 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `NNH` | 29.022 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `NO3` | 62.004 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `O` | 15.999 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `OH` | 17.008 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `PET` | 192.17 | nonvolatile | — | — | — | — | — | — | — | — |   |
+| `PMMA` | 100.12 | nonvolatile | — | — | — | — | — | — | — | — |   |
+| `polyethylene` | 28.05 | nonvolatile | — | — | — | — | — | — | — | — |   |
+| `polypropylene` | 42.08 | nonvolatile | — | — | — | — | — | — | — | — |   |
+| `polystyrene` | 104.15 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `propyleneGlycol30` | 36.6 | nonvolatile | — | — | ✓ | — | — | — | — | ✓ |   |
+| `PVC` | 62.5 | nonvolatile | — | — | — | — | — | — | — | — |   |
+| `S` | 32.06 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `S2` | 64.12 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `SH` | 33.068 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `SO` | 48.059 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `SO3` | 80.057 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 
 ### Crystallising solute
 
 | Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
+| `KCl` | 74.551 | nonvolatile | — | — | ✓ | — | ✓ | ✓ | — | — | ν=2 |
+| `potassiumBitartrate` | 188.177 | nonvolatile | — | — | ✓ | — | ✓ | ✓ | — | — | ν=2 |
 | `sucrose` | 342.297 | nonvolatile | — | — | ✓ | ✓ | ✓ | ✓ | — | ✓ |   |
 
 ### Solids-only / pseudo-component
 
 | Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
-| `silica` | 60.08 | nonvolatile | — | — | — | — | ✓ | — | — | — |   |
+| `CaCO3` | 100.0869 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
+| `calciumHydroxide` | 74.093 | nonvolatile | — | — | ✓ | ✓ | ✓ | — | — | — |   |
+| `calciumTartrate` | 188.15 | nonvolatile | — | — | ✓ | — | ✓ | — | — | — |   |
+| `CaO` | 56.077 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
+| `CaSO4` | 136.141 | nonvolatile | — | — | ✓ | ✓ | ✓ | — | — | — |   |
+| `K2SO4` | 174.259 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
+| `KOH` | 56.105 | nonvolatile | — | — | ✓ | ✓ | ✓ | — | — | — |   |
+| `magnesiumHydroxide` | 58.320 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
+| `Na2CO3` | 105.988 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
+| `Na2SO4` | 142.036 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
+| `NaHCO3` | 84.007 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
+| `NH4Cl` | 53.491 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
+| `silica` | 60.08 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
+| `tartaricAcid` | 150.087 | nonvolatile | — | — | ✓ | ✓ | ✓ | — | — | — |   |
 
 ### Other
 
 | Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
-| `glucose` | 180.16 | nonvolatile | — | — | — | — | — | — | — | — |   |
-| `MgSO4` | 120.37 | nonvolatile | — | — | — | — | — | — | — | — | ν=2 |
-| `NaCl` | 58.44 | nonvolatile | — | — | — | — | — | — | — | — | ν=2 |
+| `akermanite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `anthophyllite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `artinite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `barite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `bischofite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `bloedite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `burkeite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `carnallite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `celestite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `chrysotile` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `diopside` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `dolomite` | 184.40 | (volatile) | — | — | — | — | — | — | — | — |   |
+| `enstatite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `epsomite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `fluorite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `forsterite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `gaylussite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `glaserite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `glauberite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `goergeyite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `gypsum` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `hexahydrite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `huntite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `hydroxyapatite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `kainite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `kalicinite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `kieserite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `labile_S` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `leonhardite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `leonite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `lithiumChlorideH2O` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `magnesite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `melanterite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `mirabilite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `misenite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `natron` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `nesquehonite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `pentahydrite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `pirssonite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `polyhalite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `pyrochroite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `rhodochrosite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `schoenite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `sepiolite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `sepiolite_d` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `siderite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `strontianite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `syngenite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `talc` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `trona` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `vivianite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
+| `witherite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
 
 ## Henry's-law pairs
 
-Each ships van't Hoff temperature dependence.
+One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and its convention profile.
 
 | Name |
 |---|
+| `Ar-water` |
 | `CH4-water` |
+| `CO-water` |
 | `CO2-water` |
 | `Cl2-water` |
+| `H2-NH3` |
+| `H2-water` |
 | `H2S-water` |
+| `HCHO-water` |
+| `HCN-water` |
 | `HCl-water` |
+| `HO2-water` |
+| `He-water` |
+| `N2-NH3` |
+| `N2-water` |
+| `N2O-water` |
 | `NH3-water` |
+| `NO-water` |
+| `NO2-water` |
 | `O2-water` |
+| `O3-water` |
+| `OH-water` |
+| `R11-water` |
+| `R113-water` |
+| `R114-water` |
+| `R115-water` |
+| `R116-water` |
+| `R12-water` |
+| `R123-water` |
+| `R124-water` |
+| `R125-water` |
+| `R13-water` |
+| `R134a-water` |
+| `R14-water` |
+| `R141b-water` |
+| `R142b-water` |
+| `R152a-water` |
+| `R218-water` |
+| `R22-water` |
+| `R227EA-water` |
+| `R23-water` |
+| `R32-water` |
+| `R40-water` |
+| `R41-water` |
+| `RC318-water` |
+| `SF6-water` |
 | `SO2-water` |
+| `Xe-water` |
+| `acetaldehyde-water` |
+| `aceticAcid-water` |
+| `acetone-water` |
+| `acetonitrile-water` |
+| `acetophenone-water` |
+| `acetylene-water` |
+| `acrolein-water` |
+| `acrylonitrile-water` |
+| `allylAlcohol-water` |
+| `allylChloride-water` |
+| `amylAcetate-water` |
+| `aniline-water` |
+| `anisole-water` |
+| `anthracene-water` |
+| `benzaldehyde-water` |
+| `benzene-water` |
+| `benzoicAcid-water` |
+| `benzonitrile-water` |
+| `benzylChloride-water` |
+| `biphenyl-water` |
+| `butadiene13-water` |
+| `butanal-water` |
+| `butene1-water` |
+| `butylAcetate-water` |
+| `butyne1-water` |
+| `caproicAcid-water` |
+| `carbonDisulfide-water` |
+| `carbonTetrachloride-water` |
+| `carbonylSulfide-water` |
+| `chlorobenzene-water` |
+| `chlorobutane1-water` |
+| `chloroform-water` |
+| `cumene-water` |
+| `cyclohexane-water` |
+| `cyclohexanol-water` |
+| `cyclohexene-water` |
+| `cyclohexylamine-water` |
+| `cyclopentane-water` |
+| `cyclopentene-water` |
+| `cyclopropane-water` |
+| `diacetyl-water` |
+| `dichloroethane11-water` |
+| `dichloroethane12-water` |
+| `dichloromethane-water` |
+| `dichloropropane12-water` |
+| `diethylEther-water` |
+| `diethylSulfide-water` |
+| `diethylamine-water` |
+| `diisopropylEther-water` |
+| `dimethoxyethane12-water` |
+| `dimethylDisulfide-water` |
+| `dimethylEther-water` |
+| `dimethylFormamide-water` |
+| `dimethylPhthalate-water` |
+| `dimethylSulfide-water` |
+| `dimethylamine-water` |
+| `dioxane14-water` |
+| `epichlorohydrin-water` |
+| `ethane-water` |
+| `ethanethiol-water` |
+| `ethanol-water` |
+| `ethylAcetate-water` |
+| `ethylBenzene-water` |
+| `ethylFormate-water` |
+| `ethylTertButylEther-water` |
+| `ethylamine-water` |
+| `ethylcyclohexane-water` |
+| `ethylene-water` |
+| `ethyleneOxide-water` |
+| `ethylenediamine-water` |
+| `formicAcid-water` |
+| `guaiacol-water` |
+| `heptane-water` |
+| `heptanol1-water` |
+| `hexanal-water` |
+| `hexanol1-water` |
+| `isoButane-water` |
+| `isoButene-water` |
+| `isohexane-water` |
+| `isoprene-water` |
+| `isopropylAcetate-water` |
+| `krypton-water` |
+| `mCresol-water` |
+| `mXylene-water` |
+| `mesitylene-water` |
+| `methanethiol-water` |
+| `methanol-water` |
+| `methylAcetate-water` |
+| `methylBenzoate-water` |
+| `methylEthylKetone-water` |
+| `methylFormate-water` |
+| `methylIsobutylKetone-water` |
+| `methylMethacrylate-water` |
+| `methylamine-water` |
+| `methylcyclohexane-water` |
+| `morpholine-water` |
+| `mtbe-water` |
+| `nButane-water` |
+| `nButanol-water` |
+| `nHeptane-water` |
+| `nHexane-water` |
+| `nNonane-water` |
+| `nOctane-water` |
+| `nPentane-water` |
+| `naphthalene-water` |
+| `neopentane-water` |
+| `nitrobenzene-water` |
+| `nitroethane-water` |
+| `nitromethane-water` |
+| `nnDimethylacetamide-water` |
+| `nonane-water` |
+| `oCresol-water` |
+| `oDichlorobenzene-water` |
+| `oXylene-water` |
+| `oneOctanol-water` |
+| `onePentanol-water` |
+| `onePropanethiol-water` |
+| `onePropanol-water` |
+| `pCresol-water` |
+| `pXylene-water` |
+| `pentan3one-water` |
+| `pentanal-water` |
+| `phenol-water` |
+| `piperazine-water` |
+| `piperidine-water` |
+| `propanal-water` |
+| `propane-water` |
+| `propionitrile-water` |
+| `propylAcetate-water` |
+| `propylbenzene-water` |
+| `propylene-water` |
+| `propyleneOxide-water` |
+| `propyne-water` |
+| `pyridine-water` |
+| `pyrrolidine-water` |
+| `quinoline-water` |
+| `styrene-water` |
+| `tertButanol-water` |
+| `tetrachloroethylene-water` |
+| `tetrahydrofuran-water` |
+| `tetrahydropyran-water` |
+| `tetralin-water` |
+| `thiophene-water` |
+| `toluene-water` |
+| `trichloroethane111-water` |
+| `trichloroethylene-water` |
+| `twoButanol-water` |
+| `twoEthoxyethanol-water` |
+| `twoMethoxyethanol-water` |
+| `twoMethylpentane-water` |
+| `twoMethyltetrahydrofuran-water` |
+| `twoPentanone-water` |
+| `twoPicoline-water` |
+| `twoPropanol-water` |
+| `valericAcid-water` |
+| `vinylAcetate-water` |
+| `vinylChloride-water` |
 ## Membranes
 
-Each carries A_w + per-solute B_s + ratings (P_max, T_max, pH, MWCO).
+Each carries A_w + per-solute B_s + ratings (P_max, T_max, pH, MWCO); the ion-exchange pair carries its transport numbers.
 
 | Name |
 |---|
+| `CMX_AMX` |
 | `NF270` |
+| `NF270_dspmde` |
 | `SW30HR` |
-## Materials
+## Adsorbents and resins
+
+Isotherm and bed properties for the fixed-bed, TSA and softener units.
+
+| Name |
+|---|
+| `SAC_Na` |
+| `activatedCarbon` |
+| `zeolite13X` |
+| `zeolite5A` |
+## Construction materials
 
 Each carries ρ, F_M (Guthrie), σ_y, max T, max P.
 
@@ -212,280 +587,16 @@ Each carries ρ, F_M (Guthrie), σ_y, max T, max P.
 
 - `MW`, `Tc`, `Pc`, `omega`, `Tb`, `Hvap_Tb` — universal pure-compound (axiom 1).
 - `Vliq` — liquid molar volume (apparent for solutes).
-- `vaporPressure { model... }` — Psat(T) for VLE/flash. Two models:
-  - `Antoine` — `log10(Psat[bar]) = A − B/(T + C)`; `coefficients (A B C); Trange (Tmin Tmax);`. The data-fit route (measure or `choupoProps vaporPressureFit`).
-  - `AmbroseWalton` — corresponding-states PREDICTION from `Tc`, `Pc`, `omega` ALONE (taken from the component automatically — declare them once; no extra keys). Closes the Psat gap of a Joback estimate so an estimated component is **flashable without measured data**. It is an ESTIMATE: ~3 % near Tb, degrading at low reduced T and for polar/associating species — overlay vs data before design use (see `tutorials/props/compare/compare_psat_ambrose_walton`).
-- `idealGasHeatCapacity { coefficients (a1 a2... ); }` — for H_ig, S_ig.
-- `liquidHeatCapacity { coefficients (... ); }` — for sensible H_liq.
-- `standardThermochemistry { dHf_298; s_298; phase; }` — for K_eq, adiabatic flames, **the isothermal reactor duty / heat of reaction**, and elements-reference stream enthalpy. **Every reacting species in a reactor needs this block** — it is the single enthalpy base for the heat of reaction (`dH_rxn = Σ νᵢ·hᵢ(T)`); without it the heat of reaction is dropped (steady reactors, announced) or falls back to the dict `dH_rxn` override (batch/dynamic). The optional `phase` keyword (`gas` / `liquid` / `solid`) tells the solver in which phase `dHf_298` is tabulated; if omitted it defaults to `gas` (the NIST / JANAF convention). Set it explicitly for any new component, and use `solid` for crystalline non-volatiles like sucrose whose Hf cannot honestly be referenced to gas. Throws clearly at `h_formation` time if the matching Cp model is absent (gas needs `idealGasHeatCapacity`; liquid + solid need `liquidHeatCapacity`).
+- `Antoine { ... }` — `ln P = A − B/(T + C)` for VLE.
+- `idealGasHeatCapacity { coefficients (a1 a2 ... ); }` — for H_ig, S_ig.
+- `liquidHeatCapacity { coefficients ( ... ); }` — for sensible H_liq.
+- `standardThermochemistry { dHf_298; s_298; }` — for K_eq + adiabatic flames.
 - `diffusionVolume <Sigma_v>;` — for Fuller diffusivity.
-- `liquidViscosity { andrade {... } vogel {... } }` — model-specific.
+- `liquidViscosity { andrade { ... } vogel { ... } }` — model-specific.
 - `associationFactor <phi>;` — for Wilke-Chang liquid diffusivity.
-- `solubility { coefficients (a b c ); dHcryst; }` — c_sat(T), for crystalliser.
+- `solubility { coefficients ( a b c ); dHcryst; }` — c_sat(T), for crystalliser.
 - `solid { rho_p; k_v; }` — for solids (cyclone / crystalliser / sprayDryer).
 - `sorption { Xm; C; K; }` — GAB isotherm  **(typically case-local, axiom 4)**.
 - `role <volatile|solute|nonvolatile|radical>;` — drives K-value choice.
 - `dissociation <nu>;` — ions per formula (for osmotic pressure).
-- `electrolyte { cation <ion>; anion <ion>; solubility <m_sat>; dissolutionEnthalpy <J/mol>; }`
-  — a dissociating salt for the `pitzer` / `eNRTL` activity models (the ions are
-  `data/standards/species/<ion>.dat`, one typed file each; their pair parameters
-  are `data/standards/parameters/Pitzer/pairs/<c>-<a>.dat` and
-  `data/standards/parameters/eNRTL/<c>-<a>.dat`). `solubility` is the measured
-  m_sat [mol/kg] at 25 °C; the optional `dissolutionEnthalpy` [J/mol] sets the
-  van't Hoff temperature shift of the solubility product `Ksp(T)` (omit it and `Ksp`
-  is held flat in T — fine for NaCl, whose solubility is nearly T-independent).
-  - **Self-contained cases:** ion identities live in `constant/species/<name>.dat`
-    (one typed file per model species) and the pair parameters in
-    `constant/parameters/` (`Pitzer/pairs/<c>-<a>.dat`, `eNRTL/<c>-<a>.dat`),
-    sealed by the case's `propertyManifest` — the same per-record mechanism as
-    `constant/components/<name>.dat`.  A reaction the case adds to the curated
-    network is one file per reaction under `constant/chemistry/`, which
-    shadows the catalogue record of the same name.  (One tutorial still
-    carries a `constant/electrolyte/speciation.dat` — the single remaining use
-    of that older form, for the one thing the per-file merge cannot say: a
-    *deliberately reduced* network, where the case needs fewer reactions than
-    the catalogue offers.  Every other use of that file now refuses, naming
-    the per-file home to write instead.)
-- `relativePermittivity <eps>;` — static dielectric constant (25 °C); on an
-  **antisolvent** (e.g. ethanol 24.3) it drives the mixed-solvent eNRTL
-  (drowning-out). The electrolyte models are temperature-dependent: `eps_w(T)` /
-  `rho_w(T)` (Malmberg-Maryott / Kell) set `A_DH(T)`, and `tau(T)=tau_25·298.15/T`.
 
-
-## The reference-state layout (NEW component .dats — forum 2026-06-11)
-
-New `.dat` files group data by **declared reference state** — the file reads
-as the γ-φ equation itself.  Older flat COMPONENT records (plain top-level
-keys) remain readable — this is a statement about the component `.dat` layout
-only, not about any case grammar — but never mix the two forms for one datum:
-the loader refuses loudly.
-
-```
-identity   { name  formula  CAS  MW }            // who
-critical   { Tc  Pc  omega }                     // the fluid's corresponding-states anchor (Pc in bar)
-gasIdeal   { Hf_298  S_298  Cp{...} }            // ideal-gas reference = the formation datum (phase keyword dies)
-liquidPure { Tb  HvapTb  Vliq  Psat{...}  Cp{...} }   // symmetric (Raoult) reference; Psat IS f°(T)
-solid      { Hf_298  S_298  rho_p  k_v  forms(...) }  // crystallising species; hydrates/polymorphs in forms
-aqueousInfDil { ... }                            // ∞-dilution ion tier (electrolyte-enthalpy build)
-electrolyte{ cation anion solubility dissolutionEnthalpy provenance{...} }   // unchanged
-anchors    { K_f ... }                           // measured anchors; K_b is DERIVED (R·Tb²·MW/HvapTb), not stored
-transport  { diffusionVolume associationFactor liquidViscosity{...} }        // kinetic branch
-```
-
-Unit comment on every scalar line is mandatory.  First natives:
-`data/standards/components/NaOH.dat`, `CaCl2.dat`; estimate proposals are now
-born in this layout.
-
-
-## Pseudo-components (petroleum cuts, polymers) — a lump, NOT a molecule
-
-A **pseudo-component** is an ordinary component `.dat`, resolved by **exact
-name** like any other — but it represents a **LUMP** (a petroleum cut of
-hundreds of species; a polymer as one average chain) with **no single
-molecular structure**.  There is **no new component type**: a pseudo-component
-is just a `.dat` that carries **only the fields a lump can honestly own**, via
-the reference-state dual-reader above:
-
-```
-identity   { MW }                       // a lump AVERAGE molar mass
-critical   { Tc  Pc  omega }            // corresponding-states constants of the cut
-gasIdeal   { Cp{...} }                  // ideal-gas Cp (NO Hf_298 / S_298)
-liquidPure { Tb  Vliq  Cp{...}  Psat{ model AmbroseWalton; } }
-// optional:  role nonvolatile;   solid { rho_p; }
-```
-
-It deliberately **OMITS**:
-
-- **`formula` / `CAS`** — there is no single molecule to name;
-- **`standardThermochemistry`** — a formation datum needs a stoichiometric reaction, and
-  a lump has none.  (So a pseudo-component **cannot** appear in a Gibbs reactor
-  or carry a heat of reaction — it does **sensible** energy balances only.)
-
-It still **FLASHES** (`critical{}` + Ambrose-Walton `Psat`) and **closes a
-sensible energy balance** (`gasIdeal` / `liquidPure` `Cp`), with **no measured
-data**.
-
-The provenance block must **SCREAM** that it is lumped and estimated:
-
-```
-provenance
-{
-    status   "ESTIMATE";
-    origin   estimated;
-    lumped   true;
-    method   "Riazi-Daubert (1987) from (Tb,SG); omega Lee-Kesler; Cp Kesler-Lee";
-    note     "petroleum pseudo-component, NOT a real species";
-}
-```
-
-The engine reads `provenance.status` / `provenance.lumped` and prints a loud
-`[estimate] component '<name>' carries an ESTIMATE provenance ...` line on every
-run that uses it — an unvalidated lump never hides.
-
-Worked example (self-contained, FLASHES + closes an energy balance):
-`tutorials/steady/flash/flash_pseudoComponent_petCut`.
-
-### The structure is identity — `jobackGroups` + `bin/estimate` (no case needed)
-
-A molecular component's Joback groups live **in its own `.dat`**, like the
-formula (sibling of the UNIFAC `groups {}` block — different table, same idea):
-
-```
-jobackGroups { CH3 2; ketone 1; }     // acetone = 2 x CH3 + 1 x >C=O
-```
-
-Any component that declares them is estimable with **one command, zero case
-ceremony**:
-
-```bash
-bin/estimate acetone            # resolves case-local, then data/standards/
-bin/estimate path/to/new.dat    # or an explicit file
-```
-
-Prints the full glass-box build-up and drops ONE stable proposal
-(`<name>.estimated.dat`) next to the source — review, then promote by hand.
-Never writes into `data/standards/`; the solver never estimates at runtime.
-The `estimateComponent` op still accepts inline `groups (...)` when the
-estimate itself is the lesson (`tutorials/props/estimate/estimate_acetone`).
-
-### Estimating a petroleum cut from (Tb, SG) — `model RiaziDaubert;`
-
-A crude assay reports each cut's **normal boiling point Tb** and **specific
-gravity SG**, not its groups.  The **Riazi-Daubert (1987)** correlations turn
-`(Tb, SG)` into `(MW, Tc, Pc, Vc)`; `omega` follows by Lee-Kesler and the
-ideal-gas `Cp` by Kesler-Lee (1976).  This is the **SCALAR-input** sibling of
-the Joback **group** path (a lump has no group decomposition) — selected via the
-same `estimateComponent` op with `model RiaziDaubert;` and an `anchors` block
-instead of `groups`:
-
-```
-{
-    type        estimateComponent;
-    model       RiaziDaubert;        // scalar-input estimator (Tb, SG)
-    component   petCut_C7plus;
-    anchors     { Tb 447.3 K;  SG 0.730; }
-    output      { proposal auto; }   // writes a reviewable .estimate-<date>.dat
-}
-```
-
-It writes a glass-box proposal whose provenance screams `status ESTIMATE /
-lumped true`; you review it, then **promote** it with the printed `mv` into
-`constant/components/`.  Cross-checked against n-decane (the nearest real
-species at this Tb/SG): **Tc** lands ~exact, **omega** within ~2 %, **MW** / **Pc**
-within the correlation's stated ~6 %.  Primary source — cite this, not an
-aggregator: *M. R. Riazi & T. E. Daubert, Ind. Eng. Chem. Res. 26 (1987)
-755-759* (consolidated set in Riazi, ASTM MNL50, 2005, Ch. 2).
-Tutorial: `tutorials/props/estimate/estimate_petroleum_cut`.
-
-### A polymer as a pseudo-component (fixed average MW) — and its limit
-
-A polymer can be modelled as a pseudo-component with **one fixed average molar
-mass** (Mn): `identity { MW <Mn>; }` + `role nonvolatile;` (it never enters the
-vapour, so it needs no `critical{}` / `Psat` to flash) + a melt/solid `Cp` for
-energy balances.  **Zero new code** — the same data model as a petroleum cut.
-
-> **LOUD limitation.**  This is a single average MW, **NOT** the molecular-weight
-> **DISTRIBUTION** (no Mn/Mw/PDI tracking, no chain-length population balance,
-> no copolymer composition).  True polymer-property methods (the
-> *Polymers-Plus* / segment-based PC-SAFT class) are **NOT supported** and are
-> out of Choupo's scope.  Use the lump **only** where a single average MW is an
-> acceptable engineering approximation (solvent devolatilisation, a heat / mass
-> balance on a polymer solution) — never for MWD-dependent design.
-
-Example `.dat` + worked devolatilisation flash (the polymer stays 100 % in the
-liquid by `role nonvolatile;`, the solvent boils off):
-`tutorials/steady/flash/flash_polymer_devolatilisation`.
-
-### The predefined `air` mixture (forthcoming)
-
-A common convenience lump is **air** (≈ 79 % N2 / 21 % O2 by mole).  Until a
-predefined-mixture shorthand lands, author it explicitly — list `N2` and `O2`
-in the property package's `components` and set the feed `molarComposition { N2
-0.79; O2 0.21; }`.  Both are fully curated permanent gases (criticals, Cp_ig,
-standardThermochemistry), so an air feed flashes and balances energy with the standard
-catalogue alone.
-
-
-## Solids are first-class — the data already there to use
-
-Solids are **not** a second-class afterthought; the component model already
-carries a deep solids stack.  Surface it when authoring a crystalliser, dryer,
-cyclone, or any solid-handling case:
-
-- **PSD is a STREAM attribute, not a component field.**  A particle-size
-  distribution lives on the *stream* that carries the solid (set / read by the
-  population-balance unit ops), because the same species can flow at different
-  size distributions in different streams.  The **component** carries only the
-  per-particle constants the PSD math needs:
-  `solid { rho_p <kg/m3>; k_v <-> ; }` — particle (true) density and the volume
-  shape factor `k_v` (`V = k_v d^3`; sphere = π/6 ≈ 0.5236, the default).
-- **Sublimation reference** (the solid-vapour P-T anchor):
-  `sublimation { tripleT <K>; tripleP <Pa>; Hfus <J/mol>; Hsub <J/mol>; }`
-  — anchors the Clausius-Clapeyron sublimation line + the triple point of the
-  P-T phase diagram.  Absent ⇒ the diagram stays L-V + critical only (every
-  existing `.dat` unaffected).
-- **Solid-liquid equilibrium** `c_sat(T)` (a crystallising solute):
-  `solubility { coefficients (a b c ...); dHcryst <J/mol>; }` — saturation
-  concentration `c_sat(T) = Σ aᵢ·(T−273.15)ⁱ` in kg solute / kg solvent; the
-  crystalliser reads it for the yield.  (Crystallisation **kinetics** k_n / k_g
-  are separate — `constant/crystallisation`, not the component.)
-- **GAB water-sorption isotherm** (a drying solid):
-  `sorption { Xm; C; K; }` — the equilibrium-moisture-vs-water-activity relation
-  `Xe = Xm·C·K·aw / [(1−K·aw)(1−K·aw+C·K·aw)]`.  Typically **case-local**
-  (axiom 4): the isotherm is sample-specific.  (The critical moisture Xc and the
-  drying-RATE curve are **kinetics** — `constant/dryingKinetics`, not the
-  component.)
-- **Crystalline formation datum**: a solid-tabulated `solid { Hf_298; S_298; }`
-  (or legacy `standardThermochemistry { ...; phase solid; }`) lets a non-volatile
-  crystalline species (sucrose, NaOH) carry its heat of formation **without** a
-  gas-phase Cp it never has — the dissolved-solute enthalpy path uses
-  `liquidHeatCapacity` as the sensible heat from 298 K.
-
-See `sucrose` (solubility + sorption + solid + crystalline standardThermochemistry) and
-`NaOH` (solid formation datum + electrolyte block) for fully-worked solid
-`.dat`s in the catalogue.
-
-## Declared elemental composition (formula-less substances)
-
-An assay cut / polymer / mixture with no single molecular formula may declare
-`elementalComposition{}` (basis `massFraction` with kg/kg fractions + a
-MANDATORY `unaccountedMassFraction`, or basis `formulaUnit` with exact
-`atomCounts{}` whose Σn·AW must reproduce `MW`), plus
-`provenance.elementalComposition{}` with an attributed `origin` and a
-`method` — all validated when the component loads; malformed blocks refuse
-loudly.  The element balances (batch campaign, steady `elementBalance`
-report, choupoCtrl ledger, the `elementalComposition` props op) resolve
-formula-first and mark declared-with-unaccounted results PARTIAL.  Keep a
-sample's ultimate analysis in the case's `constant/components/` overlay.
-
-## The three questions a component record answers
-
-Every aqueous-relevant behaviour of a substance is a DECLARED FACT on its
-record — never inferred from its name, never listed per-case.  A student
-(or the ThermoResolver) asks a component exactly three questions:
-
-1. **Does it evaporate?**  `role` (`volatile` default / `solute` /
-   `nonvolatile` / `radical`) plus the presence of a vapour-pressure
-   correlation.  A `nonvolatile` salt has K = 0 in every flash by
-   declaration, not by magic.
-
-2. **Does it participate in the aqueous equilibrium speciation network?**
-   `aqueousSpeciation none;` is the curated fact that it does NOT (ethanol,
-   pKa ≈ 15.9 — negligible at this thermodynamic level);
-   `aqueousSpeciation <setName>;` names its canonical equilibrium set
-   (`ammonia`, `aceticAcid`, ...).  ABSENT means UNKNOWN: harmless in a
-   purely molecular case, REFUSED (with the curation remedy) inside an
-   electrolyte system.  Vapour-phase reactions (the acetic dimer) are NOT
-   part of this fact — they live on the gas-liquid records (phase purity).
-
-3. **Into what?**  `aqueousMapping ( { species X; nu n; } ... );` — the
-   typed, stoichiometric component→species bridge (a salt's legacy
-   `dissociatesTo` converts to the same structure at load).  This is the
-   ONLY crossing between the component and species identity spaces; name
-   identity is never assumed.
-
-The classifier (`src/thermo/SystemClassifier`, surfaced by
-`bin/choupo-resolve` and `choupo-lint`) reads exactly these three answers
-to classify a system — solvent (declared), apparent electrolyte, molecular
-reactive, molecular nonionising, UNKNOWN — and every conclusion is
-announced as a `[resolver]` line the student can check against the records.

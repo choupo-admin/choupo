@@ -33,7 +33,7 @@
       "items": {
         "type": "object",
         "properties": {
-          "name":  { "type": "string", "title": "Component name (must be in the thermoPackage)" },
+          "name":  { "type": "string", "title": "Component name (must be in the declared component set)" },
           "atoms": {
             "type": "array",
             "title": "Atom counts (one per element)",

@@ -66,7 +66,13 @@ ALLOWED_PATHS = {
 #  translation unit; accept it when either file is there.
 SRC_EXT = (".H", ".cpp", ".h", ".hpp")
 
-CASE_RE = re.compile(r'`([a-zA-Z][A-Za-z0-9]*\d{2}_[A-Za-z0-9_]+)`')
+#  A tutorial case name always starts LOWERCASE (flash01_, batch19_, ctrl16_,
+#  userOp01_, cosmoSAC01_, vanKrevelen01_ ...).  Requiring that is what keeps
+#  catalogue record names out of the case check: `NF270_dspmde` otherwise
+#  parses as NF + "27" + "0_dspmde" and gets reported as a missing tutorial.
+#  The uppercase-initial tutorial directories that do exist (SECTOR_R,
+#  ChemicalPlantTutorial, ...) carry no NN_ index, so nothing real is lost.
+CASE_RE = re.compile(r'`([a-z][A-Za-z0-9]*\d{2}_[A-Za-z0-9_]+)`')
 #  `*` and `<...>` are placeholders, not paths -- a mention carrying one is a
 #  pattern the reader fills in, so match them and skip rather than truncate the
 #  path at the placeholder and then report the stump as missing.

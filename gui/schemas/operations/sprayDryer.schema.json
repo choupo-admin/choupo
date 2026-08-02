@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/sprayDryer.schema.json",
   "title": "sprayDryer operation",
-  "description": "Single-stage rotary-atomiser spray dryer producing powder and exhaust air. Computes the exhaust temperature, droplet and particle sizes, transfer coefficients and drying time from the energy balance, the Friedman rotary-disc correlation and Ranz-Marshall transfer. Requires a transport model in the thermoPackage.",
+  "description": "Single-stage rotary-atomiser spray dryer producing powder and exhaust air. Computes the exhaust temperature, droplet and particle sizes, transfer coefficients and drying time from the energy balance, the Friedman rotary-disc correlation and Ranz-Marshall transfer. Requires a transport model in the declared thermophysical system.",
   "type": "object",
   "properties": {
     "wheelDiameter": {

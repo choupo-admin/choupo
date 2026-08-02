@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/valve.schema.json",
+  "title": "valve operation",
+  "description": "Isenthalpic throttle (Joule-Thomson let-down). Hardware-only: the single knob is the downstream pressure. A valve only DROPS pressure — it is a restriction, not a machine; to raise pressure use a pump for liquid or a compressor for gas. W = 0 and Q = 0 by definition, so the outlet temperature, the vapour fraction and the regime are RESULTS of an outer Newton on H_out = H_in at the new pressure (a hot liquid let down can flash). One combined outlet — the phases are NOT separated; chain a flash or drum downstream to split them. Tutorial credo01_valve_heater_drum.",
+  "type": "object",
+  "properties": {
+    "P": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Downstream pressure",
+      "description": "Outlet (let-down) pressure. Must be below the inlet pressure — a valve can only drop pressure. T_out and the vapour fraction follow from the isenthalpic balance.",
+      "unit": "Pa"
+    }
+  },
+  "required": ["P"],
+  "additionalProperties": false
+}

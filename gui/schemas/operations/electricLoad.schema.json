@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/electricLoad.schema.json",
+  "title": "electricLoad operation",
+  "description": "Shaft sink / electrical generator. Hardware-free apart from the generator efficiency, and it has no stream ports. The shaft power W_shaft is NOT authored here — it arrives over an energy wire from a turbine or any other work producer, via energyInputs ( { from <unit>.shaft; kind work; target W_shaft; } ). The electrical power shipped to the grid (eta * W_shaft) and the dissipated losses ((1-eta) * W_shaft) are RESULTS. See docs/ai/energy.md; tutorials rankine01_water, combined01_brayton_rankine, proxy01_gas_loop.",
+  "type": "object",
+  "properties": {
+    "eta": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Generator efficiency",
+      "description": "Shaft-to-electrical efficiency (0 < eta <= 1); default 1.0. The (1-eta) fraction is dissipated as heat and reported as the W_losses KPI.",
+      "unit": "-"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

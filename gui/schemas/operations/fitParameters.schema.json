@@ -2,17 +2,17 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/fitParameters.schema.json",
   "title": "fitParameters operation",
-  "description": "Levenberg-Marquardt regression of thermoPackage parameters against experimental data. Outputs a fit log (chi^2 and parameter trajectory per iteration) and a parity CSV (model vs experiment at the optimum).",
+  "description": "Levenberg-Marquardt regression of thermophysical-model parameters against experimental data. Outputs a fit log (chi^2 and parameter trajectory per iteration) and a parity CSV (model vs experiment at the optimum).",
   "type": "object",
   "properties": {
     "parameters": {
       "type": "array",
       "title": "Parameters to fit",
-      "description": "Each entry is a scalar in the thermoPackage to vary, with bounds and an initial guess. `path` is dot-separated (e.g. `activityModel.pairs[0].a_ij`).",
+      "description": "Each entry is a scalar in the declared thermophysical system to vary, with bounds and an initial guess. `path` is dot-separated (e.g. `activityModel.pairs[0].a_ij`).",
       "items": {
         "type": "object",
         "properties": {
-          "path":    { "type": "string", "title": "Dot-path into thermoPackage" },
+          "path":    { "type": "string", "title": "Dot-path into the thermophysical system" },
           "initial": { "type": "number", "title": "Initial guess" },
           "min":     { "type": "number", "title": "Lower bound" },
           "max":     { "type": "number", "title": "Upper bound" }

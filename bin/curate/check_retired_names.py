@@ -207,6 +207,13 @@ for d, exts in ((ROOT / "docs", (".tex",)),
             doc_files.append(f)
 doc_files += [ROOT / "AGENTS.md", ROOT / "README.md",
               ROOT / "data" / "standards" / "README.md"]
+#  The operation SCHEMAS are a teaching surface twice over: the GUI renders
+#  their titles and descriptions in its property editors, and bin/regen-llm-docs
+#  copies them verbatim into docs/ai/schemas-reference.md.  They were outside
+#  this scan, so `thermoPackage` survived in three of them and only surfaced on
+#  2026-08-02 when the generated doc was rebuilt after a long gap -- the gate
+#  had been reading the OUTPUT while the retired token sat in the INPUT.
+doc_files += sorted((ROOT / "gui" / "schemas" / "operations").glob("*.json"))
 for f in doc_files:
     try:
         txt = f.read_text(errors="replace")
@@ -264,5 +271,6 @@ if bad:
     sys.exit(1)
 print("retired-name gate: component corpus flat, tutorial sources clean,"
       " src/ clean, aggregated snapshot speaks streamFaces, doc surfaces"
-      " (guides incl. tutorialsGuide-* + docs/ai) free of v1 grammar,"
+      " (guides incl. tutorialsGuide-* + docs/ai + the operation schemas"
+      " the GUI and the generated reference both read) free of v1 grammar,"
       " bin/ writers + src/ messages emit v2 (only refusals name the old file)")

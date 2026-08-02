@@ -436,7 +436,27 @@ accepts today, and that is a policy call.
    Sabotage-verified.
    Still unread: `gui-credo.md` (411 lines, GUI-design prose rather than
    checkable claims — its paths and case names now pass the gate).
-6. **Landing mobile** — the 390 px responsive fix WAS applied (`b9f17421a`,
+6. **Operation-schema coverage: 32 of 76** — found 2026-08-02 while paying
+   debt #5, and now MEASURED and PUBLISHED rather than latent.
+   `docs/ai/schemas-reference.md` called itself *"every shipped operation"*
+   while carrying under half of them, so an assistant reading it concluded the
+   other 44 do not exist.  Three of the gaps the file itself had flagged
+   (`valve`, `electricLoad`, `steamTables`) now have `.schema.json` files and
+   are generated like everything else; the remaining 44 are listed by name in
+   the file's own header, and the list shrinks only by writing schema files —
+   never by editing the sentence.  Two consequences beyond the doc: a
+   schema-less operation has no GUI property editor, and it cannot be
+   validated.  Worth clearing in batches by family (the props-bench ops are
+   the largest cluster, then the reactors, then the heat units).
+   *Related fix, same slice:* `bin/regen-llm-docs` was reading three
+   directories that Migrations 2 and 4 had moved, and its `_list_section`
+   answered "(directory not present)" instead of failing — so a blind
+   regeneration published a catalogue claiming Choupo ships no Henry pairs, no
+   membranes and no materials.  Repointed (205/4/4/4 now render) and absence
+   is an ERROR.  Its `--check` drift mode had existed since it was written and
+   ran nowhere, which is how `components.md` came to advertise 56 components
+   against a tree of 247; it is a `runTests` gate now.
+7. **Landing mobile** — the 390 px responsive fix WAS applied (`b9f17421a`,
    `f7b69592f`: minWidth:0 + clamp + wrap).  Not a standing debt, but no fresh
    390 px screenshot confirms it end-to-end (Codex: prove clean or it stays
    a check).  The adsorption debt is roadmap #7 above.
