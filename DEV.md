@@ -250,6 +250,21 @@ accepts today, and that is a policy call.
    are wanted at all given the settled `pitzer` ≠ `pitzerHMW` key
    contract.  Also the TEMPORAL half of phase (f) (time-resolved utility
    demand / peak duty) — an architecture change, proposal-first.
+6. **A6 cyclic steady state (adsorption)** — designed 2026-08-01,
+   [`docs/design/fixed-bed-thermal-a5.md`](docs/design/fixed-bed-thermal-a5.md) §7:
+   a `cycle { period; steps (…); repeat N; }` recipe grammar +
+   per-cycle state snapshots + a tri-state CSS verdict against a
+   tolerance the CASE declares.  It touches the recipe grammar EVERY
+   batch case reads, which is why it is yours.  `batch23_tsa_cycles`
+   already MEASURES the approach it cannot claim (qbar 0.315 → 0.242 →
+   0.175 over three cycles).
+7. **P-swing P1/P2 (adsorption)** — designed 2026-08-01, same note §8:
+   outlet-pressure switch + feed-valve closure, both the T1.5
+   commitment pattern, contained in ergun mode.  The physics cost is
+   named: the T1 energy row dropped the expansion-work term at constant
+   pressure, so P1/P2 REQUIRE adding `+ eps dP/dt` or a depressurising
+   cell would cool only in reality, not in the model.  Countercurrent
+   steps (P3) stay refused — that boundary changes KIND.
 
 ## 5. Known debts (severity-ish)
 
