@@ -12,7 +12,7 @@
 
   The SAME benzene/toluene column as column01, but solved by the rigorous
   SIMULTANEOUS-correction (MESH Newton) method instead of the sequential
-  bubble-point (Wang-Henke).  Selected by `method simultaneous;`.
+  bubble-point (Wang-Henke).  Selected by `model simultaneous;`.
 
   Pedagogical point: on an ideal system both methods give the SAME answer
   --- this case validates the MESH solver against column01.  But the

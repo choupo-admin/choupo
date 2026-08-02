@@ -928,7 +928,7 @@ The annotated index of what each demonstrates →
   (`pushDerivedStart` in `IsothermalFlash.cpp`); finds 3-phase coexistence
   when it is the Gibbs-global minimum (`vlle03_audit_artificial`).
 * **NRTL distillation through an azeotrope** is unstable in Wang-Henke
-  (bubble-point) — select `method simultaneous;` (rigorous MESH Newton) for
+  (bubble-point) — select `model simultaneous;` (rigorous MESH Newton) for
   azeotropic systems.  Wang-Henke stays the default for ideal systems.
 * **Bubble-point distillation is slow** (O(100-500) outer iterations);
   `simultaneous` converges in ~5-6 Newton iterations.

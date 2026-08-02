@@ -356,7 +356,7 @@ datasheet, respectively.
   values tried.
 * **NRTL distillation** with azeotrope is unstable in the bubble-point
   method (Wang-Henke) — it can pass through the ethanol/water azeotrope
-  non-physically.  **RESOLVED**: select `method simultaneous;` on the column
+  non-physically.  **RESOLVED**: select `model simultaneous;` on the column
   for the rigorous MESH Newton, which converges on azeotropic systems (tutorial
   `column03_azeotrope_mesh`).  Wang-Henke remains the default for ideal systems
   (faster to set up, no Jacobian).

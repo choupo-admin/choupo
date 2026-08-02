@@ -15185,7 +15185,7 @@ stage temperature from its own bubble-point equation, and sweeps until
 the profile stops moving.  Simple and robust on ideal mixtures, but slow
 ($\sim$100 sweeps) and prone to stepping \emph{through} an azeotrope
 into a non-physical region.  \emph{Right} ---
-\code{method simultaneous} (the rigorous MESH Newton) packs
+\code{model simultaneous} (the rigorous MESH Newton) packs
 \emph{every} stage equation into one residual vector and drives the
 whole thing to zero with the project's one $n$-D Newton (live
 $K_j(T_j)$).  It converges quadratically in 5--6 iterations and stays
@@ -15209,7 +15209,11 @@ thermodynamics; only the \emph{shape} of the iteration differs.}
 \end{itemize}
 
 The remedy for both is Naphtali-Sandholm equation-oriented Newton
-\cite{NS} --- on the roadmap.
+\cite{NS} --- shipped as \code{model simultaneous;} (accepted alias
+\code{NaphtaliSandholm}), validated in
+\file{column07\_naphtaliSandholm} against the original 1971 paper's
+Problem~2 and exercised on the azeotropic system in
+\file{column03\_azeotrope\_mesh}.
 
 \begin{tutoriallink}
 \file{tutorials/steady/distillation/column01\_benzene\_toluene} --- the ideal case, converges
@@ -16476,7 +16480,8 @@ $A_k$ and active-layer thickness $\Delta x$ --- the geometry is carried
 in the membrane \file{.dat} \code{poreModel\{\}} block as $r_p$,
 $A_k/\Delta x$, $X_d$ and the pore dielectric $\varepsilon_p$.  Each
 \emph{ion} $i$ (the salt is split into its cation and anion through the
-component's \code{electrolyte\{ cation; anion; \}} block) carries a
+component's declared \code{dissociatesTo \{ \dots \}} stoichiometry)
+carries a
 radius $r_i$, a free-solution diffusivity $D_i$ and a signed charge
 $z_i$.
 
