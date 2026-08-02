@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/tsaTwinBed.schema.json",
+  "title": "tsaTwinBed operation",
+  "description": "Temperature-swing adsorption twin-bed pair, cycle-averaged: one column adsorbs at T_ads while its twin regenerates at T_regen, swapping every half-cycle, and the reported streams are the CYCLE AVERAGES. The working capacity is the isotherm difference between the two temperatures — a capacity the isotherm cannot deliver at the declared pair REFUSES rather than quietly under-delivering (the tsa02 teaching case exists to fire that refusal).",
+  "type": "object",
+  "properties": {
+    "adsorbent": {
+      "type": "string",
+      "title": "Adsorbent",
+      "description": "Resolved by name in the assets catalogue; brings the isotherms whose T-swing is the separation."
+    },
+    "mAdsPerColumn": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Adsorbent per column",
+      "unit": "-"
+    },
+    "tCycle": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Cycle time",
+      "description": "Full cycle period; each bed spends half adsorbing, half regenerating.",
+      "unit": "-"
+    },
+    "T_ads": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Adsorption temperature",
+      "unit": "K"
+    },
+    "T_regen": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Regeneration temperature",
+      "unit": "K"
+    },
+    "lightKey": {
+      "type": "string",
+      "title": "Light key",
+      "description": "The weakly-adsorbed component that leaves as the product."
+    },
+    "purgeRatio": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Purge ratio",
+      "unit": "-"
+    }
+  },
+  "required": [
+    "adsorbent",
+    "mAdsPerColumn",
+    "tCycle",
+    "T_ads",
+    "T_regen",
+    "lightKey",
+    "purgeRatio"
+  ],
+  "additionalProperties": false
+}

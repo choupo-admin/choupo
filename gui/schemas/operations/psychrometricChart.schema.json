@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/psychrometricChart.schema.json",
+  "title": "psychrometricChart operation",
+  "description": "Psychrometric chart for ANY carrier + condensable pair, generated from the package's own models rather than copied from a handbook: saturation line, constant-relative-humidity curves and wet-bulb lines over a declared temperature span. Carrier and condensable are NOT interchangeable — only the condensable needs a vapour-pressure model, and the op refuses by name when it has none. Air-water is one instance, not the definition; the reference case runs N2-water.",
+  "type": "object",
+  "properties": {
+    "carrier": {
+      "type": "string",
+      "title": "Carrier (dry) gas",
+      "description": "The non-condensing component, e.g. N2."
+    },
+    "condensable": {
+      "type": "string",
+      "title": "Condensable component",
+      "description": "The one that can saturate; must carry a vapour-pressure model."
+    },
+    "P": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Chart pressure",
+      "description": "Defaults to 101325 Pa.",
+      "unit": "Pa"
+    },
+    "TminC": {
+      "type": "number",
+      "title": "Lower temperature",
+      "unit": "-",
+      "description": "Chart span start, in degrees CELSIUS (this op's axis convention); defaults to 0."
+    },
+    "TmaxC": {
+      "type": "number",
+      "title": "Upper temperature",
+      "unit": "-",
+      "description": "Chart span end, degrees Celsius; defaults to 150."
+    },
+    "grid": {
+      "type": "object",
+      "title": "Grid resolution",
+      "description": "`{ n <points>; }` — how finely the domain is sampled.",
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Points",
+          "unit": "-"
+        }
+      }
+    },
+    "relativeHumidity": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 1
+      },
+      "title": "RH curves",
+      "description": "Which constant-RH curves to draw."
+    },
+    "wetBulb": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "title": "Wet-bulb lines",
+      "description": "Which wet-bulb temperature lines to draw."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "carrier",
+    "condensable"
+  ],
+  "additionalProperties": false
+}

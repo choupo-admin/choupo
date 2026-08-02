@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/scalingScan.schema.json",
+  "title": "scalingScan operation",
+  "description": "Concentration scan of a water analysis, the RO/evaporator scaling audit: the declared analysis is concentrated point by point along a recovery axis, the full speciation is solved at each point, and every mineral's saturation index is reported — WHERE each scale becomes possible, before any membrane is sized. Takes the same solution-definition keys as `speciate` (totals, pH incl. `solve`, atmosphere for an open system, temperature, equilibrate for allowed precipitation); adds the recovery axis and, with an equilibrate block, a `feedFlow` that turns precipitation into kg/day. `feedFlow` without `equilibrate` is REFUSED — it only feeds a rate an SI-only scan does not compute — and a bare number is refused too: it needs a volumetric unit.",
+  "type": "object",
+  "properties": {
+    "analyticalTotals": {
+      "type": "object",
+      "title": "Water analysis",
+      "description": "`{ Ca 84 mg/L; ... }` — the feed water. `totals` is a synonym."
+    },
+    "totals": {
+      "type": "object",
+      "title": "Water analysis (synonym)"
+    },
+    "pH": {
+      "title": "pH",
+      "description": "A number to fix it, or `solve` to compute it per point."
+    },
+    "temperature": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature",
+      "unit": "K"
+    },
+    "activityModel": {
+      "type": "string",
+      "title": "Aqueous activity model",
+      "description": "Which per-ion gamma model prices the scan, e.g. davies or pitzerHMW — the model is the experiment's subject here (the reference case runs the SAME water through both and plots the disagreement)."
+    },
+    "atmosphere": {
+      "type": "object",
+      "title": "Open-system gas pins",
+      "description": "As in `speciate`: `{ pCO2 4.2e-4 atm; }` caps the pH through the gas equilibrium; each value must carry a pressure unit."
+    },
+    "equilibrate": {
+      "type": "object",
+      "title": "Allowed precipitation",
+      "description": "As in `speciate`: the NAMED minerals may precipitate to SI = 0 along the scan.",
+      "properties": {
+        "minerals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Solids allowed to precipitate"
+        }
+      },
+      "required": [
+        "minerals"
+      ]
+    },
+    "recovery": {
+      "type": "object",
+      "title": "Recovery axis",
+      "description": "`{ from 0; to 0.85; n 18; }` — the water-recovery fraction the analysis is concentrated along.",
+      "properties": {
+        "from": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "title": "First recovery",
+          "unit": "-"
+        },
+        "to": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "title": "Last recovery",
+          "unit": "-"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Points",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "from",
+        "to",
+        "n"
+      ]
+    },
+    "feedFlow": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Feed flow",
+      "description": "Volumetric feed flow — REQUIRES an `equilibrate` block (it prices kg/day of each precipitated scale) and REQUIRES a volumetric unit on the value.",
+      "unit": "m3/s"
+    },
+    "diagSpecies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Species to pin as diagnostics"
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

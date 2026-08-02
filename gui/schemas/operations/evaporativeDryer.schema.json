@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/evaporativeDryer.schema.json",
+  "title": "evaporativeDryer operation",
+  "description": "Evaporative (adiabatic) dryer: like `solidDryer`, it takes a wet solid and a hot-air stream and the air itself brings the heat and carries away the moisture — so it has almost no operation parameters, and that absence is the design. Its one knob is a HUMIDITY CEILING on the exhaust: drying stops when the air approaches saturation, because equilibrium does, not because a timer says so.",
+  "type": "object",
+  "properties": {
+    "maxExhaustHumidity": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Exhaust humidity ceiling",
+      "description": "Maximum water activity the exhaust may reach; defaults to 0.95. The air's capacity to carry moisture is what actually limits an adiabatic dryer.",
+      "unit": "-"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

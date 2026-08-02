@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/pneumaticConveyor.schema.json",
+  "title": "pneumaticConveyor operation",
+  "description": "Dilute-phase pneumatic conveying line: pressure drop of a gas-solids flow along a pipe with bends, from the gas friction plus the solids' acceleration, wall friction and lift. The solids enter as a real stream; the geometry declares the line and its bends, each bend typed because a blinded tee and a long-radius elbow do not cost the same.",
+  "type": "object",
+  "properties": {
+    "geometry": {
+      "type": "object",
+      "title": "Line geometry",
+      "description": "The pipe run: diameter, length, vertical rise and the bend list.",
+      "properties": {
+        "D": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Internal diameter",
+          "unit": "m"
+        },
+        "L": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Line length",
+          "unit": "m"
+        },
+        "dz": {
+          "type": "number",
+          "title": "Vertical rise",
+          "description": "Signed elevation change; lifting solids costs pressure.",
+          "unit": "m"
+        },
+        "bends": {
+          "type": "array",
+          "title": "Bends",
+          "description": "`( { type longRadius; } { type blindedTee; exitRatio ...; } ... )` — each bend by its kind.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "title": "Bend kind",
+                "description": "e.g. longRadius (default) or blindedTee."
+              },
+              "exitRatio": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "title": "Exit-velocity ratio",
+                "unit": "-"
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "D",
+        "L"
+      ]
+    },
+    "particleWallFriction": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Particle-wall friction factor",
+      "description": "Solids-phase wall friction coefficient; defaults to 0.4.",
+      "unit": "-"
+    }
+  },
+  "required": [
+    "geometry"
+  ],
+  "additionalProperties": false
+}

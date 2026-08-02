@@ -254,6 +254,29 @@ def main() -> int:
                     "without it -- the engine defaults it, so the schema is "
                     "over-strict")
 
+    # ---- completeness: every registered op carries a schema -------------
+    #  Coverage climbed 32 -> 76 of 76 on 2026-08-02, batch by batch, each
+    #  schema written from the op's source and a running case.  From here the
+    #  requirement is STANDING: registering an operation and writing its
+    #  schema are one act, because a schema-less op has no GUI property
+    #  editor, no entry in the generated reference, and an assistant reading
+    #  that reference concludes it does not exist.  (An alias satisfies this
+    #  with its own file, kept equal to its canonical twin by the alias check
+    #  below.)
+    all_ops = set()
+    for rel in ("src/unitOperations/UnitOperation.cpp",
+                "src/propertyOps/PropertyOperation.cpp"):
+        all_ops |= set(re.findall(r'reg\("([A-Za-z0-9_]+)"',
+                                  (ROOT / rel).read_text()))
+    have = {f.name[:-len(".schema.json")] for f in schemas}
+    for op in sorted(all_ops - have, key=str.lower):
+        failures.append(
+            f"NO SCHEMA: operation '{op}' is registered but has no"
+            " gui/schemas/operations/" + op + ".schema.json -- write it from"
+            " the op's source and a running case (never from the header"
+            " comment); the GUI and the generated reference are blind to the"
+            " op until it exists")
+
     # ---- alias agreement: one class, one contract -----------------------
     nAlias = 0
     for cls, names in sorted(alias_groups().items()):
@@ -280,11 +303,12 @@ def main() -> int:
         for f in failures:
             print("  -", f)
         return 1
-    print(f"check_schema_coverage: OK -- {len(schemas)} schema(s), "
-          f"{exercised} exercised by the corpus over {checked} case use(s); "
-          "no schema rejects a key a running case uses, none marks required "
-          f"a key a running case omits, and {nAlias} registry-derived alias "
-          "group(s) agree property-for-property")
+    print(f"check_schema_coverage: OK -- every one of the {len(all_ops)} "
+          f"registered operations carries a schema ({exercised} exercised by "
+          f"the corpus over {checked} case use(s)); no schema rejects a key a "
+          "running case uses, none marks required a key a running case "
+          f"omits, and {nAlias} registry-derived alias group(s) agree "
+          "property-for-property")
     return 0
 
 

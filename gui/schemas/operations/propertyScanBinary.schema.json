@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/propertyScanBinary.schema.json",
+  "title": "propertyScanBinary operation",
+  "description": "Binary liquid-liquid map at one (T, P): samples the mixing Gibbs energy g_mix across the whole composition axis AND resolves the binodal by an LL flash of a declared feed. The two views teach each other — the g_mix curve SHOWS the common tangent, the flash FINDS it. The feed must lie INSIDE the miscibility gap or the flash rightly reports one phase; for an asymmetric binodal that is not the equimolar point, which is exactly the lesson the water/1-butanol case carries.",
+  "type": "object",
+  "properties": {
+    "state": {
+      "type": "object",
+      "title": "Held state",
+      "description": "`{ T ...; P ...; }` — the temperature and pressure of the map.",
+      "properties": {
+        "T": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Temperature",
+          "unit": "K"
+        },
+        "P": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Pressure",
+          "unit": "Pa"
+        }
+      }
+    },
+    "grid": {
+      "type": "object",
+      "title": "Grid resolution",
+      "description": "`{ n <points>; }` — how finely the domain is sampled.",
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Points",
+          "unit": "-"
+        }
+      }
+    },
+    "feed": {
+      "type": "object",
+      "title": "LL-flash feed",
+      "description": "`{ <component> <z>; }` — a composition inside the gap; the flash resolves both binodal branches from it."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "state"
+  ],
+  "additionalProperties": false
+}

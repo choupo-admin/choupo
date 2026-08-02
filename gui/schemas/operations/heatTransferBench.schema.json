@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/heatTransferBench.schema.json",
+  "title": "heatTransferBench operation",
+  "description": "Self-check of the heat-transfer correlation library against its own textbook worked examples: every built-in correlation is evaluated at its published example's conditions and held to the printed answer within a declared tolerance. Runs with NO configuration — the bench IS the test — and the tolerances exist only to honour textbook rounding and chart-reading scatter, never to loosen a failing correlation.",
+  "type": "object",
+  "properties": {
+    "aadTolerance": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Deviation tolerance",
+      "description": "Allowed relative deviation from the printed textbook value; defaults to 0.05.",
+      "unit": "-"
+    },
+    "aadTolerancePhaseChange": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Phase-change tolerance",
+      "description": "Separate allowance for the boiling/condensation examples, whose published inputs are chart-read.",
+      "unit": "-"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

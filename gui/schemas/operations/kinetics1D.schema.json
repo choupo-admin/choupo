@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/kinetics1D.schema.json",
+  "title": "kinetics1D operation",
+  "description": "One-dimensional batch kinetics bench: integrates c(t) for an nth-order rate, overlays a measured dataset when one is declared, and — with a `fit` list — regresses the rate constant or the Arrhenius pair (k0, Ea) from the data. The MODEL-DISCRIMINATION lesson lives here: the same dataset run at order 1 and order 2 shows which residuals carry structure, which is adequacy, not consistency.",
+  "type": "object",
+  "properties": {
+    "rate": {
+      "type": "object",
+      "title": "Rate law",
+      "description": "`{ order <n>; c0 ...; k ...; }` — the reaction order, the initial concentration, and the rate constant either directly (`k`) or as an Arrhenius pair (`k0`, `Ea`, with the evaluation `T`).",
+      "properties": {
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "title": "Reaction order",
+          "unit": "-"
+        },
+        "c0": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Initial concentration",
+          "unit": "-"
+        },
+        "k": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Rate constant",
+          "unit": "-"
+        },
+        "k0": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Arrhenius pre-exponential",
+          "unit": "-"
+        },
+        "Ea": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Activation energy",
+          "unit": "J/mol"
+        },
+        "T": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Evaluation temperature",
+          "unit": "K"
+        }
+      },
+      "required": [
+        "order"
+      ]
+    },
+    "state": {
+      "type": "object",
+      "title": "State block",
+      "description": "Alternative home for `c0`, mirroring the other bench ops."
+    },
+    "time": {
+      "type": "object",
+      "title": "Time span",
+      "description": "`{ from 0; to ...; n ...; }` — the integration window; n defaults to 61.",
+      "properties": {
+        "from": {
+          "type": "number",
+          "minimum": 0,
+          "title": "Start",
+          "unit": "-"
+        },
+        "to": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "End",
+          "unit": "-"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Points",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "to"
+      ]
+    },
+    "component": {
+      "type": "string",
+      "title": "Component",
+      "description": "Labels the concentration column (c_<component>)."
+    },
+    "dataset": {
+      "type": "string",
+      "title": "Measured dataset",
+      "description": "Path to a self-describing kinetic dataset to overlay and, with `fit`, regress against."
+    },
+    "fit": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Parameters to fit",
+      "description": "Which rate parameters to regress from the dataset — `( k )` or `( k0 Ea )` for the Arrhenius pair."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "rate",
+    "output"
+  ],
+  "additionalProperties": false
+}

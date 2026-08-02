@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/purePhaseDiagram.schema.json",
+  "title": "purePhaseDiagram operation",
+  "description": "Pure-component P-T phase diagram: the vapour-pressure curve from the component's own model, and — when the case declares the solid's data — the sublimation and melting curves meeting it at the triple point. The solid block is CASE data (axiom 4): triple point, heats of fusion and sublimation, and the fusion volume change (negative for water, which is why its melting line leans backwards — the lesson the reference case exists for).",
+  "type": "object",
+  "properties": {
+    "grid": {
+      "type": "object",
+      "title": "Grid resolution",
+      "description": "`{ n <points>; }` — how finely the domain is sampled.",
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Points",
+          "unit": "-"
+        }
+      }
+    },
+    "solid": {
+      "type": "object",
+      "title": "Solid-phase data",
+      "description": "Declares the solid so the diagram gains its two solid boundaries. Raw SI values.",
+      "properties": {
+        "tripleT": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Triple-point temperature",
+          "unit": "K"
+        },
+        "tripleP": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Triple-point pressure",
+          "unit": "Pa"
+        },
+        "Hfus": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Heat of fusion",
+          "unit": "J/mol"
+        },
+        "Hsub": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Heat of sublimation",
+          "unit": "J/mol"
+        },
+        "deltaVfus": {
+          "type": "number",
+          "title": "Fusion volume change",
+          "description": "Negative for water — the melting line then slopes backwards (Clapeyron), which is the point of showing it.",
+          "unit": "m3/mol"
+        }
+      },
+      "required": [
+        "tripleT",
+        "tripleP",
+        "Hfus",
+        "Hsub"
+      ]
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

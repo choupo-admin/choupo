@@ -449,7 +449,10 @@ accepts today, and that is a policy call.
    Fixed per the arity lesson: the credo now states the RULE (context-gated
    workspaces, lit-but-dead never shows) and names `MenuBar.tsx` as the
    authority on the lineup, instead of carrying a copy of the list.
-6. **Operation-schema coverage: 32 of 76** — found 2026-08-02 while paying
+6. ~~**Operation-schema coverage: 32 of 76**~~ — **PAID IN FULL 2026-08-02:
+   76 of 76, and the requirement is now STANDING** (`check_schema_coverage`
+   fails on any registered op without a schema, so registering an op and
+   writing its schema are one act from here on).  Found the same day while paying
    debt #5, and now MEASURED and PUBLISHED rather than latent.
    `docs/ai/schemas-reference.md` called itself *"every shipped operation"*
    while carrying under half of them, so an assistant reading it concluded the

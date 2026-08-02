@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/propertyScanTernary.schema.json",
+  "title": "propertyScanTernary operation",
+  "description": "Ternary map at one (T, P): sweeps the composition simplex and reports the phase behaviour — the LLE solubility envelope with tie-lines, or a VLE/VLLE audit — from the declared activity model. The map is the model's fingerprint: change the declared model and the envelope moves.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "title": "Map mode",
+      "description": "What each simplex point is asked: `lle` (liquid-liquid flash — the clean solubility map) or the audit modes the reference cases use."
+    },
+    "state": {
+      "type": "object",
+      "title": "Held state",
+      "properties": {
+        "T": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Temperature",
+          "unit": "K"
+        },
+        "P": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Pressure",
+          "unit": "Pa"
+        }
+      }
+    },
+    "grid": {
+      "type": "object",
+      "title": "Grid resolution",
+      "description": "`{ n <points>; }` — how finely the domain is sampled.",
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Points",
+          "unit": "-"
+        }
+      }
+    },
+    "tieStride": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Tie-line stride",
+      "description": "Draw every Nth tie-line, so the envelope stays readable.",
+      "unit": "-"
+    },
+    "shard": {
+      "type": "object",
+      "title": "Simplex shard",
+      "description": "Restrict the sweep to a slice of the simplex — for splitting an expensive map across operations."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "state"
+  ],
+  "additionalProperties": false
+}

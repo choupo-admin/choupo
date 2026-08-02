@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/psa.schema.json",
+  "title": "psa operation",
+  "description": "Pressure-swing adsorption pair, cycle-averaged: a high-pressure adsorption step splits the feed on the declared adsorbent, a low-pressure purge regenerates the bed, and the reported streams are the CYCLE AVERAGES. The working capacity follows from the isotherm evaluated at the two pressures — the swing IS the separation. `lightKey` names the raffinate product; the purge is priced against it, and the blowdown loss, when declared, is an announced debit rather than a hidden one.",
+  "type": "object",
+  "properties": {
+    "adsorbent": {
+      "type": "string",
+      "title": "Adsorbent",
+      "description": "Resolved by name in the assets catalogue (kind adsorbent); brings the isotherms."
+    },
+    "P_high": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Adsorption pressure",
+      "unit": "Pa"
+    },
+    "P_low": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Regeneration pressure",
+      "unit": "Pa"
+    },
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Operating temperature",
+      "description": "Isothermal cycle temperature the isotherms are evaluated at; defaults to the feed temperature.",
+      "unit": "K"
+    },
+    "lightKey": {
+      "type": "string",
+      "title": "Light key",
+      "description": "The weakly-adsorbed component that leaves as the high-pressure product."
+    },
+    "purgeRatio": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Purge ratio",
+      "description": "Fraction of the light product recycled as low-pressure purge.",
+      "unit": "-"
+    },
+    "bedCapacity": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Bed capacity",
+      "description": "Adsorbent inventory per mole of feed processed — the sizing knob of the cycle-averaged model.",
+      "unit": "-"
+    },
+    "eta": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Capacity efficiency",
+      "description": "Fraction of the ideal working capacity actually realised; defaults to 0.80.",
+      "unit": "-"
+    },
+    "blowdownLoss": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "title": "Blowdown loss",
+      "description": "Fraction of the light product lost in depressurisation, declared and announced; defaults to none.",
+      "unit": "-"
+    }
+  },
+  "required": [
+    "adsorbent",
+    "P_high",
+    "P_low",
+    "lightKey",
+    "purgeRatio",
+    "bedCapacity"
+  ],
+  "additionalProperties": false
+}

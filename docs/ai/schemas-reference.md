@@ -5,11 +5,7 @@
      to the hand-curated unit-ops.md (which has groupings, prose and
      worked examples); this file is the alphabetical schema dump. -->
 
-*64 of 76 registered operations carry a schema and are documented below.*
-
-**Not documented here** — these operations are registered and runnable but have no `.schema.json` yet, so the GUI has no property editor for them and this reference cannot describe their fields.  Read `unit-ops.md`, the tutorials, or the header comment of the implementing class instead; adding a schema file is what removes a name from this list:
-
-> `evaporativeDryer`, `gibbsMap`, `heatTransferBench`, `kinetics1D`, `pneumaticConveyor`, `propertyScanBinary`, `propertyScanTernary`, `psa`, `psychrometricChart`, `purePhaseDiagram`, `scalingScan`, `tsaTwinBed`
+*76 of 76 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -325,6 +321,14 @@ Group-contribution estimation of a component's constants — curation made visib
 | `polymer` |   | object | — | vanKrevelen route: `{ packing k; }` — the packing factor V/Vw, the fraction of space the chains do NOT fill. Default 1.60 (amorphous/glas… |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
+## `evaporativeDryer`  (evaporativeDryer operation)
+
+Evaporative (adiabatic) dryer: like `solidDryer`, it takes a wet solid and a hot-air stream and the air itself brings the heat and carries away the moisture — so it has almost no operation parameters, and that absence is the design. Its one knob is a HUMIDITY CEILING on the exhaust: drying stops when the air approaches saturation, because equilibrium does, not because a timer says so.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `maxExhaustHumidity` |   | number | - | Maximum water activity the exhaust may reach; defaults to 0.95. The air's capacity to carry moisture is what actually limits an adiabatic… |
+
 ## `evaporator`  (evaporator operation)
 
 Single-effect evaporator sized by its heat-transfer surface. The duty follows from Q = U·A·dT across the steam chest, and the vessel's operating PRESSURE is a RESULT, not an input: the boiling temperature carries the boiling-point elevation of the concentrated liquor (T_boil = T_sat,pure(P_op) + K_b·m_solute), so P_op = P_sat,pure(T_boil − K_b·m_solute) is read back from the answer and reported as a KPI. Chain effects by wiring one unit's vapour to the next one's steam inlet — a multiple-effect train is topology, not an operation key.
@@ -403,6 +407,24 @@ Ideal specification-driven gas-solid separator. The split is set directly, with 
 | `solidsRecovery` |   | number | - | Fraction of the solid mass sent to the captured-solids outlet. |
 | `gasCarryover` |   | number | - | Fraction of the gas leaving with the solids outlet. |
 
+## `gibbsMap`  (gibbsMap operation)
+
+Equilibrium map over a (T, P) grid by Gibbs minimisation: at every grid point the declared species set equilibrates over the element balance, and the declared metric (a species' mole fraction, an element's recovery) is contoured. The chart's pedagogical weapons are the two DECLARED boxes: an `industrialWindow` (where industry actually operates — for ammonia, NOT where equilibrium is best, because the catalyst rules) and a `kineticBand` (the user-declared region where kinetics kill the approach), both watermarked with their labels so the map says why the plant is not at the thermodynamic optimum.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `elements` | ✓ | array[string] | — | The conserved element basis. |
+| `species` | ✓ | array[object] | — | `( { name N2; atoms ( 2 0 ); } ... )` — each species with its atom counts in the declared element order. |
+| `feed` | ✓ | object | — | `{ N2 1.0; H2 3.0; }` — the element inventory comes from this. |
+| `Tgrid` | ✓ | object | — |  |
+| `Pgrid` | ✓ | object | — | `{ from ...; to ...; n ...; log true; }` — `log` spaces the axis logarithmically, the natural spacing for a pressure map. |
+| `metric` | ✓ | object | — | What each grid point reports: `{ type moleFraction; species NH3; }` or an element-recovery metric with `element`. |
+| `temperatureApproach` |   | number | K | Solve at (T − this), the standard admission that a real reactor does not reach equilibrium; announced when non-zero. |
+| `industrialWindow` |   | object | — | A rectangle drawn on the map with its label — raw SI (K, Pa). |
+| `kineticBand` |   | object | — | A rectangle drawn on the map with its label — raw SI (K, Pa). |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+| `anchors` |   | array[object] | — | `( { T ...; P ...; } ... )` — (T, P) points where a published value exists; the run reports the computed metric at each so the whole map … |
+
 ## `gibbsReactor`  (gibbsReactor operation)
 
 Gibbs reactor: equilibrium composition from minimising the total Gibbs free energy subject to atom-balance constraints. Three selectable `model` paths: elementPotential (gas), reactiveFlash (multi-condensable, NRTL) and directMin (multi-start Nelder-Mead).
@@ -454,6 +476,15 @@ Two-stream heat exchanger. THREE modes via `model`: epsNTU (default) rates from 
 | `tubeSide` |   | object | — | Which correlation prices the tube-side film coefficient. |
 | `design` |   | object | — | Turns the geometry pass into a DESIGN: solve the hardware for a declared target instead of rating what is given. |
 
+## `heatTransferBench`  (heatTransferBench operation)
+
+Self-check of the heat-transfer correlation library against its own textbook worked examples: every built-in correlation is evaluated at its published example's conditions and held to the printed answer within a declared tolerance. Runs with NO configuration — the bench IS the test — and the tolerances exist only to honour textbook rounding and chart-reading scatter, never to loosen a failing correlation.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `aadTolerance` |   | number | - | Allowed relative deviation from the printed textbook value; defaults to 0.05. |
+| `aadTolerancePhaseChange` |   | number | - | Separate allowance for the boiling/condensation examples, whose published inputs are chart-read. |
+
 ## `heater`  (heater operation)
 
 Single-stream heater. Given the thermal power Q (positive heats, negative cools), the outlet temperature follows from the enthalpy balance.
@@ -498,6 +529,20 @@ Isothermal two-phase flash at fixed T and P. Both are optional overrides of the 
 | `phaseSet` |   | string | - | Which phases the flash is allowed to find. `auto` makes the phase set a RESULT rather than an input — the engine decides from what it alr… |
 | `alphaRich` |   | string | — | Labels which of two liquids is which, for a liquid-liquid split. A label, not a constraint: it names the phases in the report without ste… |
 | `betaRich` |   | string | — | The counterpart of alphaRich. |
+
+## `kinetics1D`  (kinetics1D operation)
+
+One-dimensional batch kinetics bench: integrates c(t) for an nth-order rate, overlays a measured dataset when one is declared, and — with a `fit` list — regresses the rate constant or the Arrhenius pair (k0, Ea) from the data. The MODEL-DISCRIMINATION lesson lives here: the same dataset run at order 1 and order 2 shows which residuals carry structure, which is adequacy, not consistency.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `rate` | ✓ | object | — | `{ order <n>; c0 ...; k ...; }` — the reaction order, the initial concentration, and the rate constant either directly (`k`) or as an Arr… |
+| `state` |   | object | — | Alternative home for `c0`, mirroring the other bench ops. |
+| `time` |   | object | — | `{ from 0; to ...; n ...; }` — the integration window; n defaults to 61. |
+| `component` |   | string | — | Labels the concentration column (c_<component>). |
+| `dataset` |   | string | — | Path to a self-describing kinetic dataset to overlay and, with `fit`, regress against. |
+| `fit` |   | array[string] | — | Which rate parameters to regress from the dataset — `( k )` or `( k0 Ea )` for the Arrhenius pair. |
+| `output` | ✓ | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
 ## `membraneSW`  (membraneSW operation)
 
@@ -596,6 +641,15 @@ Mean-ionic activity coefficient and osmotic coefficient of ONE salt by the Pitze
 | `validation` |   | object | — | Published values to compare against, so the run reports a deviation rather than a bare curve. |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
+## `pneumaticConveyor`  (pneumaticConveyor operation)
+
+Dilute-phase pneumatic conveying line: pressure drop of a gas-solids flow along a pipe with bends, from the gas friction plus the solids' acceleration, wall friction and lift. The solids enter as a real stream; the geometry declares the line and its bends, each bend typed because a blinded tee and a long-radius elbow do not cost the same.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `geometry` | ✓ | object | — | The pipe run: diameter, length, vertical rise and the bend list. |
+| `particleWallFriction` |   | number | - | Solids-phase wall friction coefficient; defaults to 0.4. |
+
 ## `propertyPoint`  (propertyPoint operation)
 
 Single-point property evaluation: at a given (T, P, composition) the thermo package reports every property the chosen models can compute (Psat, gamma_i, K_i, Cp_ig, H, S, Z, v, ...). Results print to the run log.
@@ -628,6 +682,62 @@ Two-dimensional property sweep: varies two state variables on a regular grid and
 | `properties` | ✓ | array[string] | — |  |
 | `output` | ✓ | object | — |  |
 
+## `propertyScanBinary`  (propertyScanBinary operation)
+
+Binary liquid-liquid map at one (T, P): samples the mixing Gibbs energy g_mix across the whole composition axis AND resolves the binodal by an LL flash of a declared feed. The two views teach each other — the g_mix curve SHOWS the common tangent, the flash FINDS it. The feed must lie INSIDE the miscibility gap or the flash rightly reports one phase; for an asymmetric binodal that is not the equimolar point, which is exactly the lesson the water/1-butanol case carries.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `state` | ✓ | object | — | `{ T ...; P ...; }` — the temperature and pressure of the map. |
+| `grid` |   | object | — | `{ n <points>; }` — how finely the domain is sampled. |
+| `feed` |   | object | — | `{ <component> <z>; }` — a composition inside the gap; the flash resolves both binodal branches from it. |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `propertyScanTernary`  (propertyScanTernary operation)
+
+Ternary map at one (T, P): sweeps the composition simplex and reports the phase behaviour — the LLE solubility envelope with tie-lines, or a VLE/VLLE audit — from the declared activity model. The map is the model's fingerprint: change the declared model and the envelope moves.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `mode` |   | string | — | What each simplex point is asked: `lle` (liquid-liquid flash — the clean solubility map) or the audit modes the reference cases use. |
+| `state` | ✓ | object | — |  |
+| `grid` |   | object | — | `{ n <points>; }` — how finely the domain is sampled. |
+| `tieStride` |   | integer | - | Draw every Nth tie-line, so the envelope stays readable. |
+| `shard` |   | object | — | Restrict the sweep to a slice of the simplex — for splitting an expensive map across operations. |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `psa`  (psa operation)
+
+Pressure-swing adsorption pair, cycle-averaged: a high-pressure adsorption step splits the feed on the declared adsorbent, a low-pressure purge regenerates the bed, and the reported streams are the CYCLE AVERAGES. The working capacity follows from the isotherm evaluated at the two pressures — the swing IS the separation. `lightKey` names the raffinate product; the purge is priced against it, and the blowdown loss, when declared, is an announced debit rather than a hidden one.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `adsorbent` | ✓ | string | — | Resolved by name in the assets catalogue (kind adsorbent); brings the isotherms. |
+| `P_high` | ✓ | number | Pa |  |
+| `P_low` | ✓ | number | Pa |  |
+| `T` |   | number | K | Isothermal cycle temperature the isotherms are evaluated at; defaults to the feed temperature. |
+| `lightKey` | ✓ | string | — | The weakly-adsorbed component that leaves as the high-pressure product. |
+| `purgeRatio` | ✓ | number | - | Fraction of the light product recycled as low-pressure purge. |
+| `bedCapacity` | ✓ | number | - | Adsorbent inventory per mole of feed processed — the sizing knob of the cycle-averaged model. |
+| `eta` |   | number | - | Fraction of the ideal working capacity actually realised; defaults to 0.80. |
+| `blowdownLoss` |   | number | - | Fraction of the light product lost in depressurisation, declared and announced; defaults to none. |
+
+## `psychrometricChart`  (psychrometricChart operation)
+
+Psychrometric chart for ANY carrier + condensable pair, generated from the package's own models rather than copied from a handbook: saturation line, constant-relative-humidity curves and wet-bulb lines over a declared temperature span. Carrier and condensable are NOT interchangeable — only the condensable needs a vapour-pressure model, and the op refuses by name when it has none. Air-water is one instance, not the definition; the reference case runs N2-water.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `carrier` | ✓ | string | — | The non-condensing component, e.g. N2. |
+| `condensable` | ✓ | string | — | The one that can saturate; must carry a vapour-pressure model. |
+| `P` |   | number | Pa | Defaults to 101325 Pa. |
+| `TminC` |   | number | - | Chart span start, in degrees CELSIUS (this op's axis convention); defaults to 0. |
+| `TmaxC` |   | number | - | Chart span end, degrees Celsius; defaults to 150. |
+| `grid` |   | object | — | `{ n <points>; }` — how finely the domain is sampled. |
+| `relativeHumidity` |   | array[number] | — | Which constant-RH curves to draw. |
+| `wetBulb` |   | array[number] | — | Which wet-bulb temperature lines to draw. |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
 ## `pump`  (pump operation)
 
 Incompressible-liquid pump. Given the shaft power and efficiency, the discharge pressure P_in + eta·W_shaft/(F·v_molar) and the small dissipation temperature rise follow from the energy balance.
@@ -638,6 +748,34 @@ Incompressible-liquid pump. Given the shaft power and efficiency, the discharge 
 | `eta` | ✓ | number | - | Hydraulic and mechanical efficiency, useful v·dP work / shaft work (0 < eta <= 1). The (1-eta) fraction heats the liquid. |
 | `P_out` |   | number | Pa | Specify the outlet pressure instead of the power; the shaft work follows from v·dP/eta. |
 | `dP` |   | number | Pa | Specify the rise instead of the outlet pressure or the power. |
+
+## `purePhaseDiagram`  (purePhaseDiagram operation)
+
+Pure-component P-T phase diagram: the vapour-pressure curve from the component's own model, and — when the case declares the solid's data — the sublimation and melting curves meeting it at the triple point. The solid block is CASE data (axiom 4): triple point, heats of fusion and sublimation, and the fusion volume change (negative for water, which is why its melting line leans backwards — the lesson the reference case exists for).
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `grid` |   | object | — | `{ n <points>; }` — how finely the domain is sampled. |
+| `solid` |   | object | — | Declares the solid so the diagram gains its two solid boundaries. Raw SI values. |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `scalingScan`  (scalingScan operation)
+
+Concentration scan of a water analysis, the RO/evaporator scaling audit: the declared analysis is concentrated point by point along a recovery axis, the full speciation is solved at each point, and every mineral's saturation index is reported — WHERE each scale becomes possible, before any membrane is sized. Takes the same solution-definition keys as `speciate` (totals, pH incl. `solve`, atmosphere for an open system, temperature, equilibrate for allowed precipitation); adds the recovery axis and, with an equilibrate block, a `feedFlow` that turns precipitation into kg/day. `feedFlow` without `equilibrate` is REFUSED — it only feeds a rate an SI-only scan does not compute — and a bare number is refused too: it needs a volumetric unit.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `analyticalTotals` |   | object | — | `{ Ca 84 mg/L; ... }` — the feed water. `totals` is a synonym. |
+| `totals` |   | object | — |  |
+| `pH` |   | ? | — | A number to fix it, or `solve` to compute it per point. |
+| `temperature` |   | number | K |  |
+| `activityModel` |   | string | — | Which per-ion gamma model prices the scan, e.g. davies or pitzerHMW — the model is the experiment's subject here (the reference case runs… |
+| `atmosphere` |   | object | — | As in `speciate`: `{ pCO2 4.2e-4 atm; }` caps the pH through the gas equilibrium; each value must carry a pressure unit. |
+| `equilibrate` |   | object | — | As in `speciate`: the NAMED minerals may precipitate to SI = 0 along the scan. |
+| `recovery` |   | object | — | `{ from 0; to 0.85; n 18; }` — the water-recovery fraction the analysis is concentrated along. |
+| `feedFlow` |   | number | m3/s | Volumetric feed flow — REQUIRES an `equilibrate` block (it prices kg/day of each precipitated scale) and REQUIRES a volumetric unit on th… |
+| `diagSpecies` |   | array[string] | — |  |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
 ## `shortcutColumn`  (shortcutColumn operation)
 
@@ -741,6 +879,20 @@ Counter-current multistage gas stripper solved by the Kremser method (the invers
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `stages` | ✓ | number | - | Number of equilibrium stages. |
+
+## `tsaTwinBed`  (tsaTwinBed operation)
+
+Temperature-swing adsorption twin-bed pair, cycle-averaged: one column adsorbs at T_ads while its twin regenerates at T_regen, swapping every half-cycle, and the reported streams are the CYCLE AVERAGES. The working capacity is the isotherm difference between the two temperatures — a capacity the isotherm cannot deliver at the declared pair REFUSES rather than quietly under-delivering (the tsa02 teaching case exists to fire that refusal).
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `adsorbent` | ✓ | string | — | Resolved by name in the assets catalogue; brings the isotherms whose T-swing is the separation. |
+| `mAdsPerColumn` | ✓ | number | - |  |
+| `tCycle` | ✓ | number | - | Full cycle period; each bed spends half adsorbing, half regenerating. |
+| `T_ads` | ✓ | number | K |  |
+| `T_regen` | ✓ | number | K |  |
+| `lightKey` | ✓ | string | — | The weakly-adsorbed component that leaves as the product. |
+| `purgeRatio` | ✓ | number | - |  |
 
 ## `turbine`  (turbine operation)
 

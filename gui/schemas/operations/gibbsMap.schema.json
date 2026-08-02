@@ -1,0 +1,270 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/gibbsMap.schema.json",
+  "title": "gibbsMap operation",
+  "description": "Equilibrium map over a (T, P) grid by Gibbs minimisation: at every grid point the declared species set equilibrates over the element balance, and the declared metric (a species' mole fraction, an element's recovery) is contoured. The chart's pedagogical weapons are the two DECLARED boxes: an `industrialWindow` (where industry actually operates — for ammonia, NOT where equilibrium is best, because the catalyst rules) and a `kineticBand` (the user-declared region where kinetics kill the approach), both watermarked with their labels so the map says why the plant is not at the thermodynamic optimum.",
+  "type": "object",
+  "properties": {
+    "elements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Elements",
+      "description": "The conserved element basis."
+    },
+    "species": {
+      "type": "array",
+      "title": "Species set",
+      "minItems": 2,
+      "description": "`( { name N2; atoms ( 2 0 ); } ... )` — each species with its atom counts in the declared element order.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Species name"
+          },
+          "atoms": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0
+            },
+            "title": "Atoms per element",
+            "description": "Same order as `elements`."
+          }
+        },
+        "required": [
+          "name",
+          "atoms"
+        ]
+      }
+    },
+    "feed": {
+      "type": "object",
+      "title": "Feed moles",
+      "description": "`{ N2 1.0; H2 3.0; }` — the element inventory comes from this."
+    },
+    "Tgrid": {
+      "type": "object",
+      "title": "Temperature grid",
+      "properties": {
+        "from": {
+          "type": "number",
+          "title": "From",
+          "unit": "K"
+        },
+        "to": {
+          "type": "number",
+          "title": "To",
+          "unit": "K"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Points",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "from",
+        "to",
+        "n"
+      ]
+    },
+    "Pgrid": {
+      "type": "object",
+      "title": "Pressure grid",
+      "description": "`{ from ...; to ...; n ...; log true; }` — `log` spaces the axis logarithmically, the natural spacing for a pressure map.",
+      "properties": {
+        "from": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "From",
+          "unit": "Pa"
+        },
+        "to": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "To",
+          "unit": "Pa"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Points",
+          "unit": "-"
+        },
+        "log": {
+          "type": "string",
+          "enum": [
+            "true",
+            "false"
+          ],
+          "title": "Log spacing"
+        }
+      },
+      "required": [
+        "from",
+        "to",
+        "n"
+      ]
+    },
+    "metric": {
+      "type": "object",
+      "title": "Contoured metric",
+      "description": "What each grid point reports: `{ type moleFraction; species NH3; }` or an element-recovery metric with `element`.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Metric kind"
+        },
+        "species": {
+          "type": "string",
+          "title": "Species (mole-fraction metric)"
+        },
+        "element": {
+          "type": "string",
+          "title": "Element (recovery metric)"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "temperatureApproach": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Equilibrium approach",
+      "description": "Solve at (T − this), the standard admission that a real reactor does not reach equilibrium; announced when non-zero.",
+      "unit": "K"
+    },
+    "industrialWindow": {
+      "type": "object",
+      "title": "Labelled (T, P) box",
+      "description": "A rectangle drawn on the map with its label — raw SI (K, Pa).",
+      "properties": {
+        "Tmin": {
+          "type": "number",
+          "title": "Tmin",
+          "unit": "K"
+        },
+        "Tmax": {
+          "type": "number",
+          "title": "Tmax",
+          "unit": "K"
+        },
+        "Pmin": {
+          "type": "number",
+          "title": "Pmin",
+          "unit": "Pa"
+        },
+        "Pmax": {
+          "type": "number",
+          "title": "Pmax",
+          "unit": "Pa"
+        },
+        "label": {
+          "type": "string",
+          "title": "Label"
+        }
+      },
+      "required": [
+        "Tmin",
+        "Tmax",
+        "Pmin",
+        "Pmax",
+        "label"
+      ]
+    },
+    "kineticBand": {
+      "type": "object",
+      "title": "Labelled (T, P) box",
+      "description": "A rectangle drawn on the map with its label — raw SI (K, Pa).",
+      "properties": {
+        "Tmin": {
+          "type": "number",
+          "title": "Tmin",
+          "unit": "K"
+        },
+        "Tmax": {
+          "type": "number",
+          "title": "Tmax",
+          "unit": "K"
+        },
+        "Pmin": {
+          "type": "number",
+          "title": "Pmin",
+          "unit": "Pa"
+        },
+        "Pmax": {
+          "type": "number",
+          "title": "Pmax",
+          "unit": "Pa"
+        },
+        "label": {
+          "type": "string",
+          "title": "Label"
+        }
+      },
+      "required": [
+        "Tmin",
+        "Tmax",
+        "Pmin",
+        "Pmax",
+        "label"
+      ]
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    },
+    "anchors": {
+      "type": "array",
+      "title": "Published anchor points",
+      "description": "`( { T ...; P ...; } ... )` — (T, P) points where a published value exists; the run reports the computed metric at each so the whole map is pinned to literature at its corners, not just plausible.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "T": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "title": "Temperature",
+            "unit": "K"
+          },
+          "P": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "title": "Pressure",
+            "unit": "Pa"
+          }
+        },
+        "required": [
+          "T",
+          "P"
+        ]
+      }
+    }
+  },
+  "required": [
+    "elements",
+    "species",
+    "feed",
+    "Tgrid",
+    "Pgrid",
+    "metric"
+  ],
+  "additionalProperties": false
+}
