@@ -317,6 +317,28 @@ accepts today, and that is a policy call.
    are wanted at all given the settled `pitzer` ≠ `pitzerHMW` key
    contract.  Also the TEMPORAL half of phase (f) (time-resolved utility
    demand / peak duty) — an architecture change, proposal-first.
+7. **PC-SAFT association term (roadmap #4)** — proposal written 2026-08-02,
+   [`docs/design/pcsaft-association-proposal.md`](docs/design/pcsaft-association-proposal.md):
+   2B/4C Wertheim on the shipped core, `epsAB_K`/`kappaAB`/`assocScheme`
+   in the existing `pcsaft {}` block (absent = non-associating, goldens
+   untouched by construction), no case-grammar change, Gross-Sadowski-2002
+   validation battery.  Decide scheme scope, field names, battery.
+8. **Pinch full programme (roadmap #8)** — scoped 2026-08-02,
+   [`docs/design/pinch-programme-scope.md`](docs/design/pinch-programme-scope.md):
+   P1 targets (composite curves + problem table + Q_min/T_pinch) → P2
+   match recommendations (a table, never a rewiring) → P3 area/cost
+   targets via ShellTubeHX + Guthrie; home = a `pinchPass` PostProcessor;
+   needs no data the engine lacks.  Decide staging (or P1-only), home,
+   witness (Linnhoff & Hindmarsh 1983 four-stream).
+9. **Curation backlog: estimated dHf records** — survey 2026-08-02,
+   [`docs/design/curation-backlog-estimated-records.md`](docs/design/curation-backlog-estimated-records.md):
+   all 45 Joback dHf_298 records vs known primaries.  Headline:
+   `fluorine.dat` (elemental F2) carries dHf = −435,550 by Joback — an
+   element is 0 BY DEFINITION (s_298 derived from the wrong number too);
+   ring-strain outliers cyclopropane (~65 kJ, wrong sign) and
+   ethyleneOxide (~71 kJ); the isomer-blind xylene/butene sets; the
+   neopentane 13 kJ the process05 overlay already works around.
+   Promotion is a curation act — the list only ranks it.
 6. ~~**A6 cyclic steady state (adsorption)**~~ — **BUILT 2026-08-02** on
    Vítor's "faz como achares melhor / Avança!".  `cycle { period; repeat;
    steps ( … ); cssTolerance }` expands to the SAME event stream the
