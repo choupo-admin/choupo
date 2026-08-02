@@ -8096,8 +8096,11 @@ domain of $g$. A damping factor $\lambda \in (0, 1]$ tames this:
 with $\lambda$ reduced (typically halved) until
 $|g(x_{k+1})| < |g(x_k)|$. This loses quadratic convergence \emph{near
 the root} (where $\lambda$ returns to 1 anyway), but buys global
-robustness. The simulator's \code{NewtonRaphson} uses backtracking
-damping with a halving schedule.
+robustness. The simulator's 1-D \code{NewtonRaphson} guards
+differently --- an optional step cap (\code{maxStep}) plus a bracket
+whose bisection fallback catches any step that leaves it; the $n$-D
+\code{NewtonND} (\S\ref{ch:nrND}) is the one that backtracks with a
+halving schedule.
 
 \subsection{Worked example}
 
@@ -8105,10 +8108,10 @@ damping with a halving schedule.
 Solve $g(P) = \sum_i x_i \gamma_i \Psat_i(T) / P - 1 = 0$ for $P$ at
 $T = 365\,$K, $x_1 = 0.4$ benzene, ideal solution.
 
-At $T = 365\,$K Antoine gives $\Psat_1 \approx 1.20$ bar,
-$\Psat_2 \approx 0.49$ bar. So $g(P) = (0.4 \cdot 1.20 + 0.6 \cdot 0.49)/P - 1 = 0.774/P - 1$.
+At $T = 365\,$K Antoine gives $\Psat_1 \approx 1.435$ bar,
+$\Psat_2 \approx 0.575$ bar. So $g(P) = (0.4 \cdot 1.435 + 0.6 \cdot 0.575)/P - 1 = 0.919/P - 1$.
 
-This is linear in $1/P$ --- the root is $P^* = 0.774$ bar in one
+This is linear in $1/P$ --- the root is $P^* = 0.919$ bar in one
 ``Newton step''. Real cases with $\gamma_i = \gamma_i(\xv, T)$ are
 non-linear: typical convergence is 3--5 steps to $|g| < 10^{-8}$.
 \end{example}
