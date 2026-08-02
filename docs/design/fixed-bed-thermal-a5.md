@@ -135,7 +135,34 @@ Gate: check_thermal_bed extends with the wallCooled positive + the
 three declaration refusals; the old blanket "wallHeatTransfer is T2,
 not built" refusal retires WITH this slice.
 
-## 7. A6 — cyclic steady state (PROPOSAL, awaiting Vítor's decision)
+## 7. A6 — cyclic steady state (BUILT 2026-08-02)
+
+**Status: shipped.**  Vítor's ruling was "faz como achares melhor" and
+then "Avança!", so items 1-3 below are built; item 4 (`repeat untilCSS;`)
+stays the named next step.  What the BUILD added to the design:
+
+* **The accumulator trap.**  A unit's packed state also holds MONOTONE
+  ACCUMULATORS — the bed's `M_in`/`M_out` ledger rows and its `Q_wall`
+  row — which grow every cycle by construction.  Comparing the whole
+  state vector could never converge and would report a perfectly cyclic
+  bed as never settling.  So `cycleState()` is a virtual each unit
+  overrides to return only what genuinely repeats; the bed cuts at
+  `inOffset_()`, the layout's own boundary, so the cut cannot drift from
+  it.  The design had said "records its packed state" — that would have
+  been wrong.
+* **Two distinct UNAVAILABLE reasons**, both named: fewer than two
+  completed boundaries to compare, or no `cssTolerance` declared.  The
+  engine never invents the tolerance — whether a bed has converged is a
+  modelling judgement, not a default.
+* **Equivalence is the contract, and it is gated.**  The declared form
+  reproduces the hand-unrolled recipe on all 51 KPIs of batch23's
+  golden; that is what let the hand-written event list be retired.
+  `check_cycle_css` re-proves it on every run, and the sabotage (drop
+  the k·period offset) breaks it by 7e-1.
+
+Original proposal below, kept as the record of what was asked for.
+
+## 7b. A6 — the original proposal (2026-08-01)
 
 What exists TODAY (batch23_tsa_cycles, no new grammar): N hand-declared
 TSA cycles in one recipe, ending exactly on a cycle boundary so the

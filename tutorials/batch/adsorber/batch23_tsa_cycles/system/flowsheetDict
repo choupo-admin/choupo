@@ -73,23 +73,26 @@ units
     }
 );
 
-//  Three hand-declared TSA cycles.  Order matters at each instant: the
-//  T switch fires FIRST (rescales every feed concentration to the new
-//  P/(R T), commitment re-declared), the composition switch second
-//  (reads its fraction against the nominal total at the CURRENT T).
-recipe
-(
-    // -- cycle 0: load 0..3600, hot purge 3600..7200
-    { time 3600;  action setParameter; unit bed; key feed.CO2; value 0.0;   }
-    { time 3600;  action setParameter; unit bed; key feed.T;   value 400.0; }
-    // -- cycle 1
-    { time 7200;  action setParameter; unit bed; key feed.T;   value 298.15;}
-    { time 7200;  action setParameter; unit bed; key feed.CO2; value 0.15;  }
-    { time 10800; action setParameter; unit bed; key feed.CO2; value 0.0;   }
-    { time 10800; action setParameter; unit bed; key feed.T;   value 400.0; }
-    // -- cycle 2
-    { time 14400; action setParameter; unit bed; key feed.T;   value 298.15;}
-    { time 14400; action setParameter; unit bed; key feed.CO2; value 0.15;  }
-    { time 18000; action setParameter; unit bed; key feed.CO2; value 0.0;   }
-    { time 18000; action setParameter; unit bed; key feed.T;   value 400.0; }
-);
+//  A6: the cycle is DECLARED STRUCTURE, not a hand-unrolled event list.
+//  Each step's `time` is its offset WITHIN one period; the driver adds
+//  k*period and expands to the same event stream the unrolled form
+//  produced -- proven equivalent on all 51 KPIs of this case's golden,
+//  which is what let the hand-written version be retired.
+//  Order matters at each instant: the T switch fires FIRST (it rescales
+//  every feed concentration to the new P/(R T) and re-declares the
+//  commitment), the composition switch second (it reads its fraction
+//  against the nominal total at the CURRENT T).
+cycle
+{
+    period        7200;      // s -- one load + one hot purge
+    repeat        3;
+    cssTolerance  1e-3;      // the CASE's judgement, never an engine default
+
+    steps
+    (
+        { time 0;    action setParameter; unit bed; key feed.T;   value 298.15;}
+        { time 0;    action setParameter; unit bed; key feed.CO2; value 0.15;  }
+        { time 3600; action setParameter; unit bed; key feed.CO2; value 0.0;   }
+        { time 3600; action setParameter; unit bed; key feed.T;   value 400.0; }
+    );
+}

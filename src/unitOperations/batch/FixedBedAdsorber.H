@@ -232,6 +232,13 @@ public:
 
     void noteTimeAdvanced(scalar t) override;
 
+    //  A6: the bed's cyclic state is its FIELDS -- concentrations,
+    //  loadings and (thermal) temperatures.  The ledger rows M_in/M_out
+    //  and Q_wall are deliberately EXCLUDED: they are monotone
+    //  accumulators that grow every cycle by construction, and including
+    //  them would make a perfectly cyclic bed report as never settling.
+    sVector cycleState() const override;
+
     std::vector<std::pair<std::string, scalar>> trajectoryExtras() const override;
     std::map<std::string, scalar> kpis() const override;
 

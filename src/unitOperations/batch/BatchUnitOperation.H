@@ -258,6 +258,23 @@ public:
     // bubble-T seed.
     virtual void notifyStateChanged() {}
 
+    // ---- A6: the state that DEFINES a cyclic steady state ---------------
+    //  What must repeat, cycle to cycle, for this vessel to be at CSS.
+    //  Default: the holdup plus T -- right for a closed vessel.
+    //
+    //  THE TRAP THIS EXISTS TO AVOID: a unit's packed ODE state also holds
+    //  MONOTONE ACCUMULATORS (the fixed bed's M_in/M_out ledger rows, its
+    //  Q_wall row).  Those grow every cycle BY CONSTRUCTION, so a naive
+    //  "compare the whole state vector" can never converge and would report
+    //  a perfectly cyclic bed as never settling.  A unit that carries such
+    //  rows OVERRIDES this and returns only what genuinely repeats.
+    virtual sVector cycleState() const
+    {
+        sVector s = state().n;
+        s.push_back(state().T);
+        return s;
+    }
+
     // ---- Datum amendments (A5 feed switching) ---------------------------
     //  An open-boundary unit counts its DECLARED feed commitment as
     //  campaign matter from t = 0 (the fixed bed's materialInventory).

@@ -303,7 +303,25 @@ accepts today, and that is a policy call.
    are wanted at all given the settled `pitzer` ≠ `pitzerHMW` key
    contract.  Also the TEMPORAL half of phase (f) (time-resolved utility
    demand / peak duty) — an architecture change, proposal-first.
-6. **A6 cyclic steady state (adsorption)** — designed 2026-08-01,
+6. ~~**A6 cyclic steady state (adsorption)**~~ — **BUILT 2026-08-02** on
+   Vítor's "faz como achares melhor / Avança!".  `cycle { period; repeat;
+   steps ( … ); cssTolerance }` expands to the SAME event stream the
+   hand-unrolled recipe produced — proven on all 51 KPIs of batch23's
+   golden, which is what let its hand-written list be retired.  The trap
+   the design had missed and the build caught: a unit's packed state also
+   holds MONOTONE ACCUMULATORS (the bed's M_in/M_out and Q_wall rows),
+   which grow every cycle by construction — comparing the whole vector
+   would report a perfectly cyclic bed as never settling, so
+   `cycleState()` is a virtual each unit overrides to return only what
+   repeats (the bed cuts at `inOffset_()`, the layout's own boundary).
+   The verdict is tri-state — CONVERGED / NOT-YET with the measured
+   change / UNAVAILABLE, with two distinct named reasons for the last
+   (fewer than two boundaries, or no declared tolerance) — and the
+   engine NEVER invents the tolerance: whether a bed has converged is a
+   modelling judgement.  Gate `check_cycle_css` (equivalence + 4
+   refusals), sabotage-verified: dropping the k·period offset breaks
+   equivalence by 7e-1.  Stop-at-CSS (`repeat untilCSS;`) stays the
+   named next step.  Originally designed 2026-08-01,
    [`docs/design/fixed-bed-thermal-a5.md`](docs/design/fixed-bed-thermal-a5.md) §7:
    a `cycle { period; steps (…); repeat N; }` recipe grammar +
    per-cycle state snapshots + a tri-state CSS verdict against a

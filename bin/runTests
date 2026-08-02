@@ -722,6 +722,21 @@ PYEOF
     fi
     rm -f /tmp/sealv.$$
 
+    # A6 cycle/CSS gate: a DECLARED cycle reproduces the hand-unrolled
+    # recipe KPI for KPI (structure, never physics -- that equivalence is
+    # what retired batch23's event list), and the CSS verdict is tri-state
+    # with the tolerance the CASE declares.  Sabotage-verified 2026-08-02:
+    # dropping the k*period offset breaks equivalence by 7e-1.
+    if "$ROOT/bin/curate/check_cycle_css.py" > /tmp/cycss.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "cycle-css-gate" "$(tail -1 /tmp/cycss.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_cycle_css.py)\n" "cycle-css-gate"
+        cat /tmp/cycss.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/cycss.$$
+
     # ---- Curation gates that existed but never RAN ----------------------
     # Eleven gates sat in bin/curate/ unwired; seven were not even
     # executable.  Two were stale -- check_ion_pins read the retired

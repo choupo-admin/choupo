@@ -461,6 +461,65 @@ try
         std::cout << "\n";
     }
 
+// ---- A6: DECLARED CYCLES (forum 2026-08-01, design note section 7) ----
+//  A cyclic process is STRUCTURE, not a hand-unrolled event list.  The
+//  case declares one period and its steps; the driver expands them into
+//  the same RecipeEvent stream the hand-written form produces, so every
+//  ledger, amendment and balance downstream is byte-identical to the
+//  unrolled case -- the grammar buys structure and the CSS verdict, and
+//  changes no physics.  batch23_tsa_cycles is the hand-unrolled witness
+//  this must reproduce.
+std::size_t cycleCount = 0;
+scalar      cyclePeriod = 0.0;
+if (flowsheetDict->found("cycle"))
+{
+    auto cy = flowsheetDict->subDict("cycle");
+    cyclePeriod = cy->lookupScalar("period");
+    const scalar repeatN = cy->lookupScalar("repeat");
+    if (cyclePeriod <= 0.0)
+        throw std::runtime_error("cycle: period must be > 0 s");
+    if (repeatN < 1.0 || repeatN != std::floor(repeatN))
+        throw std::runtime_error("cycle: repeat must be a positive"
+            " whole number of cycles");
+    cycleCount = static_cast<std::size_t>(repeatN);
+    if (!cy->found("steps"))
+        throw std::runtime_error("cycle: needs a `steps ( ... )` list --"
+            " the events of ONE period, each with a time in [0, period)");
+    //  Every step's time is WITHIN one period; the driver adds k*period.
+    //  A step at or beyond the period would silently belong to the next
+    //  cycle, so it refuses rather than quietly shifting.
+    std::vector<DictPtr> steps;
+    for (const auto& sd : cy->lookupDictList("steps"))
+    {
+        validateAction(sd);
+        if (sd->found("when"))
+            throw std::runtime_error("cycle: a step may not carry a"
+                " `when {}` condition -- a declared cycle is a TIME"
+                " structure, and a condition-triggered event belongs in"
+                " the `recipe ( ... )` list beside it");
+        const scalar st = sd->lookupScalar("time");
+        if (st < 0.0 || st >= cyclePeriod)
+            throw std::runtime_error("cycle: step time "
+                + std::to_string(st) + " s is outside [0, period = "
+                + std::to_string(cyclePeriod) + ") -- a step's time is"
+                " its offset WITHIN one period, never absolute");
+        steps.push_back(sd);
+    }
+    for (std::size_t k = 0; k < cycleCount; ++k)
+        for (const auto& sd : steps)
+            events.push_back({ static_cast<scalar>(k) * cyclePeriod
+                               + sd->lookupScalar("time"), sd });
+    std::sort(events.begin(), events.end(),
+              [](const RecipeEvent& a, const RecipeEvent& b)
+              { return a.time < b.time; });
+    std::cout << "Declared cycle: " << cycleCount << " x "
+              << cyclePeriod << " s (" << steps.size()
+              << " step(s) per period) -> " << (cycleCount * steps.size())
+              << " expanded event(s); campaign covers "
+              << (static_cast<scalar>(cycleCount) * cyclePeriod)
+              << " s of cycling.\n";
+}
+
     // ---- solutionControl writer (opt-in) -----------------------------
     //  The instant directory IS the real physical time (seconds).  Component
     //  names label each vessel's holdup inventory in <t>/internalState.
@@ -850,6 +909,29 @@ try
     // (empty) segment boundary instead of an unstamped one.
     for (auto& unit : units) unit->noteTimeAdvanced(startTime);
 
+    // ---- A6: per-cycle state snapshots + the CSS verdict ------------------
+    //  Captured at each declared cycle boundary, from the unit's OWN
+    //  cycleState() (which excludes the monotone ledger accumulators -- see
+    //  BatchUnitOperation::cycleState).  The verdict is tri-state and the
+    //  tolerance is the CASE's: the engine never picks a number that decides
+    //  whether a bed "has converged".
+    std::vector<std::vector<sVector>> cycleSnaps;   // [cycle][unit] -> state
+    std::size_t nextCycleIdx = 1;                   // boundary k*period
+    auto captureCycleBoundary = [&](scalar tNow)
+    {
+        if (cycleCount == 0) return;
+        while (nextCycleIdx <= cycleCount
+               && tNow >= static_cast<scalar>(nextCycleIdx) * cyclePeriod
+                          - 1.0e-9)
+        {
+            std::vector<sVector> snap;
+            snap.reserve(units.size());
+            for (const auto& u : units) snap.push_back(u->cycleState());
+            cycleSnaps.push_back(std::move(snap));
+            ++nextCycleIdx;
+        }
+    };
+
     // Fire any events scheduled at or before startTime BEFORE the
     // initial snapshot, so the very first row of trajectory.csv
     // already reflects them.
@@ -904,6 +986,7 @@ try
             for (auto& unit : units) unit->step(t, dt);
             t += dt;
             for (auto& unit : units) unit->noteTimeAdvanced(t);
+            captureCycleBoundary(t);
 
             // Continuous discharge routing.
             for (std::size_t i = 0; i < units.size(); ++i)
@@ -996,6 +1079,7 @@ try
 
             t = tNext;
             for (auto& unit : units) unit->noteTimeAdvanced(t);
+            captureCycleBoundary(t);
             postStep(t);
 
             if (t >= nextWrite - 1.0e-9 || t >= endTime - 1.0e-12)
@@ -1129,6 +1213,65 @@ try
                 for (std::size_t i = 0; i < thermo.n() && i < inv.size(); ++i)
                     inventoryF[i] += inv[i];
             }
+        // ---- A6: the CSS verdict, tri-state and DECLARED ----------------
+        //  CONVERGED when the relative change between the last two cycle
+        //  boundaries falls below a tolerance the CASE declares; NOT-YET
+        //  with the measured value otherwise; UNAVAILABLE when no cycles
+        //  were declared.  The engine never invents the tolerance: whether
+        //  a bed "has converged" is a modelling judgement, not a default.
+        if (cycleCount >= 2 && cycleSnaps.size() >= 2)
+        {
+            auto& ck2 = result.kpis["campaign"];
+            const auto& a2 = cycleSnaps[cycleSnaps.size() - 2];
+            const auto& b2 = cycleSnaps.back();
+            scalar worst = 0.0;
+            std::string worstUnit;
+            for (std::size_t i = 0; i < b2.size() && i < a2.size(); ++i)
+            {
+                scalar num = 0.0, den = 0.0;
+                for (std::size_t j = 0; j < b2[i].size() && j < a2[i].size(); ++j)
+                {
+                    const scalar d = b2[i][j] - a2[i][j];
+                    num += d * d;
+                    den += b2[i][j] * b2[i][j];
+                }
+                const scalar rel = std::sqrt(num) / std::max(std::sqrt(den), 1.0e-30);
+                if (rel > worst) { worst = rel; worstUnit = unitNames[i]; }
+            }
+            ck2["css_relative_change"] = worst;
+            ck2["css_cycles_completed"] = static_cast<scalar>(cycleSnaps.size());
+            auto cy2 = flowsheetDict->subDict("cycle");
+            if (cy2->found("cssTolerance"))
+            {
+                const scalar tol = cy2->lookupScalar("cssTolerance");
+                if (tol <= 0.0)
+                    throw std::runtime_error("cycle.cssTolerance must be > 0");
+                ck2["css_tolerance"] = tol;
+                ck2["css_converged"] = (worst <= tol) ? 1.0 : 0.0;
+                if (verbosity >= 1)
+                    std::cout << "[cycle] CSS " << (worst <= tol
+                            ? "CONVERGED" : "NOT YET CONVERGED")
+                              << ": ||x_k - x_(k-1)||/||x_k|| = "
+                              << std::scientific << worst << std::fixed
+                              << " vs the case's declared tolerance " << tol
+                              << " (worst unit '" << worstUnit << "', over "
+                              << cycleSnaps.size() << " cycle boundaries)\n";
+            }
+            else if (verbosity >= 1)
+                std::cout << "[cycle] CSS verdict UNAVAILABLE -- the cycle"
+                             " ran and the change between the last two"
+                             " boundaries is " << std::scientific << worst
+                          << std::fixed << " (worst unit '" << worstUnit
+                          << "'), but no `cssTolerance` is declared and the"
+                             " engine does not invent one: whether that is"
+                             " converged is the case's judgement.\n";
+        }
+        else if (cycleCount > 0 && verbosity >= 1)
+            std::cout << "[cycle] CSS verdict UNAVAILABLE -- a verdict needs"
+                         " at least TWO completed cycle boundaries to compare"
+                         " (declared " << cycleCount << ", captured "
+                      << cycleSnaps.size() << ").\n";
+
             auto& ck = result.kpis["campaign"];
             scalar m0 = 0.0, mF = 0.0, mOut = 0.0;
             scalar mAmendIn = 0.0, mAmendOut = 0.0;

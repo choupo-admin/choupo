@@ -1520,6 +1520,18 @@ void FixedBedAdsorber::writeProfile_(scalar t) const
     }
 }
 
+sVector FixedBedAdsorber::cycleState() const
+{
+    //  c rows + q rows + (thermal) T rows -- everything up to the ledger
+    //  block.  inOffset_() is exactly where the accumulators begin, so the
+    //  cut is the layout's own boundary and cannot drift from it.
+    sVector s(y_.begin(), y_.begin() + static_cast<long>(inOffset_()));
+    if (thermal_)
+        for (std::size_t j = 0; j < N_; ++j)
+            s.push_back(cellT_(y_, j));
+    return s;
+}
+
 void FixedBedAdsorber::noteTimeAdvanced(scalar t)
 {
     tNow_ = t;
