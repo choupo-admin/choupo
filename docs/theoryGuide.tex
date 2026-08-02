@@ -15214,12 +15214,15 @@ thermodynamics; only the \emph{shape} of the iteration differs.}
         differences accumulate, and stage temperatures drift.
 \end{itemize}
 
-The remedy for both is Naphtali-Sandholm equation-oriented Newton
-\cite{NS} --- shipped as \code{model simultaneous;} (accepted alias
-\code{NaphtaliSandholm}), validated in
+Both remedies are shipped.  For the azeotrope,
+\code{model simultaneous;} --- the equation-oriented CMO Newton ---
+stays physical where the sweep does not
+(\file{column03\_azeotrope\_mesh}).  For the CMO drift,
+\code{model fullMESH;} (alias \code{NaphtaliSandholm}) adds the
+per-stage energy balances of Naphtali-Sandholm \cite{NS}, seeded from
+the converged CMO profile and validated in
 \file{column07\_naphtaliSandholm} against the original 1971 paper's
-Problem~2 and exercised on the azeotropic system in
-\file{column03\_azeotrope\_mesh}.
+Problem~2.
 
 \begin{tutoriallink}
 \file{tutorials/steady/distillation/column01\_benzene\_toluene} --- the ideal case, converges
@@ -20675,12 +20678,16 @@ limiting reactant consumed.  The energy balance becomes:
 \end{equation}
 The sign convention is the standard one: $\Delta H_r < 0$ for an
 exothermic reaction, so the RHS is positive and $dT/dt > 0$.  The
-heat-of-reaction is taken from the optional
-\code{dH\_rxn} entry of each named reaction in
-\code{constant/reactions} (units J per mol of limiting reactant),
-and is assumed constant with $T$ over the integration range --- a
-Kirchhoff correction would couple $\Delta H_r$ to the Cp polynomials
-and is scheduled for a later version.
+heat-of-reaction is the elements-datum sum
+$\Delta H_r(T) = \sum_i \nu_i\,h_i(T)$, each $h_i$ carrying its
+$\Delta h^{\circ}_{f,i}$ (\S\ref{sec:elements-reference}), resolved
+through the same shared \code{reactionHeat()} every steady reactor
+uses --- evaluated at the live $T$, so the Kirchhoff temperature
+dependence rides in automatically through the $c_p$ integrals.  A
+\code{dH\_rxn} entry in \code{constant/reactions} is \emph{not} a
+primary input: it is an announced, cross-checked override honoured
+only when a species deliberately lacks formation data, and the engine
+warns when both exist and disagree.
 
 The full state derivative is, packed:
 \[
